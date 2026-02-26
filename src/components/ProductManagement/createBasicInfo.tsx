@@ -6,7 +6,7 @@ import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
-import { Switch } from "antd"
+import { Switch } from "../ui/switch"
 import { Badge } from "../ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip"
@@ -834,9 +834,8 @@ export default function CreateBasicInfo() {
                     <Label>Status</Label>
                     <div className="flex items-center space-x-2">
                       <Switch
-                       className="red-switch"
-                       checked={formData.status === "active"}
-                        onChange={(checked) => updateFormData("status", checked ? "active" : "draft")}
+                        checked={formData.status === "active"}
+                        onCheckedChange={(checked) => updateFormData("status", checked ? "active" : "draft")}
                       />
                       <Label className="text-sm">{formData.status === "active" ? "Active" : "Draft"}</Label>
                     </div>

@@ -11,20 +11,18 @@ import { getPartnersList, updatePartnerStatus } from "../../redux/apis/apisCrud"
 import TableView from "../TableView/TableView"
 import { useNavigate } from "react-router-dom"
 import { useEffect } from "react";
-import {
-  Menu,
-  Switch,
-  Dropdown,
-  Select as AntSelect,
-  Input as AntInput,
-} from "antd";
+import { Select as AntSelect, Input as AntInput } from "antd";
 import axios from "axios";
 import { store } from "../../redux/store";
-
-
-import { EditOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { Pencil, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Switch } from "../ui/switch";
 import toast from "react-hot-toast";
-import arrowDown from "../../assets/images/arrow-down.png";
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 
 export default function CreateProductAffiliation() {
@@ -285,24 +283,6 @@ export default function CreateProductAffiliation() {
     }
   };
 
-  const menu = (row: any) => (
-    <Menu>
-      <Menu.Item
-        key="edit"
-        icon={<EditOutlined />}
-        onClick={() => handleMenuClick("edit", row)}
-      >
-        Edit
-      </Menu.Item>
-      {/* <Menu.Item
-        key="adminList"
-        icon={<UnorderedListOutlined />}
-        onClick={() => handleMenuClick("adminList", row)}
-      >
-        Admin List
-      </Menu.Item> */}
-    </Menu>
-  );
   const Activity_Loans_Header = [
   {
     name: "Name",
@@ -369,8 +349,7 @@ export default function CreateProductAffiliation() {
     cell: (row: any) => (
       <Switch
         checked={row.status === "Active"}
-        onChange={() => handleStatusToggle(row.id, row.status)}
-        className="red-switch"
+        onCheckedChange={() => handleStatusToggle(row.id, row.status)}
       />
     ),
     width: "120px",
@@ -378,20 +357,23 @@ export default function CreateProductAffiliation() {
   {
     name: "Action",
     cell: (row: any) => (
-      <Dropdown overlay={menu(row)} trigger={["click"]}>
-        <Button
-          className="gradient-btn"
-          // type="primary"
-          style={{
-            fontSize: "12px",
-            borderRadius: "4px",
-            padding: "8px",
-          }}
-        >
-          Action
-          <img src={arrowDown} alt="" />
-        </Button>
-      </Dropdown>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            className="gradient-btn text-xs rounded py-2 px-2 gap-1"
+            variant="outline"
+          >
+            Action
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onSelect={() => handleMenuClick("edit", row)}>
+            <Pencil className="h-4 w-4" />
+            Edit
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     ),
     width: "120px",
   },

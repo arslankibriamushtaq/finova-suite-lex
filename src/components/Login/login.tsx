@@ -2,16 +2,12 @@ import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Modal, Button, Input } from "antd";
-import {
-  setToken,
-  setRefreshToken,
-  setPermissions,
-} from "../../redux/apis/apisSlice";
+import { setToken, setPermissions } from "../../redux/apis/apisSlice";
 import { useDispatch } from "react-redux";
 import FactoringLogo from "../../assets/images/factoring-png.png";
 import Loader from "../Loader/Loader";
-import { login, forgetPassword } from "../../redux/apis/apisCrudFactoring";
-import { getPermissionByRole, getRolePermission } from "../../redux/apis/apisCrud";
+import { forgetPassword } from "../../redux/apis/apisCrudFactoring";
+import { getRolePermission } from "../../redux/apis/apisCrud";
 
 const Login: React.FC = () => {
   const dispatch = useDispatch();
@@ -82,85 +78,100 @@ const Login: React.FC = () => {
     return isValid;
   };
 
+  // Hardcoded token for dev/testing — login API not called
+  const DEV_TOKEN =
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiIzIiwianRpIjoiMWZmMjA1MzU4MjRkOWRhZGFiMjZjNTJiNGVhYjJlZDY0YjZjZTM5M2Y1MjJmOTI4M2UyODhkMDZiYWFhNDYzMThmYjJlMWU5YjVjNTQyZDQiLCJpYXQiOjE3NzIxMDIwNTguMDkxMjIzLCJuYmYiOjE3NzIxMDIwNTguMDkxMjI1LCJleHAiOjE4MDM2MzgwNTguMDg0MDc0LCJzdWIiOiIxIiwic2NvcGVzIjpbXX0.pP0lrvZ-sBU440UDw962_pTDD90qSejEDuTblzWV75diacztPdzYf8nmQqvzJoorfGVV79RNJ5BY8fZ9bcqHibPVNBSTfAJ7YNJUEd6CSmKoXl2zHKVP5SLnWixuXsXHbitxdXOwh5rx3ite9WCGYT21rXwwMVnZlOFWjuCyJEp7WfIqozZLBomYvwpXh-EFk4YlSy5Fyb7CDNrwfm5R91CU422P8gChnSIr8HWHWQi5uJfNtMz0PxgKbqvToVa4XI6cBCFR3xg1gzCkeTw31l8YyIZ7EepEpHojZmRnUew0mspq9qLofB168SEbrra1JbAB7I6k1v2Ar1nNr1FdvBXbR0eW2lBOBZ2vvcSaEmPjk61YRn2-APkfrMMXpQMrjh2eVwDiwsV04C56iL0jpWcP3CEMEvzbeong991gWWeQtFTS-pv4rlcyvwyrLyxBLzpnEKmxBc5JoPZcejwo6PUzGTRsY9ZOWm484033ynN92WGI9LJp8dTWtq7jGa8hffEoVDnVbm_QttAm-8pBmCC0zHKX2WC9wW5DfGHiOQVYpUpDpx2iRuatpvWhkrWhzRJf9VOk3JkOCCgk83xPmbqQLggCovLEAwnN2A7iC6QZ6ahv7jXbLkxqhuxDyPav1YhoM9G_nBdiV5ApFnRtgKtxNBc8az9xVJLT4whoHAI";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!validateForm()) return;
 
     setIsLoading(true);
-
     try {
-      if (loginMethod === "companyUnn") {
-        navigate("/verify-otp", {
-          state: {
-            companyUnn: formData.companyUnn,
-            password: formData.password,
-            loginMethod: "companyUnn",
-          },
-        });
-        setIsLoading(false);
-        return;
+      // Set token without calling login API (dev bypass)
+      dispatch(setToken({ token: DEV_TOKEN }));
+      localStorage.setItem("token", DEV_TOKEN);
+      const minimalUserData = { access_token: DEV_TOKEN, user: { role_id: 1 } };
+      localStorage.setItem("userData", JSON.stringify(minimalUserData));
+
+      const permissionRes = await getRolePermission();
+      if (permissionRes?.data?.success) {
+        const permissions = permissionRes.data.data;
+        dispatch(setPermissions(permissions));
+        localStorage.setItem("permissions", JSON.stringify(permissions));
       }
 
-      // Email login — call the los-login API
-      const body: any = {
-        password: formData.password,
-        login_type: loginMethod === "email" ? "email" : "company_unn",
-      };
-      if (loginMethod === "email") {
-        body.email = formData.email;
-      } else {
-        body.company_unn = formData.companyUnn;
-      }
-      const res = await login(body);
-
-      if (res?.data?.success) {
-        const data = res.data.data;
-
-        if (data?.access_token) {
-          dispatch(setToken({ token: data.access_token }));
-          localStorage.setItem("token", data.access_token);
-        }
-        if (data?.refresh_token) {
-          dispatch(setRefreshToken({ refreshToken: data.refresh_token }));
-        }
-
-        localStorage.setItem("userData", JSON.stringify(data));
-        const roleId = data?.user?.role_id;
-
-        if (roleId) {
-          // const permissionRes = await getPermissionByRole(roleId);
-          const permissionRes = await getRolePermission();
-  
-          if (permissionRes?.data?.success) {
-            const permissions = permissionRes.data.data;
-  
-            // Store in Redux (recommended)
-            dispatch(setPermissions(permissions));
-  
-            // Optional: store in localStorage
-            localStorage.setItem(
-              "permissions",
-              JSON.stringify(permissions)
-            );
-          }
-        }
-        toast.success(res.data.message || "Login Successful");
-        navigate("/LOS/Dashboard");
-      } else {
-        toast.error(res?.data?.message || "Login failed.");
-      }
-    } catch (error: any) {
-      console.error("Error during login:", error);
-      if (error?.response?.data?.message) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error(error?.message || "Login failed. Please try again.");
-      }
+      toast.success("Login Successful");
+      navigate("/LOS/Dashboard");
+    } catch (err: any) {
+      toast.error(err?.message || "Something went wrong.");
     } finally {
       setIsLoading(false);
     }
   };
+
+  // --- Original handleSubmit (commented out) ---
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (!validateForm()) return;
+  //   setIsLoading(true);
+  //   try {
+  //     if (loginMethod === "companyUnn") {
+  //       navigate("/verify-otp", {
+  //         state: {
+  //           companyUnn: formData.companyUnn,
+  //           password: formData.password,
+  //           loginMethod: "companyUnn",
+  //         },
+  //       });
+  //       setIsLoading(false);
+  //       return;
+  //     }
+  //     const body: any = {
+  //       password: formData.password,
+  //       login_type: loginMethod === "email" ? "email" : "company_unn",
+  //     };
+  //     if (loginMethod === "email") {
+  //       body.email = formData.email;
+  //     } else {
+  //       body.company_unn = formData.companyUnn;
+  //     }
+  //     const res = await login(body);
+  //     if (res?.data?.success) {
+  //       const data = res.data.data;
+  //       if (data?.access_token) {
+  //         dispatch(setToken({ token: data.access_token }));
+  //         localStorage.setItem("token", data.access_token);
+  //       }
+  //       if (data?.refresh_token) {
+  //         dispatch(setRefreshToken({ refreshToken: data.refresh_token }));
+  //       }
+  //       localStorage.setItem("userData", JSON.stringify(data));
+  //       const roleId = data?.user?.role_id;
+  //       if (roleId) {
+  //         const permissionRes = await getRolePermission();
+  //         if (permissionRes?.data?.success) {
+  //           const permissions = permissionRes.data.data;
+  //           dispatch(setPermissions(permissions));
+  //           localStorage.setItem("permissions", JSON.stringify(permissions));
+  //         }
+  //       }
+  //       toast.success(res.data.message || "Login Successful");
+  //       navigate("/LOS/Dashboard");
+  //     } else {
+  //       toast.error(res?.data?.message || "Login failed.");
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Error during login:", error);
+  //     if (error?.response?.data?.message) {
+  //       toast.error(error.response.data.message);
+  //     } else {
+  //       toast.error(error?.message || "Login failed. Please try again.");
+  //     }
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   const handleForgotPasswordSubmit = async () => {
     const email = forgotPasswordEmail.trim();

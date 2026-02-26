@@ -1,13 +1,36 @@
 import { useState, useEffect } from "react"
-import { ArrowLeft, ArrowRight } from "lucide-react"
-import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons"
-import { Button, Modal, Form, Input, Menu, Dropdown, Row, Col, Switch } from "antd"
+import { useFormik } from "formik"
+import { ArrowLeft, ArrowRight, Eye, Pencil, Trash2, ChevronDown } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
 import { Button as UIButton } from "../../ui/button"
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../../ui/dialog"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu"
+import { Input } from "../../ui/input"
+import { Label } from "../../ui/label"
+import { Switch } from "../../ui/switch"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "../../ui/alert-dialog"
 import TableView from "../../TableView/TableView"
 import toast from "react-hot-toast"
 import { getIncomeSlabByProductId, createIncomeSlab, updateIncomeSlab, deleteIncomeSlab } from "../../../redux/apis/apisCrudProductManagement"
-import arrowDown from "../../../assets/images/arrow-down.png"
 
 interface IncomeSlabsTabProps {
   formData: any
@@ -38,7 +61,66 @@ export default function IncomeSlabsTab({
   const [isEditMode, setIsEditMode] = useState(false)
   const [isViewMode, setIsViewMode] = useState(false)
   const [selectedRow, setSelectedRow] = useState<any>(null)
-  const [form] = Form.useForm()
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false)
+  const [rowToDelete, setRowToDelete] = useState<any>(null)
+
+  const formik = useFormik({
+    initialValues: {
+      from_income: "",
+      to_income: "",
+      multiplier_percentage: "",
+      status: true,
+    },
+    validate: (values) => {
+      const err: Record<string, string> = {}
+      if (!values.from_income) err.from_income = "Please enter from income"
+      else if (isNaN(Number(values.from_income)) || Number(values.from_income) < 0)
+        err.from_income = "From income must be a number greater than or equal to 0"
+      if (!values.to_income) err.to_income = "Please enter to income"
+      else if (isNaN(Number(values.to_income)) || Number(values.to_income) < 0)
+        err.to_income = "To income must be a number greater than or equal to 0"
+      if (!values.multiplier_percentage) err.multiplier_percentage = "Please enter multiplier percentage"
+      else if (isNaN(Number(values.multiplier_percentage)) || Number(values.multiplier_percentage) < 0)
+        err.multiplier_percentage = "Multiplier percentage must be a number greater than or equal to 0"
+      return err
+    },
+    onSubmit: async (values) => {
+      if (!productId) {
+        toast.error("Product ID not found. Please complete Basic Information step first.")
+        return
+      }
+      const payload = {
+        product_id: parseInt(productId),
+        from_income: parseFloat(values.from_income),
+        to_income: parseFloat(values.to_income),
+        multiplier_percentage: parseFloat(values.multiplier_percentage),
+        status: values.status ? "active" : "inactive",
+      }
+      try {
+        if (isEditMode && selectedRow) {
+          const response = await updateIncomeSlab(selectedRow.id, payload)
+          if (response?.data?.success) {
+            toast.success("Income slab updated successfully")
+            setShowModal(false)
+            fetchIncomeSlabs()
+          } else {
+            toast.error(response?.data?.message || "Failed to update income slab")
+          }
+        } else {
+          const response = await createIncomeSlab(payload)
+          if (response?.data?.success) {
+            toast.success("Income slab created successfully")
+            setShowModal(false)
+            fetchIncomeSlabs()
+          } else {
+            toast.error(response?.data?.message || "Failed to create income slab")
+          }
+        }
+      } catch (error: any) {
+        toast.error(error?.response?.data?.message || "Failed to save income slab")
+      }
+    },
+  })
 
   const fetchIncomeSlabs = async () => {
     if (!productId) {
@@ -76,10 +158,8 @@ export default function IncomeSlabsTab({
     setIsEditMode(false)
     setIsViewMode(false)
     setSelectedRow(null)
-    form.resetFields()
-    form.setFieldsValue({
-      status: true
-    })
+    formik.resetForm()
+    formik.setValues({ from_income: "", to_income: "", multiplier_percentage: "", status: true })
     setShowModal(true)
   }
 
@@ -87,11 +167,11 @@ export default function IncomeSlabsTab({
     setIsEditMode(true)
     setIsViewMode(false)
     setSelectedRow(row)
-    form.setFieldsValue({
-      from_income: row.from_income,
-      to_income: row.to_income,
-      multiplier_percentage: row.multiplier_percentage,
-      status: row.status === "active"
+    formik.setValues({
+      from_income: String(row.from_income ?? ""),
+      to_income: String(row.to_income ?? ""),
+      multiplier_percentage: String(row.multiplier_percentage ?? ""),
+      status: row.status === "active",
     })
     setShowModal(true)
   }
@@ -100,11 +180,11 @@ export default function IncomeSlabsTab({
     setIsEditMode(false)
     setIsViewMode(true)
     setSelectedRow(row)
-    form.setFieldsValue({
-      from_income: row.from_income,
-      to_income: row.to_income,
-      multiplier_percentage: row.multiplier_percentage,
-      status: row.status === "active"
+    formik.setValues({
+      from_income: String(row.from_income ?? ""),
+      to_income: String(row.to_income ?? ""),
+      multiplier_percentage: String(row.multiplier_percentage ?? ""),
+      status: row.status === "active",
     })
     setShowModal(true)
   }
@@ -124,51 +204,6 @@ export default function IncomeSlabsTab({
     }
   }
 
-  const handleSubmit = async () => {
-    if (!productId) {
-      toast.error("Product ID not found. Please complete Basic Information step first.")
-      return
-    }
-    
-    try {
-      const values = await form.validateFields()
-      const payload = {
-        product_id: parseInt(productId),
-        from_income: parseFloat(values.from_income),
-        to_income: parseFloat(values.to_income),
-        multiplier_percentage: parseFloat(values.multiplier_percentage),
-        status: values.status ? "active" : "inactive"
-      }
-
-      if (isEditMode && selectedRow) {
-        const response = await updateIncomeSlab(selectedRow.id, payload)
-        if (response?.data?.success) {
-          toast.success("Income slab updated successfully")
-          setShowModal(false)
-          fetchIncomeSlabs()
-        } else {
-          toast.error(response?.data?.message || "Failed to update income slab")
-        }
-      } else {
-        const response = await createIncomeSlab(payload)
-        if (response?.data?.success) {
-          toast.success("Income slab created successfully")
-          setShowModal(false)
-          fetchIncomeSlabs()
-        } else {
-          toast.error(response?.data?.message || "Failed to create income slab")
-        }
-      }
-    } catch (error: any) {
-      if (error?.errorFields) {
-        // Form validation errors
-        return
-      }
-      console.error("Error saving income slab:", error)
-      toast.error(error?.response?.data?.message || "Failed to save income slab")
-    }
-  }
-
   const handleMenuClick = (action: string, row: any) => {
     switch (action) {
       case "view":
@@ -178,43 +213,19 @@ export default function IncomeSlabsTab({
         handleEdit(row)
         break
       case "delete":
-        Modal.confirm({
-          title: "Delete Income Slab",
-          content: "Are you sure you want to delete this income slab?",
-          okText: "Yes",
-          cancelText: "No",
-          onOk: () => handleDelete(row),
-        })
+        setRowToDelete(row)
+        setDeleteConfirmOpen(true)
         break
     }
   }
 
-  const menu = (row: any) => (
-    <Menu>
-      <Menu.Item
-        key="view"
-        icon={<EyeOutlined />}
-        onClick={() => handleMenuClick("view", row)}
-      >
-        View
-      </Menu.Item>
-      <Menu.Item
-        key="edit"
-        icon={<EditOutlined />}
-        onClick={() => handleMenuClick("edit", row)}
-      >
-        Edit
-      </Menu.Item>
-      <Menu.Item
-        key="delete"
-        icon={<DeleteOutlined />}
-        onClick={() => handleMenuClick("delete", row)}
-        danger
-      >
-        Delete
-      </Menu.Item>
-    </Menu>
-  )
+  const handleDeleteConfirm = async () => {
+    if (rowToDelete) {
+      await handleDelete(rowToDelete)
+      setRowToDelete(null)
+      setDeleteConfirmOpen(false)
+    }
+  }
 
   const tableHeaders = [
     {
@@ -260,18 +271,30 @@ export default function IncomeSlabsTab({
     {
       name: "Actions",
       cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
-            type="primary"
-            style={{
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
-            Select <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
+              Select <ChevronDown className="h-4 w-4" />
+            </UIButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => handleMenuClick("view", row)}>
+              <Eye className="h-4 w-4" />
+              View
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleMenuClick("edit", row)}>
+              <Pencil className="h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              variant="destructive"
+              onSelect={() => handleMenuClick("delete", row)}
+            >
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ]
@@ -318,136 +341,115 @@ export default function IncomeSlabsTab({
         </CardContent>
       </Card>
 
-      <Modal
-        className="custom-mod"
-        style={{ maxWidth: "640px" }}
-        title={
-          isViewMode
-            ? "View Income Slab"
-            : isEditMode
-            ? "Edit Income Slab"
-            : "Add New Income Slab"
-        }
-        open={showModal}
-        onCancel={() => {
+      <Dialog open={showModal} onOpenChange={(open) => {
+        if (!open) {
           setShowModal(false)
-          form.resetFields()
-        }}
-        footer={[
-          <Button key="close" onClick={() => {
-            setShowModal(false)
-            form.resetFields()
-          }}>
-            {isViewMode ? "Close" : "Cancel"}
-          </Button>,
-          !isViewMode && (
-            <Button
-              key="save"
-              type="primary"
-              onClick={handleSubmit}
-            >
-              {isEditMode ? "Update" : "Add"}
-            </Button>
-          ),
-        ]}
-      >
-        <div className="Ente-details">
-          <Form
-            form={form}
-            layout="vertical"
-            disabled={isViewMode}
-          >
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  label="From Income"
-                  name="from_income"
-                  rules={[
-                    { required: true, message: "Please enter from income" },
-                    {
-                      validator: (_, value) => {
-                        if (value && (isNaN(value) || parseFloat(value) < 0)) {
-                          return Promise.reject(new Error("From income must be a number greater than or equal to 0"))
-                        }
-                        return Promise.resolve()
-                      }
-                    }
-                  ]}
-                >
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Enter from income"
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  label="To Income"
-                  name="to_income"
-                  rules={[
-                    { required: true, message: "Please enter to income" },
-                    {
-                      validator: (_, value) => {
-                        if (value && (isNaN(value) || parseFloat(value) < 0)) {
-                          return Promise.reject(new Error("To income must be a number greater than or equal to 0"))
-                        }
-                        return Promise.resolve()
-                      }
-                    }
-                  ]}
-                >
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Enter to income"
-                  />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  label="Multiplier Percentage"
-                  name="multiplier_percentage"
-                  rules={[
-                    { required: true, message: "Please enter multiplier percentage" },
-                    {
-                      validator: (_, value) => {
-                        if (value && (isNaN(value) || parseFloat(value) < 0)) {
-                          return Promise.reject(new Error("Multiplier percentage must be a number greater than or equal to 0"))
-                        }
-                        return Promise.resolve()
-                      }
-                    }
-                  ]}
-                >
-                  <Input
-                    type="number"
-                    step="0.01"
-                    placeholder="Enter multiplier percentage"
-                  />
-                </Form.Item>
-              </Col>
-
-              <Col span={12}>
-                <Form.Item
-                  label="Status"
-                  name="status"
-                  valuePropName="checked"
-                >
+          formik.resetForm()
+        }
+      }}>
+        <DialogContent className="sm:max-w-[640px]">
+          <DialogHeader>
+            <DialogTitle>
+              {isViewMode ? "View Income Slab" : isEditMode ? "Edit Income Slab" : "Add New Income Slab"}
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="from_income">From Income</Label>
+                <Input
+                  id="from_income"
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter from income"
+                  value={formik.values.from_income}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  disabled={isViewMode}
+                />
+                {formik.touched.from_income && formik.errors.from_income && (
+                  <p className="text-sm text-destructive">{formik.errors.from_income}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="to_income">To Income</Label>
+                <Input
+                  id="to_income"
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter to income"
+                  value={formik.values.to_income}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  disabled={isViewMode}
+                />
+                {formik.touched.to_income && formik.errors.to_income && (
+                  <p className="text-sm text-destructive">{formik.errors.to_income}</p>
+                )}
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="multiplier_percentage">Multiplier Percentage</Label>
+                <Input
+                  id="multiplier_percentage"
+                  type="number"
+                  step="0.01"
+                  placeholder="Enter multiplier percentage"
+                  value={formik.values.multiplier_percentage}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  disabled={isViewMode}
+                />
+                {formik.touched.multiplier_percentage && formik.errors.multiplier_percentage && (
+                  <p className="text-sm text-destructive">{formik.errors.multiplier_percentage}</p>
+                )}
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="status">Status</Label>
+                <div className="pt-2">
                   <Switch
-                    className="red-switch"
+                    id="status"
+                    checked={formik.values.status}
+                    onCheckedChange={(checked) => formik.setFieldValue("status", checked)}
                     disabled={isViewMode}
                   />
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-        </div>
-      </Modal>
+                </div>
+              </div>
+            </div>
+            <DialogFooter>
+              <UIButton
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setShowModal(false)
+                  formik.resetForm()
+                }}
+              >
+                {isViewMode ? "Close" : "Cancel"}
+              </UIButton>
+              {!isViewMode && (
+                <UIButton type="submit">
+                  {isEditMode ? "Update" : "Add"}
+                </UIButton>
+              )}
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Income Slab</AlertDialogTitle>
+            <p className="text-sm text-muted-foreground">Are you sure you want to delete this income slab?</p>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>Yes</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       {/* Tab Navigation */}
       <div className="flex justify-between gap-3 pt-4">

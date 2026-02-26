@@ -1,11 +1,21 @@
-import { Button, Dropdown, Form, Input, Menu, Modal, Select, Switch } from "antd";
 import toast from "react-hot-toast";
 import { getProductById, getReqDocument, storeReqDocument, updateReqDocument } from "../../redux/apis/apisCrud";
 import { useLocation } from "react-router-dom";
 import TableView from "../TableView/TableView";
-import { useState,useEffect } from "react";
-import { DeleteFilled, EditFilled, EyeOutlined, CheckOutlined, CloseOutlined } from "@ant-design/icons";  
-import arrowDown from "../../assets/images/arrow-down.png";
+import { useState, useEffect } from "react";
+import { Pencil, Trash2, Check, X, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button as UIButton } from "../ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Switch } from "../ui/switch";
 import { useSelector } from "react-redux";
 import { usePermissions, DOCUMENT_PERMISSIONS } from "../../hooks/useProductPermissions";
 const RequiredDoc = ({setSelectedTab}:any) => {
@@ -59,83 +69,58 @@ const RequiredDoc = ({setSelectedTab}:any) => {
         if (!hasAnyActionPermission()) {
           return "-";
         }
+        const items = getMenuItems(row);
         return (
-          <Dropdown overlay={menu(row)} trigger={["click"]}>
-            <Button
-              className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
-              type="primary"
-            style={{
-                borderRadius: "8px",
-                padding: "10px 20px",
-              }}
-            >
-              Select <img src={arrowDown} alt="" />
-            </Button>
-          </Dropdown>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
+                Select <ChevronDown className="h-4 w-4" />
+              </UIButton>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {items.map((item) => (
+                <DropdownMenuItem
+                  key={item.key}
+                  variant={item.danger ? "destructive" : "default"}
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    item.onClick?.();
+                  }}
+                >
+                  {item.icon}
+                  {item.label}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         );
       },
     },
   ];
-  const menu = (row: any) => {
-    const menuItems: React.ReactNode[] = [];
-    
-    // Edit - requires edit permission or maker permissions
+
+  const getMenuItems = (row: any) => {
+    const items: { key: string; label: string; icon: React.ReactNode; onClick?: () => void; danger?: boolean }[] = [];
     if (canUpdate(DOCUMENT_PERMISSIONS)) {
-      menuItems.push(
-        <Menu.Item key="edit" icon={<EditFilled />} onClick={() => openEdit(row)}>
-          Edit
-        </Menu.Item>
-      );
+      items.push({ key: "edit", label: "Edit", icon: <Pencil className="h-4 w-4" />, onClick: () => openEdit(row) });
     }
-    
-    // Delete - requires delete permission or maker permissions
     if (canRemove(DOCUMENT_PERMISSIONS)) {
-      menuItems.push(
-        <Menu.Item key="delete" icon={<DeleteFilled />} onClick={() => removeDoc(row.id)}>
-          Delete
-        </Menu.Item>
-      );
+      items.push({ key: "delete", label: "Delete", icon: <Trash2 className="h-4 w-4" />, onClick: () => removeDoc(row.id) });
     }
-    
-    // Verify - requires checker.verify permission
     if (canVerifyModule(DOCUMENT_PERMISSIONS)) {
-      menuItems.push(
-        <Menu.Item key="verify" icon={<CheckOutlined />} onClick={() => console.log("Verify", row.id)}>
-          Verify
-        </Menu.Item>
-      );
+      items.push({ key: "verify", label: "Verify", icon: <Check className="h-4 w-4" />, onClick: () => console.log("Verify", row.id) });
     }
-    
-    // Reject (Checker) - requires checker.reject permission
     if (canRejectAsChecker(DOCUMENT_PERMISSIONS)) {
-      menuItems.push(
-        <Menu.Item key="checker-reject" icon={<CloseOutlined />} danger onClick={() => console.log("Checker Reject", row.id)}>
-          Reject (Checker)
-        </Menu.Item>
-      );
+      items.push({ key: "checker-reject", label: "Reject (Checker)", icon: <X className="h-4 w-4" />, onClick: () => console.log("Checker Reject", row.id), danger: true });
     }
-    
-    // Approve - requires approver.approve permission
     if (canApproveModule(DOCUMENT_PERMISSIONS)) {
-      menuItems.push(
-        <Menu.Item key="approve" icon={<CheckOutlined />} onClick={() => console.log("Approve", row.id)}>
-          Approve
-        </Menu.Item>
-      );
+      items.push({ key: "approve", label: "Approve", icon: <Check className="h-4 w-4" />, onClick: () => console.log("Approve", row.id) });
     }
-    
-    // Reject (Approver) - requires approver.reject permission
     if (canRejectAsApprover(DOCUMENT_PERMISSIONS)) {
-      menuItems.push(
-        <Menu.Item key="approver-reject" icon={<CloseOutlined />} danger onClick={() => console.log("Approver Reject", row.id)}>
-          Reject (Approver)
-        </Menu.Item>
-      );
+      items.push({ key: "approver-reject", label: "Reject (Approver)", icon: <X className="h-4 w-4" />, onClick: () => console.log("Approver Reject", row.id), danger: true });
     }
-    
-    return <Menu>{menuItems}</Menu>;
+    return items;
   };
-  
+
   // Check if user has any action permissions
   const hasAnyActionPermission = () => {
     return canUpdate(DOCUMENT_PERMISSIONS) || 
@@ -287,52 +272,63 @@ status:formValues.status,
       Factoring Vallery Documents
       </h1>
       <div className="d-flex justify-content-end mb-3 gap-2">
-        <Input 
-          placeholder="Search By Name" 
-          style={{ width: 220 }} 
+        <Input
+          placeholder="Search By Name"
+          className="w-[220px]"
           value={searchTerm}
           onChange={(e) => handleSearch(e.target.value)}
         />
         {canCreate(DOCUMENT_PERMISSIONS) && (
-          <Button type="primary" className="theme-btn-next" onClick={() => { setSelectedItem("add");setIsModalVisible(true); }}>
+          <UIButton className="theme-btn-next" onClick={() => { setSelectedItem("add"); setIsModalVisible(true); }}>
             Add New Document
-          </Button>
+          </UIButton>
         )}
       </div>
 
-      <Modal
-        title={editingId ? "Edit Document" : "Add Document"}
-        visible={isModalVisible}
-          width={600}
-        onCancel={() => setIsModalVisible(false)}
-        footer={[
-          <Button key="cancel" onClick={() => setIsModalVisible(false)}>Cancel</Button>,
-          <Button key="save" type="primary" className="theme-btn-next" onClick={handleSave} >Save</Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <div className="row">
-            <div className="col-md-6">
-              <Form.Item label="Document Name">
-                <Input className="form-control" placeholder="Document Name" value={formValues.name} onChange={(e) => setFormValues({ ...formValues, name: e.target.value })} />
-              </Form.Item>
+      <Dialog open={isModalVisible} onOpenChange={setIsModalVisible}>
+        <DialogContent className="max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{editingId ? "Edit Document" : "Add Document"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Document Name</Label>
+              <Input
+                placeholder="Document Name"
+                value={formValues.name}
+                onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
+              />
             </div>
-            <div className="col-md-6">
-              <Form.Item label="Document Type">
-                <Select value={formValues.type} onChange={(val) => setFormValues({ ...formValues, type: val as any })}>
-                  <Select.Option value="PDF">PDF</Select.Option>
-                  <Select.Option value="Image">Image</Select.Option>
-                  <Select.Option value="Other">Other</Select.Option>
-                </Select>
-              </Form.Item>
+            <div className="space-y-2">
+              <Label>Document Type</Label>
+              <Select
+                value={formValues.type || ""}
+                onValueChange={(val) => setFormValues({ ...formValues, type: val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PDF">PDF</SelectItem>
+                  <SelectItem value="Image">Image</SelectItem>
+                  <SelectItem value="Other">Other</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
-          <div className="d-flex align-items-center gap-2">
-            <Switch checked={formValues.status} onChange={(checked) => setFormValues({ ...formValues, status: checked })} />
+          <div className="flex items-center gap-2">
+            <Switch
+              checked={formValues.status}
+              onCheckedChange={(checked) => setFormValues({ ...formValues, status: checked })}
+            />
             <span>Status</span>
           </div>
-        </Form>
-      </Modal>
+          <DialogFooter>
+            <UIButton variant="outline" onClick={() => setIsModalVisible(false)}>Cancel</UIButton>
+            <UIButton className="theme-btn-next" onClick={handleSave}>Save</UIButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <TableView
         header={headers}
@@ -349,7 +345,7 @@ status:formValues.status,
       />
 
       <div className="d-flex justify-content-end mt-3">
-        <Button type="primary" className="theme-btn-next" >Save</Button>
+        <UIButton className="theme-btn-next">Save</UIButton>
       </div>
     </div>
   );

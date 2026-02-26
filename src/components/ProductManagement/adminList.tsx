@@ -1,11 +1,21 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { Button, Form, Input, Select, Switch, Modal, Dropdown, Menu } from "antd";
 import TableView from "../TableView/TableView";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Switch } from "../ui/switch";
 import toast from "react-hot-toast";
 import { deleteAdmin, getProductAdminList, createAdmin, updateAdmin, getCountries } from "../../redux/apis/apisCrud";
-import { EditFilled, DeleteFilled, EyeOutlined } from "@ant-design/icons";
-import arrowDown from "../../assets/images/arrow-down.png";
+import { Pencil, Trash2, Eye, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { Button as UIButton } from "../ui/button";
 
 const AdminList = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
@@ -20,12 +30,14 @@ const AdminList = () => {
   const [updateId, setUpdateId] = useState("");
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [isViewOnly, setIsViewOnly] = useState(false);
-  const [countries, setCountries] = useState([]);
+  const [countries, setCountries] = useState<any[]>([]);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [deleteItem, setDeleteItem] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [form] = Form.useForm();
-  
+  const initialFormState = { name: "", email: "", phone: "", address: "", dob: "", country: "", password: "", status: true };
+  const [formState, setFormState] = useState(initialFormState);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const productId = searchParams.get("id");
@@ -105,48 +117,31 @@ const AdminList = () => {
     {
       name: "Actions",
       cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
-            type="primary"
-            style={{
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
-            Select <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
+              Select <ChevronDown className="h-4 w-4" />
+            </UIButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => handleMenuClick("view", row)}>
+              <Eye className="h-4 w-4" />
+              View Details
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleMenuClick("edit", row)}>
+              <Pencil className="h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleMenuClick("delete", row)}>
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
       width: "150px",
     },
   ];
-
-  const menu = (row: any) => (
-    <Menu>
-      <Menu.Item
-        key="view"
-        icon={<EyeOutlined />}
-        onClick={() => handleMenuClick("view", row)}
-      >
-        View Details
-      </Menu.Item>
-      <Menu.Item
-        key="edit"
-        icon={<EditFilled />}
-        onClick={() => handleMenuClick("edit", row)}
-      >
-        Edit
-      </Menu.Item>
-      <Menu.Item
-        key="delete"
-        icon={<DeleteFilled />}
-        onClick={() => handleMenuClick("delete", row)}
-      >
-        Delete
-      </Menu.Item>
-    </Menu>
-  );
 
   const handleMenuClick = (key: string, row: any) => {
     setSelectedItem(key);
@@ -155,28 +150,31 @@ const AdminList = () => {
       case "view":
         setShowModal(true);
         setIsViewOnly(true);
-        // Remove 966 prefix if it exists for display
-        const displayRow = {
-          ...row,
-          phone: row.phone?.startsWith('966') ? row.phone.substring(3) : row.phone,
-          country: row.country_id || row.country,
-          status: row.status === 1 || row.status === true || row.status === "Active"
-        };
-        form.setFieldsValue(displayRow);
+        setFormState({
+          name: row.name || "",
+          email: row.email || "",
+          phone: row.phone?.startsWith("966") ? row.phone.substring(3) : row.phone || "",
+          address: row.address || "",
+          dob: row.dob || "",
+          country: String(row.country_id || getCountryIdByName(row.country) || ""),
+          password: "",
+          status: row.status === 1 || row.status === true || row.status === "Active",
+        });
         break;
 
       case "edit":
         setShowModal(true);
         setIsViewOnly(false);
-        // Remove 966 prefix if it exists for editing and ensure country_id is a number
-        const editRow = {
-          ...row,
-          phone: row.phone?.startsWith('966') ? row.phone.substring(3) : row.phone,
-          country: getCountryIdByName(row.country) || row.country_id || row.country, // Get country ID by name
-          status: row.status === "Active" // Convert status to boolean
-        };
-        
-        form.setFieldsValue(editRow);
+        setFormState({
+          name: row.name || "",
+          email: row.email || "",
+          phone: row.phone?.startsWith("966") ? row.phone.substring(3) : row.phone || "",
+          address: row.address || "",
+          dob: row.dob || "",
+          country: String(getCountryIdByName(row.country) || row.country_id || ""),
+          password: "",
+          status: row.status === 1 || row.status === true || row.status === "Active",
+        });
         setUpdateId(row?.id);
         break;
 
@@ -263,57 +261,70 @@ const AdminList = () => {
     }
   };
 
+  const validateForm = () => {
+    const err: Record<string, string> = {};
+    if (!formState.name?.trim()) err.name = "Please enter admin name";
+    if (!formState.email?.trim()) err.email = "Please enter email";
+    if (!formState.phone?.trim()) err.phone = "Please enter phone";
+    else if (!/^\d{9}$/.test(formState.phone.replace(/\D/g, ""))) err.phone = "Phone must be exactly 9 digits (without country code)";
+    if (!formState.address?.trim()) err.address = "Please enter address";
+    if (!formState.dob?.trim()) err.dob = "Please enter DOB";
+    if (!formState.country) err.country = "Please select country";
+    if (selectedItem === "add" && !formState.password) err.password = "Please enter password";
+    setFormErrors(err);
+    return Object.keys(err).length === 0;
+  };
+
   const addAdmin = async () => {
+    if (!validateForm()) {
+      toast.error("Please fix the form errors");
+      return;
+    }
     try {
-      const values = await form.validateFields();
       const adminData = {
-        name: values.name,
-        phone: values.phone, // Send exactly as entered (without 966)
-        email: values.email,
-        dob: values.dob,
-        address: values.address,
-        country_id: parseInt(values.country), // Ensure it's a number
-        password: values.password,
-        status: values.status ? 1 : 0
+        name: formState.name,
+        phone: formState.phone,
+        email: formState.email,
+        dob: formState.dob,
+        address: formState.address,
+        country_id: parseInt(formState.country, 10),
+        password: formState.password,
+        status: formState.status ? 1 : 0,
       };
-
-     
-    
-
       await createAdmin(productId, adminData);
       toast.success("Admin created successfully");
       setShowModal(false);
-      form.resetFields();
+      setFormState(initialFormState);
+      setFormErrors({});
       fetchAdminList();
     } catch (error: any) {
-      console.error("Add Admin Error:", error);
       toast.error(error?.message || "Failed to create admin");
     }
   };
 
   const editAdmin = async () => {
+    if (!validateForm()) {
+      toast.error("Please fix the form errors");
+      return;
+    }
     try {
-      const values = await form.validateFields();
       const adminData = {
-        name: values.name,
-        phone: values.phone, // Send exactly as entered (without 966)
-        email: values.email,
-        dob: values.dob,
-        address: values.address,
-        country_id: parseInt(values.country), // Ensure it's a number
-        password: values.password,
-        status: values.status
+        name: formState.name,
+        phone: formState.phone,
+        email: formState.email,
+        dob: formState.dob,
+        address: formState.address,
+        country_id: parseInt(formState.country, 10),
+        password: formState.password,
+        status: formState.status ? 1 : 0,
       };
-
-  
-
-     const response = await updateAdmin(updateId, adminData);
+      const response = await updateAdmin(updateId, adminData);
       toast.success(response?.data?.message || "Admin updated successfully");
       setShowModal(false);
-      form.resetFields();
+      setFormState(initialFormState);
+      setFormErrors({});
       fetchAdminList();
     } catch (error: any) {
-      console.error("Edit Admin Error:", error);
       toast.error(error?.message || "Failed to update admin");
     }
   };
@@ -325,12 +336,12 @@ const AdminList = () => {
     }
   }, [productId, page, pageSize]);
 
-  // Reset form when modal opens for add
   useEffect(() => {
     if (showModal && selectedItem === "add") {
-      form.resetFields();
+      setFormState(initialFormState);
+      setFormErrors({});
     }
-  }, [showModal, selectedItem, form]);
+  }, [showModal, selectedItem]);
 
   const mappedData =
     data &&
@@ -352,17 +363,18 @@ const AdminList = () => {
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>Admin List</h4>
-        <button 
+        <UIButton
           className="theme-btn-next"
           onClick={() => {
             setShowModal(true);
             setSelectedItem("add");
             setIsViewOnly(false);
-            form.resetFields();
+            setFormState(initialFormState);
+            setFormErrors({});
           }}
         >
           Add Admin
-        </button>
+        </UIButton>
       </div>
       <TableView
         header={AdminList_Header}
@@ -378,188 +390,111 @@ const AdminList = () => {
         to={to}
       />
       
-      <Modal
-        className="custom-mod"
-        style={{ maxWidth: "732px" }}
-        title={selectedItem === "edit" ? "Edit Admin" : selectedItem === "view" ? "View Admin" : "Add Admin"}
-        visible={showModal}
-        onCancel={() => setShowModal(false)}
-        footer={[
-          <Button key="close" onClick={() => setShowModal(false)}>
-            Cancel
-          </Button>,
-          !isViewOnly && (
-            <Button
-              key="save"
-              type="primary"
-              onClick={() => {
-                if (selectedItem === "edit") {
-                  editAdmin();
-                } else {
-                  addAdmin();
-                }
-              }}
-            >
-              {selectedItem === "edit" ? "Update" : "Add"}
-            </Button>
-          ),
-        ]}
-      >
-        <div className={"Ente-details"}>
-          <Form form={form} layout="vertical">
-            <div className="d-flex col-12 gap-2 mb-2">
-              <div className="col-6">
-                <Form.Item label="Admin Name" name="name" rules={[{ required: true, message: "Please enter admin name" }]}>
-                  <Input placeholder="Enter Admin Name" disabled={isViewOnly} />
-                </Form.Item>
-              </div>
-              <div className="col-6">
-                <Form.Item label="Email" name="email" rules={[{ required: true, message: "Please enter email" }]}>
-                  <Input placeholder="Enter Email" disabled={isViewOnly} />
-                </Form.Item>
-              </div>
+      <Dialog open={showModal} onOpenChange={setShowModal}>
+        <DialogContent className="max-w-[732px]">
+          <DialogHeader>
+            <DialogTitle>{selectedItem === "edit" ? "Edit Admin" : selectedItem === "view" ? "View Admin" : "Add Admin"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Admin Name</Label>
+              <Input
+                placeholder="Enter Admin Name"
+                value={formState.name}
+                onChange={(e) => setFormState({ ...formState, name: e.target.value })}
+                disabled={isViewOnly}
+              />
+              {formErrors.name && <p className="text-sm text-destructive">{formErrors.name}</p>}
             </div>
-
-            <div className="d-flex col-12 gap-2 mb-2">
-              <div className="col-6">
-                <Form.Item 
-                  label="Phone" 
-                  name="phone" 
-                  rules={[
-                    { required: true, message: "Please enter phone" },
-                    { 
-                      pattern: /^\d{9}$/, 
-                      message: "Phone number must contain exactly 9 digits (without country code)" 
-                    }
-                  ]}
-                >
-                  <Input 
-                    placeholder="Enter 9-digit phone number (without 966)" 
-                    disabled={isViewOnly}
-                    maxLength={9}
-                    onChange={(e) => {
-                      // Only allow digits
-                      const value = e.target.value.replace(/\D/g, '');
-                      e.target.value = value;
-                    }}
-                  />
-                </Form.Item>
-              </div>
-              <div className="col-6">
-                <Form.Item label="Address" name="address" rules={[{ required: true, message: "Please enter address" }]}>
-                  <Input placeholder="Enter Address" disabled={isViewOnly} />
-                </Form.Item>
-              </div>
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <Input
+                placeholder="Enter Email"
+                value={formState.email}
+                onChange={(e) => setFormState({ ...formState, email: e.target.value })}
+                disabled={isViewOnly}
+              />
+              {formErrors.email && <p className="text-sm text-destructive">{formErrors.email}</p>}
             </div>
-
-            <div className="d-flex col-12 gap-2 mb-2">
-              <div className="col-6">
-                <Form.Item label="Date of Birth" name="dob" rules={[{ required: true, message: "Please enter DOB" }]}>
-                  <Input type="date" disabled={isViewOnly} />
-                </Form.Item>
-              </div>
-              <div className="col-6">
-                <Form.Item 
-                  label="Country" 
-                  name="country" 
-                  rules={[{ required: true, message: "Please select country" }]}
-                >
-                  <Select 
-                    placeholder="Select Country" 
-                    disabled={isViewOnly}
-                    showSearch
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      (option?.children as unknown as string)?.toLowerCase().includes(input.toLowerCase())
-                    }
-                  >
-                    {countries.map((country: any) => (
-                      <Select.Option key={country.id} value={country.id}>
-                        {country.country_name}
-                      </Select.Option>
-                    ))}
-                  </Select>
-                </Form.Item>
-              </div>
+            <div className="space-y-2">
+              <Label>Phone</Label>
+              <Input
+                placeholder="Enter 9-digit phone (without 966)"
+                value={formState.phone}
+                onChange={(e) => setFormState({ ...formState, phone: e.target.value.replace(/\D/g, "").slice(0, 9) })}
+                disabled={isViewOnly}
+                maxLength={9}
+              />
+              {formErrors.phone && <p className="text-sm text-destructive">{formErrors.phone}</p>}
             </div>
-
-            <div className="d-flex col-12 gap-2 mb-2">
-              <div className="col-6">
-                <Form.Item 
-                  label="Password" 
-                  name="password" 
-                  rules={[{ required: true, message: "Please enter password" }]}
-                >
-                  <Input 
-                    type="password" 
-                    placeholder="Enter Password" 
-                    disabled={isViewOnly} 
-                  />
-                </Form.Item>
-              </div>
-              <div className="col-6 d-flex align-items-end  ">
-                <Form.Item name="status" valuePropName="checked" >
-                   <label className="fw-400 ms-3">Status</label>
-                </Form.Item>
-               
-              </div>
+            <div className="space-y-2">
+              <Label>Address</Label>
+              <Input
+                placeholder="Enter Address"
+                value={formState.address}
+                onChange={(e) => setFormState({ ...formState, address: e.target.value })}
+                disabled={isViewOnly}
+              />
+              {formErrors.address && <p className="text-sm text-destructive">{formErrors.address}</p>}
             </div>
-          </Form>
-        </div>
-      </Modal>
+            <div className="space-y-2">
+              <Label>Date of Birth</Label>
+              <Input
+                type="date"
+                value={formState.dob}
+                onChange={(e) => setFormState({ ...formState, dob: e.target.value })}
+                disabled={isViewOnly}
+              />
+              {formErrors.dob && <p className="text-sm text-destructive">{formErrors.dob}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label>Country</Label>
+              <Select value={formState.country || undefined} onValueChange={(v) => setFormState({ ...formState, country: v })} disabled={isViewOnly}>
+                <SelectTrigger><SelectValue placeholder="Select Country" /></SelectTrigger>
+                <SelectContent>
+                  {countries.map((country: any) => (
+                    <SelectItem key={country.id} value={String(country.id)}>{country.country_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {formErrors.country && <p className="text-sm text-destructive">{formErrors.country}</p>}
+            </div>
+            <div className="space-y-2">
+              <Label>Password</Label>
+              <Input
+                type="password"
+                placeholder="Enter Password"
+                value={formState.password}
+                onChange={(e) => setFormState({ ...formState, password: e.target.value })}
+                disabled={isViewOnly}
+              />
+              {formErrors.password && <p className="text-sm text-destructive">{formErrors.password}</p>}
+            </div>
+            <div className="space-y-2 flex items-end pb-2">
+              <Label className="mr-3">Status</Label>
+              <Switch checked={formState.status} onCheckedChange={(c) => setFormState({ ...formState, status: c })} disabled={isViewOnly} />
+            </div>
+          </div>
+          <DialogFooter>
+            <UIButton variant="outline" onClick={() => setShowModal(false)}>Cancel</UIButton>
+            {!isViewOnly && (
+              <UIButton onClick={() => (selectedItem === "edit" ? editAdmin() : addAdmin())}>
+                {selectedItem === "edit" ? "Update" : "Add"}
+              </UIButton>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
-      {/* Delete Confirmation Modal */}
-      <Modal
-        className="custom-mod center-footer"
-        style={{ maxWidth: "378px" }}
-        visible={isDeleteModalVisible}
-        onCancel={() => setIsDeleteModalVisible(false)}
-        footer={[
-          <Button
-            key="no"
-            onClick={() => setIsDeleteModalVisible(false)}
-            style={{
-              border: "1px solid var(--border)",
-              color: "var(--foreground)",
-              background: "var(--background)",
-              borderRadius: "8px",
-              padding: "4px 20px",
-              fontWeight: "500",
-            }}
-          >
-            No
-          </Button>,
-          <Button
-            key="yes"
-            onClick={handleDeleteConfirm}
-            disabled={isLoading}
-            style={{
-              background: "black",
-              color: "white",
-              border: "none",
-              borderRadius: "8px",
-              padding: "4px 20px",
-              fontWeight: "500",
-            }}
-          >
-            {isLoading ? "Deleting..." : "Yes"}
-          </Button>,
-        ]}
-        centered
-        closable={false}
-      >
-        <div style={{ textAlign: "center" }}>
-          <p
-            style={{
-              fontSize: "16px",
-              fontWeight: "600",
-              marginBottom: "0",
-            }}
-          >
-            Are you sure you want to delete this Admin?
-          </p>
-        </div>
-      </Modal>
+      <Dialog open={isDeleteModalVisible} onOpenChange={setIsDeleteModalVisible}>
+        <DialogContent className="max-w-[378px]">
+          <p className="text-center text-base font-semibold py-2">Are you sure you want to delete this Admin?</p>
+          <DialogFooter className="flex justify-center gap-2 sm:justify-center">
+            <UIButton variant="outline" onClick={() => setIsDeleteModalVisible(false)}>No</UIButton>
+            <UIButton onClick={handleDeleteConfirm} disabled={isLoading}>{isLoading ? "Deleting..." : "Yes"}</UIButton>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -1,15 +1,21 @@
 import { useEffect, useState } from "react";
-import { Button, Select, Modal, Input, Form, Menu, Dropdown, Switch } from "antd";
 import TableView from "../TableView/TableView";
-
-import { adminFeeProducts, createFeeSlab, getProductById, updateFeeSlab, deleteProcessingFeeSlab, UpdateProductStatus, updateFeeSlabStatus } from "../../redux/apis/apisCrud";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Switch } from "../ui/switch";
+import { Button as UIButton } from "../ui/button";
+import { adminFeeProducts, createFeeSlab, getProductById, updateFeeSlab, deleteProcessingFeeSlab, updateFeeSlabStatus } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
- 
 import { useLocation } from "react-router-dom";
-import arrowDown from "../../assets/images/arrow-down.png";
-import { EditFilled, DeleteFilled } from "@ant-design/icons";
+import { Pencil, Trash2, ChevronDown } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { useDispatch, useSelector } from "react-redux";
-import { setProductData } from "../../redux/apis/apisSlice";
 
 
 const AdminFeeSlabs = ({ readOnly = false,setSelectedTab }: any) => {
@@ -140,19 +146,15 @@ const handleNext=()=>{
       name: "Change Status",
       cell: (row: { status: any; id?: number }) => (
         <Switch
-          checked={row.status === 1}  // Check if status is 1 (active)
-          onChange={async (checked) => {
-            const newStatus = checked ? 1 : 0;  // 1 for active, 0 for inactive
-    
+          checked={row.status === 1}
+          onCheckedChange={async (checked) => {
+            if (row.id == null) return;
+            const newStatus = checked ? 1 : 0;
             try {
-              
-              const res = await updateFeeSlabStatus(row?.id, newStatus);  // Pass id and status as parameters
-    
+              const res = await updateFeeSlabStatus(row.id, newStatus);
               if (res?.data?.success) {
                 toast.success(res?.data?.message || "Status updated successfully");
-                getList();  // Reload the data to reflect the change
-    
-                // Update the table data directly
+                getList();
                 setData((prevData: any) =>
                   prevData.map((item: any) =>
                     item.id === row.id ? { ...item, status: newStatus } : item
@@ -164,8 +166,7 @@ const handleNext=()=>{
               console.error("Error updating status:", error);
             }
           }}
-          className="red-switch"
-          disabled={readOnly}  // Disable if in read-only mode
+          disabled={readOnly}
         />
       ),
     },
@@ -174,43 +175,30 @@ const handleNext=()=>{
       name: "Actions",
 
       cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
-            type="primary"
-            style={{
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-            disabled={readOnly}
-          >
-            Select <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <UIButton
+              className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
+              disabled={readOnly}
+            >
+              Select <ChevronDown className="h-4 w-4" />
+            </UIButton>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onSelect={() => openEdit(row)}>
+              <Pencil className="h-4 w-4" />
+              Edit
+            </DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => handleDelete(row)}>
+              <Trash2 className="h-4 w-4" />
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
     },
   ];
- 
-  const menu = (row: any) => (
-    <Menu>
 
-      <Menu.Item
-        key="edit"
-        icon={<EditFilled />}
-        onClick={() => openEdit(row)}
-      >
-        Edit
-      </Menu.Item>
-      <Menu.Item
-        key="delete"
-        icon={<DeleteFilled />}
-        onClick={() => handleDelete(row)}
-      >
-        Delete
-      </Menu.Item>
-     
-    </Menu>
-  );
   const getList = async () => {
     try {
       setSkelitonLoading(true);
@@ -283,42 +271,50 @@ const handleNext=()=>{
         {/* <Select defaultValue="All Partners" style={{ width: 160 }} disabled>
           <option>All Partners</option>
         </Select> */}
-        <Button type="primary" className="theme-btn-next" onClick={() => { setSelectedItem("add"); setIsModalVisible(true); }}>
+        <UIButton className="theme-btn-next" onClick={() => { setSelectedItem("add"); setIsModalVisible(true); }}>
           Add New Record
-        </Button>
+        </UIButton>
       </div>
 
-      <Modal
-        // className="custom-mod"
-        title={readOnly ? "View Admin Fee Slab" : "Add Admin Fee Slab"}
-        visible={isModalVisible}
-        onOk={handleSubmit}
-        onCancel={handleCancel}
-        footer={readOnly ? [
-          <Button key="close" onClick={handleCancel}>Close</Button>
-        ] : [
-          <Button key="cancel" onClick={handleCancel}>Cancel</Button>,
-          <Button key="save" className="theme-btn-next" type="primary" onClick={handleSubmit}>Save</Button>,
-        ]}
-      >
-        <Form layout="vertical">
-          <Form.Item label="Amount From">
-            <Input placeholder="Amount From" value={newSlab.from_amount} onChange={(e) => setNewSlab({ ...newSlab, from_amount: e.target.value })} />
-          </Form.Item>
-          <Form.Item label="Amount To">
-            <Input placeholder="Amount To" value={newSlab.to_amount} onChange={(e) => setNewSlab({ ...newSlab, to_amount: e.target.value })} />
-          </Form.Item>
-          <Form.Item label="Profit %">
-            <Input placeholder="Profit %" value={newSlab.profit_percent} onChange={(e) => setNewSlab({ ...newSlab, profit_percent: e.target.value })} />
-          </Form.Item>
-          <Form.Item label="Admin Fee">
-            <Input placeholder="Admin Fee" value={newSlab.admin_fee} onChange={(e) => setNewSlab({ ...newSlab, admin_fee: e.target.value })} />
-          </Form.Item>
-          <Form.Item label="Processing Fee">
-            <Input placeholder="Processing Fee" value={newSlab.processing_fee} onChange={(e) => setNewSlab({ ...newSlab, processing_fee: e.target.value })} />
-          </Form.Item>
-        </Form>
-      </Modal>
+      <Dialog open={isModalVisible} onOpenChange={setIsModalVisible}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{readOnly ? "View Admin Fee Slab" : "Add Admin Fee Slab"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Amount From</Label>
+              <Input placeholder="Amount From" value={newSlab.from_amount} onChange={(e) => setNewSlab({ ...newSlab, from_amount: e.target.value })} disabled={readOnly} />
+            </div>
+            <div className="space-y-2">
+              <Label>Amount To</Label>
+              <Input placeholder="Amount To" value={newSlab.to_amount} onChange={(e) => setNewSlab({ ...newSlab, to_amount: e.target.value })} disabled={readOnly} />
+            </div>
+            <div className="space-y-2">
+              <Label>Profit %</Label>
+              <Input placeholder="Profit %" value={newSlab.profit_percent} onChange={(e) => setNewSlab({ ...newSlab, profit_percent: e.target.value })} disabled={readOnly} />
+            </div>
+            <div className="space-y-2">
+              <Label>Admin Fee</Label>
+              <Input placeholder="Admin Fee" value={newSlab.admin_fee} onChange={(e) => setNewSlab({ ...newSlab, admin_fee: e.target.value })} disabled={readOnly} />
+            </div>
+            <div className="space-y-2">
+              <Label>Processing Fee</Label>
+              <Input placeholder="Processing Fee" value={newSlab.processing_fee} onChange={(e) => setNewSlab({ ...newSlab, processing_fee: e.target.value })} disabled={readOnly} />
+            </div>
+          </div>
+          <DialogFooter>
+            {readOnly ? (
+              <UIButton onClick={handleCancel}>Close</UIButton>
+            ) : (
+              <>
+                <UIButton variant="outline" onClick={handleCancel}>Cancel</UIButton>
+                <UIButton className="theme-btn-next" onClick={handleSubmit}>Save</UIButton>
+              </>
+            )}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <TableView
         header={Activity_Loans_Header}
         data={mappedData}
@@ -332,7 +328,7 @@ const handleNext=()=>{
         setPageSize={setPageSize}
         to={to}
       />
-      <div className="d-flex justify-content-end mt-3"><button className="theme-btn-next" onClick={handleNext}>Next</button></div>
+      <div className="d-flex justify-content-end mt-3"><UIButton className="theme-btn-next" onClick={handleNext}>Next</UIButton></div>
     </div>
   );
 };

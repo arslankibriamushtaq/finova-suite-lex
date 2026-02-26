@@ -3,7 +3,8 @@ import { Plus, Trash2 } from "lucide-react"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
-import { Select as AntSelect, Checkbox, Switch } from "antd"
+import { Select as AntSelect, Checkbox } from "antd"
+import { Switch } from "../../ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
 import { getCountries } from "../../../redux/apis/apisCrud"
 import { getSelectedNationalities } from "../../../redux/apis/apisCrudProductManagement"
@@ -597,7 +598,7 @@ export default function ProductRulesTab({
               <div className="flex items-center gap-3 pt-2">
                 <Switch
                   checked={formData.bounced_cheques_allowed === true}
-                  onChange={(checked) => updateFormData("bounced_cheques_allowed", checked)}
+                  onCheckedChange={(checked) => updateFormData("bounced_cheques_allowed", checked)}
                   style={{ backgroundColor: formData.bounced_cheques_allowed ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
@@ -633,7 +634,7 @@ export default function ProductRulesTab({
               <div className="flex items-center gap-3 pt-2">
                 <Switch
                   checked={formData.writeoff_allowed_last_12 === true}
-                  onChange={(checked) => updateFormData("writeoff_allowed_last_12", checked)}
+                  onCheckedChange={(checked) => updateFormData("writeoff_allowed_last_12", checked)}
                   style={{ backgroundColor: formData.writeoff_allowed_last_12 ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">

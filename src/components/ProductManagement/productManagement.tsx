@@ -18,8 +18,13 @@ import { useLanguage } from "../../hooks/use-language"
 import { getAllProducts } from "../../redux/apis/apisCrud"
 import toast from "react-hot-toast"
 import TableView from "../TableView/TableView"
-import { Dropdown } from "antd"
-import { DownOutlined, EditOutlined, CheckOutlined, CloseOutlined, SafetyOutlined } from "@ant-design/icons"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+import { ChevronDown, Pencil, Check, X, ShieldCheck } from "lucide-react"
 import { getCountries } from "../../redux/apis/apisCrud"
 import useProductPermissions, { useWorkflowActions, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions"
 
@@ -168,19 +173,37 @@ export default function ProductManagement() {
           return <span className="text-muted-foreground">-</span>
         }
         return (
-          <Dropdown menu={{ items: menuItems }} trigger={["click"]}>
-            <Button
-              className="gradient-btn"
-              type="button"
-              style={{
-                borderColor: "white",
-                borderRadius: "8px",
-                padding: "10px 20px",
-              }}
-            >
-              Select <DownOutlined />
-            </Button>
-          </Dropdown>
+          <div
+            className="relative z-10 inline-block"
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <button
+                  type="button"
+                  className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[#333] bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#333] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                >
+                  Select
+                  <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                {menuItems.map((item) => (
+                  <DropdownMenuItem
+                    key={item.key}
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      item.onClick?.();
+                    }}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         )
       },
     },
@@ -192,7 +215,7 @@ export default function ProductManagement() {
     if (canEdit()) {
       menuItems.push({
         key: "edit",
-        icon: <EditOutlined />,
+        icon: <Pencil className="h-4 w-4" />,
         label: "Edit",
         onClick: () => handleEditProduct(row.id),
       })
@@ -202,7 +225,7 @@ export default function ProductManagement() {
     if (canVerify()) {
       menuItems.push({
         key: "verify",
-        icon: <CheckOutlined />,
+        icon: <Check className="h-4 w-4" />,
         label: "Verify",
         onClick: () => handleVerifyProduct(row),
       })
@@ -212,7 +235,7 @@ export default function ProductManagement() {
     if (canCheckerReject()) {
       menuItems.push({
         key: "checker-reject",
-        icon: <CloseOutlined />,
+        icon: <X className="h-4 w-4" />,
         label: "Reject",
         onClick: () => handleCheckerRejectProduct(row),
       })
@@ -222,7 +245,7 @@ export default function ProductManagement() {
     if (canApprove()) {
       menuItems.push({
         key: "approve",
-        icon: <SafetyOutlined />,
+        icon: <ShieldCheck className="h-4 w-4" />,
         label: "Approve",
         onClick: () => handleApproveProduct(row),
       })
@@ -232,7 +255,7 @@ export default function ProductManagement() {
     if (canApproverReject()) {
       menuItems.push({
         key: "approver-reject",
-        icon: <CloseOutlined />,
+        icon: <X className="h-4 w-4" />,
         label: "Reject",
         onClick: () => handleApproverRejectProduct(row),
       })

@@ -18,8 +18,14 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { useLanguage } from "../../hooks/use-language"
 import { getProductDocuments, storeProductDocuments, updateProductDocument } from "../../redux/apis/apisCrudProductManagement"
 import TableView from "../TableView/TableView"
-import { Switch as AntSwitch, Dropdown } from "antd"
-import { DownOutlined, EditOutlined } from "@ant-design/icons"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu"
+import { Switch } from "../ui/switch"
+import { ChevronDown, Pencil } from "lucide-react"
 import toast from "react-hot-toast"
 
 
@@ -312,23 +318,34 @@ export default function CreateRequiredDocuments() {
     {
       name: "Action",
       cell: (row: any) => (
-        <Dropdown
-          menu={{
-            items: [
-              {
-                key: "update",
-                icon: <EditOutlined />,
-                label: "Update",
-                onClick: () => openUpdateDialog(row),
-              },
-            ],
-          }}
-          trigger={["click"]}
+        <div
+          className="relative z-10 inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
-          <Button type="button" variant="outline" className="gap-1">
-            Select <DownOutlined />
-          </Button>
-        </Dropdown>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-[#333] bg-[#1a1a1a] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#333] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault()
+                  openUpdateDialog(row)
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+                Update
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
       width: "120px",
     },
@@ -469,14 +486,14 @@ export default function CreateRequiredDocuments() {
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm font-medium text-foreground">Status</Label>
-                        <div className="flex items-center h-10">
-                          <AntSwitch
-                            className="red-switch"
+                        <div className="flex items-center h-10 gap-2">
+                          <Switch
                             checked={documentForm.status === 1}
-                            onChange={(checked) => setDocumentFormField("status", checked ? 1 : 0)}
-                            checkedChildren="Active"
-                            unCheckedChildren="Inactive"
+                            onCheckedChange={(checked) => setDocumentFormField("status", checked ? 1 : 0)}
                           />
+                          <span className="text-sm text-muted-foreground">
+                            {documentForm.status === 1 ? "Active" : "Inactive"}
+                          </span>
                         </div>
                       </div>
                     </div>
