@@ -1,0 +1,107 @@
+/**
+ * Design tokens — single source of truth for theme variables.
+ * Consumed by Tailwind @theme inline in index.css and (later) by components.
+ */
+
+/* ==========================================================================
+   Semantic tokens (shadcn / app-wide)
+   ========================================================================== */
+
+:root {
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0 0 0); /* Black */
+  --primary-foreground: oklch(0.985 0 0); /* White */
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.145 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0 0 0); /* Black ring */
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.5rem;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.145 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.145 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.145 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.269 0 0);
+  --ring: oklch(0.439 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+}
+
+/* ==========================================================================
+   Theme.ts mapping — CSS variables mirroring src/components/Config/Theme.ts
+   (Theme.ts remains in use; these tokens ready for future migration)
+   ========================================================================== */
+
+:root {
+  --theme-app-background: transparent;
+  --theme-primary: #ffffff;
+  --theme-text-color: #000000;
+  --theme-secondary: #1963b9;
+  --theme-tertiary: #000000;
+  --theme-active-color: #4d6685;
+  --theme-active-tab: transparent;
+  --theme-inactive-tab: #ededed;
+  --theme-breadcrumb-active-text-color: #eb0d0d;
+  --theme-gradient-background-color: #000000;
+  --theme-sidebar-menu-background-color: #191919;
+  --theme-sidebar-text-color: #000000;
+  --theme-revert-action-color: #a0a0a0;
+  --theme-other-actions-color: transparent;
+  --theme-header-background-color: #e3e3e3;
+  --theme-header-sub-header-bg-color: #000000;
+  --theme-dashboard-subheader-bg-color: #f4f4f4;
+  --theme-dashboard-header-bg-color: #ffffff;
+  --theme-subheader-text-color: #000000;
+  --theme-heading-text-color: #090909;
+  --theme-cards-background-color: transparent;
+  --theme-cards-text-color: transparent;
+  --theme-table-background-color: #1963b9;
+  --theme-table-heading-color: #ffffff;
+  --theme-table-body-text-color: #000000;
+  --theme-flow-sidebar-logo-bg: rgb(252, 252, 252);
+  --theme-flow-dashboard-sidebar-bg: rgb(252, 252, 252);
+  --theme-flow-submenu-sidebar-bg: transparent;
+  --theme-flow-active-color-bg: transparent;
+  --theme-flow-inactive-color-bg: transparent;
+  --theme-flow-active-text-color: #1963b9;
+  --theme-flow-inactive-text-color: #000000;
+  --theme-dashboard-sidebar-active-color-bg: #eb0d0d;
+  --theme-dashboard-sidebar-active-text-color: #eb0d0d;
+  --theme-dashboard-sidebar-inactive-color-bg: #eb0d0d;
+  --theme-dashboard-sidebar-inactive-text-color: #eb0d0d;
+}
