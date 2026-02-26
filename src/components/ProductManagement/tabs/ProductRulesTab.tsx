@@ -360,14 +360,7 @@ export default function ProductRulesTab({
                   if (isAllSelected && value === selectedNationalities[0]) {
                     return (
                       <span
-                        style={{
-                          backgroundColor: '#e6f7ff',
-                          border: '1px solid #91d5ff',
-                          borderRadius: '4px',
-                          padding: '2px 8px',
-                          margin: '2px',
-                          display: 'inline-block',
-                        }}
+                        className="bg-blue-50 border border-blue-300 rounded py-0.5 px-2 my-0.5 inline-block"
                       >
                         All Nationalities Selected
                         {closable && (
@@ -389,14 +382,7 @@ export default function ProductRulesTab({
                   const country = countries.find((c: any) => String(c.id) === String(value))
                   return (
                     <span
-                      style={{
-                        backgroundColor: '#f0f0f0',
-                        border: '1px solid #d9d9d9',
-                        borderRadius: '4px',
-                        padding: '2px 8px',
-                        margin: '2px',
-                        display: 'inline-block',
-                      }}
+                      className="bg-gray-100 border border-gray-300 rounded py-0.5 px-2 my-0.5 inline-block"
                     >
                       {country?.country_name || label || value}
                       {closable && (
@@ -519,7 +505,7 @@ export default function ProductRulesTab({
                 <Switch
                   checked={formData.delinquency_allowed === true}
                   onChange={(checked) => updateFormData("delinquency_allowed", checked)}
-                  style={{ backgroundColor: formData.delinquency_allowed ? '#000000' : undefined }}
+                  style={{ backgroundColor: formData.delinquency_allowed ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
                   {formData.delinquency_allowed ? "Allowed" : "Not Allowed"}
@@ -612,7 +598,7 @@ export default function ProductRulesTab({
                 <Switch
                   checked={formData.bounced_cheques_allowed === true}
                   onChange={(checked) => updateFormData("bounced_cheques_allowed", checked)}
-                  style={{ backgroundColor: formData.bounced_cheques_allowed ? '#000000' : undefined }}
+                  style={{ backgroundColor: formData.bounced_cheques_allowed ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
                   {formData.bounced_cheques_allowed ? "Allowed" : "Not Allowed"}
@@ -630,7 +616,7 @@ export default function ProductRulesTab({
                 <Switch
                   checked={formData.default_allowed_last_12 === true}
                   onChange={(checked) => updateFormData("default_allowed_last_12", checked)}
-                  style={{ backgroundColor: formData.default_allowed_last_12 ? '#000000' : undefined }}
+                  style={{ backgroundColor: formData.default_allowed_last_12 ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
                   {formData.default_allowed_last_12 ? "Allowed" : "Not Allowed"}
@@ -648,7 +634,7 @@ export default function ProductRulesTab({
                 <Switch
                   checked={formData.writeoff_allowed_last_12 === true}
                   onChange={(checked) => updateFormData("writeoff_allowed_last_12", checked)}
-                  style={{ backgroundColor: formData.writeoff_allowed_last_12 ? '#000000' : undefined }}
+                  style={{ backgroundColor: formData.writeoff_allowed_last_12 ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
                   {formData.writeoff_allowed_last_12 ? "Allowed" : "Not Allowed"}

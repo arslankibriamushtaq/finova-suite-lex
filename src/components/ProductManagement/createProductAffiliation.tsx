@@ -645,7 +645,7 @@ export default function CreateProductAffiliation() {
                                 right: "10px",
                                 transform: "translateY(-50%)",
                                 background: "transparent",
-                                color: "#000",
+                                color: "var(--foreground)",
                                 border: "none",
                                 borderRadius: "50%",
                                 width: "28px",
@@ -710,7 +710,7 @@ export default function CreateProductAffiliation() {
                                 right: "10px",
                                 transform: "translateY(-50%)",
                                 background: "transparent",
-                                color: "#000",
+                                color: "var(--foreground)",
                                 border: "none",
                                 borderRadius: "50%",
                                 width: "28px",
@@ -750,7 +750,7 @@ export default function CreateProductAffiliation() {
                           placeholder="Auto-generated key"
                           value={newPartner.secret_key}
                           onChange={(e) => handleInputChange("secret_key", e.target.value)}
-                          style={{ backgroundColor: "#f5f5f5" }}
+                          style={{ backgroundColor: "var(--muted)" }}
                           readOnly
                         />
                       </div>

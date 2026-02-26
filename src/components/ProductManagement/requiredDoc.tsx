@@ -45,8 +45,8 @@ const RequiredDoc = ({setSelectedTab}:any) => {
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.status ? "rgba(63, 195, 128, 0.9)" : "#F84D4D",
-            color: "white",
+            backgroundColor: row.status ? "var(--chart-2)" : "var(--destructive)",
+            color: "var(--primary-foreground)",
           }}
         >
           {row.status ? "Active" : "Inactive"}
@@ -62,12 +62,9 @@ const RequiredDoc = ({setSelectedTab}:any) => {
         return (
           <Dropdown overlay={menu(row)} trigger={["click"]}>
             <Button
-              className="gradient-btn"
+              className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
               type="primary"
-              style={{
-                backgroundColor: "#0B8085 !important",
-                color: "#000000",
-                borderColor: "white",
+            style={{
                 borderRadius: "8px",
                 padding: "10px 20px",
               }}

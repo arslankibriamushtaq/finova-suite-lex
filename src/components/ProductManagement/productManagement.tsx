@@ -157,7 +157,7 @@ export default function ProductManagement() {
     },
     {
       name: "Status",
-      cell: (row: any) => row.status === "Active" ? <div style={{ backgroundColor: "rgba(63, 195, 128, 0.9)", color: "white", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>Active</div> : <div style={{ backgroundColor: "#BC3D3F", color: "white", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>Inactive</div>,
+      cell: (row: any) => row.status === "Active" ? <div style={{ backgroundColor: "var(--chart-2)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>Active</div> : <div style={{ backgroundColor: "var(--destructive)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>Inactive</div>,
     },
     {
       name: "Actions",

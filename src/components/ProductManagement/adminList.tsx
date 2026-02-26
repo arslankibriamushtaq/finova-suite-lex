@@ -83,11 +83,11 @@ const AdminList = () => {
             borderRadius: "32px",
             backgroundColor:
               row.status === "Active" || row.status === 1 || row.status === true
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--chart-2)"
                 : row.status === "Inactive" || row.status === 0 || row.status === false
-                ? "#BC3D3F"
-                : "#FF9811",
-            color: "white",
+                ? "var(--destructive)"
+                : "var(--chart-4)",
+            color: "var(--primary-foreground)",
             cursor: row.status === "Active" || row.status === 1 || row.status === true ? "pointer" : "default",
           }}
         >
@@ -107,12 +107,9 @@ const AdminList = () => {
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
-            className="gradient-btn"
+            className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
-              borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
             }}
@@ -522,9 +519,9 @@ const AdminList = () => {
             key="no"
             onClick={() => setIsDeleteModalVisible(false)}
             style={{
-              border: "1px solid #ccc",
-              color: "black",
-              background: "white",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)",
+              background: "var(--background)",
               borderRadius: "8px",
               padding: "4px 20px",
               fontWeight: "500",

@@ -127,9 +127,9 @@ const handleNext=()=>{
             borderRadius: "12px",
             backgroundColor:
               row.status === "active" || row.status === 1
-                ? "rgba(63, 195, 128, 0.9)"
-                : "#F84D4D",
-            color: "white",
+                ? "var(--chart-2)"
+                : "var(--destructive)",
+            color: "var(--primary-foreground)",
           }}
         >
           {row.status === "active" || row.status === 1 ? "Active" : "Inactive"}
@@ -176,12 +176,9 @@ const handleNext=()=>{
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
-            className="gradient-btn"
+            className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
-              borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
             }}

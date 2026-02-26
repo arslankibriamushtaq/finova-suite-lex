@@ -246,8 +246,8 @@ export default function IncomeSlabsTab({
             padding: "6px 12px",
             borderRadius: "32px",
             fontSize: "12px",
-            backgroundColor: row.status === "active" ? "rgba(63, 195, 128, 0.9)" : "#BC3D3F",
-            color: "white",
+            backgroundColor: row.status === "active" ? "var(--chart-2)" : "var(--destructive)",
+            color: "var(--primary-foreground)",
             display: "inline-block",
             textTransform: "capitalize",
           }}
@@ -262,12 +262,9 @@ export default function IncomeSlabsTab({
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
-            className="gradient-btn"
+            className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
-              borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
             }}
