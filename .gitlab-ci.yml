@@ -1,0 +1,18 @@
+stages:
+  - pull
+
+factoring-valley-los-frontend:
+  stage: pull
+  tags:
+    - factoring-valley
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - cd /opt/factoring-valley-deployment/factoring-valley-los-frontend
+    - git pull origin factoring-valley
+    - echo "Code updated successfully"
+    
+    # Run deploy script
+    - ./deploy.sh
+  only:
+    - factoring-valley

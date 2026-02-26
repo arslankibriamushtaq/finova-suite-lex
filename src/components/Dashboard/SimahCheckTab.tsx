@@ -1,0 +1,84 @@
+import { useEffect, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
+import ConsumerInquiry from "./ConsumerInquiry";
+// import UploadSimahConsumerDocument from "./UploadSimahConsumerDocument";
+// import ApproveSimahInfo from "./ApproveSimahInfo";
+import { useParams } from "react-router-dom";
+import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
+import Loader from "../Loader/Loader";
+
+function SimahCheckTab() {
+  const [active, setActive] = useState("ConsumerInquiry");
+  const [simahData, setSimahData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const { id } = useParams();
+  const tabOptions = [
+    {
+      title: "Consumer Inquiry",
+      key: "ConsumerInquiry",
+      component: <ConsumerInquiry simahData={simahData} />,
+    },
+    {
+      title: "Upload Simah Consumer Document",
+      key: "UploadSimahConsumerDocument",
+      // component: <UploadSimahConsumerDocument />,
+      component: <></>,
+    },
+    {
+      title: "Approve Simah Info",
+      key: "ApproveSimahInfo",
+      // component: <ApproveSimahInfo />,
+      component: <></>,
+    },
+  ];
+    // Fetch SIMAH data when component mounts
+    useEffect(() => {
+      if (id) {
+        fetchData();
+      }
+    }, [id]);
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await getApplicationDetailsByType(id, 'simah');
+        
+        // Extract SIMAH data from response
+        const data = response.data?.data || response.data || {};
+        const simahResponse = data.simah?.response?.data?.[0] || null;
+        setSimahData(simahResponse);
+        
+        if (response.data?.message) {
+          // toast.success(response.data.message);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        // toast.error("Failed to fetch SIMAH information");
+        setSimahData(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+  return (
+    <>
+      {loading && <Loader />}
+    <div className="product-tabs-container product-settings-tabs simah-tabs">
+      <Tabs
+        activeKey={active}
+        className="d-flex gap-1"
+        style={{ width: "max-content",marginTop:"20px" }}
+        onSelect={(tab: any) => {
+          setActive(tab);
+        }}
+      >
+        {tabOptions.map((tab) => (
+          <Tab key={tab.key} eventKey={tab.key} title={tab.title}>
+            {active === tab.key && tab.component}
+          </Tab>
+        ))}
+      </Tabs>
+    </div>
+    </>
+  );
+}
+
+export default SimahCheckTab;

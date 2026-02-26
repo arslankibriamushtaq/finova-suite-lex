@@ -1,0 +1,215 @@
+/* Tailwind CSS for Investor Pages ONLY - Scoped to avoid Bootstrap conflicts */
+@import "tailwindcss/theme" layer(theme);
+@import "tailwindcss/utilities" layer(utilities);
+
+/* Theme customizations for Tailwind v4 - Black theme to match existing dashboards */
+@theme {
+  --font-sans: 'Inter', system-ui, sans-serif;
+  
+  /* Black theme colors to match the rest of the app */
+  --color-primary: 0 0 0;
+  --color-primary-foreground: 255 255 255;
+  --color-primary-50: #f9fafb;
+  --color-primary-100: #f3f4f6;
+  --color-primary-200: #e5e7eb;
+  --color-primary-300: #d1d5db;
+  --color-primary-400: #9ca3af;
+  --color-primary-500: #6b7280;
+  --color-primary-600: #000000;
+  --color-primary-700: #000000;
+  --color-primary-800: #000000;
+  --color-primary-900: #000000;
+  
+  --color-secondary: 243 244 246;
+  --color-secondary-foreground: 0 0 0;
+  --color-border: 229 231 235;
+  --color-input: 229 231 235;
+  --color-ring: 0 0 0;
+}
+
+/* Custom component styles for Investor Dashboard - Scoped to investor-pages-container */
+.investor-pages-container {
+  @layer components {
+    /* Primary Button - Black theme */
+    .btn-primary {
+      @apply px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors;
+    }
+
+  /* Secondary Button - Black theme */
+  .btn-secondary {
+    @apply px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors;
+  }
+
+  /* Card */
+  .card {
+    @apply bg-white rounded-lg border border-gray-200 shadow-sm;
+  }
+
+  /* Badge */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  /* Badge Success */
+  .badge-success {
+    @apply bg-green-100 text-green-800;
+  }
+
+  /* Badge Danger */
+  .badge-danger {
+    @apply bg-red-100 text-red-800;
+  }
+
+  /* Badge Warning */
+  .badge-warning {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  /* Badge Info - Black theme */
+  .badge-info {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  /* Table */
+  .table-custom {
+    @apply min-w-full divide-y divide-gray-200;
+  }
+
+  /* Table Header */
+  .table-header {
+    @apply px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider;
+  }
+
+  /* Table Cell */
+  .table-cell {
+    @apply px-6 py-4 whitespace-nowrap text-sm text-gray-900;
+  }
+
+  /* Form Input - Black theme */
+  .form-input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent;
+  }
+
+  /* Form Label */
+  .form-label {
+    @apply block text-sm font-medium text-gray-700 mb-1;
+  }
+  } /* End @layer components */
+
+  @layer utilities {
+  /* Text Shadow */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.10);
+  }
+
+  /* Text Shadow Large */
+  .text-shadow-lg {
+    text-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Hover Lift */
+  .hover-lift {
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.15);
+  }
+
+  /* Scrollbar Styling */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  /* Glass Morphism */
+  .glass {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+  }
+
+  /* Gradient Text */
+  .gradient-text {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  } /* End @layer utilities */
+
+  /* Animation keyframes */
+  @keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+  @apply fixed inset-0 bg-black/50 z-50 flex items-center justify-center;
+}
+
+/* Modal Content */
+.modal-content {
+  @apply bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto;
+}
+
+/* Stat Card */
+.stat-card {
+  @apply bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow;
+}
+
+/* Stat Card Icon */
+.stat-card-icon {
+  @apply w-12 h-12 rounded-lg flex items-center justify-center;
+}
+
+/* Status Indicators */
+.status-dot {
+  @apply inline-block w-2 h-2 rounded-full mr-2;
+}
+
+.status-dot-success {
+  @apply bg-green-500;
+}
+
+.status-dot-danger {
+  @apply bg-red-500;
+}
+
+.status-dot-warning {
+  @apply bg-yellow-500;
+}
+
+.status-dot-info {
+  @apply bg-gray-500;
+}
+
+} /* End .investor-pages-container */
+

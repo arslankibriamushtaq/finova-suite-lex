@@ -1,0 +1,46 @@
+.business-info-container {
+  margin: 0 auto;
+  background: #f9f9f9;
+  padding: 0px 0;
+  overflow-y: auto;
+}
+
+.info-section {
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 0px 16px 0px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.section-header {
+  background: #f3f3f3;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.field-row {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #eee;
+  padding: 6px 0;
+  font-size: 13px;
+}
+
+.field-row .label {
+  color: #666;
+}
+
+.field-row .value {
+  font-weight: 600;
+  color: #000;
+}

@@ -1,0 +1,39 @@
+/* RTL mode overrides - Arabic styles */
+
+/* Ensure overall RTL direction */
+html[dir="rtl"] body,
+html[dir="rtl"] .header-footer-settings__landing-template {
+	direction: rtl;
+}
+
+/* Right-align primary headings and text blocks */
+html[dir="rtl"] .header-footer-settings__landing-hero-title,
+html[dir="rtl"] .header-footer-settings__landing-hero-subtitle,
+html[dir="rtl"] .header-footer-settings__landing-calculator-title,
+html[dir="rtl"] .header-footer-settings__landing-tracker-title,
+html[dir="rtl"] .header-footer-settings__landing-tracker-description,
+html[dir="rtl"] .header-footer-settings__landing-eligibility-title,
+html[dir="rtl"] .header-footer-settings__landing-eligibility-description,
+html[dir="rtl"] .header-footer-settings__landing-apply-title {
+	text-align: right;
+}
+
+/* Steps and lists */
+html[dir="rtl"] .header-footer-settings__landing-apply-steps { direction: rtl; }
+html[dir="rtl"] .header-footer-settings__landing-apply-step-number {
+	margin-left: 10px;
+	margin-right: 0;
+}
+
+/* Flip basic animations for RTL where appropriate */
+html[dir="rtl"] [data-animate="fade-left"] { transform: translate3d(-24px, 0, 0); }
+html[dir="rtl"] [data-animate="fade-right"] { transform: translate3d(24px, 0, 0); }
+
+/* Optional: flip some layout paddings/margins if needed */
+html[dir="rtl"] .header-footer-settings__landing-hero-buttons { gap: 8px; }
+html[dir="rtl"] .header-footer-settings__landing-eligibility-criterion-check { margin-right: 0; margin-left: 8px; }
+html[dir="rtl"] .header-footer-settings__finance-cards-container {
+    right: unset;
+    left: 20px;
+    top: 173px;
+}

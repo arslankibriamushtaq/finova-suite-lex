@@ -1,0 +1,16 @@
+node_modules
+build
+dist
+coverage
+*.map
+public/
+**/*.min.js
+**/*.min.css
+**/*.svg
+**/*.png
+**/*.jpg
+**/*.jpeg
+**/*.gif
+**/*.ico
+**/*.lock
+src/assets/**/*.map

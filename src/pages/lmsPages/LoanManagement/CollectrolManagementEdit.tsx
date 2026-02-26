@@ -1,0 +1,801 @@
+import { useEffect, useRef, useState } from "react";
+import { Input, Select } from "antd";
+
+import { Row, Col, Form, FormGroup, Modal } from "react-bootstrap";
+import { CloseOutlined } from "@ant-design/icons";
+// import { Images } from "../Config/Images";
+import toast from "react-hot-toast";
+import {
+  getAccountNumberForCollectral,
+  getCollectrolDataByID,
+} from "../../../redux/apis/apisCrudLms";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import Loader from "../../../components/Loader/Loader";
+import { useNavigate } from "react-router-dom";
+const CollateralManagementEdit = () => {
+  const id = useParams();
+  const navigate = useNavigate();
+  const [files, setFiles] = useState<any>([]);
+  const [reportFiles, setReportFiles] = useState<any>([]);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const fileInputRef2 = useRef<HTMLInputElement | null>(null);
+
+  const [radioInputValue, setradioInputValue] = useState("property");
+  const [accountId, setAccountId] = useState("");
+  const [loader, setLoader] = useState(false);
+  const [formValues, setFormValues] = useState<any>({
+    accountNumber: "",
+    applicationID: "",
+    collectrolId: "",
+    propertyAddress: "",
+    marketValue: "",
+    externalAgencyName: "",
+    valuationAmount: 0,
+    valuationDate: "",
+    vehicleRegistrationNo: "",
+    name: "",
+  });
+
+  const [applications, setApplications] = useState<any>();
+  const fetchCollateralData = async () => {
+    try {
+      const response = await getCollectrolDataByID(id?.id);
+      if (response) {
+        const collateralData = response.data.data;
+        setradioInputValue(
+          collateralData.collateralType == 1
+            ? "vehicle"
+            : collateralData.collateralType == 2
+            ? "cash"
+            : "property"
+        );
+        setFormValues({
+          accountNumber: collateralData.accountNumber || "",
+          vehicleRegistrationNo: collateralData.vehicleRegistrationNo || "",
+          applicationID: collateralData.applicationID || "",
+          collectrolId: collateralData.collectrolId || "",
+          propertyAddress: collateralData.propertyAddress || "",
+          marketValue: collateralData.marketValue || "",
+          externalAgencyName:
+            collateralData.collateralValuation.externalAgencyName || "",
+          valuationAmount:
+            collateralData.collateralValuation.valuationAmount || "",
+          valuationDate: collateralData.collateralValuation.valuationDate || "",
+          name: collateralData.name || "",
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching collateral data:", error);
+    }
+  };
+
+  // Use effect to fetch collateral data when the component mounts
+  useEffect(() => {
+    fetchCollateralData();
+  }, []);
+  const CollateralType = [
+    {
+      label: "Property",
+      type: "radio",
+      name: "Property",
+      value: "property",
+    },
+    {
+      label: "Vehicle",
+      type: "radio",
+      name: "Property",
+      value: "vehicle",
+    },
+    {
+      label: "Cash & Cash equivalents",
+      type: "radio",
+      name: "Property",
+      value: "cash",
+    },
+  ];
+  const CollateralDetails = [
+    // {
+    //   label: "Collateral ID",
+    //   name: "collectrolId",
+    //   type: "text",
+    //   Placeholder: "1324567",
+    // },
+    {
+      label: "Property Address",
+      type: "text",
+      name: "propertyAddress",
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Market Value",
+      type: "number",
+      name: "marketValue",
+      value: formValues.marketValue,
+      Placeholder: "Placeholder",
+    },
+  ];
+  const cashDetails = [
+    // {
+    //   label: "Collateral ID",
+    //   type: "text",
+    //   name: "collectrolId",
+    //   Placeholder: "1324567",
+    // },
+    {
+      label: "Property Address",
+      type: "text",
+      name: "propertyAddress",
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Market Value",
+      type: "number",
+      name: "marketValue",
+      Placeholder: "Placeholder",
+    },
+  ];
+  const collectrolOwnerDetails = [
+    {
+      label: "Name",
+      type: "text",
+      name: "name",
+      value: formValues.name,
+      Placeholder: "1324567",
+    },
+    {
+      label: "Mobile No",
+      type: "text",
+      name: "mobileNo",
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Nid",
+      type: "text",
+      name: "nid",
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Email",
+      type: "text",
+      name: "email",
+      Placeholder: "Placeholder",
+    },
+  ];
+  const souceInfoDetails = [
+    {
+      label: "Bank Name",
+      type: "text",
+      name: "name",
+      Placeholder: "1324567",
+    },
+    {
+      label: "Branch Code",
+      type: "text",
+      name: "code",
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Account No.",
+      type: "text",
+      name: "no",
+      Placeholder: "Placeholder",
+    },
+  ];
+  const vehicleDetails = [
+    // {
+    //   label: "Collateral ID",
+    //   type: "text",
+    //   name: "registrationNumber",
+    //   Placeholder: "1324567",
+    // },
+    {
+      label: "Vehicle registration",
+      type: "text",
+      name: "registrationNumber",
+      Placeholder: "Placeholder",
+      value: formValues.vehicleRegistrationNo,
+    },
+    {
+      label: "Vehicle Type",
+      type: "text",
+      name: "type",
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Market Value",
+      type: "text",
+      name: "value",
+      value: formValues.marketValue,
+      Placeholder: "Placeholder",
+    },
+  ];
+
+  const CollateralValuation = [
+    {
+      label: "External Agency Name",
+      type: "text",
+      name: "externalAgencyName",
+      value: formValues.externalAgencyName,
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Valuation Amount",
+      type: "number",
+      name: "valuationAmount",
+      value: formValues.valuationAmount,
+      Placeholder: "Placeholder",
+    },
+    {
+      label: "Valuation Date",
+      type: "date",
+      name: "valuationDate",
+      Placeholder: "Placeholder",
+      value: formValues.valuationDate,
+    },
+  ];
+
+  // handle choose file
+  // const handleFileDrop = (e: any) => {
+  //   e.preventDefault();
+  //   const droppedFiles = e.dataTransfer.files;
+  //   if (!droppedFiles) return;
+
+  //   setFiles((prevFiles) => [...prevFiles, ...Array.from(droppedFiles)]);
+  // };
+
+  const handleFileInput = (e: any) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles) return;
+
+    setFiles((prevFiles: any) => [...prevFiles, ...Array.from(selectedFiles)]);
+  };
+  const handleFileInput2 = (e: any) => {
+    const selectedFiles = e.target.files;
+    if (!selectedFiles) return;
+
+    setReportFiles((prevFiles: any) => [...prevFiles, ...Array.from(selectedFiles)]);
+  }
+  const getAccountNumberByApplication = async (number: any) => {
+    try {
+      const res = await getAccountNumberForCollectral(number);
+      if (res) {
+        const data = res.data.data;
+        setApplications(data);
+      }
+    } catch (error: any) {
+      toast.error(error?.message);
+    }
+  };
+  useEffect(() => {
+    if (formValues.accountNumber) {
+      getAccountNumberByApplication(formValues.accountNumber);
+    }
+  }, [formValues.accountNumber]);
+  const removeFile = (fileKey: any) => {
+    setFiles((prevFiles: any) => prevFiles.filter((_: any, index: any) => index !== fileKey));
+    if (fileInputRef.current && files.length === 1) {
+      fileInputRef.current.value = ""; // Clears selected files
+    }
+  };
+  const removeFile2 = (fileKey: any) => {
+    setReportFiles((prevFiles: any) => prevFiles.filter((_: any, index: any) => index !== fileKey));
+    if (fileInputRef2.current && reportFiles.length === 1) {
+      fileInputRef2.current.value = ""; // Clears selected files
+    }
+  };
+  // handle choose file
+  // const handleInputChange = (event: any) => {
+  //   const { name, value } = event.target;
+
+  //   setradioInputValue(event.target.value);
+  //   setFormValues((prevValues) => ({
+  //     ...prevValues,
+  //     [name]: value,
+  //   }));
+  // };
+  const handleSelectChange = (value: string) => {
+    setFormValues((prevValues: any) => ({
+      ...prevValues,
+      applicationID: value, // Set the selected value directly
+    }));
+  };
+  const handleChange = (e: any, key: any) => {
+  };
+
+  const handleInputChange = (event: any) => {
+    const { name, value, type } = event.target;
+
+    setFormValues((prevValues: any) => ({
+      ...prevValues,
+      [name]: value,
+    }));
+
+    // This handles updating the state of radio buttons
+    if (type === "radio") {
+      setradioInputValue(value);
+    }
+  };
+
+  // handle api
+
+  const submitCollateralData = async () => {
+    setLoader(true);
+    const propertyBody = {
+      id: id.id,
+      accountId: accountId ? accountId : "",
+      applicationId: formValues.applicationID,
+      collateralType: 0,
+      availabilityStatus: 0,
+      propertyAddress: formValues.propertyAddress,
+      marketValue: formValues.marketValue,
+      status: true,
+      collateralDoc: [
+        {
+          file: "string",
+          trackingNo: "string",
+          receivedDate: "2024-09-30T09:30:21.595Z",
+          status: true,
+        },
+      ],
+      collateralValuation: {
+        externalAgencyName: formValues.externalAgencyName,
+        valuationAmount: formValues.valuationAmount,
+        valuationDate: "2024-10-01T10:48:05.384Z",
+        valuationReports: ["string"],
+      },
+    };
+    const vehicleBody = {
+      id: id.id,
+      accountId: accountId ? accountId : "",
+      applicationId: formValues.applicationID,
+      collateralType: 0,
+      availabilityStatus: 0,
+      vehicleRegistrationNo: formValues.vehicleRegistrationNo,
+      vehicleType: 0,
+      marketValue: formValues.marketValue,
+      status: true,
+      collateralDoc: [
+        {
+          file: "string",
+          trackingNo: "string",
+          receivedDate: "2024-09-30T09:30:21.595Z",
+          status: true,
+        },
+      ],
+      collateralValuation: {
+        externalAgencyName: formValues.externalAgencyName,
+        valuationAmount: formValues.valuationAmount,
+        valuationDate: "2024-10-01T10:48:05.384Z",
+        valuationReports: ["string"],
+      },
+    };
+    try {
+      const response = await axios.put(
+        radioInputValue == "property"
+          ? `${
+              import.meta.env.VITE_REACT_APP_API_BASE_URL
+            }/api/PropertyCollateral/Update`
+          : `${
+              import.meta.env.VITE_REACT_APP_API_BASE_URL
+            }/api/VehicleCollateral/Update`,
+        radioInputValue == "property" ? propertyBody : vehicleBody,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "Request-Id": "94a2aca6-ab1e-4ba9-8bd8-ba3b82b5f9c1",
+          },
+        }
+      );
+
+      if (response) {
+        setLoader(false);
+        toast.success("Collateral submitted successfully");
+        navigate("/lms/LoanManagement/CollectrolManagement");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      setLoader(false);
+      toast.error("Failed to submit collateral");
+    }
+  };
+
+  // handle api
+
+  return (
+    <div>
+      {loader && <Loader />}
+      <div
+        className="d-flex align-items-center justify-content-between mt-1 mb-3"
+        style={{ fontSize: "15px", fontWeight: "Bold" }}
+      >
+        Collateral Management
+      </div>
+      <div
+        className="p-4"
+        style={{ border: "1px solid #DADADA", borderRadius: "10px" }}
+      >
+        <div className="col-12 mt-5 border-bottom">
+          <div className="col-8 d-flex justify-content-start mb-5">
+            <div className="me-2 w-100">
+              <label>Account Number</label>
+              <Input
+                name="accountNumber" // Updated to match API key
+                value={formValues.accountNumber}
+                onChange={handleInputChange}
+                size="large"
+                className="mt-2"
+                placeholder="placeholder"
+              />
+            </div>
+            <div className="w-100">
+              <label>Application ID</label>
+              <Select
+                size="large"
+                className="mt-2"
+                placeholder="placeholder"
+                value={formValues.applicationID}
+                onChange={handleSelectChange}
+              >
+                {applications &&
+                  applications.map((item: any) => (
+                    <Select.Option
+                      key={item.applicationId}
+                      value={item.applicationId}
+                    >
+                      <div
+                        onClick={() => {
+                          setAccountId(item.accountID);
+                        }}
+                      >
+                        {item.applicationKey}
+                      </div>
+                    </Select.Option>
+                  ))}
+              </Select>
+            </div>
+          </div>
+        </div>
+        <hr />
+
+        <Row>
+          <Form.Label className="mt-2 fw-bold">Collateral Type</Form.Label>
+          {CollateralType.map((field: any, index) => (
+            <Col md={3} className="mb-3" key={index}>
+              <Form.Group>
+                {field.type === "radio" && (
+                  <>
+                    <Form.Check
+                      className="mt-4 d-flex align-items-center gap-1"
+                      type={field.type}
+                      label={field.label}
+                      name={field.name}
+                      value={field.value}
+                      checked={radioInputValue == field.value}
+                      onChange={handleInputChange}
+                      style={{ fontSize: "14px", fontWeight: "700" }}
+                    />
+                  </>
+                )}
+              </Form.Group>
+            </Col>
+          ))}
+        </Row>
+
+        <hr />
+
+        <Row>
+          <Form.Label className="mt-2 fw-bold">Collateral Details</Form.Label>
+          {radioInputValue == "vehicle" ? (
+            <>
+              {" "}
+              {vehicleDetails.map((field: any, index) => (
+                <Col md={4} className="mb-3" key={index}>
+                  <Form.Group>
+                    {field.type === "text" && (
+                      <>
+                        <Form.Label className="mt-2 fw-bold fs-6">
+                          {field.label}
+                        </Form.Label>
+                        <Form.Control
+                          type={field.type}
+                          placeholder={field.Placeholder}
+                          onChange={handleInputChange}
+                          value={formValues[field.name]}
+                        />
+                      </>
+                    )}
+                  </Form.Group>
+                </Col>
+              ))}
+            </>
+          ) : radioInputValue == "cash" ? (
+            <>
+              {cashDetails.map((field: any, index) => (
+                <>
+                  <Col md={4} className="mb-3" key={index}>
+                    <Form.Group>
+                      {field.type === "text" && (
+                        <>
+                          <Form.Label className="mt-2 fw-bold fs-6">
+                            {field.label}
+                          </Form.Label>
+                          <Form.Control
+                            type={field.type}
+                            placeholder={field.Placeholder}
+                            onChange={(e) => handleChange(e, field.name)}
+                            value={formValues[field.name]}
+                          />
+                        </>
+                      )}
+                    </Form.Group>
+                  </Col>
+                </>
+              ))}
+              <div className="mt-2 fw-bold">Collateral Owner</div>
+              {collectrolOwnerDetails.map((field: any, index) => (
+                <>
+                  <Col md={4} className="mb-3" key={index}>
+                    <Form.Group>
+                      {field.type === "text" && (
+                        <>
+                          <Form.Label className="mt-2 fw-bold fs-6">
+                            {field.label}
+                          </Form.Label>
+                          <Form.Control
+                            type={field.type}
+                            placeholder={field.Placeholder}
+                            onChange={handleInputChange}
+                            value={formValues[field.name]}
+                          />
+                        </>
+                      )}
+                    </Form.Group>
+                  </Col>
+                </>
+              ))}
+              <div className="mt-2 fw-bold">Source Account Information</div>
+              {souceInfoDetails.map((field: any, index) => (
+                <>
+                  <Col md={4} className="mb-3" key={index}>
+                    <Form.Group>
+                      {field.type === "text" && (
+                        <>
+                          <Form.Label className="mt-2 fw-bold fs-6">
+                            {field.label}
+                          </Form.Label>
+                          <Form.Control
+                            type={field.type}
+                            placeholder={field.Placeholder}
+                            onChange={handleInputChange}
+                            value={formValues[field.name]}
+                          />
+                        </>
+                      )}
+                    </Form.Group>
+                  </Col>
+                </>
+              ))}
+            </>
+          ) : (
+            <>
+              {CollateralDetails.map((field: any, index) => (
+                <Col md={4} className="mb-3" key={index}>
+                  <Form.Group>
+                    <>
+                      <Form.Label
+                        className="mt-2"
+                        style={{ fontSize: "13px", fontWeight: "600" }}
+                      >
+                        {field.label}
+                      </Form.Label>
+                      <Form.Control
+                        name={field.name}
+                        type={field.type}
+                        value={formValues[field.name]}
+                        placeholder={field.Placeholder}
+                        onChange={handleInputChange}
+                      />
+                    </>
+                  </Form.Group>
+                </Col>
+              ))}
+            </>
+          )}
+
+          <Col md={12} className="mb-3 d-flex align-items-end">
+            <div className="col-4 pe-3">
+              <FormGroup>
+                <Form.Label
+                  className="mt-2 "
+                  style={{ fontSize: "16px", fontWeight: "600" }}
+                >
+                  Upload Documents
+                </Form.Label>
+                <Form.Control
+                  type="file"
+                  className="h-100 p-2"
+                  onChange={handleFileInput}
+                  ref={fileInputRef} 
+                />
+              </FormGroup>
+            </div>
+            <div className="col-4 d-flex align-items-center" style={{height:'40px'}}>
+              {files.length > 0 && (
+                <>
+                  {" "}
+                  <span style={{ color: "#EB0D0D" }}>
+                    {files.length} documents uploaded
+                  </span>
+                </>
+              )}
+            </div>
+          </Col>
+          <div
+            className="d-flex col-12 gap-3 pt-3"
+            style={{ listStyle: "none" }}
+          >
+            {files.map((file: any, index: any) => (
+              <span
+                key={index}
+                className="d-flex me-3"
+                style={{
+                  border: "1px solid #E3EFF4",
+                  borderRadius: "5px",
+                  padding: "4px",
+                  background: "#E3EFF4",
+                }}
+              >
+                <span className="col-11 px-3 d-flex align-items-center">
+                  {file.name}{" "}
+                </span>
+                <span
+                  className="col-1 px-2 justify-content-center d-flex align-items-center cursor-pointer"
+                  onClick={() => removeFile(index)}
+                >
+                  <CloseOutlined />
+                </span>
+              </span>
+            ))}
+          </div>
+        </Row>
+        <hr />
+
+        <Row>
+          <Form.Label className="mt-2 fw-bold">Collateral Valuation</Form.Label>
+          {CollateralValuation.map((field: any, index) => (
+            <Col md={4} className="mb-3" key={index}>
+              <Form.Group>
+                <Form.Label
+                  className="mt-2"
+                  style={{ fontSize: "13px", fontWeight: "600" }}
+                >
+                  {field.label}
+                </Form.Label>
+                <Form.Control
+                  name={field.name}
+                  type={field.type}
+                  placeholder={field.Placeholder}
+                  onChange={handleInputChange}
+                  value={formValues[field.name]}
+                />
+              </Form.Group>
+            </Col>
+          ))}
+
+          <Col md={12} className="mb-3 d-flex align-items-end">
+            <div className="col-4 pe-3">
+              <FormGroup>
+                <Form.Label
+                  className="mt-2"
+                  style={{ fontSize: "16px", fontWeight: "600" }}
+                >
+                  Upload Valuation Report
+                </Form.Label>
+                <Form.Control
+                  type="file"
+                  className="h-100 p-2"
+                  onChange={handleFileInput2}
+                  ref={fileInputRef2} 
+                />
+              </FormGroup>
+            </div>
+            <div className="col-4 d-flex align-items-center" style={{height:'40px'}}>
+              {reportFiles.length > 0 && (
+                <>
+                  {" "}
+                  <span style={{ color: "#EB0D0D" }}>
+                    {reportFiles.length} documents uploaded
+                  </span>
+                </>
+              )}
+            </div>
+          </Col>
+          <div
+            className="d-flex col-12 gap-3 pt-3"
+            style={{ listStyle: "none" }}
+          >
+            {reportFiles.map((file: any, index: any) => (
+              <span
+                key={index}
+                className="d-flex me-3"
+                style={{
+                  border: "1px solid #E3EFF4",
+                  borderRadius: "5px",
+                  padding: "4px",
+                  background: "#E3EFF4",
+                }}
+              >
+                <span className="col-11 px-3 d-flex align-items-center">
+                  {file.name}{" "}
+                </span>
+                <span
+                  className="col-1 px-2 justify-content-center d-flex align-items-center cursor-pointer"
+                  onClick={() => removeFile2(index)}
+                >
+                  <CloseOutlined />
+                </span>
+              </span>
+            ))}
+          </div>
+          <div className="text-end">
+            <button
+              onClick={submitCollateralData}
+              className="application-btn"
+              style={{
+                //backgroundColor: "#EB0D0D",
+                borderRadius: "8px",
+                color: "#FCFCFC",
+                border: "none",
+                padding: "10px",
+              }}
+            >
+              Submit
+            </button>
+          </div>
+        </Row>
+
+        <Modal show={false} centered size="lg">
+          <Modal.Header closeButton>
+            <div
+              className="cursor-pointer text-end w-100"
+              // onClick={() => setTermDialogBox(false)}
+            >
+              <img /* src={Images.closeBtn} */ alt="" />
+            </div>
+          </Modal.Header>
+          <Modal.Body className="">
+            <div className="d-flex justify-content-center">
+              <img /* src={Images.blueWarning} */ alt="" />
+            </div>
+
+            <div className="text-center">
+              <h3 className="mt-4 fw-bold">Collateral Under Review</h3>
+              <p
+                className="mt-4 mb-5"
+                style={{ lineHeight: "24px", fontSize: "20px" }}
+              >
+                Collateral is under review. Your application will be <br />{" "}
+                processed after the collateral details are verified.
+              </p>
+            </div>
+            <div className="text-center">
+              <button
+                className="btn btn-danger py-3 px-4"
+                style={{
+                  backgroundColor: "#EB0D0D",
+                  color: "#FCFCFC",
+                  borderRadius: "8px",
+                }}
+              >
+                ok
+              </button>
+            </div>
+          </Modal.Body>
+        </Modal>
+      </div>
+    </div>
+  );
+};
+
+export default CollateralManagementEdit;

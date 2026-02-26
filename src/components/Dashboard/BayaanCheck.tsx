@@ -1,0 +1,101 @@
+import React, { useEffect, useState } from "react";
+import { Tab, Tabs } from "react-bootstrap";
+import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
+import { useParams } from "react-router-dom";
+import BankStatement from "./ApplicationDetailsTabs/BankStatement";
+import Loader from "../Loader/Loader";
+
+function BayaanCheck() {
+  const [active, setActive] = useState("BankStatement");
+  const { id } = useParams();
+  const [loading, setLoading] = useState(true);
+  const [financialData, setFinancialData] = useState<any>(null);
+  const tabOptions = [
+    {
+      title: "Bank Statement",
+      key: "BankStatement",
+      component: <BankStatement financialData={financialData} />,
+    },
+    {
+      title: "Request Financial Document",
+      key: "RequestFinancialDocument",
+      component: <></>,
+    },
+    {
+      title: "Approve Banking Statement",
+      key: "ApproveBankingStatement",
+      component: <></>,
+    },
+    // {
+    //   title: "Bayaan Credit Report",
+    //   key: "BayaanCreditReport",
+    //   component: <BayaanCreditReport /* setActiveTab={setActiveTab} */ />,
+    // },
+    // {
+    //   title: "New Applicant Enquiry",
+    //   key: "NewApplicantEnquiry",
+    //   component: <NewApplicantEnquiry /* setActiveTab={setActiveTab} */ />,
+    // },
+    // {
+    //   title: "Request Financial Document",
+    //   key: "RequestFinancialDocument",
+    //   component: <RequestFinancialDocument /* setActiveTab={setActiveTab}  *//>,
+    // },
+    // {
+    //   title: "Approve Bayaan Info",
+    //   key: "ApproveBayaanInfo",
+    //   component: <ApproveBayaanInfo /* setActiveTab={setActiveTab}  *//>,
+    // },
+  ];
+  useEffect(() => {
+    if (id) {
+      fetchFinancialData();
+    }
+  }, [id]);
+
+  const fetchFinancialData = async () => {
+    if (!id) {
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await getApplicationDetailsByType(id, "open_banking_check");
+
+      if (response?.data?.success && response?.data?.data) {
+        setFinancialData(response.data.data);
+      } else {
+        // toast.error("Failed to load financial data");
+      }
+    } catch (error: any) {
+      console.error("API Error:", error);
+      // toast.error(error?.response?.data?.message || error?.message || "Failed to load financial data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <>
+    {loading && <Loader />}
+    <div className="product-tabs-container product-settings-tabs simah-tabs">
+      <Tabs
+        activeKey={active}
+        className="d-flex gap-1 mt-4"
+        style={{ width: "max-content" }}
+        onSelect={(tab: any) => {
+          setActive(tab);
+        }}
+      >
+        {tabOptions.map((tab) => (
+          <Tab key={tab.key} eventKey={tab.key} title={tab.title}>
+            {active === tab.key && tab.component}
+          </Tab>
+        ))}
+      </Tabs>
+    </div>
+    </>
+  );
+}
+
+export default BayaanCheck;

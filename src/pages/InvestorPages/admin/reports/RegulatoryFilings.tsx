@@ -1,0 +1,681 @@
+import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import {
+  ArrowLeft,
+  Download,
+  Calendar,
+  Filter,
+  RefreshCw,
+  Shield,
+  FileText,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  Eye,
+  Upload,
+  Send,
+  Search,
+  Building,
+  Scale,
+  Users
+} from 'lucide-react';
+import { cn } from '../../../../lib/utils';
+
+const regulatoryFilings = [
+  {
+    id: 1,
+    formType: 'Form ADV',
+    formName: 'Investment Adviser Registration',
+    dueDate: '2024-03-31',
+    filingDate: '2024-03-15',
+    status: 'Filed',
+    regulator: 'SEC',
+    submittedBy: 'Sarah Johnson',
+    confirmationNumber: 'SEC-2024-001234',
+    fileSize: '8.5 MB',
+    priority: 'High'
+  },
+  {
+    id: 2,
+    formType: 'Form 13F',
+    formName: 'Quarterly Holdings Report',
+    dueDate: '2024-02-14',
+    filingDate: '2024-02-10',
+    status: 'Filed',
+    regulator: 'SEC',
+    submittedBy: 'Mike Davis',
+    confirmationNumber: 'SEC-2024-001189',
+    fileSize: '12.3 MB',
+    priority: 'High'
+  },
+  {
+    id: 3,
+    formType: 'Form PF',
+    formName: 'Private Fund Report',
+    dueDate: '2024-04-30',
+    filingDate: null,
+    status: 'In Progress',
+    regulator: 'SEC',
+    submittedBy: 'Sarah Johnson',
+    confirmationNumber: null,
+    fileSize: null,
+    priority: 'Medium'
+  },
+  {
+    id: 4,
+    formType: 'AIF',
+    formName: 'Alternative Investment Fund Report',
+    dueDate: '2024-01-31',
+    filingDate: '2024-01-28',
+    status: 'Filed',
+    regulator: 'ESMA',
+    submittedBy: 'Sarah Johnson',
+    confirmationNumber: 'ESMA-2024-00567',
+    fileSize: '15.7 MB',
+    priority: 'High'
+  },
+  {
+    id: 5,
+    formType: 'CFTC Form CPO-PQR',
+    formName: 'Pool Quarterly Report',
+    dueDate: '2024-05-15',
+    filingDate: null,
+    status: 'Pending Review',
+    regulator: 'CFTC',
+    submittedBy: 'Mike Davis',
+    confirmationNumber: null,
+    fileSize: '6.8 MB',
+    priority: 'Medium'
+  },
+  {
+    id: 6,
+    formType: 'Form D',
+    formName: 'Notice of Exempt Offering',
+    dueDate: '2024-03-15',
+    filingDate: null,
+    status: 'Overdue',
+    regulator: 'SEC',
+    submittedBy: null,
+    confirmationNumber: null,
+    fileSize: null,
+    priority: 'Critical'
+  }
+];
+
+const regulators = [
+  { code: 'SEC', name: 'Securities and Exchange Commission', country: 'US' },
+  { code: 'CFTC', name: 'Commodity Futures Trading Commission', country: 'US' },
+  { code: 'FINRA', name: 'Financial Industry Regulatory Authority', country: 'US' },
+  { code: 'ESMA', name: 'European Securities and Markets Authority', country: 'EU' },
+  { code: 'FCA', name: 'Financial Conduct Authority', country: 'UK' }
+];
+
+const upcomingDeadlines = [
+  { formType: 'Form D', dueDate: '2024-03-15', daysUntil: 5, priority: 'Critical' },
+  { formType: 'Form ADV', dueDate: '2024-03-31', daysUntil: 21, priority: 'High' },
+  { formType: 'Form PF', dueDate: '2024-04-30', daysUntil: 51, priority: 'Medium' },
+  { formType: 'CFTC Form CPO-PQR', dueDate: '2024-05-15', daysUntil: 66, priority: 'Medium' }
+];
+
+export default function RegulatoryFilings() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('All Status');
+  const [regulatorFilter, setRegulatorFilter] = useState('All Regulators');
+  const [priorityFilter, setPriorityFilter] = useState('All Priorities');
+  const [selectedFiling, setSelectedFiling] = useState<any>(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'Filed': return 'bg-green-100 text-green-800';
+      case 'In Progress': return 'bg-gray-100 text-gray-900';
+      case 'Pending Review': return 'bg-yellow-100 text-yellow-800';
+      case 'Overdue': return 'bg-red-100 text-red-800';
+      case 'Draft': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getPriorityColor = (priority: string) => {
+    switch (priority) {
+      case 'Critical': return 'bg-red-100 text-red-800';
+      case 'High': return 'bg-orange-100 text-orange-800';
+      case 'Medium': return 'bg-yellow-100 text-yellow-800';
+      case 'Low': return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'Filed': return CheckCircle;
+      case 'In Progress': return Clock;
+      case 'Pending Review': return Eye;
+      case 'Overdue': return AlertTriangle;
+      case 'Draft': return FileText;
+      default: return FileText;
+    }
+  };
+
+  const filteredFilings = regulatoryFilings.filter(filing => {
+    const matchesSearch = filing.formType.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         filing.formName.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'All Status' || filing.status === statusFilter;
+    const matchesRegulator = regulatorFilter === 'All Regulators' || filing.regulator === regulatorFilter;
+    const matchesPriority = priorityFilter === 'All Priorities' || filing.priority === priorityFilter;
+    return matchesSearch && matchesStatus && matchesRegulator && matchesPriority;
+  });
+
+  const handleViewFiling = (filing: any) => {
+    setSelectedFiling(filing);
+    setShowDetailsModal(true);
+  };
+
+  const handleDownloadFiling = (filing: any) => {
+    alert(`Downloading ${filing.formType}...`);
+  };
+
+  const handleSubmitFiling = (filing: any) => {
+    alert(`Submitting ${filing.formType} to ${filing.regulator}...`);
+  };
+
+  const handleNewFiling = () => {
+    setShowUploadModal(true);
+  };
+
+  const handleUploadFiling = () => {
+    alert('Filing uploaded successfully!');
+    setShowUploadModal(false);
+  };
+
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return 'Not filed';
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+  };
+
+  const getDaysUntilDue = (dueDate: string) => {
+    const today = new Date();
+    const due = new Date(dueDate);
+    const diffTime = due.getTime() - today.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+  };
+
+  return (
+    <div className="p-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-4">
+            <Link
+              to="/admin/reports"
+              className="flex items-center text-gray-600 hover:text-gray-900"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Reports
+            </Link>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Regulatory Filings</h1>
+              <p className="text-gray-600">SEC, CFTC, and other regulatory compliance reports</p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-3">
+            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Refresh
+            </button>
+            <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
+              <Download className="w-4 h-4 mr-2" />
+              Export Calendar
+            </button>
+            <button 
+              onClick={handleNewFiling}
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              New Filing
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Total Filings</p>
+              <p className="text-2xl font-bold text-gray-900">{regulatoryFilings.length}</p>
+              <p className="text-xs text-gray-500 mt-1">This year</p>
+            </div>
+            <FileText className="w-8 h-8 text-gray-700" />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Filed</p>
+              <p className="text-2xl font-bold text-gray-900">{regulatoryFilings.filter(f => f.status === 'Filed').length}</p>
+              <p className="text-xs text-green-600 mt-1">On time</p>
+            </div>
+            <CheckCircle className="w-8 h-8 text-green-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">Overdue</p>
+              <p className="text-2xl font-bold text-gray-900">{regulatoryFilings.filter(f => f.status === 'Overdue').length}</p>
+              <p className="text-xs text-red-600 mt-1">Require attention</p>
+            </div>
+            <AlertTriangle className="w-8 h-8 text-red-500" />
+          </div>
+        </div>
+        <div className="bg-white rounded-lg border border-gray-200 p-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600">In Progress</p>
+              <p className="text-2xl font-bold text-gray-900">{regulatoryFilings.filter(f => f.status === 'In Progress' || f.status === 'Pending Review').length}</p>
+              <p className="text-xs text-black mt-1">Active filings</p>
+            </div>
+            <Clock className="w-8 h-8 text-gray-700" />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Filings Table */}
+        <div className="lg:col-span-2">
+          {/* Filters */}
+          <div className="mb-6 flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search filings..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+                />
+              </div>
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+              >
+                <option value="All Status">All Status</option>
+                <option value="Filed">Filed</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Pending Review">Pending Review</option>
+                <option value="Overdue">Overdue</option>
+                <option value="Draft">Draft</option>
+              </select>
+              <select
+                value={regulatorFilter}
+                onChange={(e) => setRegulatorFilter(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+              >
+                <option value="All Regulators">All Regulators</option>
+                {regulators.map(regulator => (
+                  <option key={regulator.code} value={regulator.code}>{regulator.code}</option>
+                ))}
+              </select>
+            </div>
+            <div className="text-sm text-gray-500">
+              {filteredFilings.length} of {regulatoryFilings.length} filings
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Form
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Regulator
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Due Date
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Status
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Priority
+                    </th>
+                    <th className="relative px-6 py-3">
+                      <span className="sr-only">Actions</span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {filteredFilings.map((filing) => {
+                    const StatusIcon = getStatusIcon(filing.status);
+                    const daysUntil = getDaysUntilDue(filing.dueDate);
+                    return (
+                      <tr key={filing.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <StatusIcon className="w-5 h-5 text-gray-400 mr-3" />
+                            <div>
+                              <div className="text-sm font-medium text-gray-900">{filing.formType}</div>
+                              <div className="text-sm text-gray-500">{filing.formName}</div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <Building className="w-4 h-4 text-gray-400 mr-2" />
+                            <span className="text-sm text-gray-900">{filing.regulator}</span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-gray-900">{formatDate(filing.dueDate)}</div>
+                          {daysUntil <= 0 ? (
+                            <div className="text-xs text-red-600">Overdue</div>
+                          ) : daysUntil <= 7 ? (
+                            <div className="text-xs text-orange-600">{daysUntil} days left</div>
+                          ) : (
+                            <div className="text-xs text-gray-500">{daysUntil} days left</div>
+                          )}
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(filing.status))}>
+                            {filing.status}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getPriorityColor(filing.priority))}>
+                            {filing.priority}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <div className="flex items-center space-x-2">
+                            <button 
+                              onClick={() => handleViewFiling(filing)}
+                              className="text-black hover:text-blue-900" 
+                              title="View Details"
+                            >
+                              <Eye className="w-4 h-4" />
+                            </button>
+                            {filing.status === 'Filed' && (
+                              <button 
+                                onClick={() => handleDownloadFiling(filing)}
+                                className="text-gray-600 hover:text-gray-900" 
+                                title="Download"
+                              >
+                                <Download className="w-4 h-4" />
+                              </button>
+                            )}
+                            {(filing.status === 'In Progress' || filing.status === 'Draft') && (
+                              <button 
+                                onClick={() => handleSubmitFiling(filing)}
+                                className="text-green-600 hover:text-green-900" 
+                                title="Submit"
+                              >
+                                <Send className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        {/* Sidebar */}
+        <div className="space-y-6">
+          {/* Upcoming Deadlines */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Upcoming Deadlines</h3>
+            <div className="space-y-3">
+              {upcomingDeadlines.map((deadline, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div>
+                    <div className="text-sm font-medium text-gray-900">{deadline.formType}</div>
+                    <div className="text-xs text-gray-500">{formatDate(deadline.dueDate)}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className={`text-sm font-medium ${
+                      deadline.daysUntil <= 7 ? 'text-red-600' : 'text-gray-900'
+                    }`}>
+                      {deadline.daysUntil} days
+                    </div>
+                    <span className={cn('inline-flex items-center px-2 py-0.5 rounded text-xs font-medium', getPriorityColor(deadline.priority))}>
+                      {deadline.priority}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Regulators */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Regulators</h3>
+            <div className="space-y-3">
+              {regulators.map((regulator) => (
+                <div key={regulator.code} className="flex items-center justify-between">
+                  <div className="flex items-center">
+                    <Scale className="w-4 h-4 text-gray-400 mr-2" />
+                    <div>
+                      <div className="text-sm font-medium text-gray-900">{regulator.code}</div>
+                      <div className="text-xs text-gray-500">{regulator.country}</div>
+                    </div>
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    {regulatoryFilings.filter(f => f.regulator === regulator.code).length}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Quick Actions */}
+          <div className="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
+            <div className="space-y-3">
+              <button className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center">
+                  <Calendar className="w-5 h-5 text-black mr-3" />
+                  <span className="text-sm font-medium text-gray-900">Filing Calendar</span>
+                </div>
+                <span className="text-gray-400">→</span>
+              </button>
+
+              <button className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center">
+                  <AlertTriangle className="w-5 h-5 text-orange-600 mr-3" />
+                  <span className="text-sm font-medium text-gray-900">Risk Assessment</span>
+                </div>
+                <span className="text-gray-400">→</span>
+              </button>
+
+              <button className="w-full flex items-center justify-between p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                <div className="flex items-center">
+                  <Shield className="w-5 h-5 text-green-600 mr-3" />
+                  <span className="text-sm font-medium text-gray-900">Compliance Check</span>
+                </div>
+                <span className="text-gray-400">→</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filing Details Modal */}
+      {showDetailsModal && selectedFiling && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">Filing Details</h3>
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                ×
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Form Type</label>
+                  <p className="text-sm text-gray-900">{selectedFiling.formType}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Form Name</label>
+                  <p className="text-sm text-gray-900">{selectedFiling.formName}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Regulator</label>
+                  <p className="text-sm text-gray-900">{selectedFiling.regulator}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                  <p className="text-sm text-gray-900">{formatDate(selectedFiling.dueDate)}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Filing Date</label>
+                  <p className="text-sm text-gray-900">{formatDate(selectedFiling.filingDate)}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedFiling.status)}`}>
+                    {selectedFiling.status}
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityColor(selectedFiling.priority)}`}>
+                    {selectedFiling.priority}
+                  </span>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Submitted By</label>
+                  <p className="text-sm text-gray-900">{selectedFiling.submittedBy || 'Not submitted'}</p>
+                </div>
+                {selectedFiling.confirmationNumber && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Confirmation Number</label>
+                    <p className="text-sm text-gray-900">{selectedFiling.confirmationNumber}</p>
+                  </div>
+                )}
+                {selectedFiling.fileSize && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">File Size</label>
+                    <p className="text-sm text-gray-900">{selectedFiling.fileSize}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Close
+              </button>
+              {selectedFiling.status === 'Filed' && (
+                <button
+                  onClick={() => {
+                    handleDownloadFiling(selectedFiling);
+                    setShowDetailsModal(false);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
+                >
+                  Download Filing
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Upload Modal */}
+      {showUploadModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">New Filing</h3>
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                ×
+              </button>
+            </div>
+
+            <form className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Form Type</label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                  <option value="">Select form type</option>
+                  <option value="Form ADV">Form ADV</option>
+                  <option value="Form 13F">Form 13F</option>
+                  <option value="Form PF">Form PF</option>
+                  <option value="Form D">Form D</option>
+                  <option value="AIF">AIF</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Regulator</label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                  <option value="">Select regulator</option>
+                  {regulators.map(regulator => (
+                    <option key={regulator.code} value={regulator.code}>{regulator.code} - {regulator.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Due Date</label>
+                <input
+                  type="date"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+                </select>
+              </div>
+            </form>
+
+            <div className="mt-6 flex justify-end space-x-3">
+              <button
+                onClick={() => setShowUploadModal(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUploadFiling}
+                className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
+              >
+                Create Filing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
