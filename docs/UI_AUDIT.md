@@ -1,6 +1,6 @@
-# Finova LOS Frontend — UI Architecture
+# Finova LOS Frontend — UI Audit
 
-**Document type:** Internal technical reference  
+**Document type:** Internal audit  
 **Audience:** Development team  
 **Last updated:** February 2026
 
@@ -9,11 +9,8 @@
 ## Table of Contents
 
 1. [Current UI Stack](#1-current-ui-stack)
-2. [UI Architecture Problems](#2-ui-architecture-problems)
-3. [Dependency Conflict Analysis](#3-dependency-conflict-analysis)
-4. [Target Architecture](#4-target-architecture)
-5. [Migration Plan](#5-migration-plan)
-6. [Complexity and Risk](#6-complexity-and-risk)
+2. [Architecture Problems](#2-architecture-problems)
+3. [Dependency Conflicts](#3-dependency-conflicts)
 
 ---
 
@@ -161,7 +158,7 @@ Three separate systems:
 
 ---
 
-## 2. UI Architecture Problems
+## 2. Architecture Problems
 
 ### 2.1 Inconsistencies
 
@@ -210,7 +207,7 @@ Three separate systems:
 
 ---
 
-## 3. Dependency Conflict Analysis
+## 3. Dependency Conflicts
 
 ### 3.1 Overlapping Responsibilities
 
@@ -259,282 +256,4 @@ Current bundle likely exceeds 1MB of UI-related code where a unified stack could
 
 ---
 
-## 4. Target Architecture
-
-### 4.1 Target Stack
-
-**Tailwind CSS v4 + shadcn/ui only.**
-
-Existing foundation:
-
-- 50 shadcn components in `src/components/ui/`
-- Tailwind v4 installed and configured
-- CSS variables in `src/index.css`
-- Radix UI primitives already in use
-
-**Goal:** Remove Bootstrap, antd, styled-components, and redundant one-off UI packages.
-
----
-
-### 4.2 Centralized Theme Tokens
-
-Single source of truth: CSS custom properties in one file.
-
-```css
-/* src/styles/tokens.css */
-:root {
-  --brand-primary: oklch(0 0 0);
-  --brand-primary-foreground: oklch(0.985 0 0);
-  --brand-secondary: oklch(0.97 0 0);
-  --brand-accent: oklch(0.577 0.245 27.325);
-
-  --color-background: var(--brand-primary-foreground);
-  --color-foreground: oklch(0.145 0 0);
-  --color-success: oklch(0.65 0.2 145);
-  --color-warning: oklch(0.75 0.18 85);
-  --color-error: oklch(0.577 0.245 27.325);
-  --color-info: oklch(0.6 0.15 250);
-
-  /* Spacing, radius, shadows, typography as variables */
-}
-```
-
----
-
-### 4.3 CSS Variable Flow
-
-```
-Tenant Config (API/JSON)
-        ↓
-tokens.css (:root variables)
-        ↓
-Tailwind theme (@theme inline)
-        ↓
-shadcn components (Tailwind classes)
-        ↓
-Page/feature components (compose shadcn)
-```
-
-- CSS variables are the single source of truth.
-- Tailwind maps variables via `@theme inline` (extend current setup in `index.css`).
-- shadcn components use Tailwind only; no hardcoded colors in components.
-- Dark mode: toggle `.dark` on `<html>`; variables switch accordingly.
-
----
-
-### 4.4 Component Layers
-
-```
-Layer 1: Design Tokens (tokens.css)
-Layer 2: Tailwind Utilities (from tokens)
-Layer 3: shadcn Primitives (src/components/ui/) — 50 components
-Layer 4: Composite Components (src/components/shared/)
-Layer 5: Feature Components (src/components/{feature}/)
-Layer 6: Page Components (src/pages/)
-```
-
----
-
-### 4.5 Proposed Folder Structure
-
-```
-src/
-  styles/
-    tokens.css          # Design tokens only
-    globals.css         # Resets, fonts, Tailwind imports
-    rtl.css             # RTL overrides
-  components/
-    ui/                 # shadcn primitives (existing)
-    shared/             # App-specific composites
-      DataTable/
-      FormField/
-      StatusBadge/
-      PageHeader/
-      Sidebar/
-      DateRangePicker/
-      FileUpload/
-      RichTextEditor/
-      PhoneInput/
-      Charts/
-    {feature}/          # Existing feature folders
-  config/
-    theme.ts            # Type-safe theme from API
-    white-label.ts      # Tenant branding (logo, title, colors)
-  pages/                # Unchanged
-```
-
----
-
-### 4.6 Reusable Component Mapping
-
-| Need | Target |
-|------|--------|
-| Button | `src/components/ui/button.tsx` |
-| Modal/Dialog | `src/components/ui/dialog.tsx` |
-| Select | `src/components/ui/select.tsx` |
-| Table | `src/components/shared/DataTable/` (shadcn table + tanstack-table) |
-| Form | `src/components/ui/form.tsx` + Formik |
-| Toast | `src/components/ui/toast.tsx` (Sonner) |
-| Date Picker | `src/components/ui/calendar.tsx` (extend for range/hijri) |
-| Icons | `lucide-react` only |
-| Charts | `recharts` only |
-| Skeleton/Loading | `src/components/ui/skeleton.tsx` |
-
----
-
-### 4.7 White-Label Configuration
-
-```typescript
-// src/config/white-label.ts
-interface TenantBranding {
-  tenantId: string;
-  name: string;
-  logo: string;
-  favicon: string;
-  colors: {
-    primary: string;
-    primaryForeground: string;
-    secondary: string;
-    accent: string;
-    destructive: string;
-  };
-  fonts: {
-    heading: string;
-    body: string;
-  };
-}
-```
-
-At app init:
-
-1. Fetch tenant config from API (by tenantId).
-2. Set CSS variables on `document.documentElement`.
-3. Set document title, favicon, meta tags from config.
-4. Store config in Redux for components that need brand name/logo.
-
-No per-tenant rebuild; only API response differs.
-
----
-
-## 5. Migration Plan
-
-### Phase 0: Preparation (1–2 days)
-
-- Create branch `feature/ui-migration` from main.
-- Establish visual regression baseline (screenshots of key pages).
-- Document all pages/routes for test checklist.
-- Extend Tailwind content in `tailwind.config.js` to full src:
-
-  ```js
-  content: ["./src/**/*.{js,ts,jsx,tsx}"]
-  ```
-
----
-
-### Phase 1: Tokens and Hardcoded Colors (1–2 weeks)
-
-1. Add `src/styles/tokens.css` with full token set.
-2. Document mapping: existing hex values → CSS variable names.
-3. Replace hardcoded colors in inline styles with CSS variables or Tailwind classes (one module at a time).
-4. Replace `Theme.ts` usage with token references.
-5. Move `createGlobalStyle` rules from `App.tsx` into `tokens.css`.
-6. Remove styled-components ThemeProvider from `App.tsx`; use plain CSS.
-
----
-
-### Phase 2: Migrate Off antd (3–5 weeks)
-
-Suggested order:
-
-1. antd Button → shadcn Button
-2. antd Input, Select, InputNumber → shadcn equivalents
-3. antd Modal → shadcn Dialog
-4. antd Table → shared DataTable
-5. antd Form / Form.Item → shadcn Form + Formik
-6. antd Tabs → shadcn Tabs
-7. antd DatePicker, TimePicker → shadcn calendar or temporary keep
-8. antd Steps, Upload, Tree, Transfer → custom compositions on shadcn
-9. antd icons → lucide-react (maintain mapping table)
-10. Remove `antd` and `@ant-design/icons` from package.json
-
-Use wrappers that mirror antd API where helpful, then refactor call sites.
-
----
-
-### Phase 3: Migrate Off Bootstrap (2–3 weeks)
-
-1. Remove Bootstrap CDN from `index.html`.
-2. Replace react-bootstrap Row, Col, Container with Tailwind flex/grid.
-3. Replace react-bootstrap Form components with shadcn form primitives.
-4. Replace Bootstrap utility classes with Tailwind (e.g. d-flex → flex, p-3 → p-3, etc.).
-5. Replace remaining react-bootstrap components (Modal, Card, Navbar, etc.).
-6. Remove `bootstrap` and `react-bootstrap` from package.json.
-7. Remove `src/assets/scss/custom.scss` and compiled CSS.
-
-Use `convert-tailwind-to-bootstrap.sh` as a reverse mapping reference.
-
----
-
-### Phase 4: Remove Redundant Packages (1 week)
-
-- styled-components (after Phase 1)
-- react-responsive-modal, react-select, react-tooltip, react-switch
-- react-hot-toast (use shadcn Toast/Sonner)
-- react-loading-skeleton, react-spinners (use shadcn Skeleton)
-- react-icons, @fortawesome/* (use lucide-react)
-- echarts, echarts-for-react, react-echarts-wrapper (keep recharts)
-- sass, sass-embedded
-- react-data-table-component, react-table-sticky (after DataTable is in place)
-- Duplicate/minified CSS artifacts
-
----
-
-### Phase 5: White-Label System (1 week)
-
-1. Implement tenant config API and fetch on init.
-2. Implement runtime CSS variable injection from config.
-3. Make document title, favicon, logo config-driven.
-4. Remove hardcoded tenantId from `App.tsx`.
-5. Validate with at least two tenant configurations.
-
----
-
-### Testing Strategy
-
-- **Per-PR:** Visual comparison (screenshots) for changed pages.
-- **Feature flag or route:** Optional toggle between old and new UI during migration.
-- **Module-by-module:** Migrate one folder (e.g. Settings) end-to-end before the next.
-- **Dependencies:** Keep old packages until all consumers are migrated.
-- **CI:** Build and lint on every PR.
-- **RTL:** Re-verify Arabic RTL after each phase (Tailwind `rtl:` variant).
-
----
-
-## 6. Complexity and Risk
-
-### Refactor Size: Large
-
-| Dimension | Assessment |
-|-----------|------------|
-| Files to touch | 700+ of ~800 .tsx files |
-| Dependencies to remove | 25–30 packages |
-| Estimated effort | 8–12 weeks (1–2 developers) |
-| Risk rating | High |
-
-### Risk Factors
-
-- 300+ files depend on antd, 400+ on Bootstrap; each needs review.
-- Every page is in scope for regression.
-- Many files mix antd, Bootstrap, and inline styles.
-- Limited automated test coverage for UI.
-- Large custom SCSS with broad impact if removed.
-- RTL must be preserved.
-- `App.tsx` relies on generated class names from react-pro-sidebar; fragile across upgrades.
-
-### Risk Mitigation
-
-- Migrate by module, not in one big change.
-- Keep old dependencies until fully replaced.
-- Introduce screenshot-based regression tests before migration.
-- Use adapter/wrapper components for high-usage antd components to limit blast radius.
-- Deliver in phases; avoid a single large production merge.
+See also: [UI Architecture](UI_ARCHITECTURE.md), [UI Migration Plan](UI_MIGRATION_PLAN.md).
