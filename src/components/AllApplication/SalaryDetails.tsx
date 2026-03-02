@@ -55,7 +55,7 @@ const SalaryDetails = () => {
 
         {salaryDetails.isRejected && (
           <Alert variant="danger" className="mt-3">
-            <div className="fw-600 fs-14 mb-3" style={{color:'#FF0000'}}>This Application has been rejected</div>
+            <div className="fw-600 fs-14 mb-3" style={{color:'var(--destructive)'}}>This Application has been rejected</div>
             <div className="fs-12">Reason: {salaryDetails.reason}</div>
           </Alert>
         )}

@@ -162,7 +162,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
   };
 
   if (loading) return <Loader/>;
-  if (error) return <div style={{ color: 'crimson' }}>{error}</div>;
+  if (error) return <div style={{ color: 'var(--destructive)' }}>{error}</div>;
 
   return (
     <div className="approval-table">
@@ -188,9 +188,9 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
       {/* Show status message if approved or rejected */}
       {(isApproved || isRejected) ? (
         <div style={{
-          backgroundColor: isApproved ? '#d4edda' : '#f8d7da',
-          border: `1px solid ${isApproved ? '#c3e6cb' : '#f5c6cb'}`,
-          color: isApproved ? '#155724' : '#721c24',
+          backgroundColor: isApproved ? 'var(--color-success-bg)' : 'var(--color-error-bg)',
+          border: `1px solid ${isApproved ? 'var(--color-success-border)' : 'var(--color-error-border)'}`,
+          color: isApproved ? 'var(--color-success-text)' : 'var(--color-error-text)',
           padding: '20px',
           borderRadius: '4px',
           marginTop: '20px',
@@ -245,10 +245,10 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
             disabled={rejecting}
             style={{
               padding: '8px 12px',
-              border: '1px solid #d0d0d0',
+              border: '1px solid var(--border)',
               borderRadius: '4px',
               backgroundColor: 'white',
-              color: '#333',
+              color: 'var(--foreground)',
               fontSize: '14px',
               fontWeight: '500',
               cursor: rejecting ? 'not-allowed' : 'pointer',
@@ -266,7 +266,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
               padding: '9px 14px',
               border: 'none',
               borderRadius: '4px',
-              backgroundColor: rejecting || !rejectComment.trim() ? '#ccc' : '#000000',
+              backgroundColor: rejecting || !rejectComment.trim() ? 'var(--color-disabled)' : 'var(--primary)',
               color: 'white',
               fontSize: '14px',
               fontWeight: '500',
@@ -294,7 +294,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
               width: '100%',
               minHeight: '120px',
               padding: '12px',
-              border: '1px solid #d0d0d0',
+              border: '1px solid var(--border)',
               borderRadius: '4px',
               fontSize: '14px',
               fontFamily: 'inherit',

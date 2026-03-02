@@ -275,15 +275,15 @@ const Invoices = () => {
         const getStatusConfig = (status: number) => {
           switch (status) {
             case PaymentStatus.Paid:
-              return { label: "Paid", color: "#92bc82" }; // Green
+              return { label: "Paid", color: "var(--color-success)" }; // Green
             case PaymentStatus.UnPaid:
-              return { label: "UnPaid", color: "#d86969" }; // Red
+              return { label: "UnPaid", color: "var(--destructive)" }; // Red
             case PaymentStatus.Discard:
-              return { label: "Discard", color: "#ffa500" }; // Orange
+              return { label: "Discard", color: "var(--color-warning)" }; // Orange
             case PaymentStatus.Cancelled:
-              return { label: "Cancelled", color: "#808080" }; // Gray
+              return { label: "Cancelled", color: "var(--color-disabled)" }; // Gray
             default:
-              return { label: "Unknown", color: "#808080" };
+              return { label: "Unknown", color: "var(--color-disabled)" };
           }
         };
 
@@ -295,7 +295,7 @@ const Invoices = () => {
               padding: "0.22rem 1rem",
               borderRadius: "12px",
               backgroundColor: statusConfig.color,
-              color: "white",
+              color: "var(--primary-foreground)",
               display: "inline-block",
             }}
           >
@@ -346,7 +346,7 @@ const Invoices = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              borderColor: "white",
+              borderColor: "var(--background)",
               borderRadius: "8px",
               padding: "10px 20px",
             }}
@@ -706,7 +706,7 @@ const Invoices = () => {
             <Button
               className="application-btn"
               style={{
-                color: "#ffffff",
+                color: "var(--primary-foreground)",
 
                 padding: "9px",
                 borderRadius: "8px",
@@ -742,7 +742,7 @@ const Invoices = () => {
               {regularInvoices?.length == 0 && allinvoiceList?.length > 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
-                  style={{ color: "red" }}
+                  style={{ color: "var(--destructive)" }}
                 >
                   No data found
                 </div>
@@ -750,7 +750,7 @@ const Invoices = () => {
               {allinvoiceList?.length == 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
-                  style={{ color: "red" }}
+                  style={{ color: "var(--destructive)" }}
                 >
                   No data found
                 </div>
@@ -775,7 +775,7 @@ const Invoices = () => {
               {earlySettlementInvoices?.length == 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
-                  style={{ color: "red" }}
+                  style={{ color: "var(--destructive)" }}
                 >
                   No data found
                 </div>
@@ -1168,12 +1168,12 @@ const Invoices = () => {
                           }
                           style={{
                             padding: "7px",
-                            border: "1px solid #d3d3d3",
+                            border: "1px solid var(--border)",
                             borderRadius: "5px",
                             cursor: "pointer",
                             width: "220px",
                             textAlign: "center",
-                            color: "#555",
+                            color: "var(--muted-foreground)",
                           }}
                         >
                           Click here to upload a file
@@ -1184,10 +1184,10 @@ const Invoices = () => {
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            backgroundColor: "#a3a3a3",
+                            backgroundColor: "var(--color-disabled)",
                             borderRadius: "5px",
                             padding: "5px 10px",
-                            color: "#fff",
+                            color: "var(--primary-foreground)",
                           }}
                         >
                           <span>{fileName}</span>
@@ -1196,7 +1196,7 @@ const Invoices = () => {
                             style={{
                               marginLeft: "10px",
                               cursor: "pointer",
-                              color: "#fff",
+                              color: "var(--primary-foreground)",
                               padding: "4px",
                             }}
                           >

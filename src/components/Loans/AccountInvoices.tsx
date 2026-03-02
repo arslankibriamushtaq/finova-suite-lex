@@ -227,8 +227,8 @@ const AccountInvoices = () => {
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.paymentStatus === 1 ? "#92bc82" : "#d86969",
-            color: "white",
+            backgroundColor: row.paymentStatus === 1 ? "var(--color-success)" : "var(--destructive)",
+            color: "var(--primary-foreground)",
           }}
         >
           {row.paymentStatus === 1 ? "Paid" : "Unpaid"}
@@ -244,7 +244,7 @@ const AccountInvoices = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              borderColor: "white",
+              borderColor: "var(--background)",
               borderRadius: "8px",
               padding: "10px 20px",
             }}
@@ -524,7 +524,7 @@ const AccountInvoices = () => {
           {allinvoiceList?.length == 0 && (
             <div
               className="d-flex justify-content-center mt-5"
-              style={{ color: "red" }}
+              style={{ color: "var(--destructive)" }}
             >
               No data found
             </div>
@@ -831,12 +831,12 @@ const AccountInvoices = () => {
                           }
                           style={{
                             padding: "7px",
-                            border: "1px solid #d3d3d3",
+                            border: "1px solid var(--border)",
                             borderRadius: "5px",
                             cursor: "pointer",
                             width: "220px",
                             textAlign: "center",
-                            color: "#555",
+                            color: "var(--muted-foreground)",
                           }}
                         >
                           Click here to upload a file
@@ -847,10 +847,10 @@ const AccountInvoices = () => {
                           style={{
                             display: "inline-flex",
                             alignItems: "center",
-                            backgroundColor: "#a3a3a3",
+                            backgroundColor: "var(--color-disabled)",
                             borderRadius: "5px",
                             padding: "5px 10px",
-                            color: "#fff",
+                            color: "var(--primary-foreground)",
                           }}
                         >
                           <span>{fileName}</span>
@@ -859,7 +859,7 @@ const AccountInvoices = () => {
                             style={{
                               marginLeft: "10px",
                               cursor: "pointer",
-                              color: "#fff",
+                              color: "var(--primary-foreground)",
                               padding: "4px",
                             }}
                           >

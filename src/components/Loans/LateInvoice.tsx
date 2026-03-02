@@ -126,7 +126,7 @@ function LateInvoice() {
             <Button
               type="primary"
               className="p-2"
-              style={{ background: "black" }}
+              style={{ background: "var(--primary)" }}
               onClick={downloadPDF}
             >
               Download
@@ -192,7 +192,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   From
@@ -203,7 +203,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Billing To
@@ -217,7 +217,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Payment Term
@@ -228,7 +228,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2 "
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Ship To
@@ -241,7 +241,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   PO Number
@@ -252,7 +252,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Due Date
@@ -267,7 +267,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Penalty Amount
@@ -275,8 +275,8 @@ function LateInvoice() {
                 <input
                   type="number"
                   style={{
-                    backgroundColor: "rgb(245, 245, 245)",
-                    border: "1px solid rgb(245, 245, 245)",
+                    backgroundColor: "var(--muted)",
+                    border: "1px solid var(--muted)",
                   }}
                 >
                   {invoiceData?.poNumber}
@@ -286,7 +286,7 @@ function LateInvoice() {
             <div className="col-6 mb-3">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
               >
                 <label style={{ fontWeight: "bold" }}>Date</label>
                 <span>
@@ -301,7 +301,7 @@ function LateInvoice() {
               <div
                 className=" mb-2 p-3 col-6"
                 style={{
-                  background: "#FFE7E7",
+                  background: "var(--color-error-bg)",
                   borderTopLeftRadius: "7px",
                   fontWeight: "700",
                 }}
@@ -311,7 +311,7 @@ function LateInvoice() {
               <div
                 className="mb-2 p-3 col-6"
                 style={{
-                  background: "#FFE7E7",
+                  background: "var(--color-error-bg)",
                   borderTopRightRadius: "7px",
                   fontWeight: "700",
                 }}
@@ -329,8 +329,8 @@ function LateInvoice() {
                     size="large"
                     value={field.item}
                     style={{
-                      backgroundColor: "#f8f9fa",
-                      border: "1px solid #ced4da",
+                      backgroundColor: "var(--muted)",
+                      border: "1px solid var(--border)",
                       borderBottomRightRadius: "0px",
                       borderRightColor: "transparent",
                       borderTopLeftRadius: "0px",
@@ -345,8 +345,8 @@ function LateInvoice() {
                     size="large"
                     value={field.amount}
                     style={{
-                      backgroundColor: "#f8f9fa",
-                      border: "1px solid #ced4da",
+                      backgroundColor: "var(--muted)",
+                      border: "1px solid var(--border)",
                       borderBottomRightRadius: "10px",
                       borderLeftColor: "transparent",
                       borderTopLeftRadius: "0px",
@@ -368,7 +368,7 @@ function LateInvoice() {
             </div>
             <div
               className="col-6 d-flex justify-content-end font-bold"
-              style={{ fontWeight: 600, color: "#000" }}
+              style={{ fontWeight: 600, color: "var(--foreground)" }}
             >
               SAR:{invoiceData?.subTotalAmount || "0.00"}
             </div>
@@ -379,9 +379,9 @@ function LateInvoice() {
                 <div
                   className="d-flex justify-content-between align-items-center p-3 mb-2"
                   style={{
-                    backgroundColor: "#f5f5f5",
+                    backgroundColor: "var(--muted)",
 
-                    borderRight: "1px solid #D1D1D1",
+                    borderRight: "1px solid var(--border)",
                   }}
                 >
                   <label style={{ fontWeight: "bold" }}>Tax(%)</label>
@@ -392,8 +392,8 @@ function LateInvoice() {
                 <div
                   className="d-flex justify-content-between align-items-center p-3 mb-2"
                   style={{
-                    backgroundColor: "#f5f5f5",
-                    borderRight: "1px solid #D1D1D1",
+                    backgroundColor: "var(--muted)",
+                    borderRight: "1px solid var(--border)",
                   }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
@@ -405,7 +405,7 @@ function LateInvoice() {
               <div className="col-4">
                 <div
                   className="d-flex justify-content-between align-items-center p-3"
-                  style={{ backgroundColor: "#f5f5f5", borderRadius: "8px" }}
+                  style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
                     Discount(%)
@@ -420,7 +420,7 @@ function LateInvoice() {
             <div
               className="col-8 p-5"
               style={{
-                background: "#E8F7FF",
+                background: "var(--color-info-bg)",
               }}
             >
               <label style={{ fontWeight: 600 }}>Note</label>
@@ -443,7 +443,7 @@ function LateInvoice() {
                 className=" font-bold"
                 style={{
                   fontWeight: 500,
-                  color: "#000",
+                  color: "var(--foreground)",
                   fontSize: "2.5rem",
                   lineHeight: "3.5rem",
                 }}

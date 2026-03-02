@@ -90,11 +90,11 @@ const ApplicationBoard = () => {
       {...dragHandleProps}
     >
       <div style={{
-        background: '#E3E3E3',
+        background: 'var(--theme-header-background-color)',
         padding: "16px",
         fontWeight: 700,
         fontSize: "14px",
-        borderBottom: '1px solid #E3E3E3',
+        borderBottom: '1px solid var(--theme-header-background-color)',
         display: 'flex',
         borderTopLeftRadius: "10px",
         borderTopRightRadius: "10px",
@@ -103,7 +103,7 @@ const ApplicationBoard = () => {
         Application No: <span style={{ fontSize: "12px", fontWeight: 500 }}>{loan_application_number}</span>
       </div>
       <div style={{
-        background: '#FFFF',
+        background: 'var(--background)',
         padding: "16px",
         fontSize: "14px",
         fontWeight: 700,
@@ -113,7 +113,7 @@ const ApplicationBoard = () => {
         Customer: <span style={{fontSize: "13px", fontWeight: 500 }}>{company_name}</span>
       </div>
       <div style={{
-        background: '#FFFF',
+        background: 'var(--background)',
         padding: "16px",
         fontWeight: 700,
         fontSize: "14px",
@@ -128,16 +128,16 @@ const ApplicationBoard = () => {
 
   const getHeaderColor = (dept: string) => {
     const colors: { [key: string]: string } = {
-      Operations: "#B2E9FF",
-      Accounts: "#FFEA9D",
-      Compliance: "#ABE3BE",
-      HR: "#E88DA4",
-      Sales: "#D1D9D9",
-      Risk: "#F0B1B1",
-      Credit: "#D1F0D1",
-      Marketing: "#FFEB7C",
+      Operations: "var(--dept-operations)",
+      Accounts:   "var(--dept-accounts)",
+      Compliance: "var(--dept-compliance)",
+      HR:         "var(--dept-hr)",
+      Sales:      "var(--dept-sales)",
+      Risk:       "var(--dept-risk)",
+      Credit:     "var(--dept-credit)",
+      Marketing:  "var(--dept-marketing)",
     };
-    return colors[dept] || "#E3E3E3";
+    return colors[dept] || "var(--theme-header-background-color)";
   };
 
   const handleDragEnd = (result: DropResult) => {
@@ -382,8 +382,8 @@ const cancelMove = () => {
                       <button
                         onClick={() => setShowFactoringModal(true)}
                         style={{
-                          background: '#000000',
-                          color: '#fff',
+                          background: 'var(--primary)',
+                          color: 'var(--primary-foreground)',
                           border: 'none',
                           borderRadius: 6,
                           padding: '6px 10px',
@@ -441,11 +441,11 @@ const cancelMove = () => {
           {/* All Comments Section - Only visible when input is focused */}
           {showComments && (
             <div style={{ 
-              background: '#f5f5f5', 
+              background: 'var(--muted)',
               borderRadius: '8px',
               marginBottom: '12px',
               overflow: 'hidden',
-              border: '1px solid #e0e0e0'
+              border: '1px solid var(--border)'
             }}>
               <div 
                 style={{
@@ -453,14 +453,14 @@ const cancelMove = () => {
                   justifyContent: 'space-between',
                   alignItems: 'center',
                   padding: '12px 16px',
-                  background: '#e8e8e8',
-                  borderBottom: '1px solid #d0d0d0'
+                  background: 'var(--border)',
+                  borderBottom: '1px solid var(--border)'
                 }}
               >
-                <h6 style={{ margin: 0, fontWeight: 600, fontSize: '15px', color: '#333' }}>All Comments</h6>
-                <span 
+                <h6 style={{ margin: 0, fontWeight: 600, fontSize: '15px', color: 'var(--foreground)' }}>All Comments</h6>
+                <span
                   onClick={() => setShowComments(false)}
-                  style={{ fontSize: '20px', fontWeight: 400, color: '#666', cursor: 'pointer' }}
+                  style={{ fontSize: '20px', fontWeight: 400, color: 'var(--muted-foreground)', cursor: 'pointer' }}
                 >
                   —
                 </span>
@@ -469,11 +469,11 @@ const cancelMove = () => {
               <div style={{ 
                 maxHeight: '400px', 
                 overflowY: 'auto',
-                background: '#fafafa',
+                background: 'var(--background)',
                 padding: '16px'
               }}>
                 {loadingComments ? (
-                  <div style={{ padding: '20px', textAlign: 'center', color: '#999' }}>
+                  <div style={{ padding: '20px', textAlign: 'center', color: 'var(--muted-foreground)' }}>
                     Loading comments...
                   </div>
                 ) : comments.length > 0 ? (
@@ -492,11 +492,11 @@ const cancelMove = () => {
                         {/* Comment Card */}
                         <div style={{
                           flex: 1,
-                          background: '#fff',
+                          background: 'var(--card)',
                           borderRadius: '8px',
                           padding: '12px 16px',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
-                          border: '1px solid #e8e8e8'
+                          border: '1px solid var(--border)'
                         }}>
                           {/* Header with username and menu */}
                           <div style={{ 
@@ -505,10 +505,10 @@ const cancelMove = () => {
                             alignItems: 'center',
                             marginBottom: '8px'
                           }}>
-                            <span style={{ 
-                              fontWeight: 600, 
+                            <span style={{
+                              fontWeight: 600,
                               fontSize: '14px',
-                              color: '#000'
+                              color: 'var(--foreground)'
                             }}>
                               super admin
                             </span>
@@ -518,7 +518,7 @@ const cancelMove = () => {
                               cursor: 'pointer',
                               padding: '0',
                               fontSize: '18px',
-                              color: '#666',
+                              color: 'var(--muted-foreground)',
                               lineHeight: '1'
                             }}>
                               ⋯
@@ -526,10 +526,10 @@ const cancelMove = () => {
                           </div>
                           
                           {/* Comment Text */}
-                          <p style={{ 
+                          <p style={{
                             margin: '0 0 8px 0',
                             fontSize: '13px',
-                            color: '#333',
+                            color: 'var(--foreground)',
                             wordBreak: 'break-word',
                             lineHeight: '1.5'
                           }}>
@@ -537,9 +537,9 @@ const cancelMove = () => {
                           </p>
                           
                           {/* Timestamp */}
-                          <div style={{ 
+                          <div style={{
                             fontSize: '11px',
-                            color: '#999'
+                            color: 'var(--muted-foreground)'
                           }}>
                             {comment.created_at ? new Date(comment.created_at).toLocaleString('en-GB', {
                               day: '2-digit',
@@ -557,7 +557,7 @@ const cancelMove = () => {
                           width: '36px',
                           height: '36px',
                           borderRadius: '50%',
-                          background: '#90caf9',
+                          background: 'var(--color-avatar-bg)',
                           display: 'flex',
                           alignItems: 'center',
                           justifyContent: 'center',
@@ -571,10 +571,10 @@ const cancelMove = () => {
                     ))}
                   </div>
                 ) : (
-                  <div style={{ 
-                    padding: '20px', 
-                    textAlign: 'center', 
-                    color: '#999',
+                  <div style={{
+                    padding: '20px',
+                    textAlign: 'center',
+                    color: 'var(--muted-foreground)',
                     fontSize: '13px'
                   }}>
                     No comments yet
@@ -590,8 +590,8 @@ const cancelMove = () => {
             alignItems: 'center',
             gap: '12px',
             padding: '12px 16px',
-            background: '#fff',
-            border: '1px solid #e0e0e0',
+            background: 'var(--background)',
+            border: '1px solid var(--border)',
             borderRadius: '8px'
           }}>
             <div style={{
@@ -626,14 +626,14 @@ const cancelMove = () => {
                 outline: 'none',
                 fontSize: '14px',
                 padding: '8px 0',
-                color: '#333'
+                color: 'var(--foreground)'
               }}
             />
             <button
               onClick={handleSubmitSidebarComment}
               disabled={!selectedApplication || !sidebarComment?.trim()}
               style={{
-                background: '#ef5350',
+                background: 'var(--destructive)',
                 border: 'none',
                 borderRadius: '6px',
                 padding: '8px 16px',
@@ -710,7 +710,7 @@ const cancelMove = () => {
                         </Draggable>
                       ))
                     ) : (
-                      <div style={{ textAlign: "center", color: "#999" }}>No applications</div>
+                      <div style={{ textAlign: "center", color: "var(--muted-foreground)" }}>No applications</div>
                     )}
                     {provided.placeholder}
                   </div>
@@ -777,7 +777,7 @@ const cancelMove = () => {
             width: '120px',
             height: '120px',
             borderRadius: '50%',
-            border: '6px solid #4CAF50',
+            border: '6px solid var(--color-success)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -788,7 +788,7 @@ const cancelMove = () => {
               height="60" 
               viewBox="0 0 24 24" 
               fill="none" 
-              stroke="#4CAF50" 
+              stroke="var(--color-success)" 
               strokeWidth="3" 
               strokeLinecap="round" 
               strokeLinejoin="round"
@@ -801,7 +801,7 @@ const cancelMove = () => {
           <h2 style={{
             fontSize: '24px',
             fontWeight: 600,
-            color: '#333',
+            color: 'var(--foreground)',
             marginBottom: '10px'
           }}>
             Verified!
@@ -810,7 +810,7 @@ const cancelMove = () => {
           {/* Success Message */}
           <p style={{
             fontSize: '18px',
-            color: '#666',
+            color: 'var(--muted-foreground)',
             marginBottom: '30px'
           }}>
             Assigned successfully.
@@ -820,7 +820,7 @@ const cancelMove = () => {
           <button
             onClick={() => setShowSuccessModal(false)}
             style={{
-              background: '#FF0000',
+              background: 'var(--destructive)',
               color: '#fff',
               border: 'none',
               borderRadius: '6px',

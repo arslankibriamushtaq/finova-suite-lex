@@ -147,7 +147,7 @@ const InvoiceManagement = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              borderColor: "white",
+              borderColor: "var(--background)",
               borderRadius: "8px",
               padding: "10px 20px",
             }}
@@ -328,7 +328,7 @@ const InvoiceManagement = () => {
               className="application-btn"
               style={{
                 //backgroundColor: "#EB0D0D",
-                color: "#ffffff",
+                color: "var(--primary-foreground)",
                 //height: "32px",
                 padding: "9px",
                 borderRadius: "8px",
@@ -441,7 +441,7 @@ const InvoiceManagement = () => {
           {allinvoices?.length == 0 && (
             <div
               className="d-flex justify-content-center mt-5"
-              style={{ color: "red" }}
+              style={{ color: "var(--destructive)" }}
             >
               No data found
             </div>

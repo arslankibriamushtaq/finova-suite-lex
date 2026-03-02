@@ -33,6 +33,35 @@
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
   --radius: 0.5rem;
+
+  /* Status colors */
+  --color-success: oklch(0.65 0.2 145);
+  --color-success-bg: oklch(0.95 0.04 145);
+  --color-success-border: oklch(0.87 0.08 145);
+  --color-success-text: oklch(0.3 0.1 145);
+
+  --color-error: oklch(0.577 0.245 27.325);
+  --color-error-bg: oklch(0.95 0.04 25);
+  --color-error-border: oklch(0.88 0.06 25);
+  --color-error-text: oklch(0.35 0.12 25);
+
+  --color-warning: oklch(0.75 0.18 85);
+  --color-info: oklch(0.6 0.15 250);
+  --color-info-bg: oklch(0.95 0.04 230);
+  --color-disabled: oklch(0.82 0 0);
+
+  /* Department board column colors */
+  --dept-operations: #B2E9FF;
+  --dept-accounts: #FFEA9D;
+  --dept-compliance: #ABE3BE;
+  --dept-hr: #E88DA4;
+  --dept-sales: #D1D9D9;
+  --dept-risk: #F0B1B1;
+  --dept-credit: #D1F0D1;
+  --dept-marketing: #FFEB7C;
+
+  /* Avatar */
+  --color-avatar-bg: #90caf9;
 }
 
 .dark {
@@ -82,7 +111,7 @@
   --theme-sidebar-text-color: #000000;
   --theme-revert-action-color: #a0a0a0;
   --theme-other-actions-color: transparent;
-  --theme-header-background-color: #e3e3e3;
+  --theme-header-background-color: #ffffff;
   --theme-header-sub-header-bg-color: #000000;
   --theme-dashboard-subheader-bg-color: #f4f4f4;
   --theme-dashboard-header-bg-color: #ffffff;

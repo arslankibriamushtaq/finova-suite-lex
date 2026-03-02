@@ -66,8 +66,8 @@ const DocumentGallery = () => {
               style={{
                 width: 176,
                 height: 176,
-                background: "#EDEDED",
-                color: "#000000",
+                background: "var(--theme-inactive-tab)",
+                color: "var(--foreground)",
               }}
             >
               <div className="fs-4">

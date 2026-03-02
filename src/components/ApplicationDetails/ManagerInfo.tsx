@@ -304,7 +304,7 @@ const ManagerInfo: React.FC<ManagerInfoProps> = ({ applicationId }) => {
   }, [isArabic]);
 
   if (loading) return <Loader/>;
-  if (error) return <div style={{ color: 'crimson' }}>{error}</div>;
+  if (error) return <div style={{ color: 'var(--destructive)' }}>{error}</div>;
   if (!data) return <div>No data found</div>;
 
   // Filter out unnecessary fields from manager info
@@ -330,7 +330,7 @@ const ManagerInfo: React.FC<ManagerInfoProps> = ({ applicationId }) => {
           checked={isArabic} 
           onChange={setIsArabic}
         />
-        <span style={{ fontSize: '14px', color: '#666' }}>Arabic</span>
+        <span style={{ fontSize: '14px', color: 'var(--muted-foreground)' }}>Arabic</span>
       </div>
       {renderObjectContent(filteredData, isArabic)}
     </>

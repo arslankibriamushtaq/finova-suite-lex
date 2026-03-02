@@ -422,7 +422,7 @@ const CreateInvoice = () => {
         <div className="col-12 mt-5 d-flex justify-content-between gap-2">
           <div
             className="col-6 p-3"
-            style={{ backgroundColor: "#F3F3F3", borderRadius: "10px" }}
+            style={{ backgroundColor: "var(--muted)", borderRadius: "10px" }}
           >
             <label>Name <span className="bg-red"> *</span></label>
             <Input
@@ -469,7 +469,7 @@ const CreateInvoice = () => {
           </div>
           <div
             className="col-6 p-3"
-            style={{ backgroundColor: "#F3F3F3", borderRadius: "10px" }}
+            style={{ backgroundColor: "var(--muted)", borderRadius: "10px" }}
           >
             {" "}
             <div className="">
@@ -499,7 +499,7 @@ const CreateInvoice = () => {
         </div>
         <div
           className="col-12 mt-3 d-flex p-3 gap-3"
-          style={{ backgroundColor: "#F3F3F3", borderRadius: "10px" }}
+          style={{ backgroundColor: "var(--muted)", borderRadius: "10px" }}
         >
           <div className="col-6">
             <div className="">
@@ -557,7 +557,7 @@ const CreateInvoice = () => {
               background: themeStyle.secondary,
               borderTopLeftRadius: "7px",
               fontWeight: "600",
-              color: "#FFFF",
+              color: "var(--primary-foreground)",
             }}
           >
             Item
@@ -568,7 +568,7 @@ const CreateInvoice = () => {
               background: themeStyle.secondary,
               borderTopRightRadius: "7px",
               fontWeight: "600",
-              color: "#FFFF",
+              color: "var(--primary-foreground)",
             }}
           >
             Amount
@@ -585,8 +585,8 @@ const CreateInvoice = () => {
                 value={field.item}
                 onChange={(event) => handleFieldChange(index, event)}
                 style={{
-                  backgroundColor: "#f8f9fa",
-                  border: "1px solid #ced4da",
+                  backgroundColor: "var(--muted)",
+                  border: "1px solid var(--border)",
                   borderRadius: "0.25rem",
                 }}
               />
@@ -599,8 +599,8 @@ const CreateInvoice = () => {
                 value={field.price}
                 onChange={(event) => handleFieldChange(index, event)}
                 style={{
-                  backgroundColor: "#f8f9fa",
-                  border: "1px solid #ced4da",
+                  backgroundColor: "var(--muted)",
+                  border: "1px solid var(--border)",
                   borderRadius: "0.25rem",
                 }}
               />

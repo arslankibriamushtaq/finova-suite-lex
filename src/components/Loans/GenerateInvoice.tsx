@@ -108,7 +108,7 @@ function GenerateInvoice() {
   };
   return (
     <>
-      <div style={{ backgroundColor: "#f5f5f5", minHeight: "100vh", padding: "20px 0" }}>
+      <div style={{ backgroundColor: "var(--muted)", minHeight: "100vh", padding: "20px 0" }}>
         {/* Header with Download Button */}
         <div 
           className="d-flex justify-content-between align-items-center mb-3" 
@@ -119,8 +119,8 @@ function GenerateInvoice() {
               type="primary"
               onClick={downloadPDF}
             style={{ 
-              background: "#000", 
-              borderColor: "#000",
+              background: "var(--primary)",
+              borderColor: "var(--primary)",
               padding: "8px 24px",
               height: "auto",
               fontWeight: 500
@@ -136,12 +136,12 @@ function GenerateInvoice() {
           style={{ 
             maxWidth: "850px", 
             marginInline: 'auto',
-            backgroundColor: "#ffffff",
+            backgroundColor: "var(--card)",
             padding: "50px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             borderRadius: "8px",
-            border: "2px solid #e0e0e0",
-            color: "#000",
+            border: "2px solid var(--border)",
+            color: "var(--foreground)",
             fontFamily: "Arial, sans-serif"
           }}
         >
@@ -159,42 +159,42 @@ function GenerateInvoice() {
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "25px" }}>
             {/* Left side - Company Info */}
             <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 600, fontSize: "15px", marginBottom: "6px", color: "#000" }}>Company Name</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "#333" }}>{invoiceData?.from || "Factoring Valley"}</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "#333" }}>Address:{invoiceData?.address || "Saudi Arabia"}</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "#333" }}>VAT: {invoiceData?.vatNumber || "222"}</p>
+              <p style={{ fontWeight: 600, fontSize: "15px", marginBottom: "6px", color: "var(--foreground)" }}>Company Name</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>{invoiceData?.from || "Factoring Valley"}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>Address:{invoiceData?.address || "Saudi Arabia"}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>VAT: {invoiceData?.vatNumber || "222"}</p>
             </div>
             
             {/* Right side - Invoice Details */}
             <div style={{ minWidth: "270px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#666" }}>Invoice No.:</span>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#000" }}>{invoiceData?.invoiceNumber || "FINV184058"}</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Invoice No.:</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{invoiceData?.invoiceNumber || "FINV184058"}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#666" }}>Date</span>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#000" }}>{new Date().toISOString().slice(0, 10)}</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Date</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{new Date().toISOString().slice(0, 10)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#666" }}>Due Date</span>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#000" }}>{formatDate(invoiceData?.dueDate)}</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Due Date</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{formatDate(invoiceData?.dueDate)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "#666" }}>Type</span>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "#000" }}>{invoiceData?.invoiceType || "B2C"}</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Type</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{invoiceData?.invoiceType || "B2C"}</span>
               </div>
             </div>
           </div>
 
           {/* Customer Info */}
           <div style={{ marginBottom: "25px" }}>
-            <p style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px", color: "#000" }}>To:</p>
+            <p style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px", color: "var(--foreground)" }}>To:</p>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <p style={{ margin: 0, fontWeight: 600, fontSize: "13px", color: "#000" }}>
+              <p style={{ margin: 0, fontWeight: 600, fontSize: "13px", color: "var(--foreground)" }}>
                 {invoiceData?.billingTo || "JAWAD JAWAD JAWAD JAWAD"}
               </p>
               <div style={{ display: "flex", justifyContent: "start" }}>
-                <p style={{ margin: 0, fontSize: "13px", fontWeight: 400, color: "#666" }}>Email</p>
+                <p style={{ margin: 0, fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Email</p>
               </div>
             </div>
           </div>
@@ -205,8 +205,8 @@ function GenerateInvoice() {
             <div style={{ 
               display: "grid", 
               gridTemplateColumns: "3fr 1fr 1fr 1fr",
-              backgroundColor: "#2c2c2c",
-              color: "#fff",
+              backgroundColor: "var(--primary)",
+              color: "var(--primary-foreground)",
               padding: "10px 16px",
               borderRadius: "3px 3px 0 0",
               fontWeight: 600,
@@ -222,12 +222,12 @@ function GenerateInvoice() {
             <div style={{ 
               display: "grid", 
               gridTemplateColumns: "3fr 1fr 1fr 1fr",
-              border: "1px solid #ddd",
+              border: "1px solid var(--border)",
               borderTop: "none",
               padding: "10px 16px",
               borderRadius: "0 0 3px 3px",
               fontSize: "13px",
-              color: "#333"
+              color: "var(--foreground)"
             }}>
               <div>{invoiceData?.discription || "Microban Revenue"}</div>
               <div style={{ textAlign: "center" }}>1</div>
@@ -246,8 +246,8 @@ function GenerateInvoice() {
                 padding: "6px 0",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "#000" }}>Total Before VAT</span>
-                <span style={{ fontWeight: 500, color: "#333" }}>{invoiceData?.processingFee || "86.09"}</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Total Before VAT</span>
+                <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{invoiceData?.processingFee || "86.09"}</span>
               </div>
 
               {/* VAT Amount */}
@@ -257,8 +257,8 @@ function GenerateInvoice() {
                 padding: "6px 0",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "#000" }}>VAT (15%)</span>
-                <span style={{ fontWeight: 500, color: "#333" }}>{invoiceData?.tax || "12.91"}</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>VAT (15%)</span>
+                <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{invoiceData?.tax || "12.91"}</span>
               </div>
 
               {/* Total After VAT with borders */}
@@ -266,14 +266,14 @@ function GenerateInvoice() {
                 display: "flex", 
                 justifyContent: "space-between", 
                 padding: "10px 0",
-                borderTop: "1px solid #ccc",
-                borderBottom: "1px solid #ccc",
+                borderTop: "1px solid var(--border)",
+                borderBottom: "1px solid var(--border)",
                 marginTop: "6px",
                 marginBottom: "10px",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "#000" }}>Total After VAT</span>
-                <span style={{ fontWeight: 600, color: "#000" }}>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Total After VAT</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>
                   {(
                     (Number(invoiceData?.totalAmount) || 0)
                   ).toFixed(2)}
@@ -282,7 +282,7 @@ function GenerateInvoice() {
 
               {/* Final Total */}
               <div style={{ textAlign: "right" }}>
-                <h3 style={{ margin: 0, fontSize: "22px", fontWeight: 700, color: "#000" }}>
+                <h3 style={{ margin: 0, fontSize: "22px", fontWeight: 700, color: "var(--foreground)" }}>
                   {(
                     (Number(invoiceData?.totalAmount) || 0) 
                 ).toFixed(2)}
