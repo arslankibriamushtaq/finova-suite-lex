@@ -5,7 +5,6 @@ import DasbhboardHeader from "../components/DashboardHeader/Header";
 import DasbhboardSideBar from "../components/DashboardSideBar/DashboardSideBar";
 import { RootState } from "../redux/rootReducer";
 import SubHeaderFlow from "../components/DashboardHeader/SubHeaderFlow";
-import { themeStyle } from "../components/Config/Theme";
 import DasbhboardSidebarCms from "../components/DashboardSideBar/DashboardSideBarCms";
  
 const LayoutCms = () => {
@@ -33,7 +32,7 @@ const LayoutCms = () => {
         <div
           className={`flex ${isMobile ? "" : "colOne"}`}
           style={{
-            background: themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
+            background: "var(--theme-flow-dashboard-sidebar-bg)",
             zIndex: 0,
           }}
         >

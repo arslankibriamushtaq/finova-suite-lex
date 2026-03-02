@@ -4,7 +4,6 @@ import { Outlet, useLocation } from "react-router-dom";
 import DasbhboardHeader from "../components/DashboardHeader/Header";
 import { RootState } from "../redux/rootReducer";
 import SubHeaderFlow from "../components/DashboardHeader/SubHeaderFlow";
-import { themeStyle } from "../components/Config/Theme";
 import DasbhboardSideBarLms from "../components/DashboardSideBar/DasbhboardSideBarLms";
 import HeadingHeader from "../components/HeadingHeader";
 import DashboardSideBar from "../components/DashboardSideBar/DashboardSideBar";
@@ -35,7 +34,7 @@ const LayoutLms = () => {
         <div
           className={`flex ${isMobile ? "" : "colOne"}`}
           style={{
-            background: themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
+            background: "var(--theme-flow-dashboard-sidebar-bg)",
             zIndex: 0,
           }}
         >

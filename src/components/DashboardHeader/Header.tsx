@@ -5,7 +5,6 @@ import { createGlobalStyle } from "styled-components";
 import { authSlice, setToken } from "../../redux/apis/apisSlice";
 import type { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
-import { themeStyle } from "../Config/Theme";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 import { RiArrowDropDownFill } from "react-icons/ri";
@@ -30,7 +29,7 @@ const DashboardHeader = () => {
     }
   `;
 
-  const backgroundColorClass = themeStyle?.headerColor?.backgroundColor;
+  const backgroundColorClass = "header-background-color";
   const toggleMenu = () => {
     setOpen(!open);
   };
@@ -99,7 +98,7 @@ const DashboardHeader = () => {
               className="border-left"
               style={{
                 width: "290px",
-                background: themeStyle?.dashboardSibeBarFlow.flowSideBarLogoBg,
+                background: "var(--theme-flow-sidebar-logo-bg)",
               }}
             >
               <span
@@ -125,7 +124,7 @@ const DashboardHeader = () => {
               <div className="col-md-7 d-flex">
                 <div
                   className="col-md-4 d-flex fs-20 fw-600 gap-3"
-                  style={{ color: themeStyle?.color?.headingTextColor }}
+                  style={{ color: "var(--theme-heading-text-color)" }}
                 >
                   <img src={Images.HeaderIcon} alt="Header Icon" />
 

@@ -4,7 +4,6 @@ import { Outlet } from "react-router-dom";
 import DasbhboardHeader from "../components/DashboardHeader/Header";
 import DasbhboardSideBar from "../components/DashboardSideBar/DashboardSideBar";
 import { RootState } from "../redux/rootReducer";
-import { themeStyle } from "../components/Config/Theme";
 import DashboardInfoSubHeader from "../components/DashboardHeader/DashboardSubheader";
 import { filterUtils } from "../utils/const.utils";
 const LayoutDashboard = () => {
@@ -36,8 +35,7 @@ const location=window.location.pathname
         <div
           className={`flex ${isMobile ? "" : "colOne"}`}
           style={{
-            backgroundColor:
-              themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
+            backgroundColor: "var(--theme-flow-dashboard-sidebar-bg)",
           }}
         >
           <DasbhboardSideBar />

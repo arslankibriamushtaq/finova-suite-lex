@@ -1,51 +1,7 @@
-export const themeStyle = {
-  appBackgroundColor: "",
-  primary: "#FFFFFF",
-  textColor: "#000000",
-  secondary: " #1963b9",
-  tertiary: "#000000",
-  activeColor: "#4D6685",
-  activeTab: "transparent",
-  inaActiveTab: "#ededed",
-  breadCrumActiveTextColor: "#EB0D0D",
-  gradientBackgroundColor: "#000000",
-  sideBarmenuBackgroundColor: "#191919",
-  sidebarTextColor: "black",
-  revertActionColor: "#A0A0A0",
-  otherActionsColor: "transparent",
-  headerColor: {
-    backgroundColor: "#E3E3E3",
-    subHeaderBgColor: "#000",
-    dashboardSubheaderBgColor: "#F4F4F4",
-    dashboardHeaderBgColor: "#FFFFFF",
-    subheaderTextColor: "#000000",
-  },
-  color: {
-    headingTextColor: "#090909",
-  },
-  cards: {
-    cardsBackgroundColor: "",
-    cardsTextColor: "",
-  },
-  table: {
-    backgroundColor: "#1963b9 ",
-    headingColor: "#ffffff",
-    bodyTextColor: "black",
-  },
-  dashboardSibeBarFlow: {
-    flowSideBarLogoBg: "rgb(252, 252, 252)",
-    flowDashboardSideBarBg: "rgb(252, 252, 252)",
-    subMenuSideBarBg: "transparent",
-    activeColorBg: "transparent",
-    inActiveColorBg: "transparent",
-    activeTextColor: "#1963b9",
-    inActiveTextColor: "#00000",
-  },
-  dashboardSideBarView: {
-    //viewSideBarBg: "#EDEDED",
-    activeColorBg: " red",
-    activeTextColor: "red",
-    inActiveColorBg: "red",
-    inActiveTextColor: "red",
-  },
-};
+/**
+ * Theme tokens — references to CSS variables in tokens.css.
+ * Replaces hardcoded values; actual colors defined in src/styles/tokens.css.
+ */
+import { themeTokens } from "../../lib/themeTokens";
+
+export const themeStyle = themeTokens;

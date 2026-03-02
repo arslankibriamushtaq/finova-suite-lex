@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createGlobalStyle } from "styled-components";
 
 import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
-import { themeStyle } from "../Config/Theme";
 
 const SubHeaderFlow = () => {
   const navigate = useNavigate();
@@ -29,12 +27,6 @@ const SubHeaderFlow = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const GlobalStyle = createGlobalStyle`
-  .subheader_layout{
-    background: ${themeStyle?.headerColor.subHeaderBgColor} !important;
-      color: ${themeStyle?.headerColor.subheaderTextColor} !important;
-  }
-  `;
   const addSpaceBeforeCapital = (str: string) => {
     return str?.replace(/([a-z])([A-Z])/g, "$1 $2");
   };
@@ -161,32 +153,32 @@ const SubHeaderFlow = () => {
               >
                 <div
                   className="ps-4"
-                  style={{ color: themeStyle?.headerColor.subheaderTextColor }}
+                  style={{ color: "var(--theme-subheader-text-color)" }}
                 >
                   LMS
                 </div>
                 <div
                   className="ps-2"
-                  style={{ color: themeStyle?.headerColor.subheaderTextColor }}
+                  style={{ color: "var(--theme-subheader-text-color)" }}
                 >
                   {">"}
                 </div>
                 <div
                   className="ps-2"
-                  style={{ color: themeStyle?.headerColor.subheaderTextColor }}
+                  style={{ color: "var(--theme-subheader-text-color)" }}
                 >
                   {addSpaceBeforeCapital(active)}
                 </div>
                 <div
                   className="ps-2"
-                  style={{ color: themeStyle?.headerColor.subheaderTextColor }}
+                  style={{ color: "var(--theme-subheader-text-color)" }}
                 >
                   {">"}
                 </div>
                 <div
                   className="ps-2"
                   style={{
-                    color: themeStyle.breadCrumActiveTextColor,
+                    color: "var(--theme-breadcrumb-active-text-color)",
                     fontWeight: "600",
                   }}
                 >
@@ -198,7 +190,6 @@ const SubHeaderFlow = () => {
         </div>
       </div>
 
-      <GlobalStyle />
     </>
   );
 };

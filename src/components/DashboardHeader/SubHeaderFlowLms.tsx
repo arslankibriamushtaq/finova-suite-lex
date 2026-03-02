@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createGlobalStyle } from "styled-components";
 
 import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
-import { themeStyle } from "../Config/Theme";
 
 const SubHeaderFlowLms = () => {
   const navigate = useNavigate();
@@ -29,12 +27,6 @@ const SubHeaderFlowLms = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const GlobalStyle = createGlobalStyle`
-  .subheader_layout{
-    background: ${themeStyle?.headerColor.subHeaderBgColor} !important;
-      color: ${themeStyle?.headerColor.subheaderTextColor} !important;
-  }
-  `;
   const addSpaceBeforeCapital = (str: string) => {
     return str?.replace(/([a-z])([A-Z])/g, "$1 $2");
   };
@@ -198,7 +190,6 @@ const SubHeaderFlowLms = () => {
         </div>
       </div>
 
-      <GlobalStyle />
     </>
   );
 };

@@ -63,8 +63,8 @@
 }
 
 /* ==========================================================================
-   Theme.ts mapping — CSS variables mirroring src/components/Config/Theme.ts
-   (Theme.ts remains in use; these tokens ready for future migration)
+   Theme tokens — CSS variables consumed by Theme.ts (src/components/Config/Theme.ts)
+   Theme.ts re-exports themeTokens from src/lib/themeTokens.ts
    ========================================================================== */
 
 :root {
@@ -104,4 +104,170 @@
   --theme-dashboard-sidebar-active-text-color: #eb0d0d;
   --theme-dashboard-sidebar-inactive-color-bg: #eb0d0d;
   --theme-dashboard-sidebar-inactive-text-color: #eb0d0d;
+}
+
+/* ==========================================================================
+   Global styles (migrated from App.tsx createGlobalStyle)
+   Uses CSS variables from Theme.ts mapping above
+   ========================================================================== */
+
+.application-btn {
+  background: var(--theme-secondary) !important;
+}
+
+.theme-btn-next {
+  background: var(--theme-tertiary) !important;
+}
+
+.invoice-btn {
+  background: var(--theme-other-actions-color) !important;
+}
+
+.revert-btn {
+  background: var(--theme-revert-action-color) !important;
+}
+
+.nav-tabs .nav-link {
+  background: var(--theme-inactive-tab) !important;
+}
+
+.gradient-btn {
+  background: var(--theme-gradient-background-color) !important;
+  width: 69px;
+  height: 29px;
+  font-size: 12px;
+  color: #fff !important;
+}
+
+.subheader_layout {
+  background: var(--theme-header-sub-header-bg-color) !important;
+  color: var(--theme-subheader-text-color) !important;
+}
+
+.header_layout {
+  background: var(--theme-dashboard-header-bg-color) !important;
+}
+
+.dashboard-subheader-layout {
+  background: var(--theme-dashboard-subheader-bg-color) !important;
+}
+
+.header-background-color {
+  background: var(--theme-header-background-color) !important;
+}
+
+.css-vj11vy.ps-menu-root {
+  background: var(--theme-flow-dashboard-sidebar-bg) !important;
+}
+
+.ps-submenu-content ul {
+  background: var(--theme-flow-submenu-sidebar-bg) !important;
+  color: var(--theme-flow-submenu-sidebar-bg) !important;
+}
+
+span.ps-menu-label.ps-active.css-12w9als {
+  color: var(--theme-flow-active-text-color) !important;
+}
+
+li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button,
+.menu-items > a:hover .ps-menu-button {
+  background-color: var(--theme-flow-active-color-bg) !important;
+  color: var(--theme-flow-active-text-color) !important;
+  margin-left: 20px;
+  width: -webkit-fill-available;
+  border-radius: 0;
+}
+
+li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button:first-child:before {
+  content: "";
+  position: absolute;
+  left: 20px;
+  background: #1963b9;
+  width: 4px;
+  height: 100%;
+  top: 0;
+}
+
+.css-12w9als {
+  color: var(--theme-flow-inactive-text-color) !important;
+}
+
+.menu-items > li a:hover span,
+.menu-items > a:hover span {
+  color: #ffffff !important;
+}
+
+.ps-submenu-content ul {
+  background: transparent !important;
+  color: #fff !important;
+}
+
+span.ps-submenu-expand-icon.ps-open.css-1cuxlhl span:after {
+  width: 2px;
+  height: 100%;
+  left: 50%;
+  top: 0;
+  transform: translateX(-50%);
+}
+
+span.ps-submenu-expand-icon.ps-open.css-1cuxlhl span:before {
+  display: none !important;
+}
+
+span.ps-submenu-expand-icon.ps-open.css-1cuxlhl span:after {
+  width: 15px;
+  height: 2px;
+  left: -10px;
+  top: 0;
+  transform: translateX(0) rotate(315deg) !important;
+}
+
+nav.ps-menu-root.css-vj11vy .ps-submenu-content ul a.ps-menu-button {
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  padding-left: 10px !important;
+}
+
+.ps-submenu-content.ps-open,
+.ps-submenu-content {
+  background: transparent !important;
+}
+
+.ps-submenu-content ul {
+  color: #000000 !important;
+  margin-left: 34px;
+  margin-top: 10px;
+}
+
+.ps-submenu-content .css-1wc703o {
+  margin-right: 10px !important;
+}
+
+.ps-submenu-content a.ps-menu-button {
+  text-transform: capitalize !important;
+}
+
+.ps-submenu-content.ps-open ul a li a {
+  width: 100% !important;
+}
+
+.ps-menu-root .ps-menuitem-root {
+  border-bottom: none !important;
+}
+
+.ps-menu-root .ps-menu-button {
+  border-bottom: none !important;
+}
+
+.menu-items {
+  border-bottom: none !important;
+}
+
+.menu-items > div {
+  border-bottom: none !important;
+}
+
+li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
+  background-color: var(--theme-flow-active-color-bg) !important;
+  color: var(--theme-flow-active-text-color) !important;
 }

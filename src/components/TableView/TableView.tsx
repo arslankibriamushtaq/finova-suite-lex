@@ -6,7 +6,6 @@ import "react-loading-skeleton/dist/skeleton.css";
 import { FaSearch } from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 
-import { themeStyle } from "../Config/Theme";
 import { Images } from "../Config/Images";
 import { Select } from "antd";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -56,8 +55,8 @@ const TableView = ({
         paddingRight: "8px",
         justifyContent: "start",
         alignItems: "center",
-        background: themeStyle?.table.backgroundColor,
-        color: themeStyle?.table.headingColor,
+        background: "var(--theme-table-background-color)",
+        color: "var(--theme-table-heading-color)",
         fontSize: "12px",
         fontWeight: "400",
       },
@@ -67,7 +66,7 @@ const TableView = ({
         paddingLeft: "8px",
         paddingRight: "8px",
         fontSize: "15px",
-        color: themeStyle?.table.bodyTextColor,
+        color: "var(--theme-table-body-text-color)",
         borderTopLeftRadius: "10px",
         justifyContent: "start",
         alignItems: "center",
@@ -204,8 +203,8 @@ const TableView = ({
                     style={{
                       padding: "0.22rem 1rem",
                       borderRadius: "12px",
-                      backgroundColor: themeStyle?.table.backgroundColor,
-                      color: themeStyle?.table.headingColor,
+                      backgroundColor: "var(--theme-table-background-color)",
+                      color: "var(--theme-table-heading-color)",
                       cursor: row.Status === "Active" ? "pointer" : "default",
                     }}
                   >

@@ -5,8 +5,6 @@ import DasbhboardHeader from "../components/DashboardHeader/Header";
 import DasbhboardSideBar from "../components/DashboardSideBar/DashboardSideBar";
 import { RootState } from "../redux/rootReducer";
 import SubHeaderFlow from "../components/DashboardHeader/SubHeaderFlow";
-import { themeStyle } from "../components/Config/Theme";
-
 const LayoutLogin = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);

@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { createGlobalStyle } from "styled-components";
 
 import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
-import { themeStyle } from "../Config/Theme";
 
 const SubHeader = () => {
   const navigate = useNavigate();
@@ -29,11 +27,6 @@ const SubHeader = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
-  const GlobalStyle = createGlobalStyle`
-  .subheader_layout{
-    background: ${themeStyle?.headerColor.subHeaderBgColor}!important;
-  }
-  `;
   const addSpaceBeforeCapital = (str: any) => {
     return str?.replace(/([a-z])([A-Z])/g, "$1 $2");
   };
@@ -146,14 +139,14 @@ const SubHeader = () => {
                 >
                   Account Timeline
                 </div>
-                <div className="ps-2" style={{ color: themeStyle.textColor }}>
+                <div className="ps-2" style={{ color: "var(--theme-text-color)" }}>
                   {">"}
                 </div>
-                <div className="ps-2" style={{ color: themeStyle.textColor }}>
+                <div className="ps-2" style={{ color: "var(--theme-text-color)" }}>
                   {/* {addSpaceBeforeCapital(active)} */}
                   Customer Management
                 </div>
-                <div className="ps-2" style={{ color: themeStyle.textColor }}>
+                <div className="ps-2" style={{ color: "var(--theme-text-color)" }}>
                   {">"}
                 </div>
                 <div
@@ -168,7 +161,6 @@ const SubHeader = () => {
         </div>
       </div>
 
-      <GlobalStyle />
     </>
   );
 };
