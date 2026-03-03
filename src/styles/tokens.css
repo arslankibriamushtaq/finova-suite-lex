@@ -53,6 +53,9 @@
   /* Action / confirm color */
   --color-action: #0B8085;
 
+  /* PEP risk color */
+  --color-pep: #9C27B0;
+
   /* Department board column colors */
   --dept-operations: #B2E9FF;
   --dept-accounts: #FFEA9D;

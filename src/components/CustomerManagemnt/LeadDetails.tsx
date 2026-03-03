@@ -38,7 +38,7 @@ interface Field {
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
     margin: "0 auto",
-    background: "#fff",
+    background: "var(--background)",
     borderRadius: 8,
     padding: "20px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
@@ -47,20 +47,20 @@ const styles: { [key: string]: React.CSSProperties } = {
   fieldRow: {
     display: "flex",
     justifyContent: "space-between",
-    borderBottom: "1px solid #eee",
+    borderBottom: "1px solid var(--border)",
     padding: "12px 0",
     fontSize: 14,
   },
   label: {
-    color: "#000",
+    color: "var(--foreground)",
     fontWeight: 400,
   },
   value: {
     fontWeight: 600,
-    color: "#000",
+    color: "var(--foreground)",
   },
   complianceSection: {
-    background: "#F9F9F9",
+    background: "var(--muted)",
     padding: "20px",
     borderRadius: "8px",
     marginBottom: "10px",
@@ -69,13 +69,13 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   questionLabel: {
     fontSize: "13px",
-    color: "#000",
+    color: "var(--foreground)",
     fontWeight: 400,
     marginBottom: "5px",
   },
   answerLabel: {
     fontSize: "13px",
-    color: "#555",
+    color: "var(--muted-foreground)",
     fontWeight: 400,
     marginTop: "3px",
   },
@@ -252,11 +252,11 @@ const LeadDetail = () => {
   const getKycStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
       case "approved":
-        return "rgba(63, 195, 128, 0.9)";
+        return "var(--color-success)";
       case "rejected":
-        return "#F84D4D";
+        return "var(--color-error)";
       case "pending":
-        return "#FFC107";
+        return "var(--color-warning)";
       default:
         return "transparent";
     }
@@ -267,14 +267,14 @@ const LeadDetail = () => {
     switch (risk?.toLowerCase()) {
       case "highrisk":
       case "high":
-        return "#F84D4D";
+        return "var(--color-error)";
       case "medium":
-        return "#FFC107";
+        return "var(--color-warning)";
       case "pep":
-        return "#9C27B0";
+        return "var(--color-pep)";
       case "low":
       default:
-        return "rgba(63, 195, 128, 0.9)";
+        return "var(--color-success)";
     }
   };
 
@@ -304,15 +304,15 @@ const LeadDetail = () => {
   const getEmploymentStatusColor = (status: string) => {
     const statusLower = status?.toLowerCase() || "";
     if (statusLower.includes("active")) {
-      return "rgba(63, 195, 128, 0.9)";
+      return "var(--color-success)";
     }
     if (statusLower.includes("pension") || statusLower.includes("pensioned")) {
-      return "#FFC107";
+      return "var(--color-warning)";
     }
     if (statusLower.includes("inactive")) {
-      return "#F84D4D";
+      return "var(--color-error)";
     }
-    return "#6c757d";
+    return "var(--color-disabled)";
   };
 
   // Handle Edit Modal
@@ -379,14 +379,14 @@ const LeadDetail = () => {
       employmentStatusInfo.length === 0
     ) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No employment details available
         </div>
       );
     }
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
         {/* Header */}
         <div
           style={{
@@ -399,7 +399,7 @@ const LeadDetail = () => {
           <div>
             <h2
               style={{
-                color: "#000",
+                color: "var(--foreground)",
                 fontWeight: 700,
                 fontSize: "24px",
                 margin: 0,
@@ -408,18 +408,18 @@ const LeadDetail = () => {
             >
               Employment History
             </h2>
-            <p style={{ color: "#666", fontSize: "14px", margin: 0 }}>
+            <p style={{ color: "var(--muted-foreground)", fontSize: "14px", margin: 0 }}>
               View all employment records and details
             </p>
           </div>
           <div
             style={{
               padding: "8px 16px",
-              background: "#F5F5F5",
+              background: "var(--muted)",
               borderRadius: "8px",
               fontSize: "14px",
               fontWeight: 600,
-              color: "#000",
+              color: "var(--foreground)",
             }}
           >
             {employmentStatusInfo.length} {employmentStatusInfo.length === 1 ? "Record" : "Records"}
@@ -451,9 +451,9 @@ const LeadDetail = () => {
               <div
                 key={index}
                 style={{
-                  border: "1px solid #E5E7EB",
+                  border: "1px solid var(--border)",
                   borderRadius: "8px",
-                  background: "#fff",
+                  background: "var(--background)",
                   overflow: "hidden",
                 }}
               >
@@ -466,8 +466,8 @@ const LeadDetail = () => {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    background: isExpanded ? "#F9F9F9" : "#fff",
-                    borderBottom: isExpanded ? "1px solid #E5E7EB" : "none",
+                    background: isExpanded ? "var(--muted)" : "var(--background)",
+                    borderBottom: isExpanded ? "1px solid var(--border)" : "none",
                   }}
                 >
                   <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
@@ -475,13 +475,13 @@ const LeadDetail = () => {
                       width: "40px", 
                       height: "40px", 
                       borderRadius: "8px", 
-                      background: "#F5F5F5",
+                      background: "var(--muted)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       fontSize: "20px"
                     }}>
-                      <BankOutlined style={{ fontSize: "20px", color: "#666" }} />
+                      <BankOutlined style={{ fontSize: "20px", color: "var(--muted-foreground)" }} />
                     </div> */}
                     <div style={{ flex: 1 }}>
                       <div
@@ -492,7 +492,7 @@ const LeadDetail = () => {
                           marginBottom: "4px",
                         }}
                       >
-                        <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                        <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                           {title}
                         </h3>
                         <span
@@ -502,7 +502,7 @@ const LeadDetail = () => {
                             fontSize: "12px",
                             fontWeight: 500,
                             backgroundColor: statusColor,
-                            color: "white",
+                            color: "var(--primary-foreground)",
                             textTransform: "capitalize",
                           }}
                         >
@@ -515,7 +515,7 @@ const LeadDetail = () => {
                           alignItems: "center",
                           gap: "16px",
                           fontSize: "14px",
-                          color: "#666",
+                          color: "var(--muted-foreground)",
                         }}
                       >
                         <span>{employerName}</span>
@@ -524,7 +524,7 @@ const LeadDetail = () => {
                         {amount > 0 && (
                           <>
                             <span>•</span>
-                            <span style={{ fontWeight: 600, color: "#000" }}>
+                            <span style={{ fontWeight: 600, color: "var(--foreground)" }}>
                               {formatAmount(amount)}
                             </span>
                           </>
@@ -532,7 +532,7 @@ const LeadDetail = () => {
                       </div>
                     </div>
                   </div>
-                  <div style={{ fontSize: "16px", color: "#666" }}>
+                  <div style={{ fontSize: "16px", color: "var(--muted-foreground)" }}>
                     {isExpanded ? <UpOutlined /> : <DownOutlined />}
                   </div>
                 </div>
@@ -552,13 +552,13 @@ const LeadDetail = () => {
                               marginBottom: "16px",
                             }}
                           >
-                            <UserOutlined style={{ fontSize: "18px", color: "#666" }} />
+                            <UserOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                             <h4
                               style={{
                                 margin: 0,
                                 fontSize: "16px",
                                 fontWeight: 600,
-                                color: "#000",
+                                color: "var(--foreground)",
                               }}
                             >
                               Personal Information
@@ -590,13 +590,13 @@ const LeadDetail = () => {
                               marginBottom: "16px",
                             }}
                           >
-                            <BankOutlined style={{ fontSize: "18px", color: "#666" }} />
+                            <BankOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                             <h4
                               style={{
                                 margin: 0,
                                 fontSize: "16px",
                                 fontWeight: 600,
-                                color: "#000",
+                                color: "var(--foreground)",
                               }}
                             >
                               Employment Details
@@ -615,7 +615,7 @@ const LeadDetail = () => {
                                   borderRadius: "16px",
                                   fontSize: "12px",
                                   backgroundColor: statusColor,
-                                  color: "white",
+                                  color: "var(--primary-foreground)",
                                   textTransform: "capitalize",
                                 }}
                               >
@@ -650,13 +650,13 @@ const LeadDetail = () => {
                                 marginBottom: "16px",
                               }}
                             >
-                              <ClockCircleOutlined style={{ fontSize: "18px", color: "#666" }} />
+                              <ClockCircleOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                               <h4
                                 style={{
                                   margin: 0,
                                   fontSize: "16px",
                                   fontWeight: 600,
-                                  color: "#000",
+                                  color: "var(--foreground)",
                                 }}
                               >
                                 Occupation Details
@@ -703,13 +703,13 @@ const LeadDetail = () => {
                               marginBottom: "16px",
                             }}
                           >
-                            <DollarOutlined style={{ fontSize: "18px", color: "#666" }} />
+                            <DollarOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                             <h4
                               style={{
                                 margin: 0,
                                 fontSize: "16px",
                                 fontWeight: 600,
-                                color: "#000",
+                                color: "var(--foreground)",
                               }}
                             >
                               Compensation Details
@@ -847,8 +847,8 @@ const LeadDetail = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action)",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               width: "200px",
@@ -884,7 +884,7 @@ const LeadDetail = () => {
     }));
 
     return (
-      <div style={{ background: "#fff" }}>
+      <div style={{ background: "var(--background)" }}>
         <TableView
           header={loanApplicationHeader}
           data={tableData}
@@ -899,25 +899,25 @@ const LeadDetail = () => {
   const renderCustomerInformation = () => {
     if (!nafathData) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>No data available</div>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>No data available</div>
       );
     }
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
         {/* Language Headers */}
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
-          <span style={{ color: "#000", fontWeight: 700, fontSize: "18px" }}>English</span>
-          <span style={{ color: "#000", fontWeight: 700, fontSize: "18px" }}>العربية</span>
+          <span style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px" }}>English</span>
+          <span style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px" }}>العربية</span>
         </div>
 
         {/* Personal Information */}
         <div style={{ marginBottom: "40px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               Personal Information
             </h2>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               معلومات شخصية
             </h2>
           </div>
@@ -1012,14 +1012,14 @@ const LeadDetail = () => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "12px 0",
-                    borderBottom: index < array.length - 1 ? "1px solid #E5E7EB" : "none",
+                    borderBottom: index < array.length - 1 ? "1px solid var(--border)" : "none",
                   }}
                 >
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>
                     {field.enLabel}
                   </div>
                   <div
-                    style={{ flex: "0 0 30%", fontSize: "14px", color: "#000", textAlign: "left" }}
+                    style={{ flex: "0 0 30%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}
                   >
                     {enValue}
                   </div>
@@ -1027,7 +1027,7 @@ const LeadDetail = () => {
                     style={{
                       flex: "0 0 30%",
                       fontSize: "14px",
-                      color: "#000",
+                      color: "var(--foreground)",
                       textAlign: "right",
                       direction: "rtl",
                     }}
@@ -1038,7 +1038,7 @@ const LeadDetail = () => {
                     style={{
                       flex: "0 0 20%",
                       fontSize: "14px",
-                      color: "#000",
+                      color: "var(--foreground)",
                       textAlign: "right",
                       direction: "rtl",
                     }}
@@ -1054,10 +1054,10 @@ const LeadDetail = () => {
         {/* Address Information */}
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               Address Information
             </h2>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               معلومات العنوان
             </h2>
           </div>
@@ -1144,14 +1144,14 @@ const LeadDetail = () => {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "12px 0",
-                    borderBottom: index < array.length - 1 ? "1px solid #E5E7EB" : "none",
+                    borderBottom: index < array.length - 1 ? "1px solid var(--border)" : "none",
                   }}
                 >
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>
                     {field.enLabel}
                   </div>
                   <div
-                    style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "left" }}
+                    style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}
                   >
                     {enValue}
                   </div>
@@ -1159,7 +1159,7 @@ const LeadDetail = () => {
                     style={{
                       flex: "0 0 25%",
                       fontSize: "14px",
-                      color: "#000",
+                      color: "var(--foreground)",
                       textAlign: "right",
                       direction: "rtl",
                     }}
@@ -1170,7 +1170,7 @@ const LeadDetail = () => {
                     style={{
                       flex: "0 0 20%",
                       fontSize: "14px",
-                      color: "#000",
+                      color: "var(--foreground)",
                       textAlign: "right",
                       direction: "rtl",
                     }}
@@ -1218,7 +1218,7 @@ const LeadDetail = () => {
 
     if (affordabilityData.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No affordability questions available
         </div>
       );
@@ -1251,8 +1251,8 @@ const LeadDetail = () => {
     });
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
-        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "#000" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
+        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
           Affordability Questions
         </h5>
         {sortedDates.map((date, dateIndex) => (
@@ -1261,11 +1261,11 @@ const LeadDetail = () => {
             style={{
               marginBottom: "30px",
               padding: "20px",
-              background: "#F9F9F9",
+              background: "var(--muted)",
               borderRadius: "8px",
             }}
           >
-            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "#000" }}>
+            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
               {date}
             </h6>
             <BootstrapRow>
@@ -1279,12 +1279,12 @@ const LeadDetail = () => {
                         marginBottom: "15px",
                         paddingBottom: "15px",
                         borderBottom:
-                          index < groupedByDate[date].length - 1 ? "1px solid #CFCFCF" : "none",
+                          index < groupedByDate[date].length - 1 ? "1px solid var(--border)" : "none",
                       }}
                     >
                       <p
                         style={{
-                          color: "#0B0B0B",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           margin: 0,
                           marginBottom: "5px",
@@ -1293,11 +1293,11 @@ const LeadDetail = () => {
                       >
                         {question.en || item.question}
                       </p>
-                      <p style={{ color: "#555", fontSize: "13px", margin: 0 }}>
+                      <p style={{ color: "var(--muted-foreground)", fontSize: "13px", margin: 0 }}>
                         <span style={{ fontWeight: 500 }}>Answer:</span> {item.answer || "--"}
                       </p>
                       {item.category && (
-                        <p style={{ color: "#888", fontSize: "12px", margin: "5px 0 0 0" }}>
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "5px 0 0 0" }}>
                           <span style={{ fontWeight: 500 }}>Category:</span> {item.category}
                         </p>
                       )}
@@ -1315,12 +1315,12 @@ const LeadDetail = () => {
                         marginBottom: "15px",
                         paddingBottom: "15px",
                         borderBottom:
-                          index < groupedByDate[date].length - 1 ? "1px solid #CFCFCF" : "none",
+                          index < groupedByDate[date].length - 1 ? "1px solid var(--border)" : "none",
                       }}
                     >
                       <p
                         style={{
-                          color: "#0B0B0B",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           margin: 0,
                           marginBottom: "5px",
@@ -1329,11 +1329,11 @@ const LeadDetail = () => {
                       >
                         {question.ar || question.en || item.question}
                       </p>
-                      <p style={{ color: "#555", fontSize: "13px", margin: 0 }}>
+                      <p style={{ color: "var(--muted-foreground)", fontSize: "13px", margin: 0 }}>
                         <span style={{ fontWeight: 500 }}>الإجابة:</span> {item.answer || "--"}
                       </p>
                       {item.category && (
-                        <p style={{ color: "#888", fontSize: "12px", margin: "5px 0 0 0" }}>
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "5px 0 0 0" }}>
                           <span style={{ fontWeight: 500 }}>الفئة:</span> {item.category}
                         </p>
                       )}
@@ -1372,7 +1372,7 @@ const LeadDetail = () => {
 
     if (nonAffordabilityData.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No compliance question history available
         </div>
       );
@@ -1405,8 +1405,8 @@ const LeadDetail = () => {
     });
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
-        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "#000" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
+        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
           Compliance Question History
         </h5>
         {sortedDates.map((date, dateIndex) => (
@@ -1415,11 +1415,11 @@ const LeadDetail = () => {
             style={{
               marginBottom: "30px",
               padding: "20px",
-              background: "#F9F9F9",
+              background: "var(--muted)",
               borderRadius: "8px",
             }}
           >
-            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "#000" }}>
+            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
               {date}
             </h6>
             <BootstrapRow>
@@ -1433,12 +1433,12 @@ const LeadDetail = () => {
                         marginBottom: "15px",
                         paddingBottom: "15px",
                         borderBottom:
-                          index < groupedByDate[date].length - 1 ? "1px solid #CFCFCF" : "none",
+                          index < groupedByDate[date].length - 1 ? "1px solid var(--border)" : "none",
                       }}
                     >
                       <p
                         style={{
-                          color: "#0B0B0B",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           margin: 0,
                           marginBottom: "5px",
@@ -1447,11 +1447,11 @@ const LeadDetail = () => {
                       >
                         {question.en || item.question}
                       </p>
-                      <p style={{ color: "#555", fontSize: "13px", margin: 0 }}>
+                      <p style={{ color: "var(--muted-foreground)", fontSize: "13px", margin: 0 }}>
                         <span style={{ fontWeight: 500 }}>Answer:</span> {item.answer || "--"}
                       </p>
                       {item.category && (
-                        <p style={{ color: "#888", fontSize: "12px", margin: "5px 0 0 0" }}>
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "5px 0 0 0" }}>
                           <span style={{ fontWeight: 500 }}>Category:</span> {item.category}
                         </p>
                       )}
@@ -1469,12 +1469,12 @@ const LeadDetail = () => {
                         marginBottom: "15px",
                         paddingBottom: "15px",
                         borderBottom:
-                          index < groupedByDate[date].length - 1 ? "1px solid #CFCFCF" : "none",
+                          index < groupedByDate[date].length - 1 ? "1px solid var(--border)" : "none",
                       }}
                     >
                       <p
                         style={{
-                          color: "#0B0B0B",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           margin: 0,
                           marginBottom: "5px",
@@ -1483,11 +1483,11 @@ const LeadDetail = () => {
                       >
                         {question.ar || question.en || item.question}
                       </p>
-                      <p style={{ color: "#555", fontSize: "13px", margin: 0 }}>
+                      <p style={{ color: "var(--muted-foreground)", fontSize: "13px", margin: 0 }}>
                         <span style={{ fontWeight: 500 }}>الإجابة:</span> {item.answer || "--"}
                       </p>
                       {item.category && (
-                        <p style={{ color: "#888", fontSize: "12px", margin: "5px 0 0 0" }}>
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "5px 0 0 0" }}>
                           <span style={{ fontWeight: 500 }}>الفئة:</span> {item.category}
                         </p>
                       )}
@@ -1508,7 +1508,7 @@ const LeadDetail = () => {
 
     if (kycHistory.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No risk history available
         </div>
       );
@@ -1541,8 +1541,8 @@ const LeadDetail = () => {
     };
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
-        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "#000" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
+        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
           Risk History
         </h5>
         {kycHistory.map((kyc: any, index: number) => {
@@ -1553,7 +1553,7 @@ const LeadDetail = () => {
               style={{
                 marginBottom: "20px",
                 padding: "20px",
-                background: "#F9F9F9",
+                background: "var(--muted)",
                 borderRadius: "8px",
               }}
             >
@@ -1572,7 +1572,7 @@ const LeadDetail = () => {
                           borderRadius: "32px",
                           fontSize: "12px",
                           backgroundColor: getRiskColor(kyc.risk),
-                          color: "white",
+                          color: "var(--primary-foreground)",
                           display: "inline-block",
                           textTransform: "capitalize",
                         }}
@@ -1594,8 +1594,8 @@ const LeadDetail = () => {
                             padding: "6px 12px",
                             borderRadius: "32px",
                             fontSize: "12px",
-                            backgroundColor: "#9C27B0",
-                            color: "white",
+                            backgroundColor: "var(--color-pep)",
+                            color: "var(--primary-foreground)",
                             display: "inline-block",
                           }}
                         >
@@ -1607,8 +1607,8 @@ const LeadDetail = () => {
                             padding: "6px 12px",
                             borderRadius: "32px",
                             fontSize: "12px",
-                            backgroundColor: "rgba(63, 195, 128, 0.9)",
-                            color: "white",
+                            backgroundColor: "var(--color-success)",
+                            color: "var(--primary-foreground)",
                             display: "inline-block",
                           }}
                         >
@@ -1628,8 +1628,8 @@ const LeadDetail = () => {
                           borderRadius: "32px",
                           fontSize: "12px",
                           backgroundColor:
-                            kyc.status === "active" ? "rgba(63, 195, 128, 0.9)" : "#FFC107",
-                          color: "white",
+                            kyc.status === "active" ? "var(--color-success)" : "var(--color-warning)",
+                          color: "var(--primary-foreground)",
                           display: "inline-block",
                           textTransform: "capitalize",
                         }}
@@ -1665,7 +1665,7 @@ const LeadDetail = () => {
 
     if (blockHistory.length === 0) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No block history available
         </div>
       );
@@ -1689,8 +1689,8 @@ const LeadDetail = () => {
     };
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
-        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "#000" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
+        <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
           Block History
         </h5>
         {blockHistory.map((block: any, index: number) => (
@@ -1699,7 +1699,7 @@ const LeadDetail = () => {
             style={{
               marginBottom: "20px",
               padding: "20px",
-              background: "#F9F9F9",
+              background: "var(--muted)",
               borderRadius: "8px",
             }}
           >
@@ -1722,8 +1722,8 @@ const LeadDetail = () => {
                         borderRadius: "32px",
                         fontSize: "12px",
                         backgroundColor:
-                          block.action === "block" ? "#F84D4D" : "rgba(63, 195, 128, 0.9)",
-                        color: "white",
+                          block.action === "block" ? "var(--color-error)" : "var(--color-success)",
+                        color: "var(--primary-foreground)",
                         display: "inline-block",
                         textTransform: "capitalize",
                       }}
@@ -1792,7 +1792,7 @@ const LeadDetail = () => {
               <span style={styles.value}>
                 {userDetails?.user?.nid || "1972197298"}
                 <EditOutlined
-                  style={{ marginLeft: "8px", cursor: "pointer", color: "#000" }}
+                  style={{ marginLeft: "8px", cursor: "pointer", color: "var(--foreground)" }}
                   onClick={() => handleEditClick("supplier")}
                 />
               </span>
@@ -1812,7 +1812,7 @@ const LeadDetail = () => {
               <span style={styles.value}>
                 {userDetails?.user?.dob || "1402-04-15"}
                 <EditOutlined
-                  style={{ marginLeft: "8px", cursor: "pointer", color: "#000" }}
+                  style={{ marginLeft: "8px", cursor: "pointer", color: "var(--foreground)" }}
                   onClick={() => handleEditClick("supplier")}
                 />
               </span>
@@ -1845,7 +1845,7 @@ const LeadDetail = () => {
               <span style={styles.value}>
                 {userDetails?.buyer?.nid || "1989327983"}
                 <EditOutlined
-                  style={{ marginLeft: "8px", cursor: "pointer", color: "#000" }}
+                  style={{ marginLeft: "8px", cursor: "pointer", color: "var(--foreground)" }}
                   onClick={() => handleEditClick("buyer")}
                 />
               </span>
@@ -1865,7 +1865,7 @@ const LeadDetail = () => {
               <span style={styles.value}>
                 {userDetails?.buyer?.dob || "1402-04-08"}
                 <EditOutlined
-                  style={{ marginLeft: "8px", cursor: "pointer", color: "#000" }}
+                  style={{ marginLeft: "8px", cursor: "pointer", color: "var(--foreground)" }}
                   onClick={() => handleEditClick("buyer")}
                 />
               </span>
@@ -1937,8 +1937,8 @@ const LeadDetail = () => {
         width={500}
         okButtonProps={{
           style: {
-            background: "#1890ff",
-            borderColor: "#1890ff",
+            background: "var(--color-action)",
+            borderColor: "var(--color-action)",
             height: "38px",
             lineHeight: "38px",
             padding: "0 16px",
