@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(grep -v \"//\")",
-      "Bash(grep -v \"^\\\\s*//\")"
+      "Bash(grep -v \"^\\\\s*//\")",
+      "Bash(grep -v \"white-\\\\|//\")"
     ]
   }
 }

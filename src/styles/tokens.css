@@ -68,6 +68,73 @@
 
   /* Avatar */
   --color-avatar-bg: #90caf9;
+
+  /* Text colors */
+  --color-text-dark: #333333;
+  --color-text-muted: #666666;
+  --color-text-subtle: #999999;
+
+  /* Surface / background colors */
+  --color-surface-subtle: #f5f5f5;
+  --color-surface-muted: #f0f0f0;
+  --color-surface-page: #f4f4f4;
+
+  /* Border colors */
+  --color-border-light: #dddddd;
+  --color-border-subtle: #e0e0e0;
+  --color-border-muted: #cccccc;
+
+  /* Extended accent / brand colors */
+  --color-navy: #004d72;
+  --color-danger-dark: #a40000;
+  --color-teal-accent: #0ae3be;
+  --color-orange: #ff9900;
+  --color-green-teal: #03bb86;
+  --color-purple-dark: #39244f;
+  --color-purple-medium: #614fa2;
+
+  /* Additional surface / state colors */
+  --color-surface-alt: #f6f6f6;
+  --color-surface-pressed: #e8e8e8;
+  --color-danger-bg: #fff1f1;
+  --color-danger-deeper: #650000;
+
+  /* UI gray shades */
+  --color-text-slate: #6c727f;
+  --color-text-silver: #7f8c8d;
+  --color-text-mid: #888888;
+  --color-text-gray: #6b7280;
+  --color-text-charcoal: #292929;
+  --color-text-near-black: #111827;
+  --color-text-silver-light: #aeaeae;
+  --color-border-disabled: #e6e6e6;
+  --color-border-base: #e3e3e3;
+  --color-near-white: #fcfcfc;
+
+  /* Status background / light tints */
+  --color-yellow-bg: #fcf4d4;
+  --color-purple-light-bg: #ebebff;
+  --color-teal-light-bg: #dff5f7;
+  --color-mint-bg: #e2fff7;
+  --color-mint-light-bg: #C2FFF4;
+  --color-green-light-bg: #e4f0ec;
+  --color-blue-light-bg: #e6f7ff;
+  --color-blue-xlight-bg: #e1f4ff;
+  --color-warning-yellow: #fed932;
+  --color-danger-red: #d7232c;
+  --color-orange-alt: #ff9811;
+  --color-green-success-light: #6ed66e;
+
+  /* Near-white surfaces */
+  --color-surface-cloud: #f9f9f9;
+  --color-surface-snow: #f8f9fa;
+  --color-surface-smoke: #f1f1f1;
+  --color-surface-ice: #fafafa;
+
+  /* Specific UI blues / purples */
+  --color-blue-purple: #4653b2;
+  --color-blue-royal: #2563eb;
+  --color-info-blue: #3498db;
 }
 
 .dark {
