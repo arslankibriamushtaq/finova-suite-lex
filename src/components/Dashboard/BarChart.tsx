@@ -14,6 +14,14 @@ import { getLosDashboardStatistics } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 import dayjs from "dayjs";
 const { Option } = Select;
+
+// Chart palette — hex kept intentionally: SVG fill attributes don't resolve CSS custom properties
+const CHART_COLORS = {
+  applied:   "#4A90E2",
+  approved:  "#73E98D",
+  rejected:  "#FF6B6B",
+  disbursed: "#FFCC6A",
+} as const;
 interface CustomerData {
   date: string;
   ApprovedFinanceAmounts: number;
@@ -190,7 +198,7 @@ const CustomBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#4A90E2",
+            backgroundColor: CHART_COLORS.applied,
             marginRight: 5,
           }}
         />
@@ -202,7 +210,7 @@ const CustomBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#73E98D",
+            backgroundColor: CHART_COLORS.approved,
             marginRight: 5,
           }}
         />
@@ -214,7 +222,7 @@ const CustomBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#FF6B6B",
+            backgroundColor: CHART_COLORS.rejected,
             marginRight: 5,
           }}
         />
@@ -226,7 +234,7 @@ const CustomBarChart = () => {
             width: 14,
             height: 14,
             borderRadius: 100,
-            backgroundColor: "#FFCC6A",
+            backgroundColor: CHART_COLORS.disbursed,
             marginRight: 5,
           }}
         />
@@ -308,7 +316,7 @@ const CustomBarChart = () => {
                 />
                 <Tooltip 
                   cursor={false}
-                  contentStyle={{ backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: 8 }}
+                  contentStyle={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', borderRadius: 8 }}
                   formatter={(value: any) => new Intl.NumberFormat('en-US').format(value)}
                 />
 
@@ -317,28 +325,28 @@ const CustomBarChart = () => {
                   dataKey="AppliedFinanceAmounts"
                   name="Applied"
                   barSize={15}
-                  fill="#4A90E2"
+                  fill={CHART_COLORS.applied}
                 />
                 <Bar
                   radius={[8, 8, 0, 0]}
                   dataKey="ApprovedFinanceAmounts"
                   name="Approved"
                   barSize={15}
-                  fill="#73E98D"
+                  fill={CHART_COLORS.approved}
                 />
                 <Bar
                   radius={[8, 8, 0, 0]}
                   dataKey="RejectedFinanceAmounts"
                   name="Rejected"
                   barSize={15}
-                  fill="#FF6B6B"
+                  fill={CHART_COLORS.rejected}
                 />
                 <Bar
                   radius={[8, 8, 0, 0]}
                   dataKey="DisbursedFinanceAmounts"
                   name="Disbursed"
                   barSize={15}
-                  fill="#FFCC6A"
+                  fill={CHART_COLORS.disbursed}
                 />
               </BarChart>
             </ResponsiveContainer>

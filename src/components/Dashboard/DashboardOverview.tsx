@@ -133,7 +133,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     alignItems: "center",
     borderRadius: 10,
     padding: "18px 20px",
-    background: "#ffffff",
+    background: "var(--background)",
     boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
     transition: "all 0.2s ease-in-out",
   },
@@ -144,12 +144,12 @@ const styles: { [key: string]: React.CSSProperties } = {
   labelTheme: {
     fontSize: 13,
     fontWeight: 500,
-    color: "#555",
+    color: "var(--muted-foreground)",
   },
   value: {
     fontSize: 22,
     fontWeight: 700,
-    color: "#111",
+    color: "var(--foreground)",
     margin: "8px 0 0 0",
   },
   cardRite: {

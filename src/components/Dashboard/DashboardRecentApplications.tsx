@@ -24,14 +24,14 @@ const DashboardRecentApplications = () => {
 
   const getStatusColor = (status: string) => {
     const statusColors: any = {
-      "DISBURSED": "#28a745",
-      "APPROVED": "#007bff",
-      "PENDING": "#ffc107",
-      "REJECTED": " #1963b9",
-      "IN_PROGRESS": "#17a2b8",
-      "CANCELLED": "#6c757d",
+      "DISBURSED":   "var(--color-success)",
+      "APPROVED":    "var(--color-info)",
+      "PENDING":     "var(--color-warning)",
+      "REJECTED":    "var(--theme-secondary)",
+      "IN_PROGRESS": "var(--color-info)",
+      "CANCELLED":   "var(--color-disabled)",
     };
-    return statusColors[status] || "#6c757d";
+    return statusColors[status] || "var(--color-disabled)";
   };
 
   const Activity_Loans_Header = [
@@ -91,7 +91,7 @@ const DashboardRecentApplications = () => {
             borderRadius: "32px",
             fontSize: "12px",
             backgroundColor: getStatusColor(row.status),
-            color: "white",
+            color: "var(--primary-foreground)",
             fontWeight: 500,
             textAlign: "center",
            width: "150px",
