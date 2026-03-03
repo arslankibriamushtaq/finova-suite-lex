@@ -50,6 +50,9 @@
   --color-info-bg: oklch(0.95 0.04 230);
   --color-disabled: oklch(0.82 0 0);
 
+  /* Action / confirm color */
+  --color-action: #0B8085;
+
   /* Department board column colors */
   --dept-operations: #B2E9FF;
   --dept-accounts: #FFEA9D;
