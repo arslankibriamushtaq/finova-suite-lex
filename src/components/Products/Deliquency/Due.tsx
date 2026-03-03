@@ -281,7 +281,7 @@ const createDelinquency = async () => {
       </div>
       <div
         className="mt-4"
-        style={{ borderBottom: "1px solid #D1D1D1" }}
+        style={{ borderBottom: "1px solid var(--color-border-light)" }}
       ></div>
       
       <div className="mt-4 mb-3">
@@ -295,9 +295,9 @@ const createDelinquency = async () => {
         <div
           className="mb-3 p-4"
           style={{
-            border: "1px solid #D1D1D1",
+            border: "1px solid var(--color-border-light)",
             borderRadius: "8px",
-            backgroundColor: "#FAFAFA",
+            backgroundColor: "var(--color-surface-ice)",
             position: "relative",
           }}
         >

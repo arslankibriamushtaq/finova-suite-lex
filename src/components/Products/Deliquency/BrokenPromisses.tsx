@@ -284,7 +284,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
       </div>
       <div
           className="mt-4"
-          style={{ borderBottom: "1px solid #D1D1D1" }}
+          style={{ borderBottom: "1px solid var(--color-border-light)" }}
         ></div>
       {fieldsInvoice.map((field, index) => (
           <div key={index} className="mb-2 mt-2 d-flex gap-1">
@@ -334,7 +334,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
         <Button
           className="revert-btn mb-2 me-2"
           style={{
-            border: "1px solid #A0A0A0",
+            border: "1px solid var(--color-text-silver-light)",
             borderRadius: "7px",
             padding: "8px 8px",
           }}

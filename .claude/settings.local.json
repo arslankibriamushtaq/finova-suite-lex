@@ -3,7 +3,9 @@
     "allow": [
       "Bash(grep -v \"//\")",
       "Bash(grep -v \"^\\\\s*//\")",
-      "Bash(grep -v \"white-\\\\|//\")"
+      "Bash(grep -v \"white-\\\\|//\")",
+      "Bash(grep -v \"//.*#[0-9a-fA-F]\")",
+      "Bash(grep -v \"//.*#\\\\|/\\\\*\")"
     ]
   }
 }

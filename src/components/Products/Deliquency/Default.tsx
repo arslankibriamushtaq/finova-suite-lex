@@ -257,7 +257,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
           <button
             className="theme-btn-next"
             onClick={handleAddSection}
-            style={{ backgroundColor: "#000000" }}
+            style={{ backgroundColor: "var(--foreground)" }}
           >
             Add Section
           </button>
@@ -268,9 +268,9 @@ const Default = ({ productId, setSelectedTab }: any) => {
             key={index}
             className="mb-3 p-4"
             style={{
-              border: "1px solid #D1D1D1",
+              border: "1px solid var(--color-border-light)",
               borderRadius: "8px",
-              backgroundColor: "#FAFAFA",
+              backgroundColor: "var(--color-surface-ice)",
               position: "relative",
             }}
           >
@@ -280,7 +280,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
                   fontSize: "14px",
                   fontWeight: "600",
                   margin: 0,
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Section {index + 1}
@@ -678,7 +678,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
         <Modal.Footer>
           <button
             className="theme-btn-next"
-            style={{ backgroundColor: "#6c757d", marginRight: "10px" }}
+            style={{ backgroundColor: "var(--color-text-slate)", marginRight: "10px" }}
             onClick={() => {
               setShowEditModal(false);
               setEditingIndex(null);
@@ -710,7 +710,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
         <Modal.Footer>
           <button
             className="theme-btn-next"
-            style={{ backgroundColor: "#6c757d", marginRight: "10px" }}
+            style={{ backgroundColor: "var(--color-text-slate)", marginRight: "10px" }}
             onClick={() => {
               setShowDeleteModal(false);
               setDeletingIndex(null);
@@ -720,7 +720,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
           </button>
           <button
             className="theme-btn-next"
-            style={{ backgroundColor: " #1963b9" }}
+            style={{ backgroundColor: "var(--theme-secondary)" }}
             onClick={confirmDelete}
           >
             Delete
