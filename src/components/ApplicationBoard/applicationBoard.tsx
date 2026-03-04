@@ -598,7 +598,7 @@ const cancelMove = () => {
               width: '36px',
               height: '36px',
               borderRadius: '50%',
-              background: '#90caf9',
+              background: 'var(--color-avatar-bg)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -639,7 +639,7 @@ const cancelMove = () => {
                 padding: '8px 16px',
                 cursor: sidebarComment?.trim() ? 'pointer' : 'not-allowed',
                 opacity: sidebarComment?.trim() ? 1 : 0.5,
-                color: '#fff',
+                color: 'var(--primary-foreground)',
                 fontSize: '16px',
                 display: 'flex',
                 alignItems: 'center',
@@ -821,7 +821,7 @@ const cancelMove = () => {
             onClick={() => setShowSuccessModal(false)}
             style={{
               background: 'var(--destructive)',
-              color: '#fff',
+              color: 'var(--primary-foreground)',
               border: 'none',
               borderRadius: '6px',
               padding: '10px 40px',

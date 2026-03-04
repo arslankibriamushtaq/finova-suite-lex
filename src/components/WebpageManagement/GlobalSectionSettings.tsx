@@ -419,7 +419,7 @@ const GlobalSectionsSettings = () => {
             borderRadius: '3px',
             display: textAlign === 'center' ? 'block' : 'inline-block',
             border: '1px solid transparent',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             fontSize: '14px',
             lineHeight: '1.4',
             transition: 'all 0.2s ease',
@@ -446,15 +446,15 @@ const GlobalSectionsSettings = () => {
         <div 
           onClick={() => handleImageClick(fieldPath)}
           style={{ 
-            cursor: 'pointer', 
-            padding: '8px', 
-            border: '2px dashed #ccc', 
+            cursor: 'pointer',
+            padding: '8px',
+            border: '2px dashed var(--color-border-muted)',
             borderRadius: '4px',
             minHeight: '60px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#f9f9f9'
+            backgroundColor: 'var(--color-surface-cloud)'
           }}
         >
           {mediaValue?.url ? (
@@ -478,10 +478,10 @@ const GlobalSectionsSettings = () => {
                 flex: '1', 
                 minWidth: '150px', 
                 marginBottom: '20px',
-                border: '1px solid #ddd',
+                border: '1px solid var(--color-border-light)',
                 borderRadius: '8px',
                 padding: '15px',
-                backgroundColor: '#f9f9f9'
+                backgroundColor: 'var(--color-surface-cloud)'
               }}>
                 {/* Menu Title */}
                 <h3 className="header-footer-settings__footer-heading" style={{ marginBottom: '15px' }}>
@@ -504,7 +504,7 @@ const GlobalSectionsSettings = () => {
                           border: '1px solid #e0e0e0',
                           borderRadius: '4px',
                           padding: '8px',
-                          backgroundColor: '#fff',
+                          backgroundColor: 'var(--background)',
                           marginBottom: '8px'
                         }}>
                           {linkFields.map((linkFieldName: string) => {
@@ -513,7 +513,7 @@ const GlobalSectionsSettings = () => {
                             const linkFieldValue = link[linkFieldName] || '';
                             return (
                               <div key={linkFieldName} style={{ marginBottom: '5px' }}>
-                                <label style={{ display: 'block', marginBottom: '3px', fontSize: '11px', fontWeight: 'bold', color: '#666' }}>
+                                <label style={{ display: 'block', marginBottom: '3px', fontSize: '11px', fontWeight: 'bold', color: 'var(--color-text-muted)' }}>
                                   {linkFieldSchema?.label || linkFieldName}:
                                 </label>
                                 {renderFieldEditor(
@@ -545,7 +545,7 @@ const GlobalSectionsSettings = () => {
                         padding: '5px 10px',
                         fontSize: '11px',
                         backgroundColor: '#f0f0f0',
-                        border: '1px solid #ddd',
+                        border: '1px solid var(--color-border-light)',
                         borderRadius: '4px',
                         cursor: 'pointer'
                       }}
@@ -567,7 +567,7 @@ const GlobalSectionsSettings = () => {
                 padding: '10px 20px',
                 fontSize: '12px',
                 backgroundColor: '#f0f0f0',
-                border: '1px solid #ddd',
+                border: '1px solid var(--color-border-light)',
                 borderRadius: '4px',
                 cursor: 'pointer',
                 alignSelf: 'flex-start'
@@ -584,11 +584,11 @@ const GlobalSectionsSettings = () => {
         <div>
           {Array.isArray(currentValue) && currentValue.map((item: any, index: number) => (
             <div key={index} style={{ 
-              border: '1px solid #ddd', 
+              border: '1px solid var(--color-border-light)', 
               borderRadius: '8px', 
-              padding: '15px', 
+              padding: '15px',
               marginBottom: '10px',
-              backgroundColor: '#f9f9f9'
+              backgroundColor: 'var(--color-surface-cloud)'
             }}>
               <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>
                 Item {index + 1}
@@ -607,16 +607,16 @@ const GlobalSectionsSettings = () => {
                         <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>
                           {fieldSchema?.label || fieldName}:
                         </label>
-                        <div style={{ marginLeft: '15px', borderLeft: '2px solid #ddd', paddingLeft: '10px' }}>
+                        <div style={{ marginLeft: '15px', borderLeft: '2px solid var(--color-border-light)', paddingLeft: '10px' }}>
                           {Array.isArray(fieldValue) && fieldValue.map((nestedItem: any, nestedIndex: number) => (
-                            <div key={nestedIndex} style={{ marginBottom: '10px', padding: '8px', backgroundColor: '#fff', borderRadius: '4px' }}>
+                            <div key={nestedIndex} style={{ marginBottom: '10px', padding: '8px', backgroundColor: 'var(--background)', borderRadius: '4px' }}>
                               {nestedFields.map((nestedFieldName: string) => {
                                 const nestedFieldSchema = fieldSchema.fields[nestedFieldName];
                                 const nestedFieldType = nestedFieldSchema?.type || 'text';
                                 const nestedFieldValue = nestedItem[nestedFieldName] || '';
                                 return (
                                   <div key={nestedFieldName} style={{ marginBottom: '5px' }}>
-                                    <label style={{ display: 'block', marginBottom: '3px', fontSize: '11px', fontWeight: 'bold', color: '#666' }}>
+                                    <label style={{ display: 'block', marginBottom: '3px', fontSize: '11px', fontWeight: 'bold', color: 'var(--color-text-muted)' }}>
                                       {nestedFieldSchema?.label || nestedFieldName}:
                                     </label>
                                     {renderFieldEditor(
@@ -647,8 +647,8 @@ const GlobalSectionsSettings = () => {
                               marginTop: '5px',
                               padding: '5px 10px',
                               fontSize: '11px',
-                              backgroundColor: '#f0f0f0',
-                              border: '1px solid #ddd',
+                              backgroundColor: 'var(--color-surface-muted)',
+                              border: '1px solid var(--color-border-light)',
                               borderRadius: '4px',
                               cursor: 'pointer'
                             }}
@@ -697,8 +697,8 @@ const GlobalSectionsSettings = () => {
               marginTop: '10px',
               padding: '8px 15px',
               fontSize: '12px',
-              backgroundColor: '#f0f0f0',
-              border: '1px solid #ddd',
+              backgroundColor: 'var(--color-surface-muted)',
+              border: '1px solid var(--color-border-light)',
               borderRadius: '4px',
               cursor: 'pointer'
             }}
@@ -761,7 +761,7 @@ const GlobalSectionsSettings = () => {
                     //backgroundColor: '#000',
                     borderRadius: '50%',
                     fontSize: '20px',
-                    color: 'white',
+                    color: 'var(--primary-foreground)',
                     cursor: 'pointer',
                     border: '2px solid transparent',
                     transition: 'all 0.2s ease',
@@ -827,14 +827,14 @@ const GlobalSectionsSettings = () => {
                 height: '32px',
                 padding: '0',
                 fontSize: '18px',
-                backgroundColor: '#f0f0f0',
-                border: '2px dashed #ddd',
+                backgroundColor: 'var(--color-surface-muted)',
+                border: '2px dashed var(--color-border-light)',
                 borderRadius: '50%',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#666',
+                color: 'var(--color-text-muted)',
                 ...(locale === 'ar' ? { marginLeft: '4px' } : { marginRight: '4px' })
               }}
               title="Add social link"
@@ -944,7 +944,7 @@ const GlobalSectionsSettings = () => {
         <div style={{ 
           padding: '40px', 
           textAlign: 'center',
-          color: ' #1963b9'
+          color: 'var(--theme-secondary)'
         }}>
           Error: {error}
         </div>
@@ -958,7 +958,7 @@ const GlobalSectionsSettings = () => {
         <div style={{ 
           padding: '40px', 
           textAlign: 'center',
-          color: '#666'
+          color: 'var(--color-text-muted)'
         }}>
           Section not found or no content available.
         </div>
@@ -971,7 +971,7 @@ const GlobalSectionsSettings = () => {
   return (
     <div className="header-footer-settings">
       {/* Header Section */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           {sectionTitle}
         </h2>
@@ -979,15 +979,15 @@ const GlobalSectionsSettings = () => {
         <div 
           className="header-footer-settings__landing-language" 
           style={{ 
-            color: '#000000', 
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -1075,8 +1075,8 @@ const GlobalSectionsSettings = () => {
                               setShowRepeaterModal(true);
                             }}
                             className="header-footer-settings__landing-nav-link" 
-                            style={{ 
-                              color: '#000000', 
+                            style={{
+                              color: 'var(--foreground)',
                               cursor: 'pointer',
                               textAlign: locale === 'ar' ? 'right' : 'left',
                               direction: locale === 'ar' ? 'rtl' : 'ltr'
@@ -1126,7 +1126,7 @@ const GlobalSectionsSettings = () => {
                             padding: '5px 10px',
                             borderRadius: '4px',
                             cursor: 'pointer',
-                            color: '#000000',
+                            color: 'var(--foreground)',
                             border: '1px solid transparent',
                             transition: 'all 0.2s ease'
                           }}
@@ -1317,7 +1317,7 @@ const GlobalSectionsSettings = () => {
                                 style={{
                                   background: 'none',
                                   border: 'none',
-                                  color: ' #1963b9',
+                                  color: 'var(--theme-secondary)',
                                   cursor: 'pointer',
                                   fontSize: '16px',
                                   padding: '0 4px',
@@ -1363,11 +1363,11 @@ const GlobalSectionsSettings = () => {
                         marginBottom: '10px',
                         padding: '6px 12px',
                         fontSize: '12px',
-                        backgroundColor: '#f0f0f0',
-                        border: '1px dashed #ccc',
+                        backgroundColor: 'var(--color-surface-muted)',
+                        border: '1px dashed var(--color-border-muted)',
                         borderRadius: '4px',
                         cursor: 'pointer',
-                        color: '#666',
+                        color: 'var(--color-text-muted)',
                         transition: 'all 0.2s ease',
                         alignSelf: locale === 'ar' ? 'flex-end' : 'flex-start',
                         direction: locale === 'ar' ? 'rtl' : 'ltr',
@@ -1434,7 +1434,7 @@ const GlobalSectionsSettings = () => {
                           borderRadius: '50%',
                                 fontSize: '20px',
                           cursor: 'pointer',
-                          color: 'white',
+                          color: 'var(--primary-foreground)',
                           border: '2px solid transparent',
                           transition: 'all 0.2s ease',
                                 overflow: 'hidden',
@@ -1532,9 +1532,9 @@ const GlobalSectionsSettings = () => {
                             const labelFieldType = labelFieldSchema.type || 'text';
                             
                             return (
-                              <div key={originalIndex} style={{ 
-                                fontSize: '14px', 
-                                color: '#000',
+                              <div key={originalIndex} style={{
+                                fontSize: '14px',
+                                color: 'var(--foreground)',
                                 wordWrap: 'break-word',
                                 overflowWrap: 'break-word',
                                 lineHeight: '1.5',
@@ -1571,7 +1571,7 @@ const GlobalSectionsSettings = () => {
                                   style={{
                                     background: 'none',
                                     border: 'none',
-                                    color: ' #1963b9',
+                                    color: 'var(--theme-secondary)',
                                     cursor: 'pointer',
                                     fontSize: '16px',
                                     padding: '0 4px',
@@ -1596,11 +1596,11 @@ const GlobalSectionsSettings = () => {
                             marginTop: '8px',
                             padding: '6px 12px',
                             fontSize: '12px',
-                            backgroundColor: '#f0f0f0',
-                            border: '1px dashed #ccc',
+                            backgroundColor: 'var(--color-surface-muted)',
+                            border: '1px dashed var(--color-border-muted)',
                             borderRadius: '4px',
                             cursor: 'pointer',
-                            color: '#666',
+                            color: 'var(--color-text-muted)',
                             transition: 'all 0.2s ease',
                             alignSelf: locale === 'ar' ? 'flex-end' : 'flex-start',
                             direction: locale === 'ar' ? 'rtl' : 'ltr',
@@ -1627,11 +1627,11 @@ const GlobalSectionsSettings = () => {
 
               {/* Copyright and Disclaimer */}
               <div style={{ 
-                borderTop: '1px solid #ddd', 
+                borderTop: '1px solid var(--color-border-light)',
                 paddingTop: '20px', 
                 textAlign: 'center',
                 fontSize: '14px',
-                color: '#666',
+                color: 'var(--color-text-muted)',
                 marginTop: '40px',
                 direction: locale === 'ar' ? 'rtl' : 'ltr'
               }}>
@@ -1824,14 +1824,14 @@ const GlobalSectionsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '90%',
@@ -1880,7 +1880,7 @@ const GlobalSectionsSettings = () => {
                   setEditingFieldPath('');
                   setEditingFieldValue('');
                 }}
-                style={{ padding: '10px 20px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}
+                style={{ padding: '10px 20px', border: '1px solid var(--color-border-light)', borderRadius: '4px', cursor: 'pointer' }}
               >
                 Cancel
               </button>
@@ -1892,7 +1892,7 @@ const GlobalSectionsSettings = () => {
                   setEditingFieldValue('');
                   toast.success('Content saved!');
                 }}
-                style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
+                style={{ padding: '10px 20px', backgroundColor: 'var(--color-action-blue)', color: 'var(--primary-foreground)', border: 'none', borderRadius: '4px', cursor: 'pointer' }}
               >
                 Save
               </button>
@@ -1909,14 +1909,14 @@ const GlobalSectionsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '90%',
@@ -1937,7 +1937,7 @@ const GlobalSectionsSettings = () => {
                   const currentItem = editingRepeaterData[editingRepeaterIndex] || {};
                   
                   return (
-                    <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
+                    <div style={{ border: '1px solid var(--color-border-light)', padding: '15px', borderRadius: '8px' }}>
                       {/* URL Field */}
                       {groupFields.url && (
                         <div style={{ marginBottom: '15px' }}>
@@ -1952,7 +1952,7 @@ const GlobalSectionsSettings = () => {
                               newData[editingRepeaterIndex] = { ...newData[editingRepeaterIndex], url: e.target.value };
                               setEditingRepeaterData(newData);
                             }}
-                            style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                            style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}
                             placeholder="Enter URL"
                           />
                         </div>
@@ -1973,7 +1973,7 @@ const GlobalSectionsSettings = () => {
                                 newData[editingRepeaterIndex] = { ...newData[editingRepeaterIndex], icon: e.target.value };
                                 setEditingRepeaterData(newData);
                               }}
-                              style={{ flex: 1, padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                              style={{ flex: 1, padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}
                               placeholder="Icon class or path"
                             />
                             <button
@@ -2033,8 +2033,8 @@ const GlobalSectionsSettings = () => {
                               }}
                               style={{
                                 padding: '8px 15px',
-                                backgroundColor: '#007bff',
-                                color: 'white',
+                                backgroundColor: 'var(--color-action-blue)',
+                                color: 'var(--primary-foreground)',
                                 border: 'none',
                                 borderRadius: '4px',
                                 cursor: 'pointer',
@@ -2084,7 +2084,7 @@ const GlobalSectionsSettings = () => {
                                       display: 'flex',
                                       alignItems: 'center',
                                       justifyContent: 'center',
-                                      color: 'white',
+                                      color: 'var(--primary-foreground)',
                                       fontSize: '20px'
                                     }}>
                                       {iconLower.includes('facebook') ? 'f' : 
@@ -2111,7 +2111,7 @@ const GlobalSectionsSettings = () => {
                 const fieldSchema = sectionData.schema[editingRepeaterField]?.ui?.fields || {};
                 const currentItem = editingRepeaterData[editingRepeaterIndex] || {};
                 return (
-                  <div style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '8px' }}>
+                  <div style={{ border: '1px solid var(--color-border-light)', padding: '15px', borderRadius: '8px' }}>
                     {Object.keys(fieldSchema)
                       .filter((fieldName: string) => {
                         // Remove target and url fields from main_menu editing (only label/text should be editable)
@@ -2137,7 +2137,7 @@ const GlobalSectionsSettings = () => {
                                 newData[editingRepeaterIndex] = { ...newData[editingRepeaterIndex], [fieldName]: e.target.value };
                                 setEditingRepeaterData(newData);
                               }}
-                              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                              style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}
                               placeholder={`Enter ${fieldConfig?.label || fieldName}`}
                             />
                           ) : fieldType === 'select' ? (
@@ -2148,7 +2148,7 @@ const GlobalSectionsSettings = () => {
                                 newData[editingRepeaterIndex] = { ...newData[editingRepeaterIndex], [fieldName]: e.target.value };
                                 setEditingRepeaterData(newData);
                               }}
-                              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                              style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}
                             >
                               {fieldConfig?.options?.map((option: string) => (
                                 <option key={option} value={option}>{option}</option>
@@ -2170,7 +2170,7 @@ const GlobalSectionsSettings = () => {
                                 display: 'flex',
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                backgroundColor: '#f9f9f9',
+                                backgroundColor: 'var(--color-surface-cloud)',
                                 marginTop: '5px'
                               }}
                             >
@@ -2205,12 +2205,12 @@ const GlobalSectionsSettings = () => {
                                             width: '40px', 
                                             height: '40px',
                                             display: 'inline-block',
-                                            backgroundColor: ' #1963b9',
+                                            backgroundColor: 'var(--theme-secondary)',
                                             borderRadius: '50%'
                                           }}
                                           title={fieldConfig?.label || 'Flag'}
                                         />
-                                        <span style={{ fontSize: '10px', color: '#666' }}>
+                                        <span style={{ fontSize: '10px', color: 'var(--color-text-muted)' }}>
                                           {flagUrl} (icon class)
                                         </span>
                                       </div>
@@ -2229,7 +2229,7 @@ const GlobalSectionsSettings = () => {
                                 newData[editingRepeaterIndex] = { ...newData[editingRepeaterIndex], [fieldName]: e.target.value };
                                 setEditingRepeaterData(newData);
                               }}
-                              style={{ width: '100%', padding: '8px', border: '1px solid #ddd', borderRadius: '4px' }}
+                              style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}
                               placeholder={`Enter ${fieldConfig?.label || fieldName}`}
                             />
                           )}
@@ -2241,10 +2241,10 @@ const GlobalSectionsSettings = () => {
               })()}
             </div>
             <div style={{ display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
-              <button onClick={handleRepeaterModalCancel} style={{ padding: '10px 20px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer' }}>
+              <button onClick={handleRepeaterModalCancel} style={{ padding: '10px 20px', border: '1px solid var(--color-border-light)', borderRadius: '4px', cursor: 'pointer' }}>
                 Cancel
               </button>
-              <button onClick={handleRepeaterModalSave} style={{ padding: '10px 20px', backgroundColor: '#007bff', color: 'white', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
+              <button onClick={handleRepeaterModalSave} style={{ padding: '10px 20px', backgroundColor: 'var(--color-action-blue)', color: 'var(--primary-foreground)', border: 'none', borderRadius: '4px', cursor: 'pointer' }}>
                 Save
               </button>
             </div>
@@ -2260,14 +2260,14 @@ const GlobalSectionsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '90%',
@@ -2298,9 +2298,9 @@ const GlobalSectionsSettings = () => {
                 style={{ 
                   background: 'none', 
                   border: 'none', 
-                  fontSize: '24px', 
+                  fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#666'
+                  color: 'var(--color-text-muted)'
                 }}
               >
                 ×
@@ -2325,7 +2325,7 @@ const GlobalSectionsSettings = () => {
                   style={{ 
                     width: '100%', 
                     padding: '8px', 
-                    border: '1px solid #ddd', 
+                    border: '1px solid var(--color-border-light)', 
                     borderRadius: '4px',
                     direction: locale === 'ar' ? 'rtl' : 'ltr',
                     textAlign: locale === 'ar' ? 'right' : 'left'
@@ -2351,7 +2351,7 @@ const GlobalSectionsSettings = () => {
                   style={{ 
                     width: '100%', 
                     padding: '8px', 
-                    border: '1px solid #ddd', 
+                    border: '1px solid var(--color-border-light)', 
                     borderRadius: '4px',
                     direction: 'ltr',
                     textAlign: 'left'
@@ -2376,10 +2376,10 @@ const GlobalSectionsSettings = () => {
                 }}
                 style={{ 
                   padding: '10px 20px', 
-                  border: '1px solid #ddd', 
-                  borderRadius: '4px', 
+                  border: '1px solid var(--color-border-light)', 
+                  borderRadius: '4px',
                   cursor: 'pointer',
-                  backgroundColor: '#fff'
+                  backgroundColor: 'var(--background)'
                 }}
               >
                 {locale === 'ar' ? 'إلغاء' : 'Cancel'}
@@ -2412,8 +2412,8 @@ const GlobalSectionsSettings = () => {
                 }}
                 style={{ 
                   padding: '10px 20px', 
-                  backgroundColor: '#007bff', 
-                  color: 'white', 
+                  backgroundColor: 'var(--color-action-blue)', 
+                  color: 'var(--primary-foreground)', 
                   border: 'none', 
                   borderRadius: '4px', 
                   cursor: 'pointer' 

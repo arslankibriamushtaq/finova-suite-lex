@@ -25,7 +25,7 @@ const FaqPageManagement: React.FC = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            backgroundColor: 'var(--color-overlay-dark)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -36,12 +36,12 @@ const FaqPageManagement: React.FC = () => {
         >
           <div 
             style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--background)',
               padding: '20px 40px',
               borderRadius: '8px',
               fontSize: '18px',
               fontWeight: 'bold',
-              color: '#333',
+              color: 'var(--color-text-dark)',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
             }}
           >

@@ -236,9 +236,9 @@ const FinancialStatementsSettings = () => {
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              backgroundColor: ' #1963b9',
+              backgroundColor: 'var(--theme-secondary)',
               border: 'none',
-              color: 'white',
+              color: 'var(--primary-foreground)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
@@ -250,7 +250,7 @@ const FinancialStatementsSettings = () => {
               e.currentTarget.style.backgroundColor = '#c82333';
             }}
             onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = ' #1963b9';
+              e.currentTarget.style.backgroundColor = 'var(--theme-secondary)';
             }}
             title={locale === 'ar' ? 'حذف البيان' : 'Delete Statement'}
           >
@@ -282,10 +282,10 @@ const FinancialStatementsSettings = () => {
             cursor: 'pointer',
             padding: '4px 8px',
             borderRadius: '4px',
-            backgroundColor: '#f0f0f0',
-            border: '1px solid #ddd',
+            backgroundColor: 'var(--color-surface-muted)',
+            border: '1px solid var(--color-border-light)',
             fontSize: '12px',
-            color: '#007bff',
+            color: 'var(--color-action-blue)',
             textDecoration: 'underline'
           }}
           onMouseEnter={(e) => {
@@ -322,7 +322,7 @@ const FinancialStatementsSettings = () => {
             style={{
               width: '100%',
               padding: '4px 8px',
-              border: '2px solid #007bff',
+              border: '2px solid var(--color-action-blue)',
               borderRadius: '4px',
               fontSize: 'inherit',
               fontFamily: 'inherit'
@@ -416,7 +416,7 @@ const FinancialStatementsSettings = () => {
             style={{
               width: '100%',
               padding: '4px 8px',
-              border: '2px solid #007bff',
+              border: '2px solid var(--color-action-blue)',
               borderRadius: '4px',
               fontSize: 'inherit',
               fontFamily: 'inherit'
@@ -461,7 +461,7 @@ const FinancialStatementsSettings = () => {
             borderRadius: '3px',
             display: 'inline-block',
             border: '1px solid transparent',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             fontSize: '14px',
             lineHeight: '1.4',
             transition: 'all 0.2s ease',
@@ -541,23 +541,23 @@ const FinancialStatementsSettings = () => {
   return (
     <div className="header-footer-settings__landing-template">
       {/* Header with Language Switcher */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           {locale === 'ar' ? 'صفحة البيانات المالية' : 'Financial Statements Page'}
         </h2>
         {/* Language Switcher */}
-        <div 
-          className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+        <div
+          className="header-footer-settings__landing-language"
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -607,7 +607,7 @@ const FinancialStatementsSettings = () => {
       <section style={{
         position: 'relative',
         height: '400px',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backgroundColor: 'var(--color-overlay-light)',
         backgroundImage: formValue.financial_statement_hero?.hero_image?.url ? `url(${getFullImageUrl(formValue.financial_statement_hero.hero_image.url, API_BASE_URL)})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -621,8 +621,8 @@ const FinancialStatementsSettings = () => {
             top: '20px',
             right: '20px',
             zIndex: 10,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: 'white',
+            backgroundColor: 'var(--color-overlay-dark)',
+            color: 'var(--primary-foreground)',
             border: 'none',
             padding: '8px 16px',
             borderRadius: '4px',
@@ -661,8 +661,8 @@ const FinancialStatementsSettings = () => {
 
       {/* Main Content */}
       <section style={{
-        backgroundColor: '#ffffff',
-        color: '#333',
+        backgroundColor: 'var(--background)',
+        color: 'var(--color-text-dark)',
         padding: '60px 40px',
         minHeight: '400px'
       }}>
@@ -671,7 +671,7 @@ const FinancialStatementsSettings = () => {
           <h1 style={{
             fontSize: '2.5rem',
             fontWeight: 'bold',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             marginBottom: '20px'
           }}>
             {renderFieldEditor('financial_statement.heading', formValue.financial_statement?.heading, 'text', 'Enter heading')}
@@ -681,7 +681,7 @@ const FinancialStatementsSettings = () => {
 
         {/* Statements Table */}
         <div style={{
-          backgroundColor: 'white',
+          backgroundColor: 'var(--background)',
           borderRadius: '8px',
           padding: '30px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
@@ -697,7 +697,7 @@ const FinancialStatementsSettings = () => {
               margin: 0,
               fontSize: '18px',
               fontWeight: '600',
-              color: '#333'
+              color: 'var(--color-text-dark)'
             }}>
               {locale === 'ar' ? 'البيانات المالية' : 'Financial Statements'}
             </h3>
@@ -734,14 +734,14 @@ const FinancialStatementsSettings = () => {
           
           {/* Custom Table */}
           <div style={{
-            border: '1px solid #e0e0e0',
+            border: '1px solid var(--color-border-subtle)',
             borderRadius: '14px',
             overflow: 'hidden'
           }}>
             {/* Table Header */}
             <div style={{
               display: 'flex',
-              borderBottom: '2px solid #e0e0e0',
+              borderBottom: '2px solid var(--color-border-subtle)',
               background: themeStyle?.table.backgroundColor || '#EDFFFB',
               borderRadius: '14px 14px 0 0',
             }}>
@@ -779,10 +779,10 @@ const FinancialStatementsSettings = () => {
                     key={rowIndex}
                     style={{
                       display: 'flex',
-                      borderBottom: rowIndex === mappedData.length - 1 ? 'none' : '1px solid #e0e0e0',
+                      borderBottom: rowIndex === mappedData.length - 1 ? 'none' : '1px solid var(--color-border-subtle)',
                       minHeight: '44px',
                       padding: '0px 10px',
-                      backgroundColor: rowIndex % 2 === 0 ? 'white' : '#f9f9f9'
+                      backgroundColor: rowIndex % 2 === 0 ? 'var(--background)' : 'var(--color-surface-cloud)'
                     }}
                   >
                     {financialStatementsHeaders.map((column: any, colIndex: number) => (
@@ -809,9 +809,9 @@ const FinancialStatementsSettings = () => {
         <div style={{
                   textAlign: 'center',
                   padding: '40px',
-                  color: '#666',
+                  color: 'var(--color-text-muted)',
                   fontSize: '16px',
-                  backgroundColor: 'white'
+                  backgroundColor: 'var(--background)'
                 }}>
                   No financial statements available at the moment.
         </div>
@@ -829,14 +829,14 @@ const FinancialStatementsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             width: '90%',
@@ -844,9 +844,9 @@ const FinancialStatementsSettings = () => {
             maxHeight: '90vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginBottom: '20px', color: '#333' }}>Edit Content</h3>
-            <div style={{ 
-              border: '1px solid #ddd',
+            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Content</h3>
+            <div style={{
+              border: '1px solid var(--color-border-light)',
               borderRadius: '4px',
               minHeight: '300px'
           }}>
@@ -872,24 +872,24 @@ const FinancialStatementsSettings = () => {
                 }}
               />
             </div>
-            <div style={{ 
-              marginTop: '20px', 
-              display: 'flex', 
-              gap: '10px', 
-              justifyContent: 'flex-end' 
+            <div style={{
+              marginTop: '20px',
+              display: 'flex',
+              gap: '10px',
+              justifyContent: 'flex-end'
             }}>
               <button
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
                 }}
-                onClick={() => { 
-                  setShowTextEditor(false); 
-                  setEditingFieldPath(''); 
+                onClick={() => {
+                  setShowTextEditor(false);
+                  setEditingFieldPath('');
                 }}
               >
                 Cancel
@@ -897,16 +897,16 @@ const FinancialStatementsSettings = () => {
               <button
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: 'var(--color-action-blue)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
                 }}
-                onClick={() => { 
-                  updateFormValue(editingFieldPath, editingFieldValue); 
-                  setShowTextEditor(false); 
-                  setEditingFieldPath(''); 
+                onClick={() => {
+                  updateFormValue(editingFieldPath, editingFieldValue);
+                  setShowTextEditor(false);
+                  setEditingFieldPath('');
                 }}
               >
                 Save
@@ -924,14 +924,14 @@ const FinancialStatementsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 10002
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             maxWidth: '400px',
@@ -942,7 +942,7 @@ const FinancialStatementsSettings = () => {
             <div style={{
               fontSize: '24px',
               marginBottom: '20px',
-              color: ' #1963b9'
+              color: 'var(--theme-secondary)'
             }}>
               🗑️
             </div>
@@ -950,14 +950,14 @@ const FinancialStatementsSettings = () => {
               margin: '0 0 15px 0',
               fontSize: '18px',
               fontWeight: 'bold',
-              color: '#333'
+              color: 'var(--color-text-dark)'
             }}>
               {locale === 'ar' ? 'حذف البيان' : 'Delete Statement'}
             </h3>
             <p style={{
               margin: '0 0 25px 0',
               fontSize: '14px',
-              color: '#666',
+              color: 'var(--color-text-muted)',
               lineHeight: '1.5'
             }}>
               {locale === 'ar' ? 'هل أنت متأكد أنك تريد حذف هذا البيان؟ لا يمكن التراجع عن هذا الإجراء.' : 'Are you sure you want to delete this statement? This action cannot be undone.'}
@@ -974,9 +974,9 @@ const FinancialStatementsSettings = () => {
                 }}
                 style={{
                   padding: '10px 20px',
-                  border: '1px solid #ccc',
-                  backgroundColor: 'white',
-                  color: '#666',
+                  border: '1px solid var(--color-border-muted)',
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--color-text-muted)',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -986,7 +986,7 @@ const FinancialStatementsSettings = () => {
                   e.currentTarget.style.backgroundColor = '#f5f5f5';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.backgroundColor = 'var(--background)';
                 }}
               >
                 {locale === 'ar' ? 'إلغاء' : 'Cancel'}
@@ -996,8 +996,8 @@ const FinancialStatementsSettings = () => {
                 style={{
                   padding: '10px 20px',
                   border: 'none',
-                  backgroundColor: ' #1963b9',
-                  color: 'white',
+                  backgroundColor: 'var(--theme-secondary)',
+                  color: 'var(--primary-foreground)',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -1007,7 +1007,7 @@ const FinancialStatementsSettings = () => {
                   e.currentTarget.style.backgroundColor = '#c82333';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = ' #1963b9';
+                  e.currentTarget.style.backgroundColor = 'var(--theme-secondary)';
                 }}
               >
                 {locale === 'ar' ? 'حذف' : 'Delete'}

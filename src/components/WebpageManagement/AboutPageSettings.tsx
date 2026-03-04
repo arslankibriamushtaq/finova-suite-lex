@@ -556,11 +556,11 @@ const AboutPageSettings = () => {
           }}
               style={{
                 padding: '8px',
-            border: '1px solid #ddd',
+            border: '1px solid var(--color-border-light)',
             borderRadius: '4px',
             fontSize: '14px',
-            color: '#333',
-            backgroundColor: '#f5f5f5',
+            color: 'var(--color-text-dark)',
+            backgroundColor: 'var(--color-surface-subtle)',
             outline: 'none'
           }}
           placeholder={label || 'Select date'}
@@ -576,7 +576,7 @@ const AboutPageSettings = () => {
             borderRadius: '3px',
             display: 'inline-block',
             border: '1px solid transparent',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             fontSize: '14px',
             lineHeight: '1.4',
             transition: 'all 0.2s ease'
@@ -600,10 +600,10 @@ const AboutPageSettings = () => {
           style={{ 
             cursor: 'pointer', 
             padding: '20px',
-            border: '2px dashed #ddd',
+            border: '2px dashed var(--color-border-light)',
             borderRadius: '8px',
             textAlign: 'center',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
             display: 'flex',
             alignItems: 'center',
@@ -630,14 +630,14 @@ const AboutPageSettings = () => {
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
-          backgroundColor: '#f0f0f0'
+          backgroundColor: 'var(--color-surface-muted)'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = '#e0e0e0';
           e.currentTarget.style.borderColor = '#ccc';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#f0f0f0';
+          e.currentTarget.style.backgroundColor = 'var(--color-surface-muted)';
           e.currentTarget.style.borderColor = 'transparent';
         }}
       >
@@ -689,11 +689,11 @@ const AboutPageSettings = () => {
               style={{
             width: '100%',
             padding: '8px',
-            border: '1px solid #ddd',
+            border: '1px solid var(--color-border-light)',
             borderRadius: '4px',
             fontSize: '14px',
-                color: '#333',
-                backgroundColor: '#f5f5f5',
+                color: 'var(--color-text-dark)',
+                backgroundColor: 'var(--color-surface-subtle)',
             outline: 'none',
             resize: multiline ? 'vertical' : 'none',
             minHeight: multiline ? '60px' : 'auto',
@@ -763,23 +763,23 @@ const AboutPageSettings = () => {
   return (
     <div className="header-footer-settings">
       {/* Header Section */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           About Page
         </h2>
         {/* Language Switcher */}
-        <div 
-          className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+        <div
+          className="header-footer-settings__landing-language"
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -861,8 +861,8 @@ const AboutPageSettings = () => {
                   top: '20px',
                   right: '20px',
                   zIndex: 10,
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  color: 'white',
+                  backgroundColor: 'var(--color-overlay-dark)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '8px 16px',
                   borderRadius: '4px',
@@ -924,13 +924,13 @@ const AboutPageSettings = () => {
                       }}
                       autoFocus
                       style={{
-                        border: '2px solid #007bff',
+                        border: '2px solid var(--color-action-blue)',
                         borderRadius: '4px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
                         fontWeight: 'inherit',
-                        background: 'white',
+                        background: 'var(--background)',
                         minWidth: '100px'
                       }}
                     />
@@ -991,13 +991,13 @@ const AboutPageSettings = () => {
                       }}
                       autoFocus
                       style={{
-                        border: '2px solid #007bff',
+                        border: '2px solid var(--color-action-blue)',
                         borderRadius: '4px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
                         fontWeight: 'inherit',
-                        background: 'white',
+                        background: 'var(--background)',
                         minWidth: '100px'
                       }}
                     />
@@ -1055,13 +1055,13 @@ const AboutPageSettings = () => {
                       }}
                       autoFocus
                       style={{
-                        border: '2px solid #007bff',
+                        border: '2px solid var(--color-action-blue)',
                         borderRadius: '4px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
                         fontWeight: 'inherit',
-                        background: 'white',
+                        background: 'var(--background)',
                         minWidth: '100px'
                       }}
                     />
@@ -1123,12 +1123,12 @@ const AboutPageSettings = () => {
                     <div
                       className="header-footer-settings__about-logo-display"
                       style={{
-                        backgroundColor: '#f5f5f5',
+                        backgroundColor: 'var(--color-surface-subtle)',
                         padding: '30px',
                         borderRadius: '8px',
                         textAlign: 'center',
                         marginBottom: '20px',
-                        border: '1px solid #ddd',
+                        border: '1px solid var(--color-border-light)',
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
@@ -1247,14 +1247,14 @@ const AboutPageSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ 
-            backgroundColor: 'white', 
+          <div style={{
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             width: '90%',
@@ -1262,11 +1262,11 @@ const AboutPageSettings = () => {
             maxHeight: '90vh',
             overflow: 'auto'
           }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '20px' 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '20px'
             }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Edit Text</h3>
               <button
@@ -1280,15 +1280,15 @@ const AboutPageSettings = () => {
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#666'
+                  color: 'var(--color-text-muted)'
                 }}
               >
                 ×
               </button>
             </div>
             
-            <div style={{ 
-              border: '1px solid #ddd',
+            <div style={{
+              border: '1px solid var(--color-border-light)',
               borderRadius: '4px',
               minHeight: '300px'
             }}>
@@ -1315,11 +1315,11 @@ const AboutPageSettings = () => {
               />
             </div>
 
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end', 
-              gap: '10px', 
-              marginTop: '20px' 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '10px',
+              marginTop: '20px'
             }}>
               <button
                 onClick={() => {
@@ -1329,8 +1329,8 @@ const AboutPageSettings = () => {
                 }}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
@@ -1347,8 +1347,8 @@ const AboutPageSettings = () => {
                 }}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: 'var(--color-action-blue)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
@@ -1369,14 +1369,14 @@ const AboutPageSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             width: '80%',
@@ -1384,11 +1384,11 @@ const AboutPageSettings = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'space-between', 
-              alignItems: 'center', 
-              marginBottom: '20px' 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: '20px'
             }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Edit Items</h3>
               <button
@@ -1402,7 +1402,7 @@ const AboutPageSettings = () => {
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#666'
+                  color: 'var(--color-text-muted)'
                 }}
               >
                 ×
@@ -1416,7 +1416,7 @@ const AboutPageSettings = () => {
                   gap: '10px',
                   marginBottom: '10px',
                   padding: '10px',
-                  backgroundColor: '#f8f9fa',
+                  backgroundColor: 'var(--color-surface-snow)',
                   borderRadius: '4px'
                 }}>
                   <input
@@ -1434,7 +1434,7 @@ const AboutPageSettings = () => {
                     style={{
                       flex: 1,
                       padding: '8px',
-                      border: '1px solid #ddd',
+                      border: '1px solid var(--color-border-light)',
                       borderRadius: '4px'
                     }}
                     placeholder="Label"
@@ -1446,8 +1446,8 @@ const AboutPageSettings = () => {
                     }}
                     style={{
                       padding: '8px 12px',
-                      backgroundColor: ' #1963b9',
-                      color: 'white',
+                      backgroundColor: 'var(--theme-secondary)',
+                      color: 'var(--primary-foreground)',
                       border: 'none',
                       borderRadius: '4px',
                       cursor: 'pointer'
@@ -1457,15 +1457,15 @@ const AboutPageSettings = () => {
                   </button>
                 </div>
               ))}
-              
+
               <button
                 onClick={() => {
                   setEditingRepeaterData([...editingRepeaterData, 'New Item']);
                 }}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#28a745',
-                  color: 'white',
+                  backgroundColor: 'var(--color-status-active)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
@@ -1475,10 +1475,10 @@ const AboutPageSettings = () => {
               </button>
             </div>
 
-            <div style={{ 
-              display: 'flex', 
-              justifyContent: 'flex-end', 
-              gap: '10px' 
+            <div style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '10px'
             }}>
               <button
                 onClick={() => {
@@ -1488,8 +1488,8 @@ const AboutPageSettings = () => {
                 }}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
@@ -1506,8 +1506,8 @@ const AboutPageSettings = () => {
                 }}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: 'var(--color-action-blue)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'

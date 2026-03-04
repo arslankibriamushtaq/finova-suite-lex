@@ -232,11 +232,11 @@ const HomepageSettings: React.FC = () => {
           style={{
             width: '100%',
             padding: '8px',
-            border: '1px solid #ddd',
+            border: '1px solid var(--color-border-light)',
             borderRadius: '4px',
             fontSize: '14px',
-            color: '#333',
-            backgroundColor: '#f5f5f5',
+            color: 'var(--color-text-dark)',
+            backgroundColor: 'var(--color-surface-subtle)',
             outline: 'none'
           }}
           placeholder={label || 'Select date'}
@@ -270,16 +270,16 @@ const HomepageSettings: React.FC = () => {
       return (
         <div 
           onClick={handleFieldClick}
-          style={{ 
-            cursor: 'pointer', 
-            padding: '8px', 
-            border: '1px dashed #ccc', 
+          style={{
+            cursor: 'pointer',
+            padding: '8px',
+            border: '1px dashed var(--color-border-muted)',
             borderRadius: '4px',
             minHeight: '60px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#f9f9f9'
+            backgroundColor: 'var(--color-surface-cloud)'
           }}
         >
           {value?.url ? (
@@ -391,13 +391,13 @@ const HomepageSettings: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'row', gap: '15px', flexWrap: 'wrap' }}>
           {Array.isArray(currentValue) && currentValue.map((item: any, index: number) => (
             <div key={index} style={{
-              backgroundColor: '#f0f0f0',
+              backgroundColor: 'var(--color-surface-muted)',
               padding: '8px 16px',
               borderRadius: '20px',
               fontSize: '14px',
               fontWeight: '500',
-              color: '#333',
-              border: '1px solid #ddd'
+              color: 'var(--color-text-dark)',
+              border: '1px solid var(--color-border-light)'
             }}>
               <EditableText 
                 value={typeof item === 'string' ? item : (typeof item === 'object' && item !== null ? (item as any)?.title || (item as any)?.text || JSON.stringify(item) : '')} 
@@ -422,12 +422,12 @@ const HomepageSettings: React.FC = () => {
               <div style={{
                 width: '30px',
                 height: '30px',
-                backgroundColor: '#0ae3be',
+                backgroundColor: 'var(--color-teal-accent)',
                 borderRadius: '50%',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: 'white',
+                color: 'var(--primary-foreground)',
                 fontWeight: 'bold',
                 fontSize: '14px',
                 flexShrink: 0
@@ -452,12 +452,12 @@ const HomepageSettings: React.FC = () => {
         return (
           <div>
             {Array.isArray(value) && value.map((item: any, index: number) => (
-              <div key={index} style={{ 
-                border: '1px solid #ddd', 
-                borderRadius: '8px', 
-                padding: '15px', 
+              <div key={index} style={{
+                border: '1px solid var(--color-border-light)',
+                borderRadius: '8px',
+                padding: '15px',
                 marginBottom: '10px',
-                backgroundColor: '#f9f9f9'
+                backgroundColor: 'var(--color-surface-cloud)'
               }}>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>
                   Criterion {index + 1}
@@ -470,16 +470,16 @@ const HomepageSettings: React.FC = () => {
                     </label>
                     <div
                       onClick={() => handleIconClick(fieldPath, index)}
-                      style={{ 
+                      style={{
                         cursor: 'pointer',
                         padding: '8px',
-                        border: '1px dashed #ccc',
+                        border: '1px dashed var(--color-border-muted)',
                         borderRadius: '4px',
                         minHeight: '60px',
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        backgroundColor: '#f9f9f9'
+                        backgroundColor: 'var(--color-surface-cloud)'
                       }}
                     >
                       {isIconUrl(item.icon) ? (
@@ -559,7 +559,7 @@ const HomepageSettings: React.FC = () => {
 
             return (
               <div key={childKey} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666' }}>
+                <label style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-text-muted)' }}>
                   {childLabel}:
                 </label>
                 {renderFieldEditor(
@@ -1292,11 +1292,11 @@ const HomepageSettings: React.FC = () => {
           style={{
             width: '100%',
             padding: '8px',
-            border: '1px solid #ddd',
+            border: '1px solid var(--color-border-light)',
             borderRadius: '4px',
             fontSize: '14px',
-            color: '#333',
-            backgroundColor: '#f5f5f5',
+            color: 'var(--color-text-dark)',
+            backgroundColor: 'var(--color-surface-subtle)',
             outline: 'none',
             resize: multiline ? 'vertical' : 'none',
             minHeight: multiline ? '60px' : 'auto',
@@ -1337,14 +1337,14 @@ const HomepageSettings: React.FC = () => {
 
   if (error) {
     return (
-      <div style={{ 
-        padding: '20px', 
-        textAlign: 'center', 
+      <div style={{
+        padding: '20px',
+        textAlign: 'center',
         color: 'red',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--color-surface-snow)',
         borderRadius: '8px',
         margin: '20px',
-        border: '1px solid #e0e0e0'
+        border: '1px solid var(--color-border-subtle)'
       }}>
         <h3>Error Loading Homepage</h3>
         <p>{error}</p>
@@ -1352,8 +1352,8 @@ const HomepageSettings: React.FC = () => {
           onClick={() => fetchPageData(locale)}
           style={{
             padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
+            backgroundColor: 'var(--color-action-blue)',
+            color: 'var(--primary-foreground)',
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
@@ -1368,13 +1368,13 @@ const HomepageSettings: React.FC = () => {
 
   if (!formValue || Object.keys(formValue).length === 0) {
     return (
-      <div style={{ 
-        padding: '20px', 
+      <div style={{
+        padding: '20px',
         textAlign: 'center',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--color-surface-snow)',
         borderRadius: '8px',
         margin: '20px',
-        border: '1px solid #e0e0e0'
+        border: '1px solid var(--color-border-subtle)'
       }}>
         No homepage data available.
       </div>
@@ -1384,23 +1384,23 @@ const HomepageSettings: React.FC = () => {
   return (
     <div className="header-footer-settings home-page-settings">
       {/* Header Section */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           Home Page
         </h2>
         {/* Language Switcher */}
         <div 
           className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -1446,8 +1446,8 @@ const HomepageSettings: React.FC = () => {
               top: '20px',
               right: '20px',
               zIndex: 10,
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              color: 'white',
+              backgroundColor: 'var(--color-overlay-dark)',
+              color: 'var(--primary-foreground)',
               border: 'none',
               padding: '8px 16px',
               borderRadius: '4px',
@@ -1700,7 +1700,7 @@ const HomepageSettings: React.FC = () => {
                     </span>
           ))}
         </div>
-                <div style={{ marginTop: '10px', fontSize: '14px', color: '#666', fontWeight: 'normal', textAlign: 'center' }}>
+                <div style={{ marginTop: '10px', fontSize: '14px', color: 'var(--color-text-muted)', fontWeight: 'normal', textAlign: 'center' }}>
                   {renderFieldEditor(
                     'calculator.tenure_text',
                     formValue.calculator.tenure_text,
@@ -1823,11 +1823,11 @@ const HomepageSettings: React.FC = () => {
                     style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', borderRadius: '18px' }}
               />
             ) : (
-      <div style={{ 
-                    color: 'white', 
-                    textAlign: 'center', 
-        padding: '20px', 
-                    backgroundColor: 'rgba(0, 0, 0, 0.7)',
+      <div style={{
+                    color: 'var(--primary-foreground)',
+                    textAlign: 'center',
+        padding: '20px',
+                    backgroundColor: 'var(--color-overlay-dark)',
                     borderRadius: '10px'
                   }}>
                     <div>📱</div>
@@ -2056,7 +2056,7 @@ const HomepageSettings: React.FC = () => {
                   flexDirection: 'column',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  border: '2px dashed #0ae3be'
+                  border: '2px dashed var(--color-teal-accent)'
                 }}>
                   <div style={{ fontSize: '48px', marginBottom: '20px' }}>📱</div>
                   <div style={{ fontSize: '14px' }}>Click to upload apply steps image</div>
@@ -2123,15 +2123,15 @@ const HomepageSettings: React.FC = () => {
                       handleIconClick(editingField.replace(`.${index}`, ''), index);
                     }}
                     style={{
-                      cursor: 'pointer', 
-                      padding: '8px', 
-                      border: '1px dashed #ccc', 
+                      cursor: 'pointer',
+                      padding: '8px',
+                      border: '1px dashed var(--color-border-muted)',
                       borderRadius: '4px',
                       minHeight: '60px',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      backgroundColor: '#f9f9f9'
+                      backgroundColor: 'var(--color-surface-cloud)'
                     }}
                   >
                     {isIconUrl(editingIcon) ? (
@@ -2173,14 +2173,14 @@ const HomepageSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
-      <div style={{ 
-        backgroundColor: 'white', 
+      <div style={{
+        backgroundColor: 'var(--background)',
             padding: '30px',
         borderRadius: '8px',
             width: '90%',
@@ -2194,7 +2194,7 @@ const HomepageSettings: React.FC = () => {
               alignItems: 'center',
               marginBottom: '20px'
             }}>
-              <h3 style={{ margin: 0, color: '#333' }}>Edit Description</h3>
+              <h3 style={{ margin: 0, color: 'var(--color-text-dark)' }}>Edit Description</h3>
               <button
                 onClick={handleTextEditorCancel}
                 style={{
@@ -2202,15 +2202,15 @@ const HomepageSettings: React.FC = () => {
                   border: 'none',
                   fontSize: '24px',
                   cursor: 'pointer',
-                  color: '#666'
+                  color: 'var(--color-text-muted)'
                 }}
               >
                 ×
               </button>
         </div>
 
-      <div style={{ 
-                  border: '1px solid #ddd',
+      <div style={{
+                  border: '1px solid var(--color-border-light)',
                   borderRadius: '4px',
               minHeight: '300px'
             }}>
@@ -2269,14 +2269,14 @@ const HomepageSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             width: '80%',
@@ -2284,10 +2284,10 @@ const HomepageSettings: React.FC = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginBottom: '20px', color: '#333' }}>Edit Repeater</h3>
+            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Repeater</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {editingRepeaterData.map((item, index) => (
-                <div key={index} style={{ border: '1px solid #ddd', padding: '15px', borderRadius: '4px' }}>
+                <div key={index} style={{ border: '1px solid var(--color-border-light)', padding: '15px', borderRadius: '4px' }}>
                   <h4>Item {index + 1}</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {Object.keys(item).map((key) => (
@@ -2306,7 +2306,7 @@ const HomepageSettings: React.FC = () => {
                 style={{
                   width: '100%',
                   padding: '8px',
-                  border: '1px solid #ddd',
+                  border: '1px solid var(--color-border-light)',
                   borderRadius: '4px',
                   fontSize: '14px'
                 }}
@@ -2361,14 +2361,14 @@ const HomepageSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ 
-            backgroundColor: 'white', 
+          <div style={{
+            backgroundColor: 'var(--background)',
             borderRadius: '8px',
             width: '90%',
             maxWidth: '500px',
@@ -2413,12 +2413,12 @@ const HomepageSettings: React.FC = () => {
               {/* URL Input - Only show for download_app_button */}
               {editingIconField.includes('download_app_button') && (
                 <div style={{ marginBottom: '25px' }}>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '8px', 
-                    fontSize: '14px', 
-                    fontWeight: 'bold', 
-                    color: '#333' 
+                  <label style={{
+                    display: 'block',
+                    marginBottom: '8px',
+                    fontSize: '14px',
+                    fontWeight: 'bold',
+                    color: 'var(--color-text-dark)'
                   }}>
                     Button URL
                   </label>
@@ -2430,11 +2430,11 @@ const HomepageSettings: React.FC = () => {
                     style={{
                       width: '100%',
                       padding: '12px',
-                      border: '1px solid #ddd',
+                      border: '1px solid var(--color-border-light)',
                       borderRadius: '4px',
                       fontSize: '14px',
                       boxSizing: 'border-box',
-                      backgroundColor: '#fff'
+                      backgroundColor: 'var(--background)'
                     }}
                   />
                 </div>
@@ -2442,20 +2442,20 @@ const HomepageSettings: React.FC = () => {
 
               {/* Icon Selection */}
               <div style={{ marginBottom: '30px' }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  color: '#333' 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: 'var(--color-text-dark)'
                 }}>
                   Icon
                 </label>
-                <div style={{ 
-                  border: '2px dashed #ddd',
+                <div style={{
+                  border: '2px dashed var(--color-border-light)',
                   borderRadius: '8px',
                   padding: '20px',
-                  backgroundColor: '#fafafa',
+                  backgroundColor: 'var(--color-surface-ice)',
                   minHeight: '120px',
                   display: 'flex',
                   alignItems: 'center',
@@ -2478,10 +2478,10 @@ const HomepageSettings: React.FC = () => {
                         <div style={{ fontSize: '48px', marginBottom: '10px' }}>
                           📁
                         </div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
                           {tempIconFile.name}
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999', marginTop: '5px' }}>
+                        <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)', marginTop: '5px' }}>
                           Click to change
                         </div>
                       </div>
@@ -2497,10 +2497,10 @@ const HomepageSettings: React.FC = () => {
                             marginBottom: '10px'
                           }}
                         />
-                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '5px' }}>
                           Current: Uploaded Image
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999' }}>
+                        <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)' }}>
                           Click to change
                         </div>
                       </div>
@@ -2509,10 +2509,10 @@ const HomepageSettings: React.FC = () => {
                         <div style={{ fontSize: '48px', marginBottom: '10px' }}>
                           {tempIcon || '🔗'}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '5px' }}>
                           Current: {tempIcon || 'No icon selected'}
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999' }}>
+                        <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)' }}>
                           Click to select image
                         </div>
                       </div>
@@ -2529,8 +2529,8 @@ const HomepageSettings: React.FC = () => {
                 <button
                   style={{
                     padding: '12px 24px',
-                    backgroundColor: '#000',
-                    color: 'white',
+                    backgroundColor: 'var(--foreground)',
+                    color: 'var(--primary-foreground)',
                     border: 'none',
                     borderRadius: '4px',
                     fontSize: '14px',

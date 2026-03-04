@@ -167,11 +167,11 @@ const TermsConditionsSettings: React.FC = () => {
             style={{
               width: '100%',
               padding: '8px',
-              border: '1px solid #ddd',
+              border: '1px solid var(--color-border-light)',
               borderRadius: '4px',
               fontSize: '14px',
-              color: '#333',
-              backgroundColor: '#f5f5f5',
+              color: 'var(--color-text-dark)',
+              backgroundColor: 'var(--color-surface-subtle)',
               outline: 'none',
             }}
             autoFocus
@@ -234,29 +234,29 @@ const TermsConditionsSettings: React.FC = () => {
             cursor: 'pointer',
             padding: '8px',
             borderRadius: '4px',
-            border: '2px dashed #ccc',
+            border: '2px dashed var(--color-border-muted)',
             minHeight: '100px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s'
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.backgroundColor = '#f0f8ff';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = '#f9f9f9';
+            e.currentTarget.style.backgroundColor = 'var(--color-surface-cloud)';
           }}
         >
           {currentValue?.url ? (
-            <img 
-              src={getFullImageUrl(currentValue.url)} 
-              alt={currentValue.alt || 'Uploaded image'} 
+            <img
+              src={getFullImageUrl(currentValue.url)}
+              alt={currentValue.alt || 'Uploaded image'}
               style={{ maxWidth: '100%', maxHeight: '100px', objectFit: 'contain' }}
             />
           ) : (
-            <span style={{ color: '#666' }}>Click to upload image</span>
+            <span style={{ color: 'var(--color-text-muted)' }}>Click to upload image</span>
           )}
         </div>
       );
@@ -266,12 +266,12 @@ const TermsConditionsSettings: React.FC = () => {
         return (
           <div>
             {Array.isArray(currentValue) && currentValue.map((item: any, index: number) => (
-              <div key={index} style={{ 
-                marginBottom: '8px', 
-                padding: '8px', 
-                border: '1px solid #ddd', 
+              <div key={index} style={{
+                marginBottom: '8px',
+                padding: '8px',
+                border: '1px solid var(--color-border-light)',
                 borderRadius: '4px',
-                backgroundColor: '#f9f9f9'
+                backgroundColor: 'var(--color-surface-cloud)'
               }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
                   {/* Icon field */}
@@ -321,8 +321,8 @@ const TermsConditionsSettings: React.FC = () => {
                   }}
                   style={{
                     padding: '8px 12px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
+                    backgroundColor: 'var(--color-action-blue)',
+                    color: 'var(--primary-foreground)',
                     border: 'none',
                     borderRadius: '4px',
                     cursor: 'pointer',
@@ -343,11 +343,11 @@ const TermsConditionsSettings: React.FC = () => {
       // Handle group fields
       if (schema?.ui?.fields) {
         return (
-          <div style={{ 
-            border: '1px solid #ddd', 
-            borderRadius: '4px', 
-            padding: '10px', 
-            backgroundColor: '#f9f9f9',
+          <div style={{
+            border: '1px solid var(--color-border-light)',
+            borderRadius: '4px',
+            padding: '10px',
+            backgroundColor: 'var(--color-surface-cloud)',
             display: 'flex',
             flexDirection: 'column',
             gap: '8px'
@@ -356,10 +356,10 @@ const TermsConditionsSettings: React.FC = () => {
               const childValue = currentValue?.[childKey];
               const childType = childField.type || 'text';
               const childLabel = childField.label || childKey;
-              
+
               return (
                 <div key={childKey} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: '#666' }}>
+                  <label style={{ fontSize: '12px', fontWeight: 'bold', color: 'var(--color-text-muted)' }}>
                     {childLabel}:
                   </label>
                   {renderFieldEditor(
@@ -675,23 +675,23 @@ const TermsConditionsSettings: React.FC = () => {
 
   if (error) {
     return (
-      <div style={{ 
-        padding: '20px', 
-        textAlign: 'center', 
+      <div style={{
+        padding: '20px',
+        textAlign: 'center',
         color: 'red',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--color-surface-snow)',
         borderRadius: '8px',
         margin: '20px',
-        border: '1px solid #e0e0e0'
+        border: '1px solid var(--color-border-subtle)'
       }}>
         <h3>Error Loading Terms & Conditions</h3>
         <p>{error}</p>
-        <button 
+        <button
           onClick={() => fetchTermsData(locale)}
           style={{
             padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: 'white',
+            backgroundColor: 'var(--color-action-blue)',
+            color: 'var(--primary-foreground)',
             border: 'none',
             borderRadius: '4px',
             cursor: 'pointer',
@@ -706,13 +706,13 @@ const TermsConditionsSettings: React.FC = () => {
 
   if (!termsData) {
     return (
-      <div style={{ 
-        padding: '20px', 
+      <div style={{
+        padding: '20px',
         textAlign: 'center',
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--color-surface-snow)',
         borderRadius: '8px',
         margin: '20px',
-        border: '1px solid #e0e0e0'
+        border: '1px solid var(--color-border-subtle)'
       }}>
         No terms & conditions data available.
       </div>
@@ -720,25 +720,25 @@ const TermsConditionsSettings: React.FC = () => {
   }
 
   return (
-    <div style={{ backgroundColor: 'white', minHeight: '100vh' }}>
+    <div style={{ backgroundColor: 'var(--background)', minHeight: '100vh' }}>
       {/* Header with Language Switcher */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           Terms & Conditions Page
         </h2>
         {/* Language Switcher */}
         <div 
           className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -781,9 +781,9 @@ const TermsConditionsSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.3)'
+          backgroundColor: 'var(--color-overlay-light)'
         }} />
-        
+
         {/* Upload/Change Image Button */}
         {!(formValue.terms_hero?.hero_image?.url || termsData.hero.image) && (
           <div style={{
@@ -796,7 +796,7 @@ const TermsConditionsSettings: React.FC = () => {
             borderRadius: '8px',
             fontSize: '18px',
             fontWeight: 'bold',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             textAlign: 'center',
             cursor: 'pointer',
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)'
@@ -810,8 +810,8 @@ const TermsConditionsSettings: React.FC = () => {
             position: 'absolute',
             top: '20px',
             right: '20px',
-            backgroundColor: 'rgba(0,0,0,0.7)',
-            color: 'white',
+            backgroundColor: 'var(--color-overlay-dark)',
+            color: 'var(--primary-foreground)',
             padding: '8px 16px',
             borderRadius: '4px',
             fontSize: '14px',
@@ -864,18 +864,18 @@ const TermsConditionsSettings: React.FC = () => {
                 }}
                 autoFocus
                 style={{
-                  border: '2px solid #007bff',
+                  border: '2px solid var(--color-action-blue)',
                   borderRadius: '4px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
                   fontWeight: 'inherit',
-                  background: 'white',
+                  background: 'var(--background)',
                   minWidth: '100px'
                 }}
               />
             ) : (
-              <button 
+              <button
                 className="header-footer-settings__breadcrumb-button"
                 onClick={() => {
                   setEditingBreadcrumbIndex(index);
@@ -931,18 +931,18 @@ const TermsConditionsSettings: React.FC = () => {
                 }}
                 autoFocus
                 style={{
-                  border: '2px solid #007bff',
+                  border: '2px solid var(--color-action-blue)',
                   borderRadius: '4px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
                   fontWeight: 'inherit',
-                  background: 'white',
+                  background: 'var(--background)',
                   minWidth: '100px'
                 }}
               />
             ) : (
-              <button 
+              <button
                 className="header-footer-settings__breadcrumb-button"
                 onClick={() => {
                   setEditingBreadcrumbIndex(0);
@@ -995,18 +995,18 @@ const TermsConditionsSettings: React.FC = () => {
                 }}
                 autoFocus
                 style={{
-                  border: '2px solid #007bff',
+                  border: '2px solid var(--color-action-blue)',
                   borderRadius: '4px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
                   fontWeight: 'inherit',
-                  background: 'white',
+                  background: 'var(--background)',
                   minWidth: '100px'
                 }}
               />
             ) : (
-              <button 
+              <button
                 className="header-footer-settings__breadcrumb-button"
                 onClick={() => {
                   setEditingBreadcrumbIndex(1);
@@ -1029,7 +1029,7 @@ const TermsConditionsSettings: React.FC = () => {
 
       {/* Main Content */}
       <div style={{
-        backgroundColor: 'white',
+        backgroundColor: 'var(--background)',
         padding: '40px',
         minHeight: 'calc(100vh - 200px)'
       }}>
@@ -1043,7 +1043,7 @@ const TermsConditionsSettings: React.FC = () => {
             <h1 style={{
               fontSize: '32px',
               fontWeight: 'bold',
-              color: '#333',
+              color: 'var(--color-text-dark)',
               marginBottom: '30px',
               textAlign: 'left'
             }}>
@@ -1080,11 +1080,11 @@ const TermsConditionsSettings: React.FC = () => {
             <div style={{
               padding: '40px',
               textAlign: 'center',
-              color: '#666',
+              color: 'var(--color-text-muted)',
               fontSize: '18px',
-              backgroundColor: '#f8f9fa',
+              backgroundColor: 'var(--color-surface-snow)',
               borderRadius: '8px',
-              border: '1px solid #e0e0e0'
+              border: '1px solid var(--color-border-subtle)'
             }}>
               No terms & conditions content available.
             </div>
@@ -1100,14 +1100,14 @@ const TermsConditionsSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '80%',
@@ -1118,7 +1118,7 @@ const TermsConditionsSettings: React.FC = () => {
             <h3 style={{ marginTop: 0 }}>Edit Repeater Field</h3>
             <div style={{ marginBottom: '20px' }}>
               {editingRepeaterData.map((item, index) => (
-                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
+                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}>
                   <h4>Item {index + 1}</h4>
                   {Object.entries(item).map(([key, value]) => (
                     <div key={key} style={{ marginBottom: '10px' }}>
@@ -1136,7 +1136,7 @@ const TermsConditionsSettings: React.FC = () => {
                         style={{
                           width: '100%',
                           padding: '8px',
-                          border: '1px solid #ccc',
+                          border: '1px solid var(--color-border-muted)',
                           borderRadius: '4px'
                         }}
                       />
@@ -1154,8 +1154,8 @@ const TermsConditionsSettings: React.FC = () => {
                   setEditingRepeaterData([]);
                 }}
                 style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
+                  backgroundColor: 'var(--color-status-active)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',
@@ -1171,8 +1171,8 @@ const TermsConditionsSettings: React.FC = () => {
                   setEditingRepeaterData([]);
                 }}
                 style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',
@@ -1194,14 +1194,14 @@ const TermsConditionsSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '80%',
@@ -1237,8 +1237,8 @@ const TermsConditionsSettings: React.FC = () => {
               <button
                 onClick={handleTextEditorSave}
                 style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
+                  backgroundColor: 'var(--color-status-active)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',
@@ -1250,8 +1250,8 @@ const TermsConditionsSettings: React.FC = () => {
               <button
                 onClick={handleTextEditorCancel}
                 style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',
@@ -1273,14 +1273,14 @@ const TermsConditionsSettings: React.FC = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '80%',
@@ -1291,7 +1291,7 @@ const TermsConditionsSettings: React.FC = () => {
             <h3 style={{ marginTop: 0 }}>Edit Repeater Field</h3>
             <div style={{ marginBottom: '20px' }}>
               {editingRepeaterData.map((item, index) => (
-                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid #ddd', borderRadius: '4px' }}>
+                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}>
                   <h4>Item {index + 1}</h4>
                   {Object.entries(item).map(([key, value]) => (
                     <div key={key} style={{ marginBottom: '10px' }}>
@@ -1309,7 +1309,7 @@ const TermsConditionsSettings: React.FC = () => {
                         style={{
                           width: '100%',
                           padding: '8px',
-                          border: '1px solid #ccc',
+                          border: '1px solid var(--color-border-muted)',
                           borderRadius: '4px'
                         }}
                       />
@@ -1322,8 +1322,8 @@ const TermsConditionsSettings: React.FC = () => {
               <button
                 onClick={handleRepeaterSave}
                 style={{
-                  backgroundColor: '#28a745',
-                  color: 'white',
+                  backgroundColor: 'var(--color-status-active)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',
@@ -1335,8 +1335,8 @@ const TermsConditionsSettings: React.FC = () => {
               <button
                 onClick={handleRepeaterCancel}
                 style={{
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',

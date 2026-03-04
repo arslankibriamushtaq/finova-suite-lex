@@ -135,6 +135,15 @@
   --color-blue-purple: #4653b2;
   --color-blue-royal: #2563eb;
   --color-info-blue: #3498db;
+
+  /* Overlay / backdrop colors */
+  --color-overlay-dark:   rgba(0, 0, 0, 0.7);
+  --color-overlay-medium: rgba(0, 0, 0, 0.5);
+  --color-overlay-light:  rgba(0, 0, 0, 0.3);
+
+  /* Bootstrap-origin semantic colors */
+  --color-action-blue:    #007bff;
+  --color-status-active:  #28a745;
 }
 
 .dark {

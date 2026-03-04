@@ -357,7 +357,7 @@ const PrivacyPolicySettings = () => {
             borderRadius: '3px',
             display: 'inline-block',
             border: '1px solid transparent',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             fontSize: '14px',
             lineHeight: '1.4',
             transition: 'all 0.2s ease'
@@ -378,13 +378,13 @@ const PrivacyPolicySettings = () => {
       return (
         <div 
           onClick={handleFieldClick}
-          style={{ 
-            cursor: 'pointer', 
+          style={{
+            cursor: 'pointer',
             padding: '20px',
-            border: '2px dashed #ddd',
+            border: '2px dashed var(--color-border-light)',
             borderRadius: '8px',
             textAlign: 'center',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
             display: 'flex',
             alignItems: 'center',
@@ -411,14 +411,14 @@ const PrivacyPolicySettings = () => {
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
-          backgroundColor: '#f0f0f0'
+          backgroundColor: 'var(--color-surface-muted)'
         }}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = '#e0e0e0';
           e.currentTarget.style.borderColor = '#ccc';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.backgroundColor = '#f0f0f0';
+          e.currentTarget.style.backgroundColor = 'var(--color-surface-muted)';
           e.currentTarget.style.borderColor = 'transparent';
         }}
       >
@@ -464,11 +464,11 @@ const PrivacyPolicySettings = () => {
           }}
           style={{
             padding: '4px 8px',
-            border: '2px solid #007bff',
+            border: '2px solid var(--color-action-blue)',
             borderRadius: '4px',
             fontSize: '14px',
             outline: 'none',
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             minWidth: '100px'
           }}
           placeholder={placeholder}
@@ -537,23 +537,23 @@ const PrivacyPolicySettings = () => {
   return (
     <div className="header-footer-settings">
       {/* Header Section */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           Privacy Policy Page
         </h2>
         {/* Language Switcher */}
         <div 
           className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -601,8 +601,8 @@ const PrivacyPolicySettings = () => {
                   top: '20px',
                   right: '20px',
                   zIndex: 10,
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  color: 'white',
+                  backgroundColor: 'var(--color-overlay-dark)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '8px 16px',
                   borderRadius: '4px',
@@ -664,18 +664,18 @@ const PrivacyPolicySettings = () => {
                       }}
                       autoFocus
                       style={{
-                        border: '2px solid #007bff',
+                        border: '2px solid var(--color-action-blue)',
                         borderRadius: '4px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
                         fontWeight: 'inherit',
-                        background: 'white',
+                        background: 'var(--background)',
                         minWidth: '100px'
                       }}
                     />
                   ) : (
-                    <button 
+                    <button
                       className="header-footer-settings__breadcrumb-button"
                       onClick={() => {
                         setEditingBreadcrumbIndex(index);
@@ -731,18 +731,18 @@ const PrivacyPolicySettings = () => {
                       }}
                       autoFocus
                       style={{
-                        border: '2px solid #007bff',
+                        border: '2px solid var(--color-action-blue)',
                         borderRadius: '4px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
                         fontWeight: 'inherit',
-                        background: 'white',
+                        background: 'var(--background)',
                         minWidth: '100px'
                       }}
                     />
                   ) : (
-                    <button 
+                    <button
                       className="header-footer-settings__breadcrumb-button"
                       onClick={() => {
                         setEditingBreadcrumbIndex(0);
@@ -795,18 +795,18 @@ const PrivacyPolicySettings = () => {
                       }}
                       autoFocus
                       style={{
-                        border: '2px solid #007bff',
+                        border: '2px solid var(--color-action-blue)',
                         borderRadius: '4px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
                         fontWeight: 'inherit',
-                        background: 'white',
+                        background: 'var(--background)',
                         minWidth: '100px'
                       }}
                     />
                   ) : (
-                    <button 
+                    <button
                       className="header-footer-settings__breadcrumb-button"
                       onClick={() => {
                         setEditingBreadcrumbIndex(1);
@@ -829,7 +829,7 @@ const PrivacyPolicySettings = () => {
 
             {/* Main Content */}
             <div style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--background)',
               padding: '40px',
               minHeight: 'calc(100vh - 200px)'
             }}>
@@ -843,7 +843,7 @@ const PrivacyPolicySettings = () => {
                   <h1 style={{
                     fontSize: '32px',
                     fontWeight: 'bold',
-                    color: '#333',
+                    color: 'var(--color-text-dark)',
                     marginBottom: '30px',
                     textAlign: 'left'
                   }}>
@@ -868,11 +868,11 @@ const PrivacyPolicySettings = () => {
                   <div style={{
                     padding: '40px',
                     textAlign: 'center',
-                    color: '#666',
+                    color: 'var(--color-text-muted)',
                     fontSize: '18px',
-                    backgroundColor: '#f8f9fa',
+                    backgroundColor: 'var(--color-surface-snow)',
                     borderRadius: '8px',
-                    border: '1px solid #e0e0e0'
+                    border: '1px solid var(--color-border-subtle)'
                   }}>
                     No privacy policy content available.
                   </div>
@@ -891,14 +891,14 @@ const PrivacyPolicySettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             width: '80%',
@@ -934,8 +934,8 @@ const PrivacyPolicySettings = () => {
                 style={{
                   padding: '8px 16px',
                   marginRight: '10px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
@@ -950,8 +950,8 @@ const PrivacyPolicySettings = () => {
                 }}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: 'var(--color-action-blue)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'

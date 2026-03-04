@@ -247,7 +247,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
               padding: '8px 12px',
               border: '1px solid var(--border)',
               borderRadius: '4px',
-              backgroundColor: 'white',
+              backgroundColor: 'var(--background)',
               color: 'var(--foreground)',
               fontSize: '14px',
               fontWeight: '500',
@@ -267,7 +267,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
               border: 'none',
               borderRadius: '4px',
               backgroundColor: rejecting || !rejectComment.trim() ? 'var(--color-disabled)' : 'var(--primary)',
-              color: 'white',
+              color: 'var(--primary-foreground)',
               fontSize: '14px',
               fontWeight: '500',
               cursor: rejecting || !rejectComment.trim() ? 'not-allowed' : 'pointer'

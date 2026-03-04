@@ -13,7 +13,7 @@ const CareerPage = () => {
     <>
       {/* Main Content */}
       <div style={{
-        backgroundColor: '#f8f9fa',
+        backgroundColor: 'var(--color-surface-snow)',
         padding: '40px 20px',
         minHeight: '100vh'
       }}>
@@ -23,7 +23,7 @@ const CareerPage = () => {
           textAlign: 'center'
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             borderRadius: '4px',
             padding: '12px 20px',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
@@ -33,7 +33,7 @@ const CareerPage = () => {
             <h1 style={{
               fontSize: '1rem',
               fontStyle: 'italic',
-              color: '#7f8c8d',
+              color: 'var(--color-text-silver)',
               margin: '0',
               fontWeight: 'normal'
             }}>
@@ -44,7 +44,7 @@ const CareerPage = () => {
 
         {/* Template Preview */}
         <div style={{
-          backgroundColor: 'white',
+          backgroundColor: 'var(--background)',
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           position: 'relative'
@@ -59,7 +59,7 @@ const CareerPage = () => {
             left: 0,
             right: 0,
             bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.4)',
+            backgroundColor: 'var(--color-overlay-light)',
             borderRadius: '8px',
             zIndex: 1
           }} />
@@ -68,10 +68,10 @@ const CareerPage = () => {
           <div style={{
             position: 'relative',
             zIndex: 2,
-            backgroundColor: '#f6f6f6',
+            backgroundColor: 'var(--color-surface-alt)',
             borderRadius: '8px',
             padding: '0',
-            border: '1px solid #e0e0e0',
+            border: '1px solid var(--color-border-subtle)',
             overflow: 'hidden'
           }}>
             {/* Edit Template Button - Positioned in top right corner */}
@@ -106,7 +106,7 @@ const CareerPage = () => {
 
             {/* Career Page Template Content */}
             <div style={{ 
-              backgroundColor: "#f6f6f6",
+              backgroundColor: "var(--color-surface-alt)",
               filter: showEditButton ? 'blur(2px)' : 'none',
               transition: 'filter 0.3s ease',
               padding: '40px',
@@ -171,7 +171,7 @@ const CareerPage = () => {
                 }}>
                   {/* Finance Manager */}
                   <div style={{
-                    backgroundColor: '#e8e8e8',
+                    backgroundColor: 'var(--color-surface-pressed)',
                     borderRadius: '6px',
                     padding: '20px',
                     display: 'flex',
@@ -195,7 +195,7 @@ const CareerPage = () => {
                       </p>
                     </div>
                     <button style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
                       borderRadius: '4px',
                       padding: '8px 16px',
@@ -210,7 +210,7 @@ const CareerPage = () => {
 
                   {/* Senior Sales Manager */}
                   <div style={{
-                    backgroundColor: '#e8e8e8',
+                    backgroundColor: 'var(--color-surface-pressed)',
                     borderRadius: '6px',
                     padding: '20px',
                     display: 'flex',
@@ -234,7 +234,7 @@ const CareerPage = () => {
                       </p>
                     </div>
                     <button style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
                       borderRadius: '4px',
                       padding: '8px 16px',
@@ -249,7 +249,7 @@ const CareerPage = () => {
 
                   {/* Digital Account Manager */}
                   <div style={{
-                    backgroundColor: '#e8e8e8',
+                    backgroundColor: 'var(--color-surface-pressed)',
                     borderRadius: '6px',
                     padding: '20px',
                     display: 'flex',
@@ -273,7 +273,7 @@ const CareerPage = () => {
                       </p>
                     </div>
                     <button style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
                       borderRadius: '4px',
                       padding: '8px 16px',
@@ -288,7 +288,7 @@ const CareerPage = () => {
 
                   {/* Business Development Officer */}
                   <div style={{
-                    backgroundColor: '#e8e8e8',
+                    backgroundColor: 'var(--color-surface-pressed)',
                     borderRadius: '6px',
                     padding: '20px',
                     display: 'flex',
@@ -312,7 +312,7 @@ const CareerPage = () => {
                       </p>
                     </div>
                     <button style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
                       borderRadius: '4px',
                       padding: '8px 16px',
@@ -327,7 +327,7 @@ const CareerPage = () => {
 
                   {/* Additional Senior Sales Manager */}
                   <div style={{
-                    backgroundColor: '#e8e8e8',
+                    backgroundColor: 'var(--color-surface-pressed)',
                     borderRadius: '6px',
                     padding: '20px',
                     display: 'flex',
@@ -351,7 +351,7 @@ const CareerPage = () => {
                       </p>
                     </div>
                     <button style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
                       borderRadius: '4px',
                       padding: '8px 16px',
@@ -366,7 +366,7 @@ const CareerPage = () => {
 
                   {/* Another Senior Sales Manager */}
                   <div style={{
-                    backgroundColor: '#e8e8e8',
+                    backgroundColor: 'var(--color-surface-pressed)',
                     borderRadius: '6px',
                     padding: '20px',
                     display: 'flex',
@@ -390,7 +390,7 @@ const CareerPage = () => {
                       </p>
                     </div>
                     <button style={{
-                      backgroundColor: 'white',
+                      backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
                       borderRadius: '4px',
                       padding: '8px 16px',

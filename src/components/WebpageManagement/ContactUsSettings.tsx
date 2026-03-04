@@ -388,7 +388,7 @@ const ContactUsSettings = () => {
 
     return (
       <div key={index} style={{
-        backgroundColor: 'white',
+        backgroundColor: 'var(--background)',
         padding: '20px',
         borderRadius: '8px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
@@ -406,7 +406,7 @@ const ContactUsSettings = () => {
           style={{
             fontSize: '16px',
             fontWeight: 'bold',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             cursor: 'pointer',
             padding: '5px',
             borderRadius: '4px',
@@ -438,7 +438,7 @@ const ContactUsSettings = () => {
               style={{
                 width: '100%',
                 padding: '4px 8px',
-                border: '2px solid #007bff',
+                border: '2px solid var(--color-action-blue)',
                 borderRadius: '4px',
                 fontSize: 'inherit',
                 fontWeight: 'inherit',
@@ -456,12 +456,12 @@ const ContactUsSettings = () => {
           alignItems: 'center',
           justifyContent: 'space-between'
         }}>
-          <div 
+          <div
             onClick={() => handleContactTextClick(index)}
-            style={{ 
+            style={{
               flex: 1,
-              fontSize: '14px', 
-              color: '#666', 
+              fontSize: '14px',
+              color: 'var(--color-text-muted)',
               lineHeight: '1.5',
               cursor: 'pointer',
               padding: '5px',
@@ -477,10 +477,10 @@ const ContactUsSettings = () => {
           >
             {item.value}
           </div>
-          <div 
+          <div
             onClick={() => handleFileUpload(`contact_details.contact_information.${index}.icon`)}
-            style={{ 
-              color: ' #1963b9', 
+            style={{
+              color: 'var(--theme-secondary)',
               fontSize: '24px',
               cursor: 'pointer',
               padding: '5px',
@@ -543,7 +543,7 @@ const ContactUsSettings = () => {
           style={{
             width: '100%',
             padding: '12px',
-            border: '1px solid #ddd',
+            border: '1px solid var(--color-border-light)',
             borderRadius: '4px',
             fontSize: '14px',
             boxSizing: 'border-box'
@@ -717,7 +717,7 @@ const ContactUsSettings = () => {
             style={{
               width: '100%',
               padding: '4px 8px',
-              border: '2px solid #007bff',
+              border: '2px solid var(--color-action-blue)',
               borderRadius: '4px',
               fontSize: 'inherit',
               fontFamily: 'inherit'
@@ -762,7 +762,7 @@ const ContactUsSettings = () => {
             borderRadius: '3px',
             display: 'inline-block',
             border: '1px solid transparent',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             fontSize: '14px',
             lineHeight: '1.4',
             transition: 'all 0.2s ease',
@@ -787,10 +787,10 @@ const ContactUsSettings = () => {
           style={{ 
             cursor: 'pointer', 
             padding: '20px',
-            border: '2px dashed #ddd',
+            border: '2px dashed var(--color-border-light)',
             borderRadius: '8px',
             textAlign: 'center',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
             display: 'flex',
             alignItems: 'center',
@@ -881,23 +881,23 @@ const ContactUsSettings = () => {
   return (
     <div className="header-footer-settings__landing-template">
       {/* Header with Language Switcher */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           Contact Us Page
         </h2>
         {/* Language Switcher */}
-        <div 
-          className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+        <div
+          className="header-footer-settings__landing-language"
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -926,7 +926,7 @@ const ContactUsSettings = () => {
       <section style={{
         position: 'relative',
         height: '400px',
-        backgroundColor: 'rgba(0, 0, 0, 0.3)',
+        backgroundColor: 'var(--color-overlay-light)',
         backgroundImage: formValue.contact_hero?.hero_image?.url ? `url(${getFullImageUrl(formValue.contact_hero.hero_image.url, API_BASE_URL)})` : 'none',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
@@ -940,8 +940,8 @@ const ContactUsSettings = () => {
             top: '20px',
             right: '20px',
             zIndex: 10,
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            color: 'white',
+            backgroundColor: 'var(--color-overlay-dark)',
+            color: 'var(--primary-foreground)',
             border: 'none',
             padding: '8px 16px',
             borderRadius: '4px',
@@ -1003,13 +1003,13 @@ const ContactUsSettings = () => {
                 }}
                 autoFocus
                 style={{
-                  border: '2px solid #007bff',
+                  border: '2px solid var(--color-action-blue)',
                   borderRadius: '4px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
                   fontWeight: 'inherit',
-                  background: 'white',
+                  background: 'var(--background)',
                   minWidth: '100px'
                 }}
               />
@@ -1070,13 +1070,13 @@ const ContactUsSettings = () => {
                 }}
                 autoFocus
                 style={{
-                  border: '2px solid #007bff',
+                  border: '2px solid var(--color-action-blue)',
                   borderRadius: '4px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
                   fontWeight: 'inherit',
-                  background: 'white',
+                  background: 'var(--background)',
                   minWidth: '100px'
                 }}
               />
@@ -1134,13 +1134,13 @@ const ContactUsSettings = () => {
                 }}
                 autoFocus
                 style={{
-                  border: '2px solid #007bff',
+                  border: '2px solid var(--color-action-blue)',
                   borderRadius: '4px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
                   fontWeight: 'inherit',
-                  background: 'white',
+                  background: 'var(--background)',
                   minWidth: '100px'
                 }}
               />
@@ -1168,8 +1168,8 @@ const ContactUsSettings = () => {
 
       {/* Main Content */}
       <section style={{
-        backgroundColor: '#ffffff',
-        color: '#333',
+        backgroundColor: 'var(--background)',
+        color: 'var(--color-text-dark)',
         padding: '60px 40px',
         minHeight: '600px'
       }}>
@@ -1186,7 +1186,7 @@ const ContactUsSettings = () => {
             <h1 style={{
               fontSize: '2.5rem',
               fontWeight: 'bold',
-              color: '#333',
+              color: 'var(--color-text-dark)',
               margin: '0 0 10px 0'
             }}>
               {renderFieldEditor('contact_intro.heading', formValue.contact_intro?.heading, 'text', 'Enter heading')}
@@ -1194,7 +1194,7 @@ const ContactUsSettings = () => {
             <h2 style={{
               fontSize: '1.2rem',
               fontWeight: 'normal',
-              color: '#666',
+              color: 'var(--color-text-muted)',
               margin: '0 0 30px 0',
               textAlign: 'left'
             }}>
@@ -1210,7 +1210,7 @@ const ContactUsSettings = () => {
 
             {/* Social Media Card */}
             <div style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--background)',
               padding: '20px',
               borderRadius: '8px',
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
@@ -1270,20 +1270,20 @@ const ContactUsSettings = () => {
             <h2 style={{
               fontSize: '2rem',
               fontWeight: 'bold',
-              color: '#333',
+              color: 'var(--color-text-dark)',
               margin: '0 0 30px 0'
             }}>
               {renderFieldEditor('contact_form.heading', formValue.contact_form?.heading, 'text', 'Enter form title')}
             </h2>
 
             <div style={{
-              backgroundColor: 'white',
+              backgroundColor: 'var(--background)',
               padding: '30px',
               borderRadius: '8px',
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
             }}>
               <form>
-                {(formValue.contact_form?.fields || []).map((field: any, index: number) => 
+                {(formValue.contact_form?.fields || []).map((field: any, index: number) =>
                   renderFormFieldItem(field, index)
                 )}
 
@@ -1293,8 +1293,8 @@ const ContactUsSettings = () => {
                   style={{
                     width: '100%',
                     padding: '12px',
-                    backgroundColor: '#000',
-                    color: 'white',
+                    backgroundColor: 'var(--foreground)',
+                    color: 'var(--primary-foreground)',
                     border: 'none',
                     borderRadius: '4px',
                     fontSize: '16px',
@@ -1331,14 +1331,14 @@ const ContactUsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ 
-            backgroundColor: 'white', 
+          <div style={{
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             width: '90%',
@@ -1346,9 +1346,9 @@ const ContactUsSettings = () => {
             maxHeight: '90vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginBottom: '20px', color: '#333' }}>Edit Content</h3>
-            <div style={{ 
-              border: '1px solid #ddd',
+            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Content</h3>
+            <div style={{
+              border: '1px solid var(--color-border-light)',
               borderRadius: '4px',
               minHeight: '300px'
             }}>
@@ -1374,24 +1374,24 @@ const ContactUsSettings = () => {
                 }}
               />
             </div>
-            <div style={{ 
-              marginTop: '20px', 
-              display: 'flex', 
-              gap: '10px', 
-              justifyContent: 'flex-end' 
+            <div style={{
+              marginTop: '20px',
+              display: 'flex',
+              gap: '10px',
+              justifyContent: 'flex-end'
             }}>
               <button
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
                 }}
-                onClick={() => { 
-                  setShowTextEditor(false); 
-                  setEditingFieldPath(''); 
+                onClick={() => {
+                  setShowTextEditor(false);
+                  setEditingFieldPath('');
                 }}
               >
                 Cancel
@@ -1399,16 +1399,16 @@ const ContactUsSettings = () => {
               <button
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: '#007bff',
-                  color: 'white',
+                  backgroundColor: 'var(--color-action-blue)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   cursor: 'pointer'
                 }}
-                onClick={() => { 
-                  updateFormValue(editingFieldPath, editingFieldValue); 
-                  setShowTextEditor(false); 
-                  setEditingFieldPath(''); 
+                onClick={() => {
+                  updateFormValue(editingFieldPath, editingFieldValue);
+                  setShowTextEditor(false);
+                  setEditingFieldPath('');
                 }}
               >
                 Save
@@ -1426,14 +1426,14 @@ const ContactUsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ 
-            backgroundColor: 'white', 
+          <div style={{
+            backgroundColor: 'var(--background)',
             borderRadius: '8px',
             width: '90%',
             maxWidth: '500px',
@@ -1443,8 +1443,8 @@ const ContactUsSettings = () => {
           }}>
             {/* Dark Header */}
             <div style={{
-              backgroundColor: '#333',
-              color: 'white',
+              backgroundColor: 'var(--color-text-dark)',
+              color: 'var(--primary-foreground)',
               padding: '20px',
               display: 'flex',
               justifyContent: 'space-between',
@@ -1458,7 +1458,7 @@ const ContactUsSettings = () => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'white',
+                  color: 'var(--primary-foreground)',
                   fontSize: '20px',
                   cursor: 'pointer',
                   padding: '0',
@@ -1477,12 +1477,12 @@ const ContactUsSettings = () => {
             <div style={{ padding: '30px' }}>
               {/* URL Input */}
               <div style={{ marginBottom: '25px' }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  color: '#333' 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: 'var(--color-text-dark)'
                 }}>
                   Social Media URL
                 </label>
@@ -1494,31 +1494,31 @@ const ContactUsSettings = () => {
                   style={{
                     width: '100%',
                     padding: '12px',
-                    border: '1px solid #ddd',
+                    border: '1px solid var(--color-border-light)',
                     borderRadius: '4px',
                     fontSize: '14px',
                     boxSizing: 'border-box',
-                    backgroundColor: '#fff'
+                    backgroundColor: 'var(--background)'
                   }}
                 />
               </div>
 
               {/* Icon Selection */}
               <div style={{ marginBottom: '30px' }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  color: '#333' 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: 'var(--color-text-dark)'
                 }}>
                   Social Media Icon
                 </label>
-                <div style={{ 
-                  border: '2px dashed #ddd',
+                <div style={{
+                  border: '2px dashed var(--color-border-light)',
                   borderRadius: '8px',
                   padding: '20px',
-                  backgroundColor: '#fafafa',
+                  backgroundColor: 'var(--color-surface-ice)',
                   minHeight: '120px',
                   display: 'flex',
                   alignItems: 'center',
@@ -1541,10 +1541,10 @@ const ContactUsSettings = () => {
                         <div style={{ fontSize: '48px', marginBottom: '10px' }}>
                           📁
                         </div>
-                        <div style={{ fontSize: '12px', color: '#666' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)' }}>
                           {tempSocialIconFile.name}
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999', marginTop: '5px' }}>
+                        <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)', marginTop: '5px' }}>
                           Click to change
                         </div>
                       </div>
@@ -1560,10 +1560,10 @@ const ContactUsSettings = () => {
                             marginBottom: '10px'
                           }}
                         />
-                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '5px' }}>
                           Current: Uploaded Image
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999' }}>
+                        <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)' }}>
                           Click to change
                         </div>
                       </div>
@@ -1572,10 +1572,10 @@ const ContactUsSettings = () => {
                         <div style={{ fontSize: '48px', marginBottom: '10px' }}>
                           {iconEmojiMap[tempSocialIcon] || '🔗'}
                         </div>
-                        <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '5px' }}>
                           Current: {tempSocialIcon || 'No icon selected'}
                         </div>
-                        <div style={{ fontSize: '10px', color: '#999' }}>
+                        <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)' }}>
                           Click to select image
                         </div>
                       </div>
@@ -1592,8 +1592,8 @@ const ContactUsSettings = () => {
                 <button
                   style={{
                     padding: '12px 24px',
-                    backgroundColor: '#000',
-                    color: 'white',
+                    backgroundColor: 'var(--foreground)',
+                    color: 'var(--primary-foreground)',
                     border: 'none',
                     borderRadius: '4px',
                     fontSize: '14px',
@@ -1605,7 +1605,7 @@ const ContactUsSettings = () => {
                     e.currentTarget.style.backgroundColor = '#333';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#000';
+                    e.currentTarget.style.backgroundColor = 'var(--foreground)';
                   }}
                   onClick={handleSocialModalSave}
                 >
@@ -1625,14 +1625,14 @@ const ContactUsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 1000
         }}>
-          <div style={{ 
-            backgroundColor: 'white', 
+          <div style={{
+            backgroundColor: 'var(--background)',
             borderRadius: '8px',
             width: '90%',
             maxWidth: '500px',
@@ -1642,8 +1642,8 @@ const ContactUsSettings = () => {
           }}>
             {/* Dark Header */}
             <div style={{
-              backgroundColor: '#333',
-              color: 'white',
+              backgroundColor: 'var(--color-text-dark)',
+              color: 'var(--primary-foreground)',
               padding: '20px',
               display: 'flex',
               justifyContent: 'space-between',
@@ -1657,7 +1657,7 @@ const ContactUsSettings = () => {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: 'white',
+                  color: 'var(--primary-foreground)',
                   fontSize: '20px',
                   cursor: 'pointer',
                   padding: '0',
@@ -1676,12 +1676,12 @@ const ContactUsSettings = () => {
             <div style={{ padding: '30px' }}>
               {/* Value Input */}
               <div style={{ marginBottom: '25px' }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  color: '#333' 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: 'var(--color-text-dark)'
                 }}>
                   Value
                 </label>
@@ -1693,23 +1693,23 @@ const ContactUsSettings = () => {
                   style={{
                     width: '100%',
                     padding: '12px',
-                    border: '1px solid #ddd',
+                    border: '1px solid var(--color-border-light)',
                     borderRadius: '4px',
                     fontSize: '14px',
                     boxSizing: 'border-box',
-                    backgroundColor: '#fff'
+                    backgroundColor: 'var(--background)'
                   }}
                 />
               </div>
 
               {/* URL Input */}
               <div style={{ marginBottom: '30px' }}>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '8px', 
-                  fontSize: '14px', 
-                  fontWeight: 'bold', 
-                  color: '#333' 
+                <label style={{
+                  display: 'block',
+                  marginBottom: '8px',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  color: 'var(--color-text-dark)'
                 }}>
                   URL
                 </label>
@@ -1721,25 +1721,25 @@ const ContactUsSettings = () => {
                   style={{
                     width: '100%',
                     padding: '12px',
-                    border: '1px solid #ddd',
+                    border: '1px solid var(--color-border-light)',
                     borderRadius: '4px',
                     fontSize: '14px',
                     boxSizing: 'border-box',
-                    backgroundColor: '#fff'
+                    backgroundColor: 'var(--background)'
                   }}
                 />
               </div>
 
               {/* Apply Button */}
-              <div style={{ 
-                display: 'flex', 
-                justifyContent: 'flex-end' 
+              <div style={{
+                display: 'flex',
+                justifyContent: 'flex-end'
               }}>
                 <button
                   style={{
                     padding: '12px 24px',
-                    backgroundColor: '#000',
-                    color: 'white',
+                    backgroundColor: 'var(--foreground)',
+                    color: 'var(--primary-foreground)',
                     border: 'none',
                     borderRadius: '4px',
                     fontSize: '14px',
@@ -1751,7 +1751,7 @@ const ContactUsSettings = () => {
                     e.currentTarget.style.backgroundColor = '#333';
                   }}
                   onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = '#000';
+                    e.currentTarget.style.backgroundColor = 'var(--foreground)';
                   }}
                   onClick={handleContactModalSave}
                 >
@@ -1771,7 +1771,7 @@ const ContactUsSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -1779,9 +1779,9 @@ const ContactUsSettings = () => {
         }}
         onClick={() => setShowButtonTextModal(false)}
         >
-          <div 
-            style={{ 
-              backgroundColor: 'white', 
+          <div
+            style={{
+              backgroundColor: 'var(--background)',
               padding: '30px',
               borderRadius: '8px',
               width: '90%',
@@ -1790,22 +1790,22 @@ const ContactUsSettings = () => {
             }}
             onClick={(e) => e.stopPropagation()}
           >
-            <h3 style={{ 
-              marginBottom: '20px', 
-              color: '#333',
+            <h3 style={{
+              marginBottom: '20px',
+              color: 'var(--color-text-dark)',
               fontSize: '20px',
               fontWeight: 'bold'
             }}>
               Edit Button Text
             </h3>
-            
+
             <div style={{ marginBottom: '30px' }}>
-              <label style={{ 
-                display: 'block', 
-                marginBottom: '8px', 
-                fontSize: '14px', 
-                fontWeight: 'bold', 
-                color: '#333' 
+              <label style={{
+                display: 'block',
+                marginBottom: '8px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                color: 'var(--color-text-dark)'
               }}>
                 Button Text
               </label>
@@ -1817,27 +1817,27 @@ const ContactUsSettings = () => {
                 style={{
                   width: '100%',
                   padding: '12px',
-                  border: '1px solid #ddd',
+                  border: '1px solid var(--color-border-light)',
                   borderRadius: '4px',
                   fontSize: '14px',
                   boxSizing: 'border-box',
-                  backgroundColor: '#fff'
+                  backgroundColor: 'var(--background)'
                 }}
                 autoFocus
               />
             </div>
 
             {/* Action Buttons */}
-            <div style={{ 
-              display: 'flex', 
+            <div style={{
+              display: 'flex',
               justifyContent: 'flex-end',
               gap: '10px'
             }}>
               <button
                 style={{
                   padding: '12px 24px',
-                  backgroundColor: '#6c757d',
-                  color: 'white',
+                  backgroundColor: 'var(--color-text-slate)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   fontSize: '14px',
@@ -1849,7 +1849,7 @@ const ContactUsSettings = () => {
                   e.currentTarget.style.backgroundColor = '#5a6268';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#6c757d';
+                  e.currentTarget.style.backgroundColor = 'var(--color-text-slate)';
                 }}
                 onClick={() => setShowButtonTextModal(false)}
               >
@@ -1858,8 +1858,8 @@ const ContactUsSettings = () => {
               <button
                 style={{
                   padding: '12px 24px',
-                  backgroundColor: '#000',
-                  color: 'white',
+                  backgroundColor: 'var(--foreground)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   borderRadius: '4px',
                   fontSize: '14px',
@@ -1871,7 +1871,7 @@ const ContactUsSettings = () => {
                   e.currentTarget.style.backgroundColor = '#333';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = '#000';
+                  e.currentTarget.style.backgroundColor = 'var(--foreground)';
                 }}
                 onClick={handleButtonTextModalSave}
               >

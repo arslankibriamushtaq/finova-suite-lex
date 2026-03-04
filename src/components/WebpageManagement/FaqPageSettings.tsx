@@ -294,7 +294,7 @@ const FaqPageSettings = () => {
             style={{
               width: '100%',
               padding: '5px',
-              border: '2px solid #007bff',
+              border: '2px solid var(--color-action-blue)',
               borderRadius: '4px'
             }}
             autoFocus
@@ -302,7 +302,7 @@ const FaqPageSettings = () => {
         );
       }
       return (
-        <span 
+        <span
           onClick={() => setEditingFieldPath(fieldPath)}
           style={{ cursor: 'pointer', display: 'inline-block' }}
         >
@@ -333,10 +333,10 @@ const FaqPageSettings = () => {
           style={{ 
             cursor: 'pointer', 
             padding: '20px',
-            border: '2px dashed #ddd',
+            border: '2px dashed var(--color-border-light)',
             borderRadius: '8px',
             textAlign: 'center',
-            backgroundColor: '#f9f9f9',
+            backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
             display: 'flex',
             alignItems: 'center',
@@ -513,23 +513,23 @@ const FaqPageSettings = () => {
     <div style={{ padding: '20px' }}>
       {/* PUBLISH Bar */}
       {/* Header with Language Switcher */}
-      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: '#fff', borderBottom: '1px solid #e0e0e0' }}>
+      <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
           FAQ Page
         </h2>
         {/* Language Switcher */}
-        <div 
-          className="header-footer-settings__landing-language" 
-          style={{ 
-            color: '#000000', 
+        <div
+          className="header-footer-settings__landing-language"
+          style={{
+            color: 'var(--foreground)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
             borderRadius: '4px',
-            border: '1px solid #ddd',
-            backgroundColor: '#f9f9f9',
+            border: '1px solid var(--color-border-light)',
+            backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
           }}
           onClick={() => setLocale(locale === 'en' ? 'ar' : 'en')}
@@ -573,8 +573,8 @@ const FaqPageSettings = () => {
               top: '20px',
               right: '20px',
               zIndex: 10,
-              backgroundColor: 'rgba(0, 0, 0, 0.7)',
-              color: 'white',
+              backgroundColor: 'var(--color-overlay-dark)',
+              color: 'var(--primary-foreground)',
               border: 'none',
               padding: '8px 16px',
               borderRadius: '4px',
@@ -636,13 +636,13 @@ const FaqPageSettings = () => {
                   }}
                   autoFocus
                   style={{
-                    border: '2px solid #007bff',
+                    border: '2px solid var(--color-action-blue)',
                     borderRadius: '4px',
                     padding: '4px 8px',
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
                     fontWeight: 'inherit',
-                    background: 'white',
+                    background: 'var(--background)',
                     minWidth: '100px'
                   }}
                 />
@@ -703,13 +703,13 @@ const FaqPageSettings = () => {
                   }}
                   autoFocus
                   style={{
-                    border: '2px solid #007bff',
+                    border: '2px solid var(--color-action-blue)',
                     borderRadius: '4px',
                     padding: '4px 8px',
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
                     fontWeight: 'inherit',
-                    background: 'white',
+                    background: 'var(--background)',
                     minWidth: '100px'
                   }}
                 />
@@ -767,13 +767,13 @@ const FaqPageSettings = () => {
                   }}
                   autoFocus
                   style={{
-                    border: '2px solid #007bff',
+                    border: '2px solid var(--color-action-blue)',
                     borderRadius: '4px',
                     padding: '4px 8px',
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
                     fontWeight: 'inherit',
-                    background: 'white',
+                    background: 'var(--background)',
                     minWidth: '100px'
                   }}
                 />
@@ -801,7 +801,7 @@ const FaqPageSettings = () => {
 
         {/* FAQ Content */}
         <section style={{
-          backgroundColor: '#f5f5f5',
+          backgroundColor: 'var(--color-surface-subtle)',
           padding: '60px 40px',
           maxWidth: '900px',
           margin: '0 auto'
@@ -809,7 +809,7 @@ const FaqPageSettings = () => {
           <h1 style={{
             fontSize: '2rem',
             fontWeight: 'bold',
-            color: '#333',
+            color: 'var(--color-text-dark)',
             margin: '0 0 40px 0',
             textAlign: 'center'
           }}>
@@ -848,13 +848,13 @@ const FaqPageSettings = () => {
                   opacity: draggedIndex === index ? 0.5 : 1,
                   transform: draggedIndex === index ? 'rotate(2deg)' : 'none',
                   transition: 'all 0.2s ease',
-                  border: draggedIndex === index ? '2px dashed #007bff' : dragOverIndex === index ? '2px dashed #28a745' : '2px solid transparent',
-                  backgroundColor: dragOverIndex === index ? '#f8f9fa' : 'white'
+                  border: draggedIndex === index ? '2px dashed var(--color-action-blue)' : dragOverIndex === index ? '2px dashed var(--color-status-active)' : '2px solid transparent',
+                  backgroundColor: dragOverIndex === index ? 'var(--color-surface-snow)' : 'var(--background)'
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                   {/* Drag Handle Icon */}
-                  <div style={{ color: '#999', fontSize: '14px', userSelect: 'none' }}>
+                  <div style={{ color: 'var(--color-text-subtle)', fontSize: '14px', userSelect: 'none' }}>
                     ⋮⋮
                   </div>
                   
@@ -875,7 +875,7 @@ const FaqPageSettings = () => {
                     <span style={{
                       fontSize: '1rem',
                       fontWeight: 'bold',
-                      color: '#333',
+                      color: 'var(--color-text-dark)',
                       flex: 1
                     }}>
                       {renderFieldEditor(
@@ -890,12 +890,12 @@ const FaqPageSettings = () => {
                       width: '32px',
                       height: '32px',
                       borderRadius: '50%',
-                      backgroundColor: '#e0fffa',
+                      backgroundColor: 'var(--color-teal-light-bg)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
                       fontSize: '20px',
-                      color: '#000',
+                      color: 'var(--foreground)',
                       fontWeight: 'bold',
                       flexShrink: 0
                     }}>
@@ -910,9 +910,9 @@ const FaqPageSettings = () => {
                         width: '24px',
                         height: '24px',
                         borderRadius: '50%',
-                        backgroundColor: ' #1963b9',
+                        backgroundColor: 'var(--theme-secondary)',
                         border: 'none',
-                        color: 'white',
+                        color: 'var(--primary-foreground)',
                         cursor: 'pointer',
                         display: 'flex',
                         alignItems: 'center',
@@ -924,7 +924,7 @@ const FaqPageSettings = () => {
                         e.currentTarget.style.backgroundColor = '#c82333';
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = ' #1963b9';
+                        e.currentTarget.style.backgroundColor = 'var(--theme-secondary)';
                       }}
                     >
                       {/* Trash/Delete Icon SVG */}
@@ -954,7 +954,7 @@ const FaqPageSettings = () => {
                     marginTop: '15px',
                     fontSize: '0.95rem',
                     lineHeight: '1.6',
-                    color: '#666',
+                    color: 'var(--color-text-muted)',
                     borderTop: '1px solid #d0d0d0'
                   }}>
                     {renderFieldEditor(
@@ -1002,14 +1002,14 @@ const FaqPageSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0,0,0,0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 10000
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '20px',
             borderRadius: '8px',
             maxWidth: '800px',
@@ -1054,14 +1054,14 @@ const FaqPageSettings = () => {
           left: 0,
           right: 0,
           bottom: 0,
-          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          backgroundColor: 'var(--color-overlay-medium)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 10002
         }}>
           <div style={{
-            backgroundColor: 'white',
+            backgroundColor: 'var(--background)',
             padding: '30px',
             borderRadius: '8px',
             maxWidth: '400px',
@@ -1072,7 +1072,7 @@ const FaqPageSettings = () => {
             <div style={{
               fontSize: '24px',
               marginBottom: '20px',
-              color: ' #1963b9'
+              color: 'var(--theme-secondary)'
             }}>
               🗑️
             </div>
@@ -1080,14 +1080,14 @@ const FaqPageSettings = () => {
               margin: '0 0 15px 0',
               fontSize: '18px',
               fontWeight: 'bold',
-              color: '#333'
+              color: 'var(--color-text-dark)'
             }}>
               Delete FAQ
             </h3>
             <p style={{
               margin: '0 0 25px 0',
               fontSize: '14px',
-              color: '#666',
+              color: 'var(--color-text-muted)',
               lineHeight: '1.5'
             }}>
               Are you sure you want to delete this FAQ? This action cannot be undone.
@@ -1104,9 +1104,9 @@ const FaqPageSettings = () => {
                 }}
                 style={{
                   padding: '10px 20px',
-                  border: '1px solid #ccc',
-                  backgroundColor: 'white',
-                  color: '#666',
+                  border: '1px solid var(--color-border-muted)',
+                  backgroundColor: 'var(--background)',
+                  color: 'var(--color-text-muted)',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -1116,7 +1116,7 @@ const FaqPageSettings = () => {
                   e.currentTarget.style.backgroundColor = '#f5f5f5';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'white';
+                  e.currentTarget.style.backgroundColor = 'var(--background)';
                 }}
               >
                 Cancel
@@ -1130,8 +1130,8 @@ const FaqPageSettings = () => {
                 style={{
                   padding: '10px 20px',
                   border: 'none',
-                  backgroundColor: ' #1963b9',
-                  color: 'white',
+                  backgroundColor: 'var(--theme-secondary)',
+                  color: 'var(--primary-foreground)',
                   borderRadius: '4px',
                   cursor: 'pointer',
                   fontSize: '14px',
@@ -1141,7 +1141,7 @@ const FaqPageSettings = () => {
                   e.currentTarget.style.backgroundColor = '#c82333';
                 }}
                 onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = ' #1963b9';
+                  e.currentTarget.style.backgroundColor = 'var(--theme-secondary)';
                 }}
               >
                 Delete

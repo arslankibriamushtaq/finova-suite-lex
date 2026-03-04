@@ -138,7 +138,7 @@ const GlobalSections = () => {
         alignItems: 'center', 
         height: '100vh',
         fontSize: '18px',
-        color: ' #1963b9'
+        color: 'var(--theme-secondary)'
       }}>
         Error: {error}
       </div>
@@ -146,8 +146,8 @@ const GlobalSections = () => {
   }
 
   return (
-    <div style={{ 
-      backgroundColor: '#f5f5f5', 
+    <div style={{
+      backgroundColor: 'var(--color-surface-subtle)',
       minHeight: '100vh',
       padding: '20px'
     }}>
@@ -155,8 +155,8 @@ const GlobalSections = () => {
 
       {/* Header Section */}
       {headerContent && (
-        <div style={{ 
-          backgroundColor: 'white', 
+        <div style={{
+          backgroundColor: 'var(--background)',
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           overflow: 'hidden',
@@ -177,8 +177,8 @@ const GlobalSections = () => {
               <button
                 onClick={handleEditHeader}
                 style={{
-                  backgroundColor: '#000',
-                  color: 'white',
+                  backgroundColor: 'var(--foreground)',
+                  color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
                   borderRadius: '4px',
@@ -200,7 +200,7 @@ const GlobalSections = () => {
               position: 'relative',
               //backgroundColor: isScrolled ? '#ffffff' : 'transparent',
               //transition: 'background-color 200ms ease',
-              color: '#000000',
+              color: 'var(--foreground)',
               boxShadow: isScrolled ? '0 1px 8px rgba(0,0,0,0.08)' : 'none',
               filter: showEditHeader ? 'blur(2px)' : 'none',
               //backgroundImage: !isScrolled ? 'linear-gradient(135deg, #2c3e50 0%, #34495e 100%)' : 'none'
@@ -242,7 +242,7 @@ const GlobalSections = () => {
                           target={target}
                           onClick={(e) => e.preventDefault()}
                           className="header-footer-settings__landing-nav-link" 
-                          style={{ color: '#000', cursor: 'default', pointerEvents: 'none' }}
+                          style={{ color: 'var(--foreground)', cursor: 'default', pointerEvents: 'none' }}
                         >
                           {label}
                         </a>
@@ -270,8 +270,8 @@ const GlobalSections = () => {
 
       {/* Footer Section */}
       {footerContent && (
-        <div style={{ 
-          backgroundColor: 'white', 
+        <div style={{
+          backgroundColor: 'var(--background)',
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           overflow: 'hidden'
@@ -279,7 +279,7 @@ const GlobalSections = () => {
           <div 
             style={{ 
               position: 'relative',
-              backgroundColor: '#f8f9fa',
+              backgroundColor: 'var(--color-surface-snow)',
               padding: '40px 20px'
             }}
             onMouseEnter={() => setShowEditFooter(true)}
@@ -296,8 +296,8 @@ const GlobalSections = () => {
                 <button
                   onClick={handleEditFooter}
                   style={{
-                    backgroundColor: '#000',
-                    color: 'white',
+                    backgroundColor: 'var(--foreground)',
+                    color: 'var(--primary-foreground)',
                     border: 'none',
                     padding: '10px 20px',
                     borderRadius: '4px',
@@ -313,7 +313,7 @@ const GlobalSections = () => {
 
             {/* Footer Template */}
             <footer style={{
-              color: '#000',
+              color: 'var(--foreground)',
               filter: showEditFooter ? 'blur(2px)' : 'none',
               transition: 'filter 0.3s ease',
               direction: locale === 'ar' ? 'rtl' : 'ltr'
@@ -327,12 +327,12 @@ const GlobalSections = () => {
                       <div className="header-footer-settings__footer-logo" style={{ fontSize: '24px', fontWeight: 'bold', marginBottom: '5px', textAlign: locale === 'ar' ? 'right' : 'left' }}>
                         عون
                       </div>
-                      <div style={{ fontSize: '14px', color: '#666', marginBottom: '10px', textAlign: locale === 'ar' ? 'right' : 'left' }}>
+                      <div style={{ fontSize: '14px', color: 'var(--color-text-muted)', marginBottom: '10px', textAlign: locale === 'ar' ? 'right' : 'left' }}>
                         • A W N •
                       </div>
                     </div>
                     {footerContent?.address && (
-                      <p style={{ fontSize: '14px', color: '#666', margin: '0', textAlign: locale === 'ar' ? 'right' : 'left', lineHeight: '1.6', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      <p style={{ fontSize: '14px', color: 'var(--color-text-muted)', margin: '0', textAlign: locale === 'ar' ? 'right' : 'left', lineHeight: '1.6', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {footerContent.address}
                       </p>
                     )}
@@ -342,16 +342,16 @@ const GlobalSections = () => {
                 {/* Contact Us with Social Links */}
                 {footerContent?.contact && (
                   <div style={{ flex: '1', minWidth: '200px', marginBottom: '20px', textAlign: locale === 'ar' ? 'right' : 'left' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '15px', color: '#000', textAlign: locale === 'ar' ? 'right' : 'left' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '15px', color: 'var(--foreground)', textAlign: locale === 'ar' ? 'right' : 'left' }}>
                       {footerContent?.contact_title || (locale === 'ar' ? 'اتصل بنا' : 'Contact us')}
                     </h3>
                     {footerContent.contact.phone && (
-                      <p style={{ fontSize: '14px', margin: '5px 0', color: '#000', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      <p style={{ fontSize: '14px', margin: '5px 0', color: 'var(--foreground)', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {footerContent.contact.phone}
                       </p>
                     )}
                     {footerContent.contact.email && (
-                      <p style={{ fontSize: '14px', margin: '5px 0 15px 0', color: '#000', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                      <p style={{ fontSize: '14px', margin: '5px 0 15px 0', color: 'var(--foreground)', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                         {footerContent.contact.email}
                       </p>
                     )}
@@ -404,7 +404,7 @@ const GlobalSections = () => {
                           justifyContent: 'center',
                                 fontSize: '20px',
                           cursor: 'default',
-                          color: 'white',
+                          color: 'var(--primary-foreground)',
                           textDecoration: 'none',
                                 overflow: 'hidden',
                                 transition: 'transform 0.2s',
@@ -443,7 +443,7 @@ const GlobalSections = () => {
                 {/* Footer Menus - render from footer_menus array */}
                 {footerContent?.footer_menus && footerContent.footer_menus.length > 0 && footerContent.footer_menus.map((menu: any, menuIndex: number) => (
                   <div key={menuIndex} style={{ flex: '1', minWidth: '150px', marginBottom: '20px', textAlign: locale === 'ar' ? 'right' : 'left' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '15px', color: '#000', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
+                    <h3 style={{ fontSize: '16px', fontWeight: 'bold', marginBottom: '15px', color: 'var(--foreground)', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word' }}>
                       {menu.title || 'Menu'}
                     </h3>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
@@ -461,7 +461,7 @@ const GlobalSections = () => {
                             href={link.url || '#'} 
                             target={link.target || '_self'}
                             onClick={(e) => e.preventDefault()}
-                            style={{ color: '#000', textDecoration: 'none', fontSize: '14px', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word', lineHeight: '1.5', cursor: 'default', pointerEvents: 'none' }}
+                            style={{ color: 'var(--foreground)', textDecoration: 'none', fontSize: '14px', textAlign: locale === 'ar' ? 'right' : 'left', wordWrap: 'break-word', overflowWrap: 'break-word', lineHeight: '1.5', cursor: 'default', pointerEvents: 'none' }}
                           >
                             {link.label || (typeof link === 'string' ? link : 'Link')}
                           </a>
@@ -472,12 +472,12 @@ const GlobalSections = () => {
               </div>
 
               {/* Copyright and Disclaimer */}
-              <div style={{ 
-                borderTop: '1px solid #ddd', 
-                paddingTop: '20px', 
+              <div style={{
+                borderTop: '1px solid var(--color-border-light)',
+                paddingTop: '20px',
                 textAlign: 'center',
                 fontSize: '14px',
-                color: '#666',
+                color: 'var(--color-text-muted)',
                 direction: locale === 'ar' ? 'rtl' : 'ltr'
               }}>
                 {footerContent?.copyright && (
@@ -505,12 +505,12 @@ const GlobalSections = () => {
 
       {/* Show message if no sections found */}
       {!headerContent && !footerContent && !loading && (
-        <div style={{ 
-          backgroundColor: 'white', 
+        <div style={{
+          backgroundColor: 'var(--background)',
           borderRadius: '8px',
           padding: '40px',
           textAlign: 'center',
-          color: '#666'
+          color: 'var(--color-text-muted)'
         }}>
           No global sections found in the API response.
         </div>
@@ -529,7 +529,7 @@ const GlobalSections = () => {
             will-change: background-color, box-shadow, transform, opacity; 
           }
           .header-footer-settings__landing-header.is-sticky {
-            background: #ffffff !important;
+            background: var(--background) !important;
             transition: background-color 200ms ease;
             box-shadow: 0 1px 8px rgba(0,0,0,0.08);
             animation: sticky-slide-down 220ms ease both;
@@ -537,7 +537,7 @@ const GlobalSections = () => {
           .header-footer-settings__landing-header.is-sticky .header-footer-settings__landing-nav,
           .header-footer-settings__landing-header.is-sticky .header-footer-settings__landing-nav-link,
           .header-footer-settings__landing-header.is-sticky .header-footer-settings__landing-language {
-            color: #000000 !important;
+            color: var(--foreground) !important;
           }
           @keyframes sticky-slide-down {
             0% { transform: translateY(-8px); opacity: 0.85; }
