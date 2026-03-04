@@ -5,7 +5,7 @@ import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
 
 const axios = Axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_FACTORING,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
 });
 
 axios.interceptors.request.use((reqConfig) => {

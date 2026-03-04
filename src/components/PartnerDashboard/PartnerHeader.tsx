@@ -27,25 +27,20 @@ const PartnerHeader = () => {
   // Logout function
   const logOut = async () => {
     try {
-      const body = {};
       await toast.promise(
-        logOutApi(body), // The promise to track
+        logOutApi(),
         {
-          loading: "Logging Out...", // Loading state message
+          loading: "Logging Out...",
           success: (res) => {
-            if (res?.data?.success) {
-              dispatch(setToken({ token: "" }));
-              localStorage.removeItem("token");
-              localStorage.removeItem("userData");
-              navigate("/login");
-              return res?.data?.message;
-            } else if (res?.data?.errors) {
-              throw new Error(res.data.errors[0]); // Force error handling
-            }
+            dispatch(setToken({ token: "" }));
+            localStorage.removeItem("token");
+            localStorage.removeItem("userData");
+            localStorage.removeItem("permissions");
+            navigate("/login");
+            return res?.data?.message || "Logged out successfully";
           },
           error: (err) => {
-            console.error("Error occurred:", err);
-            return err?.message || "Something went wrong!";
+            return err?.response?.data?.message || err?.message || "Logout failed!";
           },
         }
       );

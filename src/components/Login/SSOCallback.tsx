@@ -1,0 +1,121 @@
+import React, { useEffect, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import toast from "react-hot-toast";
+import axios from "axios";
+import { useDispatch } from "react-redux";
+import {
+  setToken,
+  setRefreshToken,
+  setPermissions,
+} from "../../redux/apis/apisSlice";
+import Loader from "../Loader/Loader";
+import { getRolePermission } from "../../redux/apis/apisCrud";
+
+const SSOCallback: React.FC = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const exchangeCode = async () => {
+      const code = searchParams.get("code");
+      const state = searchParams.get("state");
+
+      if (!code) {
+        setError("Authorization code not found.");
+        return;
+      }
+
+      // Verify state matches what we stored
+      const savedState = sessionStorage.getItem("sso_state");
+      if (state && savedState && state !== savedState) {
+        setError("Invalid state parameter. Please try logging in again.");
+        return;
+      }
+
+      try {
+        const ssoBaseUrl = import.meta.env.VITE_API_BASE_URL;
+        const res = await axios.post(
+          `${ssoBaseUrl}/identity-service/api/v1/auth/sso/token`,
+          { code, state }
+        );
+
+        const data = res.data?.data;
+        if (!data?.accessToken) {
+          setError("Failed to retrieve access token.");
+          return;
+        }
+
+        // Store tokens
+        dispatch(setToken({ token: data.accessToken }));
+        localStorage.setItem("token", data.accessToken);
+
+        if (data.refreshToken) {
+          dispatch(setRefreshToken({ refreshToken: data.refreshToken }));
+        }
+
+        localStorage.setItem("userData", JSON.stringify(data));
+
+        // Fetch permissions
+        try {
+          const permissionRes = await getRolePermission();
+          if (permissionRes?.data?.success) {
+            const permissions = permissionRes.data.data;
+            dispatch(setPermissions(permissions));
+            localStorage.setItem("permissions", JSON.stringify(permissions));
+          }
+        } catch {
+          // Continue even if permissions fail
+        }
+
+        // Cleanup
+        sessionStorage.removeItem("sso_state");
+
+        toast.success("Login Successful");
+        navigate("/LOS/Dashboard", { replace: true });
+      } catch (err: any) {
+        const message =
+          err?.response?.data?.message || "SSO authentication failed.";
+        setError(message);
+      }
+    };
+
+    exchangeCode();
+  }, []);
+
+  if (error) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          minHeight: "100vh",
+          gap: "16px",
+        }}
+      >
+        <p style={{ color: "#ff4d4f", fontSize: "16px" }}>{error}</p>
+        <button
+          onClick={() => navigate("/login", { replace: true })}
+          style={{
+            padding: "10px 24px",
+            backgroundColor: "var(--primary, #1963b9)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontSize: "14px",
+          }}
+        >
+          Back to Login
+        </button>
+      </div>
+    );
+  }
+
+  return <Loader />;
+};
+
+export default SSOCallback;

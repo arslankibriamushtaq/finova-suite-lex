@@ -29,6 +29,7 @@ import LmsAllCustomers from "../pages/lmsPages/Customers/AllCustomers";
 import Login from "../components/Login/login";
 import VerifyOtp from "../components/Login/VerifyOtp";
 import ResetPassword from "../components/Login/ResetPassword";
+import SSOCallback from "../components/Login/SSOCallback";
 import LayoutLogin from "../Layout/LayoutLogin";
 import Leads from "../components/Customer/Leads";
 import Users from "../components/UserAndRoleManagement/Users";
@@ -417,6 +418,11 @@ export const router = createBrowserRouter([
         path: "reset-password",
         element: <LayoutLogin />,
         children: [{ path: "", element: <ResetPassword /> }],
+      },
+      {
+        path: "callback",
+        element: <LayoutLogin />,
+        children: [{ path: "", element: <SSOCallback /> }],
       },
     ],
   },

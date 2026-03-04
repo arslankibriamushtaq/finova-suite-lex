@@ -506,8 +506,8 @@ export function editVendorCommission(id: any, body: any) {
 export function deleteVendorCommission(id: any) {
   return axios.delete(`api/portal/vendor-commission/delete/${id}`);
 }
-export function logOutApi(body: any) {
-  return axios.post(`/v1/logout`, body);
+export function logOutApi() {
+  return axios.post(`/identity-service/api/v1/auth/logout`);
 }
 export function getAppVersion(page: any, pageSize: any) {
   return axios.get(`api/portal/app-version?page=${page}&per_page=${pageSize}`);
