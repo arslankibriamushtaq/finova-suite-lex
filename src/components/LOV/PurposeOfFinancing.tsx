@@ -138,7 +138,7 @@ const PurposeOfFinancing = () => {
       {canVerifyPOF && (
         <Menu.Item
           key="verify"
-          icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+          icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
           Verify
@@ -147,7 +147,7 @@ const PurposeOfFinancing = () => {
       {canCheckerRejectPOF && (
         <Menu.Item
           key="checkerReject"
-          icon={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
           Reject (Checker)
@@ -156,7 +156,7 @@ const PurposeOfFinancing = () => {
       {canApprovePOF && (
         <Menu.Item
           key="approve"
-          icon={<SafetyCertificateOutlined style={{ color: "#1890ff" }} />}
+          icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
           Approve
@@ -165,7 +165,7 @@ const PurposeOfFinancing = () => {
       {canApproverRejectPOF && (
         <Menu.Item
           key="approverReject"
-          icon={<StopOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
           Reject (Approver)
@@ -211,11 +211,11 @@ const PurposeOfFinancing = () => {
             borderRadius: "32px",
             backgroundColor:
               row.status === true
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.status === false
-                ? "#BC3D3F"
-                : "#FF9811",
-            color: "white",
+                ? "var(--color-error)"
+                : "var(--color-orange-alt)",
+            color: "var(--primary-foreground)",
             cursor: row.status === true ? "pointer" : "default",
           }}
         >

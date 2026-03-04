@@ -68,7 +68,7 @@ const ViewListOfValues = () => {
         bordered={false}
         style={{
           margin: "0 auto",
-          background: "#fff",
+          background: "var(--background)",
           boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           borderRadius: 8,
         }}
@@ -113,11 +113,11 @@ const ViewListOfValues = () => {
                   borderRadius: "32px",
                   backgroundColor:
                     data.status === 1 || data.status === true
-                      ? "rgba(63, 195, 128, 0.9)"
+                      ? "var(--color-success)"
                       : data.status === 0 || data.status === false
-                      ? "#BC3D3F"
-                      : "#FF9811",
-                  color: "white",
+                      ? "var(--color-error)"
+                      : "var(--color-orange-alt)",
+                  color: "var(--primary-foreground)",
                   display: "inline-block",
                   minWidth: "80px",
                   textAlign: "center",

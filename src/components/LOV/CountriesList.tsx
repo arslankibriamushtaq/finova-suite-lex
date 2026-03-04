@@ -39,17 +39,17 @@ const CountriesList = () => {
       case "highrisk":
       case "high":
       case "high risk":
-        return "#F84D4D";
+        return "var(--color-error)";
       case "mediumrisk":
       case "medium":
-        return "#FFC107";
+        return "var(--color-warning)";
       case "peprisk":
       case "pep":
-        return "#9C27B0";
+        return "var(--color-pep)";
       case "lowrisk":
       case "low":
       default:
-        return "rgba(63, 195, 128, 0.9)";
+        return "var(--color-success)";
     }
   };
   
@@ -100,7 +100,7 @@ const CountriesList = () => {
               borderRadius: "32px",
               fontSize: "12px",
               backgroundColor: getRiskColor(riskStatus),
-              color: "white",
+              color: "var(--primary-foreground)",
               display: "inline-block",
               textTransform: "capitalize",
               fontWeight: "500"
@@ -122,11 +122,11 @@ const CountriesList = () => {
             borderRadius: "32px",
             backgroundColor:
               row.status === 1 || row.status === true
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.status === 0 || row.status === false
-                ? "#BC3D3F"
-                : "#FF9811",
-            color: "white",
+                ? "var(--color-error)"
+                : "var(--color-orange-alt)",
+            color: "var(--primary-foreground)",
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >

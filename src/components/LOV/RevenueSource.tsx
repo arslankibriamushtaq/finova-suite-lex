@@ -126,7 +126,7 @@ const RevenueSource = () => {
       {canVerifySOR && (
         <Menu.Item
           key="verify"
-          icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+          icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
           Verify
@@ -135,7 +135,7 @@ const RevenueSource = () => {
       {canCheckerRejectSOR && (
         <Menu.Item
           key="checkerReject"
-          icon={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
           Reject (Checker)
@@ -144,7 +144,7 @@ const RevenueSource = () => {
       {canApproveSOR && (
         <Menu.Item
           key="approve"
-          icon={<SafetyCertificateOutlined style={{ color: "#1890ff" }} />}
+          icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
           Approve
@@ -153,7 +153,7 @@ const RevenueSource = () => {
       {canApproverRejectSOR && (
         <Menu.Item
           key="approverReject"
-          icon={<StopOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
           Reject (Approver)
@@ -194,11 +194,11 @@ const RevenueSource = () => {
             borderRadius: "32px",
             backgroundColor:
               row.status === 1
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.status === 0
-                ? "#BC3D3F"
-                : "#FF9811",
-            color: "white",
+                ? "var(--color-error)"
+                : "var(--color-orange-alt)",
+            color: "var(--primary-foreground)",
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >

@@ -45,11 +45,11 @@ const OptionalReasonRescheduling = () => {
             borderRadius: "32px",
             backgroundColor:
               row.status === true
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.status === false
-                ? "#BC3D3F"
-                : "#FF9811",
-            color: "white",
+                ? "var(--color-error)"
+                : "var(--color-orange-alt)",
+            color: "var(--primary-foreground)",
             cursor: row.status === true ? "pointer" : "default",
           }}
         >

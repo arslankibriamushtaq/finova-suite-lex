@@ -129,10 +129,10 @@ const ProfessionValue = () => {
         const risk = row.risk || "";
         const getRiskColor = (risk: string) => {
           const riskLower = risk?.toLowerCase() || "";
-          if (riskLower === "high") return "#BC3D3F";
-          if (riskLower === "medium") return "#FF9811";
-          if (riskLower === "low") return "rgba(63, 195, 128, 0.9)";
-          return "#FF9811";
+          if (riskLower === "high") return "var(--color-error)";
+          if (riskLower === "medium") return "var(--color-orange-alt)";
+          if (riskLower === "low") return "var(--color-success)";
+          return "var(--color-orange-alt)";
         };
         return (
           <div
@@ -141,7 +141,7 @@ const ProfessionValue = () => {
               fontSize: "12px",
               borderRadius: "32px",
               backgroundColor: getRiskColor(risk),
-              color: "white",
+              color: "var(--primary-foreground)",
             }}
           >
             {risk || "-"}
@@ -169,11 +169,11 @@ const ProfessionValue = () => {
             borderRadius: "32px",
             backgroundColor:
               row.status === 1 || row.status === true
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.status === 0 || row.status === false
-                ? "#BC3D3F"
-                : "#FF9811",
-            color: "white",
+                ? "var(--color-error)"
+                : "var(--color-orange-alt)",
+            color: "var(--primary-foreground)",
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
