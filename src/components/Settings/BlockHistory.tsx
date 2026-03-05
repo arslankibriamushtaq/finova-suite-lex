@@ -47,7 +47,7 @@ const BlockHistory = () => {
             {row.user_name}
           </div>
           {row.user_nid && (
-            <div style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+            <div style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "4px" }}>
               | NID: {row.user_nid}
             </div>
           )}
@@ -61,11 +61,11 @@ const BlockHistory = () => {
       cell: (row: any) => (
         <span style={{
           backgroundColor: 
-            row.block_code_type === 'aml' ? "#F84D4D" : 
-            row.block_code_type === 'compliance' ? "#00BCD4" : 
-            row.block_code_type === 'anti_fraud' ? "#FF9800" : 
-            row.block_code_type === 'sanction' ? "#9C27B0" : 
-            "#607D8B",
+            row.block_code_type === 'aml' ? "var(--color-error)" :
+            row.block_code_type === 'compliance' ? "var(--color-block-compliance)" :
+            row.block_code_type === 'anti_fraud' ? "var(--color-orange)" :
+            row.block_code_type === 'sanction' ? "var(--color-pep)" :
+            "var(--color-block-fallback)",
           color: "white",
           padding: "6px 12px",
           borderRadius: "4px",
@@ -84,7 +84,7 @@ const BlockHistory = () => {
       name: "Action",
       cell: (row: any) => (
         <button style={{
-          backgroundColor: row.action === 'block' ? "#F84D4D" : "#3FC380",
+          backgroundColor: row.action === 'block' ? "var(--color-error)" : "var(--color-success)",
           color: "white",
           border: "none",
           padding: "6px 16px",
@@ -128,7 +128,7 @@ const BlockHistory = () => {
             {row.action_by_name}
           </div>
           {row.action_by_email && (
-            <div style={{ fontSize: "12px", color: "#666", marginTop: "4px" }}>
+            <div style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "4px" }}>
               {row.action_by_email}
             </div>
           )}

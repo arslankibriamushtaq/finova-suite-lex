@@ -119,12 +119,12 @@ const PartnersCommission = () => {
           <div className="col-md-6 mb-3">
             <div
               style={{
-                background: "#f8f9fa",
+                background: "var(--color-surface-snow)",
                 padding: "1.5rem",
                 borderRadius: "8px",
               }}
             >
-              <p style={{ margin: 0, fontSize: "14px", color: "#6c757d" }}>
+              <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-slate)" }}>
                 Total Applied Applications
               </p>
               <h2 style={{ margin: "0.5rem 0 0 0", fontWeight: 700 }}>

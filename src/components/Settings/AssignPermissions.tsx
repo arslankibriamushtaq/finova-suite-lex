@@ -147,8 +147,8 @@ const AssignPermissions: React.FC = () => {
       <div
         key={module.id}
         style={{
-          backgroundColor: "#f8f9fa",
-          border: "1px solid #e0e0e0",
+          backgroundColor: "var(--color-surface-snow)",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "8px",
           padding: "20px",
           width: "100%",
@@ -163,7 +163,7 @@ const AssignPermissions: React.FC = () => {
             gap: "12px",
             marginBottom: hasPermissions ? "15px" : "0",
             paddingBottom: hasPermissions ? "12px" : "0",
-            borderBottom: hasPermissions ? "1px solid #e0e0e0" : "none",
+            borderBottom: hasPermissions ? "1px solid var(--color-border-subtle)" : "none",
           }}
         >
           <Switch
@@ -171,14 +171,14 @@ const AssignPermissions: React.FC = () => {
             checked={isFullySelected}
             onChange={(checked) => toggleModulePermissions(module, checked)}
             style={{
-              backgroundColor: isFullySelected ? "#000000" : undefined,
+              backgroundColor: isFullySelected ? "var(--foreground)" : undefined,
             }}
           />
           <Text
             style={{
               fontSize: "16px",
               fontWeight: "600",
-              color: "#000",
+              color: "var(--foreground)",
               margin: 0,
             }}
           >
@@ -208,7 +208,7 @@ const AssignPermissions: React.FC = () => {
                     onChange={() => togglePermission(permission.id)}
                     size="small"
                   />
-                  <Text style={{ fontSize: "14px", color: "#666", margin: 0 }}>
+                  <Text style={{ fontSize: "14px", color: "var(--color-text-muted)", margin: 0 }}>
                     {permissionName}
                   </Text>
                 </div>

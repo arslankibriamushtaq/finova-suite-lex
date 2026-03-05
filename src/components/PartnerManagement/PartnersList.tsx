@@ -131,7 +131,7 @@ const PartnersList = () => {
       {canVerifyPartner && (
         <Menu.Item
           key="verify"
-          icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+          icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
           Verify
@@ -140,7 +140,7 @@ const PartnersList = () => {
       {canCheckerRejectPartner && (
         <Menu.Item
           key="checkerReject"
-          icon={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
           Reject (Checker)
@@ -149,7 +149,7 @@ const PartnersList = () => {
       {canApprovePartner && (
         <Menu.Item
           key="approve"
-          icon={<SafetyCertificateOutlined style={{ color: "#1890ff" }} />}
+          icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
           Approve
@@ -158,7 +158,7 @@ const PartnersList = () => {
       {canApproverRejectPartner && (
         <Menu.Item
           key="approverReject"
-          icon={<StopOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
           Reject (Approver)

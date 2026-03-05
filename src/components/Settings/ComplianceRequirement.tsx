@@ -141,7 +141,7 @@ const ComplianceRequirement = () => {
           style={{
             padding: "5px 10px",
             borderRadius: "20px",
-            backgroundColor: row.status ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}
@@ -159,8 +159,8 @@ const ComplianceRequirement = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
@@ -627,7 +627,7 @@ const ComplianceRequirement = () => {
 
             <div className="col-md-6">
               <Form.Item label="Status" name="status" valuePropName="checked">
-                <Switch style={{ backgroundColor: "#000" }} checkedChildren="Active" unCheckedChildren="Inactive" />
+                <Switch style={{ backgroundColor: "var(--foreground)" }} checkedChildren="Active" unCheckedChildren="Inactive" />
               </Form.Item>
             </div>
           </div>

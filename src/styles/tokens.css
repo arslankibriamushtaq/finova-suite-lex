@@ -144,6 +144,10 @@
   /* Bootstrap-origin semantic colors */
   --color-action-blue:    #007bff;
   --color-status-active:  #28a745;
+
+  /* Block type colors (BlockHistory) */
+  --color-block-compliance: #00BCD4;
+  --color-block-fallback:   #607D8B;
 }
 
 .dark {

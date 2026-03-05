@@ -127,7 +127,7 @@ const AddPartnerAdmin = () => {
           <Input
             placeholder="Auto-generated password"
             value={formData.password}
-            style={{ height: "40px", backgroundColor: "#f0f0f0" }}
+            style={{ height: "40px", backgroundColor: "var(--color-surface-muted)" }}
             readOnly
           />
         </div>

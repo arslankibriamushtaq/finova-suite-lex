@@ -134,7 +134,7 @@ const PartnerAdminList = () => {
       {canVerifyAdmin && (
         <Menu.Item
           key="verify"
-          icon={<CheckCircleOutlined style={{ color: "#52c41a" }} />}
+          icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
           Verify
@@ -143,7 +143,7 @@ const PartnerAdminList = () => {
       {canCheckerRejectAdmin && (
         <Menu.Item
           key="checkerReject"
-          icon={<CloseCircleOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
           Reject (Checker)
@@ -152,7 +152,7 @@ const PartnerAdminList = () => {
       {canApproveAdmin && (
         <Menu.Item
           key="approve"
-          icon={<SafetyCertificateOutlined style={{ color: "#1890ff" }} />}
+          icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
           Approve
@@ -161,7 +161,7 @@ const PartnerAdminList = () => {
       {canApproverRejectAdmin && (
         <Menu.Item
           key="approverReject"
-          icon={<StopOutlined style={{ color: "#ff4d4f" }} />}
+          icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
           Reject (Approver)

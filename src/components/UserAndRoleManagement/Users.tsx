@@ -206,9 +206,9 @@ const Users = () => {
             fontSize: "12px",
             backgroundColor:
               row.status === "active"
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.status === "inactive"
-                ? "#F84D4D"
+                ? "var(--color-error)"
                 : "transparent",
             color: "white",
             cursor: row.status === "active" ? "pointer" : "default",
@@ -227,8 +227,8 @@ const Users = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",

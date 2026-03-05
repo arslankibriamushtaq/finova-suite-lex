@@ -274,7 +274,7 @@ const AddPartner = () => {
                   right: "10px",
                   transform: "translateY(-50%)",
                   background: "transparent",
-                  color: "#000",
+                  color: "var(--foreground)",
                   border: "none",
                   borderRadius: "50%",
                   width: "28px",
@@ -339,7 +339,7 @@ const AddPartner = () => {
                   right: "10px",
                   transform: "translateY(-50%)",
                   background: "transparent",
-                  color: "#000",
+                  color: "var(--foreground)",
                   border: "none",
                   borderRadius: "50%",
                   width: "28px",
@@ -379,7 +379,7 @@ const AddPartner = () => {
             placeholder="Auto-generated key"
             value={formData.secret_key}
             onChange={(e) => handleInputChange("secret_key", e.target.value)}
-            style={{ height: "40px", backgroundColor: "#f5f5f5" }}
+            style={{ height: "40px", backgroundColor: "var(--color-surface-subtle)" }}
             readOnly
           />
         </div>

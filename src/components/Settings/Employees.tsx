@@ -159,7 +159,7 @@ const Employees = () => {
               padding: "6px 12px",
               fontSize: "12px",
               borderRadius: "32px",
-              backgroundColor: isActive ? "rgba(63, 195, 128, 0.9)" : "#FF6161",
+              backgroundColor: isActive ? "var(--color-success)" : "var(--color-error)",
               color: "white",
               display: "inline-block",
             }}
