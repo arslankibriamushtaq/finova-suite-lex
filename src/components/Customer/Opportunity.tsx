@@ -40,17 +40,17 @@ const Opportunity = () => {
     switch (riskLower) {
       case "highrisk":
       case "high":
-        return "#F84D4D";
+        return "var(--color-error)";
       case "mediumrisk":
       case "medium":
-        return "#FFC107";
+        return "var(--color-warning-gold)";
       case "peprisk":
       case "pep":
-        return "#9C27B0";
+        return "var(--color-pep)";
       case "lowrisk":
       case "low":
       default:
-        return "rgba(63, 195, 128, 0.9)";
+        return "var(--color-success)";
     }
   };
   
@@ -204,7 +204,7 @@ const Opportunity = () => {
             padding: "8px 10px",
             borderRadius: "5px",
             fontSize: "12px",
-            backgroundColor: row.is_blocked ? "#F84D4D" : "rgba(63, 195, 128, 0.9)",
+            backgroundColor: row.is_blocked ? "var(--color-error)" : "var(--color-success)",
             color: "white",
             cursor: "default",
             border: "none",
@@ -221,17 +221,17 @@ const Opportunity = () => {
       cell: (row: { status: any }) => {
         const status = row.status || "-";
         const getStatusColor = () => {
-          if (status.toLowerCase() === "active") return "#28a745";
-          if (status.toLowerCase() === "inactive") return " #1963b9";
-          if (status.toLowerCase() === "pending") return "#ffc107";
-          return "#6c757d";
+          if (status.toLowerCase() === "active") return "var(--color-status-active)";
+          if (status.toLowerCase() === "inactive") return "var(--theme-secondary)";
+          if (status.toLowerCase() === "pending") return "var(--color-warning-gold)";
+          return "var(--color-text-slate)";
         };
         
         return (
           <span
             style={{
               backgroundColor: getStatusColor(),
-              color: "#fff",
+              color: "var(--primary-foreground)",
               padding: "4px 12px",
               borderRadius: "12px",
               fontSize: "12px",
@@ -259,8 +259,8 @@ const Opportunity = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
@@ -674,7 +674,7 @@ const Opportunity = () => {
               }}>
                 <span className="visually-hidden">Loading...</span>
               </div>
-              <p style={{ fontSize: "16px", color: "#666", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
             </div>
           ) : (
             <>
@@ -690,15 +690,15 @@ const Opportunity = () => {
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Button
                     type="primary"
-                    style={{ backgroundColor: "#3FC380", borderColor: "#3FC380" }}
+                    style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }}
                     onClick={handleSelectAll}
                   >
                     ✓ Select All
                   </Button>
                   <Button
                     style={{
-                      backgroundColor: "#FFC107",
-                      borderColor: "#FFC107",
+                      backgroundColor: "var(--color-warning-gold)",
+                      borderColor: "var(--color-warning-gold)",
                       color: "white"
                     }}
                     onClick={handleDeselectAll}
@@ -710,7 +710,7 @@ const Opportunity = () => {
 
           {/* Block Codes Table */}
           <div style={{
-            border: "1px solid #f0f0f0",
+            border: "1px solid var(--color-surface-muted)",
             borderRadius: "8px",
             overflow: "hidden",
             maxHeight: "400px",
@@ -718,7 +718,7 @@ const Opportunity = () => {
           }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead style={{
-                backgroundColor: "#fafafa",
+                backgroundColor: "var(--color-surface-ice)",
                 position: "sticky",
                 top: 0,
                 zIndex: 1
@@ -727,7 +727,7 @@ const Opportunity = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "left",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     width: "50px"
                   }}>
                     <Checkbox
@@ -739,7 +739,7 @@ const Opportunity = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "left",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
                     Block Code
@@ -747,7 +747,7 @@ const Opportunity = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "left",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
                     Type
@@ -755,7 +755,7 @@ const Opportunity = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "center",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
                     Action
@@ -765,11 +765,11 @@ const Opportunity = () => {
               <tbody>
                 {blockCodes.map((code) => (
                   <tr key={code.id} style={{
-                    backgroundColor: selectedBlockCodes.includes(code.id) ? "#f5f5f5" : "white"
+                    backgroundColor: selectedBlockCodes.includes(code.id) ? "var(--color-surface-subtle)" : "white"
                   }}>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0"
+                      borderBottom: "1px solid var(--color-surface-muted)"
                     }}>
                       <Checkbox
                         checked={selectedBlockCodes.includes(code.id)}
@@ -778,17 +778,17 @@ const Opportunity = () => {
                     </td>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0",
+                      borderBottom: "1px solid var(--color-surface-muted)",
                       fontWeight: "500"
                     }}>
                       {code.code}
                     </td>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0"
+                      borderBottom: "1px solid var(--color-surface-muted)"
                     }}>
                       <span style={{
-                        backgroundColor: "#00BCD4",
+                        backgroundColor: "var(--color-block-compliance)",
                         color: "white",
                         padding: "4px 12px",
                         borderRadius: "4px",
@@ -800,11 +800,11 @@ const Opportunity = () => {
                     </td>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0",
+                      borderBottom: "1px solid var(--color-surface-muted)",
                       textAlign: "center"
                     }}>
                       <button style={{
-                        backgroundColor: code.blocked ? "#F84D4D" : "#3FC380",
+                        backgroundColor: code.blocked ? "var(--color-error)" : "var(--color-success)",
                         color: "white",
                         border: "none",
                         padding: "6px 16px",
@@ -831,7 +831,7 @@ const Opportunity = () => {
             gap: "10px",
             marginTop: "20px",
             paddingTop: "20px",
-            borderTop: "1px solid #f0f0f0"
+            borderTop: "1px solid var(--color-surface-muted)"
           }}>
             <Button
               type="primary"
@@ -839,8 +839,8 @@ const Opportunity = () => {
               disabled={selectedBlockCodes.length === 0}
               onClick={handleBlockSelected}
               style={{
-                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "#F84D4D",
-                borderColor: selectedBlockCodes.length === 0 ? undefined : "#F84D4D"
+                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)",
+                borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)"
               }}
             >
               ⊘ Block Selected
@@ -850,8 +850,8 @@ const Opportunity = () => {
               disabled={selectedBlockCodes.length === 0}
               onClick={handleUnblockSelected}
               style={{
-                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "#3FC380",
-                borderColor: selectedBlockCodes.length === 0 ? undefined : "#3FC380"
+                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-success)",
+                borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-success)"
               }}
             >
               ✓ Unblock Selected

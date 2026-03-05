@@ -492,7 +492,7 @@ const AllDocuments = () => {
                 setShowModal(false);
               }}
               style={{
-                backgroundColor: "#EB0D0D",
+                backgroundColor: "var(--color-danger-action)",
               }}
             >
               Save

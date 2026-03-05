@@ -193,9 +193,9 @@ const OnboardCustomers = () => {
             borderRadius: "12px",
             backgroundColor:
               row.accountStatus === "active"
-                ? "rgba(63, 195, 128, 0.9)"
+                ? "var(--color-success)"
                 : row.accountStatus === "inactive"
-                ? "#F84D4D"
+                ? "var(--color-error)"
                 : "transparent",
             color: "white",
             cursor: row.accountStatus === "active" ? "pointer" : "default",
@@ -214,8 +214,8 @@ const OnboardCustomers = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",

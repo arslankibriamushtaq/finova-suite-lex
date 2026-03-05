@@ -52,7 +52,7 @@ const BusinessInfoTab: React.FC<BusinessInfoTabProps> = ({ applicationData }) =>
         style={{
           fontSize: "20px",
           fontWeight: "700",
-          color: "#000000",
+          color: "var(--foreground)",
           marginBottom: "24px",
           textAlign: "start",
         }}
@@ -72,15 +72,15 @@ const BusinessInfoTab: React.FC<BusinessInfoTabProps> = ({ applicationData }) =>
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
-            backgroundColor: "#f8f9fa",
-            borderBottom: "1px solid #e0e0e0",
+            backgroundColor: "var(--color-surface-snow)",
+            borderBottom: "1px solid var(--color-border-subtle)",
             padding: "12px 16px",
           }}
         >
           <div
             style={{
               fontWeight: "600",
-              color: "#1963b9",
+              color: "var(--theme-secondary)",
               fontSize: "14px",
             }}
           >
@@ -89,7 +89,7 @@ const BusinessInfoTab: React.FC<BusinessInfoTabProps> = ({ applicationData }) =>
           <div
             style={{
               fontWeight: "600",
-              color: "#1963b9",
+              color: "var(--theme-secondary)",
               fontSize: "14px",
               textAlign: "right",
               direction: "rtl",
@@ -106,23 +106,23 @@ const BusinessInfoTab: React.FC<BusinessInfoTabProps> = ({ applicationData }) =>
             style={{
               display: "grid",
               gridTemplateColumns: "1fr 1fr",
-              borderBottom: index < businessInfoFields.length - 1 ? "1px solid #e0e0e0" : "none",
+              borderBottom: index < businessInfoFields.length - 1 ? "1px solid var(--color-border-subtle)" : "none",
             }}
           >
             {/* English Side */}
             <div
               style={{
                 padding: "12px 16px",
-                borderRight: "1px solid #e0e0e0",
+                borderRight: "1px solid var(--color-border-subtle)",
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
               }}
             >
-              <span style={{ color: "#000000", fontSize: "14px" }}>
+              <span style={{ color: "var(--foreground)", fontSize: "14px" }}>
                 {field.labelEn}
               </span>
-              <span style={{ color: "#000000", fontSize: "14px", fontWeight: "500" }}>
+              <span style={{ color: "var(--foreground)", fontSize: "14px", fontWeight: "500" }}>
                 {field.value}
               </span>
             </div>
@@ -138,10 +138,10 @@ const BusinessInfoTab: React.FC<BusinessInfoTabProps> = ({ applicationData }) =>
                 textAlign: "right",
               }}
             >
-              <span style={{ color: "#000000", fontSize: "14px" }}>
+              <span style={{ color: "var(--foreground)", fontSize: "14px" }}>
                 {field.value}
               </span>
-              <span style={{ color: "#000000", fontSize: "14px" }}>
+              <span style={{ color: "var(--foreground)", fontSize: "14px" }}>
                 {field.labelAr}
               </span>
             </div>

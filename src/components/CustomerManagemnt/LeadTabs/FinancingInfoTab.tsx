@@ -11,7 +11,7 @@ const FinancingInfoTab: React.FC = () => {
             column={1}
             size="small"
             title="Financing Info (English)"
-            style={{ background: "#fafafa", borderRadius: 8 }}
+            style={{ background: "var(--color-surface-ice)", borderRadius: 8 }}
           >
             <Descriptions.Item label="Loan Amount">PKR 2,000,000</Descriptions.Item>
             <Descriptions.Item label="Tenure">24 Months</Descriptions.Item>
@@ -25,7 +25,7 @@ const FinancingInfoTab: React.FC = () => {
             column={1}
             size="small"
             title="معلومات التمويل"
-            style={{ background: "#fafafa", borderRadius: 8 }}
+            style={{ background: "var(--color-surface-ice)", borderRadius: 8 }}
           >
             <Descriptions.Item label="مبلغ القرض">PKR 2,000,000</Descriptions.Item>
             <Descriptions.Item label="المدة">24 شهرًا</Descriptions.Item>

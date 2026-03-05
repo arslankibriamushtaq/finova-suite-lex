@@ -138,7 +138,7 @@ const AccountTimeline = () => {
         </div>
       </div>
       {/* <hr /> */}
-      <VerticalTimeline lineColor="#ccc" className="pt-4">
+      <VerticalTimeline lineColor="var(--color-border-muted)" className="pt-4">
         {data?.map((event, index) => {
           // Check if we need to display a month marker
           const showMonthMarker =
@@ -161,13 +161,13 @@ const AccountTimeline = () => {
                     style={{
                       display: "inline-block",
                       padding: "5px 10px",
-                      backgroundColor: "#4D6685",
+                      backgroundColor: "var(--theme-active-color)",
                       borderRadius: "15px",
-                      color: "#FCFCFC",
+                      color: "var(--color-near-white)",
                       fontWeight: "bold",
                       zIndex: "1",
                       position: "relative",
-                      border: "1px solid #373435",
+                      border: "1px solid var(--color-status-dark)",
                     }}
                   >
                     {event?.date} {event?.year}
@@ -178,7 +178,7 @@ const AccountTimeline = () => {
               {/* Timeline element */}
               <VerticalTimelineElement
                 className="vertical-timeline-element--work"
-                contentStyle={{ background: event.background, color: "#000" }}
+                contentStyle={{ background: event.background, color: "var(--foreground)" }}
                 contentArrowStyle={{
                   borderRight: `7px solid ${event.background}`,
                 }}
@@ -190,7 +190,7 @@ const AccountTimeline = () => {
                 }
                 iconStyle={{
                   background: event.iconColor,
-                  color: "#fff",
+                  color: "var(--primary-foreground)",
                   width: "15px",
                   height: "15px",
                 }}

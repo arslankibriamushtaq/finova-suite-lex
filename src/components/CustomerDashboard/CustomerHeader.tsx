@@ -228,7 +228,7 @@ const CustomerHeader = () => {
       </div>
 
       {location.pathname === "/superadmin" && (
-        <div className="p-2" style={{ backgroundColor: "#F0F0F0" }}>
+        <div className="p-2" style={{ backgroundColor: "var(--color-surface-muted)" }}>
           <div className="d-flex px-4 align-items-center justify-content-end">
             <Radio.Group
               defaultValue="today"
@@ -243,7 +243,7 @@ const CustomerHeader = () => {
               <DatePicker
                 style={{
                   background: "transparent",
-                  border: "1px solid #D1D1D1",
+                  border: "1px solid var(--color-border-light)",
                   borderRadius: "32px",
                 }}
                 placeholder="From"
@@ -251,7 +251,7 @@ const CustomerHeader = () => {
               <DatePicker
                 style={{
                   background: "transparent",
-                  border: "1px solid #D1D1D1",
+                  border: "1px solid var(--color-border-light)",
                   borderRadius: "32px",
                 }}
                 placeholder="To"

@@ -162,7 +162,7 @@ export default function BayaanFinancialReport() {
 
   const containerStyle: React.CSSProperties = {
     minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "var(--color-surface-subtle)",
     padding: "32px",
   }
 
@@ -173,7 +173,7 @@ export default function BayaanFinancialReport() {
   }
 
   const cardStyle: React.CSSProperties = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--background)",
     borderRadius: "0px",
     boxShadow: "none",
     border: "none",
@@ -181,15 +181,15 @@ export default function BayaanFinancialReport() {
 
   const companyInfoCardStyle: React.CSSProperties = {
     ...cardStyle,
-    borderBottom: "1px solid #e8e8e8",
+    borderBottom: "1px solid var(--color-surface-pressed)",
   }
 
   const sectionTitleStyle: React.CSSProperties = {
     fontSize: "14px",
     fontWeight: 700,
-    color: "#000000",
+    color: "var(--foreground)",
     marginBottom: "16px",
-    borderBottom: "1px solid #e8e8e8",
+    borderBottom: "1px solid var(--color-surface-pressed)",
     paddingBottom: "12px",
     textAlign:"left"
   }
@@ -209,18 +209,18 @@ export default function BayaanFinancialReport() {
     justifyContent: "space-between",
     marginBottom: "16px",
     paddingBottom: "12px",
-    borderBottom: "1px solid #f0f0f0",
+    borderBottom: "1px solid var(--color-surface-muted)",
   }
 
   const labelStyle: React.CSSProperties = {
     fontSize: "14px",
-    color: "#666666",
+    color: "var(--color-text-muted)",
   }
 
   const valueStyle: React.CSSProperties = {
     fontSize: "14px",
     fontWeight: 600,
-    color: "#000000",
+    color: "var(--foreground)",
   }
 
   const tableContainerStyle: React.CSSProperties = {
@@ -228,7 +228,7 @@ export default function BayaanFinancialReport() {
   }
 
   const tableStyle: React.CSSProperties = {
-    backgroundColor: "#ffffff",
+    backgroundColor: "var(--background)",
   }
 
   return (
@@ -236,7 +236,7 @@ export default function BayaanFinancialReport() {
       <div style={contentStyle}>
         {/* Company Information Section */}
         <Card style={companyInfoCardStyle}>
-          <h2 style={{ textAlign:"left",fontSize: "16px", fontWeight: 700, marginBottom: "24px", color: "#000000" }}>
+          <h2 style={{ textAlign:"left",fontSize: "16px", fontWeight: 700, marginBottom: "24px", color: "var(--foreground)" }}>
             Company Information
           </h2>
 
@@ -347,7 +347,7 @@ export default function BayaanFinancialReport() {
         </Card>
   {/* Financial Indicators & Board Section */}
         <Card style={companyInfoCardStyle}>
-          <h2 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "24px", color: "#000000",textAlign:"left" }}>
+          <h2 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "24px", color: "var(--foreground)",textAlign:"left" }}>
             Financial Indicators
           </h2>
 
@@ -372,8 +372,8 @@ export default function BayaanFinancialReport() {
                 fontSize: "16px",
                 fontWeight: 700,
                 marginBottom: "16px",
-                color: "#000000",
-                borderBottom: "1px solid #e8e8e8",
+                color: "var(--foreground)",
+                borderBottom: "1px solid var(--color-surface-pressed)",
                 paddingBottom: "12px",
                 textAlign:"left"
               }}
@@ -398,8 +398,8 @@ export default function BayaanFinancialReport() {
               fontSize: "16px",
               fontWeight: 700,
               marginBottom: "24px",
-              color: "#000000",
-              borderBottom: "1px solid #e8e8e8",
+              color: "var(--foreground)",
+              borderBottom: "1px solid var(--color-surface-pressed)",
               paddingBottom: "12px",
               textAlign:"left"
             }}
@@ -443,8 +443,8 @@ export default function BayaanFinancialReport() {
               fontSize: "16px",
               fontWeight: 700,
               marginBottom: "24px",
-              color: "#000000",
-              borderBottom: "1px solid #e8e8e8",
+              color: "var(--foreground)",
+              borderBottom: "1px solid var(--color-surface-pressed)",
               paddingBottom: "12px",
               textAlign:"left"
             }}
@@ -469,8 +469,8 @@ export default function BayaanFinancialReport() {
               fontSize: "16px",
               fontWeight: 700,
               marginBottom: "24px",
-              color: "#000000",
-              borderBottom: "1px solid #e8e8e8",
+              color: "var(--foreground)",
+              borderBottom: "1px solid var(--color-surface-pressed)",
               paddingBottom: "12px",
               textAlign:"left"
             }}

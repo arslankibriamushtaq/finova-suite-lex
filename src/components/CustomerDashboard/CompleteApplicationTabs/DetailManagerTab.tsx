@@ -11,13 +11,13 @@ const DetailManagerTab: React.FC<DetailManagerTabProps> = ({ applicationData }) 
         style={{
           fontSize: "20px",
           fontWeight: "700",
-          color: "#000000",
+          color: "var(--foreground)",
           marginBottom: "24px",
         }}
       >
         Detail Manager
       </h2>
-      <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>
+      <div style={{ padding: "40px", textAlign: "center", color: "var(--color-text-muted)" }}>
         <p>Detail Manager content will be displayed here.</p>
       </div>
     </div>

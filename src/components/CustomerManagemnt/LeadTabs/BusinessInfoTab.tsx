@@ -212,13 +212,13 @@ const BusinessInfoTab: React.FC = () => {
             {section.fields.map((f, i) => (
               <React.Fragment key={i}>
                 <Col xs={24} md={12}>
-                  <div className="field-row" style={{borderBottom:"1px solid #eee"}}>
+                  <div className="field-row" style={{borderBottom:"1px solid var(--color-border-faint)"}}>
                     <span className="label">{f.labelEn}</span>
                     <span className="value">{f.valueEn}</span>
                   </div>
                 </Col>
                 <Col xs={24} md={12}>
-                  <div className="field-row rtl" style={{borderBottom:"1px solid #eee"}}>
+                  <div className="field-row rtl" style={{borderBottom:"1px solid var(--color-border-faint)"}}>
                     <span className="label">{f.labelAr}</span>
                     <span className="value">{f.valueAr}</span>
                   </div>

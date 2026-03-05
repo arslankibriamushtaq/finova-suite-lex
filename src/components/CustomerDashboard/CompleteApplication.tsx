@@ -25,8 +25,8 @@ const CompleteApplication = () => {
       <div className="d-flex align-items-center gap-3 mb-3">
         <span
           style={{
-            backgroundColor: "#28a745",
-            color: "#ffffff",
+            backgroundColor: "var(--color-status-active)",
+            color: "var(--primary-foreground)",
             padding: "6px 16px",
             borderRadius: "8px",
             fontSize: "14px",
@@ -39,7 +39,7 @@ const CompleteApplication = () => {
           style={{
             fontSize: "28px",
             fontWeight: "700",
-            color: "#000000",
+            color: "var(--foreground)",
             margin: 0,
           }}
         >

@@ -74,7 +74,7 @@ const FinancingInformation: React.FC = () => {
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
     margin: "0 auto",
-    background: "#fff",
+    background: "var(--background)",
     borderRadius: 8,
     padding: "16px 0px",
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
@@ -82,7 +82,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   fieldRow: {
     display: "flex",
     justifyContent: "space-between",
-    borderBottom: "1px solid #eee",
+    borderBottom: "1px solid var(--color-border-faint)",
     padding: "6px 0",
     fontSize: 13,
   },
@@ -92,11 +92,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   value: {
     fontWeight: 600,
-    color: "#000",
+    color: "var(--foreground)",
   },
   linkValue: {
     fontWeight: 600,
-    color: "#1890ff",
+    color: "var(--color-action)",
     cursor: "pointer",
     textDecoration: "underline",
   },

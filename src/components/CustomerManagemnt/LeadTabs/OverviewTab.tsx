@@ -11,7 +11,7 @@ const OverviewTab: React.FC = () => {
             column={1}
             size="small"
             title="English"
-            style={{ background: "#fafafa", borderRadius: 8 }}
+            style={{ background: "var(--color-surface-ice)", borderRadius: 8 }}
           >
             <Descriptions.Item label="Lead ID">LD-2025001</Descriptions.Item>
             <Descriptions.Item label="Status">Active</Descriptions.Item>
@@ -27,7 +27,7 @@ const OverviewTab: React.FC = () => {
             column={1}
             size="small"
             title="Arabic"
-            style={{ background: "#fafafa", borderRadius: 8 }}
+            style={{ background: "var(--color-surface-ice)", borderRadius: 8 }}
           >
             <Descriptions.Item label="معرف العميل">LD-2025001</Descriptions.Item>
             <Descriptions.Item label="الحالة">نشط</Descriptions.Item>

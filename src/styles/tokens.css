@@ -176,6 +176,12 @@
 
   /* Surface mint (investor) */
   --color-surface-mint: #EDFFFB;
+
+  /* Bootstrap warning / medium-risk status */
+  --color-warning-gold: #FFC107;
+
+  /* Very light border (faint separator) */
+  --color-border-faint: #eeeeee;
 }
 
 .dark {

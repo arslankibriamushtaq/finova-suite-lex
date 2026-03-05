@@ -141,8 +141,8 @@ const ContractRequest = () => {
           type="primary"
           onClick={() => handlePreviewContract(row)}
           style={{
-            backgroundColor: "#1963b9",
-            color: "#ffffff",
+            backgroundColor: "var(--theme-secondary)",
+            color: "var(--primary-foreground)",
             borderRadius: "5px",
             border: "none",
             fontSize: "12px",
@@ -169,10 +169,10 @@ const ContractRequest = () => {
       cell: (row: any) => (
         <span
           style={{
-            backgroundColor: "#ffc107",
+            backgroundColor: "var(--color-warning-gold)",
             padding: "4px 12px",
             borderRadius: "5px",
-            color: "#000000",
+            color: "var(--foreground)",
             fontWeight: 500,
             fontSize: "12px",
           }}
@@ -189,8 +189,8 @@ const ContractRequest = () => {
           type="primary"
           onClick={() => handleApproveClick(row)}
           style={{
-            backgroundColor: "#1963b9",
-            color: "#ffffff",
+            backgroundColor: "var(--theme-secondary)",
+            color: "var(--primary-foreground)",
             borderRadius: "5px",
             border: "none",
             fontSize: "12px",

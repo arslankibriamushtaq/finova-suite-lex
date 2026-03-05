@@ -15,7 +15,7 @@ interface Field {
 const styles: { [key: string]: React.CSSProperties } = {
   card: {
     margin: "0 auto",
-    background: "#fff",
+    background: "var(--background)",
     borderRadius: 8,
     padding: "20px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
@@ -24,27 +24,27 @@ const styles: { [key: string]: React.CSSProperties } = {
   fieldRow: {
     display: "flex",
     justifyContent: "space-between",
-    borderBottom: "1px solid #eee",
+    borderBottom: "1px solid var(--color-border-faint)",
     padding: "12px 0",
     fontSize: 14,
   },
   label: {
-    color: "#000",
+    color: "var(--foreground)",
     fontWeight: 400,
   },
   value: {
     fontWeight: 600,
-    color: "#000",
+    color: "var(--foreground)",
   },
   complianceSection: {
-    background: "#F9F9F9",
+    background: "var(--color-surface-cloud)",
     padding: "20px",
     borderRadius: "8px",
     marginBottom: "10px",
   },
   questionLabel: {
     fontSize: "13px",
-    color: "#000",
+    color: "var(--foreground)",
     fontWeight: 400,
     marginBottom: "5px",
   },
@@ -133,27 +133,27 @@ const CustomerDetail = () => {
   const renderOverviewContent = () => {
     if (!nafathData) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-muted)" }}>
           No data available
         </div>
       );
     }
 
     return (
-      <div style={{ padding: "20px", background: "#fff" }}>
+      <div style={{ padding: "20px", background: "var(--background)" }}>
         {/* Language Headers */}
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
-          <span style={{ color: "#000", fontWeight: 700, fontSize: "18px" }}>English</span>
-          <span style={{ color: "#000", fontWeight: 700, fontSize: "18px" }}>العربية</span>
+          <span style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px" }}>English</span>
+          <span style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px" }}>العربية</span>
         </div>
 
         {/* Personal Information */}
         <div style={{ marginBottom: "40px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               Personal Information
             </h2>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               معلومات شخصية
             </h2>
           </div>
@@ -200,16 +200,16 @@ const CustomerDetail = () => {
                     borderBottom: index < array.length - 1 ? "1px solid #E5E7EB" : "none",
                   }}
                 >
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>
                     {field.enLabel}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "left" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}>
                     {enValue}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {arValue}
                   </div>
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {field.arLabel}
                   </div>
                 </div>
@@ -221,10 +221,10 @@ const CustomerDetail = () => {
         {/* Address Information */}
         <div>
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               Address Information
             </h2>
-            <h2 style={{ color: "#000", fontWeight: 700, fontSize: "18px", margin: 0 }}>
+            <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>
               معلومات العنوان
             </h2>
           </div>
@@ -273,16 +273,16 @@ const CustomerDetail = () => {
                     borderBottom: index < array.length - 1 ? "1px solid #E5E7EB" : "none",
                   }}
                 >
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>
                     {field.enLabel}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "left" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}>
                     {enValue}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {arValue}
                   </div>
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {field.arLabel}
                   </div>
                 </div>
@@ -304,7 +304,7 @@ const CustomerDetail = () => {
     <>
       {/* Page Title */}
       <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#000", margin: 0 }}>
+        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--foreground)", margin: 0 }}>
           {pageType} Detail
         </h2>
       </div>
@@ -339,13 +339,13 @@ const CustomerDetail = () => {
       {/* Compliance Questions Section */}
       {complianceAnswers.length > 0 && (
         <Card bordered={false} style={styles.card}>
-          <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "#000" }}>
+          <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
             Compliance Questions
           </h5>
           <BootstrapRow>
             {/* English Column */}
             <BootstrapCol md={6}>
-              <h6 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "15px", color: "#000" }}>
+              <h6 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "15px", color: "var(--foreground)" }}>
                 Compliance Questions (English)
               </h6>
               {complianceAnswers.map((answer: any, index: number) => {
@@ -368,7 +368,7 @@ const CustomerDetail = () => {
 
             {/* Arabic Column */}
             <BootstrapCol md={6}>
-              <h6 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "15px", color: "#000", textAlign: "right", direction: "rtl" }}>
+              <h6 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "15px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                 أسئلة الإلتزام
               </h6>
               {complianceAnswers.map((answer: any, index: number) => {

@@ -105,24 +105,24 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     maxWidth: 1200,
     margin: "0 auto",
-    background: "#f9f9f9",
+    background: "var(--color-surface-cloud)",
     padding: "16px 0",
     overflowY: "auto",
   },
   sectionCard: {
-    background: "#fff",
+    background: "var(--background)",
     borderRadius: 8,
     padding: "8px 0px 16px 0px",
     marginBottom: 16,
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",
   },
   header: {
-    background: "#f3f3f3",
+    background: "var(--color-surface-subtle)",
     padding: "6px 12px",
     borderRadius: 6,
     fontWeight: 600,
     fontSize: 14,
-    color: "#333",
+    color: "var(--color-text-dark)",
     marginBottom: 10,
   },
   rtl: {
@@ -132,16 +132,16 @@ const styles: { [key: string]: React.CSSProperties } = {
   fieldRow: {
     display: "flex",
     justifyContent: "space-between",
-    borderBottom: "1px solid #eee",
+    borderBottom: "1px solid var(--color-border-faint)",
     padding: "6px 0",
     fontSize: 13,
   },
   label: {
-    color: "#666",
+    color: "var(--color-text-muted)",
   },
   value: {
     fontWeight: 600,
-    color: "#000",
+    color: "var(--foreground)",
   },
 };
 

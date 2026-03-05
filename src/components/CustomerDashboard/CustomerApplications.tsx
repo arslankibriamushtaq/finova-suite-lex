@@ -129,10 +129,10 @@ const CustomerApplications = () => {
             cell: (row: any) => (
                 <span
                     style={{
-                        backgroundColor: "#6c757d",
+                        backgroundColor: "var(--color-text-slate)",
                         padding: "4px 12px",
                         borderRadius: "5px",
-                        color: "#fff",
+                        color: "var(--primary-foreground)",
                         fontWeight: 500,
                         fontSize: "12px",
                     }}
@@ -147,10 +147,10 @@ const CustomerApplications = () => {
             cell: (row: any) => (
                 <span
                     style={{
-                        backgroundColor: "#6c757d",
+                        backgroundColor: "var(--color-text-slate)",
                         padding: "4px 12px",
                         borderRadius: "5px",
-                        color: "#fff",
+                        color: "var(--primary-foreground)",
                         fontWeight: 500,
                         fontSize: "12px",
                     }}
@@ -168,8 +168,8 @@ const CustomerApplications = () => {
                         className="gradient-btn"
                         type="primary"
                         style={{
-                            backgroundColor: "#0B8085 !important",
-                            color: "#000000",
+                            backgroundColor: "var(--color-action) !important",
+                            color: "var(--foreground)",
                             borderColor: "white",
                             borderRadius: "8px",
                             padding: "10px 20px",

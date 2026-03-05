@@ -68,17 +68,17 @@ const AllCustomerStatus = () => {
     switch (riskLower) {
       case "highrisk":
       case "high":
-        return "#F84D4D";
+        return "var(--color-error)";
       case "mediumrisk":
       case "medium":
-        return "#FFC107";
+        return "var(--color-warning-gold)";
       case "peprisk":
       case "pep":
-        return "#9C27B0";
+        return "var(--color-pep)";
       case "lowrisk":
       case "low":
       default:
-        return "rgba(63, 195, 128, 0.9)";
+        return "var(--color-success)";
     }
   };
   
@@ -177,7 +177,7 @@ const AllCustomerStatus = () => {
             padding: "8px 10px",
             borderRadius: "5px",
             fontSize: "12px",
-            backgroundColor: row.is_blocked ? "#F84D4D" : "rgba(63, 195, 128, 0.9)",
+            backgroundColor: row.is_blocked ? "var(--color-error)" : "var(--color-success)",
             color: "white",
             cursor: "pointer",
             border: "none",
@@ -207,7 +207,7 @@ const AllCustomerStatus = () => {
             unCheckedChildren="Inactive"
             onChange={(checked) => handleStatusSwitchChange(row, checked)}
             style={{
-              backgroundColor: isActive ? "rgba(63, 195, 128, 0.9)" : undefined
+              backgroundColor: isActive ? "var(--color-success)" : undefined
             }}
           />
         );
@@ -222,8 +222,8 @@ const AllCustomerStatus = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
@@ -919,7 +919,7 @@ const AllCustomerStatus = () => {
               }}>
                 <span className="visually-hidden">Loading...</span>
               </div>
-              <p style={{ fontSize: "16px", color: "#666", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
             </div>
           ) : (
             <>
@@ -935,15 +935,15 @@ const AllCustomerStatus = () => {
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Button
                     type="primary"
-                    style={{ backgroundColor: "#3FC380", borderColor: "#3FC380" }}
+                    style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }}
                     onClick={handleSelectAll}
                   >
                     ✓ Select All
                   </Button>
                   <Button
                     style={{
-                      backgroundColor: "#FFC107",
-                      borderColor: "#FFC107",
+                      backgroundColor: "var(--color-warning-gold)",
+                      borderColor: "var(--color-warning-gold)",
                       color: "white"
                     }}
                     onClick={handleDeselectAll}
@@ -955,7 +955,7 @@ const AllCustomerStatus = () => {
 
           {/* Block Codes Table */}
           <div style={{
-            border: "1px solid #f0f0f0",
+            border: "1px solid var(--color-surface-muted)",
             borderRadius: "8px",
             overflow: "hidden",
             maxHeight: "400px",
@@ -963,7 +963,7 @@ const AllCustomerStatus = () => {
           }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead style={{
-                backgroundColor: "#fafafa",
+                backgroundColor: "var(--color-surface-ice)",
                 position: "sticky",
                 top: 0,
                 zIndex: 1
@@ -972,7 +972,7 @@ const AllCustomerStatus = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "left",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     width: "50px"
                   }}>
                     <Checkbox
@@ -984,7 +984,7 @@ const AllCustomerStatus = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "left",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
                     Block Code
@@ -992,7 +992,7 @@ const AllCustomerStatus = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "left",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
                     Type
@@ -1000,7 +1000,7 @@ const AllCustomerStatus = () => {
                   <th style={{
                     padding: "12px 16px",
                     textAlign: "center",
-                    borderBottom: "1px solid #f0f0f0",
+                    borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
                     Action
@@ -1010,11 +1010,11 @@ const AllCustomerStatus = () => {
               <tbody>
                 {blockCodes.map((code) => (
                   <tr key={code.id} style={{
-                    backgroundColor: selectedBlockCodes.includes(code.id) ? "#f5f5f5" : "white"
+                    backgroundColor: selectedBlockCodes.includes(code.id) ? "var(--color-surface-subtle)" : "white"
                   }}>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0"
+                      borderBottom: "1px solid var(--color-surface-muted)"
                     }}>
                       <Checkbox
                         checked={selectedBlockCodes.includes(code.id)}
@@ -1023,17 +1023,17 @@ const AllCustomerStatus = () => {
                     </td>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0",
+                      borderBottom: "1px solid var(--color-surface-muted)",
                       fontWeight: "500"
                     }}>
                       {code.code}
                     </td>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0"
+                      borderBottom: "1px solid var(--color-surface-muted)"
                     }}>
                       <span style={{
-                        backgroundColor: "#00BCD4",
+                        backgroundColor: "var(--color-block-compliance)",
                         color: "white",
                         padding: "4px 12px",
                         borderRadius: "4px",
@@ -1045,11 +1045,11 @@ const AllCustomerStatus = () => {
                     </td>
                     <td style={{
                       padding: "12px 16px",
-                      borderBottom: "1px solid #f0f0f0",
+                      borderBottom: "1px solid var(--color-surface-muted)",
                       textAlign: "center"
                     }}>
                       <button style={{
-                        backgroundColor: code.blocked ? "#F84D4D" : "#3FC380",
+                        backgroundColor: code.blocked ? "var(--color-error)" : "var(--color-success)",
                         color: "white",
                         border: "none",
                         padding: "6px 16px",
@@ -1076,7 +1076,7 @@ const AllCustomerStatus = () => {
             gap: "10px",
             marginTop: "20px",
             paddingTop: "20px",
-            borderTop: "1px solid #f0f0f0"
+            borderTop: "1px solid var(--color-surface-muted)"
           }}>
             <Button
               type="primary"
@@ -1084,8 +1084,8 @@ const AllCustomerStatus = () => {
               disabled={selectedBlockCodes.length === 0}
               onClick={handleBlockSelected}
               style={{
-                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "#F84D4D",
-                borderColor: selectedBlockCodes.length === 0 ? undefined : "#F84D4D"
+                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)",
+                borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)"
               }}
             >
               ⊘ Block Selected
@@ -1095,8 +1095,8 @@ const AllCustomerStatus = () => {
               disabled={selectedBlockCodes.length === 0}
               onClick={handleUnblockSelected}
               style={{
-                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "#FFC107",
-                borderColor: selectedBlockCodes.length === 0 ? undefined : "#FFC107"
+                backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning-gold)",
+                borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning-gold)"
               }}
             >
               ⊙ Unblock Selected
@@ -1109,13 +1109,13 @@ const AllCustomerStatus = () => {
                 justifyContent: "flex-end",
                 marginTop: "20px",
                 paddingTop: "20px",
-                borderTop: "1px solid #f0f0f0"
+                borderTop: "1px solid var(--color-surface-muted)"
               }}>
                 <Button
                   onClick={handleModalClose}
                   style={{
-                    backgroundColor: "#6c757d",
-                    borderColor: "#6c757d",
+                    backgroundColor: "var(--color-text-slate)",
+                    borderColor: "var(--color-text-slate)",
                     color: "white"
                   }}
                 >
@@ -1141,7 +1141,7 @@ const AllCustomerStatus = () => {
             <>
               <div style={{ marginBottom: "20px" }}>
                 <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
-                <p style={{ marginBottom: "16px", color: "#666" }}>{selectedUserForStatusChange.name || "-"}</p>
+                <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForStatusChange.name || "-"}</p>
                 
                 <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Status:</p>
                 <div style={{ marginBottom: "16px" }}>
@@ -1152,8 +1152,8 @@ const AllCustomerStatus = () => {
                       fontSize: "12px",
                       backgroundColor:
                         selectedUserForStatusChange.status === "active"
-                          ? "rgba(63, 195, 128, 0.9)"
-                          : "#F84D4D",
+                          ? "var(--color-success)"
+                          : "var(--color-error)",
                       color: "white",
                       display: "inline-block"
                     }}
@@ -1180,14 +1180,14 @@ const AllCustomerStatus = () => {
                 justifyContent: "flex-end",
                 marginTop: "20px",
                 paddingTop: "20px",
-                borderTop: "1px solid #f0f0f0"
+                borderTop: "1px solid var(--color-surface-muted)"
               }}>
                 <Button
                   onClick={handleChangeStatusModalClose}
                   disabled={isChangingStatus}
                   style={{
-                    backgroundColor: "#6c757d",
-                    borderColor: "#6c757d",
+                    backgroundColor: "var(--color-text-slate)",
+                    borderColor: "var(--color-text-slate)",
                     color: "white"
                   }}
                 >
@@ -1199,8 +1199,8 @@ const AllCustomerStatus = () => {
                   loading={isChangingStatus}
                   disabled={!newStatus || newStatus === selectedUserForStatusChange.status}
                   style={{
-                    backgroundColor: "#0B8085",
-                    borderColor: "#0B8085"
+                    backgroundColor: "var(--color-action)",
+                    borderColor: "var(--color-action)"
                   }}
                 >
                   {isChangingStatus ? "Changing..." : "Change Status"}
@@ -1225,7 +1225,7 @@ const AllCustomerStatus = () => {
             <>
               <div style={{ marginBottom: "20px" }}>
                 <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
-                <p style={{ marginBottom: "16px", color: "#666" }}>{selectedUserForRiskChange.name || "-"}</p>
+                <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForRiskChange.name || "-"}</p>
                 
                 <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Risk:</p>
                 <div style={{ marginBottom: "16px" }}>
@@ -1235,10 +1235,10 @@ const AllCustomerStatus = () => {
                       borderRadius: "32px",
                       fontSize: "12px",
                       backgroundColor: 
-                        selectedUserForRiskChange.risk_status === "high" ? "#F84D4D" :
-                        selectedUserForRiskChange.risk_status === "medium" ? "#FFC107" :
-                        selectedUserForRiskChange.risk_status === "pep" ? "#9C27B0" :
-                        "rgba(63, 195, 128, 0.9)",
+                        selectedUserForRiskChange.risk_status === "high" ? "var(--color-error)" :
+                        selectedUserForRiskChange.risk_status === "medium" ? "var(--color-warning-gold)" :
+                        selectedUserForRiskChange.risk_status === "pep" ? "var(--color-pep)" :
+                        "var(--color-success)",
                       color: "white",
                       display: "inline-block",
                       textTransform: "capitalize"
@@ -1268,7 +1268,7 @@ const AllCustomerStatus = () => {
                 justifyContent: "flex-end",
                 marginTop: "20px",
                 paddingTop: "20px",
-                borderTop: "1px solid #f0f0f0"
+                borderTop: "1px solid var(--color-surface-muted)"
               }}>
                 <button
                   onClick={handleChangeRiskModalClose}

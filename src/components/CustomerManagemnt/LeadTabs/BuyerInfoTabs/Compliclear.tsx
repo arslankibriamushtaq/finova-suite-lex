@@ -28,7 +28,7 @@ function Compliclear() {
         {tabOptions.map((item: any) => (
           <Tab key={item.key} eventKey={item.key} title={item.title}>
             {selectTab === item.key && (
-              <div style={{ padding: "20px", color: "#666", fontSize: "14px" }}>
+              <div style={{ padding: "20px", color: "var(--color-text-muted)", fontSize: "14px" }}>
                 No record found
               </div>
             )}

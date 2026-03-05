@@ -20,18 +20,18 @@ const styles = {
     fontSize: "18px",
     fontWeight: 600,
     marginBottom: "16px",
-    color: "#000",
+    color: "var(--foreground)",
   },
   fieldLabel: {
     fontSize: "14px",
     fontWeight: 500,
-    color: "#666",
+    color: "var(--color-text-muted)",
     marginBottom: "8px",
   },
   fieldValue: {
     fontSize: "14px",
     fontWeight: 600,
-    color: "#000",
+    color: "var(--foreground)",
   },
   tabContainer: {
     marginTop: "20px",
@@ -43,7 +43,7 @@ const styles = {
     fontSize: "16px",
     fontWeight: 600,
     marginBottom: "16px",
-    color: "#000",
+    color: "var(--foreground)",
   },
   infoSection: {
     marginBottom: "32px",
@@ -52,10 +52,10 @@ const styles = {
     fontSize: "16px",
     fontWeight: 600,
     marginBottom: "16px",
-    color: "#000",
+    color: "var(--foreground)",
   },
   noDataMessage: {
-    color: " #1963b9",
+    color: "var(--theme-secondary)",
     fontSize: "14px",
     fontWeight: 400,
     marginTop: "3px",
@@ -117,7 +117,7 @@ const OpportunityDetail = () => {
   const renderCustomerInformation = () => {
     if (!nafathData) {
       return (
-        <div style={{ padding: "20px", textAlign: "center", color: "#999" }}>
+        <div style={{ padding: "20px", textAlign: "center", color: "var(--color-text-subtle)" }}>
           <p>No customer information available</p>
         </div>
       );
@@ -166,7 +166,7 @@ const OpportunityDetail = () => {
                   type="text"
                   value={String(field.valueEn || "")}
                   readOnly
-                  style={{ backgroundColor: "#f5f5f5", border: "none" }}
+                  style={{ backgroundColor: "var(--color-surface-subtle)", border: "none" }}
                 />
               </BootstrapCol>
               <BootstrapCol md={3}>
@@ -174,7 +174,7 @@ const OpportunityDetail = () => {
                   type="text"
                   value={String(field.valueAr || "")}
                   readOnly
-                  style={{ backgroundColor: "#f5f5f5", border: "none", textAlign: "right" }}
+                  style={{ backgroundColor: "var(--color-surface-subtle)", border: "none", textAlign: "right" }}
                 />
               </BootstrapCol>
               <BootstrapCol md={3} style={{ textAlign: "right" }}>
@@ -217,7 +217,7 @@ const OpportunityDetail = () => {
                   type="text"
                   value={String(field.valueEn || "")}
                   readOnly
-                  style={{ backgroundColor: "#f5f5f5", border: "none" }}
+                  style={{ backgroundColor: "var(--color-surface-subtle)", border: "none" }}
                 />
               </BootstrapCol>
               <BootstrapCol md={3}>
@@ -225,7 +225,7 @@ const OpportunityDetail = () => {
                   type="text"
                   value={String(field.valueAr || "")}
                   readOnly
-                  style={{ backgroundColor: "#f5f5f5", border: "none", textAlign: "right" }}
+                  style={{ backgroundColor: "var(--color-surface-subtle)", border: "none", textAlign: "right" }}
                 />
               </BootstrapCol>
               <BootstrapCol md={3} style={{ textAlign: "right" }}>
@@ -245,7 +245,7 @@ const OpportunityDetail = () => {
                 rows={2}
                 value={String(nafathData.fullAddressEn || "")}
                 readOnly
-                style={{ backgroundColor: "#f5f5f5", border: "none" }}
+                style={{ backgroundColor: "var(--color-surface-subtle)", border: "none" }}
               />
             </BootstrapCol>
             <BootstrapCol md={3}>
@@ -254,7 +254,7 @@ const OpportunityDetail = () => {
                 rows={2}
                 value={String(nafathData.fullAddressAr || "")}
                 readOnly
-                style={{ backgroundColor: "#f5f5f5", border: "none", textAlign: "right" }}
+                style={{ backgroundColor: "var(--color-surface-subtle)", border: "none", textAlign: "right" }}
               />
             </BootstrapCol>
             <BootstrapCol md={3} style={{ textAlign: "right" }}>
@@ -269,7 +269,7 @@ const OpportunityDetail = () => {
   const renderLoanInformation = () => {
     return (
       <div style={styles.subTabContainer}>
-        <p style={{ textAlign: "center", color: "#999" }}>Loan information content</p>
+        <p style={{ textAlign: "center", color: "var(--color-text-subtle)" }}>Loan information content</p>
       </div>
     );
   };
@@ -277,7 +277,7 @@ const OpportunityDetail = () => {
   const renderBankInformation = () => {
     return (
       <div style={styles.subTabContainer}>
-        <p style={{ textAlign: "center", color: "#999" }}>Bank information content</p>
+        <p style={{ textAlign: "center", color: "var(--color-text-subtle)" }}>Bank information content</p>
       </div>
     );
   };
@@ -286,14 +286,14 @@ const OpportunityDetail = () => {
     if (complianceAnswers.length === 0) {
       return (
         <div style={styles.subTabContainer}>
-          <p style={{ textAlign: "center", color: "#999" }}>No compliance questions available</p>
+          <p style={{ textAlign: "center", color: "var(--color-text-subtle)" }}>No compliance questions available</p>
         </div>
       );
     }
 
     return (
       <div style={styles.subTabContainer}>
-        <p style={{ textAlign: "center", color: "#999" }}>Compliance questions content</p>
+        <p style={{ textAlign: "center", color: "var(--color-text-subtle)" }}>Compliance questions content</p>
       </div>
     );
   };
@@ -357,7 +357,7 @@ const OpportunityDetail = () => {
   return (
     <>
       <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "#000", margin: 0 }}>
+        <h2 style={{ fontSize: "20px", fontWeight: 700, color: "var(--foreground)", margin: 0 }}>
           Customer Detail
         </h2>
       </div>
@@ -424,7 +424,7 @@ const OpportunityDetail = () => {
                     type="text"
                     value={String(answer.answer || "")}
                     readOnly
-                    style={{ backgroundColor: "#f5f5f5", border: "none" }}
+                    style={{ backgroundColor: "var(--color-surface-subtle)", border: "none" }}
                   />
                 </div>
               ))}
@@ -440,7 +440,7 @@ const OpportunityDetail = () => {
                     type="text"
                     value={String(answer.answer || "")}
                     readOnly
-                    style={{ backgroundColor: "#f5f5f5", border: "none", textAlign: "right" }}
+                    style={{ backgroundColor: "var(--color-surface-subtle)", border: "none", textAlign: "right" }}
                   />
                 </div>
               ))}
@@ -482,21 +482,21 @@ const OpportunityDetail = () => {
           </Tab>
           <Tab eventKey="LoanApplication" title="Loan Application">
             {selectTab === "LoanApplication" && (
-              <div style={{ padding: "20px", textAlign: "center", color: "#999" }}>
+              <div style={{ padding: "20px", textAlign: "center", color: "var(--color-text-subtle)" }}>
                 <p>Loan Application content</p>
               </div>
             )}
           </Tab>
           <Tab eventKey="OpenBankingCheck" title="Open Banking Check">
             {selectTab === "OpenBankingCheck" && (
-              <div style={{ padding: "20px", textAlign: "center", color: "#999" }}>
+              <div style={{ padding: "20px", textAlign: "center", color: "var(--color-text-subtle)" }}>
                 <p>Open Banking Check content</p>
               </div>
             )}
           </Tab>
           <Tab eventKey="CreditCheck" title="Credit Check">
             {selectTab === "CreditCheck" && (
-              <div style={{ padding: "20px", textAlign: "center", color: "#999" }}>
+              <div style={{ padding: "20px", textAlign: "center", color: "var(--color-text-subtle)" }}>
                 <p>Credit Check content</p>
               </div>
             )}

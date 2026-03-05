@@ -1123,7 +1123,7 @@ const PersonalInfoForm = () => {
       {/* <TableHeaderFilter button={button} /> */}
       <div
         className="p-4"
-        style={{ border: "1px solid #D1D1D1", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
       >
         <Tabs
           defaultActiveKey={activeTab}

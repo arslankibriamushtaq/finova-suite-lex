@@ -188,8 +188,8 @@ const AccountLogs = () => {
           {/* Clear Button */}
           <button
             style={{
-              backgroundColor: "#363435",
-              color: "#ffffff",
+              backgroundColor: "var(--color-status-dark)",
+              color: "var(--primary-foreground)",
               height: "40px",
               padding: "0px 14px",
               borderRadius: "4px",
@@ -205,8 +205,8 @@ const AccountLogs = () => {
         <div className="d-flex justify-content-end col-2">
           <button
             style={{
-              backgroundColor: "#363435",
-              color: "#ffffff",
+              backgroundColor: "var(--color-status-dark)",
+              color: "var(--primary-foreground)",
               height: "40px",
               padding: "0px 14px",
               borderRadius: "4px",

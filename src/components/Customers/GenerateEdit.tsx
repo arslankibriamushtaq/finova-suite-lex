@@ -423,7 +423,7 @@ const GenerateEdit = () => {
       <TableHeaderFilter button={button} />
       <div
         className="p-4"
-        style={{ border: "1px solid #D1D1D1", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
       >
         <h3> Contract</h3>
         <Row className="mb-3">
@@ -439,7 +439,7 @@ const GenerateEdit = () => {
       </div>
       <div
         className="p-4 mt-2"
-        style={{ border: "1px solid #D1D1D1", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
       >
         <h3>Advance</h3>
         <Row className="mb-3">
@@ -455,7 +455,7 @@ const GenerateEdit = () => {
       </div>
       <div
         className="p-4 mt-2"
-        style={{ border: "1px solid #D1D1D1", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
       >
         <h3>Billing</h3>
         <Row className="mb-3">

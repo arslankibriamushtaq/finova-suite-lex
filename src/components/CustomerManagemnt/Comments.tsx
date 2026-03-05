@@ -254,7 +254,7 @@ const Comments = () => {
             type="primary"
             style={{
               background: "linear-gradient(100deg, #DEF5FF, #90CAFF)",
-              color: "#000000",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",

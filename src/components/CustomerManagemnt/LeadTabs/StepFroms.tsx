@@ -161,7 +161,7 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
                   <span
                     onClick={() => setCurrent(i)}
                     style={{
-                      color: isCompleted || isActive ? "#000" : "#8C8C8C",
+                      color: isCompleted || isActive ? "var(--foreground)" : "#8C8C8C",
                       fontWeight: isActive ? 600 : 500,
                       cursor: "pointer",
                       transition: "all 0.2s ease",
@@ -177,9 +177,9 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
                       ...styles.stepCircle,
                       background:
                         isCompleted || isActive
-                          ? " #1963b9"
+                          ? "var(--theme-secondary)"
                           : "#8C8C8C",
-                      color: isCompleted || isActive ? "#000" : "#fff",
+                      color: isCompleted || isActive ? "var(--foreground)" : "var(--primary-foreground)",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                     }}
@@ -203,7 +203,7 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
                   <CheckCircleFilled
                     style={{
                       ...styles.icon,
-                      color: task.checked ? "#00B96B" : "#D9D9D9", // green/gray
+                      color: task.checked ? "#00B96B" : "var(--color-border-light)", // green/gray
                       cursor: "default",
                     }}
                   />
@@ -236,46 +236,46 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
           }
           .ant-steps-item-finish .ant-steps-item-tail::after,
           .ant-steps-item-process .ant-steps-item-tail::after {
-            background-color:  #1963b9 !important;
+            background-color: var(--theme-secondary) !important;
           }
           .ant-steps-item-finish .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-secondary) !important;
           }
           .ant-steps-item-process .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-secondary) !important;
           }
           .ant-steps-item-wait .ant-steps-item-icon {
             border-color: #8C8C8C !important;
           }
           .ant-steps .ant-steps-item-active .ant-steps-item-title::after {
-            background-color:  #1963b9 !important;
+            background-color: var(--theme-secondary) !important;
           }
           .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
-            color: #000 !important;
+            color: var(--foreground) !important;
           }
           .ant-steps-item-process .ant-steps-item-icon .ant-steps-icon {
-            color: #000 !important;
+            color: var(--foreground) !important;
           }
           .previoustab .ant-steps-item-tail::after {
-            background-color:  #1963b9 !important;
+            background-color: var(--theme-secondary) !important;
           }
           .previoustab .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-secondary) !important;
           }
           .laststep .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-secondary) !important;
           }
           .laststep .ant-steps-item-tail::after {
             background-color: transparent !important;
           }
           .secondlaststep .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-secondary) !important;
           }
           .secondlaststep .ant-steps-item-tail::after {
-            background-color:  #1963b9 !important;
+            background-color: var(--theme-secondary) !important;
           }
             .ant-steps-item.ant-steps-item-finish.previoustab.ant-steps-item-custom .ant-steps-item-title:after{
-                        background-color:  #1963b9 !important;
+                        background-color: var(--theme-secondary) !important;
  
             }
                         .ant-steps .ant-steps-item-title::after {  left: 27px;}
@@ -300,11 +300,11 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     margin: "0 auto",
     padding: "24px 0",
-    background: "#F5F7F9",
+    background: "var(--color-surface-snow)",
   },
   wrapperCard: {
     borderRadius: 10,
-    background: "#fff",
+    background: "var(--background)",
     padding: "20px 0px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
   },
@@ -318,13 +318,13 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    color: "#000",
+    color: "var(--foreground)",
     fontWeight: 600,
     fontSize: 13,
   },
   formCard: {
-    background: "#fff",
-    border: "1px solid #eaeaea",
+    background: "var(--background)",
+    border: "1px solid var(--color-border-faint)",
     borderRadius: 6,
     padding: "16px 20px",
   },
@@ -332,17 +332,17 @@ const styles: { [key: string]: React.CSSProperties } = {
     fontWeight: 600,
     fontSize: 15,
     marginBottom: 12,
-    color: "#222",
+    color: "var(--foreground)",
   },
   taskRow: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottom: "1px solid #eee",
+    borderBottom: "1px solid var(--color-border-faint)",
     paddingBottom: 4,
   },
   label: {
-    color: "#000",
+    color: "var(--foreground)",
     fontSize: 13,
   },
   icon: {
@@ -356,9 +356,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "flex-end",
   },
   nextButton: {
-    background: " #1963b9",
-    borderColor: " #1963b9",
-    color: "#000",
+    background: "var(--theme-secondary)",
+    borderColor: "var(--theme-secondary)",
+    color: "var(--foreground)",
     fontWeight: 600,
   },
 };

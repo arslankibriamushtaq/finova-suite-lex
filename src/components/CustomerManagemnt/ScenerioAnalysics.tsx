@@ -60,7 +60,7 @@ const ScenarioAnalysis = () => {
             className="col-md-12 pt-5 d-flex align-items-center"
             style={{
               fontSize: "14px",
-              color: "#000000",
+              color: "var(--foreground)",
               lineHeight: "14px",
               textDecoration: "underline",
             }}
@@ -293,7 +293,7 @@ const ScenarioAnalysis = () => {
             className="col-md-12 pt-5 d-flex align-items-center"
             style={{
               fontSize: "14px",
-              color: "#000000",
+              color: "var(--foreground)",
               lineHeight: "14px",
               textDecoration: "underline",
             }}

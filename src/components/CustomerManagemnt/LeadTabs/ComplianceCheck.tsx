@@ -18,7 +18,7 @@ const ComplianceCheck: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             padding: "8px 16px",
-            borderBottom: "1px solid #d9d9d9",
+            borderBottom: "1px solid var(--color-border-light)",
 
           }}
         >
@@ -31,7 +31,7 @@ const ComplianceCheck: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             padding: "8px 16px",
-            borderBottom: "1px solid #d9d9d9"
+            borderBottom: "1px solid var(--color-border-light)"
           }}
         >
           <span style={{ color: "#555" }}>Legal Issue</span>
@@ -47,7 +47,7 @@ const ComplianceCheck: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             padding: "8px 16px",
-             borderBottom: "1px solid #d9d9d9",
+             borderBottom: "1px solid var(--color-border-light)",
           }}
         >
           <span style={{ color: "#555" }}>Is SIMAH Default?</span>
@@ -59,7 +59,7 @@ const ComplianceCheck: React.FC = () => {
             display: "flex",
             justifyContent: "space-between",
             padding: "8px 16px",
-             borderBottom: "1px solid #d9d9d9",
+             borderBottom: "1px solid var(--color-border-light)",
           }}
         >
           <span style={{ color: "#555" }}>
