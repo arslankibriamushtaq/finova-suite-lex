@@ -99,7 +99,7 @@ const ClientRequestDev = () => {
             style={{
               padding: "6px 12px",
               borderRadius: "4px",
-              backgroundColor: isSuccess ? "#52c41a" : "#ff4d4f",
+              backgroundColor: isSuccess ? "var(--color-success)" : "var(--color-error)",
               color: "white",
               fontSize: "12px",
             }}
@@ -126,7 +126,7 @@ const ClientRequestDev = () => {
       name: "Action",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button type="primary" style={{ backgroundColor: "#000000" }}>
+          <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>

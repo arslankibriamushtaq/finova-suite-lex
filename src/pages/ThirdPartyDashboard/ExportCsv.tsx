@@ -44,14 +44,14 @@ const ExportCsv = () => {
       </div>
       
       <div style={{ padding: "40px", textAlign: "center" }}>
-        <p style={{ marginBottom: "20px", color: "#666" }}>
+        <p style={{ marginBottom: "20px", color: "var(--color-text-muted)" }}>
           Click the button below to download the environment data as a CSV file.
         </p>
         <Button
           type="primary"
           onClick={handleExport}
           loading={loading}
-          style={{ backgroundColor: "#000000", borderColor: "#000000" }}
+          style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
           size="large"
         >
           {loading ? "Exporting..." : "Export CSV"}

@@ -185,7 +185,7 @@ const CreateTicket = () => {
             width: "40px",
             height: "40px",
             borderRadius: "8px",
-            border: "1px solid #d9d9d9",
+            border: "1px solid var(--color-border-light)",
           }}
         />
         <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>Create Ticket</h1>
@@ -197,17 +197,17 @@ const CreateTicket = () => {
           {/* Customer Information Section */}
           <div
             style={{
-              border: "1px solid #e0e0e0",
+              border: "1px solid var(--color-border-subtle)",
               borderRadius: "8px",
-              backgroundColor: "#fff",
+              backgroundColor: "var(--background)",
               marginBottom: "24px",
             }}
           >
             <div
               style={{
                 padding: "16px 24px",
-                borderBottom: "1px solid #e0e0e0",
-                backgroundColor: "#fafafa",
+                borderBottom: "1px solid var(--color-border-subtle)",
+                backgroundColor: "var(--color-surface-ice)",
               }}
             >
               <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>Customer Information</h2>
@@ -229,16 +229,16 @@ const CreateTicket = () => {
           {/* Previous Tickets Section */}
           <div
             style={{
-              border: "1px solid #e0e0e0",
+              border: "1px solid var(--color-border-subtle)",
               borderRadius: "8px",
-              backgroundColor: "#fff",
+              backgroundColor: "var(--background)",
             }}
           >
             <div
               style={{
                 padding: "16px 24px",
-                borderBottom: "1px solid #e0e0e0",
-                backgroundColor: "#fafafa",
+                borderBottom: "1px solid var(--color-border-subtle)",
+                backgroundColor: "var(--color-surface-ice)",
               }}
             >
               <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>Previous Tickets</h2>
@@ -246,14 +246,14 @@ const CreateTicket = () => {
             <div style={{ padding: "0" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ backgroundColor: "#fafafa" }}>
+                  <tr style={{ backgroundColor: "var(--color-surface-ice)" }}>
                     <th
                       style={{
                         padding: "16px 24px",
                         textAlign: "left",
                         fontWeight: 600,
                         fontSize: "14px",
-                        borderBottom: "1px solid #e0e0e0",
+                        borderBottom: "1px solid var(--color-border-subtle)",
                       }}
                     >
                       Description
@@ -264,7 +264,7 @@ const CreateTicket = () => {
                         textAlign: "left",
                         fontWeight: 600,
                         fontSize: "14px",
-                        borderBottom: "1px solid #e0e0e0",
+                        borderBottom: "1px solid var(--color-border-subtle)",
                       }}
                     >
                       Status
@@ -275,7 +275,7 @@ const CreateTicket = () => {
                         textAlign: "left",
                         fontWeight: 600,
                         fontSize: "14px",
-                        borderBottom: "1px solid #e0e0e0",
+                        borderBottom: "1px solid var(--color-border-subtle)",
                       }}
                     >
                       Department
@@ -285,7 +285,7 @@ const CreateTicket = () => {
                 <tbody>
                   {userInfo?.tickets && userInfo.tickets.length > 0 ? (
                     userInfo.tickets.map((ticket: any, index: number) => (
-                      <tr key={index} style={{ borderBottom: "1px solid #e0e0e0" }}>
+                      <tr key={index} style={{ borderBottom: "1px solid var(--color-border-subtle)" }}>
                         <td style={{ padding: "16px 24px", fontSize: "14px" }}>
                           {ticket?.description || "---"}
                         </td>
@@ -305,7 +305,7 @@ const CreateTicket = () => {
                           padding: "24px",
                           textAlign: "center",
                           fontSize: "14px",
-                          color: "#999",
+                          color: "var(--color-text-subtle)",
                         }}
                       >
                         No previous tickets found
@@ -322,16 +322,16 @@ const CreateTicket = () => {
         <div>
           <div
             style={{
-              border: "1px solid #e0e0e0",
+              border: "1px solid var(--color-border-subtle)",
               borderRadius: "8px",
-              backgroundColor: "#fff",
+              backgroundColor: "var(--background)",
             }}
           >
             <div
               style={{
                 padding: "16px 24px",
-                borderBottom: "1px solid #e0e0e0",
-                backgroundColor: "#fafafa",
+                borderBottom: "1px solid var(--color-border-subtle)",
+                backgroundColor: "var(--color-surface-ice)",
               }}
             >
               <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>Add Complaint</h2>
@@ -468,8 +468,8 @@ const CreateTicket = () => {
                 style={{
                   width: "auto",
                   height: "40px",
-                  backgroundColor: "#000000",
-                  borderColor: "#000000",
+                  backgroundColor: "var(--foreground)",
+                  borderColor: "var(--foreground)",
                   fontSize: "14px",
                   fontWeight: 500,
                 }}

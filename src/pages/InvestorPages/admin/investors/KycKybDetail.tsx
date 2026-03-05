@@ -141,20 +141,20 @@ const KycKybDetail = () => {
         // TransactionStatus enum: 0=Pending, 1=Completed, 2=Failed, 3=Cancelled, 4=Reversed
         const statusValue = row.status !== undefined ? (typeof row.status === 'number' ? row.status : parseInt(row.status)) : 0;
         let statusText = "Pending";
-        let statusColor = "#faad14"; // Yellow for Pending
+        let statusColor = "var(--color-warning-amber)"; // Yellow for Pending
         
         switch (statusValue) {
           case 0:
             statusText = "Pending";
-            statusColor = "#faad14"; // Yellow
+            statusColor = "var(--color-warning-amber)"; // Yellow
             break;
           case 1:
             statusText = "Completed";
-            statusColor = "#52c41a"; // Green
+            statusColor = "var(--color-success)"; // Green
             break;
           case 2:
             statusText = "Failed";
-            statusColor = "#ff4d4f"; // Red
+            statusColor = "var(--color-error)"; // Red
             break;
           case 3:
             statusText = "Cancelled";
@@ -162,11 +162,11 @@ const KycKybDetail = () => {
             break;
           case 4:
             statusText = "Reversed";
-            statusColor = "#ff7875"; // Light Red
+            statusColor = "var(--color-error-light)"; // Light Red
             break;
           default:
             statusText = row.status?.toString() || "Pending";
-            statusColor = "#faad14";
+            statusColor = "var(--color-warning-amber)";
         }
         
         return (
@@ -304,7 +304,7 @@ const KycKybDetail = () => {
             type="primary"
             onClick={fetchTransactions}
             loading={transactionsLoading}
-            style={{ backgroundColor: "#000000", borderColor: "#000000" }}
+            style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
           >
             View All Transactions
           </Button>

@@ -806,8 +806,8 @@ export default function ProductConfiguration() {
             </div>
 
             {/* Tenure Summary */}
-            <div style={{ backgroundColor: '#EDFFFB' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: '#090909' }}>Tenure Summary</h4>
+            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Tenure Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-black">Min Tenure:</span>
@@ -897,8 +897,8 @@ export default function ProductConfiguration() {
             </div>
 
             {/* Investment Period Summary */}
-            <div style={{ backgroundColor: '#EDFFFB' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: '#090909' }}>Investment Period Summary</h4>
+            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Investment Period Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-black">Principal Withdrawal:</span>
@@ -933,7 +933,7 @@ export default function ProductConfiguration() {
                     checked={configData.returnType === 'fixed'}
                     onChange={() => setConfigData(prev => ({ ...prev, returnType: 'fixed' as 'fixed' | 'average' }))}
                     className="text-[#10B981] border-gray-300 mr-2"
-                    style={{ accentColor: '#000' }}
+                    style={{ accentColor: 'var(--foreground)' }}
                   />
                   <span className="text-sm text-black ml-2">Fixed Return</span>
                 </label>
@@ -945,7 +945,7 @@ export default function ProductConfiguration() {
                     checked={configData.returnType === 'average'}
                     onChange={() => setConfigData(prev => ({ ...prev, returnType: 'average' as 'fixed' | 'average' }))}
                     className="text-[#10B981] border-gray-300  mr-2"
-                    style={{ accentColor: '#000' }}
+                    style={{ accentColor: 'var(--foreground)' }}
                   />
                   <span className="text-sm  text-black ml-2">Average Return</span>
                 </label>
@@ -1081,8 +1081,8 @@ export default function ProductConfiguration() {
             </div>
 
             {/* Returns Summary */}
-            <div style={{ backgroundColor: '#EDFFFB' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: '#090909' }}>Returns Summary</h4>
+            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Returns Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-black">Expected Return:</span>
@@ -1173,8 +1173,8 @@ export default function ProductConfiguration() {
             </div>
 
             {/* Investor Settings Summary */}
-            <div style={{ backgroundColor: '#EDFFFB' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: '#090909' }}>Investor Settings Summary</h4>
+            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Investor Settings Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-black">Max Investors:</span>
@@ -1329,8 +1329,8 @@ export default function ProductConfiguration() {
 
 
             {/* Advanced Settings Summary */}
-            <div style={{ backgroundColor: '#EDFFFB' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: '#090909' }}>Advanced Settings Summary</h4>
+            <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Advanced Settings Summary</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
                   <span className="font-medium text-black">Risk Level:</span>
@@ -1444,7 +1444,7 @@ export default function ProductConfiguration() {
       </div>
 
       {/* Tabs */}
-      <div style={{ backgroundColor: '#EDFFFB' }} className="border-b border-gray-200 mb-6 rounded-t-lg w-full">
+      <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border-b border-gray-200 mb-6 rounded-t-lg w-full">
         <nav className="-mb-px flex justify-between w-full px-4 py-3">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -1457,7 +1457,7 @@ export default function ProductConfiguration() {
                     ? 'border-gray-700 text-black'
                     : 'border-transparent text-black hover:text-black hover:border-gray-300'
                 }`}
-                style={{ color: '#090909' }}
+                style={{ color: 'var(--theme-heading-text-color)' }}
               >
                 <Icon className="w-4 h-4 mr-2" />
                 {tab.label}
@@ -1474,8 +1474,8 @@ export default function ProductConfiguration() {
 
       {/* Configuration Summary - Only show on Amounts tab */}
       {activeTab === 'amounts' && (
-        <div style={{ backgroundColor: '#EDFFFB' }} className="border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-black mb-4" style={{ color: '#090909' }}>Configuration Summary</h3>
+        <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
+          <h3 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Configuration Summary</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div>
               <span className="font-medium text-black">Min Investment:</span>

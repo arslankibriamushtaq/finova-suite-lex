@@ -202,7 +202,7 @@ const AddEditClient = () => {
         bordered={false}
         style={{
           margin: "0 auto",
-          background: "#fff",
+          background: "var(--background)",
           boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           borderRadius: 8,
         }}
@@ -296,12 +296,12 @@ const AddEditClient = () => {
           <Row>
             <Col xs={24}>
               <Form.Item label="Services & APIs" style={{ marginBottom: 16, marginTop: 16 }}>
-                <div style={{ border: "1px solid #d9d9d9", borderRadius: "4px", padding: "16px", backgroundColor: "#fafafa" }}>
+                <div style={{ border: "1px solid var(--color-border-light)", borderRadius: "4px", padding: "16px", backgroundColor: "var(--color-surface-ice)" }}>
                   {services.map((service) => {
                     const isServiceSelected = selectedServices.hasOwnProperty(service.id);
                     const availableApis = serviceApis[service.id] || [];
                     return (
-                      <div key={service.id} className="mb-3" style={{ paddingBottom: "16px", borderBottom: isServiceSelected ? "1px solid #e0e0e0" : "none" }}>
+                      <div key={service.id} className="mb-3" style={{ paddingBottom: "16px", borderBottom: isServiceSelected ? "1px solid var(--color-border-subtle)" : "none" }}>
                         <div className="d-flex align-items-center gap-2 mb-2">
                           <Form.Item name={`service_${service.id}_enabled`} valuePropName="checked" style={{ marginBottom: 0 }} noStyle>
                             <Switch
@@ -348,7 +348,7 @@ const AddEditClient = () => {
                 htmlType="submit"
                 loading={loading}
                 size="large"
-                style={{ backgroundColor: "#000000", borderColor: "#000000" }}
+                style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
               >
                 {isEditMode ? "Update Client" : "Create Client"}
               </Button>

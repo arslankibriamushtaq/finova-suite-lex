@@ -50,7 +50,7 @@ const ServicesApis = () => {
           style={{
             padding: "6px 12px",
             borderRadius: "4px",
-            backgroundColor: row.status === 1 ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status === 1 ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}
@@ -194,7 +194,7 @@ const ServicesApis = () => {
       )}
 
       {!selectedServiceId && (
-        <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-subtle)" }}>
           Please select a service to view its APIs
         </div>
       )}

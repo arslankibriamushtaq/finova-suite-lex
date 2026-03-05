@@ -262,7 +262,7 @@ const Escalation = () => {
                 display: "block",
                 marginBottom: "8px",
                 fontSize: "14px",
-                color: "#333",
+                color: "var(--color-text-dark)",
               }}
             >
               Select Sub Category
@@ -285,7 +285,7 @@ const Escalation = () => {
                 display: "block",
                 marginBottom: "8px",
                 fontSize: "14px",
-                color: "#333",
+                color: "var(--color-text-dark)",
               }}
             >
               Select Department
@@ -316,7 +316,7 @@ const Escalation = () => {
                 padding: "8px 24px",
                 borderRadius: "4px",
                 border: "none",
-                backgroundColor: "#20c997",
+                backgroundColor: "var(--color-cms-teal)",
                 color: "white",
                 cursor: "pointer",
                 fontSize: "14px",
@@ -331,7 +331,7 @@ const Escalation = () => {
                 padding: "8px 24px",
                 borderRadius: "4px",
                 border: "none",
-                backgroundColor: "#212529",
+                backgroundColor: "var(--foreground)",
                 color: "white",
                 cursor: "pointer",
                 fontSize: "14px",

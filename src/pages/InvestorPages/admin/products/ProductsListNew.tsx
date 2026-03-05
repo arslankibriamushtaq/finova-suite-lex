@@ -353,7 +353,7 @@ export default function ProductsList() {
       name: "Action",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button type="primary" style={{ backgroundColor: "#000000" }}>
+          <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>

@@ -46,25 +46,25 @@ const ThirdPartyDashboard = () => {
     { 
       title: "Total Clients", 
       value: dashboardData?.clients_count || "0", 
-      color: "#FFFFFF" ,
-      border: true 
+      color: "var(--primary-foreground)" ,
+      border: true
     },
-    { 
-      title: "No. of Requests", 
-      value: dashboardData?.client_requests_count || "0", 
-      color: "#FFFFFF", 
-      border: true 
+    {
+      title: "No. of Requests",
+      value: dashboardData?.client_requests_count || "0",
+      color: "var(--primary-foreground)",
+      border: true
     },
-    { 
-      title: "Total Services", 
-      value: dashboardData?.services_count || "0", 
-      color: "#FFFFFF", 
-      border: true 
+    {
+      title: "Total Services",
+      value: dashboardData?.services_count || "0",
+      color: "var(--primary-foreground)",
+      border: true
     },
-    { 
-      title: "Total Users", 
-      value: dashboardData?.users || "0", 
-      color: "#FFFFFF" ,
+    {
+      title: "Total Users",
+      value: dashboardData?.users || "0",
+      color: "var(--primary-foreground)" ,
       border: true 
     },
   ];
@@ -88,8 +88,8 @@ const ThirdPartyDashboard = () => {
       {
         label: "Success Requests",
         data: serviceStats?.success_percentage||[],
-        backgroundColor: "#000000",
-        borderColor: "#000000",
+        backgroundColor: "var(--foreground)",
+        borderColor: "var(--foreground)",
         tension: 0.4,
       },
       {
@@ -242,14 +242,14 @@ useEffect(() => {
               className={`stat-card ${stat.border ? "bordered-card" : ""}`}
               style={{
                 backgroundColor: stat.color,
-                borderColor: stat.border ? "#e0e0e0" : "transparent",
+                borderColor: stat.border ? "var(--color-border-subtle)" : "transparent",
               }}
             >
               <div className="stat-title">{stat.title}</div>
               <div
                 className="stat-value"
                 style={{
-                  color: stat.color === "#FFFFFF" ? "#000000" : "#FFFFFF",
+                  color: stat.color === "var(--primary-foreground)" ? "var(--foreground)" : "var(--primary-foreground)",
                 }}
               >
                 {loading ? <PulseLoader/> : stat.value}

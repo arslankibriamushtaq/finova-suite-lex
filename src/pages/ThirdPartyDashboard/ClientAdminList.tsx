@@ -81,7 +81,7 @@ const ClientAdminList = () => {
           style={{
             padding: "6px 12px",
             borderRadius: "4px",
-            backgroundColor: row.status === "Active" || row.status === 1 ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status === "Active" || row.status === 1 ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}
@@ -95,7 +95,7 @@ const ClientAdminList = () => {
       name: "Action",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button type="primary" style={{ backgroundColor: "#000000" }}>
+          <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>
@@ -157,7 +157,7 @@ const ClientAdminList = () => {
         <h2>Client Admins</h2>
         <Button
           type="primary"
-          style={{ backgroundColor: "#000000" }}
+          style={{ backgroundColor: "var(--foreground)" }}
           onClick={() => navigate(`/ThirdPartyManagement/Clients/${clientId}/Admins/Add`)}
         >
           Add Client Admin

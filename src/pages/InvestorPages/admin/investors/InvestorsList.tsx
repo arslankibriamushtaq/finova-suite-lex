@@ -701,31 +701,31 @@ export default function InvestorsList() {
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead style={{ backgroundColor: '#EDFFFB' }}>
+            <thead style={{ backgroundColor: 'var(--color-surface-mint)' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                   Investor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                   Type
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                   {activeTab === 'individual' ? 'Investor Level' : 'Company Info'}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                   {activeTab === 'individual' ? 'National ID' : 'CR Number'}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                   {activeTab === 'individual' ? 'Email' : 'Designation'}
                 </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                 Address
               </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
               Verification Status
             </th>
               
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: '#EDFFFB', color: '#090909' }}>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
                   Actions
                 </th>
               </tr>

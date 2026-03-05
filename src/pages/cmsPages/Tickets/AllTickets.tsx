@@ -311,8 +311,8 @@ const AllTickets = () => {
           style={{
             padding: "0.22rem 0.8rem",
             borderRadius: "5px",
-            backgroundColor: "#5F4F71",
-            color: "rgba(255, 255, 255, 1)",
+            backgroundColor: "var(--color-cms-purple)",
+            color: "var(--primary-foreground)",
             display: "inline-block",
             fontWeight: "bold",
           }}
@@ -512,12 +512,12 @@ const AllTickets = () => {
                 onChange={handleContactNoChange}
                 style={{ 
                   width: "100%",
-                  borderColor: contactNoError ? "#ff4d4f" : undefined
+                  borderColor: contactNoError ? "var(--color-error)" : undefined
                 }}
                 maxLength={9}
               />
               {contactNoError && (
-                <div style={{ color: "#ff4d4f", fontSize: "12px", marginTop: "4px" }}>
+                <div style={{ color: "var(--color-error)", fontSize: "12px", marginTop: "4px" }}>
                   {contactNoError}
                 </div>
               )}
@@ -531,7 +531,7 @@ const AllTickets = () => {
                   setContactNoError("");
                 }}
                 style={{
-                  backgroundColor: "#17c1bc",
+                  backgroundColor: "var(--color-teal-bright)",
                   color: "white",
                   borderRadius: "8px",
                   padding: "10px 30px",
@@ -575,7 +575,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Category
@@ -597,7 +597,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Sub Category
@@ -620,7 +620,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Department
@@ -642,7 +642,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Status
@@ -665,7 +665,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Comment
@@ -691,7 +691,7 @@ const AllTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: "#20c997",
+                  backgroundColor: "var(--color-cms-teal)",
                   color: "white",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -707,7 +707,7 @@ const AllTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: loadingSave ? "#6c757d" : "#212529",
+                  backgroundColor: loadingSave ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",
                   cursor: loadingSave ? "not-allowed" : "pointer",
                   fontSize: "14px",
@@ -748,7 +748,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Department
@@ -773,7 +773,7 @@ const AllTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Comment
@@ -807,7 +807,7 @@ const AllTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: "#20c997",
+                  backgroundColor: "var(--color-cms-teal)",
                   color: "white",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -823,7 +823,7 @@ const AllTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: loadingEscalate ? "#6c757d" : "#212529",
+                  backgroundColor: loadingEscalate ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",
                   cursor: loadingEscalate ? "not-allowed" : "pointer",
                   fontSize: "14px",

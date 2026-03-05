@@ -61,7 +61,7 @@ const TicketDetails = () => {
             width: "40px",
             height: "40px",
             borderRadius: "8px",
-            border: "1px solid #d9d9d9",
+            border: "1px solid var(--color-border-light)",
           }}
         />
         <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>Details</h1>
@@ -70,11 +70,11 @@ const TicketDetails = () => {
       {/* Customer Detail Section */}
       <div
         style={{
-          border: "1px solid #e0e0e0",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "8px",
           padding: "24px",
           marginBottom: "24px",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--background)",
         }}
       >
         <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Customer Detail</h2>
@@ -100,11 +100,11 @@ const TicketDetails = () => {
       {/* Customer Loan Info Section */}
       <div
         style={{
-          border: "1px solid #e0e0e0",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "8px",
           padding: "24px",
           marginBottom: "24px",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--background)",
         }}
       >
         <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Customer Loan Info</h2>
@@ -130,11 +130,11 @@ const TicketDetails = () => {
       {/* Ticket Created By Section */}
       <div
         style={{
-          border: "1px solid #e0e0e0",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "8px",
           padding: "24px",
           marginBottom: "24px",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--background)",
         }}
       >
         <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Ticket Created By</h2>
@@ -160,11 +160,11 @@ const TicketDetails = () => {
       {/* Ticket Details Section */}
       <div
         style={{
-          border: "1px solid #e0e0e0",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "8px",
           padding: "24px",
           marginBottom: "24px",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--background)",
         }}
       >
         <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Ticket Details</h2>
@@ -192,7 +192,7 @@ const TicketDetails = () => {
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: "14px", color: "#999" }}>No images available</div>
+              <div style={{ fontSize: "14px", color: "var(--color-text-subtle)" }}>No images available</div>
             )}
           </div>
           <div>
@@ -209,10 +209,10 @@ const TicketDetails = () => {
       {/* Escalation History Section */}
       <div
         style={{
-          border: "1px solid #e0e0e0",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "8px",
           padding: "24px",
-          backgroundColor: "#fff",
+          backgroundColor: "var(--background)",
         }}
       >
         <h2
@@ -233,7 +233,7 @@ const TicketDetails = () => {
           style={{
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
-            border: "1px solid #e0e0e0",
+            border: "1px solid var(--color-border-subtle)",
             borderRadius: "4px",
             overflow: "hidden",
           }}
@@ -241,7 +241,7 @@ const TicketDetails = () => {
           <div
             style={{
               padding: "16px",
-              borderRight: "1px solid #e0e0e0",
+              borderRight: "1px solid var(--color-border-subtle)",
               fontWeight: 600,
               fontSize: "14px",
             }}
@@ -256,8 +256,8 @@ const TicketDetails = () => {
                   key={`comment-${index}`}
                   style={{
                     padding: "16px",
-                    borderRight: "1px solid #e0e0e0",
-                    borderTop: "1px solid #e0e0e0",
+                    borderRight: "1px solid var(--color-border-subtle)",
+                    borderTop: "1px solid var(--color-border-subtle)",
                     fontSize: "14px",
                   }}
                 >
@@ -267,7 +267,7 @@ const TicketDetails = () => {
                   key={`date-${index}`}
                   style={{
                     padding: "16px",
-                    borderTop: "1px solid #e0e0e0",
+                    borderTop: "1px solid var(--color-border-subtle)",
                     fontSize: "14px",
                   }}
                 >
@@ -280,8 +280,8 @@ const TicketDetails = () => {
               <div
                 style={{
                   padding: "16px",
-                  borderRight: "1px solid #e0e0e0",
-                  borderTop: "1px solid #e0e0e0",
+                  borderRight: "1px solid var(--color-border-subtle)",
+                  borderTop: "1px solid var(--color-border-subtle)",
                   fontSize: "14px",
                 }}
               >
@@ -290,7 +290,7 @@ const TicketDetails = () => {
               <div
                 style={{
                   padding: "16px",
-                  borderTop: "1px solid #e0e0e0",
+                  borderTop: "1px solid var(--color-border-subtle)",
                   fontSize: "14px",
                   textAlign: "center",
                 }}

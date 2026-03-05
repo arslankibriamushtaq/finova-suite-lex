@@ -228,7 +228,7 @@ const ClientRequestProd = () => {
           format="YYYY-MM-DD"
         />
 
-        <Button type="primary" onClick={handleFilter} style={{ backgroundColor: "#000000", flexShrink: 0 }}>
+        <Button type="primary" onClick={handleFilter} style={{ backgroundColor: "var(--foreground)", flexShrink: 0 }}>
           Filter
         </Button>
         <Button onClick={handleReset} style={{ flexShrink: 0 }}>Reset</Button>
@@ -237,17 +237,17 @@ const ClientRequestProd = () => {
       {/* Custom Table */}
       <div
         style={{
-          border: "1px solid #e0e0e0",
+          border: "1px solid var(--color-border-subtle)",
           borderRadius: "14px",
           overflow: "hidden",
-          background: "#fff",
+          background: "var(--background)",
         }}
       >
         {/* Table Header */}
         <div
           style={{
             display: "flex",
-            borderBottom: "2px solid #e0e0e0",
+            borderBottom: "2px solid var(--color-border-subtle)",
             background: themeStyle?.table.backgroundColor || "#EDFFFB",
             borderRadius: "14px 14px 0 0",
           }}
@@ -292,7 +292,7 @@ const ClientRequestProd = () => {
                 key={index}
                 style={{
                   display: "flex",
-                  borderBottom: "1px solid #e0e0e0",
+                  borderBottom: "1px solid var(--color-border-subtle)",
                   minHeight: "44px",
                   padding: "0px 10px",
                 }}
@@ -326,7 +326,7 @@ const ClientRequestProd = () => {
                 <div
                   style={{
                     display: "flex",
-                    borderBottom: "1px solid #e0e0e0",
+                    borderBottom: "1px solid var(--color-border-subtle)",
                     minHeight: "44px",
                     padding: "0px 10px",
                     alignItems: "center",
@@ -351,7 +351,7 @@ const ClientRequestProd = () => {
                         display: "flex",
                         alignItems: "center",
                         gap: "4px",
-                        color: "#1890ff",
+                        color: "var(--color-action)",
                       }}
                     >
                       {isExpanded(row.id, 'request') ? <UpOutlined /> : <DownOutlined />}
@@ -368,7 +368,7 @@ const ClientRequestProd = () => {
                         display: "flex",
                         alignItems: "center",
                         gap: "4px",
-                        color: "#1890ff",
+                        color: "var(--color-action)",
                       }}
                     >
                       {isExpanded(row.id, 'response') ? <UpOutlined /> : <DownOutlined />}
@@ -377,7 +377,7 @@ const ClientRequestProd = () => {
                   </div>
                   <div style={{ flex: "0 0 120px", padding: "12px 8px", textAlign: "center" }}>
                     <Dropdown overlay={menu(row)} trigger={["click"]}>
-                      <Button type="primary" style={{ backgroundColor: "#000000" }}>
+                      <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
                         Select <DownOutlined />
                       </Button>
                     </Dropdown>
@@ -388,8 +388,8 @@ const ClientRequestProd = () => {
                   <div
                     style={{
                       padding: "16px",
-                      backgroundColor: "#f9f9f9",
-                      borderBottom: "1px solid #e0e0e0",
+                      backgroundColor: "var(--color-surface-cloud)",
+                      borderBottom: "1px solid var(--color-border-subtle)",
                     }}
                   >
                     <div style={{ marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Request:</div>
@@ -398,13 +398,13 @@ const ClientRequestProd = () => {
                         margin: 0,
                         padding: "12px",
                         fontSize: "12px",
-                        backgroundColor: "#fff",
+                        backgroundColor: "var(--background)",
                         borderRadius: "4px",
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
                         maxHeight: "400px",
                         overflow: "auto",
-                        border: "1px solid #e0e0e0",
+                        border: "1px solid var(--color-border-subtle)",
                       }}
                     >
                       {formatJSON(row.request || "")}
@@ -416,8 +416,8 @@ const ClientRequestProd = () => {
                   <div
                     style={{
                       padding: "16px",
-                      backgroundColor: "#f9f9f9",
-                      borderBottom: "1px solid #e0e0e0",
+                      backgroundColor: "var(--color-surface-cloud)",
+                      borderBottom: "1px solid var(--color-border-subtle)",
                     }}
                   >
                     <div style={{ marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Response:</div>
@@ -426,13 +426,13 @@ const ClientRequestProd = () => {
                         margin: 0,
                         padding: "12px",
                         fontSize: "12px",
-                        backgroundColor: "#fff",
+                        backgroundColor: "var(--background)",
                         borderRadius: "4px",
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
                         maxHeight: "400px",
                         overflow: "auto",
-                        border: "1px solid #e0e0e0",
+                        border: "1px solid var(--color-border-subtle)",
                       }}
                     >
                       {formatJSON(row.responses || "")}
@@ -443,7 +443,7 @@ const ClientRequestProd = () => {
             ))}
           </div>
         ) : (
-          <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-subtle)" }}>
             No data available
           </div>
         )}
@@ -454,7 +454,7 @@ const ClientRequestProd = () => {
             className="pagination-div"
             style={{
               padding: "16px",
-              borderTop: "1px solid #e0e0e0",
+              borderTop: "1px solid var(--color-border-subtle)",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
@@ -481,9 +481,9 @@ const ClientRequestProd = () => {
                 disabled={page === 1}
                 style={{
                   padding: "4px 12px",
-                  border: "1px solid #d9d9d9",
+                  border: "1px solid var(--color-border-light)",
                   borderRadius: "4px",
-                  backgroundColor: page === 1 ? "#f5f5f5" : "#fff",
+                  backgroundColor: page === 1 ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === 1 ? "not-allowed" : "pointer",
                 }}
               >
@@ -494,9 +494,9 @@ const ClientRequestProd = () => {
                 disabled={page === 1}
                 style={{
                   padding: "4px 12px",
-                  border: "1px solid #d9d9d9",
+                  border: "1px solid var(--color-border-light)",
                   borderRadius: "4px",
-                  backgroundColor: page === 1 ? "#f5f5f5" : "#fff",
+                  backgroundColor: page === 1 ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === 1 ? "not-allowed" : "pointer",
                 }}
               >
@@ -508,9 +508,9 @@ const ClientRequestProd = () => {
                 disabled={page === totalPage}
                 style={{
                   padding: "4px 12px",
-                  border: "1px solid #d9d9d9",
+                  border: "1px solid var(--color-border-light)",
                   borderRadius: "4px",
-                  backgroundColor: page === totalPage ? "#f5f5f5" : "#fff",
+                  backgroundColor: page === totalPage ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === totalPage ? "not-allowed" : "pointer",
                 }}
               >
@@ -521,9 +521,9 @@ const ClientRequestProd = () => {
                 disabled={page === totalPage}
                 style={{
                   padding: "4px 12px",
-                  border: "1px solid #d9d9d9",
+                  border: "1px solid var(--color-border-light)",
                   borderRadius: "4px",
-                  backgroundColor: page === totalPage ? "#f5f5f5" : "#fff",
+                  backgroundColor: page === totalPage ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === totalPage ? "not-allowed" : "pointer",
                 }}
               >

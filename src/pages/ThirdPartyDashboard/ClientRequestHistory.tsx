@@ -91,7 +91,7 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
           style={{
             padding: "6px 12px",
             borderRadius: "4px",
-            backgroundColor: row.status === "Success" ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status === "Success" ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}
@@ -262,7 +262,7 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
 
         {environment === "service" && (
           <Button
-            style={{ backgroundColor: "#28a745", color: "white", border: "none" }}
+            style={{ backgroundColor: "var(--color-status-active)", color: "white", border: "none" }}
             onClick={handleExport}
           >
             Export Excel

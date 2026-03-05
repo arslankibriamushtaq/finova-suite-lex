@@ -321,7 +321,7 @@ const SubCategories = () => {
                 display: "block",
                 marginBottom: "8px",
                 fontSize: "14px",
-                color: "#333",
+                color: "var(--color-text-dark)",
               }}
             >
               Sub Category Name
@@ -340,7 +340,7 @@ const SubCategories = () => {
                 display: "block",
                 marginBottom: "8px",
                 fontSize: "14px",
-                color: "#333",
+                color: "var(--color-text-dark)",
               }}
             >
               Select Priority
@@ -363,7 +363,7 @@ const SubCategories = () => {
                 display: "block",
                 marginBottom: "8px",
                 fontSize: "14px",
-                color: "#333",
+                color: "var(--color-text-dark)",
               }}
             >
               Department
@@ -386,7 +386,7 @@ const SubCategories = () => {
                 display: "block",
                 marginBottom: "8px",
                 fontSize: "14px",
-                color: "#333",
+                color: "var(--color-text-dark)",
               }}
             >
               Select Category
@@ -417,7 +417,7 @@ const SubCategories = () => {
                 padding: "8px 24px",
                 borderRadius: "4px",
                 border: "none",
-                backgroundColor: "#20c997",
+                backgroundColor: "var(--color-cms-teal)",
                 color: "white",
                 cursor: "pointer",
                 fontSize: "14px",
@@ -432,7 +432,7 @@ const SubCategories = () => {
                 padding: "8px 24px",
                 borderRadius: "4px",
                 border: "none",
-                backgroundColor: "#212529",
+                backgroundColor: "var(--foreground)",
                 color: "white",
                 cursor: "pointer",
                 fontSize: "14px",
@@ -455,8 +455,8 @@ const SubCategories = () => {
         <div style={{ padding: "20px 0" }}>
           <p>Are you sure you want to delete this Sub Category?</p>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "30px" }}>
-            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "4px", border: "none", backgroundColor: "#20c997", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
-            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "4px", border: "none", backgroundColor: "#212529", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
+            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "4px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
+            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "4px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
           </div>
         </div>
       </Modal>

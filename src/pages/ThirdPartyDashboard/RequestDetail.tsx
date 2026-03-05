@@ -102,7 +102,7 @@ const RequestDetail = () => {
         bordered={false}
         style={{
           margin: "0 auto",
-          background: "#fff",
+          background: "var(--background)",
           boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
           borderRadius: 8,
         }}
@@ -223,7 +223,7 @@ const RequestDetail = () => {
                 style={{
                   fontFamily: "monospace",
                   fontSize: "12px",
-                  backgroundColor: "#f5f5f5",
+                  backgroundColor: "var(--color-surface-subtle)",
                 }}
               />
             </div>
@@ -242,7 +242,7 @@ const RequestDetail = () => {
                 style={{
                   fontFamily: "monospace",
                   fontSize: "12px",
-                  backgroundColor: "#f5f5f5",
+                  backgroundColor: "var(--color-surface-subtle)",
                 }}
               />
             </div>

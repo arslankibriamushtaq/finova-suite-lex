@@ -161,7 +161,7 @@ const ApproveInvestment = () => {
         // verificationStatus: 0 = Pending, > 0 = Approved
         const isVerified = row.verificationStatus !== undefined && row.verificationStatus !== 0;
         const statusText = isVerified ? "Approved" : "Pending";
-        const statusColor = isVerified ? "#52c41a" : "#faad14";
+        const statusColor = isVerified ? "var(--color-success)" : "var(--color-warning-amber)";
         return (
           <span
             style={{
@@ -200,7 +200,7 @@ const ApproveInvestment = () => {
                 borderRadius: "6px",
                 backgroundColor: "#434948",
                 // border: "1px solid #Ergb(67, 73, 72)
-                color: "#fff",
+                color: "var(--primary-foreground)",
                 fontSize: "12px",
                 fontWeight: "500",
               }}
@@ -212,7 +212,7 @@ const ApproveInvestment = () => {
         }
         return (
           <Dropdown overlay={menu(row)} trigger={["click"]}>
-            <Button type="primary" style={{ backgroundColor: "#000000" }}>
+            <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
               Select <DownOutlined />
             </Button>
           </Dropdown>
@@ -249,7 +249,7 @@ const ApproveInvestment = () => {
         }}
         confirmLoading={approving}
         okText="Approve"
-        okButtonProps={{ style: { backgroundColor: "#000000", borderColor: "#000000" } }}
+        okButtonProps={{ style: { backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" } }}
       >
         {selectedInvestment && (
           <div className="mb-2">

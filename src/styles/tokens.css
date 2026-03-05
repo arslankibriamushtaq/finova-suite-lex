@@ -164,6 +164,18 @@
 
   /* Surface tint (blue-gray) */
   --color-surface-frost: #E3EFF4;
+
+  /* CMS ticket/action colors */
+  --color-cms-purple: #5F4F71;
+  --color-cms-teal:   #20c997;
+  --color-teal-bright: #17c1bc;
+
+  /* Warning/status variants */
+  --color-warning-amber: #faad14;
+  --color-error-light:   #ff7875;
+
+  /* Surface mint (investor) */
+  --color-surface-mint: #EDFFFB;
 }
 
 .dark {

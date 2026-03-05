@@ -165,11 +165,11 @@ const Dashboard = () => {
   return (
     <>
       <div className="dashboard">
-        <div style={{backgroundColor:'rgb(230, 230, 230)'}}>
+        <div style={{backgroundColor:'var(--color-border-disabled)'}}>
           <div className="d-flex align-items-center justify-content-between">
             <div
               className="d-flex align-items-center ms-2"
-              style={{ fontWeight: "600", fontSize: "20px", color: "#000" }}
+              style={{ fontWeight: "600", fontSize: "20px", color: "var(--foreground)" }}
             >
               Overview
             </div>

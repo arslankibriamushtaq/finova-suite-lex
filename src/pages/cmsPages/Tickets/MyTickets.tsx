@@ -251,8 +251,8 @@ const MyTickets = () => {
           style={{
             padding: "0.22rem 0.8rem",
             borderRadius: "5px",
-            backgroundColor: "#5F4F71",
-            color: "rgba(255, 255, 255, 1)",
+            backgroundColor: "var(--color-cms-purple)",
+            color: "var(--primary-foreground)",
             display: "inline-block",
             fontWeight: "bold",
           }}
@@ -418,7 +418,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Category
@@ -440,7 +440,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Sub Category
@@ -463,7 +463,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Department
@@ -485,7 +485,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Status
@@ -508,7 +508,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Comment
@@ -534,7 +534,7 @@ const MyTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: "#20c997",
+                  backgroundColor: "var(--color-cms-teal)",
                   color: "white",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -550,7 +550,7 @@ const MyTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: loadingSave ? "#6c757d" : "#212529",
+                  backgroundColor: loadingSave ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",
                   cursor: loadingSave ? "not-allowed" : "pointer",
                   fontSize: "14px",
@@ -590,7 +590,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Select Department
@@ -615,7 +615,7 @@ const MyTickets = () => {
                   display: "block",
                   marginBottom: "8px",
                   fontSize: "14px",
-                  color: "#333",
+                  color: "var(--color-text-dark)",
                 }}
               >
                 Comment
@@ -649,7 +649,7 @@ const MyTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: "#20c997",
+                  backgroundColor: "var(--color-cms-teal)",
                   color: "white",
                   cursor: "pointer",
                   fontSize: "14px",
@@ -665,7 +665,7 @@ const MyTickets = () => {
                   padding: "8px 24px",
                   borderRadius: "4px",
                   border: "none",
-                  backgroundColor: loadingEscalate ? "#6c757d" : "#212529",
+                  backgroundColor: loadingEscalate ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",
                   cursor: loadingEscalate ? "not-allowed" : "pointer",
                   fontSize: "14px",

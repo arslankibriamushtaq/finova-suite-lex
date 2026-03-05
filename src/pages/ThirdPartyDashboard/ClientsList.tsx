@@ -71,7 +71,7 @@ const ClientsList = () => {
           style={{
             padding: "6px 12px",
             borderRadius: "4px",
-            backgroundColor: row.status === "Active" ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status === "Active" ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}
@@ -91,7 +91,7 @@ const ClientsList = () => {
       name: "Action",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button type="primary" style={{ backgroundColor: "#000000" }}>
+          <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>
@@ -140,7 +140,7 @@ const ClientsList = () => {
         <h2>Client List</h2>
         <Button
           type="primary"
-          style={{ backgroundColor: "#000000" }}
+          style={{ backgroundColor: "var(--foreground)" }}
           onClick={() => navigate("/ThirdPartyManagement/Clients/Add")}
         >
           Add New Client

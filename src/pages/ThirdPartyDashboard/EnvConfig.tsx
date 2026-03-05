@@ -72,7 +72,7 @@ const EnvConfig = () => {
           style={{
             padding: "6px 12px",
             borderRadius: "4px",
-            backgroundColor: row.status === "Active" || row.status === 1 ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status === "Active" || row.status === 1 ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}
@@ -91,8 +91,8 @@ const EnvConfig = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
@@ -525,7 +525,7 @@ const flattenHeaders = (headers: any): Array<{ key: string; value: string }> => 
               }}>
                 Cancel
               </Button>
-              <Button type="primary" htmlType="submit" loading={isSubmitting} style={{ backgroundColor: "#000000", color: "#ffffff", }}>
+              <Button type="primary" htmlType="submit" loading={isSubmitting} style={{ backgroundColor: "var(--foreground)", color: "var(--primary-foreground)", }}>
                 {isSubmitting ? "Updating..." : "Update"}
               </Button>
             </div>
