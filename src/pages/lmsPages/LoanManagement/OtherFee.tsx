@@ -1081,10 +1081,10 @@ const OtherFee: any = () => {
               {selectFeeType == "fixedSlab" && (
                 <>
                   <table>
-                    <thead style={{ background: "#E8E8E8" }}>
+                    <thead style={{ background: "var(--color-surface-pressed)" }}>
                       <tr
                         style={{
-                          color: "#000000",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           fontWeight: "600",
                         }}
@@ -1098,7 +1098,7 @@ const OtherFee: any = () => {
                     </thead>
                     <tbody>
                       {slabs.map((slab: any, index: any) => (
-                        <tr key={index} style={{ border: "1px solid #E8E8E8" }}>
+                        <tr key={index} style={{ border: "1px solid var(--color-surface-pressed)" }}>
                           <td style={{ padding: "18px" }}>{slab.slabName}</td>
                           <td>{slab.min} SAR</td>
                           <td>{slab.max} SAR</td>
@@ -1119,7 +1119,7 @@ const OtherFee: any = () => {
                     <span
                       onClick={handleAddNewSlab}
                       style={{
-                        color: "#EB0D0D",
+                        color: "var(--color-danger-action)",
                         fontSize: "16px",
                         fontWeight: "600",
                         textDecoration: "underLine",
@@ -1136,10 +1136,10 @@ const OtherFee: any = () => {
               {selectFeeType == "percentageSlab" && (
                 <>
                   <table>
-                    <thead style={{ background: "#E8E8E8" }}>
+                    <thead style={{ background: "var(--color-surface-pressed)" }}>
                       <tr
                         style={{
-                          color: "#000000",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           fontWeight: "600",
                         }}
@@ -1153,7 +1153,7 @@ const OtherFee: any = () => {
                     </thead>
                     <tbody>
                       {percentageData.map((percentageData: any, index: any) => (
-                        <tr key={index} style={{ border: "1px solid #E8E8E8" }}>
+                        <tr key={index} style={{ border: "1px solid var(--color-surface-pressed)" }}>
                           <td style={{ padding: "18px" }}>
                             {percentageData.slabName}
                           </td>
@@ -1176,7 +1176,7 @@ const OtherFee: any = () => {
                     <span
                       onClick={handleAddNewPercentage}
                       style={{
-                        color: "#EB0D0D",
+                        color: "var(--color-danger-action)",
                         fontSize: "16px",
                         fontWeight: "600",
                         textDecoration: "underLine",
@@ -1532,10 +1532,10 @@ const OtherFee: any = () => {
               {selectFeeType == "fixedSlab" && (
                 <>
                   <table>
-                    <thead style={{ background: "#E8E8E8" }}>
+                    <thead style={{ background: "var(--color-surface-pressed)" }}>
                       <tr
                         style={{
-                          color: "#000000",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           fontWeight: "600",
                         }}
@@ -1549,7 +1549,7 @@ const OtherFee: any = () => {
                     </thead>
                     <tbody>
                       {slabs.map((slab: any, index: any) => (
-                        <tr key={index} style={{ border: "1px solid #E8E8E8" }}>
+                        <tr key={index} style={{ border: "1px solid var(--color-surface-pressed)" }}>
                           <td style={{ padding: "18px" }}>{slab.slabName}</td>
                           <td>{slab.min} SAR</td>
                           <td>{slab.max} SAR</td>
@@ -1570,7 +1570,7 @@ const OtherFee: any = () => {
                     <span
                       onClick={handleAddNewSlab}
                       style={{
-                        color: "#EB0D0D",
+                        color: "var(--color-danger-action)",
                         fontSize: "16px",
                         fontWeight: "600",
                         textDecoration: "underLine",
@@ -1587,10 +1587,10 @@ const OtherFee: any = () => {
               {selectFeeType == "percentageSlab" && (
                 <>
                   <table>
-                    <thead style={{ background: "#E8E8E8" }}>
+                    <thead style={{ background: "var(--color-surface-pressed)" }}>
                       <tr
                         style={{
-                          color: "#000000",
+                          color: "var(--foreground)",
                           fontSize: "14px",
                           fontWeight: "600",
                         }}
@@ -1604,7 +1604,7 @@ const OtherFee: any = () => {
                     </thead>
                     <tbody>
                       {percentageData.map((percentageData: any, index: any) => (
-                        <tr key={index} style={{ border: "1px solid #E8E8E8" }}>
+                        <tr key={index} style={{ border: "1px solid var(--color-surface-pressed)" }}>
                           <td style={{ padding: "18px" }}>
                             {percentageData.slabName}
                           </td>
@@ -1627,7 +1627,7 @@ const OtherFee: any = () => {
                     <span
                       onClick={handleAddNewPercentage}
                       style={{
-                        color: "#EB0D0D",
+                        color: "var(--color-danger-action)",
                         fontSize: "16px",
                         fontWeight: "600",
                         textDecoration: "underLine",
@@ -1740,7 +1740,7 @@ const OtherFee: any = () => {
                   handleSaveSlab();
                 }}
                 style={{
-                  backgroundColor: "#EB0D0D",
+                  backgroundColor: "var(--color-danger-action)",
                   borderRadius: "8px",
                   height: "fit-content",
                   width: "fit-content",

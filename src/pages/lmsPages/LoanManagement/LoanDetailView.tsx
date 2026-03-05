@@ -29,7 +29,7 @@ const LoanDetailView = () => {
   return (
     <>
       <h3>Loan Details</h3>
-      <div style={{ border: "1px solid #D1D1D1", borderRadius: "8px" }}>
+      <div style={{ border: "1px solid var(--color-border-light)", borderRadius: "8px" }}>
         <div className="col-12 d-flex pb-2 px-3 mt-2">
           <div className="col-6 d-flex align-items-center">
             <div className="col-6">
@@ -62,7 +62,7 @@ const LoanDetailView = () => {
         </div>
         <div
           className="mx-3"
-          style={{ borderBottom: "1px solid #D1D1D1" }}
+          style={{ borderBottom: "1px solid var(--color-border-light)" }}
         ></div>
         <div className="col-12 d-flex mt-2 px-2">
           <div className="col-md-4 p-2">
@@ -71,7 +71,7 @@ const LoanDetailView = () => {
               <div
                 key={index}
                 className="p-3 mt-3 d-flex"
-                style={{ backgroundColor: "#F0F0F0" }}
+                style={{ backgroundColor: "var(--color-surface-muted)" }}
               >
                 <div
                   className="col-6 fw-semibold"
@@ -91,7 +91,7 @@ const LoanDetailView = () => {
               <div
                 key={index}
                 className="p-3 mt-3 d-flex "
-                style={{ backgroundColor: "#F0F0F0" }} // Optional: Can be removed if using Bootstrap classes
+                style={{ backgroundColor: "var(--color-surface-muted)" }} // Optional: Can be removed if using Bootstrap classes
               >
                 <div
                   className="col-6 fw-semibold"
@@ -112,7 +112,7 @@ const LoanDetailView = () => {
                 key={index}
                 className="p-3 mt-3 d-flex"
                 style={{
-                  backgroundColor: "#F0F0F0",
+                  backgroundColor: "var(--color-surface-muted)",
                   whiteSpace: info.label === "Date" ? "nowrap" : "normal",
                 }}
               >
@@ -131,7 +131,7 @@ const LoanDetailView = () => {
         </div>
         <div
           className="mx-3 mt-2"
-          style={{ borderBottom: "1px solid #D1D1D1" }}
+          style={{ borderBottom: "1px solid var(--color-border-light)" }}
         ></div>
         <div className="col-12 d-flex mt-2 px-2">
           <div className="col-4 "></div>
@@ -151,7 +151,7 @@ const LoanDetailView = () => {
         </div>
         <div
           className="mx-3 mt-2"
-          style={{ borderBottom: "1px solid #D1D1D1" }}
+          style={{ borderBottom: "1px solid var(--color-border-light)" }}
         ></div>
         <div className="col-12 d-flex mt-2 px-2">
           <div className="col-4 "></div>
@@ -168,7 +168,7 @@ const LoanDetailView = () => {
         </div>
         <div
           className="mx-3 mt-2 mb-5"
-          style={{ borderBottom: "1px solid #D1D1D1" }}
+          style={{ borderBottom: "1px solid var(--color-border-light)" }}
         ></div>
       </div>
     </>

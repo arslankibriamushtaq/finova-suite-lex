@@ -148,6 +148,22 @@
   /* Block type colors (BlockHistory) */
   --color-block-compliance: #00BCD4;
   --color-block-fallback:   #607D8B;
+
+  /* LMS status badge colors */
+  --color-status-green:    #92BC83;
+  --color-status-red-soft: #D86969;
+  --color-status-amber:    #FAB65E;
+  --color-status-coral:    #F85F54;
+  --color-status-gray:     #959595;
+  --color-status-blue:     #629FFB;
+  --color-status-dark:     #373435;
+  --color-status-sky:      #42A2E7;
+
+  /* Danger action button (delete/reject) */
+  --color-danger-action: #EB0D0D;
+
+  /* Surface tint (blue-gray) */
+  --color-surface-frost: #E3EFF4;
 }
 
 .dark {

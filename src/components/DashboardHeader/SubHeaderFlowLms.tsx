@@ -51,7 +51,7 @@ const SubHeaderFlowLms = () => {
                         width: "286px",
                         cursor: "pointer",
                       }
-                    : { fontWeight: "600", fontSize: "18px", cursor: "pointer",color: "#fff" }
+                    : { fontWeight: "600", fontSize: "18px", cursor: "pointer",color: "var(--primary-foreground)" }
                 }
                 onClick={() => {
                   // navigate("/lms/dashboard");
@@ -145,10 +145,10 @@ const SubHeaderFlowLms = () => {
                   view == "view"
                     ? {
                         fontSize: "14px",
-                        color: "#A0A0A0",
+                        color: "var(--theme-revert-action-color)",
                         width: "calc(100% - 286px)",
                       }
-                    : { fontSize: "14px", color: "#A0A0A0" }
+                    : { fontSize: "14px", color: "var(--theme-revert-action-color)" }
                 }
               >
                 <div

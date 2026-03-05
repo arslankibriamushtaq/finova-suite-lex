@@ -258,7 +258,7 @@ const InvoiceRange = (props: any) => {
       {loader && <Loader />}
       <div
         className="mt-3 mb-4"
-        style={{ borderBottom: "1px solid #D1D1D1" }}
+        style={{ borderBottom: "1px solid var(--color-border-light)" }}
       ></div>
       <Row>
         <div style={{ flex: 11.5 }} className="d-flex flex-wrap">

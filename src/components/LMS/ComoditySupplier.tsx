@@ -66,8 +66,8 @@ const CommoditySupplier = () => {
             borderRadius: "32px",
             backgroundColor:
               row.recordState === 1
-                ? "rgba(63, 195, 128, 0.9)" // Green for active (1)
-                : "#FF6161", // Red for inactive (0 or other)
+                ? "var(--color-success)" // Green for active (1)
+                : "var(--color-error)", // Red for inactive (0 or other)
             color: "white",
             cursor: row.recordState === 1 ? "pointer" : "default",
           }}
@@ -85,8 +85,8 @@ const CommoditySupplier = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              backgroundColor: "#0B8085 !important",
-              color: "#000000",
+              backgroundColor: "var(--color-action) !important",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",

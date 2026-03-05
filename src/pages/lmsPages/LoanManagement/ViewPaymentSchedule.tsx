@@ -135,7 +135,7 @@ const LoanPaymentSchedule = () => {
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.paymentStatus === 1 ? "#92bc82" : "#d86969",
+            backgroundColor: row.paymentStatus === 1 ? "var(--color-status-green)" : "var(--color-status-red-soft)",
             color: "white",
           }}
         >

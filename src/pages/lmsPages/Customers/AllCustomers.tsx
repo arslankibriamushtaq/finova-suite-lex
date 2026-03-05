@@ -880,9 +880,9 @@ const AllCustomers = () => {
             borderRadius: "12px",
             backgroundColor:
               row.status
-                ? "rgba(146, 188, 131, 1)"
-                : "rgba(55, 52, 53, 1)",
-            color: "rgba(255, 255, 255, 1)",
+                ? "var(--color-status-green)"
+                : "var(--color-status-dark)",
+            color: "var(--primary-foreground)",
             cursor: row.status === "Active" ? "pointer" : "default",
           }}
         >

@@ -8,7 +8,8 @@
       "Bash(grep -v \"//.*#\\\\|/\\\\*\")",
       "Bash(grep -v \"//.*#\\\\|/\\\\*\\\\|rgba\\(0,0,0\")",
       "Bash(grep -v \"^[[:space:]]*//\")",
-      "Bash(npx tsc --noEmit --pretty)"
+      "Bash(npx tsc --noEmit --pretty)",
+      "Bash(grep -v \"^.*//.*#\")"
     ]
   }
 }

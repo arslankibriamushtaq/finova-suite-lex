@@ -649,7 +649,7 @@ const DasbhboardSidebarLms = () => {
                         fontWeight: "500",
                         textDecoration: "none",
                         backgroundColor: item.active
-                          ? "#E6E6E6"
+                          ? "var(--color-border-disabled)"
                           : "transparent",
                       }}
                       className={item.active ? "active" : ""}

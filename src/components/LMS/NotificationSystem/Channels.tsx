@@ -63,8 +63,8 @@ const Channels = () => {
                         borderRadius: "12px",
                         textAlign: "center",
                         backgroundColor: row.supportsReadStatus
-                            ? "rgba(63, 195, 128, 0.9)"
-                            : "#F84D4D",
+                            ? "var(--color-success)"
+                            : "var(--color-error)",
                         color: "white",
                     }}
                 >
@@ -92,7 +92,7 @@ const Channels = () => {
                         padding: "0.22rem 1rem",
                         borderRadius: "12px",
                         textAlign: "center",
-                        backgroundColor: row.active ? "rgba(63, 195, 128, 0.9)" : "#F84D4D",
+                        backgroundColor: row.active ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
                     }}
                 >
@@ -110,8 +110,8 @@ const Channels = () => {
                         borderRadius: "12px",
                         textAlign: "center",
                         backgroundColor: row.allowUserPref
-                            ? "rgba(63, 195, 128, 0.9)"
-                            : "#F84D4D",
+                            ? "var(--color-success)"
+                            : "var(--color-error)",
                         color: "white",
                     }}
                 >
@@ -129,8 +129,8 @@ const Channels = () => {
                         borderRadius: "12px",
                         textAlign: "center",
                         backgroundColor: row.systemAllow
-                            ? "rgba(63, 195, 128, 0.9)"
-                            : "#F84D4D",
+                            ? "var(--color-success)"
+                            : "var(--color-error)",
                         color: "white",
                     }}
                 >
@@ -149,8 +149,8 @@ const Channels = () => {
                         className="gradient-btn"
                         type="primary"
                         style={{
-                            backgroundColor: "#0B8085 !important",
-                            color: "#000000",
+                            backgroundColor: "var(--color-action) !important",
+                            color: "var(--foreground)",
                             borderColor: "white",
                             borderRadius: "8px",
                             padding: "10px 20px",

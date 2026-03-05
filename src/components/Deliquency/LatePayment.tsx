@@ -142,7 +142,7 @@ const LatePayment = () => {
 
       <div
         className="p-4 mt-4"
-        style={{ border: "1px solid #DADADA", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
       >
         <div
           className="d-flex align-items-center justify-content-between mt-1 mb-3"
@@ -204,8 +204,8 @@ const LatePayment = () => {
         <button
           className="btn btn-danger mb-4 me-3"
           style={{
-            backgroundColor: "#A0A0A0",
-            border: "1px solid #A0A0A0",
+            backgroundColor: "var(--theme-revert-action-color)",
+            border: "1px solid var(--theme-revert-action-color)",
             borderRadius: "8px",
             height: "fit-content",
             width: "fit-content",
@@ -216,7 +216,7 @@ const LatePayment = () => {
         <button
           className="btn btn-danger mb-4"
           style={{
-            backgroundColor: "#EB0D0D",
+            backgroundColor: "var(--color-danger-action)",
             borderRadius: "8px",
             height: "fit-content",
             width: "fit-content",

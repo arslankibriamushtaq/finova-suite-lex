@@ -187,9 +187,9 @@ const Dashboard = () => {
             padding: "0.22rem 1rem",
             borderRadius: "12px",
             backgroundColor: row.status
-              ? "rgba(146, 188, 131, 1)"
-              : "rgba(55, 52, 53, 1)",
-            color: "rgba(255, 255, 255, 1)",
+              ? "var(--color-status-green)"
+              : "var(--color-status-dark)",
+            color: "var(--primary-foreground)",
             cursor: row.status ? "pointer" : "default",
           }}
         >
@@ -327,11 +327,11 @@ const Dashboard = () => {
             onClose={handleCloseModal}
           />
         )}
-        <div style={{backgroundColor:'rgb(230, 230, 230)'}}>
+        <div style={{backgroundColor:'var(--color-border-disabled)'}}>
           <div className="d-flex align-items-center justify-content-between">
             <div
               className="d-flex align-items-center ms-2"
-              style={{ fontWeight: "600", fontSize: "20px", color: "#000" }}
+              style={{ fontWeight: "600", fontSize: "20px", color: "var(--foreground)" }}
             >
               Overview
             </div>

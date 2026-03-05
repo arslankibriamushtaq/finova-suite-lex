@@ -509,17 +509,17 @@ const ApplicationManagement = () => {
             borderRadius: "12px",
             backgroundColor:
               row.Status === "Paid"
-                ? "#92BC83"
+                ? "var(--color-status-green)"
                 : row.Status === "Pending"
-                  ? "#FAB65E"
+                  ? "var(--color-status-amber)"
                   : row.Status === "Rejected"
-                    ? "#F85F54"
+                    ? "var(--color-status-coral)"
                     : row.Status === "Unpaid"
-                      ? "#959595"
+                      ? "var(--color-status-gray)"
                       : row.Status === "Inprogress"
-                        ? "#629FFB"
-                        : "rgba(55, 52, 53, 1)",
-            color: "rgba(255, 255, 255, 1)",
+                        ? "var(--color-status-blue)"
+                        : "var(--color-status-dark)",
+            color: "var(--primary-foreground)",
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}
         >
@@ -537,17 +537,17 @@ const ApplicationManagement = () => {
             borderRadius: "12px",
             backgroundColor:
               row.disbursementStatus === "Approved"
-                ? "#92BC83"
+                ? "var(--color-status-green)"
                 : row.disbursementStatus === "Pending"
-                  ? "#FAB65E"
+                  ? "var(--color-status-amber)"
                   : row.disbursementStatus === "Rejected"
-                    ? "#F85F54"
+                    ? "var(--color-status-coral)"
                     : row.disbursementStatus === "Disbursed"
-                      ? "#92BC83"
+                      ? "var(--color-status-green)"
                       : row.disbursementStatus === "Not Initiated"
-                        ? "#629FFB"
-                        : "rgba(55, 52, 53, 1)",
-            color: "rgba(255, 255, 255, 1)",
+                        ? "var(--color-status-blue)"
+                        : "var(--color-status-dark)",
+            color: "var(--primary-foreground)",
             cursor: row.disbursementStatus === "Active" ? "pointer" : "default",
           }}
         >
@@ -1066,12 +1066,12 @@ const ApplicationManagement = () => {
                   ApproveAmount();
                 }}
                 style={{
-                  backgroundColor: "#EB0D0D",
+                  backgroundColor: "var(--color-danger-action)",
                   borderRadius: "8px",
                   height: "fit-content",
                   width: "fit-content",
                   border: "none",
-                  color: "#FCFCFC",
+                  color: "var(--color-near-white)",
                 }}
               >
                 Save
@@ -1436,7 +1436,7 @@ const ApplicationManagement = () => {
                   ApproveAmount();
                 }}
                 style={{
-                  backgroundColor: "#EB0D0D",
+                  backgroundColor: "var(--color-danger-action)",
                   borderRadius: "8px",
                   height: "fit-content",
                   width: "fit-content",

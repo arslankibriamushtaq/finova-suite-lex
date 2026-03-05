@@ -72,8 +72,8 @@ const CollateralAllocation = () => {
             borderRadius: "12px",
             // fontSize:"12px",
 
-            backgroundColor: row.Status ? "#92BC83" : "#D86969",
-            color: "rgba(255, 255, 255, 1)",
+            backgroundColor: row.Status ? "var(--color-status-green)" : "var(--color-status-red-soft)",
+            color: "var(--primary-foreground)",
             cursor: row.Status ? "pointer" : "default",
           }}
         >
@@ -94,7 +94,7 @@ const CollateralAllocation = () => {
             type="primary"
             style={{
               background: "linear-gradient(100deg, #DEF5FF, #90CAFF)",
-              color: "#000000",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
@@ -179,8 +179,8 @@ const CollateralAllocation = () => {
             whiteSpace: "nowrap",
             padding: "0.2rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.Status ? "#92BC83" : "#D86969",
-            color: "rgba(255, 255, 255, 1)",
+            backgroundColor: row.Status ? "var(--color-status-green)" : "var(--color-status-red-soft)",
+            color: "var(--primary-foreground)",
             cursor: row.Status ? "pointer" : "default",
           }}
         >
@@ -200,7 +200,7 @@ const CollateralAllocation = () => {
             type="primary"
             style={{
               background: "linear-gradient(100deg, #DEF5FF, #90CAFF)",
-              color: "#000000",
+              color: "var(--foreground)",
               borderColor: "white",
               borderRadius: "8px",
               padding: "10px 20px",
@@ -387,7 +387,7 @@ const CollateralAllocation = () => {
           style={{
             fontWeight: "700",
             borderRadius: "20px",
-            border: `1px solid #D1D1D1`,
+            border: `1px solid var(--color-border-light)`,
           }}
         >
           {loans?.map((card, index) => (
@@ -423,13 +423,13 @@ const CollateralAllocation = () => {
               <div>{card.icon}</div>
               <div
                 className="mt-5"
-                style={{ fontSize: "14px", fontWeight: "400", color: "#000" }}
+                style={{ fontSize: "14px", fontWeight: "400", color: "var(--foreground)" }}
               >
                 {card.title}
               </div>
               <div
                 className="mt-2"
-                style={{ fontSize: "20px", fontWeight: "600", color: "#000" }}
+                style={{ fontSize: "20px", fontWeight: "600", color: "var(--foreground)" }}
                 onClick={() => {
                 }}
               >
@@ -469,7 +469,7 @@ const CollateralAllocation = () => {
                         </div>
                         <div
                           className="col-5 d-flex align-items-center"
-                          style={{ fontSize: "10px", color: "#000000" }}
+                          style={{ fontSize: "10px", color: "var(--foreground)" }}
                         >
                           {item?.name}
                         </div>
@@ -484,7 +484,7 @@ const CollateralAllocation = () => {
                                   scrollbarWidth: "none",
                                 }
                               : {
-                                  color: "#000000",
+                                  color: "var(--foreground)",
                                   overflow: "auto",
                                   scrollbarWidth: "none",
                                 }

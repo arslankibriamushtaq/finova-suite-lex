@@ -267,17 +267,17 @@ const LoanInvoice = () => {
             borderRadius: "12px",
             backgroundColor:
               row.Status === "Active"
-                ? "#92BC83"
+                ? "var(--color-status-green)"
                 : row.Status === "Inactive"
-                ? "#FAB65E"
+                ? "var(--color-status-amber)"
                 : row.Status === "Rejected"
-                ? "#F85F54"
+                ? "var(--color-status-coral)"
                 : row.Status === "In Complete"
-                ? "#959595"
+                ? "var(--color-status-gray)"
                 : row.Status === "Inprogress"
-                ? "#629FFB"
-                : "rgba(55, 52, 53, 1)",
-            color: "rgba(255, 255, 255, 1)",
+                ? "var(--color-status-blue)"
+                : "var(--color-status-dark)",
+            color: "var(--primary-foreground)",
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}
         >

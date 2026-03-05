@@ -91,10 +91,10 @@ const CommodityManagement = () => {
             borderRadius: "32px",
             backgroundColor:
               row.commodityStatus === "SaleCommodity"
-                ? "rgba(63, 195, 128, 0.9)" // Green for Approved
+                ? "var(--color-success)" // Green for Approved
                 : row.commodityStatus === "TransferCommodity"
-                ? "#FFA500" // Orange for Pending
-                : "rgba(63, 195, 128, 0.9)", // Red for Rejected/others
+                ? "var(--color-orange)" // Orange for Pending
+                : "var(--color-success)", // Red for Rejected/others
             color: "white",
           }}
         >

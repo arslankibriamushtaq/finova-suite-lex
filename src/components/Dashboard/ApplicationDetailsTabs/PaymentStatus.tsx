@@ -107,7 +107,7 @@ function PaymentStatus() {
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.paymentStatus === 'Paid' ? "#92bc82" : "#d86969",
+            backgroundColor: row.paymentStatus === 'Paid' ? "var(--color-status-green)" : "var(--color-status-red-soft)",
             color: "white",
           }}
         >
@@ -120,16 +120,16 @@ function PaymentStatus() {
   ];
 
   return (
-    <div style={{ padding: "20px", background: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "var(--background)", minHeight: "100vh" }}>
       {loading && <Loader />}
       
       {/* Payment Status Info Table */}
       <div style={{ marginBottom: "40px" }}>
-        <h2 style={{ color: "#000000", fontWeight: 700, fontSize: "18px", marginBottom: "20px", textAlign:"left" }}>
+        <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", marginBottom: "20px", textAlign:"left" }}>
           Payment Status Info:
         </h2>
         <div style={{ 
-          background: "#fff", 
+          background: "var(--background)",
           borderRadius: "8px",
           overflow: "hidden",
           //border: "1px solid #E5E7EB"

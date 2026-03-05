@@ -131,11 +131,11 @@ const CollateralManagement = () => {
             borderRadius: "12px",
             backgroundColor:
               row.availabilityStatus == "1"
-                ? "#D86969"
+                ? "var(--color-status-red-soft)"
                 : row.availabilityStatus === "2"
-                  ? "#92BC83"
-                  : "#42A2E7",
-            color: "rgba(255, 255, 255, 1)",
+                  ? "var(--color-status-green)"
+                  : "var(--color-status-sky)",
+            color: "var(--primary-foreground)",
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}
           onClick={() => {
@@ -158,8 +158,8 @@ const CollateralManagement = () => {
             whiteSpace: "nowrap",
             padding: "0.2rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.Status ? "#92BC83" : "#D86969",
-            color: "rgba(255, 255, 255, 1)",
+            backgroundColor: row.Status ? "var(--color-status-green)" : "var(--color-status-red-soft)",
+            color: "var(--primary-foreground)",
             cursor: row.Status ? "pointer" : "default",
           }}
         >

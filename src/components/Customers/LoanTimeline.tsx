@@ -280,7 +280,7 @@ const LoanTimeline = () => {
         </div>
       </div>
       <hr />
-      <VerticalTimeline lineColor="#ccc" className="pt-4">
+      <VerticalTimeline lineColor="var(--color-border-muted)" className="pt-4">
         {data?.map((event, index) => {
           // Show year marker only if this event's year is different from the previous event's year
           const showYearMarker =
@@ -306,13 +306,13 @@ const LoanTimeline = () => {
                     style={{
                       display: "inline-block",
                       padding: "5px 10px",
-                      backgroundColor: "#4D6685",
+                      backgroundColor: "var(--theme-active-color)",
                       borderRadius: "15px",
-                      color: "#FCFCFC",
+                      color: "var(--color-near-white)",
                       fontWeight: "bold",
                       zIndex: "1",
                       position: "relative",
-                      border: "1px solid #373435",
+                      border: "1px solid var(--color-status-dark)",
                     }}
                   >
                     {event?.year}
@@ -325,9 +325,9 @@ const LoanTimeline = () => {
                     style={{
                       display: "inline-block",
                       padding: "5px 10px",
-                      backgroundColor: "#cccccc",
+                      backgroundColor: "var(--color-border-muted)",
                       borderRadius: "15px",
-                      color: "#333",
+                      color: "var(--color-text-dark)",
                       fontWeight: "bold",
                       zIndex: "1",
                       position: "relative",
@@ -340,7 +340,7 @@ const LoanTimeline = () => {
               )}
               <VerticalTimelineElement
                 className="vertical-timeline-element--work"
-                contentStyle={{ background: event.background, color: "#000" }}
+                contentStyle={{ background: event.background, color: "var(--foreground)" }}
                 contentArrowStyle={{
                   borderRight: `7px solid ${event.background}`,
                 }}
@@ -352,7 +352,7 @@ const LoanTimeline = () => {
                 }
                 iconStyle={{
                   background: event.iconColor,
-                  color: "#fff",
+                  color: "var(--primary-foreground)",
                   width: "15px",
                   height: "15px",
                 }}

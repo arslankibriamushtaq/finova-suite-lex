@@ -108,7 +108,7 @@ const formatDate = (dateString: any) => {
                         padding: "0.22rem 1rem",
                         borderRadius: "12px",
                         textAlign: "center",
-                        backgroundColor: row.inAppOptions ? "rgba(63, 195, 128, 0.9)" : "#F84D4D",
+                        backgroundColor: row.inAppOptions ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
                     }}
                 >
@@ -125,7 +125,7 @@ const formatDate = (dateString: any) => {
                         padding: "0.22rem 1rem",
                         borderRadius: "12px",
                         textAlign: "center",
-                        backgroundColor: row.active ? "rgba(63, 195, 128, 0.9)" : "#F84D4D",
+                        backgroundColor: row.active ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
                     }}
                 >

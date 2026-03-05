@@ -11,13 +11,13 @@ const InvoicesTab: React.FC<InvoicesTabProps> = ({ applicationData }) => {
         style={{
           fontSize: "20px",
           fontWeight: "700",
-          color: "#000000",
+          color: "var(--foreground)",
           marginBottom: "24px",
         }}
       >
         Invoices
       </h2>
-      <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>
+      <div style={{ padding: "40px", textAlign: "center", color: "var(--color-text-muted)" }}>
         <p>Invoices content will be displayed here.</p>
       </div>
     </div>

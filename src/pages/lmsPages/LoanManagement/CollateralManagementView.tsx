@@ -594,7 +594,7 @@ const CollateralManagementView = () => {
       </div>
       <div
         className="p-4"
-        style={{ border: "1px solid #DADADA", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
       >
         <div className="col-12 mt-5">
           <div className="col-8 d-flex justify-content-start mb-5">
@@ -974,7 +974,7 @@ const CollateralManagementView = () => {
               {files.length > 0 && (
                 <>
                   {" "}
-                  <span style={{ color: "#EB0D0D" }}>
+                  <span style={{ color: "var(--color-danger-action)" }}>
                     {files.length} documents uploaded
                   </span>
                 </>
@@ -990,10 +990,10 @@ const CollateralManagementView = () => {
                 key={index}
                 className="d-flex me-3"
                 style={{
-                  border: "1px solid #E3EFF4",
+                  border: "1px solid var(--color-surface-frost)",
                   borderRadius: "5px",
                   padding: "4px",
-                  background: "#E3EFF4",
+                  background: "var(--color-surface-frost)",
                 }}
               >
                 <span className="col-11 px-3 d-flex align-items-center">
@@ -1066,7 +1066,7 @@ const CollateralManagementView = () => {
               {reportFiles.length > 0 && (
                 <>
                   {" "}
-                  <span style={{ color: "#EB0D0D" }}>
+                  <span style={{ color: "var(--color-danger-action)" }}>
                     {reportFiles.length} documents uploaded
                   </span>
                 </>
@@ -1082,10 +1082,10 @@ const CollateralManagementView = () => {
                 key={index}
                 className="d-flex me-3"
                 style={{
-                  border: "1px solid #E3EFF4",
+                  border: "1px solid var(--color-surface-frost)",
                   borderRadius: "5px",
                   padding: "4px",
-                  background: "#E3EFF4",
+                  background: "var(--color-surface-frost)",
                 }}
               >
                 <span className="col-11 px-3 d-flex align-items-center">
@@ -1105,9 +1105,9 @@ const CollateralManagementView = () => {
               onClick={submitCollateralData}
               className="btn btn-danger"
               style={{
-                backgroundColor: "#EB0D0D",
+                backgroundColor: "var(--color-danger-action)",
                 borderRadius: "8px",
-                color: "#FCFCFC",
+                color: "var(--color-near-white)",
                 border: "none",
               }}
             >
@@ -1144,8 +1144,8 @@ const CollateralManagementView = () => {
               <button
                 className="btn btn-danger py-3 px-4"
                 style={{
-                  backgroundColor: "#EB0D0D",
-                  color: "#FCFCFC",
+                  backgroundColor: "var(--color-danger-action)",
+                  color: "var(--color-near-white)",
                   borderRadius: "8px",
                 }}
               >

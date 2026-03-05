@@ -32,7 +32,7 @@ const Bureau = () => {
             {" "}
             I Acknowledge and authorize{" "}
             <span
-              style={{ color: "#000000", fontSize: "14px", fontWeight: "800" }}
+              style={{ color: "var(--foreground)", fontSize: "14px", fontWeight: "800" }}
             >
               Credira
             </span>{" "}

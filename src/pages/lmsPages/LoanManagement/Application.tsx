@@ -848,7 +848,7 @@ const handleSave = async () => {
               onClick={() => navigate(-1)}
               style={{
                 //background: themeStyle.revertActionColor,
-                color: "#FFFF",
+                color: "var(--primary-foreground)",
                 borderRadius: "8px",
                 borderColor: "white",
                 padding: "8px 16px",
@@ -863,7 +863,7 @@ const handleSave = async () => {
               className="theme-btn-next mb-4 me-3"
               style={{
                 //background: "#EB0D0D",
-                color: "#FFFF",
+                color: "var(--primary-foreground)",
                 border: "none",
                 borderRadius: "8px",
                 padding: "12px",

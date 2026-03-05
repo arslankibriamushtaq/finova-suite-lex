@@ -78,7 +78,7 @@ const SystemPreferences = () => {
                         return (
                             <span key={index} style={{ 
                                 display: "inline-block",
-                                backgroundColor: "#1890ff",
+                                backgroundColor: "var(--color-action)",
                                 color: "white",
                                 padding: "2px 8px",
                                 borderRadius: "4px",
@@ -106,8 +106,8 @@ const SystemPreferences = () => {
                         className="gradient-btn"
                         type="primary"
                         style={{
-                            backgroundColor: "#0B8085 !important",
-                            color: "#000000",
+                            backgroundColor: "var(--color-action) !important",
+                            color: "var(--foreground)",
                             borderColor: "white",
                             borderRadius: "8px",
                             padding: "10px 20px",
