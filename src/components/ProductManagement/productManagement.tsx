@@ -15,7 +15,7 @@ import { ProductFilters } from "../../lib/types"
 import { customerTypes, mockCommodities, productCategories } from "../../lib/mock-data"
 import { useLanguage } from "../../hooks/use-language"
 // import { LanguageSwitcher } from "../language-switcher"
-import { getAllProducts } from "../../redux/apis/apisCrud"
+import { getAllProducts } from "../../redux/apis/apisCrudProductManagement"
 import toast from "react-hot-toast"
 import TableView from "../TableView/TableView"
 import {
@@ -32,8 +32,15 @@ export default function ProductManagement() {
   const { t, isRTL } = useLanguage()
   const router = useRouter()
   
-  // Permission hooks (supports both legacy and new LOS permission names)
-  const { canAdd, canEdit, canVerify, canCheckerReject, canApprove, canApproverReject } = useProductPermissions()
+  // TODO: Re-enable when permission API is implemented
+  // const { canAdd, canEdit, canVerify, canCheckerReject, canApprove, canApproverReject } = useProductPermissions()
+  // const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
+  const canAdd = () => true;
+  const canEdit = () => true;
+  const canVerify = () => true;
+  const canCheckerReject = () => true;
+  const canApprove = () => true;
+  const canApproverReject = () => true;
   const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -99,12 +106,14 @@ export default function ProductManagement() {
         // searchValue
       );
       if (response) {
-        const values = response?.data?.data?.data;
+        // Support both { data: { data: [...], total, ... } } and { data: [...] } response shapes
+        const responseData = response?.data?.data;
+        const values = Array.isArray(responseData) ? responseData : (responseData?.data || responseData?.content || []);
         setTabData(values || []);
-        setTotalRows(response?.data?.data?.total || 0);
-        setFrom(response?.data?.data?.from || 1);
-        setTo(response?.data?.data?.to || values?.length);
-        setTotalPage(response?.data?.data?.last_page || 0);
+        setTotalRows(responseData?.total || responseData?.totalElements || values?.length || 0);
+        setFrom(responseData?.from || 1);
+        setTo(responseData?.to || values?.length);
+        setTotalPage(responseData?.last_page || responseData?.totalPages || 0);
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -135,13 +144,13 @@ export default function ProductManagement() {
     // },
     {
       name: "Logo",
-      cell: (row: any) => (
+      cell: (row: any) => row.logo ? (
         <img
-          src={`${import.meta.env.VITE_REACT_APP_API_BASE_PRODUCT_MANAGEMENT_URL}${row.logo}`}
+          src={row.logo.startsWith("http") ? row.logo : `${import.meta.env.VITE_API_BASE_URL}/product-service${row.logo}`}
           alt="logo"
           style={{ width: 50 }}
         />
-      ),
+      ) : <span className="text-muted-foreground">-</span>,
     },
     {
       name: "Email",
@@ -162,7 +171,15 @@ export default function ProductManagement() {
     },
     {
       name: "Status",
-      cell: (row: any) => row.status === "Active" ? <div style={{ backgroundColor: "var(--chart-2)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>Active</div> : <div style={{ backgroundColor: "var(--destructive)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>Inactive</div>,
+      cell: (row: any) => {
+        const status = row.status?.toUpperCase?.() || row.status;
+        const isActive = status === "ACTIVE" || status === "Active";
+        return (
+          <div style={{ backgroundColor: isActive ? "var(--chart-2)" : "var(--destructive)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>
+            {row.status}
+          </div>
+        );
+      },
     },
     {
       name: "Actions",
@@ -268,15 +285,17 @@ export default function ProductManagement() {
     tabData.map((item: any) => {
       return {
         id: item?.id,
-        productName: item?.name_en,
-        name_ar: item?.name_ar,
-        logo: item?.logo,
-        email: item?.email,
+        productName: item?.nameEn || item?.name_en,
+        name_ar: item?.nameAr || item?.name_ar,
+        productCode: item?.productCode,
+        logo: item?.logoUrl || item?.logo,
+        email: item?.notificationEmail || item?.email,
         country: item?.country,
-        category: item?.category,
-        productType: item?.type,
+        category: item?.masterCategoryId ? { name_en: item?.productType } : item?.category,
+        productType: item?.productType || item?.type,
         status: item?.status,
-        actions: item?.actions || [], // Include actions array from API
+        wizardStep: item?.wizardStep,
+        actions: item?.actions || [],
       };
     });
 

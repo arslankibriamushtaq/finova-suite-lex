@@ -40,7 +40,7 @@ const navigate = useNavigate();
   const fetchCountries = async () => {
     try {
       const response = await getCountriesThirdParty();
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         
         setCountries(response?.data?.data || []);
       }

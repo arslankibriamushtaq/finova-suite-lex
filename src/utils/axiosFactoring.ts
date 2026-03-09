@@ -4,8 +4,7 @@ import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
 const axiosFactoring = Axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_FACTORING,
-  // withCredentials: true,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/product-service`,
 });
 // let tokenValue = localStorage.getItem("awn-token");
 axiosFactoring.interceptors.request.use((reqConfig) => {

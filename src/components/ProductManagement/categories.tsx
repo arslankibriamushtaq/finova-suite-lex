@@ -64,7 +64,7 @@ const Categories = () => {
 
       const response = await updateProductCategory(productId, updateData);
       
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         toast.success("Categories updated successfully");
         // Optionally refresh the data
         fetchCategories();
@@ -83,7 +83,7 @@ const Categories = () => {
       
       const response = await getProductCategorie(productId);
       
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         const activeCategories = response?.data?.data?.active_categories || [];
         // Add affiliation field (default to false) since API doesn't provide it
         const categoriesWithAffiliation = activeCategories.map((category: any) => ({

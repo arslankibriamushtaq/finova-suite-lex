@@ -153,7 +153,7 @@ export default function CreateProductAffiliation() {
         { headers: headers }
       );
 
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         toast.success(response?.data?.message || "Partner added successfully");
         setIsAddDialogOpen(false);
         setFieldErrors({});
@@ -259,7 +259,7 @@ export default function CreateProductAffiliation() {
 
       const response = await updatePartnerStatus(partnerId, body);
 
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         setData((prevData: any) =>
           prevData.map((item: any) =>
             item.id === partnerId ? { ...item, status: newStatus } : item
@@ -387,7 +387,7 @@ export default function CreateProductAffiliation() {
     setSkelitonLoading(true);
     try {
       const response = await getPartnersList();
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         const partnersData = response?.data?.data?.data || [];
         setData(partnersData);
         setTotalRows(partnersData.length || 0);

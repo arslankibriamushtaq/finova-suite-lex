@@ -24,7 +24,7 @@ const SettingsTermsConditions = ({ readOnly = false,setSelectedTab}:any) => {
       if (productId) {
         try {
           const response = await getProductById(productId, 'settings_tos');
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             // Don't overwrite the full product data, just update the form values
             setFormValues((prev) => ({
               ...prev,

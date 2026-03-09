@@ -68,7 +68,7 @@ export default function ProductRulesTab({
       
       try {
         const response = await getSelectedNationalities(productId)
-        if (response?.data?.success && response?.data?.data) {
+        if (response?.data?.message === "success" && response?.data?.data) {
           // Extract nationality IDs from the nationalities array
           const nationalities = response.data.data.nationalities || []
           // Convert to strings to match the dropdown value format

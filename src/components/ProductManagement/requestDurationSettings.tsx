@@ -31,7 +31,7 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
       if (productId) {
         try {
           const response = await getProductById(productId, 'request_duration');
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             // Don't overwrite the full product data, just update the form values
             setFormValues({
               application_request_duration: response.data.data?.application_submission?.approved_factoring_application_gap || 0,

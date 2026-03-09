@@ -38,11 +38,14 @@ export default function AdminFeeSlabsTab({
   removeFeeSlab,
   updateFeeSlab,
 }: AdminFeeSlabsTabProps) {
-  // Permissions
-  const { canCreate, canRemove, canUpdate } = usePermissions();
-  const canAddSlab = canCreate(PROCESSING_FEE_SLAB_PERMISSIONS);
-  const canDeleteSlab = canRemove(PROCESSING_FEE_SLAB_PERMISSIONS);
-  const canEditSlab = canUpdate(PROCESSING_FEE_SLAB_PERMISSIONS);
+  // TODO: Re-enable when permission API is implemented
+  // const { canCreate, canRemove, canUpdate } = usePermissions();
+  // const canAddSlab = canCreate(PROCESSING_FEE_SLAB_PERMISSIONS);
+  // const canDeleteSlab = canRemove(PROCESSING_FEE_SLAB_PERMISSIONS);
+  // const canEditSlab = canUpdate(PROCESSING_FEE_SLAB_PERMISSIONS);
+  const canAddSlab = true;
+  const canDeleteSlab = true;
+  const canEditSlab = true;
 
   return (
     <div className="space-y-6">

@@ -4,8 +4,7 @@ import { setToken } from "../redux/apis/apisSlice";
  
  
 const axiosProductManagement = Axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_FACTORING,
-  // withCredentials: true,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/product-service`,
 });
 // let tokenValue = localStorage.getItem("accessToken");
 axiosProductManagement.interceptors.request.use((reqConfig) => {

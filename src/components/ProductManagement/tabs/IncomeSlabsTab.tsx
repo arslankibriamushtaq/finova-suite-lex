@@ -99,7 +99,7 @@ export default function IncomeSlabsTab({
       try {
         if (isEditMode && selectedRow) {
           const response = await updateIncomeSlab(selectedRow.id, payload)
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             toast.success("Income slab updated successfully")
             setShowModal(false)
             fetchIncomeSlabs()
@@ -108,7 +108,7 @@ export default function IncomeSlabsTab({
           }
         } else {
           const response = await createIncomeSlab(payload)
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             toast.success("Income slab created successfully")
             setShowModal(false)
             fetchIncomeSlabs()
@@ -131,7 +131,7 @@ export default function IncomeSlabsTab({
     try {
       setLoading(true)
       const response = await getIncomeSlabByProductId(productId)
-      if (response?.data?.success && response?.data?.data) {
+      if (response?.data?.message === "success" && response?.data?.data) {
         const responseData = response.data.data
         setData(responseData.data || [])
         setTotalRows(responseData.total || 0)
@@ -192,7 +192,7 @@ export default function IncomeSlabsTab({
   const handleDelete = async (row: any) => {
     try {
       const response = await deleteIncomeSlab(row.id)
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         toast.success("Income slab deleted successfully")
         fetchIncomeSlabs()
       } else {

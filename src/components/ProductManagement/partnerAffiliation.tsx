@@ -7,9 +7,10 @@ import TableView from "../TableView/TableView";
 import { usePermissions, PRODUCT_PARTNERS_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const PartnerAffiliation = () => {
-  // Permissions
-  const { hasPermission } = usePermissions();
-  const canUpdatePartner = hasPermission(PRODUCT_PARTNERS_PERMISSIONS.UPDATE);
+  // TODO: Re-enable when permission API is implemented
+  // const { hasPermission } = usePermissions();
+  // const canUpdatePartner = hasPermission(PRODUCT_PARTNERS_PERMISSIONS.UPDATE);
+  const canUpdatePartner = true;
   const [loading, setLoading] = useState(false);
   const [partners, setPartners] = useState<any[]>([]);
   const location = useLocation();

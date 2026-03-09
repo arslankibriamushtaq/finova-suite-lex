@@ -49,7 +49,7 @@ const AdminFeeSlabs = ({ readOnly = false,setSelectedTab }: any) => {
       if (productId) {
         try {
           const response = await getProductById(productId, 'admin_fee_slabs');
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             // Don't overwrite the full product data, just load admin fee slabs data
             if (response.data.data?.admin_fee_slabs) {
               setData(response.data.data.admin_fee_slabs);
@@ -91,7 +91,7 @@ const handleNext=()=>{
         };
         response = await createFeeSlab(createBody);
       }
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         toast.success(response?.data?.message || "Fee slab created");
         setIsModalVisible(false);
         setNewSlab({ from_amount: "", to_amount: "", profit_percent: 0, admin_fee: 0, processing_fee: 0 });

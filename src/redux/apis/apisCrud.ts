@@ -841,7 +841,7 @@ export function createPartner(body: any) {
 }
 export function getCountries(page: number = 1, per_page: number = 100, search?: string) {
   const searchParam = search ? `&search=${encodeURIComponent(search)}` : '';
-  return axios.get(`/v1/countries?page=${page}&per_page=${per_page}${searchParam}`);
+  return axios.get(`product-service/api/v1/countries?page=${page}&per_page=${per_page}${searchParam}`);
 }
 export function getProductTypeListing() {
   return axios.get(`application/product-type-listing`);

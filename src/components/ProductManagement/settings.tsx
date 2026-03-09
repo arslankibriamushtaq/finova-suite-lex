@@ -43,7 +43,7 @@ const Settings = ({setActiveTab}:any) => {
           
           const apiType = typeMap[selectTab] || 'BasicInfo';
           const response = await getProductById(productId, apiType);
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             // Don't overwrite the full product data, just load the specific tab data
             // The individual tab components will handle their own data
           }

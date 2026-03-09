@@ -31,7 +31,7 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
       if (productId) {
         try {
           const response = await getProductById(productId, 'factoring_settings');
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             // Don't overwrite the full product data, just update the form values
             setFormValues({
               min_financing_amount: response.data.data?.factoring_amount.min_amount || 0,

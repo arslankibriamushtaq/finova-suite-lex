@@ -227,7 +227,7 @@ const AdminList = () => {
       
       const response = await getProductAdminList(productId);
       
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         const adminData = response?.data?.data?.data || [];
         setData(adminData);
         setSkelitonLoading(false);
@@ -253,7 +253,7 @@ const AdminList = () => {
   const fetchCountries = async () => {
     try {
       const response = await getCountries();
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         setCountries(response?.data?.data || []);
       }
     } catch (error: any) {

@@ -55,7 +55,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
       if (productId) {
         try {
           const response = await getProductById(productId, 'settings_application_steps');
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             // Don't overwrite the full product data, just update the application steps
             setFormStepsEn(response.data.data?.en || stepsEn);
             setFormStepsAr(response.data.data?.ar || stepsAr);

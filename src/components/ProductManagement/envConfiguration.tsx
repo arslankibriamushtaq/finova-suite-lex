@@ -102,7 +102,7 @@ const[envData,setEnvData]=useState<any>()
       if (productId) {
         try {
           const response = await getProductById(productId, 'verification_methods');
-          if (response?.data?.success) {
+          if (response?.data?.message === "success") {
             setEnvData(response?.data?.data||[])
   
           }

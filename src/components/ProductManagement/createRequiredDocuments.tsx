@@ -79,7 +79,7 @@ export default function CreateRequiredDocuments() {
     setSkelitonLoading(true)
     try {
       const response = await getProductDocuments(id)
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         const documentsData = response?.data?.data?.data || []
         setData(documentsData)
         setTotalRows(documentsData.length || 0)
@@ -134,7 +134,7 @@ export default function CreateRequiredDocuments() {
         step_no: documentForm.step_no,
       }
       const response = await storeProductDocuments(submitData)
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         toast.success(response?.data?.message || "Document added successfully")
         setIsDocumentDialogOpen(false)
         setEditingDocument(null)
@@ -220,7 +220,7 @@ export default function CreateRequiredDocuments() {
         step_no: documentForm.step_no,
       }
       const response = await updateProductDocument(String(editingDocument.id), payload)
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         toast.success(response?.data?.message || "Document updated successfully")
         setIsDocumentDialogOpen(false)
         setEditingDocument(null)

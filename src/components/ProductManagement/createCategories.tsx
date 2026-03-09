@@ -4,7 +4,7 @@ import { useRouter } from "../../lib/router"
 import { useLanguage } from "../../hooks/use-language"
 import { Card, CardContent } from "../ui/card"
 import { Button } from "../ui/button"
-import { getAllCategories } from "../../redux/apis/apisCrudProductManagement"
+import { getAllCategories, getSubCategories } from "../../redux/apis/apisCrudProductManagement"
  
 // const masterCategories = [
 //   {
@@ -94,6 +94,7 @@ export default function CreateCategories() {
   const [selectedMasterCategory, setSelectedMasterCategory] = useState<string | null>(null)
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null)
   const [categories, setCategories] = useState<any>([])
+  const [subCategories, setSubCategories] = useState<any>([])
   const handleCategorySelection = () => {
     if (selectedMasterCategory && selectedSubCategory) {
       // Save category selection to session storage
@@ -112,11 +113,35 @@ export default function CreateCategories() {
   const getCategories = async () => {
     const response = await getAllCategories()
     if (response) {
-      setCategories(response?.data?.data?.data || [])
+      // Support both { data: [...] } and { data: { data: [...] } } shapes
+      const responseData = response?.data?.data;
+      const items = Array.isArray(responseData) ? responseData : (responseData?.data || []);
+      setCategories(items)
     }
   }
   getCategories()
  }, [])
+
+ // Fetch sub-categories when a master category is selected
+ useEffect(() => {
+  if (!selectedMasterCategory) {
+    setSubCategories([])
+    return
+  }
+  const fetchSubCategories = async () => {
+    try {
+      const response = await getSubCategories(selectedMasterCategory)
+      if (response) {
+        const responseData = response?.data?.data;
+        const items = Array.isArray(responseData) ? responseData : (responseData?.data || []);
+        setSubCategories(items)
+      }
+    } catch {
+      setSubCategories([])
+    }
+  }
+  fetchSubCategories()
+ }, [selectedMasterCategory])
 
   return (
     <div className="min-h-screen bg-background">
@@ -155,14 +180,14 @@ export default function CreateCategories() {
                   }}
                 >
                   <CardContent className="p-6 text-center">
-                    <div className="text-4xl mb-4">{category.icon}</div>
-                    <h3 className="text-lg font-semibold mb-2">{category.name_en}</h3>
-                    {category.name_ar && (
+                    {category.iconUrl && <div className="text-4xl mb-4"><img src={category.iconUrl} alt="" className="h-10 w-10 mx-auto" /></div>}
+                    <h3 className="text-lg font-semibold mb-2">{category.nameEn || category.name_en}</h3>
+                    {(category.nameAr || category.name_ar) && (
                       <div className="text-sm text-muted-foreground mb-3" dir="rtl">
-                        {category.name_ar}
+                        {category.nameAr || category.name_ar}
                       </div>
                     )}
-                    <p className="text-sm text-muted-foreground">{category.description}</p>
+                    <p className="text-sm text-muted-foreground">{category.descriptionEn || category.description}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -183,9 +208,7 @@ export default function CreateCategories() {
                 <h2 className="text-2xl font-semibold m-0">Select Sub-Category</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {categories
-                  .find((cat: any) => cat.id === selectedMasterCategory)
-                  ?.subcategories.map((subCategory: any) => (
+                {subCategories.map((subCategory: any) => (
                     <Card
                       key={subCategory.id}
                       className={`cursor-pointer transition-all duration-200 hover:shadow-md ${
@@ -196,10 +219,10 @@ export default function CreateCategories() {
                       <CardContent className="p-4">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium">{subCategory.name_en}</h4>
-                            {subCategory.name_ar && (
+                            <h4 className="font-medium">{subCategory.nameEn || subCategory.name_en}</h4>
+                            {(subCategory.nameAr || subCategory.name_ar) && (
                               <div className="text-sm text-muted-foreground" dir="rtl">
-                                {subCategory.name_ar}
+                                {subCategory.nameAr || subCategory.name_ar}
                               </div>
                             )}
                           </div>

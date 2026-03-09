@@ -13,10 +13,18 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { useLanguage } from "../../hooks/use-language"
 import { getCountries } from "../../redux/apis/apisCrud"
-import { getAllProductTypes, getProductById } from "../../redux/apis/apisCrudProductManagement"
+import { getProductById, createProduct, updateProductBasicInfo } from "../../redux/apis/apisCrudProductManagement"
 import toast from "react-hot-toast"
-import axios from "axios"
-import { store } from "../../redux/store";
+
+const PRODUCT_TYPES = [
+  { value: "TAWARRUQ", label: "Tawarruq" },
+  { value: "MURABAHA", label: "Murabaha" },
+  { value: "IJARA", label: "Ijara" },
+  { value: "MUSHARAKAH", label: "Musharakah" },
+  { value: "FACTORING", label: "Factoring" },
+  { value: "BNPL", label: "Buy Now Pay Later" },
+  { value: "EARLY_WAGES", label: "Early Wages" },
+] as const;
 import Loader from "../Loader/Loader"
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 
@@ -88,20 +96,26 @@ export default function CreateBasicInfo() {
   })
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [countries, setCountries] = useState<any>([])
-  const [productTypes, setProductTypes] = useState<any>([])
   const [isLoading, setIsLoading] = useState(false)
   const [isLoadingProductData, setIsLoadingProductData] = useState(false)
   const [logoFile, setLogoFile] = useState<File | null>(null) // Store the file for API upload
   const fileInputRef = useRef<HTMLInputElement>(null)
   const isInitialLoadRef = useRef(true) // Track if we're in initial load phase
   const isNavigatingToNextStepRef = useRef(false) // Track if we're navigating to next step
-  const token = (store.getState() as any).block.token;
-  
+
   useEffect(()=>{
     getCountryList()
-    getProductTypesList()
-    loadCategoryFromSession()
-    
+
+    // Read category selection from session (set on Categories page)
+    const savedCategories = sessionStorage.getItem("selectedCategories")
+    let sessionCategoryId = ""
+    let sessionSubCategoryId: string[] = []
+    if (savedCategories) {
+      const categories = JSON.parse(savedCategories)
+      if (categories.masterCategory) sessionCategoryId = String(categories.masterCategory)
+      if (categories.subCategory) sessionSubCategoryId = [String(categories.subCategory)]
+    }
+
     // Check if we have a productId (from URL or sessionStorage)
     if (effectiveProductId) {
       // Persist to sessionStorage immediately so all tabs have it (edit mode: from URL; create flow: from prior step)
@@ -117,21 +131,21 @@ export default function CreateBasicInfo() {
       // No productId in URL AND no productId in sessionStorage - this is a fresh start
       // Clear all storage to ensure fresh start
       clearAllProductData()
-      // Reset form to initial state
+      // Reset form to initial state, preserving category selection from session
       setFormData({
         name: "",
         name_ar: "",
         notification_email: "",
         country: "",
         master_category: "",
-        sub_categories: [],
+        sub_categories: sessionSubCategoryId,
         customer_types: [],
         status: "draft",
         logo_url: "",
         short_desc_en: "",
         short_desc_ar: "",
         has_commodity: false,
-        category_id: "",
+        category_id: sessionCategoryId,
         product_type_id: "",
       })
       // Mark initial load as complete
@@ -199,28 +213,6 @@ export default function CreateBasicInfo() {
     }
   }
   
-  const getProductTypesList = async () => {
-    try {
-      const response = await getAllProductTypes()
-      if (response?.data?.success) {
-        setProductTypes(response?.data?.data?.data)
-      }
-    } catch (error) {
-      console.error("Error fetching product types:", error)
-    }
-  }
-  
-  const loadCategoryFromSession = () => {
-    const savedCategories = sessionStorage.getItem("selectedCategories")
-    if (savedCategories) {
-      const categories = JSON.parse(savedCategories)
-      // Set the category_id from masterCategory selection
-      if (categories.masterCategory) {
-        updateFormData("category_id", String(categories.masterCategory))
-      }
-    }
-  }
-
   const loadFormDataFromLocalStorage = () => {
     try {
       const savedData = localStorage.getItem(LOCAL_STORAGE_KEY)
@@ -244,14 +236,10 @@ export default function CreateBasicInfo() {
 
   const saveFormDataToLocalStorage = () => {
     try {
-      // Find the product type name from the productTypes list
-      const selectedProductType = productTypes?.find((type: any) => String(type?.id) === String(formData.product_type_id))
-      const productTypeName = selectedProductType?.name || selectedProductType?.type_name || selectedProductType?.product_type || ""
-      
       const dataToSave = {
         ...formData,
-        _productId: effectiveProductId || null, // Use effective productId (URL or sessionStorage)
-        product_type_name: productTypeName // Save the product type name for settings page
+        _productId: effectiveProductId || null,
+        product_type_name: formData.product_type_id // product_type_id now holds enum value directly (e.g. "TAWARRUQ")
       }
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave))
     } catch (error) {
@@ -285,41 +273,54 @@ export default function CreateBasicInfo() {
     try {
       setIsLoadingProductData(true)
       const response = await getProductById(id)
-      if (response?.data?.success && response?.data?.data) {
+      if (response?.data?.message === "success" && response?.data?.data) {
         const product = response.data.data
-        
-        // Handle country - it might be country_id (number/string) or country object with id
+
+        // Read session categories as fallback (set on Categories page)
+        const savedCategories = sessionStorage.getItem("selectedCategories")
+        let sessionCategoryId = ""
+        let sessionSubCategoryId = ""
+        if (savedCategories) {
+          const cats = JSON.parse(savedCategories)
+          if (cats.masterCategory) sessionCategoryId = String(cats.masterCategory)
+          if (cats.subCategory) sessionSubCategoryId = String(cats.subCategory)
+        }
+
+        // Handle country - supports both camelCase and snake_case API responses
         let countryValue = ""
-        if (product.country_id) {
-          countryValue = String(product.country_id)
+        if (product.country_id || product.countryId) {
+          countryValue = String(product.country_id || product.countryId)
         } else if (product.country?.id) {
           countryValue = String(product.country.id)
         }
-        
-        // Handle status - API can return "Active"/"Inactive" or 1/0
+
+        // Handle status - API returns "DRAFT"/"ACTIVE"/"INACTIVE" or legacy "Active"/"Inactive"/1/0
         let statusValue: "draft" | "active" = "draft"
-        if (product.status === 1 || product.status === "1" || product.status === "Active") {
+        const rawStatus = (product.status || "").toString().toUpperCase()
+        if (rawStatus === "ACTIVE" || rawStatus === "1") {
           statusValue = "active"
-        } else if (product.status === 0 || product.status === "0" || product.status === "Inactive") {
-          statusValue = "draft"
         }
-        
+
+        // Resolve category IDs: API response > session storage > empty
+        const resolvedCategoryId = product.masterCategoryId || product.category_id || sessionCategoryId || ""
+        const resolvedSubCategoryId = product.subCategoryId || sessionSubCategoryId || ""
+
         // Map API response to form data
         const mappedFormData: ProductFormData = {
-          name: product.name_en || "",
-          name_ar: product.name_ar || "",
-          notification_email: product.email || "",
+          name: product.nameEn || product.name_en || "",
+          name_ar: product.nameAr || product.name_ar || "",
+          notification_email: product.notificationEmail || product.email || "",
           country: countryValue,
-          master_category: product.master_category || "",
-          sub_categories: product.sub_categories || [],
-          customer_types: product.customer_types || [],
+          master_category: resolvedCategoryId,
+          sub_categories: resolvedSubCategoryId ? [resolvedSubCategoryId] : [],
+          customer_types: product.customerTypes || product.customer_types || [],
           status: statusValue,
-          logo_url: product.logo ? `${import.meta.env.VITE_REACT_APP_API_BASE_PRODUCT_MANAGEMENT_URL}${product.logo}` : "",
-          short_desc_en: product.short_desc_en || "",
-          short_desc_ar: product.short_desc_ar || "",
-          has_commodity: product.has_commodity || false,
-          category_id: product.category_id ? String(product.category_id) : "",
-          product_type_id: product.product_type_id ? String(product.product_type_id) : "",
+          logo_url: product.logoUrl || (product.logo ? `${import.meta.env.VITE_API_BASE_URL}/product-service${product.logo}` : ""),
+          short_desc_en: product.shortDescriptionEn || product.short_desc_en || "",
+          short_desc_ar: product.shortDescriptionAr || product.short_desc_ar || "",
+          has_commodity: product.involvesCommodity ?? product.has_commodity ?? false,
+          category_id: String(resolvedCategoryId),
+          product_type_id: product.productType || (product.product_type_id ? String(product.product_type_id) : ""),
         }
         
         setFormData(mappedFormData)
@@ -358,221 +359,109 @@ export default function CreateBasicInfo() {
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.notification_email)) {
       newErrors.notification_email = "Please enter a valid email address"
     }
-    if (!formData.country) newErrors.country = "Country is required"
+    // if (!formData.country) newErrors.country = "Country is required"
     // if (formData.customer_types.length === 0) newErrors.customer_types = "At least one customer type is required"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
   }
 
-  // Custom function to create product with FormData
-  const createProductWithFormData = async (formDataToSend: FormData) => {
-    const baseURL = import.meta.env.VITE_REACT_APP_API_FACTORING
-    return axios.post(`${baseURL}v1/product`, formDataToSend, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`,
-      },
+  const mapApiErrorsToFormFields = (errors: Record<string, any>): Record<string, string> => {
+    const apiErrors: Record<string, string> = {}
+    Object.keys(errors).forEach((field) => {
+      const fieldErrors = errors[field]
+      const message = Array.isArray(fieldErrors) ? fieldErrors[0] : fieldErrors
+      if (!message) return
+      const formField = field === "nameEn" || field === "name_en" ? "name"
+                       : field === "nameAr" || field === "name_ar" ? "name_ar"
+                       : field === "notificationEmail" || field === "email" ? "notification_email"
+                       : field === "masterCategoryId" || field === "category_id" ? "category_id"
+                       : field === "productType" || field === "product_type_id" ? "product_type_id"
+                       : field
+      apiErrors[formField] = message
     })
-  }
-
-  const updateProductWithFormData = async (productId: string, formDataToSend: FormData) => {
-    const baseURL = import.meta.env.VITE_REACT_APP_API_FACTORING
-    return axios.post(`${baseURL}v1/product/${productId}/update`, formDataToSend, {
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`,
-      },
-    })
+    return apiErrors
   }
 
   const handleNext = async () => {
     if (validateForm()) {
       setIsLoading(true)
-      
+
       try {
-        // Create FormData for multipart/form-data request
-        const formDataToSend = new FormData()
-        
-        // Add form fields to FormData
-        formDataToSend.append("name_en", formData.name)
-        formDataToSend.append("name_ar", formData.name_ar)
-        formDataToSend.append("email", formData.notification_email)
-        formDataToSend.append("country_id", formData.country)
-        formDataToSend.append("category_id", formData.category_id || "1")
-        formDataToSend.append("product_type_id", formData.product_type_id || "1")
-        formDataToSend.append("status", formData.status === "active" ? "1" : "0")
-        
-        // Add logo file if it exists
-        if (logoFile) {
-          formDataToSend.append("logo", logoFile)
+        // Build JSON payload — only send fields that have UI inputs
+        const payload: Record<string, any> = {
+          nameEn: formData.name,
+          nameAr: formData.name_ar,
+          notificationEmail: formData.notification_email,
+          productType: formData.product_type_id || "TAWARRUQ",
+        }
+        if (formData.category_id) {
+          payload.masterCategoryId = formData.category_id
+        }
+        if (formData.sub_categories?.[0]) {
+          payload.subCategoryId = formData.sub_categories[0]
         }
 
         let response: any
         if (isEditMode && effectiveProductId) {
-          // Update existing product (using effectiveProductId - from URL or sessionStorage)
-          response = await updateProductWithFormData(effectiveProductId, formDataToSend)
-          
-          if (response?.data?.success) {
-            toast.success(response?.data?.message || "Product updated successfully!")
-            
-            // Save form data to localStorage for persistence
-            saveFormDataToLocalStorage()
-            
-            // Save form data to session storage for next steps
-            sessionStorage.setItem("productFormData", JSON.stringify(formData))
-            sessionStorage.setItem("productId", effectiveProductId)
-            
-            // Mark that we're navigating to next step (don't clear storage)
-            isNavigatingToNextStepRef.current = true
-            
-            // Navigate to next step
-            router.push("/Los/ProductManagement/Create/ProductSettings")
-          } else {
-            // Handle validation errors from API
-            if (response?.data?.errors) {
-              const apiErrors: Record<string, string> = {}
-              Object.keys(response.data.errors).forEach((field) => {
-                const fieldErrors = response.data.errors[field]
-                if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
-                  // Map API field names to form field names if needed
-                  const formField = field === "name_en" ? "name" 
-                                 : field === "name_ar" ? "name_ar"
-                                 : field === "email" ? "notification_email"
-                                 : field === "country_id" ? "country"
-                                 : field === "category_id" ? "category_id"
-                                 : field === "product_type_id" ? "product_type_id"
-                                 : field
-                  apiErrors[formField] = fieldErrors[0] // Take first error message
-                }
-              })
-              setErrors(apiErrors)
-              
-              // Show first error in toast
-              const firstError = Object.values(apiErrors)[0]
-              if (firstError) {
-                toast.error(firstError)
-              } else {
-                toast.error(response?.data?.message || "Validation failed")
-              }
-            } else {
-              toast.error(response?.data?.message || "Failed to update product")
-            }
-          }
+          response = await updateProductBasicInfo(effectiveProductId, payload)
         } else {
-          // Create new product
-          response = await createProductWithFormData(formDataToSend)
-          
-          if (response?.data?.success) {
-            toast.success(response?.data?.message || "Product created successfully!")
-            
-            const createdProduct = response?.data?.data
-            const newProductId = String(createdProduct?.id || response?.data?.data?.id)
-            
-            // Map API response to form data format and save to localStorage
-            if (createdProduct) {
-              // Handle status - API returns "Active"/"Inactive"
-              const statusValue = createdProduct.status === "Active" ? "active" : "draft"
-              
-              const apiFormData: ProductFormData = {
-                name: createdProduct.name_en || formData.name,
-                name_ar: createdProduct.name_ar || formData.name_ar,
-                notification_email: createdProduct.email || formData.notification_email,
-                country: createdProduct.country_id ? String(createdProduct.country_id) : formData.country,
-                master_category: formData.master_category || "",
-                sub_categories: formData.sub_categories || [],
-                customer_types: formData.customer_types || [],
-                status: statusValue,
-                logo_url: formData.logo_url || "",
-                short_desc_en: formData.short_desc_en || "",
-                short_desc_ar: formData.short_desc_ar || "",
-                has_commodity: createdProduct.commodity || formData.has_commodity,
-                category_id: createdProduct.category_id ? String(createdProduct.category_id) : formData.category_id,
-                product_type_id: createdProduct.product_type_id ? String(createdProduct.product_type_id) : formData.product_type_id,
-              }
-              
-              // Save to localStorage with productId for persistence
-              const dataToSave = {
-                ...apiFormData,
-                _productId: newProductId
-              }
-              localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dataToSave))
-            }
-            
-            // Save form data to session storage for next steps
-            sessionStorage.setItem("productFormData", JSON.stringify(formData))
-            sessionStorage.setItem("productId", newProductId)
-            
-            // Mark that we're navigating to next step (don't clear storage)
-            isNavigatingToNextStepRef.current = true
-            
-            // Navigate to next step
-            router.push("/Los/ProductManagement/Create/ProductSettings")
+          response = await createProduct(payload)
+        }
+
+        // Extract product data from response (supports { data: { ... } } and { data: { data: { ... } } })
+        const resData = response?.data?.data || response?.data
+        const product = resData?.data || resData
+
+        if (product?.id || response?.status === 200 || response?.status === 201) {
+          toast.success(isEditMode ? "Product updated successfully!" : "Product created successfully!")
+
+          const resolvedProductId = String(product?.id || effectiveProductId)
+
+          // Map response back to form data for localStorage persistence
+          const rawStatus = (product?.status || "").toString().toUpperCase()
+          const apiFormData: ProductFormData = {
+            name: product?.nameEn || formData.name,
+            name_ar: product?.nameAr || formData.name_ar,
+            notification_email: product?.notificationEmail || formData.notification_email,
+            country: formData.country,
+            master_category: product?.masterCategoryId || formData.master_category || "",
+            sub_categories: product?.subCategoryId ? [product.subCategoryId] : (formData.sub_categories || []),
+            customer_types: product?.customerTypes || formData.customer_types || [],
+            status: rawStatus === "ACTIVE" ? "active" : "draft",
+            logo_url: product?.logoUrl || formData.logo_url || "",
+            short_desc_en: product?.shortDescriptionEn || formData.short_desc_en || "",
+            short_desc_ar: product?.shortDescriptionAr || formData.short_desc_ar || "",
+            has_commodity: product?.involvesCommodity ?? formData.has_commodity,
+            category_id: product?.masterCategoryId || formData.category_id,
+            product_type_id: product?.productType || formData.product_type_id,
+          }
+
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ ...apiFormData, _productId: resolvedProductId }))
+          sessionStorage.setItem("productFormData", JSON.stringify(apiFormData))
+          sessionStorage.setItem("productId", resolvedProductId)
+
+          isNavigatingToNextStepRef.current = true
+          router.push("/Los/ProductManagement/Create/ProductSettings")
+        } else {
+          // Handle validation errors
+          if (resData?.errors) {
+            const mapped = mapApiErrorsToFormFields(resData.errors)
+            setErrors(mapped)
+            toast.error(Object.values(mapped)[0] || resData?.message || "Validation failed")
           } else {
-            // Handle validation errors from API
-            if (response?.data?.errors) {
-              const apiErrors: Record<string, string> = {}
-              Object.keys(response.data.errors).forEach((field) => {
-                const fieldErrors = response.data.errors[field]
-                if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
-                  // Map API field names to form field names if needed
-                  const formField = field === "name_en" ? "name" 
-                                 : field === "name_ar" ? "name_ar"
-                                 : field === "email" ? "notification_email"
-                                 : field === "country_id" ? "country"
-                                 : field === "category_id" ? "category_id"
-                                 : field === "product_type_id" ? "product_type_id"
-                                 : field
-                  apiErrors[formField] = fieldErrors[0] // Take first error message
-                }
-              })
-              setErrors(apiErrors)
-              
-              // Show first error in toast
-              const firstError = Object.values(apiErrors)[0]
-              if (firstError) {
-                toast.error(firstError)
-              } else {
-                toast.error(response?.data?.message || "Validation failed")
-              }
-            } else {
-              toast.error(response?.data?.message || "Failed to create product")
-            }
+            toast.error(resData?.message || `Failed to ${isEditMode ? "update" : "create"} product`)
           }
         }
       } catch (error: any) {
-        console.error(`Error ${isEditMode ? 'updating' : 'creating'} product:`, error)
-        
-        // Handle validation errors from API response
-        if (error?.response?.data?.errors) {
-          const apiErrors: Record<string, string> = {}
-          Object.keys(error.response.data.errors).forEach((field) => {
-            const fieldErrors = error.response.data.errors[field]
-            if (Array.isArray(fieldErrors) && fieldErrors.length > 0) {
-              // Map API field names to form field names if needed
-              const formField = field === "name_en" ? "name" 
-                             : field === "name_ar" ? "name_ar"
-                             : field === "email" ? "notification_email"
-                             : field === "country_id" ? "country"
-                             : field === "category_id" ? "category_id"
-                             : field === "product_type_id" ? "product_type_id"
-                             : field
-              apiErrors[formField] = fieldErrors[0] // Take first error message
-            }
-          })
-          setErrors(apiErrors)
-          
-          // Show first error in toast
-          const firstError = Object.values(apiErrors)[0]
-          if (firstError) {
-            toast.error(firstError)
-          } else {
-            toast.error(error?.response?.data?.message || "Validation failed")
-          }
+        console.error(`Error ${isEditMode ? "updating" : "creating"} product:`, error)
+        const errData = error?.response?.data
+        if (errData?.errors) {
+          const mapped = mapApiErrorsToFormFields(errData.errors)
+          setErrors(mapped)
+          toast.error(Object.values(mapped)[0] || errData?.message || "Validation failed")
         } else {
-          toast.error(error?.response?.data?.message || error?.message || `Failed to ${isEditMode ? 'update' : 'create'} product`)
+          toast.error(errData?.message || error?.message || `Failed to ${isEditMode ? "update" : "create"} product`)
         }
       } finally {
         setIsLoading(false)
@@ -773,14 +662,14 @@ export default function CreateBasicInfo() {
                   
                   <div className="space-y-2">
                     <Label>Product Type</Label>
-                    <Select  value={formData.product_type_id} onValueChange={(value) => updateFormData("product_type_id", value)}>
-                      <SelectTrigger className={"w-full "}>
+                    <Select value={formData.product_type_id} onValueChange={(value) => updateFormData("product_type_id", value)}>
+                      <SelectTrigger className="w-full">
                         <SelectValue placeholder="Select product type" />
                       </SelectTrigger>
                       <SelectContent>
-                        {productTypes?.map((type:any) => (
-                          <SelectItem key={type?.id} value={String(type?.id)}>
-                            {type?.name || type?.type_name || type?.product_type}
+                        {PRODUCT_TYPES.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
                           </SelectItem>
                         ))}
                       </SelectContent>

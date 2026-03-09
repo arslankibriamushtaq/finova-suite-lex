@@ -5,7 +5,7 @@ import { Button } from "../ui/button"
 import { Tab, Tabs } from "react-bootstrap"
 import { useLanguage } from "../../hooks/use-language"
 import toast from "react-hot-toast"
-import { createProductSettings, createProductTermsAndConditions, createCreditScoringCriteria, createAdminFeeSlabs, createDurationSettings, createApprovalWorkflowScenarios, getProductSettings, addSelectedNationalities } from "../../redux/apis/apisCrudProductManagement"
+import { createProductSettings, createProductTermsAndConditions, createCreditScoringCriteria, createAdminFeeSlabs, createDurationSettings, createApprovalWorkflowScenarios, getProductSettings, addSelectedNationalities, updateFeeSettings, updateAdminFeeSlabs, updateDurationSettings, updateApprovalWorkflows } from "../../redux/apis/apisCrudProductManagement"
 import Loader from "../Loader/Loader"
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 
@@ -381,14 +381,14 @@ export default function CraeteProductSettings() {
   const [isPreviewOpen, setIsPreviewOpen] = useState(false)
 
   const tabOrder = [
-    "terms",  
+    "terms",
     "fee-settings",
-    "product-rules",
-    "eligibility",
-    "income-slabs",
+    // "product-rules",
+    // "eligibility",
+    // "income-slabs",
     "duration",
     "approval-workflows",
-    "credit-scoring",
+    // "credit-scoring",
     "fee-slabs"
   ]
 
@@ -397,7 +397,7 @@ export default function CraeteProductSettings() {
       setIsLoadingSettings(true)
       const response = await getProductSettings(productId)
       
-      if (response?.data?.success && response?.data?.data) {
+      if (response?.data?.message === "success" && response?.data?.data) {
         const settingsData = response.data.data
         
         // Map application steps from product.application_steps
@@ -410,30 +410,11 @@ export default function CraeteProductSettings() {
           order: index + 1,
         })) || []
         
-        // Map terms and conditions from settings or legal_content
-        let termsConditionsEn = settingsData.settings?.terms_conditions_en || ""
-        let termsConditionsAr = settingsData.settings?.terms_conditions_ar || ""
+        // Map terms and conditions — new API uses termsEn/termsAr, fallback to legacy keys
+        let termsConditionsEn = settingsData.termsEn || settingsData.settings?.termsEn || settingsData.settings?.terms_conditions_en || ""
+        let termsConditionsAr = settingsData.termsAr || settingsData.settings?.termsAr || settingsData.settings?.terms_conditions_ar || ""
         let eligibilityEn = settingsData.settings?.eligibility_criteria_en || ""
         let eligibilityAr = settingsData.settings?.eligibility_criteria_ar || ""
-        
-        // Also check legal_content array for terms and eligibility (if stored there)
-        if (settingsData.product?.legal_content && Array.isArray(settingsData.product.legal_content)) {
-          settingsData.product.legal_content.forEach((content: any) => {
-            if (content.type === "terms_and_conditions") {
-              if (content.locale === "en") {
-                termsConditionsEn = content.content || termsConditionsEn
-              } else if (content.locale === "ar") {
-                termsConditionsAr = content.content || termsConditionsAr
-              }
-            } else if (content.type === "eligibility_criteria") {
-              if (content.locale === "en") {
-                eligibilityEn = content.content || eligibilityEn
-              } else if (content.locale === "ar") {
-                eligibilityAr = content.content || eligibilityAr
-              }
-            }
-          })
-        }
         
         // Update formData with loaded settings
         setFormData((prev: any) => ({
@@ -443,47 +424,73 @@ export default function CraeteProductSettings() {
           terms_conditions_ar: termsConditionsAr || prev.terms_conditions_ar,
           eligibility_criteria_en: eligibilityEn || prev.eligibility_criteria_en,
           eligibility_criteria_ar: eligibilityAr || prev.eligibility_criteria_ar,
-          // Also update other settings if available
-          min_financing_amount: settingsData.min_financing_amount ? parseFloat(settingsData.min_financing_amount) : prev.min_financing_amount,
-          max_financing_amount: settingsData.max_financing_amount ? parseFloat(settingsData.max_financing_amount) : prev.max_financing_amount,
-          suggested_financing_amount: settingsData.suggested_financing_amount ? parseFloat(settingsData.suggested_financing_amount) : prev.suggested_financing_amount,
-          min_tenure: settingsData.min_tenure || prev.min_tenure,
-          max_tenure: settingsData.max_tenure || prev.max_tenure,
-          vat_percentage: settingsData.vat_percentage ? parseFloat(settingsData.vat_percentage) : prev.vat_percentage,
-          revenue_eligibility_threshold: settingsData.min_annual_revenue ? parseFloat(settingsData.min_annual_revenue) : prev.revenue_eligibility_threshold,
-          dbr_percentage: settingsData.maximum_dbr_percentage ? parseFloat(settingsData.maximum_dbr_percentage) : prev.dbr_percentage,
-          dbr_calculation_method: settingsData.dbr_calculation_method || prev.dbr_calculation_method,
-          dbr_exceptions: settingsData.dbr_exceptions || prev.dbr_exceptions,
-          gdbr_percentage: settingsData.gdbr_percentage ? parseFloat(settingsData.gdbr_percentage) : prev.gdbr_percentage,
-          credit_line_percentage: settingsData.credit_line_percentage ? parseFloat(settingsData.credit_line_percentage) : prev.credit_line_percentage,
-          min_age: settingsData.min_age || prev.min_age,
-          max_age: settingsData.max_age || prev.max_age,
-          // Map processing_fee_slabs from the response (located at product.processing_fee_slabs)
+          // Fee settings — supports both camelCase (new API) and snake_case (legacy)
+          min_financing_amount: parseFloat(settingsData.minFinancingAmount || settingsData.min_financing_amount) || prev.min_financing_amount,
+          max_financing_amount: parseFloat(settingsData.maxFinancingAmount || settingsData.max_financing_amount) || prev.max_financing_amount,
+          suggested_financing_amount: parseFloat(settingsData.suggestedFinancingAmount || settingsData.suggested_financing_amount) || prev.suggested_financing_amount,
+          min_tenure: settingsData.minTenure || settingsData.min_tenure || prev.min_tenure,
+          max_tenure: settingsData.maxTenure || settingsData.max_tenure || prev.max_tenure,
+          vat_percentage: parseFloat(settingsData.vatPercentage || settingsData.vat_percentage) || prev.vat_percentage,
+          revenue_eligibility_threshold: parseFloat(settingsData.revenueEligibilityThreshold || settingsData.min_annual_revenue) || prev.revenue_eligibility_threshold,
+          dbr_percentage: parseFloat(settingsData.maxDbrPercentage || settingsData.maximum_dbr_percentage) || prev.dbr_percentage,
+          dbr_calculation_method: settingsData.dbrCalculationMethod || settingsData.dbr_calculation_method || prev.dbr_calculation_method,
+          dbr_exceptions: settingsData.dbrExceptions || settingsData.dbr_exceptions || prev.dbr_exceptions,
+          gdbr_percentage: parseFloat(settingsData.gdbrPercentage || settingsData.gdbr_percentage) || prev.gdbr_percentage,
+          credit_line_percentage: parseFloat(settingsData.creditLinePercentage || settingsData.credit_line_percentage) || prev.credit_line_percentage,
+          min_age: settingsData.minAge || settingsData.min_age || prev.min_age,
+          max_age: settingsData.maxAge || settingsData.max_age || prev.max_age,
+          // Admin fee slabs — supports both camelCase (new: slabs array) and snake_case (legacy: processing_fee_slabs)
           admin_fee_slabs: (() => {
-            const processingFeeSlabs = settingsData.product?.processing_fee_slabs || []
-            if (processingFeeSlabs.length > 0) {
-              return processingFeeSlabs.map((slab: any) => ({
-                id: String(slab.id),
-                min_amount: slab.from_amount ? parseFloat(slab.from_amount) : 0,
-                max_amount: slab.to_amount ? parseFloat(slab.to_amount) : 0,
-                min_tenure: slab.min_tenure !== null && slab.min_tenure !== undefined ? parseInt(String(slab.min_tenure)) : 1,
-                max_tenure: slab.max_tenure !== null && slab.max_tenure !== undefined ? parseInt(String(slab.max_tenure)) : 6,
-                profit_percentage: slab.profit ? parseFloat(slab.profit) : 0,
-                profit_type: slab.profit_type || "percentage",
-                admin_fee: slab.admin_fee ? parseFloat(slab.admin_fee) : 0,
+            const slabs = settingsData.slabs || settingsData.product?.processing_fee_slabs || []
+            if (slabs.length > 0) {
+              return slabs.map((slab: any) => ({
+                id: String(slab.id || ""),
+                min_amount: parseFloat(slab.minAmount || slab.from_amount) || 0,
+                max_amount: parseFloat(slab.maxAmount || slab.to_amount) || 0,
+                min_tenure: parseInt(String(slab.minTenure ?? slab.min_tenure ?? 1)),
+                max_tenure: parseInt(String(slab.maxTenure ?? slab.max_tenure ?? 6)),
+                profit_percentage: parseFloat(slab.profitPercentage || slab.profit) || 0,
+                profit_type: slab.profitType || slab.profit_type || "percentage",
+                admin_fee: parseFloat(slab.adminFee || slab.admin_fee) || 0,
                 type: slab.type || "monthly",
-                processing_fee: slab.processing_fee ? parseFloat(slab.processing_fee) : 0,
-                partner_scope: slab.partner_scope === null ? "all" : slab.partner_scope,
-                status: slab.status === 1 ? "active" : "inactive"
+                processing_fee: parseFloat(slab.processingFee || slab.processing_fee) || 0,
+                partner_scope: (slab.partnerScope || slab.partner_scope) === "ALL_PARTNERS" ? "all" : (slab.partnerScope || slab.partner_scope || "all"),
+                status: (slab.status === "ACTIVE" || slab.status === 1) ? "active" : "inactive"
               }))
             }
             return prev.admin_fee_slabs
           })(),
-          request_duration: settingsData.settings?.request_duration || prev.request_duration,
-          approval_duration: settingsData.settings?.approval_duration || prev.approval_duration,
-          disbursement_duration: settingsData.settings?.disbursement_duration || prev.disbursement_duration,
-          repayment_duration: settingsData.settings?.repayment_duration || prev.repayment_duration,
-          approval_scenarios: settingsData.settings?.approval_scenarios || prev.approval_scenarios,
+          request_duration: settingsData.requestDurationDays || settingsData.settings?.request_duration || prev.request_duration,
+          approval_duration: settingsData.approvalDurationDays || settingsData.settings?.approval_duration || prev.approval_duration,
+          disbursement_duration: settingsData.disbursementDurationDays || settingsData.settings?.disbursement_duration || prev.disbursement_duration,
+          repayment_duration: settingsData.repaymentDurationDays || settingsData.settings?.repayment_duration || prev.repayment_duration,
+          approval_scenarios: (() => {
+            const workflows = settingsData.workflows || settingsData.settings?.approval_scenarios || []
+            if (workflows.length > 0) {
+              return workflows.map((w: any, index: number) => ({
+                id: w.id || String(Date.now() + index),
+                name: w.nameEn || w.name || "",
+                name_ar: w.nameAr || w.name_ar || "",
+                description: w.description || "",
+                type: w.workflowType === "AUTO_APPROVAL" ? "auto" : w.workflowType === "MANUAL_REVIEW" ? "manual" : (w.type || "auto"),
+                enabled: w.active ?? w.enabled ?? true,
+                priority: w.priority || index + 1,
+                conditions: (w.conditions || []).map((c: any) => ({
+                  field: c.field || "",
+                  operator: c.operator || "",
+                  value: c.value || "",
+                  logic: c.logical_operator || "AND",
+                })),
+                actions: (w.actions || []).map((a: any) => ({
+                  type: a.actionType === "APPROVE" ? "Auto Approval" : a.actionType === "ESCALATE" ? "Manual Review" : (a.action_type || a.type || ""),
+                  value: a.configuration || a.action_value || "",
+                  delay_hours: a.delay_hours || 0,
+                  configuration: a.configuration || "",
+                })),
+              }))
+            }
+            return prev.approval_scenarios
+          })(),
           credit_scoring_criteria: settingsData.settings?.credit_scoring_criteria || prev.credit_scoring_criteria,
           min_income: settingsData.min_income || prev.min_income,
           stress_buffer: settingsData.stress_buffer || prev.stress_buffer,
@@ -1038,7 +1045,7 @@ export default function CraeteProductSettings() {
 
     //     const response = await createProductSettings(productId, payload)
         
-    //     if (response?.data?.success) {
+    //     if (response?.data?.message === "success") {
     //       const autoApprovalScenarios = formData.approval_scenarios.filter(
     //         (s: any) => s.type === "auto" && s.enabled && s.creditScoringRules && s.creditScoringRules.length > 0
     //       )
@@ -1123,16 +1130,24 @@ export default function CraeteProductSettings() {
     try {
       setIsLoading(true)
       const productId = sessionStorage.getItem("productId")
-      
+
       if (!productId) {
         toast.error("Product ID not found")
         return
       }
 
-      const payload = buildApiPayload(formData)
-      const response = await createProductSettings(productId, payload)
-      
-      if (response?.data?.success) {
+      const feePayload = {
+        minFinancingAmount: formData.min_financing_amount || 0,
+        maxFinancingAmount: formData.max_financing_amount || 0,
+        vatPercentage: formData.vat_percentage || 0,
+        revenueEligibilityThreshold: formData.revenue_eligibility_threshold || 0,
+        maxDbrPercentage: formData.dbr_percentage || 0,
+        dbrCalculationMethod: (formData.dbr_calculation_method || "GROSS_INCOME").toUpperCase(),
+        dbrExceptions: Array.isArray(formData.dbr_exceptions) ? formData.dbr_exceptions.join("\n") : (formData.dbr_exceptions || ""),
+      }
+      const response = await updateFeeSettings(productId, feePayload)
+
+      if (response?.data?.message === "success") {
         sessionStorage.setItem("settingsFormData", JSON.stringify(formData))
         toast.success("Fee settings saved successfully!")
       }
@@ -1157,7 +1172,7 @@ export default function CraeteProductSettings() {
       const payload = buildApiPayload(formData)
       const response = await createProductSettings(productId, payload)
       
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         // Save nationalities if any are selected
         if (formData.eligible_nationalities && formData.eligible_nationalities.length > 0) {
           const nationalitiesPayload = {
@@ -1205,7 +1220,7 @@ export default function CraeteProductSettings() {
       
       const response = await createProductTermsAndConditions(productId, eligibilityPayload)
       
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         sessionStorage.setItem("settingsFormData", JSON.stringify(formData))
         toast.success("Eligibility criteria saved successfully!")
         
@@ -1239,23 +1254,11 @@ export default function CraeteProductSettings() {
       if (activeTab === "terms") {
         // Clear previous errors
         setTermsConditionsErrors({})
-        
+
         const termsPayload = {
-          product_content: [
-            {
-              locale: "en",
-              content: formData.terms_conditions_en || "",
-              type: "terms_and_conditions"
-            },
-            {
-              locale: "ar",
-              content: formData.terms_conditions_ar || "",
-              type: "terms_and_conditions"
-            }
-          ]
+          termsEn: formData.terms_conditions_en || "",
+          termsAr: formData.terms_conditions_ar || "",
         }
-        
-       
 
         response = await createProductTermsAndConditions(productId, termsPayload)
       } else if (activeTab === "eligibility") {
@@ -1281,159 +1284,54 @@ export default function CraeteProductSettings() {
 
         response = await createProductTermsAndConditions(productId, eligibilityPayload)
       } else if (activeTab === "admin-fees") {
-        const adminFeeSlabsPayload = formData.admin_fee_slabs.map((slab: any) => ({
-          partner_company_id:null,
-          from_amount: String(slab.min_amount),
-          to_amount: String(slab.max_amount),
-          min_tenure: slab.min_tenure || 1,
-          max_tenure: slab.max_tenure || 6,
-          profit: String(slab.profit_percentage),
-          profit_type: slab.profit_type || "percentage",
-          processing_fee: String(slab.processing_fee),
-          admin_fee: String(slab.admin_fee),
-          type: slab.type,
-          partner_scope: slab.partner_scope === "all" ? null : slab.partner_scope,
-          // Backend expects boolean true/false for status
-          status: slab.status === "active"
+        const slabs = formData.admin_fee_slabs.map((slab: any, index: number) => ({
+          minAmount: Number(slab.min_amount) || 0,
+          maxAmount: Number(slab.max_amount) || 0,
+          profitPercentage: Number(slab.profit_percentage) || 0,
+          processingFee: Number(slab.processing_fee) || 0,
+          adminFee: Number(slab.admin_fee) || 0,
+          partnerScope: slab.partner_scope === "all" ? "ALL_PARTNERS" : (slab.partner_scope || "ALL_PARTNERS"),
+          status: slab.status === "active" ? "ACTIVE" : "INACTIVE",
+          sortOrder: index + 1,
+          minTenure: Number(slab.min_tenure) || 6,
+          maxTenure: Number(slab.max_tenure) || 24,
         }))
-        
-       
 
-        response = await createAdminFeeSlabs({product_id: parseInt(productId),fee_slabs:adminFeeSlabsPayload})
+        response = await updateAdminFeeSlabs(productId, { slabs })
       } else if (activeTab === "duration") {
         const durationPayload = {
-          product_id: parseInt(productId),
-          approval_duration_days: formData.approval_duration,
-          disbursement_duration_days: formData.disbursement_duration,
-          repayment_duration_days: formData.repayment_duration,
-          request_duration_days: formData.request_duration
+          requestDurationDays: formData.request_duration || 30,
+          approvalDurationDays: formData.approval_duration || 5,
+          disbursementDurationDays: formData.disbursement_duration || 2,
+          repaymentDurationDays: formData.repayment_duration || 1825,
         }
-        
 
-
-        response = await createDurationSettings(durationPayload)
+        response = await updateDurationSettings(productId, durationPayload)
       } else if (activeTab === "approval-workflows") {
         // Clear previous errors
         setApprovalWorkflowsErrors({})
-        
-        let successCount = 0
-        let errorCount = 0
-        const scenarioErrors: Record<string, Record<string, string>> = {}
-        
-        for (const scenario of formData.approval_scenarios) {
-          const scenarioPayload = {
-            product_id: parseInt(productId),
-            scenario_name: scenario.name,
-            priority: scenario.priority,
-            scenario_type: scenario.type =="auto" ? "approval" : scenario.name == "manual" ? "manual" : "rejection",
-            is_active: scenario.enabled,
-            conditions: scenario.conditions.map((condition: any, index: number) => ({
-              field: condition.field,
-              operator: mapOperatorToApiFormat(condition.operator),
-              value: condition.value,
-              logical_operator: index === scenario.conditions.length - 1 ? null : condition.logic
-            })),
-            actions: scenario.actions.map((action: any) => ({
-              action_type: action.type =="Auto Approval" ? "approve" : scenario.name == "Manual Approval" ? "manual" : "reject",
-              action_value: action.value,
-              delay_hours: action.delay_hours || 0
-            }))
-          }
-          
-         
 
-          try {
-            const scenarioResponse = await createApprovalWorkflowScenarios(scenarioPayload)
-            if (scenarioResponse?.data?.success) {
-              successCount++
-            } else {
-              errorCount++
-              // Parse errors for this scenario
-              const apiErrors = scenarioResponse?.data?.errors || {}
-              const errorsForScenario: Record<string, string> = {}
-              
-              Object.keys(apiErrors).forEach((errorKey) => {
-                // Handle direct field errors like "scenario_name"
-                if (!errorKey.includes('.')) {
-                  const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
-                  errorsForScenario[errorKey] = errorMessage
-                } else {
-                  // Handle nested errors like "conditions.0.operator"
-                  const match = errorKey.match(/^conditions\.(\d+)\.(.+)$/)
-                  if (match) {
-                    const conditionIndex = match[1]
-                    const field = match[2]
-                    const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
-                    errorsForScenario[`conditions.${conditionIndex}.${field}`] = errorMessage
-                  }
-                }
-              })
-              
-              if (Object.keys(errorsForScenario).length > 0) {
-                scenarioErrors[scenario.id] = errorsForScenario
-              }
-              
-              console.warn(`Failed to save scenario ${scenario.name}:`, scenarioResponse?.data?.message)
-            }
-          } catch (scenarioError: any) {
-            errorCount++
-            // Parse errors from catch block
-            const apiErrors = scenarioError?.response?.data?.errors || {}
-            const errorsForScenario: Record<string, string> = {}
-            
-            Object.keys(apiErrors).forEach((errorKey) => {
-              if (!errorKey.includes('.')) {
-                const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
-                errorsForScenario[errorKey] = errorMessage
-              } else {
-                const match = errorKey.match(/^conditions\.(\d+)\.(.+)$/)
-                if (match) {
-                  const conditionIndex = match[1]
-                  const field = match[2]
-                  const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
-                  errorsForScenario[`conditions.${conditionIndex}.${field}`] = errorMessage
-                }
-              }
-            })
-            
-            if (Object.keys(errorsForScenario).length > 0) {
-              scenarioErrors[scenario.id] = errorsForScenario
-            }
-            
-            console.error(`Error saving scenario ${scenario.name}:`, scenarioError)
-          }
-        }
-        
-        // Set errors for all scenarios
-        if (Object.keys(scenarioErrors).length > 0) {
-          setApprovalWorkflowsErrors(scenarioErrors)
-        }
-        
-        if (successCount > 0) {
-          response = { data: { success: true } }
-          if (errorCount > 0) {
-            toast.success(`Approval workflows saved! ${successCount} successful, ${errorCount} failed`)
-          } else {
-            toast.success(`All ${successCount} approval workflow scenarios saved successfully!`)
-          }
-        } else if (errorCount > 0) {
-          // Show first error from first scenario
-          const firstScenarioId = Object.keys(scenarioErrors)[0]
-          if (firstScenarioId && scenarioErrors[firstScenarioId]) {
-            const firstError = Object.values(scenarioErrors[firstScenarioId])[0]
-            if (firstError) {
-              toast.error(firstError)
-            } else {
-              toast.error("Failed to save approval workflow scenarios")
-            }
-          } else {
-            toast.error("Failed to save approval workflow scenarios")
-          }
-          response = { data: { success: false } }
-        } else {
-          response = { data: { success: true } }
-          toast.success("No approval scenarios to save")
-        }
+        const workflows = formData.approval_scenarios.map((scenario: any) => ({
+          workflowType: scenario.type === "auto" ? "AUTO_APPROVAL" : scenario.type === "manual" ? "MANUAL_REVIEW" : "AUTO_REJECTION",
+          nameEn: scenario.name || "",
+          nameAr: scenario.name_ar || "",
+          description: scenario.description || "",
+          active: scenario.enabled ?? true,
+          priority: scenario.priority || 1,
+          conditions: (scenario.conditions || []).map((condition: any, idx: number) => ({
+            field: condition.field || "",
+            operator: mapOperatorToApiFormat(condition.operator),
+            value: String(condition.value ?? ""),
+            sortOrder: idx + 1,
+          })),
+          actions: (scenario.actions || []).map((action: any, idx: number) => ({
+            actionType: action.type === "Auto Approval" ? "APPROVE" : action.type === "Manual Review" ? "ESCALATE" : "REJECT",
+            configuration: action.configuration || action.value || "{}",
+            sortOrder: idx + 1,
+          })),
+        }))
+
+        response = await updateApprovalWorkflows(productId, { workflows })
       } else if (activeTab === "product-rules") {
         // Clear previous errors
         setErrors({})
@@ -1445,7 +1343,7 @@ export default function CraeteProductSettings() {
         response = await createProductSettings(productId, payload)
         
         // Then save nationalities separately if any are selected
-        if (response?.data?.success) {
+        if (response?.data?.message === "success") {
           if (formData.eligible_nationalities && Array.isArray(formData.eligible_nationalities) && formData.eligible_nationalities.length > 0) {
             try {
               const nationalitiesPayload = {
@@ -1500,42 +1398,57 @@ export default function CraeteProductSettings() {
         
         // Send single request with all fields
         response = await createCreditScoringCriteria(creditScoringPayload)
-      }
-       else {
+      } else if (activeTab === "fee-settings") {
+        // Save fee settings
+        const feePayload = {
+          minFinancingAmount: formData.min_financing_amount || 0,
+          maxFinancingAmount: formData.max_financing_amount || 0,
+          vatPercentage: formData.vat_percentage || 0,
+          revenueEligibilityThreshold: formData.revenue_eligibility_threshold || 0,
+          maxDbrPercentage: formData.dbr_percentage || 0,
+          dbrCalculationMethod: (formData.dbr_calculation_method || "GROSS_INCOME").toUpperCase(),
+          dbrExceptions: Array.isArray(formData.dbr_exceptions) ? formData.dbr_exceptions.join("\n") : (formData.dbr_exceptions || ""),
+        }
+        await updateFeeSettings(productId, feePayload)
+
+        // Save admin fee slabs
+        const slabs = formData.admin_fee_slabs.map((slab: any, index: number) => ({
+          minAmount: Number(slab.min_amount) || 0,
+          maxAmount: Number(slab.max_amount) || 0,
+          profitPercentage: Number(slab.profit_percentage) || 0,
+          processingFee: Number(slab.processing_fee) || 0,
+          adminFee: Number(slab.admin_fee) || 0,
+          partnerScope: slab.partner_scope === "all" ? "ALL_PARTNERS" : (slab.partner_scope || "ALL_PARTNERS"),
+          status: slab.status === "active" ? "ACTIVE" : "INACTIVE",
+          sortOrder: index + 1,
+          minTenure: Number(slab.min_tenure) || 6,
+          maxTenure: Number(slab.max_tenure) || 24,
+        }))
+        response = await updateAdminFeeSlabs(productId, { slabs })
+      } else {
         // Clear previous errors for application-steps
         if (activeTab === "application-steps") {
           setApplicationStepsErrors({})
         }
-        
-        const payload = buildApiPayload(formData)
-        
 
+        const payload = buildApiPayload(formData)
 
         response = await createProductSettings(productId, payload)
       }
       
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
         sessionStorage.setItem("settingsFormData", JSON.stringify(formData))
         
         const currentIndex = tabOrder.indexOf(activeTab)
         if (currentIndex < tabOrder.length - 1) {
           setActiveTab(tabOrder[currentIndex + 1])
-          if (activeTab !== "approval-workflows" && activeTab !== "credit-scoring") {
-            toast.success(`${activeTab.replace(/-/g, " ")} saved successfully!`)
-          } else if (activeTab === "credit-scoring") {
-            toast.success("Credit scoring criteria saved successfully!")
-            router.push("/Los/ProductManagement/Create/ProductAffiliation")
-          }
+          toast.success(`${activeTab.replace(/-/g, " ")} saved successfully!`)
         } else {
-          if (activeTab !== "approval-workflows" && activeTab !== "credit-scoring") {
-            toast.success("Settings saved successfully!")
-          } else if (activeTab === "credit-scoring") {
-            toast.success("Credit scoring criteria saved successfully!")
-            router.push("/Los/ProductManagement/Create/ProductAffiliation")
-          }
+          toast.success("Settings saved successfully!")
+          router.push("/Los/ProductManagement/Create/ProductAffiliation")
         }
       } else {
-        if (activeTab !== "approval-workflows" && activeTab !== "credit-scoring") {
+        if (activeTab !== "credit-scoring") {
           // Handle validation errors for application-steps, terms, and other tabs
           const apiErrors = response?.data?.errors || {}
           
@@ -1568,25 +1481,17 @@ export default function CraeteProductSettings() {
               toast.error(response?.data?.message || "Failed to save settings")
             }
           } else if (activeTab === "terms") {
-            // Parse errors like "product_content.0.content" -> terms_conditions_en, "product_content.1.content" -> terms_conditions_ar
             const termsErrors: Record<string, string> = {}
-            
+
             Object.keys(apiErrors).forEach((errorKey) => {
-              // Match pattern: product_content.{index}.content
-              const match = errorKey.match(/^product_content\.(\d+)\.content$/)
-              if (match) {
-                const index = parseInt(match[1])
-                const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
-                
-                // Map index 0 to English, index 1 to Arabic
-                if (index === 0) {
-                  termsErrors.terms_conditions_en = errorMessage
-                } else if (index === 1) {
-                  termsErrors.terms_conditions_ar = errorMessage
-                }
+              const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
+              if (errorKey === "termsEn") {
+                termsErrors.terms_conditions_en = errorMessage
+              } else if (errorKey === "termsAr") {
+                termsErrors.terms_conditions_ar = errorMessage
               }
             })
-            
+
             setTermsConditionsErrors(termsErrors)
             
             // Show first error in toast
@@ -1796,18 +1701,13 @@ export default function CraeteProductSettings() {
         // Handle validation errors from catch block for terms and conditions
         const apiErrors = error?.response?.data?.errors || {}
         const termsErrors: Record<string, string> = {}
-        
+
         Object.keys(apiErrors).forEach((errorKey) => {
-          const match = errorKey.match(/^product_content\.(\d+)\.content$/)
-          if (match) {
-            const index = parseInt(match[1])
-            const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
-            
-            if (index === 0) {
-              termsErrors.terms_conditions_en = errorMessage
-            } else if (index === 1) {
-              termsErrors.terms_conditions_ar = errorMessage
-            }
+          const errorMessage = Array.isArray(apiErrors[errorKey]) ? apiErrors[errorKey][0] : apiErrors[errorKey]
+          if (errorKey === "termsEn") {
+            termsErrors.terms_conditions_en = errorMessage
+          } else if (errorKey === "termsAr") {
+            termsErrors.terms_conditions_ar = errorMessage
           }
         })
         
@@ -2034,6 +1934,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab>
 
+              {/* Hidden: Product Rules & Affordability Income Slabs tabs
               <Tab eventKey="product-rules" title="Product Rules">
                 {activeTab === "product-rules" && (
                   <>
@@ -2042,7 +1943,6 @@ export default function CraeteProductSettings() {
                     updateFormData={updateFormData}
                     errors={{ ...errors, ...simahCheckRulesErrors }}
                     onNext={handleProductRulesSave}
-                    // onPrevious={handleTabPrevious}
                     productId={productId}
                   />
                   <EligibilityTab
@@ -2068,6 +1968,7 @@ export default function CraeteProductSettings() {
                   />
                 )}
               </Tab>
+              */}
 
               {/* <Tab eventKey="admin-fees" title="Fee Slabs">
                 {activeTab === "admin-fees" && (
@@ -2120,6 +2021,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab>
 
+              {/* Hidden: Credit Scoring Engine tab
               <Tab eventKey="credit-scoring" title="Credit Scoring Engine">
                 {activeTab === "credit-scoring" && (
                   <CreditScoringTab
@@ -2143,6 +2045,7 @@ export default function CraeteProductSettings() {
                   />
                 )}
               </Tab>
+              */}
             </Tabs>
           </div>
         </div>

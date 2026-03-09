@@ -101,7 +101,7 @@ const readOnly = mode === "view";
       }
 
      
-      if (response?.data?.success) {
+      if (response?.data?.message === "success") {
 
         const data = response?.data?.data;
         dispatch(setProductData(data));
