@@ -65,7 +65,7 @@ const Login: React.FC = () => {
   return (
     <div className="login-container">
       <Loader />
-      <div className="login-form-wrapper">
+      {/* <div className="login-form-wrapper">
         <div className="login-left-panel">
           <div className="login-left-content">
             <img src={FactoringLogo} alt="Factoring Valley Logo" className="login-logo" />
@@ -83,7 +83,7 @@ const Login: React.FC = () => {
             </p>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };
