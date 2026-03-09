@@ -267,7 +267,7 @@ export function createUser(body: any) {
 }
 export function getRolesList(page?: any, pageSize?: any) {
   return axios.get(
-    `/api/portal/role-management/direct-list?page=${page}&per_page=${pageSize}`
+    `/identity-service/api/v1/roles`
   );
 }
 export function activityLogsList(page: any, pageSize: any) {

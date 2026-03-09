@@ -67,16 +67,16 @@ export function storeDepartmentPermissions(body: any){
   return axiosFactoring.post(`/v1/departments/store-department-permissions`, body);
 }
 export function getRoles(page: any, per_page: any){
-  return axiosFactoring.get(`/v1/role?page=${page}&records_per_page=${per_page}`);
+  return axiosFactoring.get(`/identity-service/api/v1/roles`);
 }
 export function saveRole(body: any){
-  return axiosFactoring.post(`/v1/role/save`, body);
+  return axiosFactoring.post(`/identity-service/api/v1/roles`, body);
 }
-export function updateRole(id: any, name_role: any, status: any){
-  return axiosFactoring.put(`/v1/role/update/${id}?name=${name_role}&status=${status}`);
+export function updateRole(id: any, body: any){
+  return axiosFactoring.put(`/identity-service/api/v1/roles/${id}`, body);
 }
 export function deleteRole(id: any){
-  return axiosFactoring.delete(`/v1/role/delete/${id}`);
+  return axiosFactoring.delete(`/identity-service/api/v1/roles/${id}`);
 }
 export function getEmployees(page: any, per_page: any){
   return axiosFactoring.get(`/v1/employees?page=${page}&records_per_page=${per_page}`);

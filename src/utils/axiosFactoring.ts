@@ -4,7 +4,7 @@ import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
 const axiosFactoring = Axios.create({
-  baseURL: `${import.meta.env.VITE_API_BASE_URL}/product-service`,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}`,
 });
 // let tokenValue = localStorage.getItem("awn-token");
 axiosFactoring.interceptors.request.use((reqConfig) => {
@@ -18,11 +18,13 @@ axiosFactoring.interceptors.request.use((reqConfig) => {
     // if (accessToken && accessToken !== "undefined") {
     //   config.headers["Authorization"] = `Bearer ${tokenValue}`;
      config.headers["Authorization"] = `Bearer ${token}`;
+     config.headers["Content-Type"] = "application/json";
+     config.headers["X-Tenant-Id"] = "550e8400-e29b-41d4-a716-446655440000";
       // Let axios set Content-Type for FormData (multipart/form-data with boundary)
       if (!(config.data instanceof FormData)) {
         config.headers["Content-Type"] = "application/json";
       }
-      config.headers["Request-Id"] = uuidv4();
+      // config.headers["Request-Id"] = uuidv4();
  
       // console.log("Adding token", accessToken)
     //   headers: {
