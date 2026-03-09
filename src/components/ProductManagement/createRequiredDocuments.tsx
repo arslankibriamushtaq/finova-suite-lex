@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { useLanguage } from "../../hooks/use-language"
-import { getProductDocuments, storeProductDocuments, updateProductDocument } from "../../redux/apis/apisCrudProductManagement"
+import { addProductDocument, removeProductDocument, getProductById } from "../../redux/apis/apisCrudProductManagement"
 import TableView from "../TableView/TableView"
 import {
   DropdownMenu,
@@ -45,13 +45,17 @@ export default function CreateRequiredDocuments() {
   const [totalRows, setTotalRows] = useState(0)
   const [isDocumentDialogOpen, setIsDocumentDialogOpen] = useState(false)
   const [editingDocument, setEditingDocument] = useState<any>(null)
-  const [documentForm, setDocumentForm] = useState({
-    name: "",
-    type: "PDF",
-    category: "Request",
-    step_no: 1,
-    status: 0,
-  })
+  const initialDocumentForm = {
+    nameEn: "",
+    nameAr: "",
+    documentType: "TEMPLATE",
+    fileUrl: null as string | null,
+    fileSizeBytes: null as number | null,
+    fileVersion: "v1",
+    createdByName: "Admin",
+    required: true,
+  }
+  const [documentForm, setDocumentForm] = useState(initialDocumentForm)
   const [documentErrors, setDocumentErrors] = useState<Record<string, string>>({})
   const [isLoading, setIsLoading] = useState(false)
 
@@ -78,15 +82,16 @@ export default function CreateRequiredDocuments() {
   const getDocumentsData = async (id: string) => {
     setSkelitonLoading(true)
     try {
-      const response = await getProductDocuments(id)
+      const response = await getProductById(id)
       if (response?.data?.message === "success") {
-        const documentsData = response?.data?.data?.data || []
-        setData(documentsData)
-        setTotalRows(documentsData.length || 0)
+        const documentsData = response?.data?.data?.documents || response?.data?.data || []
+        const list = Array.isArray(documentsData) ? documentsData : []
+        setData(list)
+        setTotalRows(list.length || 0)
         setFrom(1)
-        setTo(documentsData.length || 0)
+        setTo(list.length || 0)
         setPage(1)
-        setTotalPage(Math.ceil(documentsData.length / pageSize) || 1)
+        setTotalPage(Math.ceil(list.length / pageSize) || 1)
       } else {
         toast.error(response?.data?.message || "Failed to fetch documents")
       }
@@ -107,7 +112,7 @@ export default function CreateRequiredDocuments() {
 
   const openAddDialog = () => {
     setEditingDocument(null)
-    setDocumentForm({ name: "", type: "PDF", category: "Request", step_no: 1, status: 0 })
+    setDocumentForm(initialDocumentForm)
     setDocumentErrors({})
     setIsDocumentDialogOpen(true)
   }
@@ -117,37 +122,31 @@ export default function CreateRequiredDocuments() {
       toast.error("Product ID not found")
       return
     }
-    if (!documentForm.name?.trim()) {
-      setDocumentErrors((prev) => ({ ...prev, name: "Document name is required" }))
-      toast.error("Document name is required")
+    if (!documentForm.nameEn?.trim() || !documentForm.nameAr?.trim()) {
+      toast.error("Please fill Name (En) and Name (Ar)")
       return
     }
     try {
       setIsLoading(true)
       setDocumentErrors({})
-      const submitData = {
-        category: documentForm.category,
-        product_id: parseInt(productId, 10),
-        name: documentForm.name.trim(),
-        type: documentForm.type || "PDF",
-        status: documentForm.status,
-        step_no: documentForm.step_no,
+      const body = {
+        nameEn: documentForm.nameEn.trim(),
+        nameAr: documentForm.nameAr.trim(),
+        documentType: documentForm.documentType,
+        fileUrl: documentForm.fileUrl,
+        fileSizeBytes: documentForm.fileSizeBytes,
+        fileVersion: documentForm.fileVersion,
+        createdByName: documentForm.createdByName,
+        required: documentForm.required,
       }
-      const response = await storeProductDocuments(submitData)
+      const response = await addProductDocument(productId, body)
       if (response?.data?.message === "success") {
-        toast.success(response?.data?.message || "Document added successfully")
+        toast.success("Document added successfully")
         setIsDocumentDialogOpen(false)
         setEditingDocument(null)
-        setDocumentForm({ name: "", type: "PDF", category: "Request", step_no: 1, status: 0 })
+        setDocumentForm(initialDocumentForm)
         getDocumentsData(productId)
       } else {
-        const errors = response?.data?.errors || {}
-        const errMap: Record<string, string> = {}
-        Object.keys(errors).forEach((key) => {
-          errMap[key] = Array.isArray(errors[key]) ? errors[key][0] : errors[key]
-        })
-        if (errMap.name && !errMap.name_en) errMap.name_en = errMap.name
-        setDocumentErrors(errMap)
         toast.error(response?.data?.message || "Failed to add document")
       }
     } catch (error: any) {
@@ -156,9 +155,12 @@ export default function CreateRequiredDocuments() {
       Object.keys(errors).forEach((key) => {
         errMap[key] = Array.isArray(errors[key]) ? errors[key][0] : errors[key]
       })
-      if (errMap.name && !errMap.name_en) errMap.name_en = errMap.name
-      setDocumentErrors(errMap)
-      toast.error(error?.response?.data?.message || "Failed to add document")
+      if (Object.keys(errMap).length > 0) {
+        setDocumentErrors(errMap)
+        toast.error(Object.values(errMap)[0])
+      } else {
+        toast.error(error?.response?.data?.message || "Failed to add document")
+      }
     } finally {
       setIsLoading(false)
     }
@@ -176,141 +178,63 @@ export default function CreateRequiredDocuments() {
     router.push("/Los/ProductManagement/Create/ProductAffiliation")
   }
 
-  const normalizeType = (t: string) => {
-    if (!t) return "PDF"
-    const u = (t || "").toLowerCase()
-    if (u === "image") return "Image"
-    if (u === "pdf") return "PDF"
-    if (u === "doc") return "DOC"
-    return t
-  }
-
   const openUpdateDialog = (row: any) => {
     setEditingDocument(row)
     setDocumentForm({
-      name: row.name || row.name_en || "",
-      type: normalizeType(row.type || "PDF"),
-      category: row.category || "Request",
-      step_no: typeof row.step_no === "number" ? row.step_no : parseInt(String(row.step_no), 10) || 1,
-      status: row.status ?? 0,
+      nameEn: row.nameEn || "",
+      nameAr: row.nameAr || "",
+      documentType: row.documentType || "TEMPLATE",
+      fileUrl: row.fileUrl || null,
+      fileSizeBytes: row.fileSizeBytes || null,
+      fileVersion: row.fileVersion || "v1",
+      createdByName: row.createdByName || "Admin",
+      required: !!row.required,
     })
     setDocumentErrors({})
     setIsDocumentDialogOpen(true)
   }
 
-  const handleUpdateDocument = async () => {
-    if (!editingDocument?.id || !productId) {
-      toast.error("Document or product ID not found")
-      return
-    }
-    if (!documentForm.name?.trim()) {
-      setDocumentErrors((prev) => ({ ...prev, name: "Document name is required" }))
-      toast.error("Document name is required")
-      return
-    }
-    try {
-      setIsLoading(true)
-      setDocumentErrors({})
-      const payload = {
-        category: documentForm.category,
-        product_id: parseInt(productId, 10),
-        name: documentForm.name.trim(),
-        type: documentForm.type || "PDF",
-        status: documentForm.status,
-        step_no: documentForm.step_no,
-      }
-      const response = await updateProductDocument(String(editingDocument.id), payload)
-      if (response?.data?.message === "success") {
-        toast.success(response?.data?.message || "Document updated successfully")
-        setIsDocumentDialogOpen(false)
-        setEditingDocument(null)
-        getDocumentsData(productId)
-      } else {
-        const errors = response?.data?.errors || {}
-        const errMap: Record<string, string> = {}
-        Object.keys(errors).forEach((key) => {
-          errMap[key] = Array.isArray(errors[key]) ? errors[key][0] : errors[key]
-        })
-        setDocumentErrors(errMap)
-        toast.error(response?.data?.message || "Failed to update document")
-      }
-    } catch (error: any) {
-      const errors = error?.response?.data?.errors || {}
-      const errMap: Record<string, string> = {}
-      Object.keys(errors).forEach((key) => {
-        errMap[key] = Array.isArray(errors[key]) ? errors[key][0] : errors[key]
-      })
-      setDocumentErrors(errMap)
-      toast.error(error?.response?.data?.message || "Failed to update document")
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
   const handleSaveDocument = () => {
-    if (editingDocument) {
-      handleUpdateDocument()
-    } else {
-      handleAddDocument()
-    }
-  }
-
-  const formatCreationDate = (dateStr: any) => {
-    if (!dateStr) return "-"
-    const d = new Date(dateStr)
-    return isNaN(d.getTime()) ? String(dateStr) : d.toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })
-  }
-
-  const handleSaveDraft = () => {
-    setIsLoading(true)
-    setTimeout(() => {
-      setIsLoading(false)
-      router.push("/")
-    }, 1000)
+    // New API only has add (POST) — no separate update endpoint in Postman
+    handleAddDocument()
   }
 
   const Documents_Header = [
     {
-      name: "Name",
-      selector: (row: any) => row.name || row.name_en || "-",
+      name: "Name (En)",
+      selector: (row: any) => row.nameEn || "-",
       sortable: true,
-      width: "180px",
+      width: "200px",
     },
     {
-      name: "Type",
-      selector: (row: any) => row.type || "-",
+      name: "Name (Ar)",
+      selector: (row: any) => row.nameAr || "-",
       sortable: true,
-      width: "100px",
+      width: "200px",
     },
     {
-      name: "Category",
-      selector: (row: any) => row.category || "-",
+      name: "Document Type",
+      selector: (row: any) => row.documentType || "-",
       sortable: true,
-      width: "150px",
+      width: "130px",
     },
     {
-      name: "Step No",
-      selector: (row: any) => row.step_no ?? "-",
+      name: "Version",
+      selector: (row: any) => row.fileVersion || "-",
       sortable: true,
       width: "90px",
     },
     {
       name: "Created By",
-      selector: (row: any) => row.created_by || row.created_by_name || "-",
+      selector: (row: any) => row.createdByName || "-",
       sortable: true,
       width: "130px",
     },
     {
-      name: "Creation Date",
-      selector: (row: any) => formatCreationDate(row.created_at),
-      sortable: true,
-      // width: "140px",
-    },
-    {
-      name: "Status",
+      name: "Required",
       cell: (row: any) => (
-        <span className={row.status === true ? "text-green-600 font-medium" : "text-muted-foreground"}>
-          {row.status === true ? "Active" : "Inactive"}
+        <span className={row.required ? "text-green-600 font-medium" : "text-muted-foreground"}>
+          {row.required ? "Yes" : "No"}
         </span>
       ),
       width: "100px",
@@ -355,17 +279,14 @@ export default function CreateRequiredDocuments() {
     data &&
     data?.map((item: any) => ({
       id: item?.id,
-      name: item?.name || item?.name_en,
-      name_en: item?.name_en || item?.name,
-      name_ar: item?.name_ar,
-      type: item?.type || "-",
-      category: item?.category || "-",
-      step_no: item?.step_no,
-      created_by: item?.created_by || item?.created_by_name,
-      created_at: item?.created_at,
-      status: item?.status ?? 0,
-      is_required: item?.is_required ?? 0,
-      notes: item?.notes,
+      nameEn: item?.nameEn || item?.name_en || item?.name || "-",
+      nameAr: item?.nameAr || item?.name_ar || "-",
+      documentType: item?.documentType || item?.type || "-",
+      fileUrl: item?.fileUrl,
+      fileSizeBytes: item?.fileSizeBytes,
+      fileVersion: item?.fileVersion || "-",
+      createdByName: item?.createdByName || item?.created_by || "-",
+      required: item?.required ?? true,
     }))
 
   return (
@@ -426,73 +347,74 @@ export default function CreateRequiredDocuments() {
                       </DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-6 py-5">
-                      <div className="sm:col-span-2 space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Document Name</Label>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Name (En)</Label>
                         <Input
-                          value={documentForm.name}
-                          onChange={(e) => setDocumentFormField("name", e.target.value)}
-                          placeholder="Enter document name"
-                          className={`h-10 ${documentErrors.name || documentErrors.name_en ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                          value={documentForm.nameEn}
+                          onChange={(e) => setDocumentFormField("nameEn", e.target.value)}
+                          placeholder="Document name in English"
+                          className={`h-10 ${documentErrors.nameEn ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                         />
-                        {(documentErrors.name || documentErrors.name_en) && (
-                          <p className="text-xs text-red-500 mt-1">{documentErrors.name || documentErrors.name_en}</p>
+                        {documentErrors.nameEn && (
+                          <p className="text-xs text-red-500 mt-1">{documentErrors.nameEn}</p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground" style={{ textAlign: "right", display: "block" }}>الاسم (عربي)</Label>
+                        <Input
+                          value={documentForm.nameAr}
+                          onChange={(e) => setDocumentFormField("nameAr", e.target.value)}
+                          placeholder="اسم المستند بالعربي"
+                          dir="rtl"
+                          className={`h-10 ${documentErrors.nameAr ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                        />
+                        {documentErrors.nameAr && (
+                          <p className="text-xs text-red-500 mt-1" dir="rtl">{documentErrors.nameAr}</p>
                         )}
                       </div>
                       <div className="space-y-2">
                         <Label className="text-sm font-medium text-foreground">Document Type</Label>
                         <Select
-                          value={documentForm.type}
-                          onValueChange={(value: string) => setDocumentFormField("type", value)}
+                          value={documentForm.documentType}
+                          onValueChange={(value: string) => setDocumentFormField("documentType", value)}
                         >
                           <SelectTrigger className="h-10">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="Image">Image</SelectItem>
-                            <SelectItem value="PDF">PDF</SelectItem>
-                            <SelectItem value="DOC">DOC</SelectItem>
+                            <SelectItem value="TEMPLATE">Template</SelectItem>
+                            <SelectItem value="UPLOAD">Upload</SelectItem>
+                            <SelectItem value="GENERATED">Generated</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Document Category</Label>
-                        <Select
-                          value={documentForm.category}
-                          onValueChange={(value: string) => setDocumentFormField("category", value)}
-                        >
-                          <SelectTrigger className="h-10">
-                            <SelectValue placeholder="Select Category" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Request">Request</SelectItem>
-                            <SelectItem value="Upload">Upload</SelectItem>
-                            <SelectItem value="Required">Required</SelectItem>
-                            <SelectItem value="Application Form">Application Form</SelectItem>
-                          </SelectContent>
-                        </Select>
-                        {documentErrors.category && <p className="text-xs text-red-500 mt-1">{documentErrors.category}</p>}
-                      </div>
-                      <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Step Number</Label>
+                        <Label className="text-sm font-medium text-foreground">File Version</Label>
                         <Input
-                          type="number"
-                          min={1}
-                          value={documentForm.step_no}
-                          onChange={(e) => setDocumentFormField("step_no", parseInt(e.target.value, 10) || 1)}
-                          placeholder="e.g. 1"
-                          className={`h-10 ${documentErrors.step_no ? "border-red-500 focus-visible:ring-red-500" : ""}`}
+                          value={documentForm.fileVersion}
+                          onChange={(e) => setDocumentFormField("fileVersion", e.target.value)}
+                          placeholder="e.g. v1"
+                          className="h-10"
                         />
-                        {documentErrors.step_no && <p className="text-xs text-red-500 mt-1">{documentErrors.step_no}</p>}
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Status</Label>
+                        <Label className="text-sm font-medium text-foreground">Created By</Label>
+                        <Input
+                          value={documentForm.createdByName}
+                          onChange={(e) => setDocumentFormField("createdByName", e.target.value)}
+                          placeholder="Creator name"
+                          className="h-10"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label className="text-sm font-medium text-foreground">Required</Label>
                         <div className="flex items-center h-10 gap-2">
                           <Switch
-                            checked={documentForm.status === 1}
-                            onCheckedChange={(checked) => setDocumentFormField("status", checked ? 1 : 0)}
+                            checked={documentForm.required}
+                            onCheckedChange={(checked) => setDocumentFormField("required", checked)}
                           />
                           <span className="text-sm text-muted-foreground">
-                            {documentForm.status === 1 ? "Active" : "Inactive"}
+                            {documentForm.required ? "Yes" : "No"}
                           </span>
                         </div>
                       </div>
@@ -500,7 +422,7 @@ export default function CreateRequiredDocuments() {
                     <div className="flex justify-end gap-3 px-6 py-4 border-t bg-muted/20">
                       <Button
                         variant="outline"
-                        onClick={() => { setIsDocumentDialogOpen(false); setEditingDocument(null); setDocumentErrors({}) }}
+                        onClick={() => { setIsDocumentDialogOpen(false); setEditingDocument(null); setDocumentErrors({}); setDocumentForm(initialDocumentForm) }}
                         className="min-w-[80px]"
                       >
                         Cancel
@@ -530,7 +452,7 @@ export default function CreateRequiredDocuments() {
 
               <div className="mt-4 p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground mb-2">
-                  {data.filter((doc: any) => doc.is_required === 1).length} required document(s) configured for this product
+                  {data.filter((doc: any) => doc.required === true || doc.required === 1).length} required document(s) configured for this product
                 </p>
                 <p className="text-xs text-muted-foreground">
                   Required documents will be automatically requested from customers during the application process.

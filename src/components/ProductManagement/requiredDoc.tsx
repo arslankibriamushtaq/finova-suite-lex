@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
-import { getProductById, getReqDocument, storeReqDocument, updateReqDocument } from "../../redux/apis/apisCrud";
+import { getProductById } from "../../redux/apis/apisCrud";
+import { addProductDocument, removeProductDocument } from "../../redux/apis/apisCrudProductManagement";
 import { useLocation } from "react-router-dom";
 import TableView from "../TableView/TableView";
 import { useState, useEffect } from "react";
@@ -23,7 +24,17 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   const [documents, setDocuments] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [formValues, setFormValues] = useState({ name: "", type: "", status: false });
+  const initialFormValues = {
+    nameEn: "",
+    nameAr: "",
+    documentType: "TEMPLATE",
+    fileUrl: null as string | null,
+    fileSizeBytes: null as number | null,
+    fileVersion: "v1",
+    createdByName: "Admin",
+    required: true,
+  };
+  const [formValues, setFormValues] = useState(initialFormValues);
   const [data, setData] = useState<any>();
   const [searchTerm, setSearchTerm] = useState("");
   const location = useLocation();
@@ -51,22 +62,23 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   const canApproveModule = () => true;
   const canRejectAsApprover = () => true;
   const headers = [
-    { name: "Name", selector: (row: any) => row.name, },
-    { name: "Type", selector: (row: any) => row.type, },
-    { name: "Created By", selector: (row: any) => row.created_by || "-" },
-    { name: "Creation Date", selector: (row: any) => row.created_at || "-" },
+    { name: "Name (En)", selector: (row: any) => row.nameEn, },
+    { name: "Name (Ar)", selector: (row: any) => row.nameAr, },
+    { name: "Document Type", selector: (row: any) => row.documentType, },
+    { name: "Version", selector: (row: any) => row.fileVersion || "-" },
+    { name: "Created By", selector: (row: any) => row.createdByName || "-" },
     {
-      name: "Status",
+      name: "Required",
       cell: (row: any) => (
         <div
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.status ? "var(--chart-2)" : "var(--destructive)",
+            backgroundColor: row.required ? "var(--chart-2)" : "var(--destructive)",
             color: "var(--primary-foreground)",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.required ? "Yes" : "No"}
         </div>
       ),
     },
@@ -139,17 +151,33 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   };
   const openEdit = (row: any) => {
     setEditingId(row.id);
-    
-    setSelectedItem("edit")
-    
-
-    setFormValues({ name: row.name, type: row.type, status: !!row.status });
+    setSelectedItem("edit");
+    setFormValues({
+      nameEn: row.nameEn || "",
+      nameAr: row.nameAr || "",
+      documentType: row.documentType || "TEMPLATE",
+      fileUrl: row.fileUrl || null,
+      fileSizeBytes: row.fileSizeBytes || null,
+      fileVersion: row.fileVersion || "v1",
+      createdByName: row.createdByName || "Admin",
+      required: !!row.required,
+    });
     setIsModalVisible(true);
   };
 
-  const removeDoc = (id: number) => {
-    setDocuments((prev) => prev.filter((d) => d.id !== id));
-    toast.success("Removed");
+  const removeDoc = async (id: number) => {
+    if (!productId) return;
+    try {
+      const response = await removeProductDocument(productId, String(id));
+      if (response?.data?.message === "success") {
+        toast.success("Document removed successfully");
+        loadDocuments();
+      } else {
+        toast.error(response?.data?.message || "Failed to remove document");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to remove document");
+    }
   };
 
   const loadDocuments = async () => {
@@ -157,16 +185,8 @@ const RequiredDoc = ({setSelectedTab}:any) => {
       if (!productId) return;
       setIsLoading(true);
       const res = await getProductById(productId, "documents");
-      const list = res?.data?.data?.documents || [];
-      const mapped = list.map((d: any) => ({
-        id: d.id,
-        name: d.name,
-        type: d.type,
-        created_by: d.created_by,
-        created_at: d.created_at,
-        status: d.status === 1 || d.status === "Active",
-      }));
-      setDocuments(mapped);
+      const list = res?.data?.data?.documents || res?.data?.data || [];
+      setData(Array.isArray(list) ? list : []);
     } catch (e: any) {
       // non-blocking
     } finally {
@@ -176,107 +196,79 @@ const RequiredDoc = ({setSelectedTab}:any) => {
 
   useEffect(() => {
     loadDocuments();
-
   }, [productId]);
-  useEffect(() => {
-    getInfo(productId)
-
-  }, [productId]);
-  const getInfo = async (id: any, searchName?: string) => {
-    try {
-      const response = await getReqDocument(id);
-      if (response) {
-        const data = response?.data?.data?.data;
-        setData(data);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    }
-  };
 
   const handleSearch = (value: string) => {
     setSearchTerm(value);
-    if (productId) {
-      getInfo(productId, value);
-    }
   };
+
   const handleSave = async () => {
-    const body: any = {
+    if (!formValues.nameEn || !formValues.nameAr) {
+      toast.error("Please fill Name (En) and Name (Ar)");
+      return;
+    }
+    if (!productId) {
+      toast.error("Product ID not found");
+      return;
+    }
 
-      product_id:productId,
-name:formValues.name,
-type:formValues.type,
-status:formValues.status,
-
+    const body = {
+      nameEn: formValues.nameEn,
+      nameAr: formValues.nameAr,
+      documentType: formValues.documentType,
+      fileUrl: formValues.fileUrl,
+      fileSizeBytes: formValues.fileSizeBytes,
+      fileVersion: formValues.fileVersion,
+      createdByName: formValues.createdByName,
+      required: formValues.required,
     };
+
     try {
-      if (selectedItem == "edit" && editingId !== null) {
-        await toast.promise(updateReqDocument(editingId, body), {
-          loading: "Updating Document...",
-          success: (response: any) => {
-            setIsModalVisible(false);
-            setFormValues({
-              name: "",
-              type: "",
-              status: false,
-            });
-            getInfo(productId);
-            return response?.data?.message;
-          },
-          error: (err) => err?.message || "Failed to update Document",
-        });
-      } else if (selectedItem == "add") {
-        await toast.promise(storeReqDocument(body), {
-          loading: "Adding Document...",
-          success: (response) => {
-            setIsModalVisible(false);
-            setFormValues({
-              name: "",
-              type: "",
-              status: false,
-            });
-            getInfo(productId);
-
-            return response?.data?.message;
-          },
-          error: (err) => {
-            const errors = err?.data?.errors;
-
-            if (errors) {
-              const allMessages = Object.values(errors).flat();
-              allMessages.forEach((msg: any) => toast.error(msg));
-            } else {
-              toast.error("Something went wrong!");
-            }
-            return "Validation error";
-          },
-        });
-      }
+      await toast.promise(addProductDocument(productId, body), {
+        loading: selectedItem === "edit" ? "Updating Document..." : "Adding Document...",
+        success: (response: any) => {
+          setIsModalVisible(false);
+          setFormValues(initialFormValues);
+          setEditingId(null);
+          loadDocuments();
+          return response?.data?.message || "Document saved successfully";
+        },
+        error: (err) => {
+          return err?.response?.data?.message || "Failed to save document";
+        },
+      });
     } catch (error) {
-      console.error("Failed to save department:", error);
+      console.error("Failed to save document:", error);
     }
   };
-  
-  const mappedData =
-    data &&
-    data?.map((item: any) => {
-      return {
-        id: item.id,
-        // Sr: index + from,
-        name: item?.name,
-        type: item?.type,
-        created_by: item?.created_by,
-        created_at: item?.created_at,
-        status: item?.status,
 
-    
-      };
-    });
+  const filteredData = data
+    ? data.filter((item: any) => {
+        if (!searchTerm) return true;
+        const term = searchTerm.toLowerCase();
+        return (
+          (item?.nameEn || "").toLowerCase().includes(term) ||
+          (item?.nameAr || "").toLowerCase().includes(term)
+        );
+      })
+    : [];
+
+  const mappedData = filteredData.map((item: any) => ({
+    id: item.id,
+    nameEn: item?.nameEn || item?.name_en || "-",
+    nameAr: item?.nameAr || item?.name_ar || "-",
+    documentType: item?.documentType || item?.type || "-",
+    fileUrl: item?.fileUrl,
+    fileSizeBytes: item?.fileSizeBytes,
+    fileVersion: item?.fileVersion || "-",
+    createdByName: item?.createdByName || item?.created_by || "-",
+    required: item?.required ?? true,
+  }));
 
   return (
     <div className="service">
       <h1 className="pt-2 pb-3" style={{ fontSize: "16px", fontWeight: "bold" }}>
-      Factoring Vallery Documents
+        Required Documents
       </h1>
       <div className="d-flex justify-content-end mb-3 gap-2">
         <Input
@@ -286,7 +278,7 @@ status:formValues.status,
           onChange={(e) => handleSearch(e.target.value)}
         />
         {canCreate(DOCUMENT_PERMISSIONS) && (
-          <UIButton className="theme-btn-next" onClick={() => { setSelectedItem("add"); setIsModalVisible(true); }}>
+          <UIButton className="theme-btn-next" onClick={() => { setSelectedItem("add"); setEditingId(null); setFormValues(initialFormValues); setIsModalVisible(true); }}>
             Add New Document
           </UIButton>
         )}
@@ -299,36 +291,63 @@ status:formValues.status,
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
-              <Label>Document Name</Label>
+              <Label>Name (En)</Label>
               <Input
-                placeholder="Document Name"
-                value={formValues.name}
-                onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
+                placeholder="Document Name in English"
+                value={formValues.nameEn}
+                onChange={(e) => setFormValues({ ...formValues, nameEn: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label style={{ textAlign: "right", display: "block" }}>الاسم (عربي)</Label>
+              <Input
+                placeholder="اسم المستند بالعربي"
+                value={formValues.nameAr}
+                onChange={(e) => setFormValues({ ...formValues, nameAr: e.target.value })}
+                dir="rtl"
               />
             </div>
             <div className="space-y-2">
               <Label>Document Type</Label>
               <Select
-                value={formValues.type || ""}
-                onValueChange={(val) => setFormValues({ ...formValues, type: val })}
+                value={formValues.documentType || ""}
+                onValueChange={(val) => setFormValues({ ...formValues, documentType: val })}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="PDF">PDF</SelectItem>
-                  <SelectItem value="Image">Image</SelectItem>
-                  <SelectItem value="Other">Other</SelectItem>
+                  <SelectItem value="TEMPLATE">Template</SelectItem>
+                  <SelectItem value="UPLOAD">Upload</SelectItem>
+                  <SelectItem value="GENERATED">Generated</SelectItem>
                 </SelectContent>
               </Select>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Switch
-              checked={formValues.status}
-              onCheckedChange={(checked) => setFormValues({ ...formValues, status: checked })}
-            />
-            <span>Status</span>
+            <div className="space-y-2">
+              <Label>File Version</Label>
+              <Input
+                placeholder="e.g. v1"
+                value={formValues.fileVersion}
+                onChange={(e) => setFormValues({ ...formValues, fileVersion: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Created By</Label>
+              <Input
+                placeholder="Creator name"
+                value={formValues.createdByName}
+                onChange={(e) => setFormValues({ ...formValues, createdByName: e.target.value })}
+              />
+            </div>
+            <div className="space-y-2 flex items-end">
+              <div className="flex items-center gap-2 pb-1">
+                <Switch
+                  checked={formValues.required}
+                  onCheckedChange={(checked) => setFormValues({ ...formValues, required: checked })}
+                />
+                <span>Required</span>
+              </div>
+            </div>
           </div>
           <DialogFooter>
             <UIButton variant="outline" onClick={() => setIsModalVisible(false)}>Cancel</UIButton>
@@ -340,19 +359,19 @@ status:formValues.status,
       <TableView
         header={headers}
         data={mappedData}
-        totalRows={documents.length}
+        totalRows={mappedData.length}
         isLoading={isLoading}
         from={1}
         page={1}
         totalPage={1}
         setPage={() => {}}
-        pageSize={documents.length || 15}
+        pageSize={mappedData.length || 15}
         setPageSize={() => {}}
-        to={documents.length}
+        to={mappedData.length}
       />
 
       <div className="d-flex justify-content-end mt-3">
-        <UIButton className="theme-btn-next">Save</UIButton>
+        <UIButton className="theme-btn-next">Next</UIButton>
       </div>
     </div>
   );

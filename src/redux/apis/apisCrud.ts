@@ -1055,7 +1055,7 @@ export function getPartnerApis() {
   return axios.get(`/apis-management/partner-apis`);
 }
 export function getPartnersList() {
-  return axios.get(`/partner`);
+  return axios.get(`/product-service/api/v1/partners`);
 }
 export function addPartner(body: any) {
   return axios.post(`/partner`, body);

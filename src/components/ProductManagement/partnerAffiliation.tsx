@@ -1,6 +1,7 @@
 import { Checkbox, Input } from "antd";
 import { useLocation } from "react-router-dom";
-import { getPartnerAffiliateDashboard, getProductById } from "../../redux/apis/apisCrud";
+import { getProductById } from "../../redux/apis/apisCrud";
+import { listPartners } from "../../redux/apis/apisCrudProductManagement";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import TableView from "../TableView/TableView";
@@ -78,8 +79,8 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
         res?.data?.data?.partners || res?.data?.data?.partner_affiliations || [];
       const normalized = list.map((p: any) => ({
         id: p.id,
-        name_en: p.name_en || p.nameEn || "-",
-        name_ar: p.name_ar || p.nameAr || "-",
+        name_en: p.nameEn || p.name_en || "-",
+        name_ar: p.nameAr || p.name_ar || "-",
         affiliated: !!(p.affiliated ?? p.is_affiliated),
         commission: p.commission ?? 0,
       }));
@@ -98,17 +99,13 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
     try {
       setSkelitonLoading(true);
 
-      const response = await getPartnerAffiliateDashboard(productId);
-      if (response) {
-        const data = response?.data?.data?.data;
- 
-        setData(data || []);
-        setSkelitonLoading(false);
-   
+      const response = await listPartners();
+      if (response?.data?.message === "success") {
+        const data = response?.data?.data || [];
+        setData(data);
       }
     } catch (error: any) {
-      toast.error(error?.message);
-      setSkelitonLoading(false);
+      toast.error(error?.response?.data?.message || error?.message || "Failed to load partners");
     } finally {
       setSkelitonLoading(false);
     }
@@ -122,17 +119,15 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
   const mappedData =
     data &&
     data?.map((item: any) => {
-    
-      
       return {
-        id:item?.id,
-        name_en: item?.name_en || "-",
-        name_ar: item?.name_ar || "-",
-        logo: item?.logo,
+        id: item?.id,
+        name_en: item?.nameEn || item?.name_en || "-",
+        name_ar: item?.nameAr || item?.name_ar || "-",
+        logo: item?.logoUrl || item?.logo,
         email: item?.email || "-",
         country: item?.country || "-",
         category: item?.category,
-        status: item?.status,
+        status: item?.status === "ACTIVE" ? "Active" : item?.status === "INACTIVE" ? "Inactive" : (item?.status || "-"),
       };
     });
   return (
