@@ -66,8 +66,11 @@ export function getPermissionByDepartment(id: any){
 export function storeDepartmentPermissions(body: any){
   return axiosFactoring.post(`/v1/departments/store-department-permissions`, body);
 }
-export function getRoles(page: any, per_page: any){
+export function getRoles(){
   return axiosFactoring.get(`/identity-service/api/v1/roles`);
+}
+export function getRole(id: any){
+  return axiosFactoring.get(`/identity-service/api/v1/roles/${id}`);
 }
 export function saveRole(body: any){
   return axiosFactoring.post(`/identity-service/api/v1/roles`, body);
@@ -78,26 +81,35 @@ export function updateRole(id: any, body: any){
 export function deleteRole(id: any){
   return axiosFactoring.delete(`/identity-service/api/v1/roles/${id}`);
 }
-export function getEmployees(page: any, per_page: any){
-  return axiosFactoring.get(`/v1/employees?page=${page}&records_per_page=${per_page}`);
+export function getEmployees(){
+  return axiosFactoring.get(`/identity-service/api/v1/employees`);
 }
 export function storeEmployee(body: any){
-  return axiosFactoring.post(`/v1/store-employee`, body);
+  return axiosFactoring.post(`/identity-service/api/v1/employees`, body);
 }
 export function updateEmployee(id: any, body: any){
-  return axiosFactoring.post(`/v1/update-employee/${id}`, body);
+  return axiosFactoring.put(`/identity-service/api/v1/employees/${id}`, body);
 }
 export function deleteEmployee(id: any){
-  return axiosFactoring.post(`/v1/destroy-employee/${id}`);
+  return axiosFactoring.delete(`/identity-service/api/v1/employees/${id}`);
 }
 export function getRolePermission() {
-  return axiosFactoring.get(`/v1/permissions/get-modules-with-permissions`);
+  return axiosFactoring.get(`/identity-service/api/v1/permissions`);
 }
 export function addRolePermissions(body: { role: string | number; permissions: (string | number)[] }) {
   return axiosFactoring.post("/v1/permissions/save-permission", body);
 }
 export function getPermissionByRole(id: any) {
-  return axiosFactoring.get(`/v1/permissions?role_id=${id}`);
+  return axiosFactoring.get(`/identity-service/api/v1/permissions/role/${id}`);
+}
+export function assignPermissionToRole(roleId: string, permissionId: string) {
+  return axiosFactoring.post(`/identity-service/api/v1/permissions/role/${roleId}/assign/${permissionId}`);
+}
+export function unassignPermissionFromRole(roleId: string, permissionId: string) {
+  return axiosFactoring.delete(`/identity-service/api/v1/permissions/role/${roleId}/assign/${permissionId}`);
+}
+export function syncRolePermissions(roleId: string, permissionIds: string[]) {
+  return axiosFactoring.put(`/identity-service/api/v1/permissions/role/${roleId}/sync`, { permissionIds });
 }
 export function forgetPassword(body: any) {
   return axiosFactoring.post(`/v1/forgot-password`, body);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   Input,
@@ -9,29 +9,20 @@ import {
   Dropdown,
   Row,
   Col,
-  Switch,
-  DatePicker,
 } from "antd";
-import dayjs from "dayjs";
 import TableView from "../TableView/TableView";
-// import { FaFilter } from "react-icons/fa";
-// import { Images } from "../Config/Images";
-// import { getRoles, getEmployess, addEmployee, updateEmployee, deleteEmployess, resendLoginEmail, getDepartmentsList } from "../../redux/apis/apisCrud";
 import {
   getEmployees,
   storeEmployee,
   updateEmployee,
   deleteEmployee,
   getRoles,
-  getDepartments,
 } from "../../redux/apis/apisCrudFactoring";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-// import { RedditCircleFilled, RedditOutlined, RocketFilled, SendOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
-import { usePermissions, EMPLOYEE_PERMISSIONS } from "../../hooks/useProductPermissions";
-// import { useWorkflowActions, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions";
-// import { CheckCircleOutlined, CloseCircleOutlined, SafetyCertificateOutlined, StopOutlined } from "@ant-design/icons";
+
+const EMPLOYEE_STATUS = ["ACTIVE", "INACTIVE", "SUSPENDED", "TERMINATED"];
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -47,17 +38,30 @@ function generatePassword(): string {
   for (let i = result.length; i < MIN_PASSWORD_LENGTH; i++) {
     result += pool[Math.floor(Math.random() * pool.length)];
   }
-  return result
-    .split("")
-    .sort(() => Math.random() - 0.5)
-    .join("");
+  return result.split("").sort(() => Math.random() - 0.5).join("");
 }
+
+const emptyForm: {
+  name: string;
+  email: string;
+  password: string;
+  phone: string;
+  address: string;
+  roleId: string;
+  status: string;
+} = {
+  name: "",
+  email: "",
+  password: "",
+  phone: "",
+  address: "",
+  roleId: "",
+  status: "ACTIVE",
+};
 
 const Employees = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
-  const [departmentFilter, setDepartmentFilter] = useState<string>("");
-  const [searchByName, setSearchByName] = useState("");
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
@@ -67,58 +71,24 @@ const Employees = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [roleData, setRoleData] = useState<any[]>([]);
-  const [currentEmployeeId, setCurrentEmployeeId] = useState<number | null>(null);
-  const [departmentData, setDepartmentData] = useState<any[]>([]);
-  const [formData, setFormData] = useState<{
-    name: string;
-    email: string;
-    password: string;
-    phone: string;
-    address: string;
-    dob: dayjs.Dayjs | null;
-    role_id: string;
-    department_id: string;
-    status: boolean;
-    send_mail: boolean;
-  }>({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-    address: "",
-    dob: null,
-    role_id: "",
-    department_id: "",
-    status: false,
-    send_mail: false,
-  });
+  const [currentEmployeeId, setCurrentEmployeeId] = useState<string | null>(null);
+  const [formData, setFormData] = useState(emptyForm);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
-
-  const { canCreate, canUpdate, canRemove } = usePermissions();
-  const canCreateEmployee = canCreate(EMPLOYEE_PERMISSIONS);
-  const canEditEmployee = canUpdate(EMPLOYEE_PERMISSIONS);
-  const canDeleteEmployee = canRemove(EMPLOYEE_PERMISSIONS);
-  const hasAnyAction = canEditEmployee || canDeleteEmployee;
+  const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
 
   const handleMenuClick = (key: string, row: any) => {
     if (key === "edit") {
-      const originalData = data.find((item: any) => item.id === row.id);
+      const original = data.find((item: any) => item.id === row.id);
       setSelectedItem("edit");
       setCurrentEmployeeId(row.id);
-      const rawPhone = originalData?.phone || "";
-      const displayPhone = rawPhone.replace(/^(\+?966)?\s*/, "");
       setFormData({
-        name: originalData?.name || "",
-        email: originalData?.email || "",
+        name: original?.name || "",
+        email: original?.email || "",
         password: "",
-        phone: displayPhone,
-        address: originalData?.address || "",
-        dob: originalData?.dob ? dayjs(originalData.dob) : null,
-        role_id: originalData?.roles?.[0]?.id ?? "",
-        department_id: originalData?.department?.id ?? "",
-        status: !!originalData?.status,
-        send_mail: !!originalData?.send_mail,
+        phone: original?.phone || "",
+        address: original?.address || "",
+        roleId: original?.roleId || "",
+        status: original?.status || "ACTIVE",
       });
       setShowModal(true);
     } else if (key === "delete") {
@@ -130,70 +100,61 @@ const Employees = () => {
 
   const menu = (row: any) => (
     <Menu>
-      {/* {canEditEmployee && ( */}
-        <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => handleMenuClick("edit", row)}>
-          Edit
-        </Menu.Item>
-      {/* )} */}
-      {/* {canDeleteEmployee && ( */}
-        <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleMenuClick("delete", row)}>
-          Delete
-        </Menu.Item>
-      {/* )} */}
+      <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => handleMenuClick("edit", row)}>
+        Edit
+      </Menu.Item>
+      <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleMenuClick("delete", row)}>
+        Delete
+      </Menu.Item>
     </Menu>
   );
+
+  const statusColor: Record<string, string> = {
+    ACTIVE: "var(--color-success)",
+    INACTIVE: "#8c8c8c",
+    SUSPENDED: "#faad14",
+    TERMINATED: "var(--color-error)",
+  };
+
   const tableColumns = [
-    { name: "User Name", selector: (row: any) => row.name, width: "15%" },
-    { name: "Email", selector: (row: any) => row.email, width: "30%" },
-    { name: "Department", selector: (row: any) => row.department, width: "20%" },
-    { name: "Employee Role", selector: (row: any) => row.employeeRole, width: "15%" },
+    { name: "#", selector: (row: any) => row.Sr, width: "60px" },
+    { name: "Name", selector: (row: any) => row.name },
+    { name: "Email", selector: (row: any) => row.email },
+    { name: "Phone", selector: (row: any) => row.phone },
+    { name: "Role", selector: (row: any) => row.roleName },
     {
       name: "Status",
-      width: "10%",
-      cell: (row: any) => {
-        const isActive =
-          row.status === "active" || row.status === 1 || row.status === true;
-        return (
-          <span
-            style={{
-              padding: "6px 12px",
-              fontSize: "12px",
-              borderRadius: "32px",
-              backgroundColor: isActive ? "var(--color-success)" : "var(--color-error)",
-              color: "white",
-              display: "inline-block",
-            }}
-          >
-            {isActive ? "Active" : "Inactive"}
-          </span>
-        );
-      },
+      cell: (row: any) => (
+        <span
+          style={{
+            padding: "6px 12px",
+            fontSize: "12px",
+            borderRadius: "32px",
+            backgroundColor: statusColor[row.status] || "#8c8c8c",
+            color: "white",
+            display: "inline-block",
+          }}
+        >
+          {row.status}
+        </span>
+      ),
     },
-    /* ...(hasAnyAction
-      ? [ */
-          {
-            name: "Action",
-            width: "10%",
-            cell: (row: any) => (
-              <Dropdown overlay={menu(row)} trigger={["click"]}>
-                <Button
-                  className="gradient-btn"
-                  type="primary"
-                  style={{ fontSize: "12px", borderRadius: "4px", padding: "8px" }}
-                >
-                  Select
-                  <img src={arrowDown} alt="" />
-                </Button>
-              </Dropdown>
-            ),
-          },
-       /*  ]
-      : []), */
+    {
+      name: "Action",
+      width: "10%",
+      cell: (row: any) => (
+        <Dropdown overlay={menu(row)} trigger={["click"]}>
+          <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "4px", padding: "8px" }}>
+            Select
+            <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
+          </Button>
+        </Dropdown>
+      ),
+    },
   ];
 
   useEffect(() => {
     getRoleData();
-    getDepartmentsData();
   }, []);
 
   useEffect(() => {
@@ -210,7 +171,7 @@ const Employees = () => {
           setShowConfirmModal(false);
           setDeleteTargetId(null);
           setSelectedItem(null);
-          return response?.data?.message;
+          return response?.data?.message || "Employee deleted.";
         },
         error: (err: any) => err?.response?.data?.message || err?.message || "Failed to delete employee",
       });
@@ -220,27 +181,15 @@ const Employees = () => {
     }
   };
 
-  const buildFormBody = (): FormData => {
-    const fd = new FormData();
-    fd.append("name", formData.name);
-    fd.append("email", formData.email);
-    fd.append("phone", formData.phone || "");
-    fd.append("address", formData.address || "");
-    fd.append("dob", formData.dob ? formData.dob.format("YYYY/MM/DD") : "");
-    fd.append("role_id", String(formData.role_id));
-    fd.append("department_id", String(formData.department_id));
-    fd.append("status", formData.status ? "1" : "0");
-    fd.append("send_mail", formData.send_mail ? "1" : "0");
-    /* if (selectedItem === "add" && formData.password) {
-      fd.append("password", formData.password);
-    } */
-    return fd;
-  };
-
   const handleSave = async () => {
-    const body = buildFormBody();
     try {
       if (selectedItem === "edit" && currentEmployeeId !== null) {
+        const body = {
+          name: formData.name,
+          phone: formData.phone,
+          roleId: formData.roleId,
+          status: formData.status,
+        };
         await toast.promise(updateEmployee(currentEmployeeId, body), {
           loading: "Updating employee...",
           success: (response: any) => {
@@ -248,39 +197,33 @@ const Employees = () => {
             setShowConfirmModal(false);
             setSelectedItem(null);
             setCurrentEmployeeId(null);
-            resetForm();
+            setFormData(emptyForm);
             getEmployeesData();
-            return response?.data?.message;
+            return response?.data?.message || "Employee updated.";
           },
-          error: (err: any) => {
-            const msg = err?.response?.data?.message;
-            if (err?.response?.data?.errors && typeof err.response.data.errors === "object") {
-              const firstKey = Object.keys(err.response.data.errors)[0];
-              return err.response.data.errors[firstKey]?.[0] || msg || "Validation failed.";
-            }
-            return msg || err?.message || "Failed to update employee";
-          },
+          error: (err: any) => err?.response?.data?.message || err?.message || "Failed to update employee",
         });
       } else if (selectedItem === "add") {
+        const body = {
+          name: formData.name,
+          email: formData.email,
+          password: formData.password,
+          phone: formData.phone,
+          address: formData.address,
+          roleId: formData.roleId,
+          status: formData.status,
+        };
         await toast.promise(storeEmployee(body), {
           loading: "Adding employee...",
           success: (response: any) => {
             setShowModal(false);
             setShowConfirmModal(false);
             setSelectedItem(null);
-            setCurrentEmployeeId(null);
-            resetForm();
+            setFormData(emptyForm);
             getEmployeesData();
-            return response?.data?.message;
+            return response?.data?.message || "Employee added.";
           },
-          error: (err: any) => {
-            const msg = err?.response?.data?.message;
-            if (err?.response?.data?.errors && typeof err.response.data.errors === "object") {
-              const firstKey = Object.keys(err.response.data.errors)[0];
-              return err.response.data.errors[firstKey]?.[0] || msg || "Validation failed.";
-            }
-            return msg || err?.message || "Failed to add employee";
-          },
+          error: (err: any) => err?.response?.data?.message || err?.message || "Failed to add employee",
         });
       }
     } catch (error) {
@@ -288,51 +231,17 @@ const Employees = () => {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      name: "",
-      email: "",
-      password: "",
-      phone: "",
-      address: "",
-      dob: null,
-      role_id: "",
-      department_id: "",
-      status: false,
-      send_mail: false,
-    });
-  };
-
-  const openAddModal = () => {
-    setShowModal(true);
-    setSelectedItem("add");
-    setFormData({
-      name: "",
-      email: "",
-      password: generatePassword(),
-      phone: "",
-      address: "",
-      dob: null,
-      role_id: "",
-      department_id: "",
-      status: false,
-      send_mail: false,
-    });
-  };
-
   const getEmployeesData = async () => {
     setSkelitonLoading(true);
     try {
-      const res = await getEmployees(page, pageSize);
-      if (res?.data?.success && res?.data?.data) {
-        const payload = res.data.data;
-        const list = Array.isArray(payload?.data) ? payload.data : [];
+      const res = await getEmployees();
+      if (res) {
+        const list = Array.isArray(res?.data?.data) ? res.data.data : [];
         setData(list);
-        const total = payload?.total ?? list.length;
-        setTotalRows(total);
-        setTotalPage(payload?.last_page ?? 1);
-        setFrom(((payload?.current_page ?? 1) - 1) * pageSize + 1);
-        setTo(Math.min((payload?.current_page ?? 1) * pageSize, total));
+        setTotalRows(list.length);
+        setFrom(list.length ? 1 : 0);
+        setTo(list.length);
+        setTotalPage(list.length ? 1 : 0);
       }
     } catch (error: any) {
       console.error("Error fetching employees:", error);
@@ -342,73 +251,52 @@ const Employees = () => {
     }
   };
 
-  const getDepartmentsData = async () => {
-    try {
-      const res = await getDepartments(1, 500);
-      if (res?.data?.success && res?.data?.data) {
-        const payload = res.data.data;
-        const list = Array.isArray(payload?.data) ? payload.data : [];
-        setDepartmentData(list);
-      }
-    } catch (error: any) {
-      console.error("Error fetching departments:", error);
-    }
-  };
-
-  const mappedData =
-    data?.map((item: any) => ({
-      id: item?.id,
-      name: item?.name || "-",
-      email: item?.email || "-",
-      department: item?.department?.name || "-",
-      employeeRole: item?.roles?.[0]?.name || "-",
-      status: item?.status,
-    })) ?? [];
   const getRoleData = async () => {
     try {
-      const res = await getRoles(1, 500);
-      if (res?.data?.success && res?.data?.data) {
-        const payload = res.data.data;
-        const list = Array.isArray(payload?.data) ? payload.data : [];
+      const res = await getRoles();
+      if (res) {
+        const list = Array.isArray(res?.data?.data) ? res.data.data : [];
         setRoleData(list);
       }
     } catch (error: any) {
       console.error("Error fetching roles:", error);
     }
   };
+
+  const mappedData = data.map((item: any, index: number) => {
+    const roleId = item?.roleId || item?.role?.id || "";
+    const matchedRole = roleData.find((r: any) => r.id === roleId);
+    return {
+      id: item?.id,
+      Sr: index + 1,
+      name: item?.name || "-",
+      email: item?.email || "-",
+      phone: item?.phone || "-",
+      address: item?.address || "-",
+      roleName: matchedRole?.roleName || item?.roleName || item?.role?.roleName || "-",
+      roleId,
+      status: item?.status || "-",
+    };
+  });
+
   return (
     <>
-      <div
-        className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
-      >
+      <div className="service" style={{ background: "white", padding: "1rem", borderRadius: "10px" }}>
         <div className="d-flex justify-content-between align-items-center gap-2 mb-3 flex-nowrap">
-          <h5 className="mb-0 fw-600" style={{ whiteSpace: "nowrap" }}>
-            Employees List
-          </h5>
-          <Select
-            style={{marginLeft: "auto", maxWidth: 250 }}
-            placeholder="All Departments"
-            value={departmentFilter || undefined}
-            onChange={(v) => setDepartmentFilter(v ?? "")}
-            allowClear
-            options={departmentData.map((d: any) => ({ label: d.name, value: String(d.id) }))}
-          />
-          {/* <Input
-            placeholder="Search By Name"
-            value={searchByName}
-            onChange={(e) => setSearchByName(e.target.value)}
-            style={{ width: 200, flexShrink: 0 }}
-            allowClear
-          /> */}
+          <h5 className="mb-0 fw-600" style={{ whiteSpace: "nowrap" }}>Employees List</h5>
           <button
             className="theme-btn-next"
-            onClick={openAddModal}
+            onClick={() => {
+              setShowModal(true);
+              setSelectedItem("add");
+              setFormData({ ...emptyForm, password: generatePassword() });
+            }}
             style={{ whiteSpace: "nowrap", flexShrink: 0 }}
           >
             Add New Employee
           </button>
         </div>
+
         <TableView
           header={tableColumns}
           data={mappedData}
@@ -426,21 +314,12 @@ const Employees = () => {
         <Modal
           className="custom-mod"
           style={{ maxWidth: "764px" }}
-          title={selectedItem === "edit" ? "Update User" : "Add New User"}
+          title={selectedItem === "edit" ? "Update Employee" : "Add New Employee"}
           open={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
-            <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
-            </Button>,
-            <Button
-              key="save"
-              type="primary"
-              onClick={() => {
-                setShowConfirmModal(true);
-                setShowModal(false);
-              }}
-            >
+            <Button key="close" onClick={() => setShowModal(false)}>Cancel</Button>,
+            <Button key="save" type="primary" onClick={() => { setShowConfirmModal(true); setShowModal(false); }}>
               Save
             </Button>,
           ]}
@@ -449,23 +328,41 @@ const Employees = () => {
             <Form layout="vertical">
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label="User Name">
+                  <Form.Item label="Name">
                     <Input
-                      className="fs-6"
-                      placeholder="User Name"
+                      placeholder="Full Name"
                       value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                     />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="User Email">
+                  <Form.Item label="Email">
                     <Input
-                      className="fs-6"
-                      placeholder="User Email"
+                      placeholder="Email"
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       disabled={selectedItem === "edit"}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
+                    />
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row gutter={16}>
+                <Col span={12}>
+                  <Form.Item label="Phone">
+                    <Input
+                      placeholder="Phone"
+                      value={formData.phone}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
+                    />
+                  </Form.Item>
+                </Col>
+                <Col span={12}>
+                  <Form.Item label="Address">
+                    <Input
+                      placeholder="Address"
+                      value={formData.address}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, address: e.target.value })}
                     />
                   </Form.Item>
                 </Col>
@@ -473,16 +370,11 @@ const Employees = () => {
               {selectedItem === "add" && (
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item
-                      label="User Password"
-                      
-                    >
-                      <Input
-                        className="fs-6"
-                        placeholder=""
+                    <Form.Item label="Password">
+                      <Input.Password
+                        placeholder="Password"
                         value={formData.password}
-                        style={{color: "black", cursor: "not-allowed" }}
-                        disabled
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, password: e.target.value })}
                       />
                     </Form.Item>
                   </Col>
@@ -490,78 +382,23 @@ const Employees = () => {
               )}
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label="Phone">
-                    <Input
-                      className="fs-6"
-                      placeholder="Contact No"
-                      value={formData.phone}
-                      onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      addonBefore="+966"
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="Address">
-                    <Input
-                      className="fs-6"
-                      placeholder="Address"
-                      value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item label="DOB (Date of Birth)">
-                    <DatePicker
-                      className="w-100 fs-6"
-                      placeholder="yyyy/mm/dd"
-                      format="YYYY/MM/DD"
-                      value={formData.dob}
-                      onChange={(date) => setFormData({ ...formData, dob: date })}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
                   <Form.Item label="Assign Role">
                     <Select
-                      className="w-100 fs-6"
-                      placeholder="Assign Role"
-                      value={formData.role_id || undefined}
-                      onChange={(value) => setFormData({ ...formData, role_id: value })}
-                      options={roleData.map((item: any) => ({ label: item.name, value: item.id }))}
+                      className="w-100"
+                      placeholder="Select Role"
+                      value={formData.roleId || undefined}
+                      onChange={(value: string) => setFormData({ ...formData, roleId: value })}
+                      options={roleData.map((item: any) => ({ label: item.roleName, value: item.id }))}
                     />
                   </Form.Item>
                 </Col>
-              </Row>
-              <Row gutter={16}>
-                <Col span={12}>
-                  <Form.Item label="Assign Department">
-                    <Select
-                      className="w-100 fs-6"
-                      placeholder="Assign Department"
-                      value={formData.department_id || undefined}
-                      onChange={(value) => setFormData({ ...formData, department_id: value })}
-                      options={departmentData.map((item: any) => ({ label: item.name, value: item.id }))}
-                    />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={16} className="mt-2">
                 <Col span={12}>
                   <Form.Item label="Status">
-                    <Switch
-                      checked={formData.status}
-                      onChange={(checked) => setFormData({ ...formData, status: checked })}
-                    />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="Send Details Via Mail">
-                    <Switch
-                      checked={formData.send_mail}
-                      onChange={(checked) => setFormData({ ...formData, send_mail: checked })}
+                    <Select
+                      className="w-100"
+                      value={formData.status}
+                      onChange={(value: string) => setFormData({ ...formData, status: value })}
+                      options={EMPLOYEE_STATUS.map((s) => ({ label: s, value: s }))}
                     />
                   </Form.Item>
                 </Col>
@@ -569,39 +406,28 @@ const Employees = () => {
             </Form>
           </div>
         </Modal>
+
         <Modal
           open={showConfirmModal}
           onCancel={() => setShowConfirmModal(false)}
           className="custom-mod"
           style={{ maxWidth: "632px" }}
           title={
-            selectedItem === "edit"
-              ? "Edit Record"
-              : selectedItem === "add"
-                ? "Add New Record"
-                : "Delete Record"
+            selectedItem === "edit" ? "Update Employee"
+            : selectedItem === "add" ? "Add New Employee"
+            : "Delete Employee"
           }
           footer={[
-            <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
-            </Button>,
-            <Button
-              key="yes"
-              type="primary"
-              onClick={
-                selectedItem === "delete" ? handleDeleteConfirmed : handleSave
-              }
-            >
+            <Button key="no" onClick={() => setShowConfirmModal(false)}>No</Button>,
+            <Button key="yes" type="primary" onClick={selectedItem === "delete" ? handleDeleteConfirmed : handleSave}>
               Yes
             </Button>,
           ]}
         >
           <p className="mb-0">
-            {selectedItem === "edit"
-              ? "Are you sure you want to update this record?"
-              : selectedItem === "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"}
+            {selectedItem === "edit" ? "Are you sure you want to update this record?"
+              : selectedItem === "add" ? "Are you sure you want to add new record?"
+              : "Are you sure you want to delete this record?"}
           </p>
         </Modal>
       </div>

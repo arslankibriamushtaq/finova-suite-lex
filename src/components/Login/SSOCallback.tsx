@@ -9,7 +9,7 @@ import {
   setPermissions,
 } from "../../redux/apis/apisSlice";
 import Loader from "../Loader/Loader";
-import { getRolePermission } from "../../redux/apis/apisCrud";
+import { getPermissionByRole } from "../../redux/apis/apisCrudFactoring";
 
 const SSOCallback: React.FC = () => {
   const dispatch = useDispatch();
@@ -57,13 +57,16 @@ const SSOCallback: React.FC = () => {
 
         localStorage.setItem("userData", JSON.stringify(data));
 
-        // Fetch permissions
+        // Fetch permissions by roleId
         try {
-          const permissionRes = await getRolePermission();
-          if (permissionRes?.data?.success) {
-            const permissions = permissionRes.data.data;
-            dispatch(setPermissions(permissions));
-            localStorage.setItem("permissions", JSON.stringify(permissions));
+          const roleId = data?.roleId;
+          if (roleId) {
+            const permissionRes = await getPermissionByRole(roleId);
+            const permissions = permissionRes?.data?.data;
+            if (Array.isArray(permissions)) {
+              dispatch(setPermissions(permissions));
+              localStorage.setItem("permissions", JSON.stringify(permissions));
+            }
           }
         } catch {
           // Continue even if permissions fail

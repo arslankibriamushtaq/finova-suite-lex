@@ -37,31 +37,19 @@ const DasbhboardSidebar = () => {
     (state: RootState) => state.block.permissions
   );
 
-  // Helper to check module and permission
-  const hasAccess = (moduleNames: string | string[]): boolean => {
-    if (!permissionData || !Array.isArray(permissionData)) {
-      return false;
+  // Helper to check if user has access based on permissionCode or permissionName
+  const hasAccess = (keys: string | string[]): boolean => {
+    if (!permissionData || !Array.isArray(permissionData) || permissionData.length === 0) {
+      return true; // No permissions loaded yet — show all
     }
-    // Convert to array if a single string is passed
-    const namesToCheck = Array.isArray(moduleNames)
-      ? moduleNames
-      : [moduleNames];    
-    
-    // Recursive function to check module and sub_modules
-    const checkModule = (module: any): boolean => {
-      // Check if current module name matches
-      if (module.name && namesToCheck.includes(module.name)) {
-        return true;
-      }
-      // Check in sub_modules if they exist
-      if (module.sub_modules && Array.isArray(module.sub_modules)) {
-        return module.sub_modules.some((subModule: any) => checkModule(subModule));
-      }
-      return false;
-    };
-    
-    // Check all permission modules
-    return permissionData.some((permission: any) => checkModule(permission));
+    const keysToCheck = (Array.isArray(keys) ? keys : [keys]).map((k) => k.toLowerCase());
+
+    // permissionData is array of modules: [{ moduleCode, moduleName, permissions: [...] }]
+    return permissionData.some((module: any) => {
+      const moduleCode = (module.moduleCode || "").toLowerCase();
+      const moduleName = (module.moduleName || "").toLowerCase();
+      return keysToCheck.some((key) => moduleCode === key || moduleName === key);
+    });
   };
   const sidebarItems = [
     {
@@ -71,8 +59,7 @@ const DasbhboardSidebar = () => {
       imgActive: Images.ApiManagementIconDark,
       active: pathname.split("/").includes("/LOS"),
       menu: [
-      //  hasAccess("dashboard_module") &&
-       {
+      hasAccess("ADMIN") && {
          label: "Dashboard",
          LinkLable: "LOS",
          Link: "Dashboard",
@@ -88,8 +75,7 @@ const DasbhboardSidebar = () => {
     //   imgActive: Images.applicationBoardActive,
     //   active: pathname.split("/").includes("ApplicationBoard"),
     // },
-    // hasAccess("customer_management_module") &&
-    {
+    hasAccess("CUSTOMER") && {
       label: "Customer Management",
       Link: "/CustomerManagement/Leads",
       active: pathname.split("/").includes("CustomerManagement/Leads"),
@@ -179,8 +165,7 @@ const DasbhboardSidebar = () => {
   //       },
   //     ],
   //   },
-    // hasAccess("product_management_module") &&
-    {
+    hasAccess("PRODUCT") && {
       label: "Product Management",
       Link: "ProductManagement",
     LinkLable: "LOS",
@@ -224,8 +209,7 @@ const DasbhboardSidebar = () => {
     //     // },
     //   ].filter(Boolean),
     // },
-    // hasAccess("lov_module") &&
-    {
+    hasAccess("WORKFLOW") && {
       label: "LOV",
       Link: "LOV/RevenueSource",
           LinkLable: "LOS",
@@ -399,8 +383,7 @@ const DasbhboardSidebar = () => {
         //   ],
         // },
       
-    // hasAccess("loan_module") &&
-    {
+    hasAccess("WORKFLOW") && {
       label: "Factoring Management",
       Link: "FinancingApplications/AllApplications",
           LinkLable: "LOS",
@@ -557,8 +540,7 @@ const DasbhboardSidebar = () => {
     //         }
     //   ],
     // },
-    // hasAccess("partner_module") &&
-    {
+    hasAccess("PARTNER") && {
       label: "Partner Management",
       Link: "PartnerManagement/PartnersList",
           LinkLable: "LOS",
@@ -582,8 +564,7 @@ const DasbhboardSidebar = () => {
         }
       ].filter(Boolean),
     },
-    // hasAccess("setting_module") &&
-    {
+    hasAccess(["ROLE", "PERMISSION"]) && {
       label: "Access Control Management",
       Link: "Setting/Employees",
           LinkLable: "LOS",
@@ -591,7 +572,6 @@ const DasbhboardSidebar = () => {
       imgActive: Images.SettingsIconDark,
       active: pathname.split("/").includes("Setting"),
           submenu: [
-            // hasAccess("department_module") && 
             {
               label: "Departments",
               Link: "Departments",
@@ -604,28 +584,24 @@ const DasbhboardSidebar = () => {
                   LinkLable: "/LOS/DepartmentManagement",
                   active: pathname.includes("/LOS/DepartmentManagement/DepartmentsPermissions"),
             },
-      // hasAccess("employee_module") && 
-        {
-          label: "Employees",
-          Link: "Employees",
+            {
+              label: "Employees",
+              Link: "Employees",
               LinkLable: "/LOS/Setting",
               active: pathname.includes("/LOS/Setting/Employees"),
-        },
-        // hasAccess("roles_module") && 
-        {
-          label: "Manage Roles",
-          Link: "RoleList",
+            },
+            hasAccess("ROLE") && {
+              label: "Manage Roles",
+              Link: "RoleList",
               LinkLable: "/LOS/Setting",
               active: pathname.includes("/LOS/Setting/RoleList"),
-        },
-        
-        // hasAccess("permissions_module") && 
-        {
-          label: "Manage Permissions",
-          Link: "AssignPermissions",
+            },
+            hasAccess("PERMISSION") && {
+              label: "Manage Permissions",
+              Link: "AssignPermissions",
               LinkLable: "/LOS/Setting",
               active: pathname.includes("/LOS/Setting/AssignPermissions"),
-        },
+            },
       ].filter(Boolean),
     },
     // hasAccess("setting_module") &&

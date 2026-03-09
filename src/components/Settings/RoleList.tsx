@@ -166,7 +166,7 @@ const RoleList = () => {
   const getRoleData = async () => {
     setSkelitonLoading(true);
     try {
-      const res = await getRoles(page, pageSize);
+      const res = await getRoles();
       if (res) {
         const apiData = res?.data?.data;
         setRoleData(apiData);

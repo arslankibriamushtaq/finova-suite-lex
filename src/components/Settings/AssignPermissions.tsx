@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Select, Button, Typography, Switch } from "antd";
-import { getRoles, getRolePermission, addRolePermissions, getPermissionByRole } from "../../redux/apis/apisCrudFactoring";
+import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions } from "../../redux/apis/apisCrudFactoring";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 
@@ -15,6 +15,7 @@ const AssignPermissions: React.FC = () => {
   const [modules, setModules] = useState<any[]>([]);
   const [data, setData] = useState<any>([]);
   const [selectedPermissions, setSelectedPermissions] = useState<any>([]);
+  const [hasExistingPermissions, setHasExistingPermissions] = useState(false);
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     getRoleData();
@@ -28,9 +29,9 @@ const AssignPermissions: React.FC = () => {
 
   const getRoleData = async () => {
     try {
-      const res = await getRoles(1, 100);
+      const res = await getRoles();
       if (res) {
-        const data = res?.data?.data?.data;
+        const data = res?.data?.data;
         setData(data || []);
       }
     } catch (error: any) {
@@ -44,13 +45,26 @@ const AssignPermissions: React.FC = () => {
       const res = await getPermissionByRole(id);
       if (res) {
         const data = res?.data?.data;
-        const selected = data?.map((item: any) => item?.id);
-        toast.success(res?.data?.message);
+        let selected: string[] = [];
+        if (Array.isArray(data)) {
+          // flat list of permissions
+          if (data.length > 0 && data[0]?.permissions) {
+            // nested modules structure
+            data.forEach((module: any) => {
+              module.permissions?.forEach((p: any) => selected.push(p.id));
+            });
+          } else {
+            selected = data.map((item: any) => item?.id);
+          }
+        }
         setSelectedPermissions(selected);
+        setHasExistingPermissions(selected.length > 0);
         setLoading(false);
       }
     } catch (error: any) {
       console.error(error?.message);
+      setSelectedPermissions([]);
+      setHasExistingPermissions(false);
       setLoading(false);
     }
   };
@@ -61,24 +75,19 @@ const AssignPermissions: React.FC = () => {
       const res = await getRolePermission();
       if (res) {
         const responseData = res?.data?.data;
-        
-        // Extract los and lms arrays from the response
-        const losModules = Array.isArray(responseData?.los) ? responseData.los : [];
-        const lmsModules = Array.isArray(responseData?.lms) ? responseData.lms : [];
-        
-        // Combine both arrays and transform to match component structure
-        const allModules = [...losModules, ...lmsModules].map((module: any) => ({
-          id: module.moduleId,
-          name: module.moduleName,
-          permissions: Array.isArray(module.permissionsList) ? module.permissionsList : [],
-        }));
-       
+        const allModules = Array.isArray(responseData)
+          ? responseData.map((module: any) => ({
+              id: module.moduleId,
+              name: module.moduleName,
+              permissions: Array.isArray(module.permissions) ? module.permissions : [],
+            }))
+          : [];
         setModules(allModules);
         setLoading(false);
       }
     } catch (error: any) {
       console.error("Error fetching modules:", error);
-      setModules([]); // Set to empty array on error
+      setModules([]);
       setLoading(false);
     }
   };
@@ -88,19 +97,12 @@ const AssignPermissions: React.FC = () => {
       if (!selectedRole) {
         return toast.error("Please select a role.");
       }
-
-      const body = {
-        role: selectedRole,
-        permissions: selectedPermissions || [],
-      };
-
-      const response = await addRolePermissions(body);
+      const response = await syncRolePermissions(selectedRole, selectedPermissions || []);
       if (response) {
-        const data = response?.data;
-        toast.success(data?.message);
+        toast.success(response?.data?.message || "Permissions updated successfully.");
       }
     } catch (e: any) {
-      toast.error("Failed to update permissions.");
+      toast.error(e?.response?.data?.message || "Failed to update permissions.");
     }
   };
 
@@ -141,7 +143,7 @@ const AssignPermissions: React.FC = () => {
   const renderModuleCard = (module: any) => {
     const hasPermissions = module.permissions && module.permissions.length > 0;
     const isFullySelected = isModuleFullySelected(module);
-    const moduleName = module.name.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
+    const moduleName = (module.name || "").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
 
     return (
       <div
@@ -169,7 +171,7 @@ const AssignPermissions: React.FC = () => {
           <Switch
             className="red-switch"
             checked={isFullySelected}
-            onChange={(checked) => toggleModulePermissions(module, checked)}
+            onChange={(checked: boolean) => toggleModulePermissions(module, checked)}
             style={{
               backgroundColor: isFullySelected ? "var(--foreground)" : undefined,
             }}
@@ -191,7 +193,7 @@ const AssignPermissions: React.FC = () => {
           <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
             {module.permissions.map((permission: any) => {
               const isChecked = selectedPermissions.includes(permission.id);
-              const permissionName = permission.name.replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
+              const permissionName = (permission.permissionName || permission.permissionCode || "").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
               
               return (
                 <div
@@ -237,7 +239,7 @@ const AssignPermissions: React.FC = () => {
         >
           {data?.map((dep: any) => (
             <Option key={dep.id} value={dep.id}>
-              {dep.name}
+              {dep.roleName}
             </Option>
           ))}
         </Select>
@@ -267,7 +269,7 @@ const AssignPermissions: React.FC = () => {
             handleDepartmentPermissions();
           }}
         >
-          Update
+          {hasExistingPermissions ? "Update" : "Assign"}
         </Button>
       </div>
     </div>
