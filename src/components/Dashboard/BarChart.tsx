@@ -45,38 +45,34 @@ const CustomBarChart = () => {
 
   // Fetch LOS Dashboard Statistics
   const getLosDashboardStats = async () => {
-    // Only proceed if both dates are selected
-    if (!fromDate || !toDate) {
-      return;
-    }
-    
-    try {
-      setLoading(true);
-      // Format dates as YYYY-MM-DD for API
-      const formattedFromDate = dayjs(fromDate).format("YYYY-MM-DD");
-      const formattedToDate = dayjs(toDate).format("YYYY-MM-DD");
-      const response = await getLosDashboardStatistics(formattedFromDate, formattedToDate);
-      
-      if (response?.data?.success && response?.data?.data) {
-        const apiData = response.data.data;
-        // Transform API data to chart format
-        const formattedData: CustomerData[] = apiData.map((item: any) => ({
-          date: item.date,
-          ApprovedFinanceAmounts: item.ApprovedFinanceAmounts || 0,
-          RejectedFinanceAmounts: item.RejectedFinanceAmounts || 0,
-          DisbursedFinanceAmounts: item.DisbursedFinanceAmounts || 0,
-          AppliedFinanceAmounts: item.AppliedFinanceAmounts || 0,
-        }));
-        
-        // Reverse to show oldest to newest
-        setData(formattedData.reverse());
-      }
-    } catch (error: any) {
-      console.error("Error fetching LOS dashboard statistics:", error);
-      toast.error(error?.message || "Failed to fetch dashboard statistics");
-    } finally {
-      setLoading(false);
-    }
+    // Commented out API call for time being
+    // if (!fromDate || !toDate) {
+    //   return;
+    // }
+    //
+    // try {
+    //   setLoading(true);
+    //   const formattedFromDate = dayjs(fromDate).format("YYYY-MM-DD");
+    //   const formattedToDate = dayjs(toDate).format("YYYY-MM-DD");
+    //   const response = await getLosDashboardStatistics(formattedFromDate, formattedToDate);
+    //
+    //   if (response?.data?.success && response?.data?.data) {
+    //     const apiData = response.data.data;
+    //     const formattedData: CustomerData[] = apiData.map((item: any) => ({
+    //       date: item.date,
+    //       ApprovedFinanceAmounts: item.ApprovedFinanceAmounts || 0,
+    //       RejectedFinanceAmounts: item.RejectedFinanceAmounts || 0,
+    //       DisbursedFinanceAmounts: item.DisbursedFinanceAmounts || 0,
+    //       AppliedFinanceAmounts: item.AppliedFinanceAmounts || 0,
+    //     }));
+    //     setData(formattedData.reverse());
+    //   }
+    // } catch (error: any) {
+    //   console.error("Error fetching LOS dashboard statistics:", error);
+    //   toast.error(error?.message || "Failed to fetch dashboard statistics");
+    // } finally {
+    //   setLoading(false);
+    // }
   };
 
   const downloadBlob = (blobOrText: Blob | string, filename: string, type?: string) => {

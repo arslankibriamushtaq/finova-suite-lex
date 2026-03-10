@@ -301,68 +301,70 @@ const creditScoringFields = [
   "test",
 ]
 
+const defaultFormData = {
+  application_steps: defaultApplicationSteps,
+  terms_conditions_en: "",
+  terms_conditions_ar: "",
+  eligibility_criteria_en: "",
+  eligibility_criteria_ar: "",
+  min_financing_amount: 1000,
+  max_financing_amount: 1000000,
+  suggested_financing_amount: 1500,
+  min_income: 0,
+  stress_buffer: 0,
+  max_dti: 0,
+  max_outstanding_balance: 0,
+  age_at_maturity: 0,
+  max_internal_payable_amount: null,
+  simah_cooling_off_days: null,
+  cooling_off: [],
+  employment_status_vendor: "",
+  commodity_vendor: "",
+  eligible_nationalities: [],
+  min_tenure: 6,
+  max_tenure: 12,
+  vat_percentage: 8,
+  revenue_eligibility_threshold: 50000,
+  dbr_percentage: 10,
+  dbr_calculation_method: "gross_income",
+  dbr_exceptions: [],
+  gdbr_percentage: 10,
+  credit_line_percentage: 10,
+  min_age: 18,
+  max_age: 65,
+  admin_fee_slabs: [],
+  api_configurations: [],
+  request_duration: 30,
+  approval_duration: 7,
+  disbursement_duration: 3,
+  repayment_duration: 365,
+  approval_scenarios: [],
+  credit_scoring_criteria: [],
+  credit_scoring_fields: [
+    {
+      id: Date.now().toString(),
+      field_name: "",
+      rules: []
+    }
+  ],
+  // Simah Check Rules fields
+  minimum_simah_score_allowed: null,
+  delinquency_allowed: false,
+  stage2_allowed_last_12: null,
+  stage3_allowed_last_12: null,
+  max_utility_writeoff_amount: null,
+  max_telecom_writeoff_amount: null,
+  partial_settlements_allowed_last_12: null,
+  bounced_cheques_allowed: false,
+  default_allowed_last_12: false,
+  writeoff_allowed_last_12: false,
+}
+
 export default function CraeteProductSettings() {
   const { isRTL } = useLanguage()
   const router = useRouter()
 
-  const [formData, setFormData] = useState<any>({
-    application_steps: defaultApplicationSteps,
-    terms_conditions_en: "",
-    terms_conditions_ar: "",
-    eligibility_criteria_en: "",
-    eligibility_criteria_ar: "",
-    min_financing_amount: 1000,
-    max_financing_amount: 1000000,
-    suggested_financing_amount: 1500,
-    min_income: 0,
-    stress_buffer: 0,
-    max_dti: 0,
-    max_outstanding_balance: 0,
-    age_at_maturity: 0,
-    max_internal_payable_amount: null,
-    simah_cooling_off_days: null,
-    cooling_off: [],
-    employment_status_vendor: "",
-    commodity_vendor: "",
-    eligible_nationalities: [],
-    min_tenure: 6,
-    max_tenure: 12,
-    vat_percentage: 8,
-    revenue_eligibility_threshold: 50000,
-    dbr_percentage: 10,
-    dbr_calculation_method: "gross_income",
-    dbr_exceptions: [],
-    gdbr_percentage: 10,
-    credit_line_percentage: 10,
-    min_age: 18,
-    max_age: 65,
-    admin_fee_slabs: [],
-    api_configurations: [],
-    request_duration: 30,
-    approval_duration: 7,
-    disbursement_duration: 3,
-    repayment_duration: 365,
-    approval_scenarios: [],
-    credit_scoring_criteria: [],
-    credit_scoring_fields: [
-      {
-        id: Date.now().toString(),
-        field_name: "",
-        rules: []
-      }
-    ],
-    // Simah Check Rules fields
-    minimum_simah_score_allowed: null,
-    delinquency_allowed: false,
-    stage2_allowed_last_12: null,
-    stage3_allowed_last_12: null,
-    max_utility_writeoff_amount: null,
-    max_telecom_writeoff_amount: null,
-    partial_settlements_allowed_last_12: null,
-    bounced_cheques_allowed: false,
-    default_allowed_last_12: false,
-    writeoff_allowed_last_12: false,
-  })
+  const [formData, setFormData] = useState<any>(defaultFormData)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [creditScoringErrors, setCreditScoringErrors] = useState<Record<string, string>>({})
   const [applicationStepsErrors, setApplicationStepsErrors] = useState<Record<string, Record<string, string>>>({})
@@ -396,136 +398,128 @@ export default function CraeteProductSettings() {
     try {
       setIsLoadingSettings(true)
       const response = await getProductSettings(productId)
-      
+
       if (response?.data?.message === "success" && response?.data?.data) {
-        const settingsData = response.data.data
-        
-        // Map application steps from product.application_steps
-        const applicationSteps = settingsData.product?.application_steps?.map((step: any, index: number) => ({
-          id: Date.now().toString() + index,
-          title: step.title_en || "",
-          title_ar: step.title_ar || "",
+        const product = response.data.data
+        // Extract nested settings objects from unified product response
+        const fee = product.feeSettings || {}
+        const terms = product.termsConditions || {}
+        const duration = product.durationSettings || {}
+        const slabsArr = product.adminFeeSlabs || []
+        const stepsArr = product.applicationSteps || []
+        const workflowsArr = product.approvalWorkflows || []
+
+        // Map application steps
+        const applicationSteps = stepsArr.map((step: any, index: number) => ({
+          id: step.id || (Date.now().toString() + index),
+          title: step.titleEn || step.title_en || "",
+          title_ar: step.titleAr || step.title_ar || "",
           description: step.description || "",
-          required: true,
-          order: index + 1,
-        })) || []
-        
-        // Map terms and conditions — new API uses termsEn/termsAr, fallback to legacy keys
-        let termsConditionsEn = settingsData.termsEn || settingsData.settings?.termsEn || settingsData.settings?.terms_conditions_en || ""
-        let termsConditionsAr = settingsData.termsAr || settingsData.settings?.termsAr || settingsData.settings?.terms_conditions_ar || ""
-        let eligibilityEn = settingsData.settings?.eligibility_criteria_en || ""
-        let eligibilityAr = settingsData.settings?.eligibility_criteria_ar || ""
-        
+          required: step.required ?? true,
+          order: step.sortOrder || step.stepNumber || index + 1,
+        }))
+
+        // Map terms and conditions
+        const termsConditionsEn = terms.termsEn || ""
+        const termsConditionsAr = terms.termsAr || ""
+
         // Update formData with loaded settings
-        setFormData((prev: any) => ({
-          ...prev,
-          application_steps: applicationSteps.length > 0 ? applicationSteps : prev.application_steps,
-          terms_conditions_en: termsConditionsEn || prev.terms_conditions_en,
-          terms_conditions_ar: termsConditionsAr || prev.terms_conditions_ar,
-          eligibility_criteria_en: eligibilityEn || prev.eligibility_criteria_en,
-          eligibility_criteria_ar: eligibilityAr || prev.eligibility_criteria_ar,
-          // Fee settings — supports both camelCase (new API) and snake_case (legacy)
-          min_financing_amount: parseFloat(settingsData.minFinancingAmount || settingsData.min_financing_amount) || prev.min_financing_amount,
-          max_financing_amount: parseFloat(settingsData.maxFinancingAmount || settingsData.max_financing_amount) || prev.max_financing_amount,
-          suggested_financing_amount: parseFloat(settingsData.suggestedFinancingAmount || settingsData.suggested_financing_amount) || prev.suggested_financing_amount,
-          min_tenure: settingsData.minTenure || settingsData.min_tenure || prev.min_tenure,
-          max_tenure: settingsData.maxTenure || settingsData.max_tenure || prev.max_tenure,
-          vat_percentage: parseFloat(settingsData.vatPercentage || settingsData.vat_percentage) || prev.vat_percentage,
-          revenue_eligibility_threshold: parseFloat(settingsData.revenueEligibilityThreshold || settingsData.min_annual_revenue) || prev.revenue_eligibility_threshold,
-          dbr_percentage: parseFloat(settingsData.maxDbrPercentage || settingsData.maximum_dbr_percentage) || prev.dbr_percentage,
-          dbr_calculation_method: settingsData.dbrCalculationMethod || settingsData.dbr_calculation_method || prev.dbr_calculation_method,
-          dbr_exceptions: settingsData.dbrExceptions || settingsData.dbr_exceptions || prev.dbr_exceptions,
-          gdbr_percentage: parseFloat(settingsData.gdbrPercentage || settingsData.gdbr_percentage) || prev.gdbr_percentage,
-          credit_line_percentage: parseFloat(settingsData.creditLinePercentage || settingsData.credit_line_percentage) || prev.credit_line_percentage,
-          min_age: settingsData.minAge || settingsData.min_age || prev.min_age,
-          max_age: settingsData.maxAge || settingsData.max_age || prev.max_age,
-          // Admin fee slabs — supports both camelCase (new: slabs array) and snake_case (legacy: processing_fee_slabs)
-          admin_fee_slabs: (() => {
-            const slabs = settingsData.slabs || settingsData.product?.processing_fee_slabs || []
-            if (slabs.length > 0) {
-              return slabs.map((slab: any) => ({
+        // Use defaultFormData as fallback instead of prev to avoid showing stale sessionStorage data
+        setFormData(() => ({
+          ...defaultFormData,
+          application_steps: applicationSteps.length > 0 ? applicationSteps : defaultFormData.application_steps,
+          terms_conditions_en: termsConditionsEn || defaultFormData.terms_conditions_en,
+          terms_conditions_ar: termsConditionsAr || defaultFormData.terms_conditions_ar,
+          // Fee settings — from nested feeSettings object
+          min_financing_amount: parseFloat(fee.minFinancingAmount) || defaultFormData.min_financing_amount,
+          max_financing_amount: parseFloat(fee.maxFinancingAmount) || defaultFormData.max_financing_amount,
+          suggested_financing_amount: parseFloat(fee.suggestedFinancingAmount) || defaultFormData.suggested_financing_amount,
+          min_tenure: product.minTenureMonths || defaultFormData.min_tenure,
+          max_tenure: product.maxTenureMonths || defaultFormData.max_tenure,
+          vat_percentage: parseFloat(fee.vatPercentage) || defaultFormData.vat_percentage,
+          revenue_eligibility_threshold: parseFloat(fee.revenueEligibilityThreshold) || defaultFormData.revenue_eligibility_threshold,
+          dbr_percentage: parseFloat(fee.maxDbrPercentage) || defaultFormData.dbr_percentage,
+          dbr_calculation_method: fee.dbrCalculationMethod || defaultFormData.dbr_calculation_method,
+          dbr_exceptions: fee.dbrExceptions || defaultFormData.dbr_exceptions,
+          gdbr_percentage: parseFloat(fee.gdbrPercentage) || defaultFormData.gdbr_percentage,
+          credit_line_percentage: parseFloat(fee.creditLinePercentage) || defaultFormData.credit_line_percentage,
+          min_age: fee.minAge || defaultFormData.min_age,
+          max_age: fee.maxAge || defaultFormData.max_age,
+          // Admin fee slabs — from root-level adminFeeSlabs array
+          admin_fee_slabs: slabsArr.length > 0
+            ? slabsArr.map((slab: any) => ({
                 id: String(slab.id || ""),
-                min_amount: parseFloat(slab.minAmount || slab.from_amount) || 0,
-                max_amount: parseFloat(slab.maxAmount || slab.to_amount) || 0,
-                min_tenure: parseInt(String(slab.minTenure ?? slab.min_tenure ?? 1)),
-                max_tenure: parseInt(String(slab.maxTenure ?? slab.max_tenure ?? 6)),
-                profit_percentage: parseFloat(slab.profitPercentage || slab.profit) || 0,
-                profit_type: slab.profitType || slab.profit_type || "percentage",
-                admin_fee: parseFloat(slab.adminFee || slab.admin_fee) || 0,
+                min_amount: parseFloat(slab.minAmount) || 0,
+                max_amount: parseFloat(slab.maxAmount) || 0,
+                min_tenure: parseInt(String(slab.minTenure ?? 1)),
+                max_tenure: parseInt(String(slab.maxTenure ?? 6)),
+                profit_percentage: parseFloat(slab.profitPercentage) || 0,
+                profit_type: slab.profitType || "percentage",
+                admin_fee: parseFloat(slab.adminFee) || 0,
                 type: slab.type || "monthly",
-                processing_fee: parseFloat(slab.processingFee || slab.processing_fee) || 0,
-                partner_scope: (slab.partnerScope || slab.partner_scope) === "ALL_PARTNERS" ? "all" : (slab.partnerScope || slab.partner_scope || "all"),
-                status: (slab.status === "ACTIVE" || slab.status === 1) ? "active" : "inactive"
+                processing_fee: parseFloat(slab.processingFee) || 0,
+                partner_scope: slab.partnerScope === "ALL_PARTNERS" ? "all" : (slab.partnerScope || "all"),
+                status: slab.status === "ACTIVE" ? "active" : "inactive"
               }))
-            }
-            return prev.admin_fee_slabs
-          })(),
-          request_duration: settingsData.requestDurationDays || settingsData.settings?.request_duration || prev.request_duration,
-          approval_duration: settingsData.approvalDurationDays || settingsData.settings?.approval_duration || prev.approval_duration,
-          disbursement_duration: settingsData.disbursementDurationDays || settingsData.settings?.disbursement_duration || prev.disbursement_duration,
-          repayment_duration: settingsData.repaymentDurationDays || settingsData.settings?.repayment_duration || prev.repayment_duration,
-          approval_scenarios: (() => {
-            const workflows = settingsData.workflows || settingsData.settings?.approval_scenarios || []
-            if (workflows.length > 0) {
-              return workflows.map((w: any, index: number) => ({
+            : defaultFormData.admin_fee_slabs,
+          // Duration settings — from nested durationSettings object
+          request_duration: duration.requestDurationDays || defaultFormData.request_duration,
+          approval_duration: duration.approvalDurationDays || defaultFormData.approval_duration,
+          disbursement_duration: duration.disbursementDurationDays || defaultFormData.disbursement_duration,
+          repayment_duration: duration.repaymentDurationDays || defaultFormData.repayment_duration,
+          // Approval workflows — from root-level approvalWorkflows array
+          approval_scenarios: workflowsArr.length > 0
+            ? workflowsArr.map((w: any, index: number) => ({
                 id: w.id || String(Date.now() + index),
                 name: w.nameEn || w.name || "",
-                name_ar: w.nameAr || w.name_ar || "",
+                name_ar: w.nameAr || "",
                 description: w.description || "",
-                type: w.workflowType === "AUTO_APPROVAL" ? "auto" : w.workflowType === "MANUAL_REVIEW" ? "manual" : (w.type || "auto"),
+                type: w.workflowType === "AUTO_APPROVAL" ? "auto"
+                     : w.workflowType === "MANUAL_APPROVAL" || w.workflowType === "MANUAL_REVIEW" ? "manual"
+                     : w.workflowType === "REJECTION_SCENARIO" || w.workflowType === "AUTO_REJECTION" ? "rejection"
+                     : (w.type || "auto"),
                 enabled: w.active ?? w.enabled ?? true,
                 priority: w.priority || index + 1,
                 conditions: (w.conditions || []).map((c: any) => ({
                   field: c.field || "",
                   operator: c.operator || "",
-                  value: c.value || "",
-                  logic: c.logical_operator || "AND",
+                  value: (c.value || "").replace(/^"|"$/g, ""),
+                  logic: c.logicalOperator || "AND",
                 })),
                 actions: (w.actions || []).map((a: any) => ({
-                  type: a.actionType === "APPROVE" ? "Auto Approval" : a.actionType === "ESCALATE" ? "Manual Review" : (a.action_type || a.type || ""),
-                  value: a.configuration || a.action_value || "",
+                  type: a.actionType === "APPROVE" ? "Auto Approval"
+                       : a.actionType === "ASSIGN_REVIEWER" || a.actionType === "ESCALATE" ? "Manual Approval"
+                       : a.actionType === "REJECT" ? "Reject"
+                       : (a.actionType || a.type || ""),
+                  value: a.configuration || "",
                   delay_hours: a.delay_hours || 0,
                   configuration: a.configuration || "",
                 })),
               }))
-            }
-            return prev.approval_scenarios
-          })(),
-          credit_scoring_criteria: settingsData.settings?.credit_scoring_criteria || prev.credit_scoring_criteria,
-          min_income: settingsData.min_income || prev.min_income,
-          stress_buffer: settingsData.stress_buffer || prev.stress_buffer,
-          max_dti: settingsData.max_dti || prev.max_dti,
-          max_outstanding_balance: settingsData.max_outstanding_balance || prev.max_outstanding_balance,
-          age_at_maturity: settingsData.age_at_maturity || prev.age_at_maturity,
-          max_internal_payable_amount: settingsData.max_internal_payable_amount ?? prev.max_internal_payable_amount,
-          simah_cooling_off_days: settingsData.simah_cooling_off_days ?? prev.simah_cooling_off_days,
-          // Map cooling_off from settings (if available) or initialize as empty array
-          cooling_off: (() => {
-            const coolingOffData = settingsData.settings?.cooling_off || []
-            if (Array.isArray(coolingOffData) && coolingOffData.length > 0) {
-              return coolingOffData.map((entry: any, index: number) => ({
-                id: entry.id || Date.now().toString() + index,
-                loan_type: entry.loan_type || "",
-                loan_days: entry.loan_days || 0
-              }))
-            }
-            return prev.cooling_off || []
-          })(),
-          employment_status_vendor: settingsData.settings?.employment_status_vendor || prev.employment_status_vendor,
-          commodity_vendor: settingsData.settings?.commodity_vendor || prev.commodity_vendor,
-          // eligible_nationalities will be loaded separately via getSelectedNationalities API
-          eligible_nationalities: prev.eligible_nationalities || [],
-          // Simah Check Rules fields
-          minimum_simah_score_allowed: settingsData.minimum_simah_score_allowed ?? prev.minimum_simah_score_allowed,
-          delinquency_allowed: settingsData.delinquency_allowed === true || settingsData.delinquency_allowed === 1 ? true : false,
-          stage2_allowed_last_12: settingsData.stage2_allowed_last_12 ?? prev.stage2_allowed_last_12,
-          stage3_allowed_last_12: settingsData.stage3_allowed_last_12 ?? prev.stage3_allowed_last_12,
-          max_utility_writeoff_amount: settingsData.max_utility_writeoff_amount ?? prev.max_utility_writeoff_amount,
-          max_telecom_writeoff_amount: settingsData.max_telecom_writeoff_amount ?? prev.max_telecom_writeoff_amount,
-          partial_settlements_allowed_last_12: settingsData.partial_settlements_allowed_last_12 ?? prev.partial_settlements_allowed_last_12,
-          bounced_cheques_allowed: settingsData.bounced_cheques_allowed === true || settingsData.bounced_cheques_allowed === 1 ? true : false,
-          default_allowed_last_12: settingsData.default_allowed_last_12 === true || settingsData.default_allowed_last_12 === 1 ? true : false,
-          writeoff_allowed_last_12: settingsData.writeoff_allowed_last_12 === true || settingsData.writeoff_allowed_last_12 === 1 ? true : false,
+            : defaultFormData.approval_scenarios,
+          credit_scoring_criteria: defaultFormData.credit_scoring_criteria,
+          min_income: product.minAmount || defaultFormData.min_income,
+          stress_buffer: defaultFormData.stress_buffer,
+          max_dti: defaultFormData.max_dti,
+          max_outstanding_balance: defaultFormData.max_outstanding_balance,
+          age_at_maturity: defaultFormData.age_at_maturity,
+          max_internal_payable_amount: defaultFormData.max_internal_payable_amount,
+          simah_cooling_off_days: defaultFormData.simah_cooling_off_days,
+          cooling_off: defaultFormData.cooling_off,
+          employment_status_vendor: defaultFormData.employment_status_vendor,
+          commodity_vendor: defaultFormData.commodity_vendor,
+          eligible_nationalities: defaultFormData.eligible_nationalities,
+          // Simah Check Rules fields — not yet in new API, keep defaults
+          minimum_simah_score_allowed: defaultFormData.minimum_simah_score_allowed,
+          delinquency_allowed: defaultFormData.delinquency_allowed,
+          stage2_allowed_last_12: defaultFormData.stage2_allowed_last_12,
+          stage3_allowed_last_12: defaultFormData.stage3_allowed_last_12,
+          max_utility_writeoff_amount: defaultFormData.max_utility_writeoff_amount,
+          max_telecom_writeoff_amount: defaultFormData.max_telecom_writeoff_amount,
+          partial_settlements_allowed_last_12: defaultFormData.partial_settlements_allowed_last_12,
+          bounced_cheques_allowed: defaultFormData.bounced_cheques_allowed,
+          default_allowed_last_12: defaultFormData.default_allowed_last_12,
+          writeoff_allowed_last_12: defaultFormData.writeoff_allowed_last_12,
         }))
       }
     }  finally {

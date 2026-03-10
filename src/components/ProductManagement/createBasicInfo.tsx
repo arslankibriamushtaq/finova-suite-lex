@@ -13,7 +13,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar"
 import { useLanguage } from "../../hooks/use-language"
 import { getCountries } from "../../redux/apis/apisCrud"
-import { getProductById, createProduct, updateProductBasicInfo } from "../../redux/apis/apisCrudProductManagement"
+import { getProductById, createProduct, updateProductBasicInfo, activateProduct, deactivateProduct } from "../../redux/apis/apisCrudProductManagement"
 import toast from "react-hot-toast"
 
 const PRODUCT_TYPES = [
@@ -207,9 +207,12 @@ export default function CreateBasicInfo() {
     }
   }, [])
   const getCountryList = async () => {
-    const response = await getCountries(2,100)
-    if (response?.data?.success) {
-      setCountries(response?.data?.data?.data)
+    try {
+      const response = await getCountries(1, 100)
+      const list = response?.data?.data?.data || response?.data?.data || response?.data || []
+      setCountries(Array.isArray(list) ? list : [])
+    } catch (e) {
+      console.error("Failed to load countries:", e)
     }
   }
   
@@ -395,6 +398,9 @@ export default function CreateBasicInfo() {
           notificationEmail: formData.notification_email,
           productType: formData.product_type_id || "TAWARRUQ",
         }
+        if (formData.country) {
+          payload.countryId = formData.country
+        }
         if (formData.category_id) {
           payload.masterCategoryId = formData.category_id
         }
@@ -414,21 +420,31 @@ export default function CreateBasicInfo() {
         const product = resData?.data || resData
 
         if (product?.id || response?.status === 200 || response?.status === 201) {
+          const resolvedId = String(product?.id || effectiveProductId)
+
+          // Call activate/deactivate endpoint based on status toggle
+          try {
+            if (formData.status === "active") {
+              await activateProduct(resolvedId)
+            } else {
+              await deactivateProduct(resolvedId)
+            }
+          } catch (statusError: any) {
+            console.error("Failed to update product status:", statusError)
+          }
+
           toast.success(isEditMode ? "Product updated successfully!" : "Product created successfully!")
 
-          const resolvedProductId = String(product?.id || effectiveProductId)
-
           // Map response back to form data for localStorage persistence
-          const rawStatus = (product?.status || "").toString().toUpperCase()
           const apiFormData: ProductFormData = {
             name: product?.nameEn || formData.name,
             name_ar: product?.nameAr || formData.name_ar,
             notification_email: product?.notificationEmail || formData.notification_email,
-            country: formData.country,
+            country: product?.countryId || product?.country_id || product?.country?.id || formData.country,
             master_category: product?.masterCategoryId || formData.master_category || "",
             sub_categories: product?.subCategoryId ? [product.subCategoryId] : (formData.sub_categories || []),
             customer_types: product?.customerTypes || formData.customer_types || [],
-            status: rawStatus === "ACTIVE" ? "active" : "draft",
+            status: formData.status,
             logo_url: product?.logoUrl || formData.logo_url || "",
             short_desc_en: product?.shortDescriptionEn || formData.short_desc_en || "",
             short_desc_ar: product?.shortDescriptionAr || formData.short_desc_ar || "",
@@ -437,9 +453,9 @@ export default function CreateBasicInfo() {
             product_type_id: product?.productType || formData.product_type_id,
           }
 
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ ...apiFormData, _productId: resolvedProductId }))
+          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({ ...apiFormData, _productId: resolvedId }))
           sessionStorage.setItem("productFormData", JSON.stringify(apiFormData))
-          sessionStorage.setItem("productId", resolvedProductId)
+          sessionStorage.setItem("productId", resolvedId)
 
           isNavigatingToNextStepRef.current = true
           router.push("/Los/ProductManagement/Create/ProductSettings")
@@ -652,7 +668,7 @@ export default function CreateBasicInfo() {
                       <SelectContent>
                         {countries?.map((country:any) => (
                           <SelectItem key={country?.id} value={String(country?.id)}>
-                            {country?.flag} {country?.country_name}
+                            {country?.code ? `(${country.code}) ` : ""}{country?.nameEn || country?.country_name || "-"}
                           </SelectItem>
                         ))}
                       </SelectContent>

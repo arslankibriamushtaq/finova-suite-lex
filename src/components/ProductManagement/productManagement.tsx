@@ -15,7 +15,7 @@ import { ProductFilters } from "../../lib/types"
 import { customerTypes, mockCommodities, productCategories } from "../../lib/mock-data"
 import { useLanguage } from "../../hooks/use-language"
 // import { LanguageSwitcher } from "../language-switcher"
-import { getAllProducts } from "../../redux/apis/apisCrudProductManagement"
+import { getAllProducts, deleteProduct } from "../../redux/apis/apisCrudProductManagement"
 import toast from "react-hot-toast"
 import TableView from "../TableView/TableView"
 import {
@@ -24,8 +24,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
-import { ChevronDown, Pencil, Check, X, ShieldCheck } from "lucide-react"
+import { ChevronDown, Pencil, Check, X, ShieldCheck, Trash2 } from "lucide-react"
 import { getCountries } from "../../redux/apis/apisCrud"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog"
 import useProductPermissions, { useWorkflowActions, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions"
 
 export default function ProductManagement() {
@@ -37,10 +45,10 @@ export default function ProductManagement() {
   // const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
   const canAdd = () => true;
   const canEdit = () => true;
-  const canVerify = () => true;
-  const canCheckerReject = () => true;
-  const canApprove = () => true;
-  const canApproverReject = () => true;
+  const canVerify = () => false;
+  const canCheckerReject = () => false;
+  const canApprove = () => false;
+  const canApproverReject = () => false;
   const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
 
   const [searchTerm, setSearchTerm] = useState("")
@@ -62,9 +70,33 @@ export default function ProductManagement() {
   const [to, setTo] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
  const [countries, setCountries] = useState<any>([])
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
+  const [deleteProductId, setDeleteProductId] = useState<string | null>(null)
+  const [deleting, setDeleting] = useState(false)
 
   const handleEditProduct = (productId: string) => {
     router.push(`/Los/ProductManagement/Create/BasicInfo?id=${productId}`)
+  }
+
+  const openDeleteDialog = (productId: string) => {
+    setDeleteProductId(productId)
+    setDeleteDialogOpen(true)
+  }
+
+  const handleDeleteProduct = async () => {
+    if (!deleteProductId) return
+    try {
+      setDeleting(true)
+      await deleteProduct(deleteProductId)
+      toast.success("Product deleted successfully")
+      setDeleteDialogOpen(false)
+      setDeleteProductId(null)
+      getData()
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to delete product")
+    } finally {
+      setDeleting(false)
+    }
   }
   
   // Static workflow action ID for product management (temporary - will be dynamic later)
@@ -237,7 +269,15 @@ export default function ProductManagement() {
         onClick: () => handleEditProduct(row.id),
       })
     }
-    
+
+    // Delete
+    menuItems.push({
+      key: "delete",
+      icon: <Trash2 className="h-4 w-4 text-destructive" />,
+      label: "Delete",
+      onClick: () => openDeleteDialog(row.id),
+    })
+
     // Verify - requires checker.verify permission
     if (canVerify()) {
       menuItems.push({
@@ -505,6 +545,25 @@ export default function ProductManagement() {
 
         {/* </Card> */}
       </div>
+
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Product</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this product? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDeleteProduct} disabled={deleting}>
+              {deleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

@@ -13,21 +13,22 @@ const LandingDashboardPage = () => {
   const [toDate, setToDate] = useState<any>(null);
 
   const getStatistics = async () => {
-    setLoading(true);
-    try {
-      const formattedFromDate = fromDate ? dayjs(fromDate).format("YYYY-MM-DDTHH:mm:ss") : undefined;
-      const formattedToDate = toDate ? dayjs(toDate).format("YYYY-MM-DDTHH:mm:ss") : undefined;
-      const response = await getDashboardStatistics(formattedFromDate, formattedToDate);
-      if (response) {
-        const data = response?.data?.data;
-        setDashboardData(data);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    } finally {
-      setLoading(false);
-    }
-  
+    // Commented out API call for time being
+    // setLoading(true);
+    // try {
+    //   const formattedFromDate = fromDate ? dayjs(fromDate).format("YYYY-MM-DDTHH:mm:ss") : undefined;
+    //   const formattedToDate = toDate ? dayjs(toDate).format("YYYY-MM-DDTHH:mm:ss") : undefined;
+    //   const response = await getDashboardStatistics(formattedFromDate, formattedToDate);
+    //   if (response) {
+    //     const data = response?.data?.data;
+    //     setDashboardData(data);
+    //   }
+    // } catch (error: any) {
+    //   toast.error(error?.message);
+    // } finally {
+    //   setLoading(false);
+    // }
+
   }
   
   const handleFromDateChange = (date: any) => {

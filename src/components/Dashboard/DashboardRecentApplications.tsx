@@ -162,26 +162,25 @@ const DashboardRecentApplications = () => {
   };
 
   const getLeadsList = async () => {
-    try {
-      setSkelitonLoading(true);
-
-      const response = await getRecentApplications(page, pageSize);
-      if (response) {
-        const data = response?.data?.data;
-        setData(data || []);
-        setSkelitonLoading(false);
-        setTotalRows(response?.data?.data?.total || 0);
-        setFrom(response?.data?.data?.from || 0);
-        setTo(response?.data?.data?.to || 0);
-        // setPage(response?.data?.data?.current_page);
-        // setTotalPage(response?.data?.data?.last_page);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-      setSkelitonLoading(false);
-    } finally {
-      setSkelitonLoading(false);
-    }
+    // Commented out API call for time being
+    // try {
+    //   setSkelitonLoading(true);
+    //
+    //   const response = await getRecentApplications(page, pageSize);
+    //   if (response) {
+    //     const data = response?.data?.data;
+    //     setData(data || []);
+    //     setSkelitonLoading(false);
+    //     setTotalRows(response?.data?.data?.total || 0);
+    //     setFrom(response?.data?.data?.from || 0);
+    //     setTo(response?.data?.data?.to || 0);
+    //   }
+    // } catch (error: any) {
+    //   toast.error(error?.message);
+    //   setSkelitonLoading(false);
+    // } finally {
+    //   setSkelitonLoading(false);
+    // }
   };
   useEffect(() => {
     getLeadsList();

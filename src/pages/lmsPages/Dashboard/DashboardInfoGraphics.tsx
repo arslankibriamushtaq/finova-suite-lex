@@ -95,62 +95,64 @@ const Dashboard = () => {
   };
 
   const dashboardInformation = async () => {
-    setLoader(true);
-    try {
-      const body = {
-        from: fromDate ? fromDate.toISOString() : null,
-        to: toDate ? toDate.toISOString() : null,
-      };
+    // API calls commented out temporarily
+    // setLoader(true);
+    // try {
+    //   const body = {
+    //     from: fromDate ? fromDate.toISOString() : null,
+    //     to: toDate ? toDate.toISOString() : null,
+    //   };
 
-      const res = await getDashboardInformation(body);
-      if (res?.data?.data) {
-        const data = res?.data?.data;
-        // Format all numeric values in the response
-        const formattedData = {
-          ...data,
-          totalCustomers: formatNumericValue(data.totalCustomers),
-          individualCount: formatNumericValue(data.individualCount),
-          businessCount: formatNumericValue(data.businessCount),
-          receivedAmount: formatNumericValue(data.receivedAmount),
-          nonPerformingAmount: formatNumericValue(data.nonPerformingAmount),
-          receivableAmount: formatNumericValue(data.receivableAmount),
-          dueAmount: formatNumericValue(data.dueAmount),
-          earlySettlementAmount: formatNumericValue(data.earlySettlementAmount),
-          overDueAmount: formatNumericValue(data.overDueAmount),
-          disbursedAmount: formatNumericValue(data.disbursedAmount),
-        };
-        setDashboardData(formattedData);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    } finally {
-      setLoader(false);
-    }
+    //   const res = await getDashboardInformation(body);
+    //   if (res?.data?.data) {
+    //     const data = res?.data?.data;
+    //     // Format all numeric values in the response
+    //     const formattedData = {
+    //       ...data,
+    //       totalCustomers: formatNumericValue(data.totalCustomers),
+    //       individualCount: formatNumericValue(data.individualCount),
+    //       businessCount: formatNumericValue(data.businessCount),
+    //       receivedAmount: formatNumericValue(data.receivedAmount),
+    //       nonPerformingAmount: formatNumericValue(data.nonPerformingAmount),
+    //       receivableAmount: formatNumericValue(data.receivableAmount),
+    //       dueAmount: formatNumericValue(data.dueAmount),
+    //       earlySettlementAmount: formatNumericValue(data.earlySettlementAmount),
+    //       overDueAmount: formatNumericValue(data.overDueAmount),
+    //       disbursedAmount: formatNumericValue(data.disbursedAmount),
+    //     };
+    //     setDashboardData(formattedData);
+    //   }
+    // } catch (error: any) {
+    //   toast.error(error?.message);
+    // } finally {
+    //   setLoader(false);
+    // }
   };
 
-  useEffect(() => {
-    const fetchLedgerAccount = async () => {
-      try {
-        setLoading(true);
-        const response = await getLedgerAccount(1, 10000, "");
+  // API calls commented out temporarily
+  // useEffect(() => {
+  //   const fetchLedgerAccount = async () => {
+  //     try {
+  //       setLoading(true);
+  //       const response = await getLedgerAccount(1, 10000, "");
 
-        if (response) {
-          const data = response.data.data;
-          if (!data || data.length === 0) {
-            setIsModalVisible(true); // Show modal if no ledger accounts exist
-          } else {
-            setLedgerData(data);
-          }
-        }
-      } catch (error: any) {
-        toast.error(error?.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //       if (response) {
+  //         const data = response.data.data;
+  //         if (!data || data.length === 0) {
+  //           setIsModalVisible(true); // Show modal if no ledger accounts exist
+  //         } else {
+  //           setLedgerData(data);
+  //         }
+  //       }
+  //     } catch (error: any) {
+  //       toast.error(error?.message);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchLedgerAccount();
-  }, []);
+  //   fetchLedgerAccount();
+  // }, []);
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
@@ -199,17 +201,18 @@ const Dashboard = () => {
     },
   ];
   const getAllTypeCustomers = async () => {
-    try {
-      const res = await getAllBusinessAndIndividualCustomer(page, 10);
-      if (res && res.data && res.data.data) {
-        const values = res.data.data;
-        setAllTypeCustomer(values);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-      // setIndividualModal(false);
-    }
+    // API calls commented out temporarily
+    // try {
+    //   const res = await getAllBusinessAndIndividualCustomer(page, 10);
+    //   if (res && res.data && res.data.data) {
+    //     const values = res.data.data;
+    //     setAllTypeCustomer(values);
+    //     setTotalRows(res?.data?.pageInfo?.totalItems || 0);
+    //   }
+    // } catch (error: any) {
+    //   toast.error(error?.message);
+    //   // setIndividualModal(false);
+    // }
   };
   const mappedData =
     allTypeCustomer &&
