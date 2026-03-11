@@ -1441,6 +1441,13 @@ const DasbhboardSidebar = () => {
             active: pathname.includes("/ThirdPartyManagement/Dashboard"),
           },
           {
+            label: "Providers",
+            Link: "Providers",
+            LinkLable: "/ThirdPartyManagement",
+            img: Images.PartnerManagementIcon,
+            active: pathname.includes("/ThirdPartyManagement/Providers"),
+          },
+          {
             label: "Environment Settings",
             Link: "EnvironmentSettings",
             LinkLable: "/ThirdPartyManagement",

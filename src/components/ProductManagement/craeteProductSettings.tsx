@@ -5,7 +5,8 @@ import { Button } from "../ui/button"
 import { Tab, Tabs } from "react-bootstrap"
 import { useLanguage } from "../../hooks/use-language"
 import toast from "react-hot-toast"
-import { createProductSettings, createProductTermsAndConditions, createCreditScoringCriteria, createAdminFeeSlabs, createDurationSettings, createApprovalWorkflowScenarios, getProductSettings, addSelectedNationalities, updateFeeSettings, updateAdminFeeSlabs, updateDurationSettings, updateApprovalWorkflows } from "../../redux/apis/apisCrudProductManagement"
+import { createProductSettings, createProductTermsAndConditions, createAdminFeeSlabs, createDurationSettings, createApprovalWorkflowScenarios, getProductSettings, addSelectedNationalities, updateFeeSettings, updateAdminFeeSlabs, updateDurationSettings, updateApprovalWorkflows } from "../../redux/apis/apisCrudProductManagement"
+import { getProductCreditScoringCriteria, saveProductCreditScoringCriteria, deleteProductCreditScoringCriteria } from "../../redux/apis/apisCreditScoring"
 import Loader from "../Loader/Loader"
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 
@@ -49,6 +50,7 @@ interface CreditScoringRule {
   operator: string
   value: string
   weight: number
+  percentage: number
 }
 
 interface ApprovalScenario {
@@ -498,6 +500,7 @@ export default function CraeteProductSettings() {
               }))
             : defaultFormData.approval_scenarios,
           credit_scoring_criteria: defaultFormData.credit_scoring_criteria,
+          credit_scoring_fields: defaultFormData.credit_scoring_fields,
           min_income: product.minAmount || defaultFormData.min_income,
           stress_buffer: defaultFormData.stress_buffer,
           max_dti: defaultFormData.max_dti,
@@ -522,8 +525,41 @@ export default function CraeteProductSettings() {
           writeoff_allowed_last_12: defaultFormData.writeoff_allowed_last_12,
         }))
       }
+
+      // Load credit scoring criteria from risk-service
+      await loadCreditScoringCriteria(productId)
     }  finally {
       setIsLoadingSettings(false)
+    }
+  }
+
+  const loadCreditScoringCriteria = async (pid: string) => {
+    try {
+      const csResponse = await getProductCreditScoringCriteria(pid)
+      // Response: { data: [...criteria], message: "success" }
+      const criteriaList = csResponse?.data?.data || csResponse?.data || []
+      const criteriaArr = Array.isArray(criteriaList) ? criteriaList : []
+      if (criteriaArr.length > 0) {
+        const mappedFields = criteriaArr.map((c: any, index: number) => ({
+          id: c.id || (Date.now().toString() + index),
+          field_name: c.customName || c.fieldDefinition?.nameEn || "",
+          fieldDefinitionId: c.fieldDefinitionId || c.fieldDefinition?.id || null,
+          enabled: c.enabled ?? true,
+          rules: (c.rules || []).map((r: any, rIdx: number) => ({
+            id: r.id || (Date.now().toString() + index + "_" + rIdx),
+            operator: r.operator || "EQ",
+            value: r.value || "",
+            weight: r.weight || 0,
+            percentage: r.percentage || 0,
+          })),
+        }))
+        setFormData((prev: any) => ({
+          ...prev,
+          credit_scoring_fields: mappedFields,
+        }))
+      }
+    } catch (csError: any) {
+      console.log("No credit scoring criteria found:", csError?.response?.status)
     }
   }
 
@@ -569,6 +605,14 @@ export default function CraeteProductSettings() {
       router.push("/Los/ProductManagement/Create/BasicInfo")
     }
   }, [productIdFromUrl])
+
+  // Reload credit scoring criteria when user navigates to the credit-scoring tab
+  useEffect(() => {
+    const effectiveProductId = productId || productIdFromUrl || sessionStorage.getItem("productId")
+    if (activeTab === "credit-scoring" && effectiveProductId) {
+      loadCreditScoringCriteria(effectiveProductId)
+    }
+  }, [activeTab])
 
   const updateFormData = (field: string, value: any) => {
     setFormData((prev: any) => ({ ...prev, [field]: value }))
@@ -819,9 +863,10 @@ export default function CraeteProductSettings() {
   const addCreditScoringRule = (fieldId: string) => {
     const newRule: CreditScoringRule = {
       id: Date.now().toString(),
-      operator: creditScoringOperators[0] || "<=",
+      operator: "EQ",
       value: "",
       weight: 1,
+      percentage: 0,
     }
     const currentFields = Array.isArray(formData.credit_scoring_fields) 
       ? formData.credit_scoring_fields 
@@ -1355,43 +1400,43 @@ export default function CraeteProductSettings() {
       } else if (activeTab === "credit-scoring") {
         // Clear previous errors
         setCreditScoringErrors({})
-        
+
         // Build Credit Scoring Criteria payload for each field
-        const currentFields = Array.isArray(formData.credit_scoring_fields) 
-          ? formData.credit_scoring_fields 
+        const currentFields = Array.isArray(formData.credit_scoring_fields)
+          ? formData.credit_scoring_fields
           : []
-        
+
         // Filter out fields that don't have a name or rules
         const validFields = currentFields.filter((field: any) => {
           const hasName = field.field_name && field.field_name.trim() !== ""
           const hasRules = field.rules && Array.isArray(field.rules) && field.rules.length > 0
           return hasName && hasRules
         })
-        
- 
-        
+
         if (validFields.length === 0) {
           toast.error("Please add at least one credit scoring field with a name and at least one rule")
           return
         }
-        
-        // Build single payload with all credit scoring fields
+
+        // Build payload for risk-service save (replace-all strategy)
         const creditScoringPayload = {
-          product_id: parseInt(productId),
-          credit_scoring_fields: validFields.map((field: any) => ({
-            name: field.field_name.trim(),
+          criteria: validFields.map((field: any, index: number) => ({
+            fieldDefinitionId: field.fieldDefinitionId || null,
+            customName: field.field_name.trim(),
+            custom: !field.fieldDefinitionId,
+            enabled: field.enabled ?? true,
+            sortOrder: index + 1,
             rules: (field.rules || []).map((rule: any) => ({
-              operator: mapOperatorToApiFormat(rule.operator),
+              operator: rule.operator || "EQ",
               value: String(rule.value || ""),
-              weight: Number(rule.weight) || 1
+              weight: Number(rule.weight) || 0,
+              percentage: Number(rule.percentage) || 0,
             }))
           }))
         }
-        
-    
-        
-        // Send single request with all fields
-        response = await createCreditScoringCriteria(creditScoringPayload)
+
+        // Send to risk-service (PUT replace-all)
+        response = await saveProductCreditScoringCriteria(productId, creditScoringPayload)
       } else if (activeTab === "fee-settings") {
         // Save fee settings
         const feePayload = {
@@ -2015,7 +2060,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab>
 
-              {/* Hidden: Credit Scoring Engine tab
+               {/* Credit Scoring Engine tab */}
               <Tab eventKey="credit-scoring" title="Credit Scoring Engine">
                 {activeTab === "credit-scoring" && (
                   <CreditScoringTab
@@ -2039,7 +2084,7 @@ export default function CraeteProductSettings() {
                   />
                 )}
               </Tab>
-              */}
+             
             </Tabs>
           </div>
         </div>

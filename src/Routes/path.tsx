@@ -23,6 +23,7 @@ import ClientRequestProd from "../pages/ThirdPartyDashboard/ClientRequestProd";
 import ClientRequestDev from "../pages/ThirdPartyDashboard/ClientRequestDev";
 import RequestDetail from "../pages/ThirdPartyDashboard/RequestDetail";
 import RequestService from "../pages/ThirdPartyDashboard/RequestService";
+import ProvidersList from "../pages/ThirdPartyDashboard/ProvidersList";
 import DashboardOnboarding from "../components/DashboardHeader/DashboardOnboarding";
 import AllCustomers from "../components/Customer/AllCustomers";
 import LmsAllCustomers from "../pages/lmsPages/Customers/AllCustomers";
@@ -1585,6 +1586,7 @@ export const router = createBrowserRouter([
          { path: "ThirdPartyManagement/AllEnvironment", element: <AllEnvironment /> },
          { path: "ThirdPartyManagement/EnvConfig", element: <EnvConfig /> },
          { path: "ThirdPartyManagement/ExportCsv", element: <ExportCsv /> },
+         { path: "ThirdPartyManagement/Providers", element: <ProvidersList /> },
          { path: "ThirdPartyManagement/Setting/Employees", element: <Employees /> },
          { path: "ThirdPartyManagement/Setting/RoleList", element: <RoleList /> },
          { path: "ThirdPartyManagement/Setting/AssignPermissions", element: <AssignPermissions /> },
