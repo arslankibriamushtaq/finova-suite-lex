@@ -129,6 +129,10 @@ export function addProductDocument(productId: string, body: any) {
   return axiosProductManagement.post(`/api/v1/products/${productId}/documents`, body);
 }
 
+export function editProductDocument(productId: string, documentId: string, body: any) {
+  return axiosProductManagement.put(`/api/v1/products/${productId}/documents/${documentId}`, body);
+}
+
 export function removeProductDocument(productId: string, documentId: string) {
   return axiosProductManagement.delete(`/api/v1/products/${productId}/documents/${documentId}`);
 }
@@ -261,8 +265,8 @@ export const getProductSettings = (productId: string) => {
   return axiosProductManagement.get(`/api/v1/products/${productId}`);
 };
 
-/** @deprecated Use removeProductDocument instead */
+/** @deprecated Use editProductDocument instead */
 export const updateProductDocument = (docId: string, body: any) => {
-  console.warn("updateProductDocument is deprecated. Use removeProductDocument and addProductDocument instead.");
+  console.warn("updateProductDocument is deprecated. Use editProductDocument(productId, documentId, body) instead.");
   return axiosProductManagement.put(`/api/v1/products/unknown/documents/${docId}`, body);
 };

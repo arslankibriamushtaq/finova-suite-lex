@@ -16,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card"
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "../ui/dialog"
 import { useLanguage } from "../../hooks/use-language"
-import { addProductDocument, removeProductDocument, getProductById } from "../../redux/apis/apisCrudProductManagement"
+import { addProductDocument, editProductDocument, removeProductDocument, getProductById } from "../../redux/apis/apisCrudProductManagement"
 import TableView from "../TableView/TableView"
 import {
   DropdownMenu,
@@ -136,18 +136,21 @@ export default function CreateRequiredDocuments() {
         fileUrl: documentForm.fileUrl,
         fileSizeBytes: documentForm.fileSizeBytes,
         fileVersion: documentForm.fileVersion,
-        createdByName: documentForm.createdByName,
         required: documentForm.required,
       }
-      const response = await addProductDocument(productId, body)
+
+      const response = editingDocument
+        ? await editProductDocument(productId, String(editingDocument.id), body)
+        : await addProductDocument(productId, body)
+
       if (response?.data?.message === "success") {
-        toast.success("Document added successfully")
+        toast.success(editingDocument ? "Document updated successfully" : "Document added successfully")
         setIsDocumentDialogOpen(false)
         setEditingDocument(null)
         setDocumentForm(initialDocumentForm)
         getDocumentsData(productId)
       } else {
-        toast.error(response?.data?.message || "Failed to add document")
+        toast.error(response?.data?.message || (editingDocument ? "Failed to update document" : "Failed to add document"))
       }
     } catch (error: any) {
       const errors = error?.response?.data?.errors || {}
@@ -159,7 +162,7 @@ export default function CreateRequiredDocuments() {
         setDocumentErrors(errMap)
         toast.error(Object.values(errMap)[0])
       } else {
-        toast.error(error?.response?.data?.message || "Failed to add document")
+        toast.error(error?.response?.data?.message || (editingDocument ? "Failed to update document" : "Failed to add document"))
       }
     } finally {
       setIsLoading(false)
@@ -195,7 +198,6 @@ export default function CreateRequiredDocuments() {
   }
 
   const handleSaveDocument = () => {
-    // New API only has add (POST) — no separate update endpoint in Postman
     handleAddDocument()
   }
 
@@ -204,31 +206,31 @@ export default function CreateRequiredDocuments() {
       name: "Name (En)",
       selector: (row: any) => row.nameEn || "-",
       sortable: true,
-      width: "200px",
+      // width: "200px",
     },
     {
       name: "Name (Ar)",
       selector: (row: any) => row.nameAr || "-",
       sortable: true,
-      width: "200px",
+      // width: "200px",
     },
     {
       name: "Document Type",
       selector: (row: any) => row.documentType || "-",
       sortable: true,
-      width: "130px",
+      // width: "130px",
     },
     {
       name: "Version",
       selector: (row: any) => row.fileVersion || "-",
       sortable: true,
-      width: "90px",
+      // width: "90px",
     },
     {
       name: "Created By",
       selector: (row: any) => row.createdByName || "-",
       sortable: true,
-      width: "130px",
+      // width: "130px",
     },
     {
       name: "Required",
@@ -237,13 +239,13 @@ export default function CreateRequiredDocuments() {
           {row.required ? "Yes" : "No"}
         </span>
       ),
-      width: "100px",
+      // width: "100px",
     },
     {
       name: "Action",
       cell: (row: any) => (
         <div
-          className="relative z-10 inline-block"
+          className="relative inline-block"
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
@@ -271,7 +273,7 @@ export default function CreateRequiredDocuments() {
           </DropdownMenu>
         </div>
       ),
-      width: "120px",
+      // width: "120px",
     },
   ]
 

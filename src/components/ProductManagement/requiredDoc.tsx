@@ -1,6 +1,6 @@
 import toast from "react-hot-toast";
 import { getProductById } from "../../redux/apis/apisCrud";
-import { addProductDocument, removeProductDocument } from "../../redux/apis/apisCrudProductManagement";
+import { addProductDocument, editProductDocument, removeProductDocument } from "../../redux/apis/apisCrudProductManagement";
 import { useLocation } from "react-router-dom";
 import TableView from "../TableView/TableView";
 import { useState, useEffect } from "react";
@@ -224,8 +224,12 @@ const RequiredDoc = ({setSelectedTab}:any) => {
     };
 
     try {
-      await toast.promise(addProductDocument(productId, body), {
-        loading: selectedItem === "edit" ? "Updating Document..." : "Adding Document...",
+      const apiCall = editingId
+        ? editProductDocument(productId, String(editingId), body)
+        : addProductDocument(productId, body);
+
+      await toast.promise(apiCall, {
+        loading: editingId ? "Updating Document..." : "Adding Document...",
         success: (response: any) => {
           setIsModalVisible(false);
           setFormValues(initialFormValues);
