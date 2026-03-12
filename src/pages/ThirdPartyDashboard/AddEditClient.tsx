@@ -450,7 +450,7 @@ const AddEditClient = () => {
 
                       {/* Child APIs — shown directly below the provider */}
                       {isChecked && (
-                        <div className="ml-6 mt-3 space-y-2.5">
+                        <div className="flex flex-col ml-6 mt-3 space-y-2.5">
                           {isLoadingProviderApis ? (
                             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                               <Loader2 className="h-3 w-3 animate-spin" />
