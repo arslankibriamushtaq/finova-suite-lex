@@ -170,20 +170,20 @@ export default function ProductManagement() {
       name: "Product Name",
       selector: (row: any) => row.productName,
     },
-    // {
-    //   name: "Product Arabic Name",
-    //   selector: (row: any) => row.name_ar,
-    // },
     {
-      name: "Logo",
-      cell: (row: any) => row.logo ? (
-        <img
-          src={row.logo.startsWith("http") ? row.logo : `${import.meta.env.VITE_API_BASE_URL}/product-service${row.logo}`}
-          alt="logo"
-          style={{ width: 50 }}
-        />
-      ) : <span className="text-muted-foreground">-</span>,
+      name: "Product Arabic Name",
+      selector: (row: any) => row.name_ar,
     },
+    // {
+    //   name: "Logo",
+    //   cell: (row: any) => row.logo ? (
+    //     <img
+    //       src={row.logo.startsWith("http") ? row.logo : `${import.meta.env.VITE_API_BASE_URL}/product-service${row.logo}`}
+    //       alt="logo"
+    //       style={{ width: 50 }}
+    //     />
+    //   ) : <span className="text-muted-foreground">-</span>,
+    // },
     {
       name: "Email",
       selector: (row: any) => row.email || "-",
@@ -199,7 +199,7 @@ export default function ProductManagement() {
     },
     {
       name: "Product Type",
-      selector: (row: any) => row.productType?.name || "-",
+      selector: (row: any) => row.productType || "-",
     },
     {
       name: "Status",
@@ -207,7 +207,7 @@ export default function ProductManagement() {
         const status = row.status?.toUpperCase?.() || row.status;
         const isActive = status === "ACTIVE" || status === "Active";
         return (
-          <div style={{ backgroundColor: isActive ? "var(--chart-2)" : "var(--destructive)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px" }}>
+          <div style={{ backgroundColor: isActive ? "var(--chart-2)" : "var(--destructive)", color: "var(--primary-foreground)", padding: "8px 10px", fontSize: "12px", borderRadius: "32px",minWidth:"fit-content" }}>
             {row.status}
           </div>
         );
@@ -330,8 +330,8 @@ export default function ProductManagement() {
         productCode: item?.productCode,
         logo: item?.logoUrl || item?.logo,
         email: item?.notificationEmail || item?.email,
-        country: item?.country,
-        category: item?.masterCategoryId ? { name_en: item?.productType } : item?.category,
+        country: item?.countryNameEn,
+        category: item?.masterCategoryId ? { name_en: item?.masterCategoryNameEn } : item?.category,
         productType: item?.productType || item?.type,
         status: item?.status,
         wizardStep: item?.wizardStep,
