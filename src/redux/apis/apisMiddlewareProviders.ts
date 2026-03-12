@@ -27,3 +27,15 @@ export function updateProvider(id: string, body: any) {
 export function deleteProvider(id: string) {
   return axiosMiddlewareThirdParty.delete(`/api/v1/providers/${id}`);
 }
+
+// ============================================================
+// Provider APIs
+// ============================================================
+
+export function getAllProviderApis() {
+  return axiosMiddlewareThirdParty.get(`/api/v1/provider-apis`);
+}
+
+export function getProviderApisByProvider(providerId: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/provider-apis/by-provider/${providerId}`);
+}

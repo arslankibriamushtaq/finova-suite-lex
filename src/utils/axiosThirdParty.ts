@@ -4,7 +4,7 @@ import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
 
 const axiosThirdParty = Axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_BASE_THIRD_PARTY_URL,
+  baseURL: `${import.meta.env.VITE_API_BASE_URL}/middleware-third-party`,
 });
 let token = localStorage.getItem("token");
 axiosThirdParty.interceptors.request.use((reqConfig) => {

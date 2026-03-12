@@ -1,5 +1,6 @@
 import axios from "axios";
 import axiosThirdParty from "../../utils/axiosThirdParty";
+import axiosMiddlewareThirdParty from "../../utils/axiosMiddlewareThirdParty";
 
 const buildQueryString = (params: Record<string, any>): string => {
   const queryParams = Object.entries(params)
@@ -16,11 +17,11 @@ export function getDashboardStats() {
 
 // Client APIs
 export function getClients() {
-  return axiosThirdParty.get(`/api/client/create`);
+  return axiosMiddlewareThirdParty.get(`/api/v1/clients`);
 }
 
 export function getClientsList(records: number, page: number) {
-  return axiosThirdParty.get(`/api/client?records=${records}&page=${page}`);
+  return axiosMiddlewareThirdParty.get(`/api/v1/clients`);
 }
 export function getServiceStats() {
   return axiosThirdParty.get(`/api/dashboard/service-stats/Yakeen`);
@@ -102,30 +103,24 @@ export function toggleServiceStatus(id: string, status: boolean) {
 }
 
 // Clients Management APIs
-export function getAllClients(page?: number, perPage?: number, searchTerm?: string, environment?: string) {
-  const params: Record<string, any> = {
-    page,
-    per_page: perPage,
-    search_term: searchTerm,
-    environment,
-  };
-  return axiosThirdParty.get(`/api/clients${buildQueryString(params)}`);
+export function getAllClients() {
+  return axiosMiddlewareThirdParty.get(`/api/v1/clients`);
 }
 
 export function getClientById(id: string) {
-  return axiosThirdParty.get(`/api/clients/${id}`);
+  return axiosMiddlewareThirdParty.get(`/api/v1/clients/${id}`);
 }
 
-export function getClientEdit(id: number) {
-  return axiosThirdParty.get(`/api/client/edit/${id}`);
+export function getClientEdit(id: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/clients/${id}`);
 }
 
 export function createClient(data: any) {
-  return axiosThirdParty.post(`/api/client/store`, data);
+  return axiosMiddlewareThirdParty.post(`/api/v1/clients`, data);
 }
 
-export function updateClient(id: number, data: any) {
-  return axiosThirdParty.post(`/api/client/update/${id}`, data);
+export function updateClient(id: string, data: any) {
+  return axiosMiddlewareThirdParty.put(`/api/v1/clients/${id}`, data);
 }
 
 // Client Admin APIs
@@ -184,15 +179,15 @@ export function getRequestService(serviceId: number) {
 }
 
 export function deleteClient(id: string) {
-  return axiosThirdParty.delete(`/api/clients/${id}`);
+  return axiosMiddlewareThirdParty.delete(`/api/v1/clients/${id}`);
 }
 
 export function toggleClientStatus(id: string, status: boolean) {
-  return axiosThirdParty.patch(`/api/clients/${id}/status`, { is_active: status });
+  return axiosMiddlewareThirdParty.patch(`/api/v1/clients/${id}/status`, { is_active: status });
 }
 
 export function regenerateClientSecret(id: string) {
-  return axiosThirdParty.post(`/api/clients/${id}/regenerate-secret`);
+  return axiosMiddlewareThirdParty.post(`/api/v1/clients/${id}/regenerate-secret`);
 }
 
 // Client Request History APIs

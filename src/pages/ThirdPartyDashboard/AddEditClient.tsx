@@ -1,364 +1,518 @@
 import { useState, useEffect } from "react";
-import { Button, Form, Input, Switch, Select, Row, Col, Card } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { createClient, updateClient, getClientEdit, getServicesList, getServiceApis } from "../../redux/apis/apisThirdParty";
+import { createClient, updateClient, getClientById, listApiAccess, bulkGrantAccess } from "../../redux/apis/apisMiddlewareClients";
+import { getAllProviders, getProviderApisByProvider } from "../../redux/apis/apisMiddlewareProviders";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "../../components/ui/card";
+import { ArrowLeft, Plus, Trash2, Loader2 } from "lucide-react";
 
-const { Option } = Select;
+const ENVIRONMENTS = ["DEV", "STAGING", "UAT", "PROD"];
 
-interface ServiceApi {
-  id: number;
+interface Provider {
+  id: string;
   name: string;
-  service_id: number;
+  code: string;
+  category: string;
+  status: string;
 }
 
-interface Service {
-  id: number;
+interface ProviderApi {
+  id: string;
   name: string;
-  status: number;
-}
-
-interface SelectedServices {
-  [serviceId: string]: number[];
+  code: string;
+  providerId: string;
 }
 
 const AddEditClient = () => {
   const navigate = useNavigate();
   const { id } = useParams();
-  const [form] = Form.useForm();
-  const [loading, setLoading] = useState(false);
-  const [services, setServices] = useState<Service[]>([]);
-  const [serviceApis, setServiceApis] = useState<{ [serviceId: number]: ServiceApi[] }>({});
-  const [selectedServices, setSelectedServices] = useState<SelectedServices>({});
-
   const isEditMode = !!id;
 
+  const [loading, setLoading] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formValues, setFormValues] = useState({
+    name: "",
+    code: "",
+    description: "",
+    callbackUrl: "",
+    environment: "DEV",
+    ipWhitelist: [""],
+  });
+
+  // Provider & API access state
+  const [providers, setProviders] = useState<Provider[]>([]);
+  const [providerApis, setProviderApis] = useState<Record<string, ProviderApi[]>>({});
+  const [loadingApis, setLoadingApis] = useState<Record<string, boolean>>({});
+  const [selectedProviders, setSelectedProviders] = useState<Set<string>>(new Set());
+  const [selectedApis, setSelectedApis] = useState<Set<string>>(new Set());
+  // Track what was originally granted (edit mode) to compute diffs
   useEffect(() => {
-    fetchServices();
+    loadProviders();
     if (isEditMode && id) {
-      fetchClientData(parseInt(id));
+      fetchClientData(id);
     }
   }, [id]);
 
-  const fetchServices = async () => {
+  const loadProviders = async () => {
     try {
-      const response = await getServicesList(100, 1);
-      if (response?.data?.success) {
-        const servicesData = response.data.data;
-        let servicesArray: Service[] = [];
-        
-        if (Array.isArray(servicesData)) {
-          servicesArray = servicesData;
-        } else if (servicesData?.services && Array.isArray(servicesData.services)) {
-          servicesArray = servicesData.services;
-        } else if (servicesData?.data?.services && Array.isArray(servicesData.data.services)) {
-          servicesArray = servicesData.data.services;
-        } else if (servicesData?.data && Array.isArray(servicesData.data)) {
-          servicesArray = servicesData.data;
-        }
-
-        setServices(servicesArray);
-      }
+      const response = await getAllProviders();
+      const list = response?.data?.data || response?.data || [];
+      setProviders(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch services");
+      console.error("Failed to load providers:", error);
     }
   };
 
-  const fetchServiceApis = async (serviceId: number) => {
-    if (serviceApis[serviceId]) {
-      return; // Already fetched
-    }
-
+  const fetchClientData = async (clientId: string) => {
     try {
-      const response = await getServiceApis(serviceId);
-      if (response?.data?.success) {
-        const apisData = response.data.data;
-        let apisArray: ServiceApi[] = [];
-        
-        if (Array.isArray(apisData)) {
-          apisArray = apisData;
-        } else if (apisData?.apis && Array.isArray(apisData.apis)) {
-          apisArray = apisData.apis;
-        } else if (apisData?.data?.apis && Array.isArray(apisData.data.apis)) {
-          apisArray = apisData.data.apis;
-        } else if (apisData?.data && Array.isArray(apisData.data)) {
-          apisArray = apisData.data;
+      setLoading(true);
+      const response = await getClientById(clientId);
+      const client = response?.data?.data || response?.data;
+      if (client) {
+        setFormValues({
+          name: client.name || "",
+          code: client.code || "",
+          description: client.description || "",
+          callbackUrl: client.callbackUrl || "",
+          environment: client.environment || "DEV",
+          ipWhitelist:
+            client.ipWhitelist && client.ipWhitelist.length > 0
+              ? client.ipWhitelist
+              : [""],
+        });
+      }
+
+      // Load existing access grants from API access list
+      try {
+        const apiAccessRes = await listApiAccess(clientId);
+        const apiAccessList = apiAccessRes?.data?.data || apiAccessRes?.data || [];
+
+        const provIds = new Set<string>();
+        const apiIds = new Set<string>();
+
+        if (Array.isArray(apiAccessList)) {
+          apiAccessList.forEach((item: any) => {
+            // apiId is the provider API ID, providerId is the parent provider
+            if (item.apiId) apiIds.add(item.apiId);
+            if (item.providerId) provIds.add(item.providerId);
+          });
         }
 
-        setServiceApis((prev) => ({
-          ...prev,
-          [serviceId]: apisArray,
-        }));
+        setSelectedProviders(new Set(provIds));
+        setSelectedApis(new Set(apiIds));
+
+        // Load child APIs for each selected provider
+        for (const pid of provIds) {
+          loadProviderApis(pid);
+        }
+      } catch {
+        // Access control may not exist yet
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch service APIs");
+      toast.error(error?.response?.data?.message || "Failed to fetch client data");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleServiceChange = (serviceId: number, checked: boolean) => {
-    if (checked) {
-      // Fetch APIs for this service when selected
-      fetchServiceApis(serviceId);
-      setSelectedServices((prev) => ({
+  const loadProviderApis = async (providerId: string) => {
+    if (providerApis[providerId]) return;
+    try {
+      setLoadingApis((prev) => ({ ...prev, [providerId]: true }));
+      const response = await getProviderApisByProvider(providerId);
+      const list = response?.data?.data || response?.data || [];
+      setProviderApis((prev) => ({
         ...prev,
-        [serviceId]: [],
+        [providerId]: Array.isArray(list) ? list : [],
       }));
-    } else {
-      // Remove service when unchecked
-      setSelectedServices((prev) => {
-        const newState = { ...prev };
-        delete newState[serviceId];
-        return newState;
-      });
+    } catch {
+      setProviderApis((prev) => ({ ...prev, [providerId]: [] }));
+    } finally {
+      setLoadingApis((prev) => ({ ...prev, [providerId]: false }));
     }
   };
 
-  const handleApiSelection = (serviceId: number, apiIds: number[]) => {
-    setSelectedServices((prev) => ({
+  const handleProviderToggle = (providerId: string, checked: boolean) => {
+    setSelectedProviders((prev) => {
+      const next = new Set(prev);
+      if (checked) {
+        next.add(providerId);
+        loadProviderApis(providerId);
+      } else {
+        next.delete(providerId);
+        // Also uncheck all APIs under this provider
+        const apis = providerApis[providerId] || [];
+        setSelectedApis((prevApis) => {
+          const nextApis = new Set(prevApis);
+          apis.forEach((api) => nextApis.delete(api.id));
+          return nextApis;
+        });
+      }
+      return next;
+    });
+  };
+
+  const handleApiToggle = (apiId: string, checked: boolean) => {
+    setSelectedApis((prev) => {
+      const next = new Set(prev);
+      if (checked) next.add(apiId);
+      else next.delete(apiId);
+      return next;
+    });
+  };
+
+  const handleSelectAllApis = (providerId: string, checked: boolean) => {
+    const apis = providerApis[providerId] || [];
+    setSelectedApis((prev) => {
+      const next = new Set(prev);
+      apis.forEach((api) => {
+        if (checked) next.add(api.id);
+        else next.delete(api.id);
+      });
+      return next;
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (!formValues.name.trim()) {
+      toast.error("Name is required");
+      return;
+    }
+    if (!formValues.code.trim()) {
+      toast.error("Code is required");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const ipList = formValues.ipWhitelist
+        .map((ip) => ip.trim())
+        .filter((ip) => ip !== "");
+
+      const body = {
+        name: formValues.name.trim(),
+        code: formValues.code.trim(),
+        description: formValues.description.trim(),
+        callbackUrl: formValues.callbackUrl.trim(),
+        environment: formValues.environment,
+        ipWhitelist: ipList,
+      };
+
+      let clientId = id;
+
+      if (isEditMode && id) {
+        await updateClient(id, body);
+        toast.success("Client updated successfully");
+      } else {
+        const res = await createClient(body);
+        const created = res?.data?.data || res?.data;
+        clientId = created?.id;
+        toast.success("Client created successfully");
+      }
+
+      // Save access grants if we have a clientId
+      if (clientId) {
+        await saveAccessGrants(clientId);
+      }
+
+      navigate("/ThirdPartyManagement/Clients");
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.message ||
+          `Failed to ${isEditMode ? "update" : "create"} client`
+      );
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const saveAccessGrants = async (clientId: string) => {
+    try {
+      // Build providers array: each selected provider with its selected API IDs
+      const providersPayload = [...selectedProviders]
+        .map((providerId) => {
+          const apis = providerApis[providerId] || [];
+          const apiIds = apis
+            .filter((api) => selectedApis.has(api.id))
+            .map((api) => api.id);
+          return { providerId, apiIds };
+        })
+        .filter((p) => p.apiIds.length > 0);
+
+      if (providersPayload.length > 0) {
+        await bulkGrantAccess(clientId, {
+          clientId,
+          environment: "BOTH",
+          providers: providersPayload,
+        });
+      }
+    } catch (error: any) {
+      console.error("Error saving access grants:", error);
+      toast.error("Client saved but access grants failed");
+    }
+  };
+
+  const addIpEntry = () => {
+    setFormValues((prev) => ({
       ...prev,
-      [serviceId]: apiIds,
+      ipWhitelist: [...prev.ipWhitelist, ""],
     }));
   };
 
-  const fetchClientData = async (clientId: number) => {
-    try {
-      setLoading(true);
-      const response = await getClientEdit(clientId);
-      if (response?.data?.success && response.data.data?.client) {
-        const clientData = response.data.data.client;
-        form.setFieldsValue({
-          name: clientData.name,
-          email: clientData.email,
-          phone: clientData.phone,
-          callback_url: clientData.callback_url,
-          env: clientData.env || "DEV",
-          status: clientData.status === 1 || clientData.status === true,
-        });
-
-        const servicesObj: SelectedServices = {};
-        if (response.data.data.selectedApiMap) {
-          Object.keys(response.data.data.selectedApiMap).forEach((serviceId) => {
-            const apiIds = response.data.data.selectedApiMap[serviceId];
-            if (Array.isArray(apiIds) && apiIds.length > 0) {
-              servicesObj[serviceId] = apiIds;
-              fetchServiceApis(parseInt(serviceId));
-            }
-          });
-        }
-        setSelectedServices(servicesObj);
-      }
-      setLoading(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch client data");
-      setLoading(false);
-    }
+  const removeIpEntry = (index: number) => {
+    setFormValues((prev) => ({
+      ...prev,
+      ipWhitelist: prev.ipWhitelist.filter((_, i) => i !== index),
+    }));
   };
 
-  const onFinish = async (values: any) => {
-    try {
-      setLoading(true);
-      const servicesPayload: { [key: string]: number[] } = {};
-      Object.keys(selectedServices).forEach((serviceId) => {
-        if (selectedServices[serviceId].length > 0) {
-          servicesPayload[serviceId] = selectedServices[serviceId];
-        }
-      });
-
-      const payload = {
-        name: values.name,
-        email: values.email,
-        phone: values.phone,
-        callback_url: values.callback_url,
-        env: values.env,
-        status: values.status === 1 || values.status === true ? 1 : 0,
-        services: servicesPayload,
-      };
-
-      if (isEditMode && id) {
-        await updateClient(parseInt(id), payload);
-        toast.success("Client updated successfully");
-      } else {
-        await createClient(payload);
-        toast.success("Client created successfully");
-      }
-      navigate("/ThirdPartyManagement/Clients");
-      setLoading(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${isEditMode ? "update" : "create"} client`);
-      setLoading(false);
-    }
+  const updateIpEntry = (index: number, value: string) => {
+    setFormValues((prev) => ({
+      ...prev,
+      ipWhitelist: prev.ipWhitelist.map((ip, i) => (i === index ? value : ip)),
+    }));
   };
+
+  if (loading) {
+    return (
+      <div className="service p-4">
+        <p className="text-muted-foreground">Loading client data...</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="service">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>{isEditMode ? "Edit Client" : "Add New Client"}</h2>
-        <Button onClick={() => navigate("/ThirdPartyManagement/Clients")}>
-          Cancel
+    <div className="service p-4">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-xl font-bold">
+          {isEditMode ? "Edit Client" : "Add New Client"}
+        </h1>
+        <Button
+          variant="outline"
+          className="gap-2"
+          onClick={() => navigate("/ThirdPartyManagement/Clients")}
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back
         </Button>
       </div>
 
-      <Card
-        bordered={false}
-        style={{
-          margin: "0 auto",
-          background: "var(--background)",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          borderRadius: 8,
-        }}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          onFinish={onFinish}
-          initialValues={{
-            env: "DEV",
-            status: true,
-          }}
-          style={{ width: "100%" }}
-        >
-          <Row gutter={[16, 16]}>
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Client Name"
-                name="name"
-                rules={[{ required: true, message: "Please enter client name" }]}
-                style={{ marginBottom: 8 }}
-              >
-                <Input className="form-control" placeholder="Enter client name" />
-              </Form.Item>
-            </Col>
+      <Card>
+        <CardHeader>
+          <CardTitle>Client Details</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Name *</Label>
+              <Input
+                placeholder="e.g. KYC Adapter Service"
+                value={formValues.name}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, name: e.target.value })
+                }
+              />
+            </div>
 
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Email"
-                name="email"
-                rules={[
-                  { required: true, message: "Please enter email" },
-                  { type: "email", message: "Please enter a valid email" },
-                ]}
-                style={{ marginBottom: 8 }}
-              >
-                <Input className="form-control" placeholder="Enter email address" />
-              </Form.Item>
-            </Col>
+            <div className="space-y-2">
+              <Label>Code *</Label>
+              <Input
+                placeholder="e.g. KYC_ADAPTER"
+                value={formValues.code}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, code: e.target.value })
+                }
+                disabled={isEditMode}
+              />
+            </div>
 
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Phone"
-                name="phone"
-                rules={[{ required: true, message: "Please enter phone number" }]}
-                style={{ marginBottom: 8 }}
-              >
-                <Input className="form-control" placeholder="Enter phone number" />
-              </Form.Item>
-            </Col>
+            <div className="col-span-1 md:col-span-2 space-y-2">
+              <Label>Description</Label>
+              <Input
+                placeholder="Brief description of the client"
+                value={formValues.description}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, description: e.target.value })
+                }
+              />
+            </div>
 
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Callback URL"
-                name="callback_url"
-                rules={[{ required: true, message: "Please enter callback URL" }]}
-                style={{ marginBottom: 8 }}
-              >
-                <Input className="form-control" placeholder="Enter callback URL" />
-              </Form.Item>
-            </Col>
+            <div className="space-y-2">
+              <Label>Callback URL</Label>
+              <Input
+                placeholder="http://service:8087/api/v1/callbacks"
+                value={formValues.callbackUrl}
+                onChange={(e) =>
+                  setFormValues({ ...formValues, callbackUrl: e.target.value })
+                }
+              />
+            </div>
 
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Environment"
-                name="env"
-                rules={[{ required: true, message: "Please select environment" }]}
-                style={{ marginBottom: 8 }}
+            <div className="space-y-2">
+              <Label>Environment</Label>
+              <Select
+                value={formValues.environment}
+                onValueChange={(val) =>
+                  setFormValues({ ...formValues, environment: val })
+                }
               >
-                <Select /* className="form-control" */ placeholder="Select environment" allowClear>
-                  <Option value="DEV">DEV</Option>
-                  <Option value="PROD">PROD</Option>
-                  <Option value="UAT">UAT</Option>
-                  <Option value="STAGING">STAGING</Option>
-                </Select>
-              </Form.Item>
-            </Col>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select environment" />
+                </SelectTrigger>
+                <SelectContent>
+                  {ENVIRONMENTS.map((env) => (
+                    <SelectItem key={env} value={env}>
+                      {env}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-            <Col xs={24} sm={12}>
-              <Form.Item
-                label="Status"
-                name="status"
-                valuePropName="checked"
-                style={{ marginBottom: 8 }}
-              >
-                <Switch className="red-switch" /* checkedChildren="Active" unCheckedChildren="Inactive" */ />
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col xs={24}>
-              <Form.Item label="Services & APIs" style={{ marginBottom: 16, marginTop: 16 }}>
-                <div style={{ border: "1px solid var(--color-border-light)", borderRadius: "4px", padding: "16px", backgroundColor: "var(--color-surface-ice)" }}>
-                  {services.map((service) => {
-                    const isServiceSelected = selectedServices.hasOwnProperty(service.id);
-                    const availableApis = serviceApis[service.id] || [];
-                    return (
-                      <div key={service.id} className="mb-3" style={{ paddingBottom: "16px", borderBottom: isServiceSelected ? "1px solid var(--color-border-subtle)" : "none" }}>
-                        <div className="d-flex align-items-center gap-2 mb-2">
-                          <Form.Item name={`service_${service.id}_enabled`} valuePropName="checked" style={{ marginBottom: 0 }} noStyle>
-                            <Switch
-                              className="red-switch"
-                              checked={isServiceSelected}
-                              onChange={(checked) => handleServiceChange(service.id, checked)}
-                              checkedChildren="Active"
-                              unCheckedChildren="Inactive"
-                            />
-                          </Form.Item>
-                          <label className="fw-400 mb-0">{service.name}</label>
-                        </div>
-                        {isServiceSelected && (
-                          <Form.Item label={`Select APIs for ${service.name}`} name={`service_${service.id}_apis`} style={{ marginBottom: 0, marginLeft: "32px" }}>
-                            <Select
-                              className="form-control"
-                              mode="multiple"
-                              placeholder={`Select APIs for ${service.name}`}
-                              value={selectedServices[service.id] || []}
-                              onChange={(values) => handleApiSelection(service.id, values)}
-                              loading={availableApis.length === 0}
-                              disabled={availableApis.length === 0}
-                              allowClear
-                            >
-                              {availableApis.map((api) => (
-                                <Option key={api.id} value={api.id}>{api.name}</Option>
-                              ))}
-                            </Select>
-                            {availableApis.length === 0 && <div className="text-muted fs-12 mt-2">Loading APIs...</div>}
-                          </Form.Item>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-              </Form.Item>
-            </Col>
-          </Row>
-
-          <Row justify="end" style={{ marginTop: 24 }}>
-            <Col>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                size="large"
-                style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
-              >
-                {isEditMode ? "Update Client" : "Create Client"}
-              </Button>
-            </Col>
-          </Row>
-        </Form>
+            <div className="col-span-1 md:col-span-2 space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>IP Whitelist</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="gap-1"
+                  onClick={addIpEntry}
+                >
+                  <Plus className="h-3 w-3" />
+                  Add IP
+                </Button>
+              </div>
+              <div className="space-y-2">
+                {formValues.ipWhitelist.map((ip, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      placeholder="e.g. 10.0.0.0/8"
+                      value={ip}
+                      onChange={(e) => updateIpEntry(index, e.target.value)}
+                    />
+                    {formValues.ipWhitelist.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeIpEntry(index)}
+                        className="text-destructive hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </CardContent>
       </Card>
+
+      {/* Provider & API Access */}
+      <Card className="mt-4">
+        <CardHeader>
+          <CardTitle>Provider & API Access</CardTitle>
+        </CardHeader>
+        <CardContent>
+          {providers.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No providers available.</p>
+          ) : (
+            <div className="border rounded-lg p-4 bg-muted/30">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-4">
+                {providers.map((provider) => {
+                  const isChecked = selectedProviders.has(provider.id);
+                  const apis = providerApis[provider.id] || [];
+                  const isLoadingProviderApis = loadingApis[provider.id];
+                  const allApiIds = apis.map((a) => a.id);
+                  const allSelected =
+                    allApiIds.length > 0 &&
+                    allApiIds.every((aid) => selectedApis.has(aid));
+
+                  return (
+                    <div key={provider.id}>
+                      {/* Provider checkbox */}
+                      <label className="flex items-center gap-2 cursor-pointer">
+                        <Checkbox
+                          checked={isChecked}
+                          onCheckedChange={(checked) =>
+                            handleProviderToggle(provider.id, !!checked)
+                          }
+                        />
+                        <span className="text-sm font-medium ml-2">{provider.name}</span>
+                      </label>
+
+                      {/* Child APIs — shown directly below the provider */}
+                      {isChecked && (
+                        <div className="ml-6 mt-3 space-y-2.5">
+                          {isLoadingProviderApis ? (
+                            <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Loading...
+                            </div>
+                          ) : apis.length === 0 ? (
+                            <p className="text-xs text-muted-foreground">No APIs</p>
+                          ) : (
+                            <>
+                              <label className="flex items-center gap-2.5 cursor-pointer">
+                                <Checkbox
+                                  checked={allSelected}
+                                  onCheckedChange={(checked) =>
+                                    handleSelectAllApis(provider.id, !!checked)
+                                  }
+                                />
+                                <span className="text-sm font-semibold ml-2">Select All APIs</span>
+                              </label>
+                              {apis.map((api) => (
+                                <label
+                                  key={api.id}
+                                  className="flex items-center gap-2.5 cursor-pointer"
+                                >
+                                  <Checkbox
+                                    checked={selectedApis.has(api.id)}
+                                    onCheckedChange={(checked) =>
+                                      handleApiToggle(api.id, !!checked)
+                                    }
+                                  />
+                                  <span className="text-sm font-normal ml-2">{api.name}</span>
+                                </label>
+                              ))}
+                            </>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end gap-3 mt-4">
+        <Button
+          variant="outline"
+          onClick={() => navigate("/ThirdPartyManagement/Clients")}
+        >
+          Cancel
+        </Button>
+        <Button onClick={handleSubmit} disabled={isSaving}>
+          {isSaving
+            ? "Saving..."
+            : isEditMode
+            ? "Update Client"
+            : "Create Client"}
+        </Button>
+      </div>
     </div>
   );
 };
 
 export default AddEditClient;
-
