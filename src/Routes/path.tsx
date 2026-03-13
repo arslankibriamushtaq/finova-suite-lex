@@ -162,6 +162,7 @@ import PurposeOfFinancing from "../components/LOV/PurposeOfFinancing";
 import EmploymentSector from "../components/LOV/EmploymentSector";
 import SourceOfIncome from "../components/LOV/SourceOfIncome";
 import SourceOfWealth from "../components/LOV/SourceOfWealth";
+import SourceOfFunds from "../components/LOV/SourceOfFunds";
 import WealthValue from "../components/LOV/WealthValue";
 import ProfessionValue from "../components/LOV/ProfessionValue";
 import CitiesList from "../components/LOV/CitiesList";
@@ -762,6 +763,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/LOV/SourceOfWealth",
             element: <SourceOfWealth />,
+          },
+          {
+            path: "/LOS/LOV/SourceOfFunds",
+            element: <SourceOfFunds />,
           },
           {
             path: "/LOS/LOV/WealthValue",

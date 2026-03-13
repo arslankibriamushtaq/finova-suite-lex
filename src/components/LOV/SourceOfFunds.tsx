@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import {
-  getAllSourceOfWealth,
-  createSourceOfWealth,
-  updateSourceOfWealth,
-  deleteSourceOfWealth,
+  getAllSourceOfFunds,
+  createSourceOfFunds,
+  updateSourceOfFunds,
+  deleteSourceOfFunds,
 } from "../../redux/apis/apisEddReferenceData";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
@@ -20,7 +20,7 @@ import {
 } from "../ui/dropdown-menu";
 import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
 
-const SourceOfWealth = () => {
+const SourceOfFunds = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -53,11 +53,11 @@ const SourceOfWealth = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllSourceOfWealth();
+      const response = await getAllSourceOfFunds();
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch source of wealth data");
+      toast.error(error?.response?.data?.message || "Failed to fetch source of funds data");
     } finally {
       setIsLoading(false);
     }
@@ -116,10 +116,10 @@ const SourceOfWealth = () => {
       };
 
       if (modalMode === "edit" && currentItemId) {
-        await updateSourceOfWealth(currentItemId, body);
+        await updateSourceOfFunds(currentItemId, body);
         toast.success("Updated successfully");
       } else {
-        await createSourceOfWealth(body);
+        await createSourceOfFunds(body);
         toast.success("Created successfully");
       }
 
@@ -136,7 +136,7 @@ const SourceOfWealth = () => {
     if (!deleteTarget) return;
     try {
       setIsDeleting(true);
-      await deleteSourceOfWealth(deleteTarget.id);
+      await deleteSourceOfFunds(deleteTarget.id);
       toast.success("Deleted successfully");
       setDeleteTarget(null);
       fetchData();
@@ -245,7 +245,7 @@ const SourceOfWealth = () => {
 
   return (
     <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Source of Wealth</h1>
+      <h1 className="text-xl font-bold pb-3">Source of Funds</h1>
 
       <div className="d-flex justify-content-between mb-3 gap-2">
         <Input
@@ -378,4 +378,4 @@ const SourceOfWealth = () => {
   );
 };
 
-export default SourceOfWealth;
+export default SourceOfFunds;
