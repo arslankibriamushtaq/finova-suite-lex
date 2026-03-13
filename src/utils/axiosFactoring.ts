@@ -16,7 +16,6 @@ axiosFactoring.interceptors.request.use((reqConfig) => {
  
     // console.log(accessToken);
     // if (accessToken && accessToken !== "undefined") {
-    //   config.headers["Authorization"] = `Bearer ${tokenValue}`;
      config.headers["Authorization"] = `Bearer ${token}`;
      config.headers["Content-Type"] = "application/json";
      config.headers["X-Tenant-Id"] = "550e8400-e29b-41d4-a716-446655440000";
