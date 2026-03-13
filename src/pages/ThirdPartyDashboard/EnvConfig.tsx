@@ -1,538 +1,476 @@
 import { useState, useEffect } from "react";
-import Axios from "axios";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getEnvironmentConfig } from "../../redux/apis/apisThirdParty";
-import { Button, Form, Input, Select, Modal, Dropdown, Menu } from "antd";
-import { EditFilled, PlusOutlined } from "@ant-design/icons";
-import arrowDown from "../../assets/images/arrow-down.png";
-import { store } from "../../redux/store";
+import { updateEnvConfig } from "../../redux/apis/apisMiddlewareProviders";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../components/ui/dropdown-menu";
+import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 
 const EnvConfig = () => {
-  const [skelitonLoading, setSkelitonLoading] = useState(false);
-  const [data, setData] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [totalRows, setTotalRows] = useState(0);
-  const [from, setFrom] = useState(0);
-  const [pageSize, setPageSize] = useState(10);
-  const [to, setTo] = useState(0);
-  const [totalPage, setTotalPage] = useState(0);
+  const [pageSize, setPageSize] = useState(15);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<any>(null);
-  const [form] = Form.useForm();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [headersList, setHeadersList] = useState<Array<{ key: string; value: string }>>([]);
   const [credentialsList, setCredentialsList] = useState<Array<{ key: string; value: string }>>([]);
+  const [formValues, setFormValues] = useState({
+    baseUrl: "",
+    endpointPath: "",
+    httpMethod: "GET",
+    environment: "DEV",
+    active: true,
+  });
 
-  const updateEnvironmentConfig = (id: number, data: FormData) => {
-    const token = (store.getState() as any)?.block?.token;
-    const baseURL = import.meta.env.VITE_REACT_APP_API_BASE_THIRD_PARTY_URL;
-    return Axios.post(`${baseURL}/api/environment/${id}`, data, {
-      headers: {
-        Authorization: token ? `Bearer ${token}` : "",
-        // Let Axios set Content-Type automatically for FormData (multipart/form-data with boundary)
-      },
-    });
-  };
+  useEffect(() => {
+    fetchEnvironmentConfig();
+  }, []);
 
-  const EnvConfig_Headers = [
-    {
-      name: "ID",
-      selector: (row: { id: any }) => row.id,
-      sortable: true,
-      width: "100px",
-    },
-    {
-      name: "API Name",
-      selector: (row: { apiName: any }) => row.apiName,
-      sortable: true,
-    },
-    {
-      name: "URL",
-      selector: (row: { url: any }) => row.url,
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Endpoint",
-      selector: (row: { endpoint: any }) => row.endpoint || "-",
-      sortable: true,
-      width: "350px",
-    },
-    {
-      name: "Method",
-      selector: (row: { method: any }) => row.method,
-      sortable: true,
-      width: "120px",
-    },
-    {
-      name: "Status",
-      cell: (row: any) => (
-        <span
-          style={{
-            padding: "6px 12px",
-            borderRadius: "4px",
-            backgroundColor: row.status === "Active" || row.status === 1 ? "var(--color-success)" : "var(--color-error)",
-            color: "white",
-            fontSize: "12px",
-          }}
-        >
-          {row.status === "Active" || row.status === 1 ? "Active" : "Inactive"}
-        </span>
-      ),
-      sortable: true,
-      width: "120px",
-    },
-    {
-      name: "Actions",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              backgroundColor: "var(--color-action) !important",
-              color: "var(--foreground)",
-              borderColor: "white",
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
-            Select <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
-      ),
-      width: "100px",
-    },
-  ];
+  const fetchEnvironmentConfig = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getEnvironmentConfig();
+      const providers = response?.data?.data || response?.data || [];
 
-  const menu = (row: any) => (
-    <Menu>
-      <Menu.Item
-        key="edit"
-        icon={<EditFilled />}
-        onClick={() => handleEdit(row)}
-      >
-        Edit
-      </Menu.Item>
-    </Menu>
-  );
-
-// Helper function to flatten nested headers object WITHOUT altering key names
-const flattenHeaders = (headers: any): Array<{ key: string; value: string }> => {
-  if (!headers || typeof headers !== "object") return [];
-
-  const flattened: Array<{ key: string; value: string }> = [];
-
-  const processObject = (obj: any, prefix: string = "") => {
-    Object.keys(obj).forEach((key) => {
-      const value = obj[key];
-
-      // Keep key EXACTLY as user typed it
-      const fullKey = prefix ? `${prefix}-${key}` : key;
-
-      if (value && typeof value === "object" && !Array.isArray(value)) {
-        processObject(value, fullKey);
-      } else {
-        flattened.push({
-          key: fullKey,
-          value: String(value),
+      // Flatten providers → apis → envConfigs into flat rows for the table
+      const flatRows: any[] = [];
+      if (Array.isArray(providers)) {
+        providers.forEach((provider: any) => {
+          const apis = provider.apis || [];
+          apis.forEach((api: any) => {
+            const envConfigs = api.envConfigs || [];
+            if (envConfigs.length > 0) {
+              envConfigs.forEach((config: any) => {
+                flatRows.push({
+                  configId: config.id,
+                  providerName: provider.name || "-",
+                  providerId: provider.id,
+                  apiId: api.id,
+                  apiName: api.name || "-",
+                  httpMethod: api.httpMethod || "-",
+                  endpointPath: config.endpointPath || api.endpointPath || "-",
+                  baseUrl: config.baseUrl || "-",
+                  environment: config.environment || "-",
+                  authType: config.authType || "-",
+                  active: config.active,
+                  credentials: config.credentials,
+                  headers: config.headers,
+                });
+              });
+            } else {
+              flatRows.push({
+                configId: null,
+                providerName: provider.name || "-",
+                providerId: provider.id,
+                apiId: api.id,
+                apiName: api.name || "-",
+                httpMethod: api.httpMethod || "-",
+                endpointPath: api.endpointPath || "-",
+                baseUrl: "-",
+                environment: "-",
+                authType: "-",
+                active: false,
+                credentials: null,
+                headers: null,
+              });
+            }
+          });
         });
       }
-    });
-  };
 
-  processObject(headers);
-  return flattened;
-};
-
-  
-  // Helper function to flatten nested credentials object
-  const flattenCredentials = (credentials: any): Array<{ key: string; value: string }> => {
-    if (!credentials || typeof credentials !== "object") return [];
-    
-    const flattened: Array<{ key: string; value: string }> = [];
-    
-    const processObject = (obj: any, prefix: string = "") => {
-      Object.keys(obj).forEach((key) => {
-        const fullKey = prefix ? `${prefix}.${key}` : key;
-        const value = obj[key];
-        
-        if (value !== null && value !== undefined) {
-          if (typeof value === "object" && !Array.isArray(value)) {
-            // Recursively process nested objects
-            processObject(value, fullKey);
-          } else {
-            // Convert value to string
-            flattened.push({
-              key: fullKey,
-              value: String(value),
-            });
-          }
-        }
-      });
-    };
-    
-    processObject(credentials);
-    return flattened;
-  };
-
-  const handleEdit = (row: any) => {
-    // Use originalItem from row if available, otherwise find from data array
-    const originalItem = row.originalItem || data.find((item: any) => item.id === row.id);
-    if (originalItem) {
-      setSelectedItem(originalItem);
-      
-      // Flatten headers into key-value pairs
-      const flattenedHeaders = flattenHeaders(originalItem.headers);
-      setHeadersList(flattenedHeaders.length > 0 ? flattenedHeaders : [{ key: "", value: "" }]);
-      
-      // Flatten credentials into key-value pairs
-      const flattenedCredentials = flattenCredentials(originalItem.credentials);
-      setCredentialsList(flattenedCredentials.length > 0 ? flattenedCredentials : [{ key: "", value: "" }]);
-      
-      // Set form values
-      form.setFieldsValue({
-        url: originalItem.url || "",
-        endpoint: originalItem.endpoint || "",
-        method: originalItem.method || "",
-        status: originalItem.status === "Active" || originalItem.status === 1 ? "Active" : "Inactive",
-      });
-      setShowEditModal(true);
+      setData(flatRows);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to fetch environment config");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleUpdate = async (values: any) => {
+  // Parse JSON string or object into key-value pairs
+  const parseJsonToKeyValue = (input: any): Array<{ key: string; value: string }> => {
+    if (!input) return [];
+    try {
+      const obj = typeof input === "string" ? JSON.parse(input) : input;
+      if (!obj || typeof obj !== "object") return [];
+      return Object.entries(obj).map(([key, value]) => ({
+        key,
+        value: String(value),
+      }));
+    } catch {
+      return [];
+    }
+  };
+
+  const handleEdit = (row: any) => {
+    setSelectedItem(row);
+
+    const flatHeaders = parseJsonToKeyValue(row.headers);
+    setHeadersList(flatHeaders.length > 0 ? flatHeaders : [{ key: "", value: "" }]);
+
+    const flatCredentials = parseJsonToKeyValue(row.credentials);
+    setCredentialsList(flatCredentials.length > 0 ? flatCredentials : [{ key: "", value: "" }]);
+
+    setFormValues({
+      baseUrl: row.baseUrl !== "-" ? row.baseUrl : "",
+      endpointPath: row.endpointPath !== "-" ? row.endpointPath : "",
+      httpMethod: row.httpMethod !== "-" ? row.httpMethod : "GET",
+      environment: row.environment !== "-" ? row.environment : "DEV",
+      active: row.active ?? true,
+    });
+
+    setShowEditModal(true);
+  };
+
+  const handleUpdate = async () => {
     if (!selectedItem) return;
+
+    if (!formValues.baseUrl.trim()) {
+      toast.error("Base URL is required");
+      return;
+    }
 
     try {
       setIsSubmitting(true);
-      const formData = new FormData();
-      
-      formData.append("url", values.url);
-      formData.append("endpoint", values.endpoint);
-      formData.append("method", values.method);
-      formData.append("status", values.status);
-      formData.append("_method", "PUT");
 
-      // Add all headers from the headersList using bracket notation
-      // This matches the Postman form-data format: header[app-id], header[app-key], etc.
-      headersList.forEach((header) => {
-        if (header.key && header.key.trim() !== "") {
-          // Send as header[key] format - backend should parse this as flat structure
-          formData.append(`header[${header.key.trim()}]`, header.value || "");
-        }
+      const headersObj: Record<string, string> = {};
+      headersList.forEach((h) => {
+        if (h.key.trim()) headersObj[h.key.trim()] = h.value;
       });
 
-      // Add all credentials from the credentialsList using bracket notation
-      credentialsList.forEach((credential) => {
-        if (credential.key && credential.key.trim() !== "") {
-          // Send as credentials[key] format
-          formData.append(`credentials[${credential.key.trim()}]`, credential.value || "");
-        }
+      const credentialsObj: Record<string, string> = {};
+      credentialsList.forEach((c) => {
+        if (c.key.trim()) credentialsObj[c.key.trim()] = c.value;
       });
 
-      const response = await updateEnvironmentConfig(selectedItem.id, formData);
-      
-      if (response?.data?.success) {
-        toast.success("Environment config updated successfully");
-        setShowEditModal(false);
-        form.resetFields();
-        setHeadersList([{ key: "", value: "" }]);
-        setCredentialsList([{ key: "", value: "" }]);
-        fetchEnvironmentConfig();
-      } else {
-        toast.error(response?.data?.message || "Failed to update environment config");
-      }
+      const body = {
+        apiId: selectedItem.apiId,
+        environment: formValues.environment,
+        baseUrl: formValues.baseUrl.trim(),
+        endpointPath: formValues.endpointPath.trim(),
+        credentials: JSON.stringify(credentialsObj),
+        headers: JSON.stringify(headersObj),
+        queryParams: null,
+        authType: selectedItem.authType !== "-" ? selectedItem.authType : "API_KEY",
+      };
+
+      await updateEnvConfig(selectedItem.configId, body);
+      toast.success("Environment config updated successfully");
+      closeModal();
+      fetchEnvironmentConfig();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to update environment config");
+      toast.error(error?.response?.data?.message || "Failed to update environment config");
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const addHeader = () => {
-    setHeadersList([...headersList, { key: "", value: "" }]);
+  const closeModal = () => {
+    setShowEditModal(false);
+    setSelectedItem(null);
+    setHeadersList([{ key: "", value: "" }]);
+    setCredentialsList([{ key: "", value: "" }]);
+    setFormValues({ baseUrl: "", endpointPath: "", httpMethod: "GET", environment: "DEV", active: true });
   };
 
-  // Headers cannot be removed - only updated or new ones can be added per requirements
-
+  const addHeader = () => setHeadersList([...headersList, { key: "", value: "" }]);
+  const removeHeader = (index: number) => setHeadersList(headersList.filter((_, i) => i !== index));
   const updateHeader = (index: number, field: "key" | "value", newValue: string) => {
-    const newHeaders = [...headersList];
-    newHeaders[index] = {
-      ...newHeaders[index],
-      [field]: newValue,
-    };
-    setHeadersList(newHeaders);
+    const updated = [...headersList];
+    updated[index] = { ...updated[index], [field]: newValue };
+    setHeadersList(updated);
   };
 
-  const addCredential = () => {
-    setCredentialsList([...credentialsList, { key: "", value: "" }]);
-  };
-
-  // Credentials cannot be removed - only updated or new ones can be added per requirements
-
+  const addCredential = () => setCredentialsList([...credentialsList, { key: "", value: "" }]);
+  const removeCredential = (index: number) => setCredentialsList(credentialsList.filter((_, i) => i !== index));
   const updateCredential = (index: number, field: "key" | "value", newValue: string) => {
-    const newCredentials = [...credentialsList];
-    newCredentials[index] = {
-      ...newCredentials[index],
-      [field]: newValue,
-    };
-    setCredentialsList(newCredentials);
+    const updated = [...credentialsList];
+    updated[index] = { ...updated[index], [field]: newValue };
+    setCredentialsList(updated);
   };
 
-  useEffect(() => {
-    fetchEnvironmentConfig();
-  }, [page, pageSize]);
-
-  const fetchEnvironmentConfig = async () => {
-    try {
-      setSkelitonLoading(true);
-      const response = await getEnvironmentConfig();
-      
-      if (response?.data?.success) {
-        const responseData = response.data.data;
-        
-        // The response has product_verification_methods as an object with keys (environment names) and values (arrays)
-        // Example: { "": [{id: 1, api_id: 1, url: "...", ...}], "DEV": [...], "PROD": [...] }
-        const verificationMethodsObj = responseData?.product_verification_methods || {};
-        
-        // Flatten all verification methods from all environment keys into a single array
-        let configArray: any[] = [];
-        Object.keys(verificationMethodsObj).forEach((envKey) => {
-          const methodsArray = verificationMethodsObj[envKey];
-          if (Array.isArray(methodsArray)) {
-            // Add environment info to each method
-            methodsArray.forEach((method) => {
-              configArray.push({
-                ...method,
-                environmentKey: envKey || "-",
-              });
-            });
-          }
-        });
-
-        setData(configArray);
-        setTotalRows(configArray.length || 0);
-        setFrom(configArray.length > 0 ? 1 : 0);
-        setTo(configArray.length || 0);
-        setPage(1);
-        setTotalPage(1);
-      }
-      setSkelitonLoading(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch environment config");
-      setSkelitonLoading(false);
-    }
-  };
-
-  const mappedData = data?.map((item: any) => ({
-    id: item?.id || "-",
-    apiName: item?.name || item?.api?.name || "-",
-    url: item?.url || "-",
-    endpoint: item?.endpoint || "-",
-    method: item?.method || "-",
-    status: item?.status || "Inactive",
-    originalItem: item, // Keep reference to original item for editing
-  }));
+  const tableHeaders = [
+    {
+      name: "Provider",
+      selector: (row: any) => row.providerName,
+      sortable: true,
+    },
+    {
+      name: "API Name",
+      selector: (row: any) => row.apiName,
+      sortable: true,
+    },
+    {
+      name: "Base URL",
+      selector: (row: any) => row.baseUrl,
+      sortable: true,
+      width: "250px",
+    },
+    {
+      name: "Endpoint",
+      selector: (row: any) => row.endpointPath,
+      sortable: true,
+      width: "250px",
+    },
+    {
+      name: "Method",
+      selector: (row: any) => row.httpMethod,
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Environment",
+      selector: (row: any) => row.environment,
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "Status",
+      cell: (row: any) => {
+        const isActive = row.active === true;
+        return (
+          <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+            {isActive ? "Active" : "Inactive"}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Action",
+      cell: (row: any) => (
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleEdit(row);
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+      width: "100px",
+    },
+  ];
 
   return (
-    <div className="service">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Env Config</h2>
-      </div>
+    <div className="service p-4">
+      <h1 className="text-xl font-bold pb-3">Environment Config</h1>
+
       <TableView
-        header={EnvConfig_Headers}
-        data={mappedData}
-        totalRows={totalRows}
-        isLoading={skelitonLoading}
-        from={from}
+        header={tableHeaders}
+        data={data}
+        totalRows={data.length}
+        isLoading={isLoading}
+        from={1}
         page={page}
-        totalPage={totalPage}
+        totalPage={Math.ceil(data.length / pageSize) || 1}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={to}
+        to={data.length}
       />
-      
-      <Modal
-        title="Edit Environment Config"
-        open={showEditModal}
-        onCancel={() => {
-          setShowEditModal(false);
-          form.resetFields();
-          setSelectedItem(null);
-          setHeadersList([{ key: "", value: "" }]);
-          setCredentialsList([{ key: "", value: "" }]);
-        }}
-        footer={null}
-        className="custom-mod"
-        style={{ maxWidth: "700px" }}
-      >
-        <Form
-          form={form}
-          layout="vertical"
-          className="Ente-details"
-          onFinish={handleUpdate}
-          initialValues={{
-            method: "GET",
-            status: "Active",
-          }}
-        >
-         <div className="d-flex w-100 gap-4 align-items-center">
-         <Form.Item
-            label="URL"
-            name="url"
-            rules={[{ required: true, message: "Please enter URL" }]}
-            className="w-48"
-          >
-            <Input placeholder="Enter URL" />
-          </Form.Item>
 
-          <Form.Item
-            label="Endpoint"
-            name="endpoint"
-            rules={[{ required: true, message: "Please enter endpoint" }]}
-             className="w-48"
-          >
-            <Input placeholder="Enter endpoint" />
-          </Form.Item>
-         </div>
-         <div className="d-flex w-100 gap-4 align-items-center">
-          <Form.Item
-            label="Method"
-            name="method"
-            rules={[{ required: true, message: "Please select method" }]}
-            className="w-48"
-          >
-            <Select placeholder="Select method">
-              <Select.Option value="GET">GET</Select.Option>
-              <Select.Option value="POST">POST</Select.Option>
-              <Select.Option value="PUT">PUT</Select.Option>
-              <Select.Option value="PATCH">PATCH</Select.Option>
-              <Select.Option value="DELETE">DELETE</Select.Option>
-              </Select>
-            </Form.Item>
-        
+      <Dialog open={showEditModal} onOpenChange={(open) => !open && closeModal()}>
+        <DialogContent className="max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Edit Environment Config</DialogTitle>
+          </DialogHeader>
 
-          <Form.Item
-            label="Status"
-            name="status"
-            rules={[{ required: true, message: "Please select status" }]}
-            className="w-48"
-          >
-            <Select placeholder="Select status">
-              <Select.Option value="Active">Active</Select.Option>
-              <Select.Option value="Inactive">Inactive</Select.Option>
-            </Select>
-          </Form.Item>
-          </div>
-
-          <div style={{ marginTop: "20px", marginBottom: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontWeight: "bold" }}>Headers</span>
-            <Button
-              type="dashed"
-              onClick={addHeader}
-              icon={<PlusOutlined />}
-              style={{ marginBottom: "10px" }}
-            >
-              Add Header
-            </Button>
-          </div>
-          
-          <div style={{ maxHeight: "400px", overflowY: "auto", marginBottom: "20px" }}>
-            {headersList.map((header, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  marginBottom: "10px",
-                  alignItems: "flex-start",
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <Input
-                    placeholder="Header Key (e.g., app-id, PLATFORM-KEY)"
-                    value={header.key}
-                    onChange={(e) => updateHeader(index, "key", e.target.value)}
-                    style={{ marginBottom: "5px" }}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Input
-                    placeholder="Header Value"
-                    value={header.value}
-                    onChange={(e) => updateHeader(index, "value", e.target.value)}
-                    style={{ marginBottom: "5px" }}
-                  />
-                </div>
+          <div className="space-y-4">
+            {selectedItem && (
+              <div className="text-sm text-muted-foreground">
+                <span className="font-medium text-foreground">{selectedItem.providerName}</span>
+                {" — "}
+                {selectedItem.apiName}
               </div>
-            ))}
-          </div>
+            )}
 
-          <div style={{ marginTop: "20px", marginBottom: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-            <span style={{ fontWeight: "bold" }}>Credentials</span>
-            <Button
-              type="dashed"
-              onClick={addCredential}
-              icon={<PlusOutlined />}
-              style={{ marginBottom: "10px" }}
-            >
-              Add Credential
-            </Button>
-          </div>
-          
-          <div style={{ maxHeight: "400px", overflowY: "auto", marginBottom: "20px" }}>
-            {credentialsList.map((credential, index) => (
-              <div
-                key={index}
-                style={{
-                  display: "flex",
-                  gap: "10px",
-                  marginBottom: "10px",
-                  alignItems: "flex-start",
-                }}
-              >
-                <div style={{ flex: 1 }}>
-                  <Input
-                    placeholder="Credential Key (e.g., username, password)"
-                    value={credential.key}
-                    onChange={(e) => updateCredential(index, "key", e.target.value)}
-                    style={{ marginBottom: "5px" }}
-                  />
-                </div>
-                <div style={{ flex: 1 }}>
-                  <Input
-                    placeholder="Credential Value"
-                    value={credential.value}
-                    onChange={(e) => updateCredential(index, "value", e.target.value)}
-                    style={{ marginBottom: "5px" }}
-                  />
-                </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Base URL *</Label>
+                <Input
+                  placeholder="https://sandbox.example.com"
+                  value={formValues.baseUrl}
+                  onChange={(e) => setFormValues({ ...formValues, baseUrl: e.target.value })}
+                />
               </div>
-            ))}
-          </div>
-          <Form.Item style={{ marginTop: "20px", marginBottom: 0 }}>
-            <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-              <Button onClick={() => {
-                setShowEditModal(false);
-                form.resetFields();
-                setSelectedItem(null);
-                setHeadersList([{ key: "", value: "" }]);
-                setCredentialsList([{ key: "", value: "" }]);
-                fetchEnvironmentConfig();
-              }}>
-                Cancel
-              </Button>
-              <Button type="primary" htmlType="submit" loading={isSubmitting} style={{ backgroundColor: "var(--foreground)", color: "var(--primary-foreground)", }}>
-                {isSubmitting ? "Updating..." : "Update"}
-              </Button>
+              <div className="space-y-2">
+                <Label>Endpoint Path</Label>
+                <Input
+                  placeholder="/api/v1/resource"
+                  value={formValues.endpointPath}
+                  onChange={(e) => setFormValues({ ...formValues, endpointPath: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Method</Label>
+                <Select
+                  value={formValues.httpMethod}
+                  onValueChange={(val) => setFormValues({ ...formValues, httpMethod: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["GET", "POST", "PUT", "PATCH", "DELETE"].map((m) => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label>Environment</Label>
+                <Select
+                  value={formValues.environment}
+                  onValueChange={(val) => setFormValues({ ...formValues, environment: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {["DEV", "STAGING", "UAT", "PROD"].map((env) => (
+                      <SelectItem key={env} value={env}>{env}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-          </Form.Item>
-       
-        </Form>
-      </Modal>
+
+            <div className="space-y-2">
+              <Label>Status</Label>
+              <Select
+                value={formValues.active ? "active" : "inactive"}
+                onValueChange={(val) => setFormValues({ ...formValues, active: val === "active" })}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Headers */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="font-semibold">Headers</Label>
+                <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addHeader}>
+                  <Plus className="h-3 w-3" />
+                  Add Header
+                </Button>
+              </div>
+              <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                {headersList.map((header, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Header Key"
+                      value={header.key}
+                      onChange={(e) => updateHeader(index, "key", e.target.value)}
+                    />
+                    <Input
+                      placeholder="Header Value"
+                      value={header.value}
+                      onChange={(e) => updateHeader(index, "value", e.target.value)}
+                    />
+                    {headersList.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeHeader(index)}
+                        className="text-destructive hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Credentials */}
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label className="font-semibold">Credentials</Label>
+                <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addCredential}>
+                  <Plus className="h-3 w-3" />
+                  Add Credential
+                </Button>
+              </div>
+              <div className="space-y-2 max-h-[200px] overflow-y-auto">
+                {credentialsList.map((credential, index) => (
+                  <div key={index} className="flex items-center gap-2">
+                    <Input
+                      placeholder="Credential Key"
+                      value={credential.key}
+                      onChange={(e) => updateCredential(index, "key", e.target.value)}
+                    />
+                    <Input
+                      placeholder="Credential Value"
+                      value={credential.value}
+                      onChange={(e) => updateCredential(index, "value", e.target.value)}
+                    />
+                    {credentialsList.length > 1 && (
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeCredential(index)}
+                        className="text-destructive hover:text-destructive shrink-0"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeModal} disabled={isSubmitting}>
+              Cancel
+            </Button>
+            <Button onClick={handleUpdate} disabled={isSubmitting}>
+              {isSubmitting ? "Updating..." : "Update"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

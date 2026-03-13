@@ -6,9 +6,9 @@ import toast from "react-hot-toast";
 const axiosThirdParty = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/middleware-third-party`,
 });
-let token = localStorage.getItem("token");
 axiosThirdParty.interceptors.request.use((reqConfig) => {
   const config = { ...reqConfig };
+  const token = (store.getState() as any).block.token;
 
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
@@ -24,19 +24,19 @@ axiosThirdParty.interceptors.response.use(
     const status = error?.response?.status;
     const data = error?.response?.data;
 
-    if (status === 401) {
-      console.warn("Unauthorized, redirecting to login...");
-      toast.error("Session expired, please login again.");
+    // if (status === 401) {
+    //   console.warn("Unauthorized, redirecting to login...");
+    //   toast.error("Session expired, please login again.");
       
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
+    //   // Clear authentication data from localStorage
+    //   localStorage.removeItem("token");
+    //   localStorage.removeItem("userData");
       
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
+    //   // Clear token from Redux store
+    //   store.dispatch(setToken({ token: "" }));
       
-      window.location.href = "/login";
-    }
+    //   window.location.href = "/login";
+    // }
 
     if (status === 422 && data?.errors) {
       // Validation errors

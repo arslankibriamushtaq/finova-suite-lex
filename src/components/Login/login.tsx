@@ -12,7 +12,7 @@ const Login: React.FC = () => {
       try {
         const ssoBaseUrl = import.meta.env.VITE_API_BASE_URL;
         const res = await axios.get(
-          `${ssoBaseUrl}/identity-service/api/v1/auth/sso/login-url`
+          `${ssoBaseUrl}/identity-service/api/v1/auth/sso/login-url?redirect_uri=${window.location.origin}/callback`
         );
         const { authUrl, state } = res.data.data;
         sessionStorage.setItem("sso_state", state);

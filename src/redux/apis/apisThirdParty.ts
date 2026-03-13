@@ -79,7 +79,7 @@ export function getCountriesThirdParty() {
   return axios.get(`/countries?page=1&per_page=50`);
 }
 export function getEnvironmentConfig() {
-  return axiosThirdParty.get(`/api/environment`);
+  return axiosThirdParty.get(`/api/v1/providers/environment`);
 }
 
 export function exportEnvironmentCsv() {

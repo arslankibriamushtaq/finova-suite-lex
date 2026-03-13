@@ -39,3 +39,11 @@ export function getAllProviderApis() {
 export function getProviderApisByProvider(providerId: string) {
   return axiosMiddlewareThirdParty.get(`/api/v1/provider-apis/by-provider/${providerId}`);
 }
+
+// ============================================================
+// Environment Configs
+// ============================================================
+
+export function updateEnvConfig(configId: string, body: any) {
+  return axiosMiddlewareThirdParty.put(`/api/v1/env-configs/${configId}`, body);
+}
