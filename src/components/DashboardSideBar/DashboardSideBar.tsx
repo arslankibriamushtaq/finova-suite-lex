@@ -578,18 +578,18 @@ const DasbhboardSidebar = () => {
       imgActive: Images.SettingsIconDark,
       active: pathname.split("/").includes("Setting"),
           submenu: [
-            {
-              label: "Departments",
-              Link: "Departments",
-                  LinkLable: "/LOS/DepartmentManagement",
-                  active: pathname.includes("/Departments"),
-            },
-            {
-              label: "Department Permissions",
-              Link: "DepartmentsPermissions",
-                  LinkLable: "/LOS/DepartmentManagement",
-                  active: pathname.includes("/LOS/DepartmentManagement/DepartmentsPermissions"),
-            },
+            // {
+            //   label: "Departments",
+            //   Link: "Departments",
+            //       LinkLable: "/LOS/DepartmentManagement",
+            //       active: pathname.includes("/Departments"),
+            // },
+            // {
+            //   label: "Department Permissions",
+            //   Link: "DepartmentsPermissions",
+            //       LinkLable: "/LOS/DepartmentManagement",
+            //       active: pathname.includes("/LOS/DepartmentManagement/DepartmentsPermissions"),
+            // },
             {
               label: "Employees",
               Link: "Employees",
