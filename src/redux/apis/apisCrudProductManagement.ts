@@ -270,3 +270,67 @@ export const updateProductDocument = (docId: string, body: any) => {
   console.warn("updateProductDocument is deprecated. Use editProductDocument(productId, documentId, body) instead.");
   return axiosProductManagement.put(`/api/v1/products/unknown/documents/${docId}`, body);
 };
+
+// ============================================================
+// Template Types CRUD
+// ============================================================
+
+export function getAllTemplateTypes() {
+  return axiosProductManagement.get(`/api/v1/template-types`);
+}
+
+export function getTemplateTypesByCategory(category: string) {
+  return axiosProductManagement.get(`/api/v1/template-types/category/${category}`);
+}
+
+export function getTemplateTypeById(id: string) {
+  return axiosProductManagement.get(`/api/v1/template-types/${id}`);
+}
+
+export function createTemplateType(body: { name: string; category: string }) {
+  return axiosProductManagement.post(`/api/v1/template-types`, body);
+}
+
+export function updateTemplateType(id: string, body: { name: string; category: string; active?: boolean }) {
+  return axiosProductManagement.put(`/api/v1/template-types/${id}`, body);
+}
+
+export function deleteTemplateType(id: string) {
+  return axiosProductManagement.delete(`/api/v1/template-types/${id}`);
+}
+
+// ============================================================
+// Contract Templates CRUD
+// ============================================================
+
+export function getAllContractTemplates() {
+  return axiosProductManagement.get(`/api/v1/contract-templates`);
+}
+
+export function getContractTemplatesByProduct(productId: string) {
+  return axiosProductManagement.get(`/api/v1/contract-templates/product/${productId}`);
+}
+
+export function getContractTemplatesByType(typeId: string) {
+  return axiosProductManagement.get(`/api/v1/contract-templates/type/${typeId}`);
+}
+
+export function getContractTemplateById(id: string) {
+  return axiosProductManagement.get(`/api/v1/contract-templates/${id}`);
+}
+
+export function createContractTemplate(body: any) {
+  return axiosProductManagement.post(`/api/v1/contract-templates`, body);
+}
+
+export function updateContractTemplate(id: string, body: any) {
+  return axiosProductManagement.put(`/api/v1/contract-templates/${id}`, body);
+}
+
+export function deleteContractTemplate(id: string) {
+  return axiosProductManagement.delete(`/api/v1/contract-templates/${id}`);
+}
+
+export function getProductsList() {
+  return axiosProductManagement.get(`/api/v1/products`);
+}

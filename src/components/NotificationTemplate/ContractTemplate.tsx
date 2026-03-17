@@ -1,680 +1,486 @@
-import { SetStateAction, useEffect, useState } from "react";
-
-import {
-  Button,
-  Input,
-  Menu,
-  Select,
-  Modal,
-  Form,
-  Switch,
-  Dropdown,
-  Row,
-  Col,
-} from "antd";
+import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
-import { FaFilter } from "react-icons/fa";
-import { Images } from "../Config/Images";
-import {
-  updateCommodityTypeStatus,
-  getContractTemplates,
-  createContractTemplate,
-  deleteContractTemplate,
-  updateContractTemplate,
-  updateContractTemplateStatus,
-} from "../../redux/apis/apisCrud";
-import { getAllProducts } from "../../redux/apis/apisCrudProductManagement";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
-import arrowDown from "../../assets/images/arrow-down.png";
+import {
+  getAllContractTemplates,
+  createContractTemplate,
+  updateContractTemplate,
+  deleteContractTemplate,
+  getProductsList,
+  getAllTemplateTypes,
+} from "../../redux/apis/apisCrudProductManagement";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const ContractTemplate = () => {
-  const [skelitonLoading, setSkelitonLoading] = useState(false);
-  const [data, setData] = useState<any>([]);
-
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [from, setFrom] = useState(0);
-  const [to, setTo] = useState(0);
-  const [totalPage, setTotalPage] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
-  const [totalRows, setTotalRows] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedFilters, setSelectedFilters] = useState();
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [currentSourceId, setCurrentSourceId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({ name: "", product_id: null as number | null, message_en: "", message_ar: "", status: "inactive", type: "" });
-  const [selectedLanguage, setSelectedLanguage] = useState<"english" | "arabic">("english");
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
+
+  // Dropdown data
   const [products, setProducts] = useState<any[]>([]);
-  const [loadingProducts, setLoadingProducts] = useState(false);
+  const [templateTypes, setTemplateTypes] = useState<any[]>([]);
+
+  // Modal state
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [currentItemId, setCurrentItemId] = useState<string | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = useState<"en" | "ar">("en");
+  const [formData, setFormData] = useState({
+    name: "",
+    productId: "",
+    typeId: "",
+    language: "en",
+    message: "",
+    messageEn: "",
+    messageAr: "",
+  });
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    fetchData();
+    fetchProducts();
+    fetchTemplateTypes();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllContractTemplates();
+      const list = response?.data?.data || response?.data || [];
+      setData(Array.isArray(list) ? list : []);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to fetch contract templates");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const fetchProducts = async () => {
-    setLoadingProducts(true);
     try {
-      const res = await getAllProducts(1, 100); // Fetch first page with 100 items
-      if (res?.data?.data?.data) {
-        setProducts(res.data.data.data);
-      }
+      const res = await getProductsList();
+      const list = res?.data?.data || res?.data || [];
+      setProducts(Array.isArray(list) ? list : []);
     } catch (error) {
-      console.error("Error fetching products:", error);
-      toast.error("Failed to fetch products");
-    } finally {
-      setLoadingProducts(false);
+      console.error("Failed to load products:", error);
     }
   };
 
-  const handleMenuClick = (key: string, row: any) => {
-    if (key === "edit") {
-      // If modal is already open, close it first and wait for it to fully close
-      if (showModal) {
-        setShowModal(false);
-        setFormData({ 
-          name: "",
-          product_id: null,
-          message_en: "",
-          message_ar: "",
-          status: "inactive",
-          type: ""
-        });
-        setSelectedItem(null);
-        setCurrentSourceId(null);
-        
-        // Wait for modal to close, then open with new data
-        setTimeout(() => {
-          const newFormData = { 
-            name: row.name || "",
-            product_id: row.original_product_id || null,
-            message_en: row.message_en || "",
-            message_ar: row.message_ar || "",
-            status: row.status === 1 || row.status === true || row.status === "active" ? "active" : "inactive",
-            type: row.type || ""
-          };
-          
-          setSelectedItem("edit");
-          setCurrentSourceId(row.id);
-          setFormData(newFormData);
-          setSelectedLanguage("english");
-          setShowModal(true);
-        }, 300); // Wait for modal animation to complete
-      } else {
-        // Modal is closed, directly set new data
-        const newFormData = { 
-          name: row.name || "",
-          product_id: row.original_product_id || null,
-          message_en: row.message_en || "",
-          message_ar: row.message_ar || "",
-          status: row.status === 1 || row.status === true || row.status === "active" ? "active" : "inactive",
-          type: row.type || ""
-        };
-        
-        setSelectedItem("edit");
-        setCurrentSourceId(row.id);
-        setFormData(newFormData);
-        setSelectedLanguage("english");
-        setShowModal(true);
-      }
-    } else if (key === "delete") {
-      setDeleteTargetId(row.id);
-      setShowConfirmModal(true);
-      setSelectedItem("delete");
+  const fetchTemplateTypes = async () => {
+    try {
+      const res = await getAllTemplateTypes();
+      const list = res?.data?.data || res?.data || [];
+      setTemplateTypes(Array.isArray(list) ? list : []);
+    } catch (error) {
+      console.error("Failed to load template types:", error);
     }
   };
 
-  const menu = (row: any) => (
-    <Menu>
-      <Menu.Item
-        key="edit"
-        icon={<EditOutlined />}
-        onClick={() => handleMenuClick("edit", row)}
-      >
-        Edit
-      </Menu.Item>
-      <Menu.Item
-        key="delete"
-        icon={<DeleteOutlined />}
-        onClick={() => handleMenuClick("delete", row)}
-      >
-        Delete
-      </Menu.Item>
-    </Menu>
-  );
+  const getProductName = (productId: string) => {
+    const product = products.find((p: any) => p.id === productId);
+    return product?.nameEn || product?.name_en || product?.name || productId || "-";
+  };
 
-  const Activity_Loans_Header = [
-    // {
-    //   name: "Sr:",
-    //   selector: (row: { Sr: any }) => row.Sr,
-    //   sortable: true,
-    //   // width: "15%",
-    // },
-    {
-      name: "Name",
-      selector: (row: { name: any }) => row.name,
-      // sortable: true,
-    },
-     {
-      name: "Product",
-      selector: (row: { product_id: any }) => row.product_id,
-      // sortable: true,
-    },
-     {
-      name: "Type",
-      selector: (row: { type: any }) => row.type,
-      // sortable: true,
-    },
-    {
-      name: "Status",
-      cell: (row: any) => (
-        <Switch
-          checked={row.status}
-          onChange={async (checked) => {
-            const newStatus = checked;
-            const body = {
-              status: newStatus,
-            };
+  const getTypeName = (typeId: string) => {
+    const tt = templateTypes.find((t: any) => t.id === typeId);
+    return tt?.name || typeId || "-";
+  };
 
-            try {
-              const res = await updateContractTemplateStatus(row.id, body);
-              if (res) {
-                toast.success(res?.data?.message);
-                getList();
-                // Update UI locally
-                setData((prevData: any) =>
-                  prevData.map((item: any) =>
-                    item.id === row.id ? { ...item, status: body } : item
-                  )
-                );
-              }
-            } catch (error) {
-              console.error("Status update failed:", error);
-            }
-          }}
-          className="red-switch"
-        />
-      ),
-    },
-    {
-      name: "Action",
-      width: "10%",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              fontSize: "12px",
-              borderRadius: "4px",
-              padding: "8px",
-            }}
-          >
-            Select 
-            <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
-      ),
-    },
-  ];
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      productId: "",
+      typeId: "",
+      language: "en",
+      message: "",
+      messageEn: "",
+      messageAr: "",
+    });
+    setSelectedLanguage("en");
+    setCurrentItemId(null);
+  };
 
-   const handleDeleteConfirmed = async () => {
-    if (!deleteTargetId) return;
-    try {
-      await toast.promise(deleteContractTemplate(deleteTargetId), {
-        loading: "Deleting...",
-        success: (response) => {
-          getList();
-          setShowConfirmModal(false);
-          return response?.data?.data?.message;
-        },
-        error: (err) => err?.message || "Failed to delete source",
-      });
-    } catch (error) {
-      console.error("Delete error:", error);
-      setShowConfirmModal(false);
+  const handleAdd = () => {
+    setModalMode("add");
+    resetForm();
+    setShowFormModal(true);
+  };
+
+  const handleEdit = (row: any) => {
+    setModalMode("edit");
+    setCurrentItemId(row.id);
+    setFormData({
+      name: row.name || "",
+      productId: row.productId || row.product_id || "",
+      typeId: row.typeId || row.type_id || "",
+      language: row.language || "en",
+      message: row.message || "",
+      messageEn: row.language === "en" ? (row.message || "") : "",
+      messageAr: row.language === "ar" ? (row.message || "") : "",
+    });
+    setSelectedLanguage(row.language === "ar" ? "ar" : "en");
+    setShowFormModal(true);
+  };
+
+  const handleSave = async () => {
+    if (!formData.name.trim()) {
+      toast.error("Name is required");
+      return;
     }
-  }; 
-
-   const handleSave = async () => {
-    if (!formData.product_id) {
+    if (!formData.productId) {
       toast.error("Please select a product");
       return;
     }
-    if (!formData.type) {
-      toast.error("Please select a type");
+    if (!formData.typeId) {
+      toast.error("Please select a template type");
       return;
     }
-    
-    const body: any = {
-        name: formData.name,
-        product_id: formData.product_id,
-        message_en: formData.message_en,
-        message_ar: formData.message_ar,
-        status: formData.status,
-        type: formData.type
-    };
+
     try {
-      if (selectedItem == "edit" && currentSourceId !== null) {
-        await toast.promise(updateContractTemplate(currentSourceId, body), {
-          loading: "Updating...",
-          success: (response: any) => {
-            setShowModal(false);
-            setSelectedItem("");
-            setShowConfirmModal(false);
-            setCurrentSourceId(null);
-            setFormData({ 
-              name: "",
-              product_id: null,
-              message_en: "",
-              message_ar: "",
-              status: "inactive",
-              type: ""
-             });
-            setSelectedLanguage("english");
-            getList();
-            return response?.data?.message;
-          },
-          error: (err) => err?.message || "Failed to update",
-        });
-      } else if (selectedItem == "add") {
-        await toast.promise(createContractTemplate(body), {
-          loading: "Adding Contract Template...",
-          success: (response) => {
-            setShowModal(false);
-            setSelectedItem("");
-            setShowConfirmModal(false);
-            setCurrentSourceId(null);
-            setFormData({ 
-                name: "",
-                product_id: null,
-                message_en: "",
-                message_ar: "",
-                status: "inactive",
-                type: ""
-              });
-            setSelectedLanguage("english");
-            getList();
-            return response?.data?.message;
-          },
-          error: (err) => err?.message || "Failed to add new source",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to save source:", error);
-      setShowConfirmModal(false);
-    }
-  }; 
-
-  const getList = async () => {
-     setSkelitonLoading(true);
-     try {
-       const res = await getContractTemplates();
-       if (res) {
-    
-         const data = res?.data?.data?.data;
-
-         setData(data || []);
-         setSkelitonLoading(false);
-         setTotalRows(data.length || 0);
-         setFrom(1);
-         setTo(data.length || 0);
-         setPage(1);
-         setTotalPage(1);
-       }
-     } catch (error: any) {
-       console.error("Error fetching Financing purpose:", error);
-       setSkelitonLoading(false);
-     }
-  };
-
-  useEffect(() => {
-     getList();
-     fetchProducts();
-  }, [page, pageSize]);
-  
-  const mappedData =
-    data &&
-    data?.map((item: any, index: number) => {
-      // Find product name from products list
-      const product = products.find((p: any) => p.id === item?.product_id);
-      const productName = product ? product.name_en : (item?.product_id ? item.product_id : "-");
-      
-      const mappedItem = {
-        id: item?.id,
-        Sr: index + 1,
-        name: item?.name || "-",
-        product_id: productName,
-        message_en: item?.message_en || "",
-        message_ar: item?.message_ar || "",
-        parent_id: item?.parent_id || "-",
-        status:item?.status,
-        type: item?.type,
-        // Keep original product_id for editing
-        original_product_id: item?.product_id,
+      setIsSaving(true);
+      const message = selectedLanguage === "en" ? formData.messageEn : formData.messageAr;
+      const body = {
+        name: formData.name.trim(),
+        productId: formData.productId,
+        typeId: formData.typeId,
+        language: selectedLanguage,
+        message: message,
       };
-      
-      return mappedItem;
-    });
 
-  const options = [{ label: "Name", value: "name" }];
-  const handleChange = (value: SetStateAction<undefined>[]) => {
-
-    setSelectedFilters(value[0]);
-    // You can trigger filtering logic here
+      if (modalMode === "edit" && currentItemId) {
+        await updateContractTemplate(currentItemId, body);
+        toast.success("Updated successfully");
+      } else {
+        await createContractTemplate(body);
+        toast.success("Created successfully");
+      }
+      setShowFormModal(false);
+      resetForm();
+      fetchData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+    } finally {
+      setIsSaving(false);
+    }
   };
-  return (
-    <>
-      <div
-        className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
-      >
-        <div className="d-flex mb-3 col-12 filter-select">
-          <Select
-            mode="tags"
-            style={{ width: "15%", borderTopRightRadius: "0px" }}
-            onChange={handleChange}
-            placeholder="Filter"
-            tokenSeparators={[","]}
-            suffixIcon={<FaFilter />}
-            options={options}
-          />
-          <div className="d-flex gap-2 w-100">
-            <div className="d-flex align-items-center gap-1 border px-2 ps-3 search-box">
-              <img src={Images.searchIconGray} alt="" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                style={{
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      setIsDeleting(true);
+      await deleteContractTemplate(deleteTarget.id);
+      toast.success("Deleted successfully");
+      setDeleteTarget(null);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to delete");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const filteredData = data.filter((item) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (item?.name || "").toLowerCase().includes(term) ||
+      getProductName(item?.productId || item?.product_id).toLowerCase().includes(term) ||
+      getTypeName(item?.typeId || item?.type_id).toLowerCase().includes(term)
+    );
+  });
+
+  const headers = [
+    {
+      name: "Name",
+      selector: (row: any) => row.name || "-",
+      sortable: true,
+    },
+    {
+      name: "Product",
+      selector: (row: any) => getProductName(row.productId || row.product_id),
+      sortable: true,
+    },
+    {
+      name: "Type",
+      selector: (row: any) => getTypeName(row.typeId || row.type_id),
+      sortable: true,
+    },
+    {
+      name: "Language",
+      selector: (row: any) => (row.language === "ar" ? "Arabic" : "English"),
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Created At",
+      selector: (row: any) =>
+        row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Action",
+      cell: (row: any) => (
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleEdit(row);
                 }}
-                className="p-2"
-                placeholder="Search..."
+              >
+                <Pencil className="h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDeleteTarget(row);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      ),
+      width: "100px",
+    },
+  ];
+
+  return (
+    <div className="service p-4">
+      <h1 className="text-xl font-bold pb-3">Contract Templates</h1>
+
+      <div className="d-flex justify-content-between mb-3 gap-2">
+        <Input
+          placeholder="Search by name, product, or type"
+          className="w-[280px]"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button className="gap-2" onClick={handleAdd}>
+          <Plus className="h-4 w-4" />
+          Add New Contract Template
+        </Button>
+      </div>
+
+      <TableView
+        header={headers}
+        data={filteredData}
+        totalRows={filteredData.length}
+        isLoading={isLoading}
+        from={1}
+        page={page}
+        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        to={filteredData.length}
+      />
+
+      {/* Add/Edit Modal */}
+      <Dialog
+        open={showFormModal}
+        onOpenChange={(open) => {
+          if (!open) {
+            setShowFormModal(false);
+            resetForm();
+          }
+        }}
+      >
+        <DialogContent className="max-w-[700px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {modalMode === "edit" ? "Edit Contract Template" : "Add New Contract Template"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Name *</Label>
+              <Input
+                placeholder="e.g. Murabaha Financing Agreement"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setShowModal(true);
-                setSelectedItem("add");
-                setFormData({ 
-                  name: "",
-                  product_id: null,
-                  message_en: "",
-                  message_ar: "",
-                  status: "inactive",
-                  type: ""
-                });
-                setSelectedLanguage("english");
-              }}
-            >
-                Add New Contract Template
-            </button>
-          </div>
-        </div>
-        <TableView
-          header={Activity_Loans_Header}
-          data={mappedData}
-          totalRows={totalRows}
-          isLoading={skelitonLoading}
-          from={from}
-          page={page}
-          totalPage={totalPage}
-          setPage={setPage}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          to={to}
-        />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Product *</Label>
+                <Select
+                  value={formData.productId || undefined}
+                  onValueChange={(val) => setFormData({ ...formData, productId: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select product" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {products.map((product: any) => (
+                      <SelectItem key={product.id} value={product.id}>
+                        {product.nameEn || product.name_en || product.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
 
-        <Modal
-          key={currentSourceId || "add"} // Force re-render when editing different items
-          className="custom-mod"
-          style={{ maxWidth: "640px" }}
-          title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
-          }
-          visible={showModal}
-          onCancel={() => {
-            setShowModal(false);
-            // Clear all form data and states
-            setFormData({ 
-              name: "",
-              product_id: null,
-              message_en: "",
-              message_ar: "",
-              status: "inactive",
-              type: ""
-            });
-            setSelectedLanguage("english");
-            setSelectedItem(null);
-            setCurrentSourceId(null);
-          }}
-          footer={[
-            <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
-            </Button>,
-            <Button
-              key="save"
-              type="primary"
-              onClick={() => {
-                setShowConfirmModal(true);
-                setShowModal(false);
-              }}
-            >
-              {selectedItem === "edit" ? "Save" : "Submit"}
-            </Button>,
-          ]}
-        >
-          <div className={"Ente-details"}>
-            <Form>
-              <Row className="">
-                <Col className="px-2 py-2" md={24}>
-                <label className="fw-400">Name</label>
-                <Input
-                  type="text"
-                  className="fs-6"
-                  placeholder="Enter Name"
-                  value={formData.name}
-                  onChange={(e: any) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-                </Col>
-               
-                <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Product</label>
+              <div className="space-y-2">
+                <Label>Template Type *</Label>
                 <Select
-                  key={`product-${currentSourceId || 'new'}`}
-                  className="fs-6"
-                  style={{ width: "100%" }}
-                  placeholder="Select Product"
-                  value={formData.product_id || undefined}
-                  onChange={(value: number) =>
-                    setFormData({ ...formData, product_id: value })
-                  }
-                  allowClear
-                  loading={loadingProducts}
-                  showSearch
-                  filterOption={(input, option: any) =>
-                    (option?.children as string)?.toLowerCase().includes(input.toLowerCase())
-                  }
+                  value={formData.typeId || undefined}
+                  onValueChange={(val) => setFormData({ ...formData, typeId: val })}
                 >
-                  {products.map((product: any) => (
-                    <Select.Option key={product.id} value={product.id}>
-                      {product.name_en}
-                    </Select.Option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select template type" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {templateTypes.map((tt: any) => (
+                      <SelectItem key={tt.id} value={tt.id}>
+                        {tt.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
-                </Col>
-                <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Type</label>
-                <Select
-                  key={`type-${currentSourceId || 'new'}`}
-                  className="fs-6"
-                  style={{ width: "100%" }}
-                  placeholder="Select Type"
-                  value={formData.type || undefined}
-                  onChange={(value: string) =>
-                    setFormData({ ...formData, type: value })
-                  }
-                  allowClear
-                >
-                  <Select.Option value="AuthorizationLetter">Authorization Letter</Select.Option>
-                  <Select.Option value="FinancingContract">Financing Contract</Select.Option>
-                </Select>
-                </Col>
-                {/* <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Status</label>
-                <Switch
-                  
-                  className="fs-6"
-                
-                  checked={formData.status === "active"}
-                  onChange={(checked: boolean) =>
-                    setFormData({ ...formData, status: checked ? "active" : "inactive" })
-                  }
-                />
-                </Col> */}
-                <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Language</label>
-                <Select
-                  className="fs-6"
-                  style={{ width: "100%" }}
-                  placeholder="Select Language"
-                  value={selectedLanguage}
-                  onChange={(value: "english" | "arabic") => {
-                    setSelectedLanguage(value);
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Language</Label>
+              <Select
+                value={selectedLanguage}
+                onValueChange={(val: "en" | "ar") => setSelectedLanguage(val)}
+              >
+                <SelectTrigger className="w-[200px]">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="en">English</SelectItem>
+                  <SelectItem value="ar">Arabic</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Message ({selectedLanguage === "en" ? "English" : "Arabic"})</Label>
+              <div
+                className="editor-fixed"
+                style={{ direction: selectedLanguage === "ar" ? "rtl" : "ltr" }}
+              >
+                <CKEditor
+                  key={`${currentItemId || "new"}-${selectedLanguage}`}
+                  // @ts-ignore
+                  editor={ClassicEditor}
+                  data={selectedLanguage === "en" ? formData.messageEn : formData.messageAr}
+                  onChange={(_event: any, editor: any) => {
+                    const content = editor.getData();
+                    if (selectedLanguage === "en") {
+                      setFormData({ ...formData, messageEn: content });
+                    } else {
+                      setFormData({ ...formData, messageAr: content });
+                    }
                   }}
-                >
-                  <Select.Option value="english">English</Select.Option>
-                  <Select.Option value="arabic">Arabic</Select.Option>
-                </Select>
-                </Col>
-                <Col className="px-2 py-2" md={24}>
-                          <div className="editor-fixed" style={{ direction: selectedLanguage === "arabic" ? "rtl" : "ltr" }}>
-                            <label className="fw-400">Message ({selectedLanguage === "english" ? "English" : "Arabic"})</label>
-                
-                            <div style={{ direction: selectedLanguage === "arabic" ? "rtl" : "ltr" }}>
-                            <CKEditor
-                              key={selectedLanguage} // Force re-render when language changes
-                              // @ts-ignore
-                              editor={ClassicEditor}
-                              data={(() => {
-                                const editorData = selectedLanguage === "english" ? formData.message_en : formData.message_ar;
-                                return editorData;
-                              })()}
-                              onChange={(_event: any, editor: any) => {
-                                const data = editor.getData();
-                                if (selectedLanguage === "english") {
-                                  setFormData({ ...formData, message_en: data });
-                                } else {
-                                  setFormData({ ...formData, message_ar: data });
-                                }
-                              }}
-                              config={{
-                                language: selectedLanguage === "arabic" ? "ar" : "en",
-                                toolbar: [
-                                  "heading",
-                                  "|",
-                                  "bold",
-                                  "italic",
-                                  "underline",
-                                  "strikethrough",
-                                  "link",
-                                  "bulletedList",
-                                  "numberedList",
-                                  "blockQuote",
-                                  "insertTable",
-                                  "undo",
-                                  "redo",
-                                  "imageUpload",
-                                  "mediaEmbed",
-                                  "codeBlock",
-                                  "highlight",
-                                  "alignment",
-                                  "fontColor",
-                                  "fontBackgroundColor",
-                                  "fontSize",
-                                  "fontFamily",
-                                  "horizontalLine",
-                                  "specialCharacters",
-                                  "sourceEditing"
-                                ],
-                              }}
-                              onReady={(editor: any) => {
-                                // Set RTL direction for Arabic
-                                if (selectedLanguage === "arabic") {
-                                  editor.editing.view.change((writer: any) => {
-                                    writer.setAttribute('dir', 'rtl', editor.editing.view.document.getRoot());
-                                  });
-                                  // Also set direction on the editable element
-                                  const editable = editor.ui.getEditableElement();
-                                  if (editable) {
-                                    editable.setAttribute('dir', 'rtl');
-                                    editable.setAttribute('lang', 'ar');
-                                  }
-                                } else {
-                                  editor.editing.view.change((writer: any) => {
-                                    writer.setAttribute('dir', 'ltr', editor.editing.view.document.getRoot());
-                                  });
-                                  const editable = editor.ui.getEditableElement();
-                                  if (editable) {
-                                    editable.setAttribute('dir', 'ltr');
-                                    editable.setAttribute('lang', 'en');
-                                  }
-                                }
-                              }}
-                            />
-                            </div>
-                          </div>
-                        </Col>
-              </Row>
-            </Form>
+                  config={{
+                    language: selectedLanguage === "ar" ? "ar" : "en",
+                    toolbar: [
+                      "heading", "|",
+                      "bold", "italic", "underline", "strikethrough",
+                      "link", "bulletedList", "numberedList",
+                      "blockQuote", "insertTable",
+                      "undo", "redo",
+                    ],
+                  }}
+                  onReady={(editor: any) => {
+                    if (selectedLanguage === "ar") {
+                      editor.editing.view.change((writer: any) => {
+                        writer.setAttribute("dir", "rtl", editor.editing.view.document.getRoot());
+                      });
+                      const editable = editor.ui.getEditableElement();
+                      if (editable) {
+                        editable.setAttribute("dir", "rtl");
+                        editable.setAttribute("lang", "ar");
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </div>
           </div>
-        </Modal>
-        <Modal
-          visible={showConfirmModal}
-          onCancel={() => setShowConfirmModal(false)}
-          className="custom-mod"
-          style={{ maxWidth: "632px" }}
-          title={
-            selectedItem === "edit"
-              ? "Edit Contract Template"
-              : selectedItem === "add"
-              ? "Add New Contract Template"
-              : "Delete Contract Template"
-          }
-          footer={[
-            <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
-            </Button>,
+
+          <DialogFooter>
             <Button
-              key="yes"
-              type="primary"
-              onClick={
-                selectedItem == "delete" ? handleDeleteConfirmed : handleSave
-              }
+              variant="outline"
+              onClick={() => {
+                setShowFormModal(false);
+                resetForm();
+              }}
+              disabled={isSaving}
             >
-              Yes
-            </Button>,
-          ]}
-        >
-          <Form>
-            {`${
-              selectedItem == "edit"
-                ? "Are you sure you want to update this contract template?"
-                : selectedItem == "add"
-                ? "Are you sure you want to add new contract template?"
-                : "Are you sure you want to delete this contract template?"
-            }`}
-          </Form>
-        </Modal>
-      </div>
-    </>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Delete Contract Template</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete{" "}
+            <span className="font-medium text-foreground">{deleteTarget?.name}</span>?
+            This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 

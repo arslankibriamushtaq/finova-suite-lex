@@ -6,7 +6,7 @@ import {
   createTemplateType,
   updateTemplateType,
   deleteTemplateType,
-} from "../../redux/apis/apisTemplateTypes";
+} from "../../redux/apis/apisCrudProductManagement";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
