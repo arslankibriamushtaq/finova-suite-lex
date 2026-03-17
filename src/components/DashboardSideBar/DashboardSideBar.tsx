@@ -346,6 +346,35 @@ const DasbhboardSidebar = () => {
           ],
         },
 
+    {
+      label: "Risk Management",
+      Link: "RiskManagement/BlacklistNid",
+      LinkLable: "LOS",
+      img: Images.LovIcon,
+      imgActive: Images.LovIconDark,
+      active: pathname.includes("/RiskManagement"),
+      submenu: [
+        {
+          label: "Blacklist NID",
+          Link: "BlacklistNid",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/BlacklistNid",
+        },
+        {
+          label: "Blacklist Mobile",
+          Link: "BlacklistMobile",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/BlacklistMobile",
+        },
+        {
+          label: "Fraud Rule Management",
+          Link: "FraudRuleManagement",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
+        },
+      ],
+    },
+
         // {
         //   label: "Notification",
         //   Link: "Notification",

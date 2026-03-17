@@ -167,6 +167,9 @@ import WealthValue from "../components/LOV/WealthValue";
 import ProfessionValue from "../components/LOV/ProfessionValue";
 import CitiesList from "../components/LOV/CitiesList";
 import MonthlyIncome from "../components/LOV/MonthlyIncome";
+import BlacklistNid from "../pages/lmsPages/RiskManagement/BlacklistNid";
+import BlacklistMobile from "../pages/lmsPages/RiskManagement/BlacklistMobile";
+import FraudRuleManagement from "../pages/lmsPages/RiskManagement/FraudRuleManagement";
 import RejectedCustomers from "../components/Customer/SanctionedCustomers";
 import SmsTemplate from "../components/NotificationTemplate/SmsTemplate";
 import PushTemplate from "../components/NotificationTemplate/PushTemplate";
@@ -811,6 +814,18 @@ export const router = createBrowserRouter([
           {
             path: "/Los/LOV/FactorsList",
             element: <FactorsList/>,
+          },
+          {
+            path: "/LOS/RiskManagement/BlacklistNid",
+            element: <BlacklistNid />,
+          },
+          {
+            path: "/LOS/RiskManagement/BlacklistMobile",
+            element: <BlacklistMobile />,
+          },
+          {
+            path: "/LOS/RiskManagement/FraudRuleManagement",
+            element: <FraudRuleManagement />,
           },
           {
             path: "/LOS/CustomerManagement/LeadDetails/:id",
