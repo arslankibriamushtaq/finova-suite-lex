@@ -55,3 +55,31 @@ export function updateSourceOfFunds(id: string, body: any) {
 export function deleteSourceOfFunds(id: string) {
   return axiosCustomerService.delete(`/api/v1/reference-data/source-of-funds/${id}`);
 }
+
+// ============================================================
+// Net Worth Ranges
+// ============================================================
+
+export function getAllNetWorthRanges() {
+  return axiosCustomerService.get(`/api/v1/reference-data/net-worth-ranges`);
+}
+
+export function getActiveNetWorthRanges() {
+  return axiosCustomerService.get(`/api/v1/reference-data/net-worth-ranges/active`);
+}
+
+export function getNetWorthRangeById(id: string) {
+  return axiosCustomerService.get(`/api/v1/reference-data/net-worth-ranges/${id}`);
+}
+
+export function createNetWorthRange(body: any) {
+  return axiosCustomerService.post(`/api/v1/reference-data/net-worth-ranges`, body);
+}
+
+export function updateNetWorthRange(id: string, body: any) {
+  return axiosCustomerService.put(`/api/v1/reference-data/net-worth-ranges/${id}`, body);
+}
+
+export function deleteNetWorthRange(id: string) {
+  return axiosCustomerService.delete(`/api/v1/reference-data/net-worth-ranges/${id}`);
+}

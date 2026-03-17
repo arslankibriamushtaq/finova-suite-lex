@@ -164,6 +164,7 @@ import SourceOfIncome from "../components/LOV/SourceOfIncome";
 import SourceOfWealth from "../components/LOV/SourceOfWealth";
 import SourceOfFunds from "../components/LOV/SourceOfFunds";
 import TemplateTypes from "../components/LOV/TemplateTypes";
+import NetWorthRanges from "../components/LOV/NetWorthRanges";
 import WealthValue from "../components/LOV/WealthValue";
 import ProfessionValue from "../components/LOV/ProfessionValue";
 import CitiesList from "../components/LOV/CitiesList";
@@ -775,6 +776,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/LOV/TemplateTypes",
             element: <TemplateTypes />,
+          },
+          {
+            path: "/LOS/LOV/NetWorthRanges",
+            element: <NetWorthRanges />,
           },
           {
             path: "/LOS/LOV/WealthValue",

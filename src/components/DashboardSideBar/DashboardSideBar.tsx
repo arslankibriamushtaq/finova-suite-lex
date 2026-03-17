@@ -283,6 +283,12 @@ const DasbhboardSidebar = () => {
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/TemplateTypes",
             },
+            {
+              label: "Net Worth Ranges",
+              Link: "NetWorthRanges",
+              LinkLable: "/LOS/LOV",
+              active: pathname == "/LOS/LOV/NetWorthRanges",
+            },
             // {
             //   label: "Purpose of Factoring",
             //   Link: "PurposeofFinancing",
