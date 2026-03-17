@@ -277,6 +277,12 @@ const DasbhboardSidebar = () => {
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/SourceOfFunds",
             },
+            {
+              label: "Template Types",
+              Link: "TemplateTypes",
+              LinkLable: "/LOS/LOV",
+              active: pathname == "/LOS/LOV/TemplateTypes",
+            },
             // {
             //   label: "Purpose of Factoring",
             //   Link: "PurposeofFinancing",
