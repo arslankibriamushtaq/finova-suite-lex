@@ -1,18 +1,20 @@
 stages:
-  - pull
+  - clone
 
-factoring-valley-los-frontend:
-  stage: pull
+# -----------------------------
+# DEV PIPELINE
+# -----------------------------
+clone-dev:
+  stage: clone
   tags:
-    - factoring-valley
+    - new_mytm_dev
   variables:
     GIT_STRATEGY: none
   script:
-    - cd /opt/factoring-valley-deployment/factoring-valley-los-frontend
-    - git pull origin factoring-valley
-    - echo "Code updated successfully"
-    
-    # Run deploy script
+    - cd /www/wwwroot/react-projects/financing-dashboard.xintdev.com
+    - git pull origin feature/ui-migration
     - ./deploy.sh
+    - echo "Code updated successfully"
+
   only:
-    - factoring-valley
+    - feature/ui-migration
