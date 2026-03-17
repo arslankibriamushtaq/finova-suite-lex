@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { createClient, updateClient, getClientById, listApiAccess, bulkGrantAccess } from "../../redux/apis/apisMiddlewareClients";
-import { getAllProviders, getProviderApisByProvider } from "../../redux/apis/apisMiddlewareProviders";
+import { createClient, updateClient, getClientById, listApiAccess, bulkGrantAccess, getAllProviders, getProviderApisByProvider } from "../../redux/apis/apisMiddlewareProviders";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";

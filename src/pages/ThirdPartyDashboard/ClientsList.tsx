@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
-import { getAllClients, deleteClient } from "../../redux/apis/apisMiddlewareClients";
+import { getAllClients, deleteClient } from "../../redux/apis/apisMiddlewareProviders";
 import { Button } from "../../components/ui/button";
 import { Input } from "../../components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../components/ui/dialog";

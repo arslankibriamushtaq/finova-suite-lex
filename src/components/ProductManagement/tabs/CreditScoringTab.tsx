@@ -6,7 +6,7 @@ import { Label } from "../../ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
 import { Switch } from "../../ui/switch"
-import { getCreditScoringFieldDefinitions } from "../../../redux/apis/apisCreditScoring"
+import { getCreditScoringFieldDefinitions } from "../../../redux/apis/apisRiskManagement"
 import toast from "react-hot-toast"
 
 const OPERATORS = [

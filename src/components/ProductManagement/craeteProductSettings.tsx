@@ -6,7 +6,7 @@ import { Tab, Tabs } from "react-bootstrap"
 import { useLanguage } from "../../hooks/use-language"
 import toast from "react-hot-toast"
 import { createProductSettings, createProductTermsAndConditions, createAdminFeeSlabs, createDurationSettings, createApprovalWorkflowScenarios, getProductSettings, addSelectedNationalities, updateFeeSettings, updateAdminFeeSlabs, updateDurationSettings, updateApprovalWorkflows } from "../../redux/apis/apisCrudProductManagement"
-import { getProductCreditScoringCriteria, saveProductCreditScoringCriteria, deleteProductCreditScoringCriteria } from "../../redux/apis/apisCreditScoring"
+import { getProductCreditScoringCriteria, saveProductCreditScoringCriteria, deleteProductCreditScoringCriteria } from "../../redux/apis/apisRiskManagement"
 import Loader from "../Loader/Loader"
 import ProductCreateEditTabs from "./ProductCreateEditTabs"
 
