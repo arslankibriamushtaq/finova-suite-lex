@@ -323,7 +323,7 @@ const ContractTemplate = () => {
           }
         }}
       >
-        <DialogContent className="max-w-[700px] max-h-[90vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {modalMode === "edit" ? "Edit Contract Template" : "Add New Contract Template"}
@@ -377,15 +377,13 @@ const ContractTemplate = () => {
                   </SelectContent>
                 </Select>
               </div>
-            </div>
-
             <div className="space-y-2">
               <Label>Language</Label>
               <Select
                 value={selectedLanguage}
                 onValueChange={(val: "en" | "ar") => setSelectedLanguage(val)}
               >
-                <SelectTrigger className="w-[200px]">
+                <SelectTrigger className="w-100">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -394,7 +392,7 @@ const ContractTemplate = () => {
                 </SelectContent>
               </Select>
             </div>
-
+            </div>
             <div className="space-y-2">
               <Label>Message ({selectedLanguage === "en" ? "English" : "Arabic"})</Label>
               <div

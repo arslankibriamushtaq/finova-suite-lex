@@ -261,7 +261,7 @@ const FraudRuleManagement = () => {
 
       {/* Edit Parameters Modal */}
       <Dialog open={showEditModal} onOpenChange={(open) => !open && closeModal()}>
-        <DialogContent className="max-w-[700px] max-h-[80vh] overflow-y-auto">
+        <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit Rule Parameters</DialogTitle>
           </DialogHeader>
