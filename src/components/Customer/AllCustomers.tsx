@@ -3,7 +3,8 @@ import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox, Switch } f
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
-import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, getCustomers } from "../../redux/apis/apisCrud";
+import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk } from "../../redux/apis/apisCrud";
+import { getCustomers } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
@@ -99,57 +100,99 @@ const AllCustomers = () => {
   const Activity_Loans_Header = [
     {
       name: "Name",
-      cell: (row: { name: any }) => row.name,
+      cell: (row: any) => row.name,
       sortable: true,
       width: "200px",
-    },
-    {
-      name: "Application No.",
-      cell: (row: { application_number: any }) => row.application_number,
-      sortable: true,
-      width: "200px",
-    },
-    {
-      name: "ID",
-      cell: (row: any) => (
-        <MaskedValue value={row.nid} showToggle={true} unmaskedCount={4} />
-      ),
-      width: "200px",
-      sortable: true,
     },
     {
       name: "CIF",
-      selector: (row: { cif: any }) => row.cif || "-",
+      selector: (row: any) => row.cif || "-",
       sortable: true,
-      width: "220px",
+      width: "180px",
     },
     {
       name: "Email",
-      selector: (row: { email: any }) => row.email,
+      selector: (row: any) => row.email,
       sortable: true,
     },
     {
       name: "Phone",
-      selector: (row: { phone: any }) => row.phone,
+      selector: (row: any) => row.phone,
       sortable: true,
-      width: "200px",
+      width: "180px",
     },
     {
-      name: "Partner",
-      selector: (row: { partner: any }) => row.partner || "-",
+      name: "Nationality",
+      selector: (row: any) => row.nationality || "-",
       sortable: true,
+      width: "120px",
     },
     {
-      name: "Product",
-      selector: (row: { product_name: any }) => row.product_name || "-",
+      name: "KYC Status",
+      cell: (row: any) => {
+        const status = row.kycStatus || "-";
+        const color = status === "VERIFIED" ? "var(--color-success)" : status === "PENDING" ? "var(--color-warning)" : "var(--color-error)";
+        return (
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              backgroundColor: color,
+              color: "var(--primary-foreground)",
+              display: "inline-block",
+              textTransform: "capitalize",
+              fontWeight: "500"
+            }}
+          >
+            {status.toLowerCase()}
+          </span>
+        );
+      },
       sortable: true,
+      width: "140px",
     },
     {
-      name: "Risk Status",
+      name: "Stage",
+      cell: (row: any) => {
+        const stage = row.lifecycleStage || "-";
+        const color = stage === "QUALIFIED" ? "var(--color-success)" : stage === "LEAD" ? "var(--color-info)" : "var(--color-warning)";
+        return (
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              backgroundColor: color,
+              color: "var(--primary-foreground)",
+              display: "inline-block",
+              textTransform: "capitalize",
+              fontWeight: "500"
+            }}
+          >
+            {stage.toLowerCase()}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "PEP",
+      cell: (row: any) => (
+        <span style={{ fontWeight: "500", color: row.pep === "Yes" ? "var(--color-error)" : "var(--color-success)" }}>
+          {row.pep}
+        </span>
+      ),
+      sortable: true,
+      width: "80px",
+    },
+    {
+      name: "Risk",
       cell: (row: any) => {
         const riskStatus = row.risk || "--";
         const displayRisk = normalizeRiskDisplay(riskStatus);
-        
+
         return (
           <span
             style={{
@@ -168,60 +211,20 @@ const AllCustomers = () => {
         );
       },
       sortable: true,
+      width: "100px",
     },
     {
-      name: "Is Blocked",
-      selector: (row: { is_blocked: any }) => row.is_blocked,
-      sortable: true,
-      cell: (row: any) => (
-        <button
-          onClick={() => handleBlockButtonClick(row)}
-          style={{
-            padding: "8px 10px",
-            borderRadius: "5px",
-            fontSize: "12px",
-            backgroundColor: row.is_blocked ? "var(--color-error)" : "var(--color-success)",
-            color: "var(--primary-foreground)",
-            cursor: "pointer",
-            border: "none",
-          }}
-        >
-          {row.is_blocked ? "Blocked" : "Unblocked"}
-        </button>
-      ),
-    },
-    {
-      name:"Date",
+      name: "Created",
       sortable: true,
       cell: (row: any) => (
         <div>
-          {row.created_at ? new Date(row.created_at).toLocaleDateString() : "-"}
+          {row.created_at && row.created_at !== "-" ? new Date(row.created_at).toLocaleDateString() : "-"}
         </div>
       ),
-    },
-    {
-      name: "Status",
-      cell: (row: any) => (
-        <Switch
-          checked={row.status === "active"}
-          checkedChildren="Active"
-          unCheckedChildren="Inactive"
-          onChange={(checked) => handleStatusSwitchChange(row, checked)}
-          style={{
-            backgroundColor: row.status === "active" ? "var(--color-success)" : undefined
-          }}
-        />
-      ),
-    },
-
-    {
-      name:"Comments",
-      cell: (row: { comment: any }) => row.comment || "-",
-      sortable: true,
+      width: "120px",
     },
     {
       name: "Actions",
-
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -581,14 +584,13 @@ const AllCustomers = () => {
 
       const response = await getCustomers(page, pageSize, search, pep, status);
       if (response) {
-        const responseData = response?.data?.data;
-        setData(responseData?.data || []);
+        const list = response?.data?.data || [];
+        setData(Array.isArray(list) ? list : []);
         setSkelitonLoading(false);
-        setTotalRows(responseData?.total || 0);
-        setFrom(responseData?.from || 0);
-        setTo(responseData?.to || 0);
-        setPage(responseData?.current_page || 1);
-        setTotalPage(responseData?.last_page || 1);
+        setTotalRows(list.length || 0);
+        setFrom(list.length > 0 ? 1 : 0);
+        setTo(list.length || 0);
+        setTotalPage(1);
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -607,76 +609,57 @@ const AllCustomers = () => {
       return {
         id: item.id,
         Sr: index + 1,
-        name: item?.name || "-",
-        nid: item?.nid || "-",
-        cif: item?.cif || "-",
+        name: item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
+        cif: item?.cifNumber || "-",
         email: item?.email || "-",
-        phone: item?.phone || "-",
-        cnic: item?.cnic || "-",
-        pep: item?.pep ? "Yes" : "No",
-        accountBalance: item?.balance || "-",
-        UpdatedBy: item?.updated_at || "-",
-        accountType: item?.user_type || "-",
-        accountStatus: item?.accountStatus || "-",
-        status: item?.status || "-",
-        partner: item?.partner,
-        product_name: item?.product_name,
-        application_number: item?.application_number,
-        risk_status: item?.risk,
-        risk:item?.risk,
-        is_blocked: item?.is_blocked,
-        blocked_by_payment_guard: item?.blocked_by_payment_guard,
-        created_at: item?.created_at,
-        comment: item?.comment,
-        compliance_status:item?.compliance_status
+        phone: item?.mobileNumber || "-",
+        nationality: item?.nationality || "-",
+        gender: item?.gender || "-",
+        pep: item?.pepFlag ? "Yes" : "No",
+        kycStatus: item?.kycStatus || "-",
+        lifecycleStage: item?.lifecycleStage || "-",
+        risk: item?.riskGrade || "-",
+        risk_status: item?.riskGrade || "-",
+        sanctionsFlag: item?.sanctionsFlag,
+        customerType: item?.customerType || "-",
+        residencyType: item?.residencyType || "-",
+        created_at: item?.createdAt || "-",
+        dateOfBirth: item?.dateOfBirth || "-",
       };
     });
   const exportToCSV = async () => {
     try {
       toast.loading("Exporting CSV...", { id: "export-csv" });
       
-      // Fetch all data by getting all pages
       let allData: any[] = [];
-      let currentPage = 1;
-      let hasMorePages = true;
-      const pageSizeForExport = 1000; // Large page size to minimize API calls
-      
-      while (hasMorePages) {
-        try {
-          const response = await getCustomers(currentPage, pageSizeForExport, search, pep, status);
-          if (response?.data?.data?.data && response.data.data.data.length > 0) {
-            allData = [...allData, ...response.data.data.data];
-            const totalPages = response.data.data.last_page || 1;
-            hasMorePages = currentPage < totalPages;
-            currentPage++;
-          } else {
-            hasMorePages = false;
-          }
-        } catch (pageError) {
-          console.error(`Error fetching page ${currentPage}:`, pageError);
-          hasMorePages = false;
-        }
+
+      try {
+        const response = await getCustomers(1, 10000, search, pep, status);
+        const list = response?.data?.data || [];
+        allData = Array.isArray(list) ? list : [];
+      } catch (pageError) {
+        console.error("Error fetching customers for export:", pageError);
       }
-      
+
       if (allData.length === 0) {
         toast.error("No data to export", { id: "export-csv" });
         return;
       }
-      
-      // Map data according to table headers in Activity_Loans_Header
+
+      // Map data according to table headers
       const csvData = allData.map((item: any) => ({
-        "Name": item?.name || "-",
-        "Application No.": item?.application_number || "-",
-        "ID": item?.nid || "-",
-        "CIF": item?.cif || "-",
+        "Name": item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
+        "CIF": item?.cifNumber || "-",
         "Email": item?.email || "-",
-        "Phone": item?.phone || "-",
-        "Partner": item?.partner || "-",
-        "Product": item?.product_name || "-",
-        "Is Blocked": item?.is_blocked ? "Blocked" : "Unblocked",
-        "Date": item?.created_at ? new Date(item.created_at).toLocaleDateString() : "-",
-        "Status": item?.status || "-",
-        "Comments": item?.comment || "-",
+        "Phone": item?.mobileNumber || "-",
+        "Nationality": item?.nationality || "-",
+        "Gender": item?.gender || "-",
+        "KYC Status": item?.kycStatus || "-",
+        "Lifecycle Stage": item?.lifecycleStage || "-",
+        "PEP": item?.pepFlag ? "Yes" : "No",
+        "Risk Grade": item?.riskGrade || "-",
+        "Customer Type": item?.customerType || "-",
+        "Created": item?.createdAt ? new Date(item.createdAt).toLocaleDateString() : "-",
       }));
       
       // Create CSV string

@@ -3,7 +3,8 @@ import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox, Switch } f
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
-import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, userActive, exportLeads } from "../../redux/apis/apisCrud";
+import { getLeadCustomers } from "../../redux/apis/apisEddReferenceData";
+import { blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, userActive, exportLeads } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
@@ -28,13 +29,9 @@ const blockCodesData = [
 
 const Leads = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
-  const [data, setData] = useState<any>();
+  const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
-  const [totalRows, setTotalRows] = useState(0);
-  const [from, setFrom] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
-  const [to, setTo] = useState(0);
-  const [totalPage, setTotalPage] = useState(0);
+  const [pageSize, setPageSize] = useState(15);
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -130,8 +127,8 @@ const Leads = () => {
       width: "200px",
     },
     {
-      name: "Partner",
-      selector: (row: { partner: any }) => row.partner || "-",
+      name: "Nationality",
+      selector: (row: any) => row.nationality || "-",
       sortable: true,
     },
     /* {
@@ -160,8 +157,7 @@ const Leads = () => {
       sortable: true,
     }, */
     {
-      name: "Is Blocked",
-      selector: (row: { is_blocked: any }) => row.is_blocked,
+      name: "Sanctions",
       sortable: true,
       cell: (row: any) => (
         <span
@@ -176,7 +172,7 @@ const Leads = () => {
             display: "inline-block",
           }}
         >
-          {row.is_blocked ? "Blocked" : "Unblocked"}
+          {row.is_blocked ? "Flagged" : "Clear"}
         </span>
       ),
     },
@@ -190,24 +186,37 @@ const Leads = () => {
       ),
     },
     {
-      name: "Status",
+      name: "KYC Status",
       cell: (row: any) => (
-        <Switch
-          checked={row.status === "active"}
-          /* checkedChildren="Active"
-          unCheckedChildren="Inactive" */
-          onChange={(checked) => handleStatusSwitchChange(row, checked)}
-          /* style={{
-            backgroundColor: row.status === "active" ? "rgba(63, 195, 128, 0.9)" : undefined
-          }} */
-         className="red-switch"
-        />
+        <span
+          style={{
+            padding: "6px 12px",
+            borderRadius: "32px",
+            fontSize: "12px",
+            fontWeight: "500",
+            backgroundColor:
+              row.status === "VERIFIED" ? "var(--color-success)" :
+              row.status === "PENDING" ? "var(--color-warning)" :
+              "var(--color-error)",
+            color: "var(--primary-foreground)",
+            display: "inline-block",
+            textTransform: "capitalize",
+          }}
+        >
+          {row.status || "-"}
+        </span>
       ),
+      sortable: true,
     },
     {
-      name:"Comments",
-      cell: (row: { comment: any }) => row.comment || "-",
+      name: "PEP",
+      cell: (row: any) => (
+        <span className={row.pep === "Yes" ? "text-red-600 font-medium" : "text-green-600 font-medium"}>
+          {row.pep}
+        </span>
+      ),
       sortable: true,
+      width: "80px",
     },
     {
       name: "Actions",
@@ -567,28 +576,18 @@ const Leads = () => {
   const getLeadsList = async () => {
     try {
       setSkelitonLoading(true);
-
-      const response = await getLeadCustomers(page, pageSize, search, pep, status);
-      if (response) {
-        const responseData = response?.data?.data;
-        setData(responseData?.data || []);
-        setSkelitonLoading(false);
-        setTotalRows(responseData?.total || 0);
-        setFrom(responseData?.from || 0);
-        setTo(responseData?.to || 0);
-        setPage(responseData?.current_page || 1);
-        setTotalPage(responseData?.last_page || 1);
-      }
+      const response = await getLeadCustomers(search, pep, status);
+      const list = response?.data?.data || [];
+      setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.message);
-      setSkelitonLoading(false);
+      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch leads");
     } finally {
       setSkelitonLoading(false);
     }
   };
   useEffect(() => {
     getLeadsList();
-  }, [page, pageSize, search, pep, status]);
+  }, [search, pep, status]);
 
   const mappedData =
     data &&
@@ -596,25 +595,20 @@ const Leads = () => {
       return {
         id: item.id,
         Sr: index + 1,
-        name: item?.name || "-",
-        nid: item?.nid || "-",
-        cif: item?.cif || "-",
+        name: item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
+        nid: item?.nationalIdType || "-",
+        cif: item?.cifNumber || "-",
         email: item?.email || "-",
-        phone: item?.phone || "-",
-        cnic: item?.cnic || "-",
-        pep: item?.pep ? "Yes" : "No",
-        accountBalance: item?.balance || "-",
-        UpdatedBy: item?.updated_at || "-",
-        accountType: item?.user_type || "-",
-        accountStatus: item?.accountStatus || "-",
-        status: item?.status || "-",
-        partner: item?.partner,
-        risk_status: item?.risk,
-        is_blocked: item?.is_blocked,
-        blocked_by_payment_guard: item?.blocked_by_payment_guard,
-        created_at: item?.created_at,
-        comment: item?.comment,
-        risk: item?.risk,
+        phone: item?.mobileNumber || "-",
+        pep: item?.pepFlag ? "Yes" : "No",
+        status: item?.kycStatus || "-",
+        partner: item?.partner || "-",
+        risk_status: item?.riskGrade,
+        is_blocked: item?.sanctionsFlag,
+        created_at: item?.createdAt,
+        risk: item?.riskGrade,
+        lifecycleStage: item?.lifecycleStage,
+        nationality: item?.nationality,
       };
     });
   const exportCSV = async () => {
@@ -777,15 +771,15 @@ const Leads = () => {
       <TableView
         header={Activity_Loans_Header}
         data={mappedData}
-        totalRows={totalRows}
+        totalRows={mappedData?.length || 0}
         isLoading={skelitonLoading}
-        from={from}
+        from={1}
         page={page}
-        totalPage={totalPage}
+        totalPage={Math.ceil((mappedData?.length || 0) / pageSize) || 1}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={to}
+        to={mappedData?.length || 0}
       />
 
       {/* Block Codes Management Modal */}

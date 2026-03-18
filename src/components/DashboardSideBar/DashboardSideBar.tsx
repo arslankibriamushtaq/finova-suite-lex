@@ -259,12 +259,12 @@ const DasbhboardSidebar = () => {
         //       LinkLable: "/LOS/LOV",
         //       active: pathname == "/LOS/LOV/CommodityTypes",
         //     },
-            // {
-            //    label: "Source Of Revenue",
-            //    Link: "SourceOfIncome",
-            //    LinkLable: "/LOS/LOV",
-            //    active: pathname == "/LOS/LOV/SourceOfIncome",
-            // },
+            {
+               label: "Source Of Income",
+               Link: "SourceOfIncome",
+               LinkLable: "/LOS/LOV",
+               active: pathname == "/LOS/LOV/SourceOfIncome",
+            },
             {
               label: "Source Of Wealth",
               Link: "SourceOfWealth",
@@ -289,12 +289,12 @@ const DasbhboardSidebar = () => {
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/NetWorthRanges",
             },
-            // {
-            //   label: "Purpose of Factoring",
-            //   Link: "PurposeofFinancing",
-            //   LinkLable: "/LOS/LOV",
-            //   active: pathname == "/LOS/LOV/PurposeofFinancing",
-            // },
+            {
+              label: "Purpose of Financing",
+              Link: "PurposeofFinancing",
+              LinkLable: "/LOS/LOV",
+              active: pathname == "/LOS/LOV/PurposeofFinancing",
+            },
             // {
             //   label: "Wealth Value",
             //   Link: "WealthValue",

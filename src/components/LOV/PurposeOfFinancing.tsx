@@ -1,607 +1,385 @@
-import { SetStateAction, useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
-import {
-  Button,
-  Input,
-  Menu,
-  Select,
-  Modal,
-  Form,
-  Row,
-  Col,
-  Checkbox,
-  Dropdown,
-} from "antd";
-
+import { useState, useEffect } from "react";
 import TableView from "../TableView/TableView";
-import { FaFilter } from "react-icons/fa";
-import { Images } from "../Config/Images";
-import {
-  getLOVsByType,
-  createListOfValue,
-  updateListOfValue,
-  deleteListOfValues,
-} from "../../redux/apis/apisCrud";
-import { DeleteOutlined, EditOutlined, EyeOutlined, CheckCircleOutlined, CloseCircleOutlined, SafetyCertificateOutlined, StopOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
-import arrowDown from "../../assets/images/arrow-down.png";
-import { usePermissions, useWorkflowActions, PURPOSE_OF_FINANCE_PERMISSIONS, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions";
+import {
+  getAllPurposeOfFinance,
+  createPurposeOfFinance,
+  updatePurposeOfFinance,
+  deletePurposeOfFinance,
+} from "../../redux/apis/apisLendingService";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Label } from "../ui/label";
+import { Checkbox } from "../ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
 
 const PurposeOfFinancing = () => {
-  const [skelitonLoading, setSkelitonLoading] = useState(false);
-  const [data, setData] = useState<any>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [from, setFrom] = useState(0);
-  const [to, setTo] = useState(0);
-  const [totalPage, setTotalPage] = useState(0);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
-  const [totalRows, setTotalRows] = useState(0);
-  const [showModal, setShowModal] = useState(false);
-  const [selectedFilters] = useState();
-  const [selectedItem, setSelectedItem] = useState<string | null>(null);
-  const [currentSourceId, setCurrentSourceId] = useState<number | null>(null);
-  const [formData, setFormData] = useState({ 
-    title: "", 
-    type: "PurposeOfFinancing", 
-    factor_weight: "", 
-    status: false 
+
+  // Modal state
+  const [showFormModal, setShowFormModal] = useState(false);
+  const [modalMode, setModalMode] = useState<"add" | "edit">("add");
+  const [currentItemId, setCurrentItemId] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    code: "",
+    nameEn: "",
+    nameAr: "",
+    descriptionEn: "",
+    descriptionAr: "",
+    active: true,
+    sortOrder: 0,
   });
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [deleteTargetId, setDeleteTargetId] = useState<number | null>(null);
-  const navigate = useNavigate();
-  
-  // Permissions
-  const { hasPermission, canCreate, canUpdate, canRemove, canVerifyModule, canRejectAsChecker, canApproveModule, canRejectAsApprover } = usePermissions();
-  const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions();
-  
-  const canCreatePOF = canCreate(PURPOSE_OF_FINANCE_PERMISSIONS);
-  const canEditPOF = canUpdate(PURPOSE_OF_FINANCE_PERMISSIONS);
-  const canDeletePOF = canRemove(PURPOSE_OF_FINANCE_PERMISSIONS);
-  const canShowPOF = hasPermission(PURPOSE_OF_FINANCE_PERMISSIONS.SHOW);
-  const canVerifyPOF = canVerifyModule(PURPOSE_OF_FINANCE_PERMISSIONS);
-  const canCheckerRejectPOF = canRejectAsChecker(PURPOSE_OF_FINANCE_PERMISSIONS);
-  const canApprovePOF = canApproveModule(PURPOSE_OF_FINANCE_PERMISSIONS);
-  const canApproverRejectPOF = canRejectAsApprover(PURPOSE_OF_FINANCE_PERMISSIONS);
-  
-  // Check if any action is available
-  const hasAnyAction = canShowPOF || canEditPOF || canDeletePOF || canVerifyPOF || canCheckerRejectPOF || canApprovePOF || canApproverRejectPOF;
-  const handleMenuClick = (key: string, row: any) => {
-    if (key === "view") {
-      navigate(`/Los/LOV/ListOfValues/${row.id}`);
-    } else if (key === "edit") {
-      setSelectedItem("edit");
-      setCurrentSourceId(row.id);
-      setFormData({ 
-        title: row.title || "",
-        type: row.type || "",
-        factor_weight: row.factor_weight || "",
-        status: row.status || false
-      });
-      setShowModal(true);
-    } else if (key === "delete") {
-      setDeleteTargetId(row.id);
-      setShowConfirmModal(true);
-      setSelectedItem("delete");
+  const [isSaving, setIsSaving] = useState(false);
+
+  // Delete state
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  const fetchData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await getAllPurposeOfFinance();
+      const list = response?.data?.data || response?.data || [];
+      setData(Array.isArray(list) ? list : []);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to fetch purpose of finance data");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  // Workflow action handlers
-  const handleVerify = async (row: any) => {
-    const result = await verifyItem(WORKFLOW_MODULE_NAMES.PURPOSE_OF_FINANCE, row, { purpose_of_finance_id: row.id });
-    if (result.success) {
-      getList();
-    }
+  const handleAdd = () => {
+    setModalMode("add");
+    setCurrentItemId(null);
+    setFormData({
+      code: "",
+      nameEn: "",
+      nameAr: "",
+      descriptionEn: "",
+      descriptionAr: "",
+      active: true,
+      sortOrder: 0,
+    });
+    setShowFormModal(true);
   };
-  
-  const handleCheckerReject = async (row: any) => {
-    const result = await rejectAsChecker(WORKFLOW_MODULE_NAMES.PURPOSE_OF_FINANCE, row, { purpose_of_finance_id: row.id });
-    if (result.success) {
-      getList();
-    }
-  };
-  
-  const handleApprove = async (row: any) => {
-    const result = await approveItem(WORKFLOW_MODULE_NAMES.PURPOSE_OF_FINANCE, row, { purpose_of_finance_id: row.id });
-    if (result.success) {
-      getList();
-    }
-  };
-  
-  const handleApproverReject = async (row: any) => {
-    const result = await rejectAsApprover(WORKFLOW_MODULE_NAMES.PURPOSE_OF_FINANCE, row, { purpose_of_finance_id: row.id });
-    if (result.success) {
-      getList();
-    }
-  };
-  
-  const menu = (row: any) => (
-    <Menu>
-      {canShowPOF && (
-        <Menu.Item
-          key="view"
-          icon={<EyeOutlined />}
-          onClick={() => handleMenuClick("view", row)}
-        >
-          View
-        </Menu.Item>
-      )}
-      {canEditPOF && (
-        <Menu.Item
-          key="edit"
-          icon={<EditOutlined />}
-          onClick={() => handleMenuClick("edit", row)}
-        >
-          Edit
-        </Menu.Item>
-      )}
-      {canVerifyPOF && (
-        <Menu.Item
-          key="verify"
-          icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
-          onClick={() => handleVerify(row)}
-        >
-          Verify
-        </Menu.Item>
-      )}
-      {canCheckerRejectPOF && (
-        <Menu.Item
-          key="checkerReject"
-          icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
-          onClick={() => handleCheckerReject(row)}
-        >
-          Reject (Checker)
-        </Menu.Item>
-      )}
-      {canApprovePOF && (
-        <Menu.Item
-          key="approve"
-          icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
-          onClick={() => handleApprove(row)}
-        >
-          Approve
-        </Menu.Item>
-      )}
-      {canApproverRejectPOF && (
-        <Menu.Item
-          key="approverReject"
-          icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
-          onClick={() => handleApproverReject(row)}
-        >
-          Reject (Approver)
-        </Menu.Item>
-      )}
-      {canDeletePOF && (
-        <Menu.Item
-          key="delete"
-          icon={<DeleteOutlined />}
-          onClick={() => handleMenuClick("delete", row)}
-        >
-          Delete
-        </Menu.Item>
-      )}
-    </Menu>
-  );
 
+  const handleEdit = (row: any) => {
+    setModalMode("edit");
+    setCurrentItemId(row.id);
+    setFormData({
+      code: row.code || "",
+      nameEn: row.nameEn || "",
+      nameAr: row.nameAr || "",
+      descriptionEn: row.descriptionEn || "",
+      descriptionAr: row.descriptionAr || "",
+      active: row.active ?? true,
+      sortOrder: row.sortOrder ?? 0,
+    });
+    setShowFormModal(true);
+  };
 
-  const Activity_Loans_Header = [
+  const handleSave = async () => {
+    if (!formData.code.trim()) {
+      toast.error("Code is required");
+      return;
+    }
+    if (!formData.nameEn.trim()) {
+      toast.error("English name is required");
+      return;
+    }
+
+    try {
+      setIsSaving(true);
+      const body: any = {
+        code: formData.code.trim(),
+        nameEn: formData.nameEn.trim(),
+        nameAr: formData.nameAr.trim(),
+        descriptionEn: formData.descriptionEn.trim(),
+        descriptionAr: formData.descriptionAr.trim(),
+        sortOrder: Number(formData.sortOrder) || 0,
+      };
+
+      if (modalMode === "edit") {
+        body.active = formData.active;
+      }
+
+      if (modalMode === "edit" && currentItemId) {
+        await updatePurposeOfFinance(currentItemId, body);
+        toast.success("Updated successfully");
+      } else {
+        await createPurposeOfFinance(body);
+        toast.success("Created successfully");
+      }
+
+      setShowFormModal(false);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    try {
+      setIsDeleting(true);
+      await deletePurposeOfFinance(deleteTarget.id);
+      toast.success("Deleted successfully");
+      setDeleteTarget(null);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to delete");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const filteredData = data.filter((item) => {
+    if (!searchTerm) return true;
+    const term = searchTerm.toLowerCase();
+    return (
+      (item?.code || "").toLowerCase().includes(term) ||
+      (item?.nameEn || "").toLowerCase().includes(term) ||
+      (item?.nameAr || "").toLowerCase().includes(term)
+    );
+  });
+
+  const headers = [
     {
-      name: "Title",
-      selector: (row: { title: any }) => row.title || "-",
+      name: "Code",
+      selector: (row: any) => row.code || "-",
+      sortable: true,
     },
     {
-      name: "Type",
-      selector: (row: { type: any }) => row.type || "-",
+      name: "Name (EN)",
+      selector: (row: any) => row.nameEn || "-",
+      sortable: true,
     },
     {
-      name: "Factor Weight",
-      selector: (row: { factor_weight: any }) => row.factor_weight ?? "-",
+      name: "Name (AR)",
+      selector: (row: any) => row.nameAr || "-",
+      sortable: true,
     },
     {
-      name: "Factors",
-      selector: (row: { factors: any }) => row.factors ?? "-",
+      name: "Description (EN)",
+      selector: (row: any) => row.descriptionEn || "-",
+      sortable: true,
+    },
+    {
+      name: "Sort Order",
+      selector: (row: any) => row.sortOrder ?? "-",
+      sortable: true,
+      width: "120px",
     },
     {
       name: "Status",
+      cell: (row: any) => {
+        const isActive = row.active ?? true;
+        return (
+          <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+            {isActive ? "Active" : "Inactive"}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Action",
       cell: (row: any) => (
         <div
-          style={{
-            padding: "8px 10px",
-            fontSize: "12px",
-            borderRadius: "32px",
-            backgroundColor:
-              row.status === true
-                ? "var(--color-success)"
-                : row.status === false
-                ? "var(--color-error)"
-                : "var(--color-orange-alt)",
-            color: "var(--primary-foreground)",
-            cursor: row.status === true ? "pointer" : "default",
-          }}
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
-          {row.status === true ? "Active" : "Inactive"}
-        </div>
-      ),
-    },
-    // {
-    //   name: "Change Status",
-    //   cell: (row: any) => (
-    //     <Switch
-    //       checked={row.status === true}
-    //       onChange={async (checked) => {
-    //         const newStatus = checked;
-    //         const body = {
-    //           status: newStatus,
-    //         };
-
-    //         try {
-    //           const res = await updateCommodityTypeStatus(row.id, body);
-    //           if (res) {
-    //             toast.success(res?.data?.message);
-    //             getList();
-    //             // Update UI locally
-    //             setData((prevData: any) =>
-    //               prevData.map((item: any) =>
-    //                 item.id === row.id ? { ...item, status: newStatus } : item
-    //               )
-    //             );
-    //           }
-    //         } catch (error) {
-    //           console.error("Status update failed:", error);
-    //         }
-    //       }}
-    //       className="red-switch"
-    //     />
-    //   ),
-    // },
-    // Only include Action column if user has any action permission
-    ...(hasAnyAction ? [{
-      name: "Action",
-      width: "10%",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              fontSize: "12px",
-              borderRadius: "4px",
-              padding: "8px",
-            }}
-          >
-            Select 
-            <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
-      ),
-    }] : []),
-  ];
-
-   const handleDeleteConfirmed = async () => {
-    if (!deleteTargetId) return;
-    try {
-      await toast.promise(deleteListOfValues(deleteTargetId), {
-        loading: "Deleting...",
-        success: () => {
-          getList();
-          setShowConfirmModal(false);
-          setDeleteTargetId(null);
-          return "Deleted successfully";
-        },
-        error: (err) => err?.message || "Failed to delete source",
-      });
-    } catch (error) {
-      console.error("Delete error:", error);
-      setShowConfirmModal(false);
-    }
-  }; 
-
-   const handleSave = async () => {
-    const body: any = {
-      title: formData.title,
-      type: formData.type,
-      factor_weight: formData.factor_weight ? Number(formData.factor_weight) : 0,
-      status: formData.status
-    };
-    try {
-      if (selectedItem == "edit" && currentSourceId !== null) {
-        await toast.promise(updateListOfValue(currentSourceId, body), {
-          loading: "Updating...",
-          success: () => {
-            setShowModal(false);
-            setSelectedItem("");
-            setShowConfirmModal(false);
-            setCurrentSourceId(null);
-            setFormData({ 
-              title: "", 
-              type: "PurposeOfFinancing", 
-              factor_weight: "", 
-              status: false 
-             });
-            getList();
-            return "Updated successfully";
-          },
-          error: (err) => err?.message || "Failed to update",
-        });
-      } else if (selectedItem == "add") {
-        await toast.promise(createListOfValue(body), {
-          loading: "Adding new record...",
-          success: () => {
-            setShowModal(false);
-            setSelectedItem("");
-            setShowConfirmModal(false);
-            setCurrentSourceId(null);
-            setFormData({ 
-              title: "", 
-              type: "PurposeOfFinancing", 
-              factor_weight: "", 
-              status: false 
-              });
-            getList();
-            return "Record added successfully";
-          },
-          error: (err) => err?.message || "Failed to add new record",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to save source:", error);
-      setShowConfirmModal(false);
-    }
-  }; 
-
-  const getList = async (searchQuery?: string) => {
-     setSkelitonLoading(true);
-     try {
-       const res = await getLOVsByType("PurposeOfFinance", page, pageSize, searchQuery || searchTerm);
-       if (res) {
-         const responseData = res?.data?.data;
-         const data = responseData?.data || [];
-         setData(data || []);
-         setSkelitonLoading(false);
-         setTotalRows(responseData?.total || 0);
-         setFrom(responseData?.from || 0);
-         setTo(responseData?.to || 0);
-         setTotalPage(responseData?.last_page || 0);
-       }
-     } catch (error: any) {
-       console.error("Error fetching Financing purpose:", error);
-       setSkelitonLoading(false);
-     }
-  };
-
-  // Debounce search function
-  const debouncedSearch = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSearchChange = (value: string) => {
-    setSearchTerm(value);
-    
-    // Clear previous timeout
-    if (debouncedSearch.current) {
-      clearTimeout(debouncedSearch.current);
-    }
-    
-    // Set new timeout for debounced search
-    debouncedSearch.current = setTimeout(() => {
-      // Reset to page 1 when searching
-      setPage(1);
-      getList(value);
-    }, 500); // 500ms debounce delay
-  };
-
-  useEffect(() => {
-     getList();
-  }, [page, pageSize]);
-
-  // Cleanup debounce on unmount
-  useEffect(() => {
-    return () => {
-      if (debouncedSearch.current) {
-        clearTimeout(debouncedSearch.current);
-      }
-    };
-  }, []);
-  
-  const mappedData =
-    data &&
-    data?.map((item: any, index: number) => {
-      return {
-        id: item?.id,
-        Sr: index + 1,
-        title: item?.title || "-",
-        type: item?.type || "-",
-        factor_weight: item?.factor_weight ?? "-",
-        factors: item?.factors ?? "-",
-        status: item?.status,
-        actions: item?.actions || [], // Include actions array from API
-      };
-    });
-
-  const options = [{ label: "Name", value: "name" }];
-  const handleChange = (value: SetStateAction<undefined>[]) => {
-    //setSelectedFilters(value[0]);
-    // You can trigger filtering logic here
-  };
-  return (
-    <>
-      <div
-        className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
-      >
-        <div className="d-flex mb-3 col-12 filter-select">
-          <Select
-            mode="tags"
-            style={{ width: "15%", borderTopRightRadius: "0px" }}
-            onChange={handleChange}
-            placeholder="Filter"
-            tokenSeparators={[","]}
-            suffixIcon={<FaFilter />}
-            options={options}
-          />
-
-          <div className="d-flex gap-2 w-100">
-            <div className="d-flex align-items-center gap-1 border px-2 ps-3 search-box">
-              <img src={Images.searchIconGray} alt="" />
-              <input
-                type="text"
-                value={searchTerm}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                style={{
-                  border: "none",
-                  outline: "none",
-                  background: "transparent",
-                }}
-                className="p-2"
-                placeholder="Search..."
-              />
-            </div>
-
-            {canCreatePOF && (
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
               <button
-                className="theme-btn-next"
-                onClick={() => {
-                  setShowModal(true);
-                  setSelectedItem("add");
-                  setFormData({ 
-                    title: "", 
-                    type: "PurposeOfFinancing", 
-                    factor_weight: "", 
-                    status: false 
-                  });
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleEdit(row);
                 }}
               >
-                Add New Record
-              </button>
-            )}
-          </div>
+                <Pencil className="h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDeleteTarget(row);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-        <TableView
-          header={Activity_Loans_Header}
-          data={mappedData}
-          totalRows={totalRows}
-          isLoading={skelitonLoading}
-          from={from}
-          page={page}
-          totalPage={totalPage}
-          setPage={setPage}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          to={to}
-        />
+      ),
+      width: "100px",
+    },
+  ];
 
-        <Modal
-          className="custom-mod"
-          style={{ maxWidth: "640px" }}
-          title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
-          }
-          visible={showModal}
-          onCancel={() => setShowModal(false)}
-          footer={[
-            <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
-            </Button>,
-            <Button
-              key="save"
-              type="primary"
-              onClick={() => {
-                setShowConfirmModal(true);
-                setShowModal(false);
-              }}
-            >
-              {selectedItem === "edit" ? "Save" : "Submit"}
-            </Button>,
-          ]}
-        >
-          <div className={"Ente-details"}>
-            <Form>
-              <Row className="">
-                <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Title</label>
+  return (
+    <div className="service p-4">
+      <h1 className="text-xl font-bold pb-3">Purpose of Finance</h1>
+
+      <div className="d-flex justify-content-between mb-3 gap-2">
+        <Input
+          placeholder="Search by code or name"
+          className="w-[280px]"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+        <Button className="gap-2" onClick={handleAdd}>
+          <Plus className="h-4 w-4" />
+          Add New Record
+        </Button>
+      </div>
+
+      <TableView
+        header={headers}
+        data={filteredData}
+        totalRows={filteredData.length}
+        isLoading={isLoading}
+        from={1}
+        page={page}
+        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        setPage={setPage}
+        pageSize={pageSize}
+        setPageSize={setPageSize}
+        to={filteredData.length}
+      />
+
+      {/* Add/Edit Modal */}
+      <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>{modalMode === "edit" ? "Edit Record" : "Add New Record"}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Code *</Label>
                 <Input
-                  type="text"
-                  className="fs-6"
-                  placeholder="Enter Title"
-                  value={formData.title}
-                  onChange={(e: any) =>
-                    setFormData({ ...formData, title: e.target.value })
-                  }
+                  placeholder="e.g. HOME_PURCHASE"
+                  value={formData.code}
+                  onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                 />
-                </Col>
-                <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Type</label>
-                <Input
-                  type="text"
-                  className="fs-6"
-                  placeholder="PurposeOfFinancing"
-                  value={formData.type}
-                  disabled
-                />
-                </Col>
-                <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Factor Weight</label>
+              </div>
+              <div className="space-y-2">
+                <Label>Sort Order</Label>
                 <Input
                   type="number"
-                  className="fs-6"
-                  placeholder="Enter Factor Weight"
-                  value={formData.factor_weight}
-                  onChange={(e: any) =>
-                    setFormData({ ...formData, factor_weight: e.target.value })
-                  }
+                  placeholder="0"
+                  value={formData.sortOrder}
+                  onChange={(e) => setFormData({ ...formData, sortOrder: Number(e.target.value) })}
                 />
-                </Col>
-                <Col md={12} >            
-                <Checkbox 
-                  checked={formData.status}
-                  onChange={(e: any) =>
-                    setFormData({ ...formData, status: e.target.checked })
-                  }
-                >
-                  Status
-                </Checkbox>
-                </Col>
-              </Row>
-            </Form>
+              </div>
+              <div className="space-y-2">
+                <Label>Name (EN) *</Label>
+                <Input
+                  placeholder="English name"
+                  value={formData.nameEn}
+                  onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Name (AR)</Label>
+                <Input
+                  placeholder="Arabic name"
+                  value={formData.nameAr}
+                  onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Description (EN)</Label>
+                <Input
+                  placeholder="English description"
+                  value={formData.descriptionEn}
+                  onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Description (AR)</Label>
+                <Input
+                  placeholder="Arabic description"
+                  value={formData.descriptionAr}
+                  onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
+                />
+              </div>
+            </div>
+            {modalMode === "edit" && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox
+                  checked={formData.active}
+                  onCheckedChange={(checked) => setFormData({ ...formData, active: !!checked })}
+                />
+                <span className="text-sm">Active</span>
+              </label>
+            )}
           </div>
-        </Modal>
-        <Modal
-          visible={showConfirmModal}
-          onCancel={() => setShowConfirmModal(false)}
-          className="custom-mod"
-          style={{ maxWidth: "632px" }}
-          title={
-            selectedItem === "edit"
-              ? "Edit Record"
-              : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
-          }
-          footer={[
-            <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
-            </Button>,
-            <Button
-              key="yes"
-              type="primary"
-              onClick={
-                selectedItem == "delete" ? handleDeleteConfirmed : handleSave
-              }
-            >
-              Yes
-            </Button>,
-          ]}
-        >
-          <Form>
-            {`${
-              selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
-                : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
-            }`}
-          </Form>
-        </Modal>
-      </div>
-    </>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isSaving}>
+              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Modal */}
+      <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+        <DialogContent className="sm:max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Delete Record</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Are you sure you want to delete{" "}
+            <span className="font-medium text-foreground">
+              {deleteTarget?.nameEn || deleteTarget?.code}
+            </span>
+            ? This action cannot be undone.
+          </p>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+              {isDeleting ? "Deleting..." : "Delete"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
   );
 };
 
