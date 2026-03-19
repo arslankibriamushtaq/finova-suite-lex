@@ -3,7 +3,7 @@ import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox, Switch } f
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
-import { getLeadCustomers } from "../../redux/apis/apisEddReferenceData";
+import { getActiveOnboardings } from "../../redux/apis/apisOnboardingService";
 import { blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, userActive, exportLeads } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
@@ -95,89 +95,52 @@ const Leads = () => {
   
   const Activity_Loans_Header = [
     {
-      name: "Name",
-      cell: (row: { name: any }) => row.name,
-      sortable: true,
-      width: "300px",
-    },
-    {
-      name: "ID",
+      name: "National ID",
       cell: (row: any) => (
-        <MaskedValue value={row.nid} showToggle={true} unmaskedCount={4} />
+        <MaskedValue value={row.nationalId} showToggle={true} unmaskedCount={4} />
       ),
-      width: "200px",
+      width: "180px",
       sortable: true,
-    },
-    {
-      name: "CIF",
-      selector: (row: { cif: any }) => row.cif || "-",
-      sortable: true,
-      width: "220px",
-    },
-    {
-      name: "Email",
-      selector: (row: { email: any }) => row.email,
-      sortable: true,
-      width: "200px",
     },
     {
       name: "Phone",
-      selector: (row: { phone: any }) => row.phone,
+      selector: (row: any) => row.phone,
+      sortable: true,
+      width: "180px",
+    },
+    {
+      name: "Current Step",
+      cell: (row: any) => (
+        <span
+          style={{
+            padding: "6px 12px",
+            borderRadius: "32px",
+            fontSize: "12px",
+            fontWeight: "500",
+            backgroundColor: "var(--color-info)",
+            color: "var(--primary-foreground)",
+            display: "inline-block",
+            textTransform: "capitalize",
+          }}
+        >
+          {(row.currentStep || "-").replace(/_/g, " ").toLowerCase()}
+        </span>
+      ),
       sortable: true,
       width: "200px",
     },
     {
-      name: "Nationality",
-      selector: (row: any) => row.nationality || "-",
-      sortable: true,
-    },
-    /* {
-      name: "Risk Status",
-      cell: (row: any) => {
-        const riskStatus = row.risk || "--";
-        const displayRisk = normalizeRiskDisplay(riskStatus);
-        
-        return (
-          <span
-            style={{
-              padding: "6px 12px",
-              borderRadius: "32px",
-              fontSize: "12px",
-              backgroundColor: getRiskColor(riskStatus),
-              color: "white",
-              display: "inline-block",
-              textTransform: "capitalize",
-              fontWeight: "500"
-            }}
-          >
-            {displayRisk}
-          </span>
-        );
-      },
-      sortable: true,
-    }, */
-    {
-      name: "Sanctions",
-      sortable: true,
+      name: "Device Trusted",
       cell: (row: any) => (
-        <span
-          style={{
-            padding: "8px 10px",
-            borderRadius: "5px",
-            fontSize: "12px",
-            backgroundColor: row.is_blocked ? "var(--color-error)" : "var(--color-success)",
-            color: "var(--primary-foreground)",
-            cursor: "default",
-            border: "none",
-            display: "inline-block",
-          }}
-        >
-          {row.is_blocked ? "Flagged" : "Clear"}
+        <span className={row.deviceTrusted ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+          {row.deviceTrusted ? "Yes" : "No"}
         </span>
       ),
+      sortable: true,
+      width: "140px",
     },
     {
-      name:"Date",
+      name: "Started At",
       sortable: true,
       cell: (row: any) => (
         <div>
@@ -186,37 +149,13 @@ const Leads = () => {
       ),
     },
     {
-      name: "KYC Status",
-      cell: (row: any) => (
-        <span
-          style={{
-            padding: "6px 12px",
-            borderRadius: "32px",
-            fontSize: "12px",
-            fontWeight: "500",
-            backgroundColor:
-              row.status === "VERIFIED" ? "var(--color-success)" :
-              row.status === "PENDING" ? "var(--color-warning)" :
-              "var(--color-error)",
-            color: "var(--primary-foreground)",
-            display: "inline-block",
-            textTransform: "capitalize",
-          }}
-        >
-          {row.status || "-"}
-        </span>
-      ),
+      name: "Last Updated",
       sortable: true,
-    },
-    {
-      name: "PEP",
       cell: (row: any) => (
-        <span className={row.pep === "Yes" ? "text-red-600 font-medium" : "text-green-600 font-medium"}>
-          {row.pep}
-        </span>
+        <div>
+          {row.lastUpdatedAt ? new Date(row.lastUpdatedAt).toLocaleDateString() : "-"}
+        </div>
       ),
-      sortable: true,
-      width: "80px",
     },
     {
       name: "Actions",
@@ -576,9 +515,10 @@ const Leads = () => {
   const getLeadsList = async () => {
     try {
       setSkelitonLoading(true);
-      const response = await getLeadCustomers(search, pep, status);
-      const list = response?.data?.data || [];
-      setData(Array.isArray(list) ? list : []);
+      const response = await getActiveOnboardings();
+      const list = response?.data?.data || response?.data || [];
+      const allData = Array.isArray(list) ? list : [];
+      setData(allData.filter((item: any) => item.lifecycleStage === "LEAD"));
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || "Failed to fetch leads");
     } finally {
@@ -587,28 +527,23 @@ const Leads = () => {
   };
   useEffect(() => {
     getLeadsList();
-  }, [search, pep, status]);
+  }, []);
 
   const mappedData =
     data &&
     data?.map((item: any, index: number) => {
       return {
-        id: item.id,
+        id: item.customerId || item.workflowId,
         Sr: index + 1,
-        name: item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
-        nid: item?.nationalIdType || "-",
-        cif: item?.cifNumber || "-",
-        email: item?.email || "-",
+        workflowId: item?.workflowId || "-",
+        nationalId: item?.nationalId || "-",
         phone: item?.mobileNumber || "-",
-        pep: item?.pepFlag ? "Yes" : "No",
-        status: item?.kycStatus || "-",
-        partner: item?.partner || "-",
-        risk_status: item?.riskGrade,
-        is_blocked: item?.sanctionsFlag,
-        created_at: item?.createdAt,
-        risk: item?.riskGrade,
-        lifecycleStage: item?.lifecycleStage,
-        nationality: item?.nationality,
+        currentStep: item?.currentStep || "-",
+        lifecycleStage: item?.lifecycleStage || "-",
+        customerId: item?.customerId || "-",
+        deviceTrusted: item?.deviceTrusted,
+        created_at: item?.startedAt,
+        lastUpdatedAt: item?.lastUpdatedAt,
       };
     });
   const exportCSV = async () => {
