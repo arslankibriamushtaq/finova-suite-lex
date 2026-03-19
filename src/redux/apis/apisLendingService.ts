@@ -27,3 +27,11 @@ export function updatePurposeOfFinance(id: string, body: any) {
 export function deletePurposeOfFinance(id: string) {
   return axiosLendingService.delete(`/api/v1/reference-data/purpose-of-finance/${id}`);
 }
+
+// ============================================================
+// Loan Applications
+// ============================================================
+
+export function getLoanApplications() {
+  return axiosLendingService.get(`/api/v1/loan-applications`);
+}

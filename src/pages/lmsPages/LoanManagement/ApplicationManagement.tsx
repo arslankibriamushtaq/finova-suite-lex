@@ -18,9 +18,9 @@ import {
 import {
   ApproveDisburseAmount,
   generateInvoices,
-  getAllApplication,
   modifyLoanStatus,
 } from "../../../redux/apis/apisCrudLms";
+import { getLoanApplications } from "../../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 
 import { Col, Form, Modal, Row } from "react-bootstrap";
@@ -234,34 +234,15 @@ const ApplicationManagement = () => {
   const ledgerAcoount = async () => {
     try {
       setSkelitonLoading(true);
-      const requestBody = {
-        pageNo: page,
-        pageSize: pageSize,
-        searchTypes: selectApplicable,
-        searchQuery: searchValue,
-        from: "2024-06-15T10:30:39.150Z",
-        to: new Date(),
-      };
-      const response = await getAllApplication(requestBody);
-      if (response) {
-        const data = response.data.data;
-        setApplicationData(data || []);
-        const currentPage = response?.data?.pageInfo?.page || page;
-        const currentPageSize = response?.data?.pageInfo?.pageSize || pageSize;
-        const totalItems = response?.data?.pageInfo?.totalItems || 0;
-        
-        setTotalRows(totalItems);
-        
-        // Calculate from and to based on page, pageSize, and totalItems
-        const calculatedFrom = (currentPage - 1) * currentPageSize + 1;
-        const calculatedTo = Math.min(currentPage * currentPageSize, totalItems);
-        
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
-      }
+      const response = await getLoanApplications();
+      const list = response?.data?.data || response?.data || [];
+      const dataArray = Array.isArray(list) ? list : [];
+      setApplicationData(dataArray);
+      setTotalRows(dataArray.length);
+      setFrom(dataArray.length > 0 ? 1 : 0);
+      setTo(dataArray.length);
     } catch (error: any) {
-      toast.error(error?.message);
-      setSkelitonLoading(false);
+      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch loan applications");
     } finally {
       setSkelitonLoading(false);
     }
@@ -431,76 +412,68 @@ const ApplicationManagement = () => {
   const Account_Documents_List_Header = [
     {
       name: "Application No",
-      cell: (row: any) =>
-        row.applicationNo,
+      selector: (row: any) => row.applicationNumber,
+      sortable: true,
       width: "170px",
     },
     {
-      name: "CIF",
-      cell: (row: { cif: any }) => row.cif,
+      name: "National ID",
+      selector: (row: any) => row.nationalId,
       sortable: true,
-      width: "250px",
+      width: "140px",
     },
     {
       name: "Product Name",
-      cell: (row: any) =>
-        row.productName,
-      width: "130px",
+      selector: (row: any) => row.productName,
+      sortable: true,
+      width: "160px",
     },
     {
-      name: "Channel",
-      selector: (row: any) =>
-        editRowId === row.id ? (
-          <Input
-            name="DocumentType"
-            value={editFormData.DocumentType}
-            onChange={handleInputChange}
-          />
-        ) : (
-          row.chennel
-        ),
-    },
-    {
-      name: "Customer Name",
-      cell: (row: any) =>
-        row.CustomerName,
+      name: "Sharia Structure",
+      selector: (row: any) => row.shariaStructure,
+      sortable: true,
       width: "150px",
     },
     {
-      name: "Loan Amount",
-      selector: (row: any) =>
-        editRowId === row.id ? (
-          <Input
-            name="Customer ID"
-            value={editFormData.loanAmount}
-            onChange={handleInputChange}
-          />
-        ) : (
-          row.loanAmount
-        ),
-      //width: "200px",
+      name: "Amount",
+      selector: (row: any) => row.requestedAmount,
+      sortable: true,
+      width: "120px",
     },
     {
       name: "Tenure",
-      selector: (row: any) =>
-        editRowId === row.id ? (
-          <Input
-            name="tenure"
-            value={disburseData?.tenure}
-            onChange={handleInputChange}
-          />
-        ) : (
-          row.tenure
-        ),
+      selector: (row: any) => row.requestedTenureMonths ? `${row.requestedTenureMonths} months` : "-",
+      sortable: true,
+      width: "120px",
     },
     {
-      name: "Application Date",
-      selector: (row: { Date: any }) => row.Date,
-      width: "150px",
+      name: "Purpose",
+      selector: (row: any) => row.purposeOfFinance,
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Current Step",
+      cell: (row: any) => (
+        <div
+          style={{
+            whiteSpace: "nowrap",
+            padding: "0.4rem 1rem",
+            borderRadius: "12px",
+            backgroundColor: "var(--color-info)",
+            color: "var(--primary-foreground)",
+            fontSize: "12px",
+            textTransform: "capitalize",
+          }}
+        >
+          {(row.stepperLabel || "-")}
+        </div>
+      ),
+      width: "180px",
     },
     {
       name: "Status",
-      width: "150px",
+      width: "180px",
       cell: (row: any) => (
         <div
           style={{
@@ -508,53 +481,48 @@ const ApplicationManagement = () => {
             padding: "0.4rem 1rem",
             borderRadius: "12px",
             backgroundColor:
-              row.Status === "Paid"
+              row.status?.includes("COMPLETED") || row.status?.includes("APPROVED")
                 ? "var(--color-status-green)"
-                : row.Status === "Pending"
+                : row.status?.includes("PENDING")
                   ? "var(--color-status-amber)"
-                  : row.Status === "Rejected"
+                  : row.status?.includes("REJECTED")
                     ? "var(--color-status-coral)"
-                    : row.Status === "Unpaid"
-                      ? "var(--color-status-gray)"
-                      : row.Status === "Inprogress"
-                        ? "var(--color-status-blue)"
-                        : "var(--color-status-dark)",
+                    : "var(--color-status-blue)",
             color: "var(--primary-foreground)",
-            cursor: row.Status === "Active" ? "pointer" : "default",
+            fontSize: "12px",
+            textTransform: "capitalize",
           }}
         >
-          {row.Status}
+          {(row.status || "-").replace(/_/g, " ").toLowerCase()}
         </div>
       ),
     },
     {
-      name: 'Disbursement Status',
+      name: "SafeWatch",
       cell: (row: any) => (
-        <div
+        <span
           style={{
-            whiteSpace: "nowrap",
-            padding: "0.4rem 1rem",
-            borderRadius: "12px",
+            padding: "6px 12px",
+            borderRadius: "32px",
+            fontSize: "12px",
+            fontWeight: "500",
             backgroundColor:
-              row.disbursementStatus === "Approved"
+              row.safeWatchStatus === "CLEAR"
                 ? "var(--color-status-green)"
-                : row.disbursementStatus === "Pending"
-                  ? "var(--color-status-amber)"
-                  : row.disbursementStatus === "Rejected"
-                    ? "var(--color-status-coral)"
-                    : row.disbursementStatus === "Disbursed"
-                      ? "var(--color-status-green)"
-                      : row.disbursementStatus === "Not Initiated"
-                        ? "var(--color-status-blue)"
-                        : "var(--color-status-dark)",
+                : "var(--color-status-coral)",
             color: "var(--primary-foreground)",
-            cursor: row.disbursementStatus === "Active" ? "pointer" : "default",
           }}
         >
-          {row.disbursementStatus}
-        </div>
+          {row.safeWatchStatus || "-"}
+        </span>
       ),
-      width: "150px",
+      width: "120px",
+    },
+    {
+      name: "Date",
+      selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
+      sortable: true,
+      width: "120px",
     },
     {
       name: "Action",
@@ -609,25 +577,29 @@ const ApplicationManagement = () => {
     applicationData &&
     applicationData.map((item: any) => {
       return {
-        disbursementStatus: getDisbursementStatus(item?.disbursementStatus),
-        productName: item?.productName,
-        chennel: item?.chennel,
-        applicationKey: item?.applicationKey,
-        applicationNo: item?.applicationNo,
-        Status: item?.loanPaymentStatus === 1
-        ? "Paid"
-        : item?.loanPaymentStatus === 2
-        ? "UnPaid"
-        : "None",
-        laonStatus:item?.laonStatus,
-        loanId: item?.loanId,
-        applicationId: item?.applicationId,
-        loanAmount: item?.loanAmount,
-        tenure: item?.tenure,
-        accountId: item?.accountId,
-        CustomerName: item?.customerName||"-",
-        Date:formatDate(item?.createdDate),
-        cif: item?.cif,
+        id: item?.id,
+        applicationNumber: item?.applicationNumber || "-",
+        customerId: item?.customerId,
+        nationalId: item?.nationalId || "-",
+        status: item?.status || "-",
+        stepperIndex: item?.stepperIndex,
+        stepperLabel: item?.stepperLabel || "-",
+        productId: item?.productId,
+        productName: item?.productName || "-",
+        shariaStructure: item?.shariaStructure || "-",
+        requestedAmount: item?.requestedAmount ?? "-",
+        requestedTenureMonths: item?.requestedTenureMonths,
+        purposeOfFinance: item?.purposeOfFinance || "-",
+        safeWatchStatus: item?.safeWatchStatus || "-",
+        creditScore: item?.creditScore,
+        createdAt: item?.createdAt,
+        updatedAt: item?.updatedAt,
+        // Keep for action menu compatibility
+        applicationId: item?.id,
+        loanId: item?.id,
+        applicationNo: item?.applicationNumber,
+        loanAmount: item?.requestedAmount,
+        laonStatus: item?.status,
       };
     });
   const validateFields = () => {
@@ -751,9 +723,10 @@ const ApplicationManagement = () => {
           setPageSize={setPageSize}
           page={page}
           pageSize={pageSize}
-          totalRows={totalRows}
-          from={from}
-          to={to}
+          totalRows={mappedData?.length || 0}
+          totalPage={Math.ceil((mappedData?.length || 0) / pageSize) || 1}
+          from={1}
+          to={mappedData?.length || 0}
           header={Account_Documents_List_Header}
           data={mappedData}
           isLoading={skelitonLoading}
