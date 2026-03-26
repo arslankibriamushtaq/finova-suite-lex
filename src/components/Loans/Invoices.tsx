@@ -4,13 +4,13 @@ import { Dropdown, Input, Menu, Button, Checkbox } from "antd";
 import TableView from "../TableView/TableView";
 import { useNavigate, useParams } from "react-router-dom";
 import {
-  getAllInvoiceList,
   getAllRealations,
   getDynamicInvoiceCreation,
   repayManually,
   updateLoanInvoiceDueDate,
   waiveAmount,
 } from "../../redux/apis/apisCrudLms";
+import { getApplicationInstallments } from "../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 import { Modal, Row, Col, ModalHeader, ModalBody, Tab, Tabs } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
@@ -21,13 +21,13 @@ import { NumberFormatter } from "../../App";
 import { useDispatch } from "react-redux";
 import { setPayInvoices } from "../../redux/apis/apisSlice";
 
-// Enum matching backend PaymentStatus
-enum PaymentStatus {
-  Paid = 1,
-  UnPaid = 2,
-  Discard = 3,
-  Cancelled = 4
-}
+// Payment status strings from lending-service
+const PAYMENT_STATUS = {
+  PAID: "PAID",
+  PENDING: "PENDING",
+  OVERDUE: "OVERDUE",
+  CANCELLED: "CANCELLED",
+} as const;
 
 const Invoices = () => {
   const dispatch = useDispatch();
@@ -88,7 +88,7 @@ const Invoices = () => {
 
     return (
       <Menu>
-        {row.paymentStatus != 1 && (
+        {row.paymentStatus !== PAYMENT_STATUS.PAID && (
           <Menu.Item
             key="editName"
             icon={<EditOutlined />}
@@ -97,7 +97,7 @@ const Invoices = () => {
               setUpdatedDate(row.dueDate);
               setUpdatedAccId(row.accountId);
               setUpdatedId(row.invoiceId);
-              setInvoiceNo(row.invoiceNumber);
+              setInvoiceNo(row.invoiceId);
             }}
           >
             Update Due Date
@@ -112,18 +112,7 @@ const Invoices = () => {
           View
         </Menu.Item>
 
-        {/* {row.paymentStatus != 1 && (
-          <Menu.Item
-            onClick={() => {
-              setSelectedInvoice(row);
-              setShowModal(true);
-            }}
-            icon={<EditOutlined />}
-          >
-            Pay Manually
-          </Menu.Item>
-        )} */}
-        {row.paymentStatus != 1 && (
+        {row.paymentStatus !== PAYMENT_STATUS.PAID && (
           <Menu.Item
             onClick={() => {
               setWaveLateDialog(true);
@@ -171,8 +160,7 @@ const Invoices = () => {
     if (isChecked) {
       // Filter all unpaid invoices
       const unpaidInvoices = allinvoiceList
-        .filter((invoice: any) => invoice.result.paymentStatus !== 1)
-        .map((invoice: any) => invoice.result); // Extracting only the `result` field
+        .filter((invoice: any) => invoice.paymentStatus !== PAYMENT_STATUS.PAID);
 
       setSelectedInvoices(unpaidInvoices);
     } else {
@@ -212,78 +200,68 @@ const Invoices = () => {
     // },
 
     {
-      name: "Loan Application Number",
-      selector: (row: any) => row.applicationNo,
+      name: "Invoice ID",
+      selector: (row: any) => row.invoiceId,
       width: "200px",
     },
-
     {
-      name: "Customer Id",
-      selector: (row: any) => row.customerId,
-      width: "250px",
-    },
-
-    {
-      name:"Invoice Number",
-      selector: (row: any) => row.invoiceNumber,
-      width: "150px",
+      name: "Installment #",
+      selector: (row: any) => row.installmentNumber,
+      width: "120px",
     },
     {
       name: "Due Date",
-      selector: (row: any) => new Date(row.dueDate).toLocaleDateString(),
-      width: "200px",
+      selector: (row: any) => row.dueDate || "-",
+      width: "130px",
     },
     {
-      name: "Sub Total",
-      selector: (row: any) => row.subTotalAmount, // Assuming totalAmount is the total
+      name: "Installment Amount",
+      selector: (row: any) => row.installmentAmount,
       cell: (row: any) => (
-        <div className="d-flex">
-          <span>
-            <NumberFormatter value={row?.subTotalAmount} />
-          </span>
-        </div>
+        <NumberFormatter value={row?.installmentAmount} />
       ),
+      width: "160px",
+    },
+    {
+      name: "Principal",
+      selector: (row: any) => row.principalComponent,
+      cell: (row: any) => (
+        <NumberFormatter value={row?.principalComponent} />
+      ),
+      width: "130px",
     },
     {
       name: "Profit",
-      selector: (row: any) => row?.vat+row?.profit, // Assuming totalAmount is the total
+      selector: (row: any) => row.profitComponent,
       cell: (row: any) => (
-        <div className="d-flex">
-          <span>
-            <NumberFormatter value={row?.vat+row?.profit} />
-          </span>
-        </div>
+        <NumberFormatter value={row?.profitComponent} />
       ),
+      width: "130px",
     },
     {
-      name: "Total",
-      selector: (row: any) => row.totalAmount, // Assuming totalAmount is the total
+      name: "Outstanding Balance",
+      selector: (row: any) => row.outstandingBalance,
       cell: (row: any) => (
-        <div className="d-flex">
-          <span>
-            <NumberFormatter value={row?.totalAmount} />
-          </span>
-        </div>
+        <NumberFormatter value={row?.outstandingBalance} />
       ),
+      width: "170px",
     },
-  
-   
     {
       name: "Payment Status",
       selector: (row: any) => row.paymentStatus,
       cell: (row: any) => {
-        const getStatusConfig = (status: number) => {
+        const getStatusConfig = (status: string) => {
           switch (status) {
-            case PaymentStatus.Paid:
-              return { label: "Paid", color: "var(--color-success)" }; // Green
-            case PaymentStatus.UnPaid:
-              return { label: "UnPaid", color: "var(--destructive)" }; // Red
-            case PaymentStatus.Discard:
-              return { label: "Discard", color: "var(--color-warning)" }; // Orange
-            case PaymentStatus.Cancelled:
-              return { label: "Cancelled", color: "var(--color-disabled)" }; // Gray
+            case PAYMENT_STATUS.PAID:
+              return { label: "Paid", color: "var(--color-success)" };
+            case PAYMENT_STATUS.PENDING:
+              return { label: "Pending", color: "var(--color-warning)" };
+            case PAYMENT_STATUS.OVERDUE:
+              return { label: "Overdue", color: "var(--destructive)" };
+            case PAYMENT_STATUS.CANCELLED:
+              return { label: "Cancelled", color: "var(--color-disabled)" };
             default:
-              return { label: "Unknown", color: "var(--color-disabled)" };
+              return { label: status || "Unknown", color: "var(--color-disabled)" };
           }
         };
 
@@ -306,40 +284,20 @@ const Invoices = () => {
       width: "150px",
     },
     {
-      name:"Transaction Date",
-      selector: (row: any) => row.transactionDate  ? new Date(row.transactionDate).toLocaleDateString() : "-", 
-      width: "150px",
+      name: "Paid Date",
+      selector: (row: any) => row.paidDate ? new Date(row.paidDate).toLocaleDateString() : "-",
+      width: "130px",
     },
     {
-      name: "Payable Status",
-      selector: (row: any) => row.payableStatus, // Assuming payableStatus holds "Early Settlement" or "Due Loans"
+      name: "Paid Amount",
+      selector: (row: any) => row.paidAmount,
       cell: (row: any) => (
-        <div
-          onClick={() => {
-          }}
-        >
-          {row.payableStatus === 1
-            ? "Early settlement"
-            : row.payableStatus === 2
-              ? "Due Loan"
-              : row.payableStatus === 3
-                ? "Over due"
-                : row.payableStatus === 5
-                  ? "Non performing"
-                  : row.payableStatus === 4
-                    ? " Write off"
-                    : row.payableStatus === 6
-                      ? "Broken promise"
-                      : row.payableStatus === 7
-                        ? "Pending"
-                      : "Default"}
-        </div>
+        row.paidAmount != null ? <NumberFormatter value={row?.paidAmount} /> : <span>-</span>
       ),
+      width: "130px",
     },
-    
     {
       name: "Actions",
-
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -456,15 +414,15 @@ const Invoices = () => {
   const individualCustomer = async () => {
     try {
       setSkelitonLoading(true);
-      const res = await getAllInvoiceList(id?.id, type.type);
-      if (res) {
-        const value = res.data.data;
-        setAllinvoiceList(value || []);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
-      }
+      const applicationId = id?.id;
+      if (!applicationId) return;
+      const res = await getApplicationInstallments(applicationId);
+      const list = res?.data?.data || res?.data || [];
+      const dataArray = Array.isArray(list) ? list : [];
+      setAllinvoiceList(dataArray);
+      setTotalRows(dataArray.length);
     } catch (error: any) {
-      toast.error(error?.message);
-      setSkelitonLoading(false);
+      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch installments");
     } finally {
       setSkelitonLoading(false);
     }
@@ -518,40 +476,20 @@ const Invoices = () => {
     allinvoiceList &&
     allinvoiceList.map((item: any) => {
       return {
-        accountNumber: item.result?.accountNumber,
-        applicationID: item.result?.applicationID,
-        invoiceLogo: item?.invoiceLogo,
-        invoiceNumber: item?.result?.invoiceNumber,
-        applicationNo: item?.result?.applicationNo,
-        IqamaId: item?.result?.iqamaId || "-",
-        customerId: item?.result?.customerId || "-",
-        from: item?.from,
-        billingTo: item?.result?.billingTo || "-",
-        shipTo: item?.shipTo,
-        vat: item?.result?.vat,
-        profit: item?.result?.profit,
-        dueDate: formatDate(item?.result?.dueDate),
-        invoiceDate: formatDate(item?.result?.invoiceDate),
-        poNumber: item?.poNumber,
-        subTotalAmount: item?.result?.subTotalAmount.toFixed(2),
-        totalAmount: item?.result?.totalAmount.toFixed(2),
-        tax: item?.result?.tax,
-        shipping: item?.shipping,
-        discount: item?.discount,
-        notes: item?.notes,
-        terms: item?.terms,
-        payableStatus: item?.result?.payableStatus,
-        paymentTerms: item?.result?.paymentTerms,
-        paymentStatus: item?.result?.paymentStatus,
-        transactionDate: item?.result?.transactionDetails?.created,
-        id: item?.result?.id,
-        created: item?.result?.created,
-        accountId: item?.result?.accountId,
-        penaltyAmount: item?.result?.penaltyAmount,
-        totalAmountWithPenalty: item?.result?.totalAmountWithPenalty,
-        invoiceId:
-          item?.result?.invoiceDiscriptions?.invoiceID || item?.result?.id,
-        isEarlySettlement: item?.result?.isEarlySettlement || false,
+        invoiceId: item?.invoiceId || "-",
+        installmentNumber: item?.installmentNumber ?? "-",
+        dueDate: item?.dueDate || "-",
+        installmentAmount: item?.installmentAmount ?? 0,
+        principalComponent: item?.principalComponent ?? 0,
+        profitComponent: item?.profitComponent ?? 0,
+        outstandingBalance: item?.outstandingBalance ?? 0,
+        paymentStatus: item?.paymentStatus || "PENDING",
+        paidDate: item?.paidDate,
+        paidAmount: item?.paidAmount,
+        receiptAvailable: item?.receiptAvailable ?? false,
+        // Keep accountId for waive/update actions
+        accountId: item?.accountId,
+        id: item?.invoiceId,
       };
     });
 

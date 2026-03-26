@@ -375,7 +375,7 @@ const ApplicationManagement = () => {
           </Menu.Item>
         </>
       )}
-      {row.laonStatus == "Approved" && (
+      {row.laonStatus == "APPROVED" && (
         <>
           {/* <Menu.Item key="view" icon={<EyeOutlined />}>
             View
@@ -519,6 +519,27 @@ const ApplicationManagement = () => {
       width: "120px",
     },
     {
+      name: "Disbursement",
+      cell: (row: any) => (
+        <span
+          style={{
+            padding: "6px 12px",
+            borderRadius: "32px",
+            fontSize: "12px",
+            fontWeight: "500",
+            backgroundColor:
+              row.disbursementStatus === "Disbursed"
+                ? "var(--color-status-green)"
+                : "var(--color-status-amber)",
+            color: "var(--primary-foreground)",
+          }}
+        >
+          {row.disbursementStatus}
+        </span>
+      ),
+      width: "140px",
+    },
+    {
       name: "Date",
       selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
@@ -600,6 +621,7 @@ const ApplicationManagement = () => {
         applicationNo: item?.applicationNumber,
         loanAmount: item?.requestedAmount,
         laonStatus: item?.status,
+        disbursementStatus: item?.loanStatus === "ACTIVE" ? "Disbursed" : "Pending",
       };
     });
   const validateFields = () => {

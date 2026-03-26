@@ -35,3 +35,7 @@ export function deletePurposeOfFinance(id: string) {
 export function getLoanApplications() {
   return axiosLendingService.get(`/api/v1/loan-applications`);
 }
+
+export function getApplicationInstallments(applicationId: string) {
+  return axiosLendingService.get(`/api/v1/loans/application/${applicationId}/installments`);
+}
