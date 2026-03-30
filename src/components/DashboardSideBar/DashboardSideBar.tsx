@@ -430,147 +430,147 @@ const DasbhboardSidebar = () => {
         //   ],
         // },
       
-    hasAccess("WORKFLOW") && {
-      label: "Factoring Management",
-      Link: "FinancingApplications/AllApplications",
-          LinkLable: "LOS",
-      img: Images.FinancingApplicationsIcon,
-      imgActive: Images.FinancingApplicationsIconDark,
-      active: pathname.includes("/FinancingApplications"),
-          submenu: [
-        // hasAccess("loan_application_module") &&
-         {
-          label: "All Applications",
-          Link: "AllApplications",
-              LinkLable: "/LOS/FinancingApplications",
-              active: pathname.includes("/AllApplications"),
-        },
-        // hasAccess("loan_application_module") && 
-        {
-          label: "Pending Factoring",
-          Link: "PendingFinancing",
-              LinkLable: "/LOS/FinancingApplications",
-              active: pathname.includes("/PendingFinancing"),
-        },
-        // hasAccess("loan_application_module") && 
-        {
-          label: "In Progress Factoring",
-          Link: "InProgressFinancing",
-              LinkLable: "/LOS/FinancingApplications",
-              active: pathname.includes("/InProgressFinancing"),
-        },
-        // hasAccess("loan_application_module") && 
-        {
-          label: "Approved Factoring",
-          Link: "ApprovedFinancing",
-              LinkLable: "/LOS/FinancingApplications",
-              active: pathname.includes("/ApprovedFinancing"),
-        },
-        // hasAccess("loan_application_module") && 
-        {
-          label: "Rejected Factoring",
-          Link: "RejectedFinancing",
-              LinkLable: "/LOS/FinancingApplications",
-          active: pathname.includes("/RejectedFinancing"),
-        },
-        // hasAccess("loan_application_module") && 
-        {
-          label: "Incomplete Factoring",
-          Link: "IncompleteFinancing",
-              LinkLable: "/LOS/FinancingApplications",
-          active: pathname.includes("/IncompleteFinancing"),
-        },
-        // hasAccess("loan_application_module") && 
-        {
-          label: "Canceled Factoring",
-          Link: "CanceledFinancing",
-              LinkLable: "/LOS/FinancingApplications",
-              active: pathname.includes("/CanceledFinancing"),
-        },
-        // hasAccess("loan_application_module") && {
-        //   label: "Rescheduling Request",
-        //   Link: "ReschedulingRequest",
-        //       LinkLable: "/LOS/FinancingApplications",
-        //       active: pathname.includes("/ReschedulingRequest"),
-        // },
-        // hasAccess("loan_application_module") && {
-        //   label: "Approved Rescheduled Applications",
-        //   Link: "ApprovedRescheduledApplications",
-        //       LinkLable: "/LOS/FinancingApplications",
-        //       active: pathname.includes("/ApprovedRescheduledApplications"),
-        // },
-        // hasAccess("activity_logs_module") && {
-        //   label: "Activity Logs",
-        //   Link: "ActivityLogsFinancing",
-        //       LinkLable: "/LOS/FinancingApplications",
-        //       active: pathname == "/LOS/FinancingApplications/ActivityLogsFinancing",
-        // },
-      ].filter(Boolean),
-    },
-    {
-      label: "Web Page Management",
-      Link: "WebPageManagement/HeaderFooter",
-      img: Images.HomePageManagementIcon,
-      imgActive: Images.HomePageManagementIcon,
-      LinkLable: "LOS",
-      active: pathname.includes("/WebPageManagement"),
-      menu: [
-        {
-          label: "Global Sections",
-          Link: "GlobalSections",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/GlobalSections"),
-        },
-        {
-          label: "Home Page",
-          Link: "HomePage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/HomePage"),
-        },
-        /* {
-          label: "Career Page",
-          Link: "CareerPage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname == "/LOS/WebPageManagement/CareerPage",
-        }, */
-        {
-          label: "About Page",
-          Link: "AboutPage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/AboutPage"),
-        },
-        {
-          label: "Privacy Policy Page",
-          Link: "PrivacyPolicyTemplatePage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/PrivacyPolicyTemplatePage"),
-        },
-        {
-          label: "Terms Conditions Page",
-          Link: "TermsConditionsTemplatePage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/TermsConditionsTemplatePage"),
-        },
-        {
-          label: "Faqs Page",
-          Link: "FaqsTemplatePage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/FaqsTemplatePage"),
-        },
-        {
-          label: "Contact Us Page",
-          Link: "ContactUsTemplatePage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/ContactUsTemplatePage"),
-        },
-        {
-          label: "Financial Statements Page",
-          Link: "FinancialStatementsTemplatePage",
-          LinkLable: "/LOS/WebPageManagement",
-          active: pathname.includes("/FinancialStatementsTemplatePage"),
-        },
-      ],
-    },
+    // hasAccess("WORKFLOW") && {
+    //   label: "Factoring Management",
+    //   Link: "FinancingApplications/AllApplications",
+    //       LinkLable: "LOS",
+    //   img: Images.FinancingApplicationsIcon,
+    //   imgActive: Images.FinancingApplicationsIconDark,
+    //   active: pathname.includes("/FinancingApplications"),
+    //       submenu: [
+    //     // hasAccess("loan_application_module") &&
+    //      {
+    //       label: "All Applications",
+    //       Link: "AllApplications",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //           active: pathname.includes("/AllApplications"),
+    //     },
+    //     // hasAccess("loan_application_module") && 
+    //     {
+    //       label: "Pending Factoring",
+    //       Link: "PendingFinancing",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //           active: pathname.includes("/PendingFinancing"),
+    //     },
+    //     // hasAccess("loan_application_module") && 
+    //     {
+    //       label: "In Progress Factoring",
+    //       Link: "InProgressFinancing",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //           active: pathname.includes("/InProgressFinancing"),
+    //     },
+    //     // hasAccess("loan_application_module") && 
+    //     {
+    //       label: "Approved Factoring",
+    //       Link: "ApprovedFinancing",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //           active: pathname.includes("/ApprovedFinancing"),
+    //     },
+    //     // hasAccess("loan_application_module") && 
+    //     {
+    //       label: "Rejected Factoring",
+    //       Link: "RejectedFinancing",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //       active: pathname.includes("/RejectedFinancing"),
+    //     },
+    //     // hasAccess("loan_application_module") && 
+    //     {
+    //       label: "Incomplete Factoring",
+    //       Link: "IncompleteFinancing",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //       active: pathname.includes("/IncompleteFinancing"),
+    //     },
+    //     // hasAccess("loan_application_module") && 
+    //     {
+    //       label: "Canceled Factoring",
+    //       Link: "CanceledFinancing",
+    //           LinkLable: "/LOS/FinancingApplications",
+    //           active: pathname.includes("/CanceledFinancing"),
+    //     },
+    //     // hasAccess("loan_application_module") && {
+    //     //   label: "Rescheduling Request",
+    //     //   Link: "ReschedulingRequest",
+    //     //       LinkLable: "/LOS/FinancingApplications",
+    //     //       active: pathname.includes("/ReschedulingRequest"),
+    //     // },
+    //     // hasAccess("loan_application_module") && {
+    //     //   label: "Approved Rescheduled Applications",
+    //     //   Link: "ApprovedRescheduledApplications",
+    //     //       LinkLable: "/LOS/FinancingApplications",
+    //     //       active: pathname.includes("/ApprovedRescheduledApplications"),
+    //     // },
+    //     // hasAccess("activity_logs_module") && {
+    //     //   label: "Activity Logs",
+    //     //   Link: "ActivityLogsFinancing",
+    //     //       LinkLable: "/LOS/FinancingApplications",
+    //     //       active: pathname == "/LOS/FinancingApplications/ActivityLogsFinancing",
+    //     // },
+    //   ].filter(Boolean),
+    // },
+    // {
+    //   label: "Web Page Management",
+    //   Link: "WebPageManagement/HeaderFooter",
+    //   img: Images.HomePageManagementIcon,
+    //   imgActive: Images.HomePageManagementIcon,
+    //   LinkLable: "LOS",
+    //   active: pathname.includes("/WebPageManagement"),
+    //   menu: [
+    //     {
+    //       label: "Global Sections",
+    //       Link: "GlobalSections",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/GlobalSections"),
+    //     },
+    //     {
+    //       label: "Home Page",
+    //       Link: "HomePage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/HomePage"),
+    //     },
+    //     /* {
+    //       label: "Career Page",
+    //       Link: "CareerPage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname == "/LOS/WebPageManagement/CareerPage",
+    //     }, */
+    //     {
+    //       label: "About Page",
+    //       Link: "AboutPage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/AboutPage"),
+    //     },
+    //     {
+    //       label: "Privacy Policy Page",
+    //       Link: "PrivacyPolicyTemplatePage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/PrivacyPolicyTemplatePage"),
+    //     },
+    //     {
+    //       label: "Terms Conditions Page",
+    //       Link: "TermsConditionsTemplatePage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/TermsConditionsTemplatePage"),
+    //     },
+    //     {
+    //       label: "Faqs Page",
+    //       Link: "FaqsTemplatePage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/FaqsTemplatePage"),
+    //     },
+    //     {
+    //       label: "Contact Us Page",
+    //       Link: "ContactUsTemplatePage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/ContactUsTemplatePage"),
+    //     },
+    //     {
+    //       label: "Financial Statements Page",
+    //       Link: "FinancialStatementsTemplatePage",
+    //       LinkLable: "/LOS/WebPageManagement",
+    //       active: pathname.includes("/FinancialStatementsTemplatePage"),
+    //     },
+    //   ],
+    // },
     //     {
     //       label: "Merchant Management",
     //       Link: "MerchantManagement/MerchantList",
@@ -587,30 +587,30 @@ const DasbhboardSidebar = () => {
     //         }
     //   ],
     // },
-    hasAccess("PARTNER") && {
-      label: "Partner Management",
-      Link: "PartnerManagement/PartnersList",
-          LinkLable: "LOS",
-      img: Images.PartnerManagementIcon,
-      imgActive: Images.PartnerManagementIconDark,
-      active: pathname.split("/").includes("PartnerManagement"),
-          submenu: [
-        // hasAccess("partner_module") &&
-         {
-          label: "Partners List",
-          Link: "PartnersList",
-              LinkLable: "/LOS/PartnerManagement",
-              active: ["/LOS/PartnerManagement/PartnersList", "/PartnerManagement/PartnerAdminList"].includes(pathname),
-        },
-        // hasAccess("partner_module") && 
-        {
-          label:'Partners Commission',
-          Link:"AllPartners",
-              LinkLable: "/LOS/PartnerManagement",
-              active: pathname.includes("/LOS/PartnerManagement/AllPartners"),
-        }
-      ].filter(Boolean),
-    },
+    // hasAccess("PARTNER") && {
+    //   label: "Partner Management",
+    //   Link: "PartnerManagement/PartnersList",
+    //       LinkLable: "LOS",
+    //   img: Images.PartnerManagementIcon,
+    //   imgActive: Images.PartnerManagementIconDark,
+    //   active: pathname.split("/").includes("PartnerManagement"),
+    //       submenu: [
+    //     // hasAccess("partner_module") &&
+    //      {
+    //       label: "Partners List",
+    //       Link: "PartnersList",
+    //           LinkLable: "/LOS/PartnerManagement",
+    //           active: ["/LOS/PartnerManagement/PartnersList", "/PartnerManagement/PartnerAdminList"].includes(pathname),
+    //     },
+    //     // hasAccess("partner_module") && 
+    //     {
+    //       label:'Partners Commission',
+    //       Link:"AllPartners",
+    //           LinkLable: "/LOS/PartnerManagement",
+    //           active: pathname.includes("/LOS/PartnerManagement/AllPartners"),
+    //     }
+    //   ].filter(Boolean),
+    // },
     hasAccess(["ROLE", "PERMISSION"]) && {
       label: "Access Control Management",
       Link: "Setting/Employees",
@@ -835,14 +835,14 @@ const DasbhboardSidebar = () => {
         },
     
         // hasAccess("customer_dashboard_module") &&
-        {
-          label: "Customers",
-          Link: "Customers/AllCustomers",
-          LinkLable: "/Lms",
-          img: Images.CustomerManagementIcon,
-          active: pathname.split("/").includes("Customers"),
+        // {
+        //   label: "Customers",
+        //   Link: "Customers/AllCustomers",
+        //   LinkLable: "/Lms",
+        //   img: Images.CustomerManagementIcon,
+        //   active: pathname.split("/").includes("Customers"),
       
-        },
+        // },
     
         // hasAccess("loan_module") &&
         {
@@ -867,12 +867,12 @@ const DasbhboardSidebar = () => {
             //   active: pathname == "/Lms/LoanManagement/invoicemanagement",
             // },
     
-            {
-              label: "Other Fees/Charges",
-              Link: "OtherFee",
-              LinkLable: "/Lms/LoanManagement",
-              active: pathname.includes("/Lms/LoanManagement/OtherFee"),
-            },
+            // {
+            //   label: "Other Fees/Charges",
+            //   Link: "OtherFee",
+            //   LinkLable: "/Lms/LoanManagement",
+            //   active: pathname.includes("/Lms/LoanManagement/OtherFee"),
+            // },
           ].filter(Boolean),
         },
      
@@ -897,596 +897,596 @@ const DasbhboardSidebar = () => {
         //   ],
         // },
         // hasAccess("reports_module") &&
-        {
-          label: "Reports",
-          Link: "Reports",
-          img: Images.reportsIconDark,
-          active: pathname.split("/").includes("Reports"),
-          submenu: [
-            //  hasAccess("account_report_module") && 
-             {
-              label: "Account Report",
-              Link: "AccountReportsList",
-              LinkLable: "/Lms/Reports",
-              active: pathname.includes("/Lms/Reports/AccountReportsList"),
+        // {
+        //   label: "Reports",
+        //   Link: "Reports",
+        //   img: Images.reportsIconDark,
+        //   active: pathname.split("/").includes("Reports"),
+        //   submenu: [
+        //     //  hasAccess("account_report_module") && 
+        //      {
+        //       label: "Account Report",
+        //       Link: "AccountReportsList",
+        //       LinkLable: "/Lms/Reports",
+        //       active: pathname.includes("/Lms/Reports/AccountReportsList"),
     
-            },
-            //  hasAccess("simah_report_module") &&
-              {
-              label: "Simah Report",
-              Link: "SimahReportsList",
-              LinkLable: "/Lms/Reports",
-              active: pathname.includes("/Lms/Reports/SimahReportsList"),
+        //     },
+        //     //  hasAccess("simah_report_module") &&
+        //       {
+        //       label: "Simah Report",
+        //       Link: "SimahReportsList",
+        //       LinkLable: "/Lms/Reports",
+        //       active: pathname.includes("/Lms/Reports/SimahReportsList"),
     
-            },
-            // hasAccess("accounting_financing_module") && {
-            //   label: "Accounting & Financing",
-            //   Link: "AccountingFinancing",
-            //   LinkLable: "/Lms/Reports",
-            //   active: pathname.split("/").includes("AccountingFinancing"),
-            //   menu: [
-            //     hasAccess("voucher_module") && {
-            //       label: "Voucher",
-            //       link: "vouchers",
-            //       linkLable: "AccountingFinancing",
-            //       active: pathname.split("/").includes("vouchers"),
-            //     },
-            //     hasAccess("day_book_module") && {
-            //       label: "Day Book",
-            //       link: "daybook",
-            //       linkLable: "AccountingFinancing",
-            //       active: pathname.split("/").includes("daybook"),
-            //     },
-            //     hasAccess("trial_balance_module") && {
-            //       label: "Trial Balance",
-            //       link: "trialbalance",
-            //       linkLable: "AccountingFinancing",
-            //       active: pathname.split("/").includes("trialbalance"),
-            //     },
-            //     hasAccess("ledger_module") && {
-            //       label: "Ledger",
-            //       link: "ledger",
-            //       linkLable: "AccountingFinancing",
-            //       active: pathname.split("/").includes("ledger"),
-            //     },
-            //   ].filter(Boolean),
-            // },
-            // {
-            //   label: "Loans Reports",
-            //   Link: "loans",
-            //   LinkLable: "/Lms/Reports",
-            //   active: pathname.split("/").includes("loans"),
-            //   submenu: [
-            //     hasAccess("overdue_loan_module") && {
-            //       label: "Overdue Loan",
-            //       link: "overdue",
-            //       linkLable: "loans",
-            //       active: pathname.split("/").includes("overdue"),
-            //     },
-            //     hasAccess("non_performing_loan_module") && {
-            //       label: "Non Performing Loan",
-            //       link: "performingLoans",
-            //       linkLable: "loans",
-            //       active: pathname.split("/").includes("performingLoans"),
-            //     },
-            //     hasAccess("due_loan_module") && {
-            //       label: "Due Loan",
-            //       link: "due",
-            //       linkLable: "loans",
-            //       active: pathname.split("/").includes("due"),
-            //     },
-            //     hasAccess("early_settlement_module") && {
-            //       label: "Early Settlement",
-            //       link: "earlySettlement",
-            //       linkLable: "loans",
-            //       active: pathname.split("/").includes("earlySettlement"),
-            //     },
-            //     hasAccess("write_off_loan_module") && {
-            //       label: "Write Off Loan",
-            //       link: "writeOff",
-            //       linkLable: "loans",
-            //       active: pathname.split("/").includes("writeOff"),
-            //     },
-            //   ].filter(Boolean),
-            // },
-          ].filter(Boolean),
-        },
+        //     },
+        //     // hasAccess("accounting_financing_module") && {
+        //     //   label: "Accounting & Financing",
+        //     //   Link: "AccountingFinancing",
+        //     //   LinkLable: "/Lms/Reports",
+        //     //   active: pathname.split("/").includes("AccountingFinancing"),
+        //     //   menu: [
+        //     //     hasAccess("voucher_module") && {
+        //     //       label: "Voucher",
+        //     //       link: "vouchers",
+        //     //       linkLable: "AccountingFinancing",
+        //     //       active: pathname.split("/").includes("vouchers"),
+        //     //     },
+        //     //     hasAccess("day_book_module") && {
+        //     //       label: "Day Book",
+        //     //       link: "daybook",
+        //     //       linkLable: "AccountingFinancing",
+        //     //       active: pathname.split("/").includes("daybook"),
+        //     //     },
+        //     //     hasAccess("trial_balance_module") && {
+        //     //       label: "Trial Balance",
+        //     //       link: "trialbalance",
+        //     //       linkLable: "AccountingFinancing",
+        //     //       active: pathname.split("/").includes("trialbalance"),
+        //     //     },
+        //     //     hasAccess("ledger_module") && {
+        //     //       label: "Ledger",
+        //     //       link: "ledger",
+        //     //       linkLable: "AccountingFinancing",
+        //     //       active: pathname.split("/").includes("ledger"),
+        //     //     },
+        //     //   ].filter(Boolean),
+        //     // },
+        //     // {
+        //     //   label: "Loans Reports",
+        //     //   Link: "loans",
+        //     //   LinkLable: "/Lms/Reports",
+        //     //   active: pathname.split("/").includes("loans"),
+        //     //   submenu: [
+        //     //     hasAccess("overdue_loan_module") && {
+        //     //       label: "Overdue Loan",
+        //     //       link: "overdue",
+        //     //       linkLable: "loans",
+        //     //       active: pathname.split("/").includes("overdue"),
+        //     //     },
+        //     //     hasAccess("non_performing_loan_module") && {
+        //     //       label: "Non Performing Loan",
+        //     //       link: "performingLoans",
+        //     //       linkLable: "loans",
+        //     //       active: pathname.split("/").includes("performingLoans"),
+        //     //     },
+        //     //     hasAccess("due_loan_module") && {
+        //     //       label: "Due Loan",
+        //     //       link: "due",
+        //     //       linkLable: "loans",
+        //     //       active: pathname.split("/").includes("due"),
+        //     //     },
+        //     //     hasAccess("early_settlement_module") && {
+        //     //       label: "Early Settlement",
+        //     //       link: "earlySettlement",
+        //     //       linkLable: "loans",
+        //     //       active: pathname.split("/").includes("earlySettlement"),
+        //     //     },
+        //     //     hasAccess("write_off_loan_module") && {
+        //     //       label: "Write Off Loan",
+        //     //       link: "writeOff",
+        //     //       linkLable: "loans",
+        //     //       active: pathname.split("/").includes("writeOff"),
+        //     //     },
+        //     //   ].filter(Boolean),
+        //     // },
+        //   ].filter(Boolean),
+        // },
         // hasAccess("accounting_financing_module") &&
-        {
-          label: "Accounting & Financing",
-          Link: "AccountingFinancing",
-          img: Images.reportsIconDark,
-          active: pathname.split("/").includes("AccountingFinancing"),
-          submenu: [
-                // hasAccess("voucher_module") && 
-                {
-                  label: "Voucher",
-                  link: "vouchers",
-                  linkLable: "/Lms/Reports/AccountingFinancing",
-                  active: pathname.split("/").includes("vouchers"),
-                },
-                // hasAccess("day_book_module") &&
-                 {
-                  label: "Day Book",
-                  link: "daybook",
-                  linkLable: "/Lms/Reports/AccountingFinancing",
-                  active: pathname.split("/").includes("daybook"),
-                },
-                // hasAccess("trial_balance_module") &&
-                 {
-                  label: "Trial Balance",
-                  link: "trialbalance",
-                  linkLable: "/Lms/Reports/AccountingFinancing",
-                  active: pathname.split("/").includes("trialbalance"),
-                },
-                // hasAccess("ledger_module") &&
-                 {
-                  label: "Ledger",
-                  link: "ledger",
-                  linkLable: "/Lms/Reports/AccountingFinancing",
-                  active: pathname.split("/").includes("ledger"),
-                },
+        // {
+        //   label: "Accounting & Financing",
+        //   Link: "AccountingFinancing",
+        //   img: Images.reportsIconDark,
+        //   active: pathname.split("/").includes("AccountingFinancing"),
+        //   submenu: [
+        //         // hasAccess("voucher_module") && 
+        //         {
+        //           label: "Voucher",
+        //           link: "vouchers",
+        //           linkLable: "/Lms/Reports/AccountingFinancing",
+        //           active: pathname.split("/").includes("vouchers"),
+        //         },
+        //         // hasAccess("day_book_module") &&
+        //          {
+        //           label: "Day Book",
+        //           link: "daybook",
+        //           linkLable: "/Lms/Reports/AccountingFinancing",
+        //           active: pathname.split("/").includes("daybook"),
+        //         },
+        //         // hasAccess("trial_balance_module") &&
+        //          {
+        //           label: "Trial Balance",
+        //           link: "trialbalance",
+        //           linkLable: "/Lms/Reports/AccountingFinancing",
+        //           active: pathname.split("/").includes("trialbalance"),
+        //         },
+        //         // hasAccess("ledger_module") &&
+        //          {
+        //           label: "Ledger",
+        //           link: "ledger",
+        //           linkLable: "/Lms/Reports/AccountingFinancing",
+        //           active: pathname.split("/").includes("ledger"),
+        //         },
               
-          ].filter(Boolean),
-        },
+        //   ].filter(Boolean),
+        // },
         // hasAccess("accounting_financing_module") &&
-        {
-          label: "Loans Reports",
-          Link: "loans",
-          img: Images.reportsIconDark,
-          active: pathname.split("/").includes("loans"),
-          submenu: [ 
-            // {
-              // label: "Loans Reports",
-              // Link: "loans",
-              // LinkLable: "/Lms/Reports",
-              // active: pathname.split("/").includes("loans"),
-              // submenu: [
-                // hasAccess("overdue_loan_module") &&
-                 {
-                  label: "Overdue Loan",
-                  link: "overdue",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("overdue"),
-                },
-                // hasAccess("non_performing_loan_module") &&
-                 {
-                  label: "Non Performing Loan",
-                  link: "performingLoans",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("performingLoans"),
-                },
-                // hasAccess("due_loan_module") &&
-                 {
-                  label: "Due Loan",
-                  link: "due",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("due"),
-                },
-                // hasAccess("early_settlement_module") &&
-                 {
-                  label: "Early Settlement",
-                  link: "earlySettlement",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("earlySettlement"),
-                },
-                // hasAccess("write_off_loan_module") &&
-                 {
-                  label: "Write Off Loan",
-                  link: "writeOff",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("writeOff"),
-                },
-                {
-                  label: "Loan Disbursement Report",
-                  link: "loanDisbursementReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("loanDisbursementReport"),
-                },
-                {
-                  label: "Repayment Schedule Report",
-                  link: "repaymentScheduleReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("repaymentScheduleReport"),
-                },
-                {
-                  label: "Daily Transaction Summary",
-                  link: "dailyTransactionSummary",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("dailyTransactionSummary"),
-                },
-                {
-                  label: "Loan Balance & Outstanding Report",
-                  link: "loanBalanceReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("loanBalanceReport"),
-                },
-                {
-                  label: "Product Wise Profit & Loss",
-                  link: "productWiseProfitLoss",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("productWiseProfitLoss"),
-                },
-                {
-                  label: "Loan History Report",
-                  link: "loanHistoryReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("loanHistoryReport"),
-                },
-                {
-                  label: "Customer Statement of Account",
-                  link: "customerAccountStatement",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("customerAccountStatement"),
-                },
-                {
-                  label: "Customer Wise Profit & Loss",
-                  link: "customerWiseProfitLoss",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("customerWiseProfitLoss"),
-                },
-                {
-                  label: "Collections Due Report",
-                  link: "collectionsDueReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("collectionsDueReport"),
-                },
-                {
-                  label: "Skipped Installments Report",
-                  link: "skippedInstallmentsReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("skippedInstallmentsReport"),
-                },
-                /* {
-                  label: "Product Performance Report",
-                  link: "productPerformanceReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("productPerformanceReport"),
-                }, */
-                {
-                  label: "Top Borrowers Report",
-                  link: "topBorrowersReport",
-                  linkLable: "/Lms/Reports/loans",
-                  active: pathname.split("/").includes("topBorrowersReport"),
-                },
-              // ].filter(Boolean),
-            // },
-          ].filter(Boolean),
-        },
+        // {
+        //   label: "Loans Reports",
+        //   Link: "loans",
+        //   img: Images.reportsIconDark,
+        //   active: pathname.split("/").includes("loans"),
+        //   submenu: [ 
+        //     // {
+        //       // label: "Loans Reports",
+        //       // Link: "loans",
+        //       // LinkLable: "/Lms/Reports",
+        //       // active: pathname.split("/").includes("loans"),
+        //       // submenu: [
+        //         // hasAccess("overdue_loan_module") &&
+        //          {
+        //           label: "Overdue Loan",
+        //           link: "overdue",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("overdue"),
+        //         },
+        //         // hasAccess("non_performing_loan_module") &&
+        //          {
+        //           label: "Non Performing Loan",
+        //           link: "performingLoans",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("performingLoans"),
+        //         },
+        //         // hasAccess("due_loan_module") &&
+        //          {
+        //           label: "Due Loan",
+        //           link: "due",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("due"),
+        //         },
+        //         // hasAccess("early_settlement_module") &&
+        //          {
+        //           label: "Early Settlement",
+        //           link: "earlySettlement",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("earlySettlement"),
+        //         },
+        //         // hasAccess("write_off_loan_module") &&
+        //          {
+        //           label: "Write Off Loan",
+        //           link: "writeOff",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("writeOff"),
+        //         },
+        //         {
+        //           label: "Loan Disbursement Report",
+        //           link: "loanDisbursementReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("loanDisbursementReport"),
+        //         },
+        //         {
+        //           label: "Repayment Schedule Report",
+        //           link: "repaymentScheduleReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("repaymentScheduleReport"),
+        //         },
+        //         {
+        //           label: "Daily Transaction Summary",
+        //           link: "dailyTransactionSummary",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("dailyTransactionSummary"),
+        //         },
+        //         {
+        //           label: "Loan Balance & Outstanding Report",
+        //           link: "loanBalanceReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("loanBalanceReport"),
+        //         },
+        //         {
+        //           label: "Product Wise Profit & Loss",
+        //           link: "productWiseProfitLoss",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("productWiseProfitLoss"),
+        //         },
+        //         {
+        //           label: "Loan History Report",
+        //           link: "loanHistoryReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("loanHistoryReport"),
+        //         },
+        //         {
+        //           label: "Customer Statement of Account",
+        //           link: "customerAccountStatement",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("customerAccountStatement"),
+        //         },
+        //         {
+        //           label: "Customer Wise Profit & Loss",
+        //           link: "customerWiseProfitLoss",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("customerWiseProfitLoss"),
+        //         },
+        //         {
+        //           label: "Collections Due Report",
+        //           link: "collectionsDueReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("collectionsDueReport"),
+        //         },
+        //         {
+        //           label: "Skipped Installments Report",
+        //           link: "skippedInstallmentsReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("skippedInstallmentsReport"),
+        //         },
+        //         /* {
+        //           label: "Product Performance Report",
+        //           link: "productPerformanceReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("productPerformanceReport"),
+        //         }, */
+        //         {
+        //           label: "Top Borrowers Report",
+        //           link: "topBorrowersReport",
+        //           linkLable: "/Lms/Reports/loans",
+        //           active: pathname.split("/").includes("topBorrowersReport"),
+        //         },
+        //       // ].filter(Boolean),
+        //     // },
+        //   ].filter(Boolean),
+        // },
         // hasAccess("accounting_financing_module") &&
-        {
-          label: "Chart of account",
-          Link: "ChartOfAccount",
-          active: pathname.split("/").includes("ChartOfAccount"),
-          img: Images.accountCharts,
-          submenu: [
-            // hasAccess("chart_of_account_module") &&
-             {
-              label: "Chart of account",
-              Link: "ChartOfAccount",
-              LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccount"),
-            },
-            //hasAccess("coa_configuration_module") &&
-             {
-              label: "COA Configuration",
-              Link: "CoaConfiguration",
-              LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
-            },
-          ].filter(Boolean),
-        },
+        // {
+        //   label: "Chart of account",
+        //   Link: "ChartOfAccount",
+        //   active: pathname.split("/").includes("ChartOfAccount"),
+        //   img: Images.accountCharts,
+        //   submenu: [
+        //     // hasAccess("chart_of_account_module") &&
+        //      {
+        //       label: "Chart of account",
+        //       Link: "ChartOfAccount",
+        //       LinkLable: "/Lms/ChartOfAccount",
+        //       active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccount"),
+        //     },
+        //     //hasAccess("coa_configuration_module") &&
+        //      {
+        //       label: "COA Configuration",
+        //       Link: "CoaConfiguration",
+        //       LinkLable: "/Lms/ChartOfAccount",
+        //       active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
+        //     },
+        //   ].filter(Boolean),
+        // },
      
-        {
-          label: "Setting",
-          Link: "notification",
-          img: Images.SettingsIcon,
-          active: pathname.split("/").includes("Setting"),
-          submenu: [
-            // {
-            //   label: "Product Management",
-            //   Link: "ProductManagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/Lms/Setting/ProductManagement",
-            // },
-            {
-              label: "Product Fee",
-              Link: "ProductFee",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/ProductFee"),
-            },
-            // hasAccess("delinquency_module") && 
-            {
-              label: "Delinquency",
-              Link: "Deliquency",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/Deliquency"),
-            },
-            // hasAccess("workflow_mapping_module") && 
-            {
-              label: "Work Flow Mapping",
-              Link: "WorkFlowMapping",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
-            },
-            // hasAccess("invoice_management_admin_module") && 
-            {
-              label: "Invoice Setting",
-              Link: "InvoiceSetting",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/InvoiceSetting"),
-            },
-            // {
-            //   label: "Calculator",
-            //   Link: "Calculator",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/Lms/Setting/Calculator",
-            // },
-            // {
-            //   label: "Search Function",
-            //   Link: "pdcmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/pdcmanagement",
-            // },
+        // {
+        //   label: "Setting",
+        //   Link: "notification",
+        //   img: Images.SettingsIcon,
+        //   active: pathname.split("/").includes("Setting"),
+        //   submenu: [
+        //     // {
+        //     //   label: "Product Management",
+        //     //   Link: "ProductManagement",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/Lms/Setting/ProductManagement",
+        //     // },
+        //     {
+        //       label: "Product Fee",
+        //       Link: "ProductFee",
+        //       LinkLable: "/Lms/Setting",
+        //       active: pathname.includes("/Lms/Setting/ProductFee"),
+        //     },
+        //     // hasAccess("delinquency_module") && 
+        //     {
+        //       label: "Delinquency",
+        //       Link: "Deliquency",
+        //       LinkLable: "/Lms/Setting",
+        //       active: pathname.includes("/Lms/Setting/Deliquency"),
+        //     },
+        //     // hasAccess("workflow_mapping_module") && 
+        //     {
+        //       label: "Work Flow Mapping",
+        //       Link: "WorkFlowMapping",
+        //       LinkLable: "/Lms/Setting",
+        //       active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
+        //     },
+        //     // hasAccess("invoice_management_admin_module") && 
+        //     {
+        //       label: "Invoice Setting",
+        //       Link: "InvoiceSetting",
+        //       LinkLable: "/Lms/Setting",
+        //       active: pathname.includes("/Lms/Setting/InvoiceSetting"),
+        //     },
+        //     // {
+        //     //   label: "Calculator",
+        //     //   Link: "Calculator",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/Lms/Setting/Calculator",
+        //     // },
+        //     // {
+        //     //   label: "Search Function",
+        //     //   Link: "pdcmanagement",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/pdcmanagement",
+        //     // },
     
-            // {
-            //   label: "Securization",
-            //   Link: "escrowmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/escrowmanagement",
-            // },
-            // {
-            //   label: "Tools",
-            //   Link: "transactionmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/transactionmanagement",
-            // },
-            // {
-            //   label: "Interface",
-            //   Link: "pdcmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/pdcmanagement",
-            // },
-            // {
-            //   label: "Pending Event Actions",
-            //   Link: "escrowmanagement",
-            //   LinkLable: "Setting",
-            //   active: pathname == "/escrowmanagement",
-            // },
-          ].filter(Boolean),
-        },
+        //     // {
+        //     //   label: "Securization",
+        //     //   Link: "escrowmanagement",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/escrowmanagement",
+        //     // },
+        //     // {
+        //     //   label: "Tools",
+        //     //   Link: "transactionmanagement",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/transactionmanagement",
+        //     // },
+        //     // {
+        //     //   label: "Interface",
+        //     //   Link: "pdcmanagement",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/pdcmanagement",
+        //     // },
+        //     // {
+        //     //   label: "Pending Event Actions",
+        //     //   Link: "escrowmanagement",
+        //     //   LinkLable: "Setting",
+        //     //   active: pathname == "/escrowmanagement",
+        //     // },
+        //   ].filter(Boolean),
+        // },
         // hasAccess("system_logs_module") &&
-        {
-          label: "Logs",
-          Link: "Logs",
-          img: Images.logsIcon,
-          active: pathname.split("/").includes("Logs"),
-          submenu: [
-             // hasAccess("system_logs_module") && 
-             {
-              label: "Logs",
-              Link: "AllLogs",
-              LinkLable: "/Lms/Logs",
-              active: pathname.includes("/Lms/Logs/AllLogs"),
-            },
-             // hasAccess("system_logs_module") && 
-             {
-              label: "Api Logs",
-              Link: "ApiLogs",
-              LinkLable: "/Lms/Logs",
-              active: pathname.includes("/Lms/Logs/ApiLogs"),
-            },
-            // hasAccess("disburse_api_logs_module") && 
-            {
-              label: "Disburse Amount Api Logs",
-              Link: "DisburseApprovedAmountApiLogs",
-              LinkLable: "/Lms/Logs",
-              active: pathname.includes("/Lms/Logs/DisburseApprovedAmountApiLogs"),
-            },
-          ].filter(Boolean),
-        },
-        {
-          label: "Commodity Management",
-          Link: "CommodityManagement",
-          img: Images.logsIcon,
-          active: pathname.split("/").includes("CommodityManagement"),
-          submenu: [
-              {
-                label: "Commodity List",
-                Link: "CommodityList",
+        // {
+        //   label: "Logs",
+        //   Link: "Logs",
+        //   img: Images.logsIcon,
+        //   active: pathname.split("/").includes("Logs"),
+        //   submenu: [
+        //      // hasAccess("system_logs_module") && 
+        //      {
+        //       label: "Logs",
+        //       Link: "AllLogs",
+        //       LinkLable: "/Lms/Logs",
+        //       active: pathname.includes("/Lms/Logs/AllLogs"),
+        //     },
+        //      // hasAccess("system_logs_module") && 
+        //      {
+        //       label: "Api Logs",
+        //       Link: "ApiLogs",
+        //       LinkLable: "/Lms/Logs",
+        //       active: pathname.includes("/Lms/Logs/ApiLogs"),
+        //     },
+        //     // hasAccess("disburse_api_logs_module") && 
+        //     {
+        //       label: "Disburse Amount Api Logs",
+        //       Link: "DisburseApprovedAmountApiLogs",
+        //       LinkLable: "/Lms/Logs",
+        //       active: pathname.includes("/Lms/Logs/DisburseApprovedAmountApiLogs"),
+        //     },
+        //   ].filter(Boolean),
+        // },
+        // {
+        //   label: "Commodity Management",
+        //   Link: "CommodityManagement",
+        //   img: Images.logsIcon,
+        //   active: pathname.split("/").includes("CommodityManagement"),
+        //   submenu: [
+        //       {
+        //         label: "Commodity List",
+        //         Link: "CommodityList",
                 
-                LinkLable: "/Lms/CommodityManagement",
-                active: pathname.includes("/Lms/CommodityManagement/CommodityList"),
-              },
-              {
-                label: "Commodity Supplier",
-                Link: "CommoditySupplier",
-                LinkLable: "/Lms/CommodityManagement",
-                active: pathname.includes("/Lms/CommodityManagement/CommoditySupplier"),
-            },
-          ],
-        },
-           {
-          label: "Reconciliation",
-          Link: "Reconciliation/Dashboard",
-          active: pathname.split("/").includes("Reconciliation"),
-          img: Images.LovIcon,
-          submenu: [
-            {
-              label: "Reconciliation Dashboard",
-              Link: "Dashboard",
-              LinkLable: "/Lms/Reconciliation",
-              active: pathname.includes("/Lms/Reconciliation/Dashboard"),
-            },
-            {
-              label: "Transactions Logs",
-              Link: "Transactions",
-              LinkLable: "/Lms/Reconciliation",
-              active: pathname.includes("/Lms/Reconciliation/Transactions"),
-            },
-            {
-              label: "Operational Expenses",
-              Link: "OperationalExpenses",
-              LinkLable: "/Lms/Reconciliation",
-              active: pathname.includes("/Lms/Reconciliation/OperationalExpenses"),
-            },
-            {
-              label: "Reconciliation Summary",
-              Link: "ReconciliationSummary",
-              LinkLable: "/Lms/Reconciliation",
-              active: pathname.includes("/Lms/Reconciliation/ReconciliationSummary"),
-            },
-            {
-              label: "Error Report",
-              Link: "ErrorReport",
-              LinkLable: "/Lms/Reconciliation",
-              active: pathname.includes("/Lms/Reconciliation/ErrorReport"),
-            },
-            {
-              label: "Transaction Accounts",
-              Link: "TransactionAccounts",
-              LinkLable: "/Lms/Reconciliation",
-              active: pathname.includes("/Lms/Reconciliation/TransactionAccounts"),
-            },
-          ],
-        },
+        //         LinkLable: "/Lms/CommodityManagement",
+        //         active: pathname.includes("/Lms/CommodityManagement/CommodityList"),
+        //       },
+        //       {
+        //         label: "Commodity Supplier",
+        //         Link: "CommoditySupplier",
+        //         LinkLable: "/Lms/CommodityManagement",
+        //         active: pathname.includes("/Lms/CommodityManagement/CommoditySupplier"),
+        //     },
+        //   ],
+        // },
+        //    {
+        //   label: "Reconciliation",
+        //   Link: "Reconciliation/Dashboard",
+        //   active: pathname.split("/").includes("Reconciliation"),
+        //   img: Images.LovIcon,
+        //   submenu: [
+        //     {
+        //       label: "Reconciliation Dashboard",
+        //       Link: "Dashboard",
+        //       LinkLable: "/Lms/Reconciliation",
+        //       active: pathname.includes("/Lms/Reconciliation/Dashboard"),
+        //     },
+        //     {
+        //       label: "Transactions Logs",
+        //       Link: "Transactions",
+        //       LinkLable: "/Lms/Reconciliation",
+        //       active: pathname.includes("/Lms/Reconciliation/Transactions"),
+        //     },
+        //     {
+        //       label: "Operational Expenses",
+        //       Link: "OperationalExpenses",
+        //       LinkLable: "/Lms/Reconciliation",
+        //       active: pathname.includes("/Lms/Reconciliation/OperationalExpenses"),
+        //     },
+        //     {
+        //       label: "Reconciliation Summary",
+        //       Link: "ReconciliationSummary",
+        //       LinkLable: "/Lms/Reconciliation",
+        //       active: pathname.includes("/Lms/Reconciliation/ReconciliationSummary"),
+        //     },
+        //     {
+        //       label: "Error Report",
+        //       Link: "ErrorReport",
+        //       LinkLable: "/Lms/Reconciliation",
+        //       active: pathname.includes("/Lms/Reconciliation/ErrorReport"),
+        //     },
+        //     {
+        //       label: "Transaction Accounts",
+        //       Link: "TransactionAccounts",
+        //       LinkLable: "/Lms/Reconciliation",
+        //       active: pathname.includes("/Lms/Reconciliation/TransactionAccounts"),
+        //     },
+        //   ],
+        // },
      
-        {
-          label: "Expenses",
-          Link: `/Lms/Expenses/ThirdPartyExpense`,
-          img: Images.LovIcon,
-          active:pathname.split("/").includes("Expenses"),
-          submenu: [
-            {
-               label: "Third Party Expense",
-               Link: `ThirdPartyExpense`,
-               LinkLable: "/Lms/Expenses",
-               img: "",
-               active: pathname == "/Lms/Expenses/ThirdPartyExpense",
-            },
-            {
-               label: "Loan Application Expenses",
-               Link: `LoanApplicationExpenses`,
-               LinkLable: "/Lms/Expenses",
-               img: "",
-               active: pathname == "/Lms/Expenses/LoanApplicationExpenses",
-            },
-            {
-               label: "Onboarding Expenses",
-               Link: `OnboardingExpenses`,
-               LinkLable: "/Lms/Expenses",
-               img: "",
-               active: pathname == "/Lms/Expenses/OnboardingExpenses",
-            },
+        // {
+        //   label: "Expenses",
+        //   Link: `/Lms/Expenses/ThirdPartyExpense`,
+        //   img: Images.LovIcon,
+        //   active:pathname.split("/").includes("Expenses"),
+        //   submenu: [
+        //     {
+        //        label: "Third Party Expense",
+        //        Link: `ThirdPartyExpense`,
+        //        LinkLable: "/Lms/Expenses",
+        //        img: "",
+        //        active: pathname == "/Lms/Expenses/ThirdPartyExpense",
+        //     },
+        //     {
+        //        label: "Loan Application Expenses",
+        //        Link: `LoanApplicationExpenses`,
+        //        LinkLable: "/Lms/Expenses",
+        //        img: "",
+        //        active: pathname == "/Lms/Expenses/LoanApplicationExpenses",
+        //     },
+        //     {
+        //        label: "Onboarding Expenses",
+        //        Link: `OnboardingExpenses`,
+        //        LinkLable: "/Lms/Expenses",
+        //        img: "",
+        //        active: pathname == "/Lms/Expenses/OnboardingExpenses",
+        //     },
     
           
-          ],
-        },
+        //   ],
+        // },
       ],
     },
   
-    {
-      label: "CMS",
-      Link: "cms/dashboard",
-      img: Images.HomePageManagementIcon,
-      imgActive: Images.HomePageManagementIconActive,
-      active: pathname.split("/").includes("cms/dashboard"),
-      menu: [
-        {
-          label: "Dashboard",
-          Link: `dashboard`,
-          LinkLable: "cms",
-          img: Images.dashboardIcon,
-          active: pathname.includes("/cms/dashboard"),
-        },
-        {
-          label: "All Tickets",
-          Link: "Tickets/AllTickets",
-          LinkLable: "cms",
-          img: Images.allTickets,
-          active: pathname.split("/").includes("AllTickets"),
-        },
-        {
-          label: "Tickets",
-          Link: "Tickets/GetTickets",
-          LinkLable: "cms",
-          img: Images.tickets,
-          active: pathname.split("/").includes("GetTickets") && !pathname.includes("AllTickets") && !pathname.includes("MyTickets"),
-        },
-        {
-          label: "My Tickets",
-          Link: "Tickets/MyTickets",
-          LinkLable: "cms",
-          img: Images.myTickets,
-          active: pathname.split("/").includes("MyTickets"),
-        },
-        {
-          label: "Reports",
-          Link: "Reports",
-          LinkLable: "cms",
-          img: Images.reportsIconDark,
-          active: pathname.split("/").includes("Reports"),
-        },
-        {
-          label: "Priorities",
-          Link: "Priorities",
-          LinkLable: "cms",
-          img: Images.priorities,
-          active: pathname.split("/").includes("Priorities"),
-        },
-        {
-          label: "Categories",
-          Link: "Categories",
-          LinkLable: "cms",
-          img: Images.categories,
-          active: pathname.split("/").includes("Categories") && !pathname.includes("SubCategories"),
-        },
-        {
-          label: "Sub Categories",
-          Link: "SubCategories",
-          LinkLable: "cms",
-          img: Images.categories,
-          active: pathname.split("/").includes("SubCategories"),
-        },
-        {
-          label: "Escalation",
-          Link: "Escalation",
-          LinkLable: "cms",
-          img: Images.escalation,
-          active: pathname.split("/").includes("Escalation"),
-        },
-        {
-          label: "Customers",
-          Link: "Customers",
-          LinkLable: "cms",
-          img: Images.CustomerManagementIcon,
-          active: pathname.split("/").includes("Customers"),
-        },
-        {
-          label: "Logs",
-          Link: "Logs",
-          LinkLable: "cms",
-          img: Images.logsIcon,
-          active: pathname.split("/").includes("Logs"),
-        },
+    // {
+    //   label: "CMS",
+    //   Link: "cms/dashboard",
+    //   img: Images.HomePageManagementIcon,
+    //   imgActive: Images.HomePageManagementIconActive,
+    //   active: pathname.split("/").includes("cms/dashboard"),
+    //   menu: [
+    //     {
+    //       label: "Dashboard",
+    //       Link: `dashboard`,
+    //       LinkLable: "cms",
+    //       img: Images.dashboardIcon,
+    //       active: pathname.includes("/cms/dashboard"),
+    //     },
+    //     {
+    //       label: "All Tickets",
+    //       Link: "Tickets/AllTickets",
+    //       LinkLable: "cms",
+    //       img: Images.allTickets,
+    //       active: pathname.split("/").includes("AllTickets"),
+    //     },
+    //     {
+    //       label: "Tickets",
+    //       Link: "Tickets/GetTickets",
+    //       LinkLable: "cms",
+    //       img: Images.tickets,
+    //       active: pathname.split("/").includes("GetTickets") && !pathname.includes("AllTickets") && !pathname.includes("MyTickets"),
+    //     },
+    //     {
+    //       label: "My Tickets",
+    //       Link: "Tickets/MyTickets",
+    //       LinkLable: "cms",
+    //       img: Images.myTickets,
+    //       active: pathname.split("/").includes("MyTickets"),
+    //     },
+    //     {
+    //       label: "Reports",
+    //       Link: "Reports",
+    //       LinkLable: "cms",
+    //       img: Images.reportsIconDark,
+    //       active: pathname.split("/").includes("Reports"),
+    //     },
+    //     {
+    //       label: "Priorities",
+    //       Link: "Priorities",
+    //       LinkLable: "cms",
+    //       img: Images.priorities,
+    //       active: pathname.split("/").includes("Priorities"),
+    //     },
+    //     {
+    //       label: "Categories",
+    //       Link: "Categories",
+    //       LinkLable: "cms",
+    //       img: Images.categories,
+    //       active: pathname.split("/").includes("Categories") && !pathname.includes("SubCategories"),
+    //     },
+    //     {
+    //       label: "Sub Categories",
+    //       Link: "SubCategories",
+    //       LinkLable: "cms",
+    //       img: Images.categories,
+    //       active: pathname.split("/").includes("SubCategories"),
+    //     },
+    //     {
+    //       label: "Escalation",
+    //       Link: "Escalation",
+    //       LinkLable: "cms",
+    //       img: Images.escalation,
+    //       active: pathname.split("/").includes("Escalation"),
+    //     },
+    //     {
+    //       label: "Customers",
+    //       Link: "Customers",
+    //       LinkLable: "cms",
+    //       img: Images.CustomerManagementIcon,
+    //       active: pathname.split("/").includes("Customers"),
+    //     },
+    //     {
+    //       label: "Logs",
+    //       Link: "Logs",
+    //       LinkLable: "cms",
+    //       img: Images.logsIcon,
+    //       active: pathname.split("/").includes("Logs"),
+    //     },
       
-      ],
+    //   ],
       
-    },
+    // },
       {
         label: "Connector Management",
-        Link: "/ThirdPartyManagement/Dashboard",
+        Link: "/ThirdPartyManagement/Providers",
         img: Images.ApiManagementIcon,
         imgActive: Images.ApiManagementIconDark,
         active: pathname.split("/").includes("/ThirdPartyManagement"),
         menu: [
-          {
-            label: "Dashboard",
-            Link: "Dashboard",
-            LinkLable: "/ThirdPartyManagement",
-            img: Images.dashboardIcon,
-            active: pathname.includes("/ThirdPartyManagement/Dashboard"),
-          },
+          // {
+          //   label: "Dashboard",
+          //   Link: "Dashboard",
+          //   LinkLable: "/ThirdPartyManagement",
+          //   img: Images.dashboardIcon,
+          //   active: pathname.includes("/ThirdPartyManagement/Dashboard"),
+          // },
           {
             label: "Providers",
             Link: "Providers",
@@ -1674,167 +1674,167 @@ const DasbhboardSidebar = () => {
           //  },
       ],
     },
-    {
-      label: "Porfolio Management",
-      Link: "/InvestorDashboard/Overview",
-      img: Images.dashboardIcon,
-      imgActive: Images.dashboardIconActive,
-      active: pathname.split("/").includes("/InvestorDashboard"),
-      menu: [
-        {
-          label: "Dashboard Overview",
-          Link: "Overview",
-          LinkLable: "/InvestorDashboard",
-          img: Images.dashboardIcon,
-          active: pathname.includes("/InvestorDashboard/Overview"),
-        },
-        {
-          label: "Investors",
-          Link: "Investors",
-          LinkLable: "/InvestorDashboard",
-          img: Images.CustomerManagementIcon,
-          active: pathname.includes("/InvestorDashboard/Investors"),
-        },
-        {
-          label: "Products & Rates",
-          Link: "Products",
-          LinkLable: "/InvestorDashboard",
-          img: Images.productManagementIcon,
-          active: pathname.includes("/InvestorDashboard/Products"),
-        },
-        {
-          label: "Income Ranges",
-          Link: "IncomeRanges",
-          LinkLable: "/InvestorDashboard",
-          img: Images.LovIcon,
-          active: pathname == "/InvestorDashboard/IncomeRanges",
-        },
-        {
-          label: "Initial Invest",
-          Link: "InitialInvest",
-          LinkLable: "/InvestorDashboard",
-          img: Images.FinancingApplicationsIcon,
-          active: pathname == "/InvestorDashboard/InitialInvest",
-        },
-        {
-          label: "Investment Experience",
-          Link: "InvestmentExperience",
-          LinkLable: "/InvestorDashboard",
-          img: Images.PartnerManagementIcon,
-          active: pathname == "/InvestorDashboard/InvestmentExperience",
-        },
-        {
-          label: "Investment Timeline",
-          Link: "InvestmentTimeline",
-          LinkLable: "/InvestorDashboard",
-          img: Images.applicationBoard,
-          active: pathname == "/InvestorDashboard/InvestmentTimeline",
-        },
-        {
-          label: "System Settings",
-          Link: "SystemSettings",
-          LinkLable: "/InvestorDashboard",
-          img: Images.SettingsIcon,
-          active: pathname.includes("/InvestorDashboard/SystemSettings"),
-          submenu: [
+    // {
+    //   label: "Porfolio Management",
+    //   Link: "/InvestorDashboard/Overview",
+    //   img: Images.dashboardIcon,
+    //   imgActive: Images.dashboardIconActive,
+    //   active: pathname.split("/").includes("/InvestorDashboard"),
+    //   menu: [
+    //     {
+    //       label: "Dashboard Overview",
+    //       Link: "Overview",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.dashboardIcon,
+    //       active: pathname.includes("/InvestorDashboard/Overview"),
+    //     },
+    //     {
+    //       label: "Investors",
+    //       Link: "Investors",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.CustomerManagementIcon,
+    //       active: pathname.includes("/InvestorDashboard/Investors"),
+    //     },
+    //     {
+    //       label: "Products & Rates",
+    //       Link: "Products",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.productManagementIcon,
+    //       active: pathname.includes("/InvestorDashboard/Products"),
+    //     },
+    //     {
+    //       label: "Income Ranges",
+    //       Link: "IncomeRanges",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.LovIcon,
+    //       active: pathname == "/InvestorDashboard/IncomeRanges",
+    //     },
+    //     {
+    //       label: "Initial Invest",
+    //       Link: "InitialInvest",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.FinancingApplicationsIcon,
+    //       active: pathname == "/InvestorDashboard/InitialInvest",
+    //     },
+    //     {
+    //       label: "Investment Experience",
+    //       Link: "InvestmentExperience",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.PartnerManagementIcon,
+    //       active: pathname == "/InvestorDashboard/InvestmentExperience",
+    //     },
+    //     {
+    //       label: "Investment Timeline",
+    //       Link: "InvestmentTimeline",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.applicationBoard,
+    //       active: pathname == "/InvestorDashboard/InvestmentTimeline",
+    //     },
+    //     {
+    //       label: "System Settings",
+    //       Link: "SystemSettings",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.SettingsIcon,
+    //       active: pathname.includes("/InvestorDashboard/SystemSettings"),
+    //       submenu: [
            
-            {
-              label: "Income Ranges",
-              Link: "IncomeRanges",
-              LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.LovIcon,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/IncomeRanges"),
-            },
-            {
-              label: "Initial Invest",
-              Link: "InitialInvest",
-              LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.FinancingApplicationsIcon,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/InitialInvest"),
-            },
-            {
-              label: "Investment Experience",
-              Link: "InvestmentExperience",
-              LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.PartnerManagementIcon,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentExperience"),
-            },
-            {
-              label: "Investment Timeline",
-              Link: "InvestmentTimeline",
-              LinkLable: "/InvestorDashboard/SystemSettings",
-              img: Images.applicationBoard,
-              active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
-            },
+    //         {
+    //           label: "Income Ranges",
+    //           Link: "IncomeRanges",
+    //           LinkLable: "/InvestorDashboard/SystemSettings",
+    //           img: Images.LovIcon,
+    //           active: pathname.includes("/InvestorDashboard/SystemSettings/IncomeRanges"),
+    //         },
+    //         {
+    //           label: "Initial Invest",
+    //           Link: "InitialInvest",
+    //           LinkLable: "/InvestorDashboard/SystemSettings",
+    //           img: Images.FinancingApplicationsIcon,
+    //           active: pathname.includes("/InvestorDashboard/SystemSettings/InitialInvest"),
+    //         },
+    //         {
+    //           label: "Investment Experience",
+    //           Link: "InvestmentExperience",
+    //           LinkLable: "/InvestorDashboard/SystemSettings",
+    //           img: Images.PartnerManagementIcon,
+    //           active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentExperience"),
+    //         },
+    //         {
+    //           label: "Investment Timeline",
+    //           Link: "InvestmentTimeline",
+    //           LinkLable: "/InvestorDashboard/SystemSettings",
+    //           img: Images.applicationBoard,
+    //           active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
+    //         },
               
-          ],
-        },
-        {
-          label: "Investment",
-          Link: "ApproveInvestment",
-          LinkLable: "/InvestorDashboard",
-          img: Images.logsIcon,
-          active: pathname.includes("/InvestorDashboard/ApproveInvestment"),
-        },
-        {
-          label: "Logs",
-          Link: "Logs",
-          LinkLable: "/InvestorDashboard",
-          img: Images.logsIcon,
-          active: pathname.includes("/InvestorDashboard/Logs"),
-        },
-        {
-          label: "Ledger",
-          Link: "Ledger",
-          LinkLable: "/InvestorDashboard",
-          img: Images.reportsIconDark,
-          active: pathname.includes("/InvestorDashboard/Ledger"),
-        },
-        {
-          label: "Investments",
-          Link: "Investments",
-          LinkLable: "/InvestorDashboard",
-          img: Images.loanIcon,
-          active: pathname == "/InvestorDashboard/Investments",
-        },
-        {
-          label: "Allocation Engine",
-          Link: "AllocationEngine",
-          LinkLable: "/InvestorDashboard",
-          img: Images.ApiManagementIcon,
-          active: pathname == "/InvestorDashboard/AllocationEngine",
-        },
-        {
-          label: "Reports",
-          Link: "Reports",
-          LinkLable: "/InvestorDashboard",
-          img: Images.reportsIconDark,
-          active: pathname == "/InvestorDashboard/Reports",
-        },
-        {
-          label: "Audit Logs",
-          Link: "AuditLogs",
-          LinkLable: "/InvestorDashboard",
-          img: Images.logsIcon,
-          active: pathname == "/InvestorDashboard/AuditLogs",
-        },
-        {
-          label: "Notifications",
-          Link: "Notifications",
-          LinkLable: "/InvestorDashboard",
-          img: Images.notification,
-          active: pathname == "/InvestorDashboard/Notifications",
-        },
-        {
-          label: "Admin Users & Roles",
-          Link: "AdminUsers",
-          LinkLable: "/InvestorDashboard",
-          img: Images.DepartmentManagementIcon,
-          active: pathname == "/InvestorDashboard/AdminUsers",
-        },
+    //       ],
+    //     },
+    //     {
+    //       label: "Investment",
+    //       Link: "ApproveInvestment",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.logsIcon,
+    //       active: pathname.includes("/InvestorDashboard/ApproveInvestment"),
+    //     },
+    //     {
+    //       label: "Logs",
+    //       Link: "Logs",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.logsIcon,
+    //       active: pathname.includes("/InvestorDashboard/Logs"),
+    //     },
+    //     {
+    //       label: "Ledger",
+    //       Link: "Ledger",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.reportsIconDark,
+    //       active: pathname.includes("/InvestorDashboard/Ledger"),
+    //     },
+    //     {
+    //       label: "Investments",
+    //       Link: "Investments",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.loanIcon,
+    //       active: pathname == "/InvestorDashboard/Investments",
+    //     },
+    //     {
+    //       label: "Allocation Engine",
+    //       Link: "AllocationEngine",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.ApiManagementIcon,
+    //       active: pathname == "/InvestorDashboard/AllocationEngine",
+    //     },
+    //     {
+    //       label: "Reports",
+    //       Link: "Reports",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.reportsIconDark,
+    //       active: pathname == "/InvestorDashboard/Reports",
+    //     },
+    //     {
+    //       label: "Audit Logs",
+    //       Link: "AuditLogs",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.logsIcon,
+    //       active: pathname == "/InvestorDashboard/AuditLogs",
+    //     },
+    //     {
+    //       label: "Notifications",
+    //       Link: "Notifications",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.notification,
+    //       active: pathname == "/InvestorDashboard/Notifications",
+    //     },
+    //     {
+    //       label: "Admin Users & Roles",
+    //       Link: "AdminUsers",
+    //       LinkLable: "/InvestorDashboard",
+    //       img: Images.DepartmentManagementIcon,
+    //       active: pathname == "/InvestorDashboard/AdminUsers",
+    //     },
      
-      ],
-    },
+    //   ],
+    // },
   ];
   
   const renderSubmenu = (
