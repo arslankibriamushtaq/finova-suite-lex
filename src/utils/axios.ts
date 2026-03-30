@@ -31,14 +31,17 @@ axios.interceptors.response.use(
     if (status === 401) {
       console.warn("Unauthorized, redirecting to login...");
       toast.error("Session expired, please login again.");
-      
+
       // Clear authentication data from localStorage
       localStorage.removeItem("token");
       localStorage.removeItem("userData");
-      
+
+      // Clear redux-persist persisted state so PublicRoute won't redirect back
+      localStorage.removeItem("persist:root");
+
       // Clear token from Redux store
       store.dispatch(setToken({ token: "" }));
-      
+
       window.location.href = "/login";
     }
     // }

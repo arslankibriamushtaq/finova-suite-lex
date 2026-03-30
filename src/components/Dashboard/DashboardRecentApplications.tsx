@@ -1,26 +1,20 @@
-import { useEffect, useState } from "react";
-import { Button, Dropdown, Menu, Select } from "antd";
+import React, { useState } from "react";
+import { Button, Dropdown, Menu } from "antd";
 import TableView from "../TableView/TableView";
-import { FaFilter } from "react-icons/fa";
-import { Images } from "../Config/Images";
-import { getRecentApplications, leadsList } from "../../redux/apis/apisCrud";
-import toast from "react-hot-toast";
-import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, LogoutOutlined, SyncOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
-import MaskedValue from "../MaskedValue";
 
-const DashboardRecentApplications = () => {
-  const [skelitonLoading, setSkelitonLoading] = useState(false);
-  const [data, setData] = useState<any>();
+const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loading?: boolean }> = ({ recentApplications, loading }) => {
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [from, setFrom] = useState(0);
   const [pageSize, setPageSize] = useState(15);
   const [to, setTo] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
+  const data = recentApplications;
+  const skelitonLoading = loading || false;
 
   const getStatusColor = (status: string) => {
     const statusColors: any = {
@@ -37,50 +31,40 @@ const DashboardRecentApplications = () => {
   const Activity_Loans_Header = [
     {
       name: "Application Number",
-      selector: (row: { loan_application_number: any }) => row.loan_application_number || "--",
+      selector: (row: { applicationNumber: any }) => row.applicationNumber || "--",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Customer Name",
-      selector: (row: { company_name: any }) => row.company_name || "--",
+      name: "National ID",
+      selector: (row: { nationalId: any }) => row.nationalId || "--",
       sortable: true,
     },
     {
-      name: "Phone",
-      selector: (row: { phone: any }) => row.phone || "--",
+      name: "Product Name",
+      selector: (row: { productName: any }) => row.productName || "--",
       sortable: true,
     },
     {
       name: "Requested Amount",
-      selector: (row: { requested_amount: any }) => {
-        return row.requested_amount ? `SAR ${row.requested_amount.toLocaleString()}` : "--";
+      selector: (row: { requestedAmount: any }) => {
+        return row.requestedAmount ? `SAR ${row.requestedAmount.toLocaleString()}` : "--";
       },
-      sortable: true,
-    },
-    {
-      name: "Customer Type",
-      selector: (row: { customer_type: any }) => row.customer_type || "--",
-      sortable: true,
-    },
-    {
-      name: "Channel",
-      selector: (row: { channel: any }) => row.channel || "--",
       sortable: true,
     },
     {
       name: "Created Date",
-      selector: (row: { created_at: any }) => {
-        if (!row.created_at) return "--";
-        const date = new Date(row.created_at);
-        return date.toLocaleDateString('en-US', { 
-          year: 'numeric', 
-          month: 'short', 
-          day: 'numeric' 
+      selector: (row: { createdAt: any }) => {
+        if (!row.createdAt) return "--";
+        const date = new Date(row.createdAt);
+        return date.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
         });
       },
       sortable: true,
-      width: "130px",
+      width: "150px",
     },
     {
       name: "Status",
@@ -161,44 +145,17 @@ const DashboardRecentApplications = () => {
     }
   };
 
-  const getLeadsList = async () => {
-    // Commented out API call for time being
-    // try {
-    //   setSkelitonLoading(true);
-    //
-    //   const response = await getRecentApplications(page, pageSize);
-    //   if (response) {
-    //     const data = response?.data?.data;
-    //     setData(data || []);
-    //     setSkelitonLoading(false);
-    //     setTotalRows(response?.data?.data?.total || 0);
-    //     setFrom(response?.data?.data?.from || 0);
-    //     setTo(response?.data?.data?.to || 0);
-    //   }
-    // } catch (error: any) {
-    //   toast.error(error?.message);
-    //   setSkelitonLoading(false);
-    // } finally {
-    //   setSkelitonLoading(false);
-    // }
-  };
-  useEffect(() => {
-    getLeadsList();
-  }, [page, pageSize]);
   const mappedData =
     data &&
-    data?.map((item: any, index: number) => {
+    data?.map((item: any) => {
       return {
-        id: item.id,
-        loan_application_number: item?.loan_application_number || "--",
-        company_name: item?.company_name || "--",
-        phone: item?.phone || "--",
-        created_at: item?.created_at,
-        requested_amount: item?.requested_amount || 0,
+        id: item.applicationId,
+        applicationNumber: item?.applicationNumber || "--",
+        nationalId: item?.nationalId || "--",
+        productName: item?.productName || "--",
+        createdAt: item?.createdAt,
+        requestedAmount: item?.requestedAmount || 0,
         status: item?.status || "PENDING",
-        customer_type: item?.customer_type || "--",
-        channel: item?.channel || "--",
-        application: item?.application || "--",
       };
     });
   const exportToExcel = () => {
@@ -214,21 +171,17 @@ const DashboardRecentApplications = () => {
 
     const tableColumn = [
       "Application Number",
-      "Company Name",
-      "Phone",
+      "National ID",
+      "Product Name",
       "Requested Amount",
-      "Customer Type",
-      "Channel",
       "Status",
     ];
 
     const tableRows = mappedData?.map((item: any) => [
-      item.loan_application_number,
-      item.company_name,
-      item.phone,
-      item.requested_amount ? `SAR ${item.requested_amount.toLocaleString()}` : "--",
-      item.customer_type,
-      item.channel,
+      item.applicationNumber,
+      item.nationalId,
+      item.productName,
+      item.requestedAmount ? `SAR ${item.requestedAmount.toLocaleString()}` : "--",
       item.status,
     ]);
 

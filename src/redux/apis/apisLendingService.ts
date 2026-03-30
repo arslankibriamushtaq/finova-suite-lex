@@ -5,27 +5,27 @@ import axiosLendingService from "../../utils/axiosLendingService";
 // ============================================================
 
 export function getAllPurposeOfFinance() {
-  return axiosLendingService.get(`/api/v1/reference-data/purpose-of-finance?activeOnly=false`);
+  return axiosLendingService.get(`/api/v1/purpose-of-finance?activeOnly=false`);
 }
 
 export function getActivePurposeOfFinance() {
-  return axiosLendingService.get(`/api/v1/reference-data/purpose-of-finance`);
+  return axiosLendingService.get(`/api/v1/purpose-of-finance`);
 }
 
 export function getPurposeOfFinanceById(id: string) {
-  return axiosLendingService.get(`/api/v1/reference-data/purpose-of-finance/${id}`);
+  return axiosLendingService.get(`/api/v1/purpose-of-finance/${id}`);
 }
 
 export function createPurposeOfFinance(body: any) {
-  return axiosLendingService.post(`/api/v1/reference-data/purpose-of-finance`, body);
+  return axiosLendingService.post(`/api/v1/purpose-of-finance`, body);
 }
 
 export function updatePurposeOfFinance(id: string, body: any) {
-  return axiosLendingService.put(`/api/v1/reference-data/purpose-of-finance/${id}`, body);
+  return axiosLendingService.put(`/api/v1/purpose-of-finance/${id}`, body);
 }
 
 export function deletePurposeOfFinance(id: string) {
-  return axiosLendingService.delete(`/api/v1/reference-data/purpose-of-finance/${id}`);
+  return axiosLendingService.delete(`/api/v1/purpose-of-finance/${id}`);
 }
 
 // ============================================================

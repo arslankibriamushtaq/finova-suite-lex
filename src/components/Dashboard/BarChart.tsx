@@ -24,10 +24,10 @@ const CHART_COLORS = {
 } as const;
 interface CustomerData {
   date: string;
-  ApprovedFinanceAmounts: number;
-  RejectedFinanceAmounts: number;
-  DisbursedFinanceAmounts: number;
-  AppliedFinanceAmounts: number;
+  applied: number;
+  approved: number;
+  rejected: number;
+  disbursed: number;
 }
 const CustomBarChart = () => {
   const [data, setData] = useState<CustomerData[]>([]);
@@ -45,34 +45,33 @@ const CustomBarChart = () => {
 
   // Fetch LOS Dashboard Statistics
   const getLosDashboardStats = async () => {
-    // Commented out API call for time being
-    // if (!fromDate || !toDate) {
-    //   return;
-    // }
-    //
-    // try {
-    //   setLoading(true);
-    //   const formattedFromDate = dayjs(fromDate).format("YYYY-MM-DD");
-    //   const formattedToDate = dayjs(toDate).format("YYYY-MM-DD");
-    //   const response = await getLosDashboardStatistics(formattedFromDate, formattedToDate);
-    //
-    //   if (response?.data?.success && response?.data?.data) {
-    //     const apiData = response.data.data;
-    //     const formattedData: CustomerData[] = apiData.map((item: any) => ({
-    //       date: item.date,
-    //       ApprovedFinanceAmounts: item.ApprovedFinanceAmounts || 0,
-    //       RejectedFinanceAmounts: item.RejectedFinanceAmounts || 0,
-    //       DisbursedFinanceAmounts: item.DisbursedFinanceAmounts || 0,
-    //       AppliedFinanceAmounts: item.AppliedFinanceAmounts || 0,
-    //     }));
-    //     setData(formattedData.reverse());
-    //   }
-    // } catch (error: any) {
-    //   console.error("Error fetching LOS dashboard statistics:", error);
-    //   toast.error(error?.message || "Failed to fetch dashboard statistics");
-    // } finally {
-    //   setLoading(false);
-    // }
+    if (!fromDate || !toDate) {
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const formattedFromDate = dayjs(fromDate).format("YYYY-MM-DD");
+      const formattedToDate = dayjs(toDate).format("YYYY-MM-DD");
+      const response = await getLosDashboardStatistics(formattedFromDate, formattedToDate);
+
+      if (response?.data?.data?.financeStatistics) {
+        const apiData = response.data.data.financeStatistics;
+        const formattedData: CustomerData[] = apiData.map((item: any) => ({
+          date: item.date,
+          applied: item.applied || 0,
+          approved: item.approved || 0,
+          rejected: item.rejected || 0,
+          disbursed: item.disbursed || 0,
+        }));
+        setData(formattedData);
+      }
+    } catch (error: any) {
+      console.error("Error fetching LOS dashboard statistics:", error);
+      toast.error(error?.message || "Failed to fetch dashboard statistics");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const downloadBlob = (blobOrText: Blob | string, filename: string, type?: string) => {
@@ -166,10 +165,10 @@ const CustomBarChart = () => {
       ["Date", "Applied", "Approved", "Rejected", "Disbursed"],
       ...data.map((d) => [
         d.date,
-        d.AppliedFinanceAmounts,
-        d.ApprovedFinanceAmounts,
-        d.RejectedFinanceAmounts,
-        d.DisbursedFinanceAmounts
+        d.applied,
+        d.approved,
+        d.rejected,
+        d.disbursed
       ]),
     ];
     const csv = rows
@@ -318,28 +317,28 @@ const CustomBarChart = () => {
 
                 <Bar
                   radius={[8, 8, 0, 0]}
-                  dataKey="AppliedFinanceAmounts"
+                  dataKey="applied"
                   name="Applied"
                   barSize={15}
                   fill={CHART_COLORS.applied}
                 />
                 <Bar
                   radius={[8, 8, 0, 0]}
-                  dataKey="ApprovedFinanceAmounts"
+                  dataKey="approved"
                   name="Approved"
                   barSize={15}
                   fill={CHART_COLORS.approved}
                 />
                 <Bar
                   radius={[8, 8, 0, 0]}
-                  dataKey="RejectedFinanceAmounts"
+                  dataKey="rejected"
                   name="Rejected"
                   barSize={15}
                   fill={CHART_COLORS.rejected}
                 />
                 <Bar
                   radius={[8, 8, 0, 0]}
-                  dataKey="DisbursedFinanceAmounts"
+                  dataKey="disbursed"
                   name="Disbursed"
                   barSize={15}
                   fill={CHART_COLORS.disbursed}

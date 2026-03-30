@@ -44,20 +44,20 @@ export function getRecentApplications(page: any, pageSize: any) {
   );
 }
 export function getDashboardStatistics(fromDate?: string, toDate?: string) {
-  let url = `/v1/dashboard/statistics`;
+  let url = `/lending-service/api/v1/dashboard/stats`;
   const params = [];
-  
+
   if (fromDate) {
     params.push(`from=${fromDate}`);
   }
   if (toDate) {
     params.push(`to=${toDate}`);
   }
-  
+
   if (params.length > 0) {
     url += `?${params.join('&')}`;
   }
-  
+
   return axios.get(url);
 }
 export function getdepartmentApplications(id = "") {
@@ -1259,7 +1259,21 @@ export function updateKycRisk(body: any) {
 }
 
 export function getLosDashboardStatistics(fromDate?: string, toDate?: string) {
-return axios.get(`/v1/dashboard/stats?fromDate=${fromDate}&toDate=${toDate}`);
+  let url = `/lending-service/api/v1/dashboard/stats`;
+  const params = [];
+
+  if (fromDate) {
+    params.push(`from=${fromDate}`);
+  }
+  if (toDate) {
+    params.push(`to=${toDate}`);
+  }
+
+  if (params.length > 0) {
+    url += `?${params.join('&')}`;
+  }
+
+  return axios.get(url);
 }
 export function getContractTemplates() {
   return axios.get(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates`);

@@ -9,26 +9,26 @@ import DashboardRecentApplications from "./DashboardRecentApplications";
 const LandingDashboardPage = () => {
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<any>();
+  const [recentApplications, setRecentApplications] = useState<any[]>([]);
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
 
   const getStatistics = async () => {
-    // Commented out API call for time being
-    // setLoading(true);
-    // try {
-    //   const formattedFromDate = fromDate ? dayjs(fromDate).format("YYYY-MM-DDTHH:mm:ss") : undefined;
-    //   const formattedToDate = toDate ? dayjs(toDate).format("YYYY-MM-DDTHH:mm:ss") : undefined;
-    //   const response = await getDashboardStatistics(formattedFromDate, formattedToDate);
-    //   if (response) {
-    //     const data = response?.data?.data;
-    //     setDashboardData(data);
-    //   }
-    // } catch (error: any) {
-    //   toast.error(error?.message);
-    // } finally {
-    //   setLoading(false);
-    // }
-
+    setLoading(true);
+    try {
+      const formattedFromDate = fromDate ? dayjs(fromDate).format("YYYY-MM-DD") : undefined;
+      const formattedToDate = toDate ? dayjs(toDate).format("YYYY-MM-DD") : undefined;
+      const response = await getDashboardStatistics(formattedFromDate, formattedToDate);
+      if (response) {
+        const responseData = response?.data?.data;
+        setDashboardData(responseData?.cards);
+        setRecentApplications(responseData?.recentApplications || []);
+      }
+    } catch (error: any) {
+      toast.error(error?.message);
+    } finally {
+      setLoading(false);
+    }
   }
   
   const handleFromDateChange = (date: any) => {
@@ -93,7 +93,7 @@ const LandingDashboardPage = () => {
               </Col>
             </div>
           </div>
-          <DashboardRecentApplications/>
+          <DashboardRecentApplications recentApplications={recentApplications} loading={loading}/>
 
         {/* </div> */}
       </div>
