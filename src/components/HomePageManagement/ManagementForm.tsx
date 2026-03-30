@@ -81,7 +81,7 @@ const ManagementForm = () => {
                 <img
                   src={Images.FactoringLogo}
                   alt="Factoring Valley Logo"
-                  style={{height: 80, objectFit: "contain"}}
+                  style={{height: 48, objectFit: "contain"}}
                  
                 />
               <div className="d-flex align-items-center flex-column flex-md-row contact-info">

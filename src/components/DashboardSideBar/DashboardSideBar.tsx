@@ -2020,9 +2020,9 @@ const DasbhboardSidebar = () => {
             src={Images.FactoringLogo} 
             alt="logo" 
             style={{
-              width: "220px",
+              width: "150px",
               height: "auto",
-              maxHeight: "90px"
+              maxHeight: "60px"
             }}
           />
         </span>
