@@ -36,7 +36,7 @@ const AllCustomers = () => {
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [from, setFrom] = useState(0);
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [to, setTo] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
   const dispatch = useDispatch();
@@ -582,28 +582,39 @@ const AllCustomers = () => {
     try {
       setSkelitonLoading(true);
 
-      const response = await getCustomers(page, pageSize, search, pep, status);
+      const response = await getCustomers(1, 10000, search, pep, status);
       if (response) {
         const list = response?.data?.data || [];
-        setData(Array.isArray(list) ? list : []);
-        setSkelitonLoading(false);
-        setTotalRows(list.length || 0);
-        setFrom(list.length > 0 ? 1 : 0);
-        setTo(list.length || 0);
-        setTotalPage(1);
+        const allData = Array.isArray(list) ? list : [];
+        setData(allData);
+        setTotalRows(allData.length);
+        setTotalPage(Math.ceil(allData.length / pageSize));
       }
     } catch (error: any) {
       toast.error(error?.message);
-      setSkelitonLoading(false);
     } finally {
       setSkelitonLoading(false);
     }
   };
   useEffect(() => {
     getLeadsList();
-  }, [page, pageSize, search, pep, status]);
+  }, [search, pep, status]);
 
-  const mappedData =
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setPage(1);
+  }, [search, pep, status]);
+
+  // Recalculate total pages when pageSize changes
+  useEffect(() => {
+    if (data) {
+      setTotalPage(Math.ceil(data.length / pageSize));
+      setPage(1);
+    }
+  }, [pageSize]);
+
+  // Client-side pagination
+  const allMappedData =
     data &&
     data?.map((item: any, index: number) => {
       return {
@@ -627,6 +638,12 @@ const AllCustomers = () => {
         dateOfBirth: item?.dateOfBirth || "-",
       };
     });
+
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const mappedData = allMappedData?.slice(startIndex, endIndex);
+  const fromValue = allMappedData?.length > 0 ? startIndex + 1 : 0;
+  const toValue = Math.min(endIndex, allMappedData?.length || 0);
   const exportToCSV = async () => {
     try {
       toast.loading("Exporting CSV...", { id: "export-csv" });
@@ -839,13 +856,13 @@ const AllCustomers = () => {
         data={mappedData}
         totalRows={totalRows}
         isLoading={skelitonLoading}
-        from={from}
+        from={fromValue}
         page={page}
         totalPage={totalPage}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={to}
+        to={toValue}
       />
 
       {/* Block Codes Management Modal */}
