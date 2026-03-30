@@ -641,9 +641,10 @@ const AllCustomers = () => {
 
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
+  const total = allMappedData?.length || 0;
   const mappedData = allMappedData?.slice(startIndex, endIndex);
-  const fromValue = allMappedData?.length > 0 ? startIndex + 1 : 0;
-  const toValue = Math.min(endIndex, allMappedData?.length || 0);
+  const fromValue = total > 0 ? startIndex + 1 : 0;
+  const toValue = Math.min(endIndex, total);
   const exportToCSV = async () => {
     try {
       toast.loading("Exporting CSV...", { id: "export-csv" });

@@ -594,7 +594,7 @@ const ApplicationManagement = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  const mappedData =
+  const allMappedData =
     applicationData &&
     applicationData.map((item: any) => {
       return {
@@ -624,6 +624,15 @@ const ApplicationManagement = () => {
         disbursementStatus: item?.loanStatus === "ACTIVE" ? "Disbursed" : "Pending",
       };
     });
+
+  // Client-side pagination
+  const paginationTotal = allMappedData?.length || 0;
+  const paginationStartIndex = (page - 1) * pageSize;
+  const paginationEndIndex = paginationStartIndex + pageSize;
+  const mappedData = allMappedData?.slice(paginationStartIndex, paginationEndIndex);
+  const paginationFrom = paginationTotal > 0 ? paginationStartIndex + 1 : 0;
+  const paginationTo = Math.min(paginationEndIndex, paginationTotal);
+  const paginationTotalPage = Math.ceil(paginationTotal / pageSize) || 1;
   const validateFields = () => {
     const newErrors: any = {};
     Object.keys(formValues).forEach((key) => {
@@ -745,10 +754,10 @@ const ApplicationManagement = () => {
           setPageSize={setPageSize}
           page={page}
           pageSize={pageSize}
-          totalRows={mappedData?.length || 0}
-          totalPage={Math.ceil((mappedData?.length || 0) / pageSize) || 1}
-          from={1}
-          to={mappedData?.length || 0}
+          totalRows={paginationTotal}
+          totalPage={paginationTotalPage}
+          from={paginationFrom}
+          to={paginationTo}
           header={Account_Documents_List_Header}
           data={mappedData}
           isLoading={skelitonLoading}
