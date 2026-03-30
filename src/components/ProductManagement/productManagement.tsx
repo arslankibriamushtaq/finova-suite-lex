@@ -169,10 +169,14 @@ export default function ProductManagement() {
     {
       name: "Product Name",
       selector: (row: any) => row.productName,
+      wrap: true,
+      width: "200px",
     },
     {
       name: "Product Arabic Name",
       selector: (row: any) => row.name_ar,
+      wrap: true,
+      width: "200px",
     },
     // {
     //   name: "Logo",
@@ -196,6 +200,7 @@ export default function ProductManagement() {
     {
       name: "Category",
       selector: (row: any) => row.category?.name_en || "-",
+      wrap: true,
     },
     {
       name: "Product Type",
