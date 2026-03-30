@@ -277,77 +277,75 @@ const CustomBarChart = () => {
           </Dropdown> */}
         </div>
         
-        {loading ? (
-          <div >
-           <Loader />
-          </div>
-        ) : (
-          <>
-            <ResponsiveContainer width="100%" height={350}>
-              <BarChart
-                ref={chartRef}
-                data={data}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
-              >
-                <XAxis 
-                  dataKey="date" 
-                  angle={-45}
-                  textAnchor="end"
-                  height={80}
-                  tick={{ fontSize: 11 }}
-                  tickFormatter={(value) => {
-                    // Format date from "2025-11-18" to "Nov 18" or "18 Nov"
-                    if (!value) return "";
-                    const date = dayjs(value);
-                    if (date.isValid()) {
-                      return date.format("MMM DD");
-                    }
-                    return value;
-                  }}
-                />
-                <YAxis 
-                  tick={{ fontSize: 12 }}
-                  label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
-                />
-                <Tooltip 
-                  cursor={false}
-                  contentStyle={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', borderRadius: 8 }}
-                  formatter={(value: any) => new Intl.NumberFormat('en-US').format(value)}
-                />
+        <div style={{ position: "relative", minHeight: 400 }}>
+          {loading && (
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.6)", zIndex: 10, borderRadius: 8 }}>
+              <Loader />
+            </div>
+          )}
+          <ResponsiveContainer width="100%" height={350}>
+            <BarChart
+              ref={chartRef}
+              data={data}
+              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+            >
+              <XAxis
+                dataKey="date"
+                angle={-45}
+                textAnchor="end"
+                height={80}
+                tick={{ fontSize: 11 }}
+                tickFormatter={(value) => {
+                  if (!value) return "";
+                  const date = dayjs(value);
+                  if (date.isValid()) {
+                    return date.format("MMM DD");
+                  }
+                  return value;
+                }}
+              />
+              <YAxis
+                tick={{ fontSize: 12 }}
+                label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
+              />
+              <Tooltip
+                cursor={false}
+                contentStyle={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', borderRadius: 8 }}
+                formatter={(value: any) => new Intl.NumberFormat('en-US').format(value)}
+              />
 
-                <Bar
-                  radius={[8, 8, 0, 0]}
-                  dataKey="applied"
-                  name="Applied"
-                  barSize={15}
-                  fill={CHART_COLORS.applied}
-                />
-                <Bar
-                  radius={[8, 8, 0, 0]}
-                  dataKey="approved"
-                  name="Approved"
-                  barSize={15}
-                  fill={CHART_COLORS.approved}
-                />
-                <Bar
-                  radius={[8, 8, 0, 0]}
-                  dataKey="rejected"
-                  name="Rejected"
-                  barSize={15}
-                  fill={CHART_COLORS.rejected}
-                />
-                <Bar
-                  radius={[8, 8, 0, 0]}
-                  dataKey="disbursed"
-                  name="Disbursed"
-                  barSize={15}
-                  fill={CHART_COLORS.disbursed}
-                />
-              </BarChart>
-            </ResponsiveContainer>
-            <CustomLegend />
-          </>
-        )}
+              <Bar
+                radius={[8, 8, 0, 0]}
+                dataKey="applied"
+                name="Applied"
+                barSize={15}
+                fill={CHART_COLORS.applied}
+              />
+              <Bar
+                radius={[8, 8, 0, 0]}
+                dataKey="approved"
+                name="Approved"
+                barSize={15}
+                fill={CHART_COLORS.approved}
+              />
+              <Bar
+                radius={[8, 8, 0, 0]}
+                dataKey="rejected"
+                name="Rejected"
+                barSize={15}
+                fill={CHART_COLORS.rejected}
+              />
+              <Bar
+                radius={[8, 8, 0, 0]}
+                dataKey="disbursed"
+                name="Disbursed"
+                barSize={15}
+                fill={CHART_COLORS.disbursed}
+              />
+            </BarChart>
+          </ResponsiveContainer>
+          <CustomLegend />
+        </div>
       </div>
     </>
   );
