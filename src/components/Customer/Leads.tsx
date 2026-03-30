@@ -3,7 +3,7 @@ import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox, Switch } f
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
-import { getActiveOnboardings } from "../../redux/apis/apisOnboardingService";
+import { getCustomersByLifecycleStage } from "../../redux/apis/apisOnboardingService";
 import { blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, userActive, exportLeads } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
@@ -95,21 +95,37 @@ const Leads = () => {
   
   const Activity_Loans_Header = [
     {
-      name: "National ID",
-      cell: (row: any) => (
-        <MaskedValue value={row.nationalId} showToggle={true} unmaskedCount={4} />
-      ),
-      width: "180px",
+      name: "CIF Number",
+      selector: (row: any) => row.cifNumber,
       sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Full Name",
+      selector: (row: any) => row.fullName,
+      sortable: true,
+      width: "180px",
     },
     {
       name: "Phone",
       selector: (row: any) => row.phone,
       sortable: true,
-      width: "180px",
+      width: "160px",
     },
     {
-      name: "Current Step",
+      name: "Email",
+      selector: (row: any) => row.email,
+      sortable: true,
+      width: "200px",
+    },
+    {
+      name: "Customer Type",
+      selector: (row: any) => row.customerType,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "KYC Status",
       cell: (row: any) => (
         <span
           style={{
@@ -117,49 +133,30 @@ const Leads = () => {
             borderRadius: "32px",
             fontSize: "12px",
             fontWeight: "500",
-            backgroundColor: "var(--color-info)",
+            backgroundColor: row.kycStatus === "VERIFIED" ? "var(--color-success)" : "var(--color-warning)",
             color: "var(--primary-foreground)",
             display: "inline-block",
             textTransform: "capitalize",
           }}
         >
-          {(row.currentStep || "-").replace(/_/g, " ").toLowerCase()}
+          {(row.kycStatus || "-").toLowerCase()}
         </span>
       ),
       sortable: true,
-      width: "200px",
+      width: "150px",
     },
     {
-      name: "Device Trusted",
-      cell: (row: any) => (
-        <span className={row.deviceTrusted ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-          {row.deviceTrusted ? "Yes" : "No"}
-        </span>
-      ),
-      sortable: true,
-      width: "140px",
-    },
-    {
-      name: "Started At",
+      name: "Created At",
       sortable: true,
       cell: (row: any) => (
         <div>
           {row.created_at ? new Date(row.created_at).toLocaleDateString() : "-"}
         </div>
       ),
-    },
-    {
-      name: "Last Updated",
-      sortable: true,
-      cell: (row: any) => (
-        <div>
-          {row.lastUpdatedAt ? new Date(row.lastUpdatedAt).toLocaleDateString() : "-"}
-        </div>
-      ),
+      width: "130px",
     },
     {
       name: "Actions",
-
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -515,10 +512,10 @@ const Leads = () => {
   const getLeadsList = async () => {
     try {
       setSkelitonLoading(true);
-      const response = await getActiveOnboardings();
+      const response = await getCustomersByLifecycleStage("LEAD");
       const list = response?.data?.data || response?.data || [];
       const allData = Array.isArray(list) ? list : [];
-      setData(allData.filter((item: any) => item.lifecycleStage === "LEAD"));
+      setData(allData);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || "Failed to fetch leads");
     } finally {
@@ -533,17 +530,21 @@ const Leads = () => {
     data &&
     data?.map((item: any, index: number) => {
       return {
-        id: item.customerId || item.workflowId,
+        id: item.id,
         Sr: index + 1,
-        workflowId: item?.workflowId || "-",
-        nationalId: item?.nationalId || "-",
+        cifNumber: item?.cifNumber || "-",
+        fullName: item?.fullName || "-",
+        nationalId: item?.nationalIdType || "-",
         phone: item?.mobileNumber || "-",
-        currentStep: item?.currentStep || "-",
+        email: item?.email || "-",
+        customerType: item?.customerType || "-",
+        kycStatus: item?.kycStatus || "-",
         lifecycleStage: item?.lifecycleStage || "-",
-        customerId: item?.customerId || "-",
-        deviceTrusted: item?.deviceTrusted,
-        created_at: item?.startedAt,
-        lastUpdatedAt: item?.lastUpdatedAt,
+        riskGrade: item?.riskGrade || "-",
+        gender: item?.gender || "-",
+        nationality: item?.nationality || "-",
+        created_at: item?.createdAt,
+        lastUpdatedAt: item?.updatedAt,
       };
     });
   const exportCSV = async () => {
