@@ -55,7 +55,7 @@ export default function ProductCreateEditTabs({
               className={cn(
                 "px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px",
                 isActive
-                  ? "border-primary bg-primary text-primary-foreground"
+                  ? "border-[var(--theme-secondary)] bg-[var(--theme-secondary)] text-primary-foreground"
                   : "border-transparent bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
               )}
             >
