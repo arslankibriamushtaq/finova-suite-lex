@@ -44,97 +44,98 @@ const ClientRequestProd = () => {
     }
   };
 
-  useEffect(() => {
-    fetchClients();
-    fetchServices();
-    getRequestsList();
-  }, [page, pageSize]);
+  // API calls commented out for now
+  // useEffect(() => {
+  //   fetchClients();
+  //   fetchServices();
+  //   getRequestsList();
+  // }, [page, pageSize]);
 
-  const fetchClients = async () => {
-    try {
-      const response = await getClientsList(100, 1);
-      if (response?.data?.success) {
-        const clientsData = response.data.data.clients?.data || response.data.data.clients || [];
-        setClients(Array.isArray(clientsData) ? clientsData : []);
-      }
-    } catch (error: any) {
-      console.error("Failed to fetch clients:", error);
-    }
-  };
+  // const fetchClients = async () => {
+  //   try {
+  //     const response = await getClientsList(100, 1);
+  //     if (response?.data?.success) {
+  //       const clientsData = response.data.data.clients?.data || response.data.data.clients || [];
+  //       setClients(Array.isArray(clientsData) ? clientsData : []);
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Failed to fetch clients:", error);
+  //   }
+  // };
 
-  const fetchServices = async () => {
-    try {
-      const response = await getServicesList(100, 1);
-      if (response?.data?.success) {
-        const servicesData = response.data.data;
-        let servicesArray: any[] = [];
-        if (Array.isArray(servicesData)) {
-          servicesArray = servicesData;
-        } else if (servicesData?.services && Array.isArray(servicesData.services)) {
-          servicesArray = servicesData.services;
-        } else if (servicesData?.data?.services && Array.isArray(servicesData.data.services)) {
-          servicesArray = servicesData.data.services;
-        }
-        setServices(servicesArray);
-      }
-    } catch (error: any) {
-      console.error("Failed to fetch services:", error);
-    }
-  };
+  // const fetchServices = async () => {
+  //   try {
+  //     const response = await getServicesList(100, 1);
+  //     if (response?.data?.success) {
+  //       const servicesData = response.data.data;
+  //       let servicesArray: any[] = [];
+  //       if (Array.isArray(servicesData)) {
+  //         servicesArray = servicesData;
+  //       } else if (servicesData?.services && Array.isArray(servicesData.services)) {
+  //         servicesArray = servicesData.services;
+  //       } else if (servicesData?.data?.services && Array.isArray(servicesData.data.services)) {
+  //         servicesArray = servicesData.data.services;
+  //       }
+  //       setServices(servicesArray);
+  //     }
+  //   } catch (error: any) {
+  //     console.error("Failed to fetch services:", error);
+  //   }
+  // };
 
-  const getRequestsList = async () => {
-    try {
-      setSkelitonLoading(true);
-      const params: any = {
-        records: pageSize,
-        page: page,
-      };
-      
-      if (selectedClient) params.client_id = selectedClient;
-      if (selectedService) params.service_id = selectedService;
-      if (selectedApi) params.api_id = selectedApi;
-      if (fromDate) params.from = fromDate.format("YYYY-MM-DD");
-      if (toDate) params.to = toDate.format("YYYY-MM-DD");
-
-      const response = await getClientRequestProd(params);
-      if (response?.data?.success) {
-        const requestsHistory = response.data.data?.requests_history;
-        let requestsArray: any[] = [];
-        
-        if (requestsHistory?.data && Array.isArray(requestsHistory.data)) {
-          requestsArray = requestsHistory.data;
-          setTotalRows(requestsHistory.total || 0);
-          setFrom(requestsHistory.from || 0);
-          setTo(requestsHistory.to || 0);
-          setPage(requestsHistory.current_page || page);
-          setTotalPage(requestsHistory.last_page || 1);
-        } else if (response.data.data?.data && Array.isArray(response.data.data.data)) {
-          requestsArray = response.data.data.data;
-          setTotalRows(response.data.data.total || 0);
-          setFrom(response.data.data.from || 0);
-          setTo(response.data.data.to || 0);
-          setPage(response.data.data.current_page || page);
-          setTotalPage(response.data.data.last_page || 1);
-        } else if (Array.isArray(response.data.data)) {
-          requestsArray = response.data.data;
-          setTotalRows(requestsArray.length || 0);
-          setFrom(requestsArray.length > 0 ? 1 : 0);
-          setTo(requestsArray.length || 0);
-          setPage(1);
-          setTotalPage(1);
-        }
-        setData(requestsArray);
-      }
-      setSkelitonLoading(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch requests");
-      setSkelitonLoading(false);
-    }
-  };
+  // const getRequestsList = async () => {
+  //   try {
+  //     setSkelitonLoading(true);
+  //     const params: any = {
+  //       records: pageSize,
+  //       page: page,
+  //     };
+  //
+  //     if (selectedClient) params.client_id = selectedClient;
+  //     if (selectedService) params.service_id = selectedService;
+  //     if (selectedApi) params.api_id = selectedApi;
+  //     if (fromDate) params.from = fromDate.format("YYYY-MM-DD");
+  //     if (toDate) params.to = toDate.format("YYYY-MM-DD");
+  //
+  //     const response = await getClientRequestProd(params);
+  //     if (response?.data?.success) {
+  //       const requestsHistory = response.data.data?.requests_history;
+  //       let requestsArray: any[] = [];
+  //
+  //       if (requestsHistory?.data && Array.isArray(requestsHistory.data)) {
+  //         requestsArray = requestsHistory.data;
+  //         setTotalRows(requestsHistory.total || 0);
+  //         setFrom(requestsHistory.from || 0);
+  //         setTo(requestsHistory.to || 0);
+  //         setPage(requestsHistory.current_page || page);
+  //         setTotalPage(requestsHistory.last_page || 1);
+  //       } else if (response.data.data?.data && Array.isArray(response.data.data.data)) {
+  //         requestsArray = response.data.data.data;
+  //         setTotalRows(response.data.data.total || 0);
+  //         setFrom(response.data.data.from || 0);
+  //         setTo(response.data.data.to || 0);
+  //         setPage(response.data.data.current_page || page);
+  //         setTotalPage(response.data.data.last_page || 1);
+  //       } else if (Array.isArray(response.data.data)) {
+  //         requestsArray = response.data.data;
+  //         setTotalRows(requestsArray.length || 0);
+  //         setFrom(requestsArray.length > 0 ? 1 : 0);
+  //         setTo(requestsArray.length || 0);
+  //         setPage(1);
+  //         setTotalPage(1);
+  //       }
+  //       setData(requestsArray);
+  //     }
+  //     setSkelitonLoading(false);
+  //   } catch (error: any) {
+  //     toast.error(error?.response?.data?.message || "Failed to fetch requests");
+  //     setSkelitonLoading(false);
+  //   }
+  // };
 
   const handleFilter = () => {
     setPage(1);
-    getRequestsList();
+    // getRequestsList();
   };
 
   const handleReset = () => {
@@ -146,9 +147,9 @@ const ClientRequestProd = () => {
     setPage(1);
   };
 
-  useEffect(() => {
-    getRequestsList();
-  }, [page, pageSize]);
+  // useEffect(() => {
+  //   getRequestsList();
+  // }, [page, pageSize]);
 
   // Helper function to format JSON strings
   const formatJSON = (jsonString: string | any) => {

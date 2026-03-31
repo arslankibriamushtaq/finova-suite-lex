@@ -1606,33 +1606,33 @@ const DasbhboardSidebar = () => {
           //     },
           //   ],
           // },
-          {
-            label: "Environment APIs",
-            Link: "AllEnvironment",
-            LinkLable: "/ThirdPartyManagement",
-            img: Images.logsIcon,
-            active: pathname.split("/").includes("AllEnvironment") || pathname.split("/").includes("EnvConfig") || pathname.split("/").includes("ExportCsv"),
-            submenu: [
-              {
-                label: "All Environment",
-                Link: "AllEnvironment",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/AllEnvironment"),
-              },
-              {
-                label: "Env Config",
-                Link: "EnvConfig",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/EnvConfig"),
-              },
-              {
-                label: "Export CSV",
-                Link: "ExportCsv",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/ExportCsv"),
-              },
-            ],
-          },
+          // {
+          //   label: "Environment APIs",
+          //   Link: "AllEnvironment",
+          //   LinkLable: "/ThirdPartyManagement",
+          //   img: Images.logsIcon,
+          //   active: pathname.split("/").includes("AllEnvironment") || pathname.split("/").includes("EnvConfig") || pathname.split("/").includes("ExportCsv"),
+          //   submenu: [
+          //     {
+          //       label: "All Environment",
+          //       Link: "AllEnvironment",
+          //       LinkLable: "/ThirdPartyManagement",
+          //       active: pathname.includes("/ThirdPartyManagement/AllEnvironment"),
+          //     },
+          //     {
+          //       label: "Env Config",
+          //       Link: "EnvConfig",
+          //       LinkLable: "/ThirdPartyManagement",
+          //       active: pathname.includes("/ThirdPartyManagement/EnvConfig"),
+          //     },
+          //     {
+          //       label: "Export CSV",
+          //       Link: "ExportCsv",
+          //       LinkLable: "/ThirdPartyManagement",
+          //       active: pathname.includes("/ThirdPartyManagement/ExportCsv"),
+          //     },
+          //   ],
+          // },
           //  {
           //    label: "Request History",
           //    Link: "RequestHistory",

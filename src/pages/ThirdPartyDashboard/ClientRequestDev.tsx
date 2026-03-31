@@ -31,41 +31,42 @@ const ClientRequestDev = () => {
     }
   };
 
-  const getRequestsList = async () => {
-    try {
-      setSkelitonLoading(true);
-      const response = await getClientRequestDev(pageSize, page);
-      if (response?.data?.success) {
-        const requestsHistory = response.data.data?.requests_history;
-        let requestsArray: any[] = [];
-        
-        if (requestsHistory?.data && Array.isArray(requestsHistory.data)) {
-          requestsArray = requestsHistory.data;
-          setTotalRows(requestsHistory.total || 0);
-          setFrom(requestsHistory.from || 0);
-          setTo(requestsHistory.to || 0);
-          setPage(requestsHistory.current_page || page);
-          setTotalPage(requestsHistory.last_page || 1);
-        } else if (Array.isArray(response.data.data)) {
-          requestsArray = response.data.data;
-          setTotalRows(requestsArray.length || 0);
-          setFrom(requestsArray.length > 0 ? 1 : 0);
-          setTo(requestsArray.length || 0);
-          setPage(1);
-          setTotalPage(1);
-        }
-        setData(requestsArray);
-      }
-      setSkelitonLoading(false);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch requests");
-      setSkelitonLoading(false);
-    }
-  };
+  // API calls commented out for now
+  // const getRequestsList = async () => {
+  //   try {
+  //     setSkelitonLoading(true);
+  //     const response = await getClientRequestDev(pageSize, page);
+  //     if (response?.data?.success) {
+  //       const requestsHistory = response.data.data?.requests_history;
+  //       let requestsArray: any[] = [];
+  //
+  //       if (requestsHistory?.data && Array.isArray(requestsHistory.data)) {
+  //         requestsArray = requestsHistory.data;
+  //         setTotalRows(requestsHistory.total || 0);
+  //         setFrom(requestsHistory.from || 0);
+  //         setTo(requestsHistory.to || 0);
+  //         setPage(requestsHistory.current_page || page);
+  //         setTotalPage(requestsHistory.last_page || 1);
+  //       } else if (Array.isArray(response.data.data)) {
+  //         requestsArray = response.data.data;
+  //         setTotalRows(requestsArray.length || 0);
+  //         setFrom(requestsArray.length > 0 ? 1 : 0);
+  //         setTo(requestsArray.length || 0);
+  //         setPage(1);
+  //         setTotalPage(1);
+  //       }
+  //       setData(requestsArray);
+  //     }
+  //     setSkelitonLoading(false);
+  //   } catch (error: any) {
+  //     toast.error(error?.response?.data?.message || "Failed to fetch requests");
+  //     setSkelitonLoading(false);
+  //   }
+  // };
 
-  useEffect(() => {
-    getRequestsList();
-  }, [page, pageSize]);
+  // useEffect(() => {
+  //   getRequestsList();
+  // }, [page, pageSize]);
 
   const Headers = [
     {

@@ -184,40 +184,35 @@ const VerifyOtp: React.FC = () => {
           try {
             const permRes = await getPermissionsByRole(accessToken);
             if (permRes?.data?.success) {
-              // Handle permissions (similar to login component)
-              toast.success("Login Successfully");
-              navigate("/LOS/Dashboard");
-            } else {
-              // Navigate based on role
-              if (roleValue === "partner_admin") {
-                navigate("/partner");
-              } else if (roleValue === "customer") {
-                navigate("/customer");
-              } else {
-                navigate("/LOS/Dashboard");
+              const permissions = permRes?.data?.data;
+              if (Array.isArray(permissions)) {
+                dispatch(setPermissions(permissions));
+                localStorage.setItem("permissions", JSON.stringify(permissions));
               }
-              toast.success("Login Successfully");
+            } else {
+              // No permissions — clear so sidebar shows all items
+              dispatch(setPermissions([]));
+              localStorage.removeItem("permissions");
             }
           } catch (error) {
-            // Navigate based on role on error
-            if (roleValue === "partner_admin") {
-              navigate("/partner");
-            } else if (roleValue === "customer") {
-              navigate("/customer");
-            } else {
-              navigate("/LOS/Dashboard");
-            }
-            toast.success("Login Successfully");
+            // Permissions fetch failed — clear so sidebar shows all items
+            dispatch(setPermissions([]));
+            localStorage.removeItem("permissions");
           }
         } else {
-          if (roleValue === "partner_admin") {
-            navigate("/partner");
-          } else if (roleValue === "customer") {
-            navigate("/customer");
-          } else {
-            navigate("/LOS/Dashboard");
-          }
-          toast.success("Login Successfully");
+          // No username — clear permissions
+          dispatch(setPermissions([]));
+          localStorage.removeItem("permissions");
+        }
+
+        // Navigate based on role
+        toast.success("Login Successfully");
+        if (roleValue === "partner_admin") {
+          navigate("/partner");
+        } else if (roleValue === "customer") {
+          navigate("/customer");
+        } else {
+          navigate("/LOS/Dashboard");
         }
       }
     } catch (error: any) {

@@ -67,6 +67,10 @@ const SSOCallback: React.FC = () => {
               dispatch(setPermissions(permissions));
               localStorage.setItem("permissions", JSON.stringify(permissions));
             }
+          } else {
+            // No roleId (e.g. super_admin) — clear permissions so sidebar shows all items
+            dispatch(setPermissions([]));
+            localStorage.removeItem("permissions");
           }
         } catch {
           // Continue even if permissions fail
