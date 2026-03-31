@@ -175,9 +175,10 @@ const DasbhboardSidebar = () => {
       submenu: [
         {label: "Product Management",
           Link: "ProductManagement",
-        LinkLable: "LOS",
+        LinkLable: "/LOS",
           img: Images.productManagementIcon,
-          imgActive: Images.productManagementIconActive},
+          imgActive: Images.productManagementIconActive,
+          active: pathname === "/LOS/ProductManagement"},
         {
           label: "Contract Template",
           Link: "ContractTemplate",
