@@ -12,6 +12,7 @@ import { FaMobileAlt } from "react-icons/fa";
 const DasbhboardSidebar = () => {
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
+  const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const toggled = useSelector((state: RootState) => state.block.toggled);
@@ -20,16 +21,15 @@ const DasbhboardSidebar = () => {
 
   // Auto-open menu based on current route
   useEffect(() => {
-    if (pathname.includes("/LOS")) {
-      setOpenSubmenuIndex(0); // LOS menu is at index 0
-    } else if (pathname.includes("/Lms")) {
-      setOpenSubmenuIndex(1); // LMS menu is at index 1
-    } else if (pathname.includes("/cms")) {
-      setOpenSubmenuIndex(2); // CMS menu is at index 2
-    } else if (pathname.includes("/ThirdPartyManagement")) {
-      setOpenSubmenuIndex(3); // Third Party Management menu is at index 3
-    } else if (pathname.includes("/InvestorDashboard")) {
-      setOpenSubmenuIndex(4); // Investor Dashboard menu is at index 4
+    const matchIndex = sidebarItems.findIndex((item) => {
+      const link = item.Link || "";
+      // Extract the top-level path segment from the item's Link
+      const topSegment = link.split("/").filter(Boolean)[0];
+      if (!topSegment) return false;
+      return pathname.includes(`/${topSegment}`);
+    });
+    if (matchIndex !== -1) {
+      setOpenSubmenuIndex(matchIndex);
     }
   }, [pathname]);
 
@@ -1901,7 +1901,7 @@ const DasbhboardSidebar = () => {
           )
         }
         // defaultOpen={item.active}
-        open={openSubmenuIndex === index || item.active}
+        open={openSubmenuIndex === index}
         onClick={() => {
           // Toggle the submenu open/close
           setOpenSubmenuIndex((prevIndex) =>
@@ -1919,15 +1919,24 @@ const DasbhboardSidebar = () => {
 
           if (hasNestedSubmenu) {
             const nestedItems = submenuItem.submenu || submenuItem.menu;
+            const isAnyChildActive = nestedItems.some((child: any) => child.active);
+            const nestedKey = `${index}-${subIndex}`;
+            const isNestedOpen = openNestedSubmenus[nestedKey] !== undefined
+              ? openNestedSubmenus[nestedKey]
+              : (submenuItem.active || isAnyChildActive);
             return (
               <SubMenu
                 key={subIndex}
                 label={submenuItem.label}
-                defaultOpen={submenuItem.active}
+                open={isNestedOpen || isAnyChildActive}
                 className="nested-submenu"
                 onClick={(e) => {
                   // Prevent parent menu from closing when clicking nested submenu
                   e.stopPropagation();
+                  setOpenNestedSubmenus((prev) => ({
+                    ...prev,
+                    [nestedKey]: !isNestedOpen,
+                  }));
                 }}
                 prefix={
                   submenuItem.img ? (
