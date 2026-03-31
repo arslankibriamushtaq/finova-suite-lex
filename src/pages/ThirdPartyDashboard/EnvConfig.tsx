@@ -215,25 +215,25 @@ const EnvConfig = () => {
       name: "Base URL",
       selector: (row: any) => row.baseUrl,
       sortable: true,
-      width: "250px",
+      // width: "250px",
     },
     {
       name: "Endpoint",
       selector: (row: any) => row.endpointPath,
       sortable: true,
-      width: "250px",
+      // width: "250px",
     },
     {
       name: "Method",
       selector: (row: any) => row.httpMethod,
       sortable: true,
-      width: "100px",
+      // width: "100px",
     },
     {
       name: "Environment",
       selector: (row: any) => row.environment,
       sortable: true,
-      width: "120px",
+      // width: "120px",
     },
     {
       name: "Status",
@@ -246,7 +246,7 @@ const EnvConfig = () => {
         );
       },
       sortable: true,
-      width: "100px",
+      // width: "100px",
     },
     {
       name: "Action",
@@ -280,7 +280,7 @@ const EnvConfig = () => {
           </DropdownMenu>
         </div>
       ),
-      width: "100px",
+      // width: "100px",
     },
   ];
 

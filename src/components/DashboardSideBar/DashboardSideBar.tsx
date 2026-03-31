@@ -178,7 +178,7 @@ const DasbhboardSidebar = () => {
         LinkLable: "/LOS",
           img: Images.productManagementIcon,
           imgActive: Images.productManagementIconActive,
-          active: pathname === "/LOS/ProductManagement"},
+          active: pathname.toLowerCase().includes("/productmanagement")},
         {
           label: "Contract Template",
           Link: "ContractTemplate",

@@ -195,26 +195,26 @@ const ProviderApiEnvConfig = () => {
           {row.environment || "-"}
         </span>
       ),
-      width: "140px",
+      // width: "140px",
     },
     {
       name: "Base URL",
       selector: (row: any) => row.baseUrl || "-",
       sortable: true,
       wrap: true,
-      width: "250px",
+      // width: "250px",
     },
     {
       name: "Endpoint Path",
       selector: (row: any) => row.endpointPath || "-",
       sortable: true,
       wrap: true,
-      width: "200px",
+      // width: "200px",
     },
     {
       name: "Auth Type",
       selector: (row: any) => row.authType || "-",
-      width: "120px",
+      // width: "120px",
     },
     {
       name: "Active",
@@ -223,7 +223,7 @@ const ProviderApiEnvConfig = () => {
           {row.active ? "Yes" : "No"}
         </span>
       ),
-      width: "80px",
+      // width: "80px",
     },
     {
       name: "Created At",
@@ -231,7 +231,7 @@ const ProviderApiEnvConfig = () => {
         <div>{row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-"}</div>
       ),
       sortable: true,
-      width: "120px",
+      // width: "120px",
     },
     {
       name: "Action",

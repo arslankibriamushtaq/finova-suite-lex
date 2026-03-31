@@ -236,7 +236,7 @@ const AllProviderApis = () => {
       selector: (row: any) => row.name || "-",
       sortable: true,
       wrap: true,
-      width: "200px",
+      // width: "200px",
     },
     {
       name: "Method",
@@ -253,14 +253,14 @@ const AllProviderApis = () => {
           {row.httpMethod || "-"}
         </span>
       ),
-      width: "100px",
+      // width: "100px",
     },
     {
       name: "Endpoint Path",
       selector: (row: any) => row.endpointPath || "-",
       sortable: true,
       wrap: true,
-      width: "220px",
+      // width: "220px",
     },
     {
       name: "Status",
@@ -270,17 +270,17 @@ const AllProviderApis = () => {
         </span>
       ),
       sortable: true,
-      width: "110px",
+      // width: "110px",
     },
     {
       name: "Async",
       selector: (row: any) => (row.async ? "Yes" : "No"),
-      width: "80px",
+      // width: "80px",
     },
     {
       name: "Timeout (ms)",
       selector: (row: any) => row.timeoutMs ?? "-",
-      width: "120px",
+      // width: "120px",
     },
     {
       name: "Created At",
@@ -290,7 +290,7 @@ const AllProviderApis = () => {
         </div>
       ),
       sortable: true,
-      width: "120px",
+      // width: "120px",
     },
     {
       name: "Action",
