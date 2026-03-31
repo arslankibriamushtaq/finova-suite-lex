@@ -108,10 +108,42 @@ export function getProviderApisByProvider(providerId: string) {
   return axiosMiddlewareThirdParty.get(`/api/v1/provider-apis/by-provider/${providerId}`);
 }
 
+export function createProviderApi(body: any) {
+  return axiosMiddlewareThirdParty.post(`/api/v1/provider-apis`, body);
+}
+
+export function getProviderApiById(id: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/provider-apis/${id}`);
+}
+
+export function updateProviderApi(id: string, body: any) {
+  return axiosMiddlewareThirdParty.put(`/api/v1/provider-apis/${id}`, body);
+}
+
+export function deleteProviderApi(id: string) {
+  return axiosMiddlewareThirdParty.delete(`/api/v1/provider-apis/${id}`);
+}
+
+export function getEnvConfigsByApiId(apiId: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/env-configs/by-api/${apiId}`);
+}
+
 // ============================================================
 // Environment Configs
 // ============================================================
 
+export function createEnvConfig(body: any) {
+  return axiosMiddlewareThirdParty.post(`/api/v1/env-configs`, body);
+}
+
+export function getEnvConfigById(id: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/env-configs/${id}`);
+}
+
 export function updateEnvConfig(configId: string, body: any) {
   return axiosMiddlewareThirdParty.put(`/api/v1/env-configs/${configId}`, body);
+}
+
+export function deleteEnvConfig(id: string) {
+  return axiosMiddlewareThirdParty.delete(`/api/v1/env-configs/${id}`);
 }

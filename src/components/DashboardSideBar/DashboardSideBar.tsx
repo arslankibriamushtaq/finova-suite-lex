@@ -1487,13 +1487,13 @@ const DasbhboardSidebar = () => {
           //   img: Images.dashboardIcon,
           //   active: pathname.includes("/ThirdPartyManagement/Dashboard"),
           // },
-          {
-            label: "Providers",
-            Link: "Providers",
-            LinkLable: "/ThirdPartyManagement",
-            img: Images.PartnerManagementIcon,
-            active: pathname.includes("/ThirdPartyManagement/Providers"),
-          },
+          // {
+          //   label: "Providers",
+          //   Link: "Providers",
+          //   LinkLable: "/ThirdPartyManagement",
+          //   img: Images.PartnerManagementIcon,
+          //   active: pathname.includes("/ThirdPartyManagement/Providers"),
+          // },
           {
             label: "Environment Settings",
             Link: "EnvironmentSettings",
@@ -1501,11 +1501,24 @@ const DasbhboardSidebar = () => {
             img: Images.SettingsIcon,
             active: pathname.split("/").includes("/ThirdPartyManagement/EnvironmentSettings"),
             submenu: [
-              {
-                label: "Services List",
-                Link: "EnvironmentSettings/ServicesList",
+              // {
+              //   label: "Services List",
+              //   Link: "EnvironmentSettings/ServicesList",
+              //   LinkLable: "/ThirdPartyManagement",
+              //   active: pathname.includes("/ThirdPartyManagement/EnvironmentSettings/ServicesList"),
+              // },
+                {
+                label: "Providers",
+                Link: "Providers",
                 LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/EnvironmentSettings/ServicesList"),
+                img: Images.PartnerManagementIcon,
+                active: pathname.includes("/ThirdPartyManagement/Providers"),
+              },
+              {
+                label: "All Provider APIs",
+                Link: "AllProviderApis",
+                LinkLable: "/ThirdPartyManagement",
+                active: pathname.includes("/ThirdPartyManagement/AllProviderApis"),
               },
             ],
           },
@@ -1522,6 +1535,30 @@ const DasbhboardSidebar = () => {
                 LinkLable: "/ThirdPartyManagement",
                 active: pathname.includes("/ThirdPartyManagement/Clients"),
               },
+                {
+                 label: "Client Request Prod",
+                 Link: "RequestHistory/ClientRequestProd",
+                 LinkLable: "/ThirdPartyManagement",
+                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
+               },
+               {
+                 label: "Client Request Dev",
+                 Link: "RequestHistory/ClientRequestDev",
+                 LinkLable: "/ThirdPartyManagement",
+                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
+               },
+               /* {
+                 label: "Request Detail",
+                 Link: "RequestHistory/RequestDetail",
+                 LinkLable: "/ThirdPartyManagement",
+                 active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory/RequestDetail"),
+               }, */
+              //  {
+              //    label: "Request Service",
+              //    Link: "RequestHistory/RequestService",
+              //    LinkLable: "/ThirdPartyManagement",
+              //    active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
+              // },
               // {
               //   label: "Dev Client Requests",
               //   Link: "DevClientRequests",
@@ -1542,33 +1579,33 @@ const DasbhboardSidebar = () => {
               // },
             ],
           },
-          {
-            label: "Services Management",
-            Link: "Services",
-            LinkLable: "/ThirdPartyManagement",
-            img: Images.logsIcon,
-            active: pathname.split("/").includes("Services") || pathname.split("/").includes("EnvironmentSettings"),
-            submenu: [
-              {
-                label: "All Services",
-                Link: "Services",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/Services"),
-              },
-              {
-                label: "Services API",
-                Link: "Services/Apis",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/Services/Apis"),
-              },
-              {
-                label: "Services Environment",
-                Link: "Services/Environment",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/Services/Environment"),
-              },
-            ],
-          },
+          // {
+          //   label: "Services Management",
+          //   Link: "Services",
+          //   LinkLable: "/ThirdPartyManagement",
+          //   img: Images.logsIcon,
+          //   active: pathname.split("/").includes("Services") || pathname.split("/").includes("EnvironmentSettings"),
+          //   submenu: [
+          //     {
+          //       label: "All Services",
+          //       Link: "Services",
+          //       LinkLable: "/ThirdPartyManagement",
+          //       active: pathname.includes("/ThirdPartyManagement/Services"),
+          //     },
+          //     {
+          //       label: "Services API",
+          //       Link: "Services/Apis",
+          //       LinkLable: "/ThirdPartyManagement",
+          //       active: pathname.includes("/ThirdPartyManagement/Services/Apis"),
+          //     },
+          //     {
+          //       label: "Services Environment",
+          //       Link: "Services/Environment",
+          //       LinkLable: "/ThirdPartyManagement",
+          //       active: pathname.includes("/ThirdPartyManagement/Services/Environment"),
+          //     },
+          //   ],
+          // },
           {
             label: "Environment APIs",
             Link: "AllEnvironment",
@@ -1596,39 +1633,39 @@ const DasbhboardSidebar = () => {
               },
             ],
           },
-           {
-             label: "Request History",
-             Link: "RequestHistory",
-             LinkLable: "/ThirdPartyManagement",
-             img: Images.logsIcon,
-             active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory"),
-             submenu: [
-               {
-                 label: "Client Request Prod",
-                 Link: "RequestHistory/ClientRequestProd",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
-               },
-               {
-                 label: "Client Request Dev",
-                 Link: "RequestHistory/ClientRequestDev",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
-               },
-               /* {
-                 label: "Request Detail",
-                 Link: "RequestHistory/RequestDetail",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory/RequestDetail"),
-               }, */
-               {
-                 label: "Request Service",
-                 Link: "RequestHistory/RequestService",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
-              },
-            ],
-          },
+          //  {
+          //    label: "Request History",
+          //    Link: "RequestHistory",
+          //    LinkLable: "/ThirdPartyManagement",
+          //    img: Images.logsIcon,
+          //    active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory"),
+          //    submenu: [
+          //      {
+          //        label: "Client Request Prod",
+          //        Link: "RequestHistory/ClientRequestProd",
+          //        LinkLable: "/ThirdPartyManagement",
+          //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
+          //      },
+          //      {
+          //        label: "Client Request Dev",
+          //        Link: "RequestHistory/ClientRequestDev",
+          //        LinkLable: "/ThirdPartyManagement",
+          //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
+          //      },
+          //      /* {
+          //        label: "Request Detail",
+          //        Link: "RequestHistory/RequestDetail",
+          //        LinkLable: "/ThirdPartyManagement",
+          //        active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory/RequestDetail"),
+          //      }, */
+          //      {
+          //        label: "Request Service",
+          //        Link: "RequestHistory/RequestService",
+          //        LinkLable: "/ThirdPartyManagement",
+          //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
+          //     },
+          //   ],
+          // },
            /* {
              label: "System Logs",
              Link: "SystemLogs",
