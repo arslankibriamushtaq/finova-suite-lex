@@ -34,11 +34,7 @@ const AllCustomers = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
-  const [totalRows, setTotalRows] = useState(0);
-  const [from, setFrom] = useState(0);
   const [pageSize, setPageSize] = useState(10);
-  const [to, setTo] = useState(0);
-  const [totalPage, setTotalPage] = useState(0);
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -103,6 +99,12 @@ const AllCustomers = () => {
       cell: (row: any) => row.name,
       sortable: true,
       width: "200px",
+    },
+    {
+      name: "National ID",
+      selector: (row: any) => row.nationalId || "-",
+      sortable: true,
+      width: "150px",
     },
     {
       name: "CIF",
@@ -582,13 +584,11 @@ const AllCustomers = () => {
     try {
       setSkelitonLoading(true);
 
-      const response = await getCustomers(1, 10000, search, pep, status);
+      const response = await getCustomers(1, 10000, "", "", "");
       if (response) {
         const list = response?.data?.data || [];
         const allData = Array.isArray(list) ? list : [];
         setData(allData);
-        setTotalRows(allData.length);
-        setTotalPage(Math.ceil(allData.length / pageSize));
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -598,22 +598,14 @@ const AllCustomers = () => {
   };
   useEffect(() => {
     getLeadsList();
-  }, [search, pep, status]);
+  }, []);
 
-  // Reset to page 1 when filters change
+  // Reset to page 1 when search/filters change
   useEffect(() => {
     setPage(1);
-  }, [search, pep, status]);
+  }, [search, pep, status, pageSize]);
 
-  // Recalculate total pages when pageSize changes
-  useEffect(() => {
-    if (data) {
-      setTotalPage(Math.ceil(data.length / pageSize));
-      setPage(1);
-    }
-  }, [pageSize]);
-
-  // Client-side pagination
+  // Client-side search + mapping
   const allMappedData =
     data &&
     data?.map((item: any, index: number) => {
@@ -621,6 +613,7 @@ const AllCustomers = () => {
         id: item.id,
         Sr: index + 1,
         name: item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
+        nationalId: item?.nationalId || "-",
         cif: item?.cifNumber || "-",
         email: item?.email || "-",
         phone: item?.mobileNumber || "-",
@@ -639,12 +632,31 @@ const AllCustomers = () => {
       };
     });
 
+  // Client-side filtering
+  const filteredData = (allMappedData || []).filter((item: any) => {
+    if (search) {
+      const term = search.toLowerCase();
+      const matchesSearch =
+        (item.name || "").toLowerCase().includes(term) ||
+        (item.cif || "").toLowerCase().includes(term) ||
+        (item.email || "").toLowerCase().includes(term) ||
+        (item.phone || "").toLowerCase().includes(term) ||
+        (item.nationality || "").toLowerCase().includes(term);
+      if (!matchesSearch) return false;
+    }
+    if (pep && item.pep?.toLowerCase() !== pep.toLowerCase()) return false;
+    if (status && item.kycStatus?.toLowerCase() !== status.toLowerCase()) return false;
+    return true;
+  });
+
+  // Client-side pagination
   const startIndex = (page - 1) * pageSize;
   const endIndex = startIndex + pageSize;
-  const total = allMappedData?.length || 0;
-  const mappedData = allMappedData?.slice(startIndex, endIndex);
+  const total = filteredData.length;
+  const mappedData = filteredData.slice(startIndex, endIndex);
   const fromValue = total > 0 ? startIndex + 1 : 0;
   const toValue = Math.min(endIndex, total);
+  const totalPage = Math.ceil(total / pageSize) || 1;
   const exportToCSV = async () => {
     try {
       toast.loading("Exporting CSV...", { id: "export-csv" });
@@ -855,7 +867,7 @@ const AllCustomers = () => {
       <TableView
         header={Activity_Loans_Header}
         data={mappedData}
-        totalRows={totalRows}
+        totalRows={total}
         isLoading={skelitonLoading}
         from={fromValue}
         page={page}
