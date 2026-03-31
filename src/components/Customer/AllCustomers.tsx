@@ -95,7 +95,7 @@ const AllCustomers = () => {
     if (riskLower.endsWith("risk")) {
       return riskLower.slice(0, -4); // Remove last 4 characters ("risk")
     }
-    return riskLower;
+    return risk;
   };
   const Activity_Loans_Header = [
     {
@@ -190,7 +190,7 @@ const AllCustomers = () => {
     {
       name: "Risk",
       cell: (row: any) => {
-        const riskStatus = row.risk || "--";
+        const riskStatus = row.risk || "N/A";
         const displayRisk = normalizeRiskDisplay(riskStatus);
 
         return (
@@ -223,26 +223,26 @@ const AllCustomers = () => {
       ),
       width: "120px",
     },
-    {
-      name: "Actions",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              backgroundColor: "var(--color-action)",
-              color: "var(--foreground)",
-              borderColor: "white",
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
-            Select <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
-      ),
-    },
+    // {
+    //   name: "Actions",
+    //   cell: (row: any) => (
+    //     <Dropdown overlay={menu(row)} trigger={["click"]}>
+    //       <Button
+    //         className="gradient-btn"
+    //         type="primary"
+    //         style={{
+    //           backgroundColor: "var(--color-action)",
+    //           color: "var(--foreground)",
+    //           borderColor: "white",
+    //           borderRadius: "8px",
+    //           padding: "10px 20px",
+    //         }}
+    //       >
+    //         Select <img src={arrowDown} alt="" />
+    //       </Button>
+    //     </Dropdown>
+    //   ),
+    // },
   ];
   const menu = (row: any) => (
     <Menu>
@@ -629,7 +629,7 @@ const AllCustomers = () => {
         pep: item?.pepFlag ? "Yes" : "No",
         kycStatus: item?.kycStatus || "-",
         lifecycleStage: item?.lifecycleStage || "-",
-        risk: item?.riskGrade || "-",
+        risk: item?.riskGrade || "N/A",
         risk_status: item?.riskGrade || "-",
         sanctionsFlag: item?.sanctionsFlag,
         customerType: item?.customerType || "-",

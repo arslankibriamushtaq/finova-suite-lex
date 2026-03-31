@@ -98,31 +98,31 @@ const Leads = () => {
       name: "CIF Number",
       selector: (row: any) => row.cifNumber,
       sortable: true,
-      width: "150px",
+      // width: "150px",
     },
     {
       name: "Full Name",
       selector: (row: any) => row.fullName,
       sortable: true,
-      width: "180px",
+      // width: "180px",
     },
     {
       name: "Phone",
       selector: (row: any) => row.phone,
       sortable: true,
-      width: "160px",
+      // width: "160px",
     },
     {
       name: "Email",
       selector: (row: any) => row.email,
       sortable: true,
-      width: "200px",
+      // width: "200px",
     },
     {
       name: "Customer Type",
       selector: (row: any) => row.customerType,
       sortable: true,
-      width: "150px",
+      // width: "150px",
     },
     {
       name: "KYC Status",
@@ -143,7 +143,7 @@ const Leads = () => {
         </span>
       ),
       sortable: true,
-      width: "150px",
+      // width: "150px",
     },
     {
       name: "Created At",
@@ -153,28 +153,28 @@ const Leads = () => {
           {row.created_at ? new Date(row.created_at).toLocaleDateString() : "-"}
         </div>
       ),
-      width: "130px",
+      // width: "130px",
     },
-    {
-      name: "Actions",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              backgroundColor: "var(--color-action)",
-              color: "var(--foreground)",
-              borderColor: "var(--primary-foreground)",
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
-            Select <img src={arrowDown} alt="" />
-          </Button>
-        </Dropdown>
-      ),
-    },
+    // {
+    //   name: "Actions",
+    //   cell: (row: any) => (
+    //     <Dropdown overlay={menu(row)} trigger={["click"]}>
+    //       <Button
+    //         className="gradient-btn"
+    //         type="primary"
+    //         style={{
+    //           backgroundColor: "var(--color-action)",
+    //           color: "var(--foreground)",
+    //           borderColor: "var(--primary-foreground)",
+    //           borderRadius: "8px",
+    //           padding: "10px 20px",
+    //         }}
+    //       >
+    //         Select <img src={arrowDown} alt="" />
+    //       </Button>
+    //     </Dropdown>
+    //   ),
+    // },
   ];
   const menu = (row: any) => (
     <Menu>

@@ -545,24 +545,24 @@ const ApplicationManagement = () => {
       sortable: true,
       width: "120px",
     },
-    {
-      name: "Action",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              borderColor: "white",
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
-            Select <DownOutlined />
-          </Button>
-        </Dropdown>
-      ),
-    },
+    // {
+    //   name: "Action",
+    //   cell: (row: any) => (
+    //     <Dropdown overlay={menu(row)} trigger={["click"]}>
+    //       <Button
+    //         className="gradient-btn"
+    //         type="primary"
+    //         style={{
+    //           borderColor: "white",
+    //           borderRadius: "8px",
+    //           padding: "10px 20px",
+    //         }}
+    //       >
+    //         Select <DownOutlined />
+    //       </Button>
+    //     </Dropdown>
+    //   ),
+    // },
   ];
   const getDisbursementStatus = (id: any) => {
     // Pending = 0,

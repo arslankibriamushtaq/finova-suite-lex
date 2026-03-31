@@ -145,6 +145,10 @@ const ProvidersList = () => {
     }
   };
 
+  useEffect(() => {
+    setPage(1);
+  }, [searchTerm, pageSize]);
+
   const filteredData = data.filter((item) => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
@@ -389,16 +393,16 @@ const ProvidersList = () => {
 
       <TableView
         header={headers}
-        data={filteredData}
+        data={filteredData.slice((page - 1) * pageSize, page * pageSize)}
         totalRows={filteredData.length}
         isLoading={isLoading}
-        from={1}
+        from={filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0}
         page={page}
         totalPage={Math.ceil(filteredData.length / pageSize) || 1}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={filteredData.length}
+        to={Math.min(page * pageSize, filteredData.length)}
       />
     </div>
   );
