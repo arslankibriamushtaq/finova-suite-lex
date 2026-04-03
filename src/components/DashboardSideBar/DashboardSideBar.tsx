@@ -381,6 +381,12 @@ const DasbhboardSidebar = () => {
               LinkLable: "/LOS/LOV",
               active: pathname.includes("/ListOfValues"),
             } */
+            {
+              label:"Credit Scoring Definitions",
+              Link:"CreditScoringDefinitions",
+              LinkLable:"/LOS/LOV",
+              active: pathname.includes("/CreditScoringDefinitions"),
+            }
           ],
         },
 

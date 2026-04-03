@@ -8,6 +8,18 @@ export function getCreditScoringFieldDefinitions() {
   return axiosRiskService.get(`/api/v1/risk/credit-scoring/field-definitions`);
 }
 
+export function createCreditScoringFieldDefinition(body: any) {
+  return axiosRiskService.post(`/api/v1/risk/credit-scoring/field-definitions`, body);
+}
+
+export function updateCreditScoringFieldDefinition(fieldDefinitionId: string, body: any) {
+  return axiosRiskService.put(`/api/v1/risk/credit-scoring/field-definitions/${fieldDefinitionId}`, body);
+}
+
+export function deleteCreditScoringFieldDefinition(fieldDefinitionId: string) {
+  return axiosRiskService.delete(`/api/v1/risk/credit-scoring/field-definitions/${fieldDefinitionId}`);
+}
+
 // ============================================================
 // Product Credit Scoring Criteria
 // ============================================================
