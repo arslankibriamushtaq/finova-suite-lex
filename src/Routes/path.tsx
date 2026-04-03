@@ -396,6 +396,9 @@ import CustomerWiseProfitLoss from "../components/Reports/CustomerWiseProfitLoss
 import AllCustomerStatus from "../components/Customer/AllCustomerStatus";
 import OptionalReasonRescheduling from "../components/LOV/OptionalReasonRescheduling";
 import CustomerVerificationLayout from "../components/CustomerVerification/CustomerVerificationLayout";
+import DeviceManagement from "../pages/lmsPages/RiskManagement/DeviceManagement";
+import CreditScoringDefinitions from "../components/LOV/CreditScoringDefinitions";
+import ApprovalConditions from "../components/LOV/ApprovalConditions";
 
 // import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
 // import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
@@ -792,6 +795,14 @@ export const router = createBrowserRouter([
             element: <PurposeOfFinancing />,
           },
           {
+            path: "/LOS/LOV/CreditScoringDefinitions",
+            element: <CreditScoringDefinitions/>,
+          },
+          {
+            path: "/LOS/LOV/ApprovalConditions",
+            element: <ApprovalConditions/>,
+          },
+          {
             path: "/LOS/LOV/ProfessionValue",
             element: <ProfessionValue />,
           },
@@ -838,6 +849,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/RiskManagement/FraudRuleManagement",
             element: <FraudRuleManagement />,
+          },
+          {
+            path: "/LOS/RiskManagement/DeviceManagement",
+            element: <DeviceManagement/>,
           },
           {
             path: "/LOS/CustomerManagement/LeadDetails/:id",

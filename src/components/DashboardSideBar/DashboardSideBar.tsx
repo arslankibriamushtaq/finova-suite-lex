@@ -381,6 +381,18 @@ const DasbhboardSidebar = () => {
               LinkLable: "/LOS/LOV",
               active: pathname.includes("/ListOfValues"),
             } */
+            {
+              label:"Credit Scoring Definitions",
+              Link:"CreditScoringDefinitions",
+              LinkLable:"/LOS/LOV",
+              active: pathname.includes("/CreditScoringDefinitions"),
+            },
+            {
+              label:"Approval Conditions",
+              Link:"ApprovalConditions",
+              LinkLable:"/LOS/LOV",
+              active: pathname.includes("/ApprovalConditions"),
+            }
           ],
         },
 
@@ -409,6 +421,12 @@ const DasbhboardSidebar = () => {
           Link: "FraudRuleManagement",
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
+        },
+        {
+          label: "Device Management",
+          Link: "DeviceManagement",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/DeviceManagement",
         },
       ],
     },

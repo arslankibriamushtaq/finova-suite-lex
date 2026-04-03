@@ -8,6 +8,18 @@ export function getCreditScoringFieldDefinitions() {
   return axiosRiskService.get(`/api/v1/risk/credit-scoring/field-definitions`);
 }
 
+export function createCreditScoringFieldDefinition(body: any) {
+  return axiosRiskService.post(`/api/v1/risk/credit-scoring/field-definitions`, body);
+}
+
+export function updateCreditScoringFieldDefinition(fieldDefinitionId: string, body: any) {
+  return axiosRiskService.put(`/api/v1/risk/credit-scoring/field-definitions/${fieldDefinitionId}`, body);
+}
+
+export function deleteCreditScoringFieldDefinition(fieldDefinitionId: string) {
+  return axiosRiskService.delete(`/api/v1/risk/credit-scoring/field-definitions/${fieldDefinitionId}`);
+}
+
 // ============================================================
 // Product Credit Scoring Criteria
 // ============================================================
@@ -90,4 +102,28 @@ export function disableFraudRule(ruleId: string) {
 
 export function updateFraudRuleParameters(ruleId: string, body: any) {
   return axiosRiskService.put(`/api/v1/risk/fraud/rules/${ruleId}/parameters`, body);
+}
+
+// ============================================================
+// Device Management
+// ============================================================
+
+export function getAllDevices() {
+  return axiosRiskService.get(`/api/v1/risk/devices`);
+}
+
+export function getBlockedDevices() {
+  return axiosRiskService.get(`/api/v1/risk/devices/blocked`);
+}
+
+export function blockDevice(body: { deviceId: string; reason: string }) {
+  return axiosRiskService.post(`/api/v1/risk/devices/block`, body);
+}
+
+export function unblockDevice(deviceId: string) {
+  return axiosRiskService.post(`/api/v1/risk/devices/${deviceId}/unblock`);
+}
+
+export function deleteDevice(deviceId: string) {
+  return axiosRiskService.delete(`/api/v1/risk/devices/${deviceId}`);
 }
