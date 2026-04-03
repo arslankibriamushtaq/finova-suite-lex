@@ -175,7 +175,6 @@ const VerifyOtp: React.FC = () => {
 
         localStorage.setItem("userData", JSON.stringify(userData));
 
-        const userId = decodedToken?.sub || decodedToken?.user_id || decodedToken?.id;
         const roleValue = decodedToken?.role || decodedToken?.user_role;
         const userName = decodedToken?.userName || decodedToken?.userName;
 

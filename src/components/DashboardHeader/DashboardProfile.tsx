@@ -8,10 +8,11 @@ const DashboardProfile: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const storedUserData = localStorage.getItem("userData");
   const user = storedUserData ? JSON.parse(storedUserData) : null;
+  
   const [formData, setFormData] = useState({
-    name: user?.user?.name,
-    email: user?.user?.email,
-    phone: user?.user?.phone,
+    name: user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName,
+    email: user?.email || user?.user?.email,
+    phone: user?.phone || user?.user?.phone,
     password: '',
     passwordConfirmation: '',
   });
