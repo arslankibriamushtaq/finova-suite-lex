@@ -14,6 +14,7 @@ import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { usePermissions, LEAD_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { name } from "react-date-object/calendars/julian";
 
 // Block codes data
 const blockCodesData = [
@@ -92,40 +93,52 @@ const Leads = () => {
     }
     return riskLower;
   };
+
+  // Helper function for lifecycle color
+  const getLifecycleColor = (stage: string) => {
+    if (!stage) return "var(--color-disabled)";
+    const stageLower = stage.toLowerCase();
+    switch (stageLower) {
+      case "lead":
+        return "var(--color-primary)";
+      default:
+        return "var(--color-disabled)";
+    }
+  };
   
   const Activity_Loans_Header = [
+    // {
+    //   name: "CIF Number",
+    //   selector: (row: any) => row.cifNumber,
+    //   sortable: true,
+    //   // width: "150px",
+    // },
     {
-      name: "CIF Number",
-      selector: (row: any) => row.cifNumber,
+      name: "NID",
+      selector: (row: any) => row.nationalId,
       sortable: true,
       // width: "150px",
     },
+    // {
+    //   name: "Full Name",
+    //   selector: (row: any) => row.fullName,
+    //   sortable: true,
+    //   // width: "180px",
+    // },
     {
-      name: "Full Name",
-      selector: (row: any) => row.fullName,
-      sortable: true,
-      // width: "180px",
-    },
-    {
-      name: "Phone",
+      name: "Mobile No",
       selector: (row: any) => row.phone,
       sortable: true,
       // width: "160px",
     },
+    // {
+    //   name: "Email",
+    //   selector: (row: any) => row.email,
+    //   sortable: true,
+    //   // width: "200px",
+    // },
     {
-      name: "Email",
-      selector: (row: any) => row.email,
-      sortable: true,
-      // width: "200px",
-    },
-    {
-      name: "Customer Type",
-      selector: (row: any) => row.customerType,
-      sortable: true,
-      // width: "150px",
-    },
-    {
-      name: "KYC Status",
+      name: "Current Step",
       cell: (row: any) => (
         <span
           style={{
@@ -133,27 +146,103 @@ const Leads = () => {
             borderRadius: "32px",
             fontSize: "12px",
             fontWeight: "500",
-            backgroundColor: row.kycStatus === "VERIFIED" ? "var(--color-success)" : "var(--color-warning)",
+            backgroundColor: row.currentStep === "OTP_SENT" ? "var(--color-warning)" : "var(--color-success)",
             color: "var(--primary-foreground)",
             display: "inline-block",
             textTransform: "capitalize",
           }}
         >
-          {(row.kycStatus || "-").toLowerCase()}
+          {(row.currentStep || "-").toLowerCase().replace(/_/g, " ")}
+        </span>
+      ),
+      sortable: true,
+      // width: "160px",
+    },
+    // {
+    //   name: "Customer Type",
+    //   selector: (row: any) => row.customerType,
+    //   sortable: true,
+    //   // width: "150px",
+    // },
+    {
+      name: "Global ID",
+      selector: (row: any) => row.globalUid,
+      sortable: true,
+      // width: "150px",
+    },
+    // {
+    //   name: "KYC Status",
+    //   cell: (row: any) => (
+    //     <span
+    //       style={{
+    //         padding: "6px 12px",
+    //         borderRadius: "32px",
+    //         fontSize: "12px",
+    //         fontWeight: "500",
+    //         backgroundColor: row.kycStatus === "VERIFIED" ? "var(--color-success)" : "var(--color-warning)",
+    //         color: "var(--primary-foreground)",
+    //         display: "inline-block",
+    //         textTransform: "capitalize",
+    //       }}
+    //     >
+    //       {(row.kycStatus || "-").toLowerCase()}
+    //     </span>
+    //   ),
+    //   sortable: true,
+    //   // width: "150px",
+    // },
+    {
+      name: "Device Trusted",
+      cell: (row: any) => (
+        <span
+          style={{
+            padding: "6px 12px",
+            borderRadius: "32px",
+            fontSize: "12px",
+            fontWeight: "500",
+            backgroundColor: row.deviceTrusted === true ? "var(--color-success)" : "var(--color-warning)",
+            color: "var(--primary-foreground)",
+            display: "inline-block",
+            textTransform: "capitalize",
+          }}
+        >
+          {row.deviceTrusted === true ? "✓ Trusted" : "⊘ Not Trusted"}
         </span>
       ),
       sortable: true,
       // width: "150px",
     },
+    // {
+    //   name: "Created At",
+    //   sortable: true,
+    //   cell: (row: any) => (
+    //     <div>
+    //       {row.created_at ? new Date(row.created_at).toLocaleDateString() : "-"}
+    //     </div>
+    //   ),
+    //   // width: "130px",
+    // },
+
     {
-      name: "Created At",
-      sortable: true,
+      name: "Life Cycle",
       cell: (row: any) => (
-        <div>
-          {row.created_at ? new Date(row.created_at).toLocaleDateString() : "-"}
-        </div>
+        <span
+          style={{
+            padding: "6px 12px",
+            borderRadius: "32px",
+            fontSize: "12px",
+            fontWeight: "500",
+            backgroundColor: getLifecycleColor(row.lifecycleStage),
+            color: "var(--primary-foreground)",
+            display: "inline-block",
+            textTransform: "capitalize",
+          }}
+        >
+          {(row.lifecycleStage || "-").toLowerCase().replace(/_/g, " ")}
+        </span>
       ),
-      // width: "130px",
+      sortable: true,
+      // width: "150px",
     },
     // {
     //   name: "Actions",
@@ -534,9 +623,12 @@ const Leads = () => {
         Sr: index + 1,
         cifNumber: item?.cifNumber || "-",
         fullName: item?.fullName || "-",
-        nationalId: item?.nationalIdType || "-",
+        nationalId: item?.nationalId || item?.nationalIdType || "-",
         phone: item?.mobileNumber || "-",
         email: item?.email || "-",
+        currentStep: item?.currentStep || "-",
+        globalUid: item?.globalUid || "-",
+        deviceTrusted: item?.deviceTrusted || "-",
         customerType: item?.customerType || "-",
         kycStatus: item?.kycStatus || "-",
         lifecycleStage: item?.lifecycleStage || "-",
