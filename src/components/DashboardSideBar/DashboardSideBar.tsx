@@ -410,6 +410,12 @@ const DasbhboardSidebar = () => {
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
         },
+        {
+          label: "Device Management",
+          Link: "DeviceManagement",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/DeviceManagement",
+        },
       ],
     },
 

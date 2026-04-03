@@ -396,6 +396,7 @@ import CustomerWiseProfitLoss from "../components/Reports/CustomerWiseProfitLoss
 import AllCustomerStatus from "../components/Customer/AllCustomerStatus";
 import OptionalReasonRescheduling from "../components/LOV/OptionalReasonRescheduling";
 import CustomerVerificationLayout from "../components/CustomerVerification/CustomerVerificationLayout";
+import DeviceManagement from "../pages/lmsPages/RiskManagement/DeviceManagement";
 
 // import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
 // import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
@@ -838,6 +839,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/RiskManagement/FraudRuleManagement",
             element: <FraudRuleManagement />,
+          },
+          {
+            path: "/LOS/RiskManagement/DeviceManagement",
+            element: <DeviceManagement/>,
           },
           {
             path: "/LOS/CustomerManagement/LeadDetails/:id",
