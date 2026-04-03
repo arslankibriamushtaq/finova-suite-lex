@@ -11,6 +11,23 @@ import {
 import Loader from "../Loader/Loader";
 import { getPermissionByRole } from "../../redux/apis/apisCrudFactoring";
 
+const decodeJWT = (token: string) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error("Error decoding JWT:", error);
+    return null;
+  }
+};
+
 const SSOCallback: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -55,11 +72,19 @@ const SSOCallback: React.FC = () => {
           dispatch(setRefreshToken({ refreshToken: data.refreshToken }));
         }
 
-        localStorage.setItem("userData", JSON.stringify(data));
+        // Decode JWT to get user information
+        const decodedToken = decodeJWT(data.accessToken);
+        
+        const userData = {
+          ...data,
+          user: decodedToken,
+        };
+
+        localStorage.setItem("userData", JSON.stringify(userData));
 
         // Fetch permissions by roleId
         try {
-          const roleId = data?.roleId;
+          const roleId = userData?.roleId || decodedToken?.role || decodedToken?.roleId;
           if (roleId) {
             const permissionRes = await getPermissionByRole(roleId);
             const permissions = permissionRes?.data?.data;

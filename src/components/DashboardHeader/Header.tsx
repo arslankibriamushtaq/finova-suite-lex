@@ -36,25 +36,27 @@ const DashboardHeader = () => {
 
   const logOut = async () => {
     try {
-      await toast.promise(
-        logOutApi(),
-        {
-          loading: "Logging Out...",
-          success: (res) => {
-            dispatch(setToken({ token: "" }));
-            localStorage.removeItem("token");
-            localStorage.removeItem("userData");
-            localStorage.removeItem("permissions");
-            navigate("/login");
-            return res?.data?.message || "Logged out successfully";
-          },
-          error: (err) => {
-            return err?.response?.data?.message || err?.message || "Logout failed!";
-          },
-        }
-      );
+      // Try to call logout API, but don't fail if it doesn't work
+      await logOutApi().catch((err) => {
+        console.warn("Logout API failed, but proceeding with local logout:", err);
+      });
+      
+      // Always clear local data regardless of API success
+      dispatch(setToken({ token: "" }));
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("permissions");
+      navigate("/login");
+      toast.success("Logged out successfully");
     } catch (error: any) {
       console.error("Error during log out", error);
+      // Even if there's an error, clear local data and redirect
+      dispatch(setToken({ token: "" }));
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+      localStorage.removeItem("permissions");
+      navigate("/login");
+      toast.error("Logged out (with errors)");
     }
   };
   function splitCamelCase(str: string) {
@@ -157,9 +159,10 @@ const DashboardHeader = () => {
                           color: "#090909",
                         }}
                       >
-                        {user?.user?.name}
+                        {user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName}
                       </div>
-                      <div
+                      {/* Removed email display as requested */}
+                      {/* <div
                         className="mt-1"
                         style={{
                           fontSize: "14px",
@@ -167,8 +170,8 @@ const DashboardHeader = () => {
                           color: "#999797",
                         }}
                       >
-                        {user?.user?.email}
-                      </div>
+                        {user?.email || user?.user?.email}
+                      </div> */}
                     </div>
 
                     <RiArrowDropDownFill />
@@ -187,15 +190,15 @@ const DashboardHeader = () => {
                   </Button>
 
                   {/* Profile Picture */}
-                  <div className="profile-picture">
-                    <img src={Images.userIcon} alt="Super Admin" />
+                  <div className="profile-picture d-flex justify-content-center">
+                    <img src={Images.userIcon} alt={user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName || "User"} />
                     {/* <span className="edit-icon">✎</span> */}
                   </div>
 
                   {/* User Name */}
                   <h4 className="profile-name">
                     {" "}
-                    Welcome , {user?.user?.name}
+                    Welcome , {user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName}
                   </h4>
 
                   {/* Profile Actions */}
