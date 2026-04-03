@@ -334,3 +334,23 @@ export function deleteContractTemplate(id: string) {
 export function getProductsList() {
   return axiosProductManagement.get(`/api/v1/products`);
 }
+
+// ============================================================
+// Approval Condition Fields CRUD
+// ============================================================
+
+export function getApprovalConditionFields() {
+  return axiosProductManagement.get(`/api/v1/approval-condition-fields`);
+}
+
+export function createApprovalConditionField(body: any) {
+  return axiosProductManagement.post(`/api/v1/approval-condition-fields`, body);
+}
+
+export function updateApprovalConditionField(fieldId: string, body: any) {
+  return axiosProductManagement.put(`/api/v1/approval-condition-fields/${fieldId}`, body);
+}
+
+export function deleteApprovalConditionField(fieldId: string) {
+  return axiosProductManagement.delete(`/api/v1/approval-condition-fields/${fieldId}`);
+}
