@@ -30,6 +30,31 @@ const DasbhboardSidebar = () => {
     });
     if (matchIndex !== -1) {
       setOpenSubmenuIndex(matchIndex);
+      
+      // Auto-open nested submenus based on active items
+      const parentItem = sidebarItems[matchIndex];
+      if (parentItem && Array.isArray(parentItem.menu)) {
+        const nestedStates: Record<string, boolean> = {};
+        parentItem.menu.forEach((submenuItem: any, subIndex: any) => {
+          if (submenuItem) {
+            const hasNestedSubmenu =
+              (Array.isArray(submenuItem.submenu) && submenuItem.submenu.length > 0) ||
+              (Array.isArray(submenuItem.menu) && submenuItem.menu.length > 0);
+            
+            if (hasNestedSubmenu) {
+              const nestedItems = submenuItem.submenu || submenuItem.menu;
+              const isAnyChildActive = nestedItems.some((child: any) => child.active);
+              const nestedKey = `${matchIndex}-${subIndex}`;
+              
+              // Auto-open if the submenu itself is active or any child is active
+              if (submenuItem.active || isAnyChildActive) {
+                nestedStates[nestedKey] = true;
+              }
+            }
+          }
+        });
+        setOpenNestedSubmenus(nestedStates);
+      }
     }
   }, [pathname]);
 
@@ -1929,7 +1954,7 @@ const DasbhboardSidebar = () => {
               <SubMenu
                 key={subIndex}
                 label={submenuItem.label}
-                open={isNestedOpen || isAnyChildActive}
+                open={isNestedOpen}
                 className="nested-submenu"
                 onClick={(e) => {
                   // Prevent parent menu from closing when clicking nested submenu
