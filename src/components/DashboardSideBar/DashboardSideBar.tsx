@@ -62,19 +62,34 @@ const DasbhboardSidebar = () => {
     (state: RootState) => state.block.permissions
   );
 
-  // Helper to check if user has access based on permissionCode or permissionName
+  // Helper to check if user has access based on moduleCode, moduleName, subModule names, or permission names
   const hasAccess = (keys: string | string[]): boolean => {
     if (!permissionData || !Array.isArray(permissionData) || permissionData.length === 0) {
       return true; // No permissions loaded yet — show all
     }
     const keysToCheck = (Array.isArray(keys) ? keys : [keys]).map((k) => k.toLowerCase());
-console.log("against permissions:", permissionData);
-    // permissionData is array of modules: [{ moduleCode, moduleName, permissions: [...] }]
-    return permissionData.some((module: any) => {
-      const moduleCode = (module.moduleCode || "").toLowerCase();
-      const moduleName = (module.moduleName || "").toLowerCase();
-      return keysToCheck.some((key) => moduleCode === key || moduleName === key);
-    });
+    const matchModule = (mod: any): boolean => {
+      const code = (mod.moduleCode || "").toLowerCase();
+      const name = (mod.moduleName || "").toLowerCase();
+      if (keysToCheck.some((key) => code === key || name === key)) return true;
+      // Check individual permissions (e.g. "View Source Of Income" contains "source of income")
+      const perms = mod.permissionsList || mod.permissions || [];
+      if (Array.isArray(perms)) {
+        for (const p of perms) {
+          const permName = (p.name || p.permissionName || "").toLowerCase();
+          if (keysToCheck.some((key) => permName.includes(key))) return true;
+        }
+      }
+      // Check sub-modules recursively
+      const subs = mod.subModulesList || mod.sub_modules || [];
+      if (Array.isArray(subs)) {
+        for (const sub of subs) {
+          if (matchModule(sub)) return true;
+        }
+      }
+      return false;
+    };
+    return permissionData.some((module: any) => matchModule(module));
   };
   const sidebarItems = [
     {
@@ -235,7 +250,7 @@ console.log("against permissions:", permissionData);
     //     // },
     //   ].filter(Boolean),
     // },
-    hasAccess("WORKFLOW") && {
+    hasAccess("LOV") && {
       label: "LOV",
       Link: "LOV/RevenueSource",
           LinkLable: "LOS",
@@ -285,19 +300,19 @@ console.log("against permissions:", permissionData);
         //       LinkLable: "/LOS/LOV",
         //       active: pathname == "/LOS/LOV/CommodityTypes",
         //     },
-            {
+            hasAccess("Source Of Income") && {
                label: "Source Of Income",
                Link: "SourceOfIncome",
                LinkLable: "/LOS/LOV",
                active: pathname == "/LOS/LOV/SourceOfIncome",
             },
-            {
+            hasAccess("Source Of Wealth") && {
               label: "Source Of Wealth",
               Link: "SourceOfWealth",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/SourceOfWealth",
             },
-            {
+            hasAccess("Source Of Funds") && {
               label: "Source Of Funds",
               Link: "SourceOfFunds",
               LinkLable: "/LOS/LOV",
@@ -309,13 +324,13 @@ console.log("against permissions:", permissionData);
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/TemplateTypes",
             },
-            {
+            hasAccess("Net Worth Range") && {
               label: "Net Worth Ranges",
               Link: "NetWorthRanges",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/NetWorthRanges",
             },
-            {
+            hasAccess("Purpose Of Finance") && {
               label: "Purpose of Financing",
               Link: "PurposeofFinancing",
               LinkLable: "/LOS/LOV",
@@ -381,19 +396,19 @@ console.log("against permissions:", permissionData);
               LinkLable: "/LOS/LOV",
               active: pathname.includes("/ListOfValues"),
             } */
-            {
+            hasAccess("Credit Scoring Field") && {
               label:"Credit Scoring Definitions",
               Link:"CreditScoringDefinitions",
               LinkLable:"/LOS/LOV",
               active: pathname.includes("/CreditScoringDefinitions"),
             },
-            {
+            hasAccess("Approval Condition Field") && {
               label:"Approval Conditions",
               Link:"ApprovalConditions",
               LinkLable:"/LOS/LOV",
               active: pathname.includes("/ApprovalConditions"),
             }
-          ],
+          ].filter(Boolean),
         },
 
     hasAccess("RISK") && {
@@ -655,7 +670,7 @@ console.log("against permissions:", permissionData);
     //     }
     //   ].filter(Boolean),
     // },
-    hasAccess(["ROLE", "PERMISSION"]) && {
+    hasAccess(["ROLE", "PERMISSION", "EMPLOYEE"]) && {
       label: "Access Control Management",
       Link: "Setting/Employees",
           LinkLable: "LOS",
@@ -675,7 +690,7 @@ console.log("against permissions:", permissionData);
             //       LinkLable: "/LOS/DepartmentManagement",
             //       active: pathname.includes("/LOS/DepartmentManagement/DepartmentsPermissions"),
             // },
-            {
+            hasAccess("EMPLOYEE") && {
               label: "Employees",
               Link: "Employees",
               LinkLable: "/LOS/Setting",
