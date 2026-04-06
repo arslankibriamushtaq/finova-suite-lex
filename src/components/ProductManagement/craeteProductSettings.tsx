@@ -387,13 +387,13 @@ export default function CraeteProductSettings() {
   const tabOrder = [
     "terms",
     "fee-settings",
+    "admin-fees",
     // "product-rules",
     // "eligibility",
     // "income-slabs",
     "duration",
     "approval-workflows",
     // "credit-scoring",
-    "fee-slabs"
   ]
 
   const loadProductSettings = async (productId: string) => {
@@ -1448,22 +1448,7 @@ export default function CraeteProductSettings() {
           dbrCalculationMethod: (formData.dbr_calculation_method || "GROSS_INCOME").toUpperCase(),
           dbrExceptions: Array.isArray(formData.dbr_exceptions) ? formData.dbr_exceptions.join("\n") : (formData.dbr_exceptions || ""),
         }
-        await updateFeeSettings(productId, feePayload)
-
-        // Save admin fee slabs
-        const slabs = formData.admin_fee_slabs.map((slab: any, index: number) => ({
-          minAmount: Number(slab.min_amount) || 0,
-          maxAmount: Number(slab.max_amount) || 0,
-          profitPercentage: Number(slab.profit_percentage) || 0,
-          processingFee: Number(slab.processing_fee) || 0,
-          adminFee: Number(slab.admin_fee) || 0,
-          partnerScope: slab.partner_scope === "all" ? "ALL_PARTNERS" : (slab.partner_scope || "ALL_PARTNERS"),
-          status: slab.status === "active" ? "ACTIVE" : "INACTIVE",
-          sortOrder: index + 1,
-          minTenure: Number(slab.min_tenure) || 6,
-          maxTenure: Number(slab.max_tenure) || 24,
-        }))
-        response = await updateAdminFeeSlabs(productId, { slabs })
+        response = await updateFeeSettings(productId, feePayload)
       } else {
         // Clear previous errors for application-steps
         if (activeTab === "application-steps") {
@@ -1951,25 +1936,14 @@ export default function CraeteProductSettings() {
 
               <Tab eventKey="fee-settings" title="Fee Settings">
                 {activeTab === "fee-settings" && (
-                  <>
                   <FeeSettingsTab
                     formData={formData}
                     updateFormData={updateFormData}
                     errors={errors}
-                    onNext={handleFeeSettingsSave}
-                    // onPrevious={handleTabPrevious}
+                    onNext={handleTabNext}
+                    onPrevious={handleTabPrevious}
                     productTypeName={productTypeName}
                   />
-                  <AdminFeeSlabsTab
-                  formData={formData}
-                  onNext={handleTabNext}
-                  onPrevious={handleTabPrevious}
-                  addFeeSlab={addFeeSlab}
-                  removeFeeSlab={removeFeeSlab}
-                  updateFeeSlab={updateFeeSlab}
-                />
-                </>
-
                 )}
               </Tab>
 
@@ -2009,7 +1983,7 @@ export default function CraeteProductSettings() {
               </Tab>
               */}
 
-              {/* <Tab eventKey="admin-fees" title="Fee Slabs">
+              <Tab eventKey="admin-fees" title="Fee Slabs">
                 {activeTab === "admin-fees" && (
                   <AdminFeeSlabsTab
                     formData={formData}
@@ -2020,7 +1994,7 @@ export default function CraeteProductSettings() {
                     updateFeeSlab={updateFeeSlab}
                   />
                 )}
-              </Tab> */}
+              </Tab>
 
               <Tab eventKey="duration" title="Duration Settings">
                 {activeTab === "duration" && (

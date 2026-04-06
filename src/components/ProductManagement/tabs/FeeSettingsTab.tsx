@@ -9,7 +9,7 @@ interface FeeSettingsTabProps {
   updateFormData: (field: string, value: any) => void
   errors: Record<string, string>
   onNext: () => void
- 
+  onPrevious: () => void
   productTypeName?: string
 }
 
@@ -18,7 +18,7 @@ export default function FeeSettingsTab({
   updateFormData,
   errors,
   onNext,
-  // onPrevious,
+  onPrevious,
   productTypeName = "",
 }: FeeSettingsTabProps) {
   // Check if product type is individual or company
@@ -36,79 +36,6 @@ export default function FeeSettingsTab({
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
-          {/* Financing Amount Configuration */}
-          <div>
-            <h3 className="text-lg font-medium mb-4">Financing Amount Configuration</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <Label>Minimum Financing Amount *</Label>
-                <Input
-                  type="number"
-                  placeholder="1000"
-                  value={formData.min_financing_amount}
-                  onChange={(e) => updateFormData("min_financing_amount", Number(e.target.value))}
-                  className={errors.min_financing_amount ? "border-destructive" : ""}
-                />
-                {errors.min_financing_amount && (
-                  <p className="text-sm text-destructive">{errors.min_financing_amount}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label>Maximum Financing Amount *</Label>
-                <Input
-                  type="number"
-                  placeholder="1000000"
-                  value={formData.max_financing_amount}
-                  onChange={(e) => updateFormData("max_financing_amount", Number(e.target.value))}
-                  className={errors.max_financing_amount ? "border-destructive" : ""}
-                />
-                {errors.max_financing_amount && (
-                  <p className="text-sm text-destructive">{errors.max_financing_amount}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label>Suggested Financing Amount</Label>
-                <Input
-                  type="number"
-                  placeholder="1500"
-                  value={formData.suggested_financing_amount}
-                  onChange={(e) => updateFormData("suggested_financing_amount", Number(e.target.value))}
-                />
-                <p className="text-xs text-muted-foreground">Recommended amount shown to customers</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Tenure Configuration */}
-          <div className="border-t pt-6">
-            <h3 className="text-lg font-medium mb-4">Tenure Configuration</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <Label>Minimum Tenure (Months)</Label>
-                <Input
-                  type="number"
-                  placeholder="6"
-                  value={formData.min_tenure}
-                  onChange={(e) => updateFormData("min_tenure", Number(e.target.value))}
-                />
-                <p className="text-xs text-muted-foreground">Minimum repayment period in months</p>
-              </div>
-
-              <div className="space-y-2">
-                <Label>Maximum Tenure (Months)</Label>
-                <Input
-                  type="number"
-                  placeholder="12"
-                  value={formData.max_tenure}
-                  onChange={(e) => updateFormData("max_tenure", Number(e.target.value))}
-                />
-                <p className="text-xs text-muted-foreground">Maximum repayment period in months</p>
-              </div>
-            </div>
-          </div>
-
           {/* Age and Other Settings */}
           <div className="border-t pt-6">
             <h3 className="text-lg font-medium mb-4">Eligibility Settings</h3>
@@ -135,31 +62,6 @@ export default function FeeSettingsTab({
                 <p className="text-xs text-muted-foreground">{isCompany ? "Maximum company age requirement" : "Maximum customer age requirement"}</p>
               </div>
 
-              <div className="space-y-2">
-                <Label>VAT Percentage *</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  placeholder="8"
-                  value={formData.vat_percentage}
-                  onChange={(e) => updateFormData("vat_percentage", Number(e.target.value))}
-                  className={errors.vat_percentage ? "border-destructive" : ""}
-                />
-                {errors.vat_percentage && <p className="text-sm text-destructive">{errors.vat_percentage}</p>}
-              </div>
-
-              {!isIndividual && (
-                <div className="space-y-2">
-                  <Label>Minimum Annual Revenue</Label>
-                  <Input
-                    type="number"
-                    placeholder="50000"
-                    value={formData.revenue_eligibility_threshold}
-                    onChange={(e) => updateFormData("revenue_eligibility_threshold", Number(e.target.value))}
-                  />
-                  <p className="text-xs text-muted-foreground">Minimum annual revenue required</p>
-                </div>
-              )}
 
               <div className="space-y-2">
                 <Label>GDBR Percentage</Label>
@@ -171,31 +73,6 @@ export default function FeeSettingsTab({
                   onChange={(e) => updateFormData("gdbr_percentage", Number(e.target.value))}
                 />
                 <p className="text-xs text-muted-foreground">Gross Debt-to-Business Revenue ratio</p>
-              </div>
-             {!isIndividual && (
-              <div className="space-y-2">
-                <Label>Credit Line Percentage</Label>
-                <Input
-                  type="number"
-                  step="0.1"
-                  placeholder="10"
-                  value={formData.credit_line_percentage}
-                  onChange={(e) => updateFormData("credit_line_percentage", Number(e.target.value))}
-                />
-                <p className="text-xs text-muted-foreground">Credit line allocation percentage</p>
-              </div>
-              )}
-              <div className="space-y-2">
-                <Label>Minimum Income</Label>
-                <Input
-                  type="number"
-                  placeholder="Enter minimum income"
-                  value={formData.min_income}
-                  onChange={(e) => updateFormData("min_income", Number(e.target.value))}
-                  className={errors.min_income ? "border-destructive" : ""}
-                />
-                {errors.min_income && <p className="text-sm text-destructive">{errors.min_income}</p>}
-                <p className="text-xs text-muted-foreground">Minimum income required</p>
               </div>
             </div>
           </div>
@@ -261,21 +138,6 @@ export default function FeeSettingsTab({
               />
               <p className="text-xs text-muted-foreground">Enter each exception on a new line</p>
             </div> */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-         
-              <div className="space-y-2">
-                <Label>Stress Buffer</Label>
-                <Input
-                  type="number"
-                  placeholder="Enter Stress Buffer"
-                  value={formData.stress_buffer}
-                  onChange={(e) => updateFormData("stress_buffer", Number(e.target.value))}
-                  className={errors.stress_buffer ? "border-destructive" : ""}
-                />
-                {errors.stress_buffer && <p className="text-sm text-destructive">{errors.stress_buffer}</p>}
-                {/* <p className="text-xs text-muted-foreground">Maximum allowed debt-to-income ratio</p> */}
-              </div>
-            </div>
           </div>
           
         </CardContent>
@@ -283,11 +145,14 @@ export default function FeeSettingsTab({
       
 
       {/* Tab Navigation */}
-      <div className="flex justify-end gap-3 mb-3 pt-4">
-       
+      <div className="flex justify-between gap-3 pt-4">
+        <Button variant="outline" onClick={onPrevious} className="gap-2">
+          <ArrowLeft className="h-4 w-4" />
+          Previous
+        </Button>
         <Button onClick={onNext} className="gap-2">
-         Save
-         
+          Next: Fee Slabs
+          <ArrowRight className="h-4 w-4" />
         </Button>
       </div>
     </div>
