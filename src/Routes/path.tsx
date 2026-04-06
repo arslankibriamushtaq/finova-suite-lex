@@ -335,6 +335,7 @@ import AllocationAudit from "../pages/InvestorPages/admin/allocation/AllocationA
 import RiskProfiles from "../pages/InvestorPages/admin/allocation/RiskProfiles";
 import TicketDetails from "../pages/cmsPages/Tickets/TicketDetails";
 import LeadDetails from "../components/CustomerManagemnt/LeadDetails";
+import CustomerDetails from "../components/CustomerManagemnt/CustomerDetails";
 import MerchantList from "../components/Merchant Management/MerchantList";
 import CreateCategories from "../components/ProductManagement/createCategories";
 import CreateWizerd from "../components/ProductManagement/createWizerd";
@@ -864,7 +865,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/LOS/CustomerManagement/CustomerDetails/:id",
-            element: <LeadDetails/>,
+            element: <CustomerDetails/>,
           },
           {
             path: "/LOS/CustomerManagement/HighRiskUsers/:id",

@@ -108,6 +108,9 @@ export function getHighRiskUsers(page: number = 1, per_page: number = 20, search
 export function getUserDetails(id: number | string) {
   return axios.get(`/crm/user-details/${id}`);
 }
+export function getCustomer360(customerId: number | string) {
+  return axios.get(`/customer-service/api/v1/customers/${customerId}/360`);
+}
 
 export function getOpportunityDetails(id: number | string) {
   return axios.get(`/crm/opportunity-details/${id}`);
