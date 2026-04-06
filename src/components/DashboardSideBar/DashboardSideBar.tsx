@@ -68,7 +68,7 @@ const DasbhboardSidebar = () => {
       return true; // No permissions loaded yet — show all
     }
     const keysToCheck = (Array.isArray(keys) ? keys : [keys]).map((k) => k.toLowerCase());
-
+console.log("against permissions:", permissionData);
     // permissionData is array of modules: [{ moduleCode, moduleName, permissions: [...] }]
     return permissionData.some((module: any) => {
       const moduleCode = (module.moduleCode || "").toLowerCase();
@@ -84,7 +84,7 @@ const DasbhboardSidebar = () => {
       imgActive: Images.ApiManagementIconDark,
       active: pathname.split("/").includes("/LOS"),
       menu: [
-      hasAccess("ADMIN") && {
+      hasAccess("Dashboard") && {
          label: "Dashboard",
          LinkLable: "LOS",
          Link: "Dashboard",
@@ -396,7 +396,7 @@ const DasbhboardSidebar = () => {
           ],
         },
 
-    {
+    hasAccess("RISK") && {
       label: "Risk Management",
       Link: "RiskManagement/BlacklistNid",
       LinkLable: "LOS",
