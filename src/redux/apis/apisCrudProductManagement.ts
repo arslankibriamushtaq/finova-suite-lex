@@ -287,11 +287,11 @@ export function getTemplateTypeById(id: string) {
   return axiosProductManagement.get(`/api/v1/template-types/${id}`);
 }
 
-export function createTemplateType(body: { name: string; category: string }) {
+export function createTemplateType(body: { nameEn: string; category: string }) {
   return axiosProductManagement.post(`/api/v1/template-types`, body);
 }
 
-export function updateTemplateType(id: string, body: { name: string; category: string; active?: boolean }) {
+export function updateTemplateType(id: string, body: { nameEn: string; category: string; isActive?: boolean }) {
   return axiosProductManagement.put(`/api/v1/template-types/${id}`, body);
 }
 
