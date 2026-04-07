@@ -107,12 +107,12 @@ const NetWorthRanges = () => {
       setIsSaving(true);
       const body = {
         code: formData.code.trim(),
-        name_en: formData.name_en.trim(),
-        name_ar: formData.name_ar.trim(),
-        description_en: formData.description_en.trim(),
-        description_ar: formData.description_ar.trim(),
-        is_active: formData.is_active,
-        display_order: Number(formData.display_order) || 0,
+        nameEn: formData.name_en.trim(),
+        nameAr: formData.name_ar.trim(),
+        descriptionEn: formData.description_en.trim(),
+        descriptionAr: formData.description_ar.trim(),
+        isActive: formData.is_active,
+        displayOrder: Number(formData.display_order) || 0,
       };
 
       if (modalMode === "edit" && currentItemId) {
@@ -138,8 +138,8 @@ const NetWorthRanges = () => {
       setIsDeleting(true);
       await deleteNetWorthRange(deleteTarget.id);
       toast.success("Deleted successfully");
+      setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
-      fetchData();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to delete");
     } finally {
@@ -288,6 +288,7 @@ const NetWorthRanges = () => {
                   placeholder="e.g. NW_RANGE_1"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  disabled={modalMode === "edit"}
                 />
               </div>
               <div className="space-y-2">
