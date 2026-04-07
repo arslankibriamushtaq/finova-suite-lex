@@ -197,8 +197,14 @@ const CreditScoringDefinitions = () => {
       );
       if (response?.data?.success || response?.status === 200) {
         toast.success(response?.data?.message || "Field definition updated successfully");
+        setDefinitions((prev: any[]) =>
+          prev.map((item) =>
+            item.id === selectedDefinition.id
+              ? { ...item, ...editFormData }
+              : item
+          )
+        );
         closeEditModal();
-        fetchDefinitions();
       } else {
         toast.error(response?.data?.message || "Failed to update field definition");
       }
@@ -232,10 +238,10 @@ const CreditScoringDefinitions = () => {
     try {
       setIsDeletingItem(true);
       const response = await deleteCreditScoringFieldDefinition(selectedForDelete.id);
-      if (response?.data?.success || response?.status === 200) {
+      if (response?.data?.success || response?.status === 200 || response?.status === 204) {
         toast.success(response?.data?.message || "Field definition deleted successfully");
+        setDefinitions((prev: any[]) => prev.filter((item) => item.id !== selectedForDelete.id));
         closeDeleteModal();
-        fetchDefinitions();
       } else {
         toast.error(response?.data?.message || "Failed to delete field definition");
       }
@@ -476,6 +482,7 @@ const CreditScoringDefinitions = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, fieldKey: e.target.value })}
                   placeholder="e.g., INCOME_SCORE"
                   className="mt-1"
+                  disabled
                 />
               </div>
               <div>

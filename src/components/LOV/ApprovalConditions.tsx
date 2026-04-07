@@ -159,9 +159,15 @@ const ApprovalConditions = () => {
 
       await updateApprovalConditionField(selectedCondition.id, payload);
       toast.success("Approval condition field updated successfully");
+      setConditions((prev) =>
+        prev.map((item) =>
+          item.id === selectedCondition.id
+            ? { ...item, ...payload, fieldKey: item.fieldKey }
+            : item
+        )
+      );
       setIsEditModalOpen(false);
       setSelectedCondition(null);
-      fetchConditions();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to update approval condition field");
     } finally {
@@ -180,9 +186,9 @@ const ApprovalConditions = () => {
     try {
       await deleteApprovalConditionField(selectedForDelete.id);
       toast.success("Approval condition field deleted successfully");
+      setConditions((prev) => prev.filter((item) => item.id !== selectedForDelete.id));
       setIsDeleteModalOpen(false);
       setSelectedForDelete(null);
-      fetchConditions();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to delete approval condition field");
     } finally {
