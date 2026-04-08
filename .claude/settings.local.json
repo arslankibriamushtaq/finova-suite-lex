@@ -12,7 +12,9 @@
       "Bash(grep -v \"^.*//.*#\")",
       "Bash(npm run build)",
       "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductCategory')",
-      "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductSubCategory')"
+      "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductSubCategory')",
+      "Bash(xargs grep:*)",
+      "Bash(grep -i \"\\\\\\\\.tsx\")"
     ]
   }
 }

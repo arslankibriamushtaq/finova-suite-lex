@@ -72,12 +72,23 @@ const DasbhboardSidebar = () => {
       const code = (mod.moduleCode || "").toLowerCase();
       const name = (mod.moduleName || "").toLowerCase();
       if (keysToCheck.some((key) => code === key || name === key)) return true;
-      // Check individual permissions (e.g. "View Source Of Income" contains "source of income")
+      // Check individual permissions — match only within the SAME module
+      // Use word-boundary matching so "Product Category" matches "View Product Categories"
+      // but NOT "View Product Credit Scoring Fields"
       const perms = mod.permissionsList || mod.permissions || [];
       if (Array.isArray(perms)) {
         for (const p of perms) {
           const permName = (p.name || p.permissionName || "").toLowerCase();
-          if (keysToCheck.some((key) => permName.includes(key))) return true;
+          if (keysToCheck.some((key) => {
+            // Skip single-word module codes (e.g. "product", "lov", "risk") for permission name matching
+            // These should only match moduleCode/moduleName above, not permission names across modules
+            if (!key.includes(" ")) return false;
+            // Word-boundary check: key must appear as complete words in the permission name
+            // e.g. "product category" matches "view product categories" or "create product category"
+            // but "product" alone won't match "view product credit scoring fields"
+            const regex = new RegExp(`(^|\\s)${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
+            return regex.test(permName);
+          })) return true;
         }
       }
       // Check sub-modules recursively
@@ -213,31 +224,31 @@ const DasbhboardSidebar = () => {
       imgActive: Images.productManagementIconActive,
       active: pathname.includes("/ProductManagement"),
       submenu: [
-        {label: "Product Management",
+        hasAccess("View Products") && {label: "Product Management",
           Link: "ProductManagement",
         LinkLable: "/LOS",
           img: Images.productManagementIcon,
           imgActive: Images.productManagementIconActive,
-          active: pathname.toLowerCase().includes("/productmanagement")},
-        {
+          active: pathname === "/LOS/ProductManagement"},
+        hasAccess("Contract Template") && {
           label: "Contract Template",
           Link: "ContractTemplate",
           LinkLable: "/LOS/NotificationTemplate",
           active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
         },
-        {
+        hasAccess("Product Category") && {
           label: "Product Category",
           Link: "ProductCategory",
-          LinkLable: "/LOS/Product",
-          active: pathname == "/LOS/Product/ProductCategory",
+          LinkLable: "/LOS/ProductManagement",
+          active: pathname == "/LOS/ProductManagement/ProductCategory",
         },
-        {
+        hasAccess("Product Sub Category") && {
           label: "Product Sub Category",
           Link: "ProductSubCategory",
-          LinkLable: "/LOS/Product",
-          active: pathname == "/LOS/Product/ProductSubCategory",
+          LinkLable: "/LOS/ProductManagement",
+          active: pathname == "/LOS/ProductManagement/ProductSubCategory",
         }
-      ]
+      ].filter(Boolean)
     },
     // hasAccess("department_management_module") &&
     // {
