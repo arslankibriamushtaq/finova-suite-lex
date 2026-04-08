@@ -244,26 +244,26 @@ const Leads = () => {
       sortable: true,
       // width: "150px",
     },
-    // {
-    //   name: "Actions",
-    //   cell: (row: any) => (
-    //     <Dropdown overlay={menu(row)} trigger={["click"]}>
-    //       <Button
-    //         className="gradient-btn"
-    //         type="primary"
-    //         style={{
-    //           backgroundColor: "var(--color-action)",
-    //           color: "var(--foreground)",
-    //           borderColor: "var(--primary-foreground)",
-    //           borderRadius: "8px",
-    //           padding: "10px 20px",
-    //         }}
-    //       >
-    //         Select <img src={arrowDown} alt="" />
-    //       </Button>
-    //     </Dropdown>
-    //   ),
-    // },
+    {
+      name: "Actions",
+      cell: (row: any) => (
+        <Dropdown overlay={menu(row)} trigger={["click"]}>
+          <Button
+            className="gradient-btn"
+            type="primary"
+            style={{
+              backgroundColor: "var(--color-action)",
+              color: "var(--foreground)",
+              borderColor: "var(--primary-foreground)",
+              borderRadius: "8px",
+              padding: "10px 20px",
+            }}
+          >
+            Select <img src={arrowDown} alt="" />
+          </Button>
+        </Dropdown>
+      ),
+    },
   ];
   const menu = (row: any) => (
     <Menu>
@@ -632,7 +632,7 @@ const Leads = () => {
         customerType: item?.customerType || "-",
         kycStatus: item?.kycStatus || "-",
         lifecycleStage: item?.lifecycleStage || "-",
-        riskGrade: item?.riskGrade || "-",
+        riskGrade: item?.riskGrade || item?.riskLevel || item?.risk_grade || item?.risk || "-",
         gender: item?.gender || "-",
         nationality: item?.nationality || "-",
         created_at: item?.createdAt,

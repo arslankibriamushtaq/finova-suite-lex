@@ -225,26 +225,26 @@ const AllCustomers = () => {
       ),
       width: "120px",
     },
-    // {
-    //   name: "Actions",
-    //   cell: (row: any) => (
-    //     <Dropdown overlay={menu(row)} trigger={["click"]}>
-    //       <Button
-    //         className="gradient-btn"
-    //         type="primary"
-    //         style={{
-    //           backgroundColor: "var(--color-action)",
-    //           color: "var(--foreground)",
-    //           borderColor: "white",
-    //           borderRadius: "8px",
-    //           padding: "10px 20px",
-    //         }}
-    //       >
-    //         Select <img src={arrowDown} alt="" />
-    //       </Button>
-    //     </Dropdown>
-    //   ),
-    // },
+    {
+      name: "Actions",
+      cell: (row: any) => (
+        <Dropdown overlay={menu(row)} trigger={["click"]}>
+          <Button
+            className="gradient-btn"
+            type="primary"
+            style={{
+              backgroundColor: "var(--color-action)",
+              color: "var(--foreground)",
+              borderColor: "white",
+              borderRadius: "8px",
+              padding: "10px 20px",
+            }}
+          >
+            Select <img src={arrowDown} alt="" />
+          </Button>
+        </Dropdown>
+      ),
+    },
   ];
   const menu = (row: any) => (
     <Menu>
@@ -622,8 +622,8 @@ const AllCustomers = () => {
         pep: item?.pepFlag ? "Yes" : "No",
         kycStatus: item?.kycStatus || "-",
         lifecycleStage: item?.lifecycleStage || "-",
-        risk: item?.riskGrade || "N/A",
-        risk_status: item?.riskGrade || "-",
+        risk: item?.riskGrade || item?.riskLevel || item?.risk_grade || item?.risk || "N/A",
+        risk_status: item?.riskGrade || item?.riskLevel || item?.risk_grade || item?.risk || "-",
         sanctionsFlag: item?.sanctionsFlag,
         customerType: item?.customerType || "-",
         residencyType: item?.residencyType || "-",

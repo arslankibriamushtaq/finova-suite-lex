@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Tab, Tabs, Row as BootstrapRow, Col as BootstrapCol } from "react-bootstrap";
 import { Row, Col, Card } from "antd";
-import StepForms from "./LeadTabs/StepFroms";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCustomer360 } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
@@ -46,7 +45,7 @@ const CustomerDetail = () => {
   const [selectTab, setSelectedTab] = useState<string>("Overview");
   const [overviewChildTab, setOverviewChildTab] = useState<string>("Customer Information");
   const [loading, setLoading] = useState(false);
-  const [userDetails, setUserDetails] = useState<any>(null);
+  const [data, setData] = useState<any>(null);
 
   useEffect(() => {
     if (id) {
@@ -58,8 +57,8 @@ const CustomerDetail = () => {
     try {
       setLoading(true);
       const response = await getCustomer360(id!);
-      if (response?.data?.success || response?.data?.data) {
-        setUserDetails(response.data.data || response.data);
+      if (response?.data?.data) {
+        setData(response.data.data);
       }
     } catch (error: any) {
       toast.error(
@@ -70,62 +69,193 @@ const CustomerDetail = () => {
     }
   };
 
-  // Parse nafath callback data
-  const nafathData = userDetails?.nafath_callback_data
-    ? typeof userDetails.nafath_callback_data === "string"
-      ? JSON.parse(userDetails.nafath_callback_data)
-      : userDetails.nafath_callback_data
-    : null;
-
-  // Parse KYC step data
-  const kycStepData = userDetails?.kyc?.step
-    ? typeof userDetails.kyc.step === "string"
-      ? JSON.parse(userDetails.kyc.step)
-      : userDetails.kyc.step
-    : null;
-
-  // Parse compliance answers
-  const parseQuestion = (questionString: string) => {
-    try {
-      return JSON.parse(questionString);
-    } catch {
-      return { en: questionString, ar: "" };
-    }
-  };
+  const customer = data?.customer;
+  const personalInfo = data?.personalInfo;
+  const addressInfo = data?.addressInfo;
+  const kycInfo = data?.kycInfo;
+  const kycSteps = data?.kycSteps || [];
+  const kycWeightageData = data?.kycWeightageData || [];
+  const riskInfo = data?.riskInfo;
+  const riskHistory = data?.riskHistory || [];
+  const complianceQuestionHistory = data?.complianceQuestionHistory || [];
+  const loanApplications = data?.loanApplications || [];
+  const bankAccounts = data?.bankAccounts || [];
 
   // Get risk color
   const getRiskColor = (risk: string) => {
-    switch (risk?.toLowerCase()) {
-      case "highrisk":
-      case "high":
+    switch (risk?.toUpperCase()) {
+      case "HIGH":
+      case "HIGHRISK":
         return "var(--color-error)";
-      case "medium":
+      case "MEDIUM":
         return "var(--color-warning)";
-      case "low":
+      case "LOW":
         return "var(--color-success)";
       default:
-        return "var(--color-error)";
+        return "var(--color-warning)";
     }
   };
 
-  // Dynamic mapping for summary columns
+  // Format date
+  const formatDate = (dateString: string) => {
+    if (!dateString) return "--";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    if (!dateString) return "--";
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+    } catch {
+      return dateString;
+    }
+  };
+
+  // Format amount
+  const formatAmount = (amount: number | string | null) => {
+    if (!amount) return "--";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "SAR",
+      minimumFractionDigits: 0,
+    }).format(Number(amount));
+  };
+
+  // Customer summary columns
   const leftColumn: Field[] = [
-    { label: "Customer Name", value: userDetails?.user?.name || "--" },
-    { label: "Phone", value: userDetails?.user?.phone || "--" },
-    { label: "ID", value: userDetails?.user?.nid || "--" },
-    { label: "Employment Sector Name", value: userDetails?.user?.employment_sector_name || "--" },
+    { label: "Customer Name", value: customer?.fullName || "--" },
+    { label: "Phone", value: customer?.mobileNumber || "--" },
+    { label: "ID", value: customer?.nationalId || "--" },
+    { label: "Customer Type", value: customer?.customerType || "--" },
   ];
 
   const rightColumn: Field[] = [
-    { label: "Customer Name", value: userDetails?.user?.name || "--" },
-    { label: "Email", value: userDetails?.user?.email || "--" },
-    { label: "Address", value: nafathData?.full_address_en || nafathData?.full_address || "--" },
+    { label: "Customer Name", value: customer?.fullName || "--" },
+    { label: "Email", value: customer?.email || "--" },
+    { label: "Nationality", value: customer?.nationality || "--" },
   ];
 
-  // ──────────── KYC Information Section ────────────
+  // ──────────── Onboarding Stepper ────────────
+  const renderStepper = () => {
+    if (!kycSteps || kycSteps.length === 0) return null;
+
+    const currentStep = kycSteps.findIndex((s: any) => s.status !== "completed");
+    const activeIndex = currentStep === -1 ? kycSteps.length - 1 : currentStep;
+
+    return (
+      <Card bordered={false} style={{ ...styles.card, padding: "24px" }}>
+        {/* Stepper */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
+          {kycSteps.map((step: any, index: number) => {
+            const isCompleted = step.status === "completed";
+            const isActive = index === activeIndex;
+            return (
+              <React.Fragment key={index}>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "center", flex: "0 0 auto" }}>
+                  <div
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: "50%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      backgroundColor: isCompleted || isActive ? "var(--theme-secondary)" : "#8C8C8C",
+                      color: "white",
+                      fontWeight: 600,
+                      fontSize: 13,
+                    }}
+                  >
+                    {index + 1}
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      marginTop: 6,
+                      color: isCompleted || isActive ? "var(--foreground)" : "#8C8C8C",
+                      fontWeight: isActive ? 600 : 400,
+                      textAlign: "center",
+                      maxWidth: 100,
+                    }}
+                  >
+                    {step.label}
+                  </span>
+                </div>
+                {index < kycSteps.length - 1 && (
+                  <div
+                    style={{
+                      flex: 1,
+                      height: 2,
+                      backgroundColor: isCompleted ? "var(--theme-secondary)" : "#E5E7EB",
+                      marginTop: -16,
+                    }}
+                  />
+                )}
+              </React.Fragment>
+            );
+          })}
+        </div>
+
+        {/* Current Step Details */}
+        <Card bordered style={{ borderRadius: 8, borderColor: "var(--border)" }}>
+          <h3 style={{ fontWeight: 600, fontSize: 15, marginBottom: 12, color: "var(--foreground)" }}>
+            {kycSteps[activeIndex]?.label}
+          </h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <span style={{ fontSize: 13, color: "var(--foreground)" }}>{kycSteps[activeIndex]?.label}</span>
+            <span
+              style={{
+                width: 20,
+                height: 20,
+                borderRadius: "50%",
+                backgroundColor: kycSteps[activeIndex]?.status === "completed" ? "#00B96B" : "#E5E7EB",
+                display: "inline-block",
+              }}
+            />
+          </div>
+        </Card>
+
+        {/* Next Step Button */}
+        {activeIndex < kycSteps.length - 1 && (
+          <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
+            <button
+              style={{
+                background: "var(--theme-secondary)",
+                color: "var(--foreground)",
+                border: "none",
+                borderRadius: 8,
+                padding: "8px 24px",
+                fontWeight: 600,
+                cursor: "pointer",
+              }}
+            >
+              Next Step
+            </button>
+          </div>
+        )}
+      </Card>
+    );
+  };
+
+  // ──────────── KYC Information ────────────
   const renderKycInformation = () => {
-    const kyc = userDetails?.kyc;
-    if (!kyc) return null;
+    if (!kycInfo) return null;
 
     return (
       <Card bordered={false} style={styles.card}>
@@ -136,58 +266,56 @@ const CustomerDetail = () => {
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
               <span style={styles.label}>KYC ID</span>
-              <span style={styles.value}>{kyc.kyc_id || kyc.id || "--"}</span>
+              <span style={styles.value}>{kycInfo.kycId || "--"}</span>
             </div>
             <div style={styles.fieldRow}>
               <span style={styles.label}>KYC Status</span>
-              <span style={styles.value}>{kyc.kyc_status || kyc.status || "--"}</span>
+              <span style={styles.value}>{kycInfo.kycStatus || "--"}</span>
             </div>
             <div style={styles.fieldRow}>
               <span style={styles.label}>Risk Level</span>
               <span style={styles.value}>
-                {kyc.risk ? (
+                {kycInfo.riskLevel ? (
                   <span
                     style={{
                       padding: "4px 12px",
                       borderRadius: "16px",
                       fontSize: "12px",
                       fontWeight: 500,
-                      backgroundColor: getRiskColor(kyc.risk),
+                      backgroundColor: getRiskColor(kycInfo.riskLevel),
                       color: "white",
                     }}
                   >
-                    {kyc.risk}
+                    {kycInfo.riskLevel}
                   </span>
                 ) : "--"}
               </span>
             </div>
             <div style={styles.fieldRow}>
               <span style={styles.label}>Compliance Status</span>
-              <span style={styles.value}>{kyc.compliance_status || "--"}</span>
+              <span style={styles.value}>{kycInfo.complianceStatus || "--"}</span>
             </div>
           </Col>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
               <span style={styles.label}>Risk Score</span>
-              <span style={styles.value}>{kyc.risk_score || "--"}</span>
+              <span style={styles.value}>{kycInfo.riskScore || "--"}</span>
             </div>
             <div style={styles.fieldRow}>
               <span style={styles.label}>Is PEP</span>
               <span style={styles.value}>
-                {kyc.is_pep !== undefined ? (
-                  <span
-                    style={{
-                      padding: "4px 12px",
-                      borderRadius: "16px",
-                      fontSize: "12px",
-                      fontWeight: 500,
-                      backgroundColor: kyc.is_pep ? "var(--color-success)" : "var(--color-success)",
-                      color: "white",
-                    }}
-                  >
-                    {kyc.is_pep ? "Yes" : "No"}
-                  </span>
-                ) : "--"}
+                <span
+                  style={{
+                    padding: "4px 12px",
+                    borderRadius: "16px",
+                    fontSize: "12px",
+                    fontWeight: 500,
+                    backgroundColor: kycInfo.isPep ? "var(--color-error)" : "var(--color-success)",
+                    color: "white",
+                  }}
+                >
+                  {kycInfo.isPep ? "Yes" : "No"}
+                </span>
               </span>
             </div>
           </Col>
@@ -196,21 +324,9 @@ const CustomerDetail = () => {
     );
   };
 
-  // ──────────── KYC Steps Section ────────────
+  // ──────────── KYC Steps ────────────
   const renderKycSteps = () => {
-    if (!kycStepData) return null;
-
-    const stepItems = [
-      { label: "Mobile Verification", key: "mobile_verification" },
-      { label: "Otp", key: "otp" },
-      { label: "Set Pin", key: "set_pin" },
-      { label: "Nafath", key: "nafath" },
-      { label: "Scan", key: "scan" },
-      { label: "Compliance Question", key: "compliance_question" },
-      { label: "Kyc Question", key: "kyc_question" },
-      { label: "Compliance Answers", key: "compliance_answers" },
-      { label: "Kyc Answers", key: "kyc_answers" },
-    ];
+    if (!kycSteps || kycSteps.length === 0) return null;
 
     return (
       <Card bordered={false} style={styles.card}>
@@ -218,8 +334,8 @@ const CustomerDetail = () => {
           KYC Steps
         </h5>
         <Row gutter={[24, 16]}>
-          {stepItems.map((step, index) => {
-            const isCompleted = kycStepData[step.key] === true;
+          {kycSteps.map((step: any, index: number) => {
+            const isCompleted = step.status === "completed";
             return (
               <Col xs={24} md={12} key={index}>
                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0" }}>
@@ -247,35 +363,16 @@ const CustomerDetail = () => {
 
   // ──────────── KYC Data with Weightage ────────────
   const renderKycWeightage = () => {
-    const kycData = userDetails?.kyc_data || userDetails?.kyc?.kyc_data || [];
-    if (!kycData || kycData.length === 0) return null;
-
-    const formatDate = (dateString: string) => {
-      if (!dateString) return "--";
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleString("en-US", {
-          year: "numeric",
-          month: "numeric",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-          second: "2-digit",
-          hour12: true,
-        });
-      } catch {
-        return dateString;
-      }
-    };
+    if (!kycWeightageData || kycWeightageData.length === 0) return null;
 
     const weightageHeader = [
       { name: "Category", selector: (row: any) => row.category || "--" },
-      { name: "LOV Type", selector: (row: any) => row.lov_type || "--" },
-      { name: "Question ID", selector: (row: any) => row.question_id || "--" },
-      { name: "Factor Weight", selector: (row: any) => row.factor_weight || "--" },
-      { name: "Category Weight", selector: (row: any) => row.category_weight || "--" },
-      { name: "Calculated Score", selector: (row: any) => row.calculated_score || "--" },
-      { name: "Calculated At", selector: (row: any) => formatDate(row.calculated_at) },
+      { name: "LOV Type", selector: (row: any) => row.lovType || row.lov_type || "--" },
+      { name: "Question ID", selector: (row: any) => row.questionId || row.question_id || "--" },
+      { name: "Factor Weight", selector: (row: any) => row.factorWeight || row.factor_weight || "--" },
+      { name: "Category Weight", selector: (row: any) => row.categoryWeight || row.category_weight || "--" },
+      { name: "Calculated Score", selector: (row: any) => row.calculatedScore || row.calculated_score || "--" },
+      { name: "Calculated At", selector: (row: any) => formatDateTime(row.calculatedAt || row.calculated_at) },
     ];
 
     return (
@@ -283,14 +380,14 @@ const CustomerDetail = () => {
         <h5 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "18px", color: "var(--foreground)" }}>
           KYC Data with Weightage
         </h5>
-        <TableView header={weightageHeader} data={kycData} paginationShow={false} isLoading={false} />
+        <TableView header={weightageHeader} data={kycWeightageData} paginationShow={false} isLoading={false} />
       </Card>
     );
   };
 
   // ──────────── Customer Information Tab ────────────
   const renderCustomerInformation = () => {
-    if (!nafathData) {
+    if (!personalInfo) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No data available
@@ -299,83 +396,63 @@ const CustomerDetail = () => {
     }
 
     const renderFieldRows = (
-      fields: Array<{ enLabel: string; arLabel: string; enKey?: string; arKey?: string; key?: string }>,
-      dataSource: any
+      fields: Array<{ enLabel: string; arLabel: string; value: string; arValue?: string }>
     ) => {
-      const getValue = (key?: string, altKey?: string) => {
-        if (key && dataSource?.[key] !== undefined && dataSource?.[key] !== null) {
-          const value = dataSource[key];
-          if (typeof value === "object" && value !== null) return JSON.stringify(value);
-          return String(value);
-        }
-        if (altKey && dataSource?.[altKey] !== undefined && dataSource?.[altKey] !== null) {
-          const value = dataSource[altKey];
-          if (typeof value === "object" && value !== null) return JSON.stringify(value);
-          return String(value);
-        }
-        return "-";
-      };
-
-      return fields.map((field, index, array) => {
-        const enValue = field.enKey ? getValue(field.enKey) : getValue(field.key);
-        const arValue = field.arKey ? getValue(field.arKey) : getValue(field.key);
-        return (
-          <div
-            key={index}
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              padding: "12px 0",
-              borderBottom: index < array.length - 1 ? "1px solid var(--border)" : "none",
-            }}
-          >
-            <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>{field.enLabel}</div>
-            <div style={{ flex: "0 0 30%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}>{enValue}</div>
-            <div style={{ flex: "0 0 30%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>{arValue}</div>
-            <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>{field.arLabel}</div>
-          </div>
-        );
-      });
+      return fields.map((field, index, array) => (
+        <div
+          key={index}
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "12px 0",
+            borderBottom: index < array.length - 1 ? "1px solid var(--border)" : "none",
+          }}
+        >
+          <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>{field.enLabel}</div>
+          <div style={{ flex: "0 0 30%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}>{field.value || "-"}</div>
+          <div style={{ flex: "0 0 30%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>{field.arValue || field.value || "-"}</div>
+          <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>{field.arLabel}</div>
+        </div>
+      ));
     };
 
     const personalFields = [
-      { enLabel: "NID", arLabel: "الهوية الوطنية", key: "nid" },
-      { enLabel: "First Name", arLabel: "الاسم الأول", key: "first_name" },
-      { enLabel: "Second Name", arLabel: "الاسم الثاني", key: "second_name" },
-      { enLabel: "Third Name", arLabel: "الاسم الثالث", key: "third_name" },
-      { enLabel: "Last Name", arLabel: "اسم العائلة", key: "last_name" },
-      { enLabel: "Full Name (English)", arLabel: "الاسم الكامل (إنجليزي)", enKey: "full_name_english", arKey: "full_name_arabic" },
-      { enLabel: "Full Name (Arabic)", arLabel: "الاسم الكامل (عربي)", enKey: "full_name_arabic", arKey: "full_name_english" },
-      { enLabel: "Date of Birth (Gregorian)", arLabel: "تاريخ الميلاد (ميلادي)", key: "date_of_birth_gregorian" },
-      { enLabel: "Date of Birth (Hijri)", arLabel: "تاريخ الميلاد (هجري)", key: "date_of_birth_hijri" },
-      { enLabel: "Gender", arLabel: "جنس", key: "gender" },
-      { enLabel: "Nationality", arLabel: "جنسية", key: "nationality" },
-      { enLabel: "Nationality Code", arLabel: "رمز الجنسية", key: "nationality_code" },
-      { enLabel: "Iqama Number", arLabel: "رقم الإقامة", key: "iqama_number" },
-      { enLabel: "Iqama Issue Date", arLabel: "تاريخ إصدار الإقامة", key: "iqama_issue_date" },
-      { enLabel: "Iqama Expiry Date", arLabel: "تاريخ انتهاء الإقامة", key: "iqama_expiry_date" },
-      { enLabel: "Iqama Issue Place", arLabel: "مكان إصدار الإقامة", key: "iqama_issue_place" },
-      { enLabel: "Status", arLabel: "الحالة", key: "status" },
-      { enLabel: "Verification Date", arLabel: "تاريخ التحقق", key: "verification_date" },
-      { enLabel: "Transaction ID", arLabel: "معرف المعاملة", key: "trans_id" },
-      { enLabel: "Request ID", arLabel: "معرف الطلب", key: "request_id" },
+      { enLabel: "NID", arLabel: "الهوية الوطنية", value: personalInfo.nationalId, arValue: personalInfo.nationalId },
+      { enLabel: "First Name", arLabel: "الاسم الأول", value: personalInfo.firstName, arValue: personalInfo.firstNameAr },
+      { enLabel: "Second Name", arLabel: "الاسم الثاني", value: personalInfo.secondName, arValue: personalInfo.secondNameAr },
+      { enLabel: "Third Name", arLabel: "الاسم الثالث", value: personalInfo.thirdName, arValue: personalInfo.thirdNameAr },
+      { enLabel: "Last Name", arLabel: "اسم العائلة", value: personalInfo.lastName, arValue: personalInfo.lastNameAr },
+      { enLabel: "Full Name (English)", arLabel: "الاسم الكامل (إنجليزي)", value: personalInfo.fullNameEn, arValue: personalInfo.fullNameAr },
+      { enLabel: "Full Name (Arabic)", arLabel: "الاسم الكامل (عربي)", value: personalInfo.fullNameAr, arValue: personalInfo.fullNameEn },
+      { enLabel: "Date of Birth (Gregorian)", arLabel: "تاريخ الميلاد (ميلادي)", value: personalInfo.dateOfBirthGregorian },
+      { enLabel: "Date of Birth (Hijri)", arLabel: "تاريخ الميلاد (هجري)", value: personalInfo.dateOfBirthHijri },
+      { enLabel: "Gender", arLabel: "جنس", value: personalInfo.gender },
+      { enLabel: "Nationality", arLabel: "جنسية", value: personalInfo.nationality },
+      { enLabel: "Nationality Code", arLabel: "رمز الجنسية", value: personalInfo.nationalityCode },
+      { enLabel: "Iqama Number", arLabel: "رقم الإقامة", value: personalInfo.iqamaNumber },
+      { enLabel: "Iqama Issue Date", arLabel: "تاريخ إصدار الإقامة", value: personalInfo.iqamaIssueDate },
+      { enLabel: "Iqama Expiry Date", arLabel: "تاريخ انتهاء الإقامة", value: personalInfo.iqamaExpiryDate },
+      { enLabel: "Iqama Issue Place", arLabel: "مكان إصدار الإقامة", value: personalInfo.iqamaIssuePlace },
+      { enLabel: "Status", arLabel: "الحالة", value: personalInfo.status },
+      { enLabel: "Verification Date", arLabel: "تاريخ التحقق", value: personalInfo.verificationDate },
+      { enLabel: "Transaction ID", arLabel: "معرف المعاملة", value: personalInfo.transactionId },
+      { enLabel: "Request ID", arLabel: "معرف الطلب", value: personalInfo.requestId },
     ];
 
-    const nationalAddress = nafathData?.national_address || nafathData;
     const addressFields = [
-      { enLabel: "City", arLabel: "مدينة", enKey: "city", arKey: "cityL2" },
-      { enLabel: "City ID", arLabel: "معرف المدينة", key: "cityId" },
-      { enLabel: "Region Name", arLabel: "اسم المنطقة", enKey: "regionName", arKey: "regionNameL2" },
-      { enLabel: "Region ID", arLabel: "معرف المنطقة", key: "regionId" },
-      { enLabel: "District", arLabel: "الحي", enKey: "district", arKey: "districtL2" },
-      { enLabel: "Street Name", arLabel: "اسم الشارع", enKey: "streetName", arKey: "streetL2" },
-      { enLabel: "Building Number", arLabel: "رقم المبنى", key: "buildingNumber" },
-      { enLabel: "Additional Number", arLabel: "رقم إضافي", key: "additionalNumber" },
-      { enLabel: "Post Code", arLabel: "الرمز البريدي", key: "postCode" },
-      { enLabel: "Short Address", arLabel: "عنوان قصير", key: "shortAddress" },
-      { enLabel: "Location Coordinates", arLabel: "إحداثيات الموقع", key: "locationCoordinates" },
-      { enLabel: "Is Primary Address", arLabel: "عنوان رئيسي", key: "isPrimaryAddress" },
+      { enLabel: "City", arLabel: "مدينة", value: addressInfo?.city },
+      { enLabel: "City ID", arLabel: "معرف المدينة", value: addressInfo?.cityId },
+      { enLabel: "Region Name", arLabel: "اسم المنطقة", value: addressInfo?.regionName },
+      { enLabel: "Region ID", arLabel: "معرف المنطقة", value: addressInfo?.regionId },
+      { enLabel: "District", arLabel: "الحي", value: addressInfo?.district },
+      { enLabel: "Street Name", arLabel: "اسم الشارع", value: addressInfo?.streetName },
+      { enLabel: "Building Number", arLabel: "رقم المبنى", value: addressInfo?.buildingNumber },
+      { enLabel: "Additional Number", arLabel: "رقم إضافي", value: addressInfo?.additionalNumber },
+      { enLabel: "Post Code", arLabel: "الرمز البريدي", value: addressInfo?.postCode },
+      { enLabel: "Short Address", arLabel: "عنوان قصير", value: addressInfo?.shortAddress },
+      { enLabel: "Location Coordinates", arLabel: "إحداثيات الموقع", value: addressInfo?.locationCoordinates },
+      { enLabel: "Is Primary Address", arLabel: "عنوان رئيسي", value: addressInfo?.isPrimaryAddress?.toString() },
     ];
 
     return (
@@ -392,7 +469,7 @@ const CustomerDetail = () => {
             <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>Personal Information</h2>
             <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>معلومات شخصية</h2>
           </div>
-          {renderFieldRows(personalFields, nafathData)}
+          {renderFieldRows(personalFields)}
         </div>
 
         {/* Address Information */}
@@ -401,7 +478,7 @@ const CustomerDetail = () => {
             <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>Address Information</h2>
             <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", margin: 0 }}>معلومات العنوان</h2>
           </div>
-          {renderFieldRows(addressFields, nationalAddress)}
+          {renderFieldRows(addressFields)}
         </div>
       </div>
     );
@@ -409,15 +486,7 @@ const CustomerDetail = () => {
 
   // ──────────── Compliance Question History Tab ────────────
   const renderComplianceQuestionHistory = () => {
-    const complianceAnswerHistory = userDetails?.compliance_answer_history || [];
-    const complianceAnswers = userDetails?.compliance_answers || [];
-
-    const allComplianceData = [
-      ...complianceAnswers.map((item: any) => ({ ...item, source: "compliance_answers" })),
-      ...complianceAnswerHistory.map((item: any) => ({ ...item, source: "compliance_answer_history" })),
-    ];
-
-    if (allComplianceData.length === 0) {
+    if (complianceQuestionHistory.length === 0) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No compliance question history available
@@ -425,100 +494,128 @@ const CustomerDetail = () => {
       );
     }
 
-    // Group by date
-    const groupedByDate = allComplianceData.reduce((acc: any, item: any) => {
-      const date = item.created_at ? new Date(item.created_at).toLocaleDateString() : "Unknown";
-      if (!acc[date]) acc[date] = [];
-      acc[date].push(item);
-      return acc;
-    }, {});
-
-    const sortedDates = Object.keys(groupedByDate).sort((a, b) => {
-      if (a === "Unknown") return 1;
-      if (b === "Unknown") return -1;
-      return new Date(b).getTime() - new Date(a).getTime();
-    });
-
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
         <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
           Compliance Question History
         </h5>
-        {sortedDates.map((date, dateIndex) => (
-          <div
-            key={dateIndex}
-            style={{ marginBottom: "30px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
-          >
-            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
-              {date}
-            </h6>
-            <BootstrapRow>
-              <BootstrapCol md={6}>
-                {groupedByDate[date].map((item: any, index: number) => {
-                  const question = parseQuestion(item.question);
-                  return (
+        {complianceQuestionHistory.map((entry: any, entryIndex: number) => {
+          const entryDate = entry.date ? new Date(entry.date).toLocaleDateString() : "Unknown";
+          const answers = entry.answers || [];
+
+          return (
+            <div
+              key={entryIndex}
+              style={{ marginBottom: "30px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
+            >
+              <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
+                {entryDate}
+              </h6>
+              <BootstrapRow>
+                <BootstrapCol md={6}>
+                  {answers.map((item: any, index: number) => (
                     <div
-                      key={item.id || index}
+                      key={index}
                       style={{
                         marginBottom: "15px",
                         paddingBottom: "15px",
-                        borderBottom: index < groupedByDate[date].length - 1 ? "1px solid var(--border)" : "none",
+                        borderBottom: index < answers.length - 1 ? "1px solid var(--border)" : "none",
                       }}
                     >
-                      <p style={{ color: "var(--foreground)", fontSize: "14px", margin: 0, marginBottom: "5px", fontWeight: 500 }}>
-                        {question.en || item.question}
+                      <p style={{ color: "var(--foreground)", fontSize: "14px", margin: 0, marginBottom: "3px", fontWeight: 700 }}>
+                        {item.questionEn || "--"}
                       </p>
                       <p style={{ color: "var(--muted-foreground)", fontSize: "13px", margin: 0 }}>
-                        <span style={{ fontWeight: 500 }}>Answer:</span> {item.answer || "--"}
+                        Answer: {item.answer || "--"}
                       </p>
                       {item.category && (
-                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "5px 0 0 0" }}>
-                          <span style={{ fontWeight: 500 }}>Category:</span> {item.category}
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          Category: {item.category}
+                        </p>
+                      )}
+                      {item.factorWeightPct && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          Factor Weight: {item.factorWeightPct}%
+                        </p>
+                      )}
+                      {item.categoryWeight && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          Category Weight: {item.categoryWeight}
+                        </p>
+                      )}
+                      {item.scoreContribution && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          Score Contribution: {item.scoreContribution}
+                        </p>
+                      )}
+                      {item.calculationDetail && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "11px", margin: "3px 0 0 0", fontStyle: "italic" }}>
+                          {item.calculationDetail}
                         </p>
                       )}
                     </div>
-                  );
-                })}
-              </BootstrapCol>
-              <BootstrapCol md={6} style={{ direction: "rtl" }}>
-                {groupedByDate[date].map((item: any, index: number) => {
-                  const question = parseQuestion(item.question);
-                  return (
+                  ))}
+                </BootstrapCol>
+                <BootstrapCol md={6} style={{ direction: "rtl" }}>
+                  {answers.map((item: any, index: number) => (
                     <div
-                      key={item.id || index}
+                      key={index}
                       style={{
                         marginBottom: "15px",
                         paddingBottom: "15px",
-                        borderBottom: index < groupedByDate[date].length - 1 ? "1px solid var(--border)" : "none",
+                        borderBottom: index < answers.length - 1 ? "1px solid var(--border)" : "none",
                       }}
                     >
-                      <p style={{ color: "var(--foreground)", fontSize: "14px", margin: 0, marginBottom: "5px", fontWeight: 500 }}>
-                        {question.ar || question.en || item.question}
+                      <p style={{ color: "var(--foreground)", fontSize: "14px", margin: 0, marginBottom: "3px", fontWeight: 700 }}>
+                        {item.questionAr || item.questionEn || "--"}
                       </p>
                       <p style={{ color: "var(--muted-foreground)", fontSize: "13px", margin: 0 }}>
-                        <span style={{ fontWeight: 500 }}>الإجابة:</span> {item.answer || "--"}
+                        الإجابة: {item.answer || "--"}
                       </p>
                       {item.category && (
-                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "5px 0 0 0" }}>
-                          <span style={{ fontWeight: 500 }}>الفئة:</span> {item.category}
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          الفئة: {item.category}
+                        </p>
+                      )}
+                      {item.factorWeightPct && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          وزن العامل: %{item.factorWeightPct}
+                        </p>
+                      )}
+                      {item.categoryWeight && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          وزن الفئة: {item.categoryWeight}
+                        </p>
+                      )}
+                      {item.scoreContribution && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "12px", margin: "3px 0 0 0" }}>
+                          مساهمة النقاط: {item.scoreContribution}
+                        </p>
+                      )}
+                      {item.calculationDetail && (
+                        <p style={{ color: "var(--muted-foreground)", fontSize: "11px", margin: "3px 0 0 0", fontStyle: "italic" }}>
+                          {item.calculationDetail}
                         </p>
                       )}
                     </div>
-                  );
-                })}
-              </BootstrapCol>
-            </BootstrapRow>
-          </div>
-        ))}
+                  ))}
+                </BootstrapCol>
+              </BootstrapRow>
+            </div>
+          );
+        })}
       </div>
     );
   };
 
   // ──────────── Risk History Tab ────────────
   const renderRiskHistory = () => {
-    const kycHistory = userDetails?.kyc_history || [];
+    const riskCalculation = data?.riskCalculation;
+    const hasRiskInfo = riskInfo;
+    const hasRiskHistory = riskHistory.length > 0;
+    const hasRiskCalculation = riskCalculation;
 
-    if (kycHistory.length === 0) {
+    if (!hasRiskInfo && !hasRiskHistory && !hasRiskCalculation) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No risk history available
@@ -526,74 +623,40 @@ const CustomerDetail = () => {
       );
     }
 
-    const formatDate = (dateString: string) => {
-      if (!dateString) return "--";
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } catch {
-        return dateString;
-      }
-    };
-
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
         <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
           Risk History
         </h5>
-        {kycHistory.map((kyc: any, index: number) => (
-          <div
-            key={kyc.id || index}
-            style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
-          >
+
+        {/* Current Risk Info */}
+        {hasRiskInfo && (
+          <div style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}>
             <Row gutter={24}>
               <Col xs={24} md={12}>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>KYC ID</span>
-                  <span style={styles.value}>{kyc.kyc_id || "--"}</span>
+                  <span style={styles.value}>{riskInfo.kycId || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Risk Level</span>
                   <span style={styles.value}>
-                    <span
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "32px",
-                        fontSize: "12px",
-                        backgroundColor: getRiskColor(kyc.risk),
-                        color: "white",
-                        display: "inline-block",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {kyc.risk || "--"}
-                    </span>
+                    {riskInfo.riskLevel ? (
+                      <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: getRiskColor(riskInfo.riskLevel), color: "white", display: "inline-block" }}>
+                        {riskInfo.riskLevel}
+                      </span>
+                    ) : "--"}
                   </span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Risk Score</span>
-                  <span style={styles.value}>{kyc.risk_score || "--"}</span>
+                  <span style={styles.value}>{riskInfo.riskScore || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Is PEP</span>
                   <span style={styles.value}>
-                    <span
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "32px",
-                        fontSize: "12px",
-                        backgroundColor: kyc.is_pep ? "var(--color-error)" : "var(--color-success)",
-                        color: "white",
-                        display: "inline-block",
-                      }}
-                    >
-                      {kyc.is_pep ? "Yes" : "No"}
+                    <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: riskInfo.isPep ? "var(--color-error)" : "var(--color-success)", color: "white", display: "inline-block" }}>
+                      {riskInfo.isPep ? "Yes" : "No"}
                     </span>
                   </span>
                 </div>
@@ -602,32 +665,128 @@ const CustomerDetail = () => {
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Status</span>
                   <span style={styles.value}>
-                    <span
-                      style={{
-                        padding: "6px 12px",
-                        borderRadius: "32px",
-                        fontSize: "12px",
-                        backgroundColor: kyc.status === "active" ? "var(--color-success)" : "var(--color-warning)",
-                        color: "white",
-                        display: "inline-block",
-                        textTransform: "capitalize",
-                      }}
-                    >
-                      {kyc.status || "--"}
+                    <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: riskInfo.status?.toLowerCase() === "active" ? "var(--color-success)" : "var(--color-warning)", color: "white", display: "inline-block", textTransform: "capitalize" }}>
+                      {riskInfo.status || "--"}
                     </span>
                   </span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Phone</span>
-                  <span style={styles.value}>{kyc.phone || "--"}</span>
+                  <span style={styles.value}>{riskInfo.phone || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>NID</span>
-                  <span style={styles.value}>{kyc.nid || "--"}</span>
+                  <span style={styles.value}>{riskInfo.nationalId || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Created At</span>
-                  <span style={styles.value}>{formatDate(kyc.created_at)}</span>
+                  <span style={styles.value}>{formatDateTime(riskInfo.createdAt)}</span>
+                </div>
+              </Col>
+            </Row>
+          </div>
+        )}
+
+        {/* Risk Calculation Details */}
+        {hasRiskCalculation && (
+          <div style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}>
+            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
+              Risk Calculation
+            </h6>
+            <Row gutter={24}>
+              <Col xs={24} md={12}>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Total Score</span>
+                  <span style={styles.value}>{riskCalculation.totalScore || "--"}</span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Risk Level</span>
+                  <span style={styles.value}>
+                    {riskCalculation.riskLevel ? (
+                      <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: getRiskColor(riskCalculation.riskLevel), color: "white", display: "inline-block" }}>
+                        {riskCalculation.riskLevel}
+                      </span>
+                    ) : "--"}
+                  </span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>PEP Flag</span>
+                  <span style={styles.value}>
+                    <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: riskCalculation.pepFlag ? "var(--color-error)" : "var(--color-success)", color: "white", display: "inline-block" }}>
+                      {riskCalculation.pepFlag ? "Yes" : "No"}
+                    </span>
+                  </span>
+                </div>
+              </Col>
+              <Col xs={24} md={12}>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>EDD Flag</span>
+                  <span style={styles.value}>
+                    <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: riskCalculation.eddFlag ? "var(--color-warning)" : "var(--color-success)", color: "white", display: "inline-block" }}>
+                      {riskCalculation.eddFlag ? "Yes" : "No"}
+                    </span>
+                  </span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Dominant Override</span>
+                  <span style={styles.value}>{riskCalculation.dominantOverride ? "Yes" : "No"}</span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Session ID</span>
+                  <span style={styles.value} title={riskCalculation.sessionId}>{riskCalculation.sessionId ? riskCalculation.sessionId.substring(0, 16) + "..." : "--"}</span>
+                </div>
+              </Col>
+            </Row>
+            {riskCalculation.formula && (
+              <div style={{ marginTop: "12px", padding: "12px", background: "var(--background)", borderRadius: "6px", fontSize: "13px", color: "var(--muted-foreground)", wordBreak: "break-all" }}>
+                <span style={{ fontWeight: 600 }}>Formula:</span> {riskCalculation.formula}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Risk Assessment History */}
+        {hasRiskHistory && riskHistory.map((assessment: any, index: number) => (
+          <div
+            key={assessment.assessmentId || index}
+            style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
+          >
+            <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
+              Assessment #{index + 1}
+            </h6>
+            <Row gutter={24}>
+              <Col xs={24} md={12}>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Assessment ID</span>
+                  <span style={styles.value} title={assessment.assessmentId}>{assessment.assessmentId ? assessment.assessmentId.substring(0, 16) + "..." : "--"}</span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Risk Grade</span>
+                  <span style={styles.value}>
+                    {assessment.riskGrade ? (
+                      <span style={{ padding: "6px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: getRiskColor(assessment.riskGrade), color: "white", display: "inline-block" }}>
+                        {assessment.riskGrade}
+                      </span>
+                    ) : "--"}
+                  </span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Overall Risk Score</span>
+                  <span style={styles.value}>{assessment.overallRiskScore || "--"}</span>
+                </div>
+              </Col>
+              <Col xs={24} md={12}>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Assessment Type</span>
+                  <span style={styles.value}>{assessment.assessmentType || "--"}</span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Recommended Action</span>
+                  <span style={styles.value}>{assessment.recommendedAction || "--"}</span>
+                </div>
+                <div style={styles.fieldRow}>
+                  <span style={styles.label}>Completed At</span>
+                  <span style={styles.value}>{assessment.completedAt ? formatDateTime(assessment.completedAt) : "--"}</span>
                 </div>
               </Col>
             </Row>
@@ -639,7 +798,7 @@ const CustomerDetail = () => {
 
   // ──────────── Block History Tab ────────────
   const renderBlockHistory = () => {
-    const blockHistory = userDetails?.block_history || [];
+    const blockHistory = data?.blockHistory || [];
 
     if (blockHistory.length === 0) {
       return (
@@ -648,22 +807,6 @@ const CustomerDetail = () => {
         </div>
       );
     }
-
-    const formatDate = (dateString: string) => {
-      if (!dateString) return "--";
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "short",
-          day: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-      } catch {
-        return dateString;
-      }
-    };
 
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
@@ -679,11 +822,11 @@ const CustomerDetail = () => {
               <Col xs={24} md={12}>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Block Code</span>
-                  <span style={styles.value}>{block.block_code?.code || "--"}</span>
+                  <span style={styles.value}>{block.blockCode?.code || block.block_code?.code || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Description</span>
-                  <span style={styles.value}>{block.block_code?.description || "--"}</span>
+                  <span style={styles.value}>{block.blockCode?.description || block.block_code?.description || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Action</span>
@@ -707,11 +850,11 @@ const CustomerDetail = () => {
               <Col xs={24} md={12}>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Action By</span>
-                  <span style={styles.value}>{block.action_by?.name || "--"}</span>
+                  <span style={styles.value}>{block.actionBy?.name || block.action_by?.name || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Email</span>
-                  <span style={styles.value}>{block.action_by?.email || "--"}</span>
+                  <span style={styles.value}>{block.actionBy?.email || block.action_by?.email || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Reason</span>
@@ -719,7 +862,7 @@ const CustomerDetail = () => {
                 </div>
                 <div style={styles.fieldRow}>
                   <span style={styles.label}>Created At</span>
-                  <span style={styles.value}>{formatDate(block.created_at)}</span>
+                  <span style={styles.value}>{formatDateTime(block.createdAt || block.created_at)}</span>
                 </div>
               </Col>
             </Row>
@@ -731,41 +874,34 @@ const CustomerDetail = () => {
 
   // ──────────── Loan Application Tab ────────────
   const renderLoanApplicationContent = () => {
-    const loanApplications = userDetails?.loan_applications || [];
-
-    const formatDate = (dateString: string) => {
-      if (!dateString) return "--";
-      try {
-        const date = new Date(dateString);
-        return date.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-      } catch {
-        return dateString;
-      }
-    };
-
-    const formatAmount = (amount: number | string) => {
-      if (!amount) return "--";
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "SAR",
-        minimumFractionDigits: 0,
-      }).format(Number(amount));
-    };
-
     const loanApplicationHeader = [
-      { name: "Loan Application Number", selector: (row: any) => row.loan_application_number || "--", width: "200px" },
+      { name: "Loan Application Number", selector: (row: any) => row.applicationNumber || "--", width: "200px" },
       { name: "Amount", selector: (row: any) => formatAmount(row.amount) },
-      { name: "Duration", selector: (row: any) => (row.duration ? `${row.duration} months` : "--") },
+      { name: "Duration", selector: (row: any) => row.duration || "--" },
       { name: "Type", selector: (row: any) => row.type || "--" },
-      { name: "Status", selector: (row: any) => row.status?.name || "--" },
-      { name: "Product", selector: (row: any) => row.product?.name || "--" },
-      { name: "Created At", selector: (row: any) => formatDate(row.created_at) },
-      { name: "Updated At", selector: (row: any) => formatDate(row.updated_at) },
+      {
+        name: "Status",
+        cell: (row: any) => {
+          const status = row.status || "--";
+          const statusColor =
+            status === "APPROVED" ? "var(--color-success)" :
+            status === "REJECTED" ? "var(--color-error)" :
+            status === "DRAFT" ? "#8C8C8C" :
+            "var(--color-warning)";
+          return (
+            <span style={{ padding: "4px 10px", borderRadius: "16px", fontSize: "12px", backgroundColor: statusColor, color: "white" }}>
+              {status}
+            </span>
+          );
+        },
+      },
+      { name: "Product", selector: (row: any) => row.product || "--" },
+      { name: "Created At", selector: (row: any) => formatDate(row.createdAt) },
+      { name: "Updated At", selector: (row: any) => formatDate(row.updatedAt) },
       {
         name: "Action",
         cell: (row: any) => (
           <button
-            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium"
             style={{
               backgroundColor: "var(--color-action)",
               color: "var(--foreground)",
@@ -776,10 +912,11 @@ const CustomerDetail = () => {
               display: "flex",
               alignItems: "center",
               gap: "8px",
+              fontSize: "13px",
             }}
             onClick={() => {
-              if (row.loan_application_number) {
-                navigate(`/FinancingApplications/AllApplications/View/${row.loan_application_number}`);
+              if (row.applicationNumber) {
+                navigate(`/FinancingApplications/AllApplications/View/${row.applicationNumber}`);
               }
             }}
           >
@@ -790,22 +927,53 @@ const CustomerDetail = () => {
       },
     ];
 
-    const tableData = loanApplications.map((loan: any, index: number) => ({
-      id: loan.id || index,
-      loan_application_number: loan.loan_application_number,
-      amount: loan.amount,
-      duration: loan.duration,
-      type: loan.type,
-      status: loan.status,
-      product: loan.product,
-      created_at: loan.created_at,
-      updated_at: loan.updated_at,
-    }));
-
     return (
       <div style={{ background: "var(--background)" }}>
-        <TableView header={loanApplicationHeader} data={tableData} paginationShow={false} isLoading={false} />
+        <TableView header={loanApplicationHeader} data={loanApplications} paginationShow={false} isLoading={false} />
       </div>
+    );
+  };
+
+  // ──────────── Bank Accounts Section ────────────
+  const renderBankAccounts = () => {
+    if (!bankAccounts || bankAccounts.length === 0) return null;
+
+    const bankHeader = [
+      { name: "Bank Name", selector: (row: any) => row.bankName || "--" },
+      { name: "Bank Code", selector: (row: any) => row.bankCode || "--" },
+      { name: "IBAN", selector: (row: any) => row.iban || "--", width: "250px" },
+      { name: "Account Type", selector: (row: any) => row.accountType || "--" },
+      { name: "Primary", selector: (row: any) => row.isPrimary ? "Yes" : "No" },
+      {
+        name: "Status",
+        cell: (row: any) => (
+          <span style={{
+            padding: "4px 10px",
+            borderRadius: "16px",
+            fontSize: "12px",
+            backgroundColor: row.status === "VERIFIED" ? "var(--color-success)" : "var(--color-warning)",
+            color: "white",
+          }}>
+            {row.status || "--"}
+          </span>
+        ),
+      },
+      { name: "Created At", selector: (row: any) => formatDate(row.createdAt) },
+    ];
+
+    return (
+      <Card bordered={false} style={styles.card}>
+        <h5 style={{ fontWeight: 700, marginBottom: "20px", fontSize: "18px", color: "var(--foreground)" }}>
+          Bank Accounts
+        </h5>
+        {data?.walletIban && (
+          <div style={{ ...styles.fieldRow, marginBottom: "16px" }}>
+            <span style={styles.label}>Wallet IBAN</span>
+            <span style={styles.value}>{data.walletIban}</span>
+          </div>
+        )}
+        <TableView header={bankHeader} data={bankAccounts} paginationShow={false} isLoading={false} />
+      </Card>
     );
   };
 
@@ -823,7 +991,7 @@ const CustomerDetail = () => {
       </div>
 
       {/* Onboarding Stepper */}
-      <StepForms userDetails={userDetails} />
+      {renderStepper()}
 
       {/* Customer Summary Card */}
       <Card bordered={false} style={styles.card}>
@@ -855,6 +1023,9 @@ const CustomerDetail = () => {
 
       {/* KYC Data with Weightage */}
       {renderKycWeightage()}
+
+      {/* Bank Accounts */}
+      {renderBankAccounts()}
 
       {/* Main Tabs: Overview | Loan Application */}
       <Card bordered={false} style={styles.card}>
