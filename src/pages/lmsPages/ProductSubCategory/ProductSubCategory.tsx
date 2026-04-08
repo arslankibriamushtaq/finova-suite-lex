@@ -1,44 +1,55 @@
 import { useState, useEffect } from "react";
-import TableView from "../TableView/TableView";
+import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
-  getAllNetWorthRanges,
-  createNetWorthRange,
-  updateNetWorthRange,
-  deleteNetWorthRange,
-} from "../../redux/apis/apisEddReferenceData";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Checkbox } from "../ui/checkbox";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
+  getAllCategories,
+  getSubCategories,
+  createSubCategory,
+  updateSubCategory,
+  deleteSubCategory,
+} from "../../../redux/apis/apisCrudProductManagement";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
+import { Label } from "../../../components/ui/label";
+import { Checkbox } from "../../../components/ui/checkbox";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../../../components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../../components/ui/dropdown-menu";
 import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
 
-const NetWorthRanges = () => {
+const ProductSubCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
 
+  // Master categories
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategoryId, setSelectedCategoryId] = useState("");
+
   // Modal state
   const [showFormModal, setShowFormModal] = useState(false);
   const [modalMode, setModalMode] = useState<"add" | "edit">("add");
   const [currentItemId, setCurrentItemId] = useState<string | null>(null);
   const [formData, setFormData] = useState({
+    masterCategoryId: "",
     code: "",
-    name_en: "",
-    name_ar: "",
-    description_en: "",
-    description_ar: "",
-    is_active: true,
-    display_order: 0,
+    nameEn: "",
+    nameAr: "",
+    sortOrder: 0,
+    active: true,
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -47,17 +58,38 @@ const NetWorthRanges = () => {
   const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
-    fetchData();
+    fetchCategories();
   }, []);
 
+  useEffect(() => {
+    if (selectedCategoryId) {
+      fetchData();
+    }
+  }, [selectedCategoryId]);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await getAllCategories();
+      const list = response?.data?.data || response?.data || [];
+      const arr = Array.isArray(list) ? list : [];
+      setCategories(arr);
+      if (arr.length > 0) {
+        setSelectedCategoryId(arr[0].id);
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to fetch categories");
+    }
+  };
+
   const fetchData = async () => {
+    if (!selectedCategoryId) return;
     try {
       setIsLoading(true);
-      const response = await getAllNetWorthRanges();
+      const response = await getSubCategories(selectedCategoryId);
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch net worth ranges");
+      toast.error(error?.response?.data?.message || "Failed to fetch sub categories");
     } finally {
       setIsLoading(false);
     }
@@ -67,13 +99,12 @@ const NetWorthRanges = () => {
     setModalMode("add");
     setCurrentItemId(null);
     setFormData({
+      masterCategoryId: selectedCategoryId,
       code: "",
-      name_en: "",
-      name_ar: "",
-      description_en: "",
-      description_ar: "",
-      is_active: true,
-      display_order: 0,
+      nameEn: "",
+      nameAr: "",
+      sortOrder: 0,
+      active: true,
     });
     setShowFormModal(true);
   };
@@ -82,13 +113,12 @@ const NetWorthRanges = () => {
     setModalMode("edit");
     setCurrentItemId(row.id);
     setFormData({
+      masterCategoryId: row.masterCategoryId || selectedCategoryId,
       code: row.code || "",
-      name_en: row.nameEn || row.name_en || "",
-      name_ar: row.nameAr || row.name_ar || "",
-      description_en: row.descriptionEn || row.description_en || "",
-      description_ar: row.descriptionAr || row.description_ar || "",
-      is_active: row.isActive ?? row.is_active ?? true,
-      display_order: row.displayOrder ?? row.display_order ?? 0,
+      nameEn: row.nameEn || "",
+      nameAr: row.nameAr || "",
+      sortOrder: row.sortOrder ?? 0,
+      active: row.active ?? true,
     });
     setShowFormModal(true);
   };
@@ -98,35 +128,38 @@ const NetWorthRanges = () => {
       toast.error("Code is required");
       return;
     }
-    if (!formData.name_en.trim()) {
-      toast.error("English name is required");
+    if (!formData.nameEn.trim()) {
+      toast.error("Name (EN) is required");
+      return;
+    }
+    if (!formData.masterCategoryId) {
+      toast.error("Master Category is required");
       return;
     }
 
     try {
       setIsSaving(true);
-      const body = {
-        code: formData.code.trim(),
-        nameEn: formData.name_en.trim(),
-        nameAr: formData.name_ar.trim(),
-        descriptionEn: formData.description_en.trim(),
-        descriptionAr: formData.description_ar.trim(),
-        isActive: formData.is_active,
-        displayOrder: Number(formData.display_order) || 0,
+      const body: any = {
+        nameEn: formData.nameEn.trim(),
+        nameAr: formData.nameAr.trim(),
+        sortOrder: Number(formData.sortOrder) || 0,
       };
 
       if (modalMode === "edit" && currentItemId) {
-        await updateNetWorthRange(currentItemId, body);
-        toast.success("Updated successfully");
+        body.active = formData.active;
+        await updateSubCategory(currentItemId, body);
+        toast.success("Sub Category updated successfully");
       } else {
-        await createNetWorthRange(body);
-        toast.success("Created successfully");
+        body.masterCategoryId = formData.masterCategoryId;
+        body.code = formData.code.trim();
+        await createSubCategory(body);
+        toast.success("Sub Category created successfully");
       }
 
       setShowFormModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"} sub category`);
     } finally {
       setIsSaving(false);
     }
@@ -136,12 +169,12 @@ const NetWorthRanges = () => {
     if (!deleteTarget) return;
     try {
       setIsDeleting(true);
-      await deleteNetWorthRange(deleteTarget.id);
-      toast.success("Deleted successfully");
+      await deleteSubCategory(deleteTarget.id);
+      toast.success("Sub Category deleted successfully");
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
+      toast.error(error?.response?.data?.message || "Failed to delete sub category");
     } finally {
       setIsDeleting(false);
     }
@@ -152,8 +185,8 @@ const NetWorthRanges = () => {
     const term = searchTerm.toLowerCase();
     return (
       (item?.code || "").toLowerCase().includes(term) ||
-      (item?.nameEn || item?.name_en || "").toLowerCase().includes(term) ||
-      (item?.nameAr || item?.name_ar || "").toLowerCase().includes(term)
+      (item?.nameEn || "").toLowerCase().includes(term) ||
+      (item?.nameAr || "").toLowerCase().includes(term)
     );
   });
 
@@ -165,29 +198,24 @@ const NetWorthRanges = () => {
     },
     {
       name: "Name (EN)",
-      selector: (row: any) => row.nameEn || row.name_en || "-",
+      selector: (row: any) => row.nameEn || "-",
       sortable: true,
     },
     {
       name: "Name (AR)",
-      selector: (row: any) => row.nameAr || row.name_ar || "-",
-      sortable: true,
-    },
-    {
-      name: "Description (EN)",
-      selector: (row: any) => row.descriptionEn || row.description_en || "-",
+      selector: (row: any) => row.nameAr || "-",
       sortable: true,
     },
     {
       name: "Display Order",
-      selector: (row: any) => row.displayOrder ?? row.display_order ?? "-",
+      selector: (row: any) => row.sortOrder ?? "-",
       sortable: true,
       width: "130px",
     },
     {
       name: "Status",
       cell: (row: any) => {
-        const isActive = row.isActive ?? row.is_active;
+        const isActive = row.active;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
             {isActive ? "Active" : "Inactive"}
@@ -245,15 +273,35 @@ const NetWorthRanges = () => {
 
   return (
     <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Net Worth Ranges</h1>
+      <h1 className="text-xl font-bold pb-3">Product Sub Categories</h1>
 
       <div className="d-flex justify-content-between mb-3 gap-2">
-        <Input
-          placeholder="Search by code or name"
-          className="w-[280px]"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
+        <div className="d-flex gap-2">
+          <Select
+            value={selectedCategoryId}
+            onValueChange={(value) => {
+              setSelectedCategoryId(value);
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-[220px]">
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent>
+              {categories.map((cat: any) => (
+                <SelectItem key={cat.id} value={cat.id}>
+                  {cat.nameEn}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input
+            placeholder="Search by code or name"
+            className="w-[280px]"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
         <Button className="gap-2" onClick={handleAdd}>
           <Plus className="h-4 w-4" />
           Add New Record
@@ -278,14 +326,33 @@ const NetWorthRanges = () => {
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Record" : "Add New Record"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? "Edit Sub Category" : "Add New Sub Category"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Master Category *</Label>
+              <Select
+                value={formData.masterCategoryId}
+                onValueChange={(value) => setFormData({ ...formData, masterCategoryId: value })}
+                disabled={modalMode === "edit"}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select master category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories.map((cat: any) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.nameEn}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Code *</Label>
                 <Input
-                  placeholder="e.g. NW_RANGE_1"
+                  placeholder="e.g. AUTO_FINANCE"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   disabled={modalMode === "edit"}
@@ -296,47 +363,31 @@ const NetWorthRanges = () => {
                 <Input
                   type="number"
                   placeholder="0"
-                  value={formData.display_order}
-                  onChange={(e) => setFormData({ ...formData, display_order: Number(e.target.value) })}
+                  value={formData.sortOrder}
+                  onChange={(e) => setFormData({ ...formData, sortOrder: Number(e.target.value) })}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Name (EN) *</Label>
                 <Input
                   placeholder="English name"
-                  value={formData.name_en}
-                  onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
+                  value={formData.nameEn}
+                  onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
                 <Label>Name (AR)</Label>
                 <Input
                   placeholder="Arabic name"
-                  value={formData.name_ar}
-                  onChange={(e) => setFormData({ ...formData, name_ar: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Description (EN)</Label>
-                <Input
-                  placeholder="English description"
-                  value={formData.description_en}
-                  onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label>Description (AR)</Label>
-                <Input
-                  placeholder="Arabic description"
-                  value={formData.description_ar}
-                  onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
+                  value={formData.nameAr}
+                  onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
                 />
               </div>
             </div>
             <label className="flex items-center gap-2 cursor-pointer">
               <Checkbox
-                checked={formData.is_active}
-                onCheckedChange={(checked) => setFormData({ ...formData, is_active: !!checked })}
+                checked={formData.active}
+                onCheckedChange={(checked) => setFormData({ ...formData, active: !!checked })}
               />
               <span className="text-sm">Active</span>
             </label>
@@ -356,12 +407,12 @@ const NetWorthRanges = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Record</DialogTitle>
+            <DialogTitle>Delete Sub Category</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             Are you sure you want to delete{" "}
             <span className="font-medium text-foreground">
-              {deleteTarget?.nameEn || deleteTarget?.name_en || deleteTarget?.code}
+              {deleteTarget?.nameEn || deleteTarget?.code}
             </span>
             ? This action cannot be undone.
           </p>
@@ -379,4 +430,4 @@ const NetWorthRanges = () => {
   );
 };
 
-export default NetWorthRanges;
+export default ProductSubCategory;

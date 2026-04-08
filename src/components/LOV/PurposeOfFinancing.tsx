@@ -141,8 +141,8 @@ const PurposeOfFinancing = () => {
       setIsDeleting(true);
       await deletePurposeOfFinance(deleteTarget.id);
       toast.success("Deleted successfully");
+      setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
-      fetchData();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to delete");
     } finally {
@@ -291,6 +291,7 @@ const PurposeOfFinancing = () => {
                   placeholder="e.g. HOME_PURCHASE"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
+                  disabled={modalMode === "edit"}
                 />
               </div>
               <div className="space-y-2">

@@ -73,9 +73,9 @@ const TemplateTypes = () => {
     setModalMode("edit");
     setCurrentItemId(row.id);
     setFormData({
-      name: row.name || "",
+      name: row.nameEn || row.name || "",
       category: row.category || "contract_type",
-      active: row.active ?? true,
+      active: row.isActive ?? row.active ?? true,
     });
     setShowFormModal(true);
   };
@@ -90,20 +90,29 @@ const TemplateTypes = () => {
       setIsSaving(true);
       if (modalMode === "edit" && currentItemId) {
         await updateTemplateType(currentItemId, {
-          name: formData.name.trim(),
+          nameEn: formData.name.trim(),
           category: formData.category,
-          active: formData.active,
+          isActive: formData.active,
         });
+        setData((prev) =>
+          prev.map((item) =>
+            item.id === currentItemId
+              ? { ...item, nameEn: formData.name.trim(), name: formData.name.trim(), category: formData.category, isActive: formData.active, active: formData.active }
+              : item
+          )
+        );
         toast.success("Updated successfully");
       } else {
-        await createTemplateType({
-          name: formData.name.trim(),
+        const res = await createTemplateType({
+          nameEn: formData.name.trim(),
           category: formData.category,
         });
+        const newItem = res?.data?.data || res?.data;
+        if (newItem) setData((prev) => [...prev, newItem]);
+        else fetchData();
         toast.success("Created successfully");
       }
       setShowFormModal(false);
-      fetchData();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
     } finally {
@@ -117,8 +126,8 @@ const TemplateTypes = () => {
       setIsDeleting(true);
       await deleteTemplateType(deleteTarget.id);
       toast.success("Deleted successfully");
+      setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
-      fetchData();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to delete");
     } finally {
@@ -130,7 +139,7 @@ const TemplateTypes = () => {
     if (!searchTerm) return true;
     const term = searchTerm.toLowerCase();
     return (
-      (item?.name || "").toLowerCase().includes(term) ||
+      (item?.nameEn || item?.name || "").toLowerCase().includes(term) ||
       (item?.category || "").toLowerCase().includes(term)
     );
   });
@@ -138,7 +147,7 @@ const TemplateTypes = () => {
   const headers = [
     {
       name: "Name",
-      selector: (row: any) => row.name || "-",
+      selector: (row: any) => row.nameEn || row.name || "-",
       sortable: true,
     },
     {
@@ -149,7 +158,7 @@ const TemplateTypes = () => {
     {
       name: "Status",
       cell: (row: any) => {
-        const isActive = row.active ?? true;
+        const isActive = row.isActive ?? row.active ?? true;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
             {isActive ? "Active" : "Inactive"}
