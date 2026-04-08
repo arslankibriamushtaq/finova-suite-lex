@@ -345,13 +345,15 @@ const ProductCategory = () => {
                 />
               </div>
             </div>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox
-                checked={formData.active}
-                onCheckedChange={(checked) => setFormData({ ...formData, active: !!checked })}
-              />
-              <span className="text-sm">Active</span>
-            </label>
+            {modalMode === "edit" && (
+              <label className="flex items-center gap-2 cursor-pointer">
+                <Checkbox
+                  checked={formData.active}
+                  onCheckedChange={(checked) => setFormData({ ...formData, active: !!checked })}
+                />
+                <span className="text-sm">Active</span>
+              </label>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
