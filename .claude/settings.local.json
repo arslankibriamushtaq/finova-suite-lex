@@ -10,7 +10,9 @@
       "Bash(grep -v \"^[[:space:]]*//\")",
       "Bash(npx tsc --noEmit --pretty)",
       "Bash(grep -v \"^.*//.*#\")",
-      "Bash(npm run build)"
+      "Bash(npm run build)",
+      "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductCategory')",
+      "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductSubCategory')"
     ]
   }
 }

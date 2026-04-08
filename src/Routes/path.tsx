@@ -69,6 +69,8 @@ import Opportunity from "../components/Customer/Opportunity";
 import OnboardCustomers from "../components/Customer/OnboardCustomers";
 import ProductManagement from "../components/ProductManagement/productManagement";
 import AddProduct from "../components/ProductManagement/addProduct";
+import ProductCategory from "../pages/lmsPages/ProductCategory/ProductCategory";
+import ProductSubCategory from "../pages/lmsPages/ProductSubCategory/ProductSubCategory";
 import DepartmentsPermissions from "../components/DepartmentManagement/DepartmentsPermissions";
 import RevenueSource from "../components/LOV/RevenueSource";
 import MandatoryReasonRescheduling from "../components/LOV/MandatoryReasonRescheduling";
@@ -493,6 +495,8 @@ export const router = createBrowserRouter([
           { path: "/LOS/ProductManagement/Create/ProductSettings", element: <CraeteProductSettings /> },
           { path: "/LOS/ProductManagement/Create/RequiredDocuments", element: <CreateRequiredDocuments /> },
           { path: "/LOS/ProductManagement/Create/ProductAffiliation", element: <CreateProductAffiliation /> },
+          { path: "/LOS/Product/ProductCategory", element: <ProductCategory /> },
+          { path: "/LOS/Product/ProductSubCategory", element: <ProductSubCategory /> },
           { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },
           { path: "/LOS/Notification", element: <Notification /> },
 {

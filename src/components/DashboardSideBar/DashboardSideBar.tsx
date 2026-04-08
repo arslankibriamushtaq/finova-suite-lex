@@ -224,6 +224,18 @@ const DasbhboardSidebar = () => {
           Link: "ContractTemplate",
           LinkLable: "/LOS/NotificationTemplate",
           active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
+        },
+        {
+          label: "Product Category",
+          Link: "ProductCategory",
+          LinkLable: "/LOS/Product",
+          active: pathname == "/LOS/Product/ProductCategory",
+        },
+        {
+          label: "Product Sub Category",
+          Link: "ProductSubCategory",
+          LinkLable: "/LOS/Product",
+          active: pathname == "/LOS/Product/ProductSubCategory",
         }
       ]
     },
