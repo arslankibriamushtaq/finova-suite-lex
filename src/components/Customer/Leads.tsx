@@ -577,12 +577,9 @@ const Leads = () => {
 
     try {
       setIsChangingRisk(true);
-      const response = await updateKycRisk({
-        user_id: selectedUserForRiskChange.id,
-        risk: newRisk
-      });
+      const response = await updateKycRisk(selectedUserForRiskChange.id, newRisk);
 
-      if (response?.data?.success) {
+      if (response?.status >= 200 && response?.status < 300) {
         toast.success(response?.data?.message || `Risk changed to ${newRisk} successfully`);
         handleChangeRiskModalClose();
         // Refresh the leads list to get updated data
