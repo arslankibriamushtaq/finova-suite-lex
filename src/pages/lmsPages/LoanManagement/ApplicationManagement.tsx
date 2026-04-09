@@ -395,20 +395,20 @@ const ApplicationManagement = () => {
       {/* <Menu.Item key="edit" icon={<EditOutlined />}>
         Edit
       </Menu.Item> */}
-      <Menu.Item key="timeLine" icon={<ClockCircleOutlined />}>
+      {/* <Menu.Item key="timeLine" icon={<ClockCircleOutlined />}>
         Loan TimeLine
-      </Menu.Item>
+      </Menu.Item> */}
             {row.disbursementStatus == "Disbursed" && (
         <>
-          <Menu.Item key="disburseHistory" icon={<FaSortAmountUp />}>
+          {/* <Menu.Item key="disburseHistory" icon={<FaSortAmountUp />}>
             Disburse History
-          </Menu.Item>
-          <Menu.Item key="repayHistory" icon={<RiSecurePaymentLine/>}>
+          </Menu.Item> */}
+          {/* <Menu.Item key="repayHistory" icon={<RiSecurePaymentLine/>}>
             Repay History
           </Menu.Item>
           <Menu.Item key="brokenPromise" icon={<RiContractLeftFill/>}>
               Broken Promise
-          </Menu.Item>
+          </Menu.Item> */}
         </>
       )}
       {row.rescheduleStatus && (
