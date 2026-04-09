@@ -495,8 +495,8 @@ export const router = createBrowserRouter([
           { path: "/LOS/ProductManagement/Create/ProductSettings", element: <CraeteProductSettings /> },
           { path: "/LOS/ProductManagement/Create/RequiredDocuments", element: <CreateRequiredDocuments /> },
           { path: "/LOS/ProductManagement/Create/ProductAffiliation", element: <CreateProductAffiliation /> },
-          { path: "/LOS/Product/ProductCategory", element: <ProductCategory /> },
-          { path: "/LOS/Product/ProductSubCategory", element: <ProductSubCategory /> },
+          { path: "/LOS/ProductManagement/ProductCategory", element: <ProductCategory /> },
+          { path: "/LOS/ProductManagement/ProductSubCategory", element: <ProductSubCategory /> },
           { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },
           { path: "/LOS/Notification", element: <Notification /> },
 {
