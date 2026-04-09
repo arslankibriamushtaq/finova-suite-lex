@@ -39,3 +39,19 @@ export function getLoanApplications() {
 export function getApplicationInstallments(applicationId: string) {
   return axiosLendingService.get(`/api/v1/loans/application/${applicationId}/installments`);
 }
+
+// ============================================================
+// Loan Reschedules
+// ============================================================
+
+export function getReschedulesByApplication(applicationId: string) {
+  return axiosLendingService.get(`/api/v1/admin/loan-reschedules/by-application/${applicationId}`);
+}
+
+export function approveReschedule(applicationId: string, rescheduleId: string) {
+  return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/approve`);
+}
+
+export function rejectReschedule(applicationId: string, rescheduleId: string) {
+  return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/reject`);
+}

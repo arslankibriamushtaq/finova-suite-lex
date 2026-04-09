@@ -35,6 +35,7 @@ import {
 import { Spin } from "antd";
 import axios from "axios";
 import { RiContractLeftFill, RiSecurePaymentLine } from "react-icons/ri";
+import { MdSchedule } from "react-icons/md";
 
 const getApproveStepIcon = (stepIndex: any, status: any) => {
   const iconMap: any = {
@@ -230,6 +231,9 @@ const ApplicationManagement = () => {
       dispatch(setSelectedPromiseApplication(row));
       navigate(`/lms/LoanManagement/BrokenPromises/${row.applicationId}`);
     }
+    else if (key === "rescheduleHistory") {
+      navigate(`/Lms/LoanManagement/RescheduleHistory/${row.applicationId}`);
+    }
   };
   const ledgerAcoount = async () => {
     try {
@@ -407,6 +411,11 @@ const ApplicationManagement = () => {
           </Menu.Item>
         </>
       )}
+      {row.rescheduleStatus && (
+        <Menu.Item key="rescheduleHistory" icon={<MdSchedule />}>
+          Reschedule History
+        </Menu.Item>
+      )}
     </Menu>
   );
   const Account_Documents_List_Header = [
@@ -574,24 +583,25 @@ const ApplicationManagement = () => {
       sortable: true,
       width: "120px",
     },
-    // {
-    //   name: "Action",
-    //   cell: (row: any) => (
-    //     <Dropdown overlay={menu(row)} trigger={["click"]}>
-    //       <Button
-    //         className="gradient-btn"
-    //         type="primary"
-    //         style={{
-    //           borderColor: "white",
-    //           borderRadius: "8px",
-    //           padding: "10px 20px",
-    //         }}
-    //       >
-    //         Select <DownOutlined />
-    //       </Button>
-    //     </Dropdown>
-    //   ),
-    // },
+    {
+      name: "Action",
+      cell: (row: any) => (
+        <Dropdown overlay={menu(row)} trigger={["click"]}>
+          <Button
+            className="gradient-btn"
+            type="primary"
+            style={{
+              borderColor: "white",
+              borderRadius: "8px",
+              padding: "10px 20px",
+            }}
+          >
+            Select <DownOutlined />
+          </Button>
+        </Dropdown>
+      ),
+      width: "140px",
+    },
   ];
   const getDisbursementStatus = (id: any) => {
     // Pending = 0,
@@ -628,6 +638,7 @@ const ApplicationManagement = () => {
     applicationData.map((item: any) => {
       return {
         id: item?.id,
+        rescheduleStatus: item?.rescheduleStatus,
         applicationNumber: item?.applicationNumber || "-",
         customerId: item?.customerId,
         nationalId: item?.nationalId || "-",

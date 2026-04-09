@@ -203,6 +203,7 @@ import Invoices from "../components/Loans/Invoices";
 import RetryTransaction from "../pages/lmsPages/LoanManagement/RetryTransaction";
 import ApplicationManagement from "../pages/lmsPages/LoanManagement/ApplicationManagement";
 import BrokenPromises from "../pages/lmsPages/LoanManagement/BrokenPromises";
+import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistory";
 import CreateInvoice from "../components/Loans/CreateInvoice";
 import DeliquencyManagement from "../components/Products/Deliquency/DeliquencyManagement";
 import DayBook from "../components/Reports/DayBook";
@@ -1402,6 +1403,10 @@ export const router = createBrowserRouter([
           element: <BrokenPromises />,
         },
         {
+          path: "Lms/LoanManagement/RescheduleHistory/:id",
+          element: <RescheduleHistory />,
+        },
+        {
           path: "Lms/LoanManagement/ViewSchedule/:id",
           element: <LoanPaymentSchedule />,
         },
@@ -1973,6 +1978,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/LoanManagement/BrokenPromises/:id",
           element: <BrokenPromises />,
+        },
+        {
+          path: "Lms/LoanManagement/RescheduleHistory/:id",
+          element: <RescheduleHistory />,
         },
         {
           path: "Lms/LoanManagement/ViewSchedule/:id",
