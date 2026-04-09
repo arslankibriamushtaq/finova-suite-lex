@@ -461,25 +461,25 @@ const ApplicationManagement = () => {
       sortable: true,
       width: "130px",
     },
-    {
-      name: "Current Step",
-      cell: (row: any) => (
-        <div
-          style={{
-            whiteSpace: "nowrap",
-            padding: "0.4rem 1rem",
-            borderRadius: "12px",
-            backgroundColor: "var(--color-info)",
-            color: "var(--primary-foreground)",
-            fontSize: "12px",
-            textTransform: "capitalize",
-          }}
-        >
-          {(row.stepperLabel || "-")}
-        </div>
-      ),
-      width: "180px",
-    },
+    // {
+    //   name: "Current Step",
+    //   cell: (row: any) => (
+    //     <div
+    //       style={{
+    //         whiteSpace: "nowrap",
+    //         padding: "0.4rem 1rem",
+    //         borderRadius: "12px",
+    //         backgroundColor: "var(--color-info)",
+    //         color: "var(--primary-foreground)",
+    //         fontSize: "12px",
+    //         textTransform: "capitalize",
+    //       }}
+    //     >
+    //       {(row.stepperLabel || "-")}
+    //     </div>
+    //   ),
+    //   width: "180px",
+    // },
     {
       name: "Status",
       width: "180px",
@@ -506,27 +506,27 @@ const ApplicationManagement = () => {
         </div>
       ),
     },
-    {
-      name: "SafeWatch",
-      cell: (row: any) => (
-        <span
-          style={{
-            padding: "6px 12px",
-            borderRadius: "32px",
-            fontSize: "12px",
-            fontWeight: "500",
-            backgroundColor:
-              row.safeWatchStatus === "CLEAR"
-                ? "var(--color-status-green)"
-                : "var(--color-status-coral)",
-            color: "var(--primary-foreground)",
-          }}
-        >
-          {row.safeWatchStatus || "-"}
-        </span>
-      ),
-      width: "120px",
-    },
+    // {
+    //   name: "SafeWatch",
+    //   cell: (row: any) => (
+    //     <span
+    //       style={{
+    //         padding: "6px 12px",
+    //         borderRadius: "32px",
+    //         fontSize: "12px",
+    //         fontWeight: "500",
+    //         backgroundColor:
+    //           row.safeWatchStatus === "CLEAR"
+    //             ? "var(--color-status-green)"
+    //             : "var(--color-status-coral)",
+    //         color: "var(--primary-foreground)",
+    //       }}
+    //     >
+    //       {row.safeWatchStatus || "-"}
+    //     </span>
+    //   ),
+    //   width: "120px",
+    // },
     {
       name: "Disbursement",
       cell: (row: any) => (
