@@ -540,6 +540,35 @@ const ApplicationManagement = () => {
       width: "140px",
     },
     {
+      name: "Reschedule Status",
+      cell: (row: any) => {
+        const status = row.rescheduleStatus;
+        if (!status) return <span>-</span>;
+        return (
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              fontWeight: "500",
+              backgroundColor:
+                status === "APPLIED"
+                  ? "var(--color-status-green)"
+                  : status === "SUBMITTED"
+                    ? "var(--color-status-amber)"
+                    : status === "REJECTED"
+                      ? "var(--color-status-coral)"
+                      : "var(--color-status-blue)",
+              color: "var(--primary-foreground)",
+            }}
+          >
+            {status}
+          </span>
+        );
+      },
+      width: "170px",
+    },
+    {
       name: "Date",
       selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,

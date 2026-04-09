@@ -192,6 +192,38 @@ const AllApplication = () => {
       sortable: true,
     },
     {
+      name: "Reschedule Status",
+      cell: (row: { reschedule_status: any }) => {
+        const status = row.reschedule_status;
+        if (!status || status === "-") {
+          return <span>-</span>;
+        }
+        const colorMap: { [key: string]: { backgroundColor: string; color: string } } = {
+          SUBMITTED: { backgroundColor: "#fd7e14", color: "white" },
+          APPLIED: { backgroundColor: "#28a745", color: "white" },
+          REJECTED: { backgroundColor: "#dc3545", color: "white" },
+          PENDING: { backgroundColor: "#6c757d", color: "white" },
+        };
+        const statusColor = colorMap[status] || { backgroundColor: "#6c757d", color: "white" };
+        return (
+          <span
+            className="badge"
+            style={{
+              fontSize: "10px",
+              padding: "4px 8px",
+              fontWeight: "500",
+              borderRadius: "4px",
+              ...statusColor,
+            }}
+          >
+            {status}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "160px",
+    },
+    {
       name: "Rejection Reason",
       cell: (row: { rejection_reason: any }) => {
         const reason = row.rejection_reason || "-";
@@ -345,29 +377,40 @@ const AllApplication = () => {
     try {
       setSkelitonLoading(true);
       const response = await getAllFinancingApplications(page, pageSize);
-      if (response?.data?.success) {
-        // Access data from response.data.data.data as confirmed
-        const responseData = response?.data?.data?.data;
-        const paginationData = response?.data?.data;
-        
-        // Set the applications data
-        setData(responseData || []);
-        setPagination(paginationData);
-        
-        // Update pagination state from the API response
-        if (paginationData) {
-          setTotalRows(paginationData?.total || 0);
-          setFrom(paginationData?.from || 0);
-          setTo(paginationData?.to || 0);
-          setPage(paginationData?.current_page || 1);
-          setTotalPage(paginationData?.last_page || 1);
-          setPageSize(paginationData?.per_page || 10);
-        } else {
-          // If no pagination, set basic values
-          setTotalRows(responseData?.length || 0);
-          setFrom(1);
-          setTo(responseData?.length || 0);
-        }
+
+      // Support both response shapes:
+      // Shape 1 (paginated): { success, data: { data: [...], total, current_page, ... } }
+      // Shape 2 (flat):      { data: [...] }
+      const resBody = response?.data;
+      let responseData: any[] = [];
+      let paginationData: any = null;
+
+      if (resBody?.success && resBody?.data?.data) {
+        // Shape 1 – paginated wrapper
+        responseData = resBody.data.data;
+        paginationData = resBody.data;
+      } else if (resBody?.data && Array.isArray(resBody.data)) {
+        // Shape 2 – flat array
+        responseData = resBody.data;
+      } else if (Array.isArray(resBody)) {
+        // Shape 3 – raw array
+        responseData = resBody;
+      }
+
+      setData(responseData);
+      setPagination(paginationData);
+
+      if (paginationData) {
+        setTotalRows(paginationData?.total || 0);
+        setFrom(paginationData?.from || 0);
+        setTo(paginationData?.to || 0);
+        setPage(paginationData?.current_page || 1);
+        setTotalPage(paginationData?.last_page || 1);
+        setPageSize(paginationData?.per_page || 10);
+      } else {
+        setTotalRows(responseData?.length || 0);
+        setFrom(1);
+        setTo(responseData?.length || 0);
       }
     } catch (error: any) {
       console.error("Error fetching applications:", error);
@@ -385,25 +428,27 @@ const AllApplication = () => {
   const mappedData =
     data &&
     data?.map((item: any) => {
+      const createdDate = item?.createdAt || item?.created_at;
       return {
         id: item.id,
-        loan_application_number: item?.loan_application_number || "-",
-        customer_name: item?.kyc?.user?.name || "-",
-        risk: item?.kyc?.risk || "-",
-        phone: item?.kyc?.phone || item?.kyc?.user?.phone || "-",
-        nid: item?.kyc?.nid || "-",
-        type: item?.type || "-",
-        duration: item?.duration ? `${item?.duration} Months` : "-",
-        loan_amount: item?.amount ? `SR ${item?.amount}` : "-",
+        loan_application_number: item?.applicationNumber || item?.loan_application_number || "-",
+        customer_name: item?.customerName || item?.kyc?.user?.name || "-",
+        risk: item?.risk || item?.kyc?.risk || "-",
+        phone: item?.phone || item?.kyc?.phone || item?.kyc?.user?.phone || "-",
+        nid: item?.nationalId || item?.kyc?.nid || "-",
+        type: item?.shariaStructure || item?.type || "-",
+        duration: (item?.requestedTenureMonths || item?.duration) ? `${item?.requestedTenureMonths || item?.duration} Months` : "-",
+        loan_amount: (item?.requestedAmount || item?.amount) ? `SR ${item?.requestedAmount || item?.amount}` : "-",
         installment_type: item?.installment_Type || "-",
-        created_at: item?.created_at ? new Date(item.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "-",
-        status: item?.application_status?.title || getStatusText(item?.status_id),
+        created_at: createdDate ? new Date(createdDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : "-",
+        status: item?.displayStatus || item?.status || item?.application_status?.title || getStatusText(item?.status_id),
         status_id: item?.status_id,
         partners: item?.partners || "-",
+        reschedule_status: item?.rescheduleStatus || item?.reschedule_status || "-",
         rejection_reason: item?.rejection_reason || "-",
-        steps:item?.steps,
-        nationalId:item?.nationalId || "-",
-        product_id: item?.product_id || item?.productId || null,
+        steps: item?.steps,
+        nationalId: item?.nationalId || "-",
+        product_id: item?.productId || item?.product_id || null,
       };
     });
   const exportToExcel = () => {
