@@ -192,6 +192,38 @@ const AllApplication = () => {
       sortable: true,
     },
     {
+      name: "Reschedule Status",
+      cell: (row: { reschedule_status: any }) => {
+        const status = row.reschedule_status;
+        if (!status || status === "-") {
+          return <span>-</span>;
+        }
+        const colorMap: { [key: string]: { backgroundColor: string; color: string } } = {
+          SUBMITTED: { backgroundColor: "#fd7e14", color: "white" },
+          APPLIED: { backgroundColor: "#28a745", color: "white" },
+          REJECTED: { backgroundColor: "#dc3545", color: "white" },
+          PENDING: { backgroundColor: "#6c757d", color: "white" },
+        };
+        const statusColor = colorMap[status] || { backgroundColor: "#6c757d", color: "white" };
+        return (
+          <span
+            className="badge"
+            style={{
+              fontSize: "10px",
+              padding: "4px 8px",
+              fontWeight: "500",
+              borderRadius: "4px",
+              ...statusColor,
+            }}
+          >
+            {status}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "160px",
+    },
+    {
       name: "Rejection Reason",
       cell: (row: { rejection_reason: any }) => {
         const reason = row.rejection_reason || "-";
@@ -400,6 +432,7 @@ const AllApplication = () => {
         status: item?.application_status?.title || getStatusText(item?.status_id),
         status_id: item?.status_id,
         partners: item?.partners || "-",
+        reschedule_status: item?.rescheduleStatus || item?.reschedule_status || "-",
         rejection_reason: item?.rejection_reason || "-",
         steps:item?.steps,
         nationalId:item?.nationalId || "-",
