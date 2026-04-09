@@ -1257,9 +1257,7 @@ export function changeUserStatus(userId: number, body: any) {
 export function userActive(userId: number, body: any) {
   return axios.patch(`/update-user-status`, body);
 }
-export function updateKycRisk(body: any) {
-  return axios.patch(`/update-kyc-risk`, body);
-}
+export { updateKycRisk } from "./apisEddReferenceData";
 
 export function getLosDashboardStatistics(fromDate?: string, toDate?: string) {
   let url = `/lending-service/api/v1/dashboard/stats`;

@@ -125,6 +125,12 @@ export function getCustomers(page: number = 1, per_page: number = 20, search: st
   return axiosCustomerService.get(`/api/v1/customers${queryString ? `?${queryString}` : ""}`);
 }
 
+export function updateKycRisk(customerId: string, riskGrade: string) {
+  return axiosCustomerService.patch(`/api/v1/customers/${customerId}/risk-grade`, {
+    riskGrade: riskGrade.toUpperCase()
+  });
+}
+
 export function getLeadCustomers(search: string = '', pep: string = '', status: string = '') {
   const params: Record<string, any> = { search, pep, status, lifecycleStage: 'LEAD' };
   const queryString = Object.entries(params)
