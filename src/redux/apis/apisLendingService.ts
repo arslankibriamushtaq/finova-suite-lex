@@ -48,10 +48,10 @@ export function getReschedulesByApplication(applicationId: string) {
   return axiosLendingService.get(`/api/v1/admin/loan-reschedules/by-application/${applicationId}`);
 }
 
-export function approveReschedule(applicationId: string, rescheduleId: string) {
-  return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/approve`);
+export function approveReschedule(applicationId: string, rescheduleId: string, body: { approverRole: string; approvalNotes: string }) {
+  return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/approve`, body);
 }
 
-export function rejectReschedule(applicationId: string, rescheduleId: string) {
-  return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/reject`);
+export function rejectReschedule(applicationId: string, rescheduleId: string, body: { approverRole: string; approvalNotes: string }) {
+  return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/reject`, body);
 }
