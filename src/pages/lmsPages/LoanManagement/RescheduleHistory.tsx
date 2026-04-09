@@ -80,7 +80,7 @@ const RescheduleHistory = () => {
         key="approve"
         icon={<CheckCircleOutlined />}
         onClick={() => handleApprove(row.rescheduleId)}
-        disabled={actionLoading === row.rescheduleId || row.status === "APPROVED" || row.status === "REJECTED"}
+        disabled={actionLoading === row.rescheduleId || row.status === "APPROVED" || row.status === "REJECTED" || row.status === "CANCELLED"}
       >
         Approve
       </Menu.Item>
@@ -88,7 +88,7 @@ const RescheduleHistory = () => {
         key="reject"
         icon={<CloseCircleOutlined />}
         onClick={() => handleReject(row.rescheduleId)}
-        disabled={actionLoading === row.rescheduleId || row.status === "APPROVED" || row.status === "REJECTED"}
+        disabled={actionLoading === row.rescheduleId || row.status === "APPROVED" || row.status === "REJECTED" || row.status === "CANCELLED"}
       >
         Reject
       </Menu.Item>
