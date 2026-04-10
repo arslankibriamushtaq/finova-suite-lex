@@ -5,10 +5,10 @@ import { useParams } from "react-router-dom";
 import BankStatement from "./ApplicationDetailsTabs/BankStatement";
 import Loader from "../Loader/Loader";
 
-function BayaanCheck() {
+function BayaanCheck({ fullDetail }: any) {
   const [active, setActive] = useState("BankStatement");
   const { id } = useParams();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [financialData, setFinancialData] = useState<any>(null);
   const tabOptions = [
     {
@@ -47,11 +47,19 @@ function BayaanCheck() {
     //   component: <ApproveBayaanInfo /* setActiveTab={setActiveTab}  *//>,
     // },
   ];
+  // Use fullDetail if available
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.openBankingCheck) {
+      setFinancialData(fullDetail.openBankingCheck);
+      return;
+    }
+  }, [fullDetail]);
+
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchFinancialData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchFinancialData = async () => {
     if (!id) {

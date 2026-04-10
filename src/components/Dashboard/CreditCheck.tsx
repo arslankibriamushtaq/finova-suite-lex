@@ -8,7 +8,7 @@ import Loader from "../Loader/Loader";
 import CreditWeightagesInfo from "./CreditWeightagesInfo";
 import ApproveCreditInfo from "./ApproveCreditInfo";
 
-function CreditCheck({ setActiveTab }: any) {
+function CreditCheck({ setActiveTab, fullDetail }: any) {
   const [active, setActive] = useState("CreditWeightagesInfo");
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -17,10 +17,20 @@ function CreditCheck({ setActiveTab }: any) {
   const [definitions, setDefinitions] = useState<any[]>([]);
 
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.creditCheck) {
+      const cc = fullDetail.creditCheck;
+      setCreditData(cc);
+      setCreditHistory(cc.riskHistory || []);
+      setDefinitions(cc.kycWeightageData || []);
+      return;
+    }
+  }, [fullDetail]);
+
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchCreditData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchCreditData = async () => {
     if (!id) {

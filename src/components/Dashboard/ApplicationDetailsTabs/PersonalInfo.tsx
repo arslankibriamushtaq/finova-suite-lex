@@ -13,7 +13,7 @@ interface FieldConfig {
   transform?: (data: any) => { en: string; ar: string };
 }
 
-function PersonalInformation() {
+function PersonalInformation({ fullDetail }: any) {
   const [personalData, setPersonalData] = useState<any>(null);
   const [addressData, setAddressData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -230,12 +230,54 @@ function PersonalInformation() {
     };
   };
 
-  // Fetch personal information when component mounts
+  // Use fullDetail data if available
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.personalInformation) {
+      const pi = fullDetail.personalInformation.personalInfo || {};
+      const addr = fullDetail.personalInformation.addressInfo || {};
+      setPersonalData({
+        name: pi.fullNameEn || [pi.firstName, pi.lastName].filter(Boolean).join(" ") || "-",
+        name_ar: pi.fullNameAr || [pi.firstNameAr, pi.lastNameAr].filter(Boolean).join(" ") || "-",
+        family_name_en: pi.lastName || "-",
+        family_name_ar: pi.lastNameAr || "-",
+        nid: pi.nationalId || pi.iqamaNumber || "-",
+        national_id: pi.nationalId || pi.iqamaNumber || "-",
+        gender: pi.gender || "-",
+        gender_en: pi.gender || "-",
+        gender_ar: pi.gender === "Male" ? "ذكر" : pi.gender === "Female" ? "أنثى" : pi.gender || "-",
+        nationality_en: pi.nationality || "-",
+        nationality_ar: pi.nationality || "-",
+        nationality_code: "-",
+        dob: pi.dateOfBirthGregorian || "-",
+        date_of_birth_gregorian: pi.dateOfBirthGregorian || "-",
+        date_of_birth_hijri: pi.dateOfBirthHijri || "-",
+        id_version: "-",
+        id_issue_date_gregorian: pi.verificationDate || "-",
+        id_expiry_date_gregorian: pi.iqamaExpiryDate || "-",
+      });
+      setAddressData({
+        region_en: addr.regionName || "-",
+        region_ar: addr.regionName || "-",
+        city_en: addr.city || "-",
+        city_ar: addr.city || "-",
+        district_en: addr.district || "-",
+        district_ar: addr.district || "-",
+        street_name_en: addr.streetName || "-",
+        street_name_ar: addr.streetName || "-",
+        building_number: addr.buildingNumber || "-",
+        post_code: addr.postCode || "-",
+        short_address: addr.shortAddress || "-",
+      });
+      return;
+    }
+  }, [fullDetail]);
+
+  // Fetch personal information when component mounts (fallback only when fullDetail prop not provided)
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchData = async () => {
     try {

@@ -40,6 +40,10 @@ export function getApplicationInstallments(applicationId: string) {
   return axiosLendingService.get(`/api/v1/loans/application/${applicationId}/installments`);
 }
 
+export function getApplicationFullDetail(applicationId: string) {
+  return axiosLendingService.get(`/api/v1/loan-applications/${applicationId}/full-detail`);
+}
+
 // ============================================================
 // Loan Reschedules
 // ============================================================

@@ -14,7 +14,7 @@ interface DocumentItem {
   updated_at: string;
 }
 
-function Document() {
+function Document({ fullDetail }: any) {
   const [documents, setDocuments] = useState<{
     NAFITH?: DocumentItem;
     EmdhaFinancingContract?: DocumentItem;
@@ -63,12 +63,19 @@ function Document() {
     return `${BASE_URL}${url}`;
   };
 
-  // Fetch documents when component mounts
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.documents) {
+      setDocuments(fullDetail.documents);
+      return;
+    }
+  }, [fullDetail]);
+
+  // Fetch documents (fallback)
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchData = async () => {
     try {

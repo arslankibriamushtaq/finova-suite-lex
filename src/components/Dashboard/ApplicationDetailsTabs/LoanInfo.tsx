@@ -13,7 +13,7 @@ interface FieldConfig {
   transform?: (data: any) => { en: string; ar: string };
 }
 
-function LoanInformation({ applicationData }: any) {
+function LoanInformation({ applicationData, fullDetail }: any) {
   const [loanAmountData, setLoanAmountData] = useState<any>(null);
   const [loanApplicationData, setLoanApplicationData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -170,12 +170,47 @@ function LoanInformation({ applicationData }: any) {
     };
   };
 
-  // Fetch loan information when component mounts
+  // Use fullDetail data if available
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.loanInformation) {
+      const lai = fullDetail.loanInformation.loanAmountInfo || {};
+      const lapp = fullDetail.loanInformation.loanApplicationInfo || {};
+      const activeLoan = fullDetail.loanInformation.activeLoan || {};
+      setLoanAmountData({
+        requested_amount: lai.requestedAmount,
+        admin_fee_amount: lai.adminFee,
+        total_amount_with_admin_fee: lai.totalPayable,
+        monthly_amount_with_admin_fee: lai.monthlyInstallment,
+        processing_fee: lai.processingFee,
+        profit_rate: lai.profitRate,
+        total_profit: lai.totalProfit,
+        offered_amount: lai.offeredAmount,
+        accepted_amount: lai.acceptedAmount,
+        max_eligible_amount: lai.maxEligibleAmount,
+      });
+      setLoanApplicationData({
+        loan_application_number: lapp.applicationNumber || id,
+        product_name_en: lapp.productName || "-",
+        product_name_ar: lapp.productName || "-",
+        product_name: lapp.productName || "-",
+        duration: lai.requestedTenureMonths || activeLoan.tenureMonths || "-",
+        type: lapp.shariaStructure || "-",
+        purpose_of_finance: lapp.purposeOfFinance || "-",
+        purpose_of_finance_title: lapp.purposeOfFinance || "-",
+        created_at: lapp.createdAt || "-",
+        product_code: lapp.productCode || "-",
+        status: lapp.status || "-",
+      });
+      return;
+    }
+  }, [fullDetail]);
+
+  // Fetch loan information when component mounts (fallback only when fullDetail prop not provided)
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchData = async () => {
     try {

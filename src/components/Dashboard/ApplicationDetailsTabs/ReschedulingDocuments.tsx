@@ -20,7 +20,7 @@ const getDocumentStatusColor = (status: string): { backgroundColor: string; colo
   return colorMap[statusLower] || { backgroundColor: "#6c757d", color: "white" }; // Default gray
 };
 
-function ReschedulingDocuments() {
+function ReschedulingDocuments({ fullDetail }: any) {
   const location = useLocation();
   const { id } = useParams();
   const rowData = location.state?.rowData;
@@ -31,16 +31,23 @@ function ReschedulingDocuments() {
   const loanApplicationId = rowData?.id || rowData?.loan_application_id;
 
   useEffect(() => {
+    if (fullDetail?.reschedulingRequest) {
+      const rr = fullDetail.reschedulingRequest;
+      setReschedulingData(rr);
+      setDocuments(rr.requests || []);
+      return;
+    }
+  }, [fullDetail]);
+
+  useEffect(() => {
+    if (fullDetail !== undefined) return;
     const applicationId = rowData?.id || rowData?.loan_application_id;
-        
+
     if (applicationId && !isNaN(Number(applicationId))) {
       const numericId = Number(applicationId);
       fetchReschedulingRequestDetails(numericId);
-    } else {
-      console.warn("No valid numeric loan_application_id found. Cannot fetch rescheduling request details.");
-      console.warn("Available values - rowData:", rowData, "rowData.id:", rowData?.id, "rowData.loan_application_id:", rowData?.loan_application_id, "id from params:", id);
     }
-  }, [rowData?.id, rowData?.loan_application_id]);
+  }, [rowData?.id, rowData?.loan_application_id, fullDetail]);
 
   const fetchReschedulingRequestDetails = async (loanApplicationId: number) => {
     if (!loanApplicationId) {

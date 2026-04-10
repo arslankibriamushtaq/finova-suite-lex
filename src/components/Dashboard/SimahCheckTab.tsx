@@ -7,10 +7,10 @@ import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 
-function SimahCheckTab() {
+function SimahCheckTab({ fullDetail }: any) {
   const [active, setActive] = useState("ConsumerInquiry");
   const [simahData, setSimahData] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const tabOptions = [
     {
@@ -31,12 +31,20 @@ function SimahCheckTab() {
       component: <></>,
     },
   ];
-    // Fetch SIMAH data when component mounts
+    // Use fullDetail if available
     useEffect(() => {
-      if (id) {
+      if (fullDetail?.simahCheck) {
+        setSimahData(fullDetail.simahCheck);
+        return;
+      }
+    }, [fullDetail]);
+
+    // Fetch SIMAH data (fallback)
+    useEffect(() => {
+      if (id && fullDetail === undefined) {
         fetchData();
       }
-    }, [id]);
+    }, [id, fullDetail]);
     const fetchData = async () => {
       try {
         setLoading(true);

@@ -4,7 +4,7 @@ import { getApplicationDetailsByType, applicationApprovalChecks } from "../../re
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
 
-function CompilanceCheck({ setActiveTab }: any) {
+function CompilanceCheck({ setActiveTab, fullDetail }: any) {
   const [loading, setLoading] = useState(false);
   const [answers, setAnswers] = useState<any[]>([]);
   const [complianceHistory, setComplianceHistory] = useState<any>(null);
@@ -14,10 +14,19 @@ function CompilanceCheck({ setActiveTab }: any) {
   const { id } = useParams();
 
   useEffect(() => {
-    if(id){
+    if (fullDetail?.complianceCheck) {
+      const cc = fullDetail.complianceCheck;
+      setAnswers(cc.complianceQuestionHistory || []);
+      setComplianceHistory(cc.kycInfo || null);
+      return;
+    }
+  }, [fullDetail]);
+
+  useEffect(() => {
+    if(id && fullDetail === undefined){
     fetchComplianceData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchComplianceData = async () => {
     if (!id) {

@@ -15,7 +15,7 @@ type StatusRow = {
 
 const EmptyCell = () => <span>--</span>;
 
-const ApplicationApproval = () => {
+const ApplicationApproval = ({ fullDetail }: any) => {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<StatusRow[]>([]);
@@ -30,10 +30,25 @@ const ApplicationApproval = () => {
   const [rejectedHistory, setRejectedHistory] = useState<any>(null);
 
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.approval) {
+      const a = fullDetail.approval;
+      const list: StatusRow[] = [];
+      list.push({ checks: 'Application Status', status: a.applicationStatus || '--', processedDate: '', processedBy: '', comment: '' });
+      list.push({ checks: 'Loan Status', status: a.loanStatus || '--', processedDate: a.disbursementDate || '', processedBy: '', comment: '' });
+      list.push({ checks: 'OTP Verified', status: a.otpVerified ? 'Approved' : 'Not Approved', processedDate: '', processedBy: '', comment: '' });
+      list.push({ checks: 'IVR Verified', status: a.ivrVerified ? 'Approved' : 'Not Approved', processedDate: '', processedBy: '', comment: '' });
+      setRows(list);
+      if (a.applicationStatus === 'APPROVED') setIsApproved(true);
+      if (a.applicationStatus === 'REJECTED') setIsRejected(true);
+      return;
+    }
+  }, [fullDetail]);
+
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchData = async () => {
     if (!id) {

@@ -6,18 +6,47 @@ import Loader from "../../Loader/Loader";
 import { Row, Col } from "antd";
 import { BankOutlined, UserOutlined, DollarOutlined, ClockCircleOutlined, UpOutlined, DownOutlined } from "@ant-design/icons";
 
-function SalaryDetails() {
+function SalaryDetails({ fullDetail }: any) {
   const [salaryData, setSalaryData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [expandedEmploymentCards, setExpandedEmploymentCards] = useState<{ [key: number]: boolean }>({});
   const { id } = useParams();
 
-  // Fetch salary details when component mounts
+  // Use fullDetail data if available
   useEffect(() => {
-    if (id) {
+    if (fullDetail?.employmentSalary) {
+      const emp = fullDetail.employmentSalary.verifiedEmployment || {};
+      const expenses = fullDetail.employmentSalary.monthlyExpenses || {};
+      const history = fullDetail.employmentSalary.employmentHistory || [];
+      const employmentRecord = {
+        employerName: emp.employerName,
+        employer_name: emp.employerName,
+        employmentStatus: emp.employmentStatus,
+        employment_status: emp.employmentStatus,
+        employmentSector: emp.employmentSector,
+        basicWage: emp.basicSalary,
+        basic_wage: emp.basicSalary,
+        totalSalary: emp.totalSalary,
+        verifiedSalary: emp.verifiedSalary,
+        joiningDate: emp.employmentStartDate,
+        joining_date: emp.employmentStartDate,
+        source: emp.source,
+        monthlyIncome: expenses.monthlyIncome,
+        totalExpenses: expenses.totalExpenses,
+        existingLiabilities: expenses.existingLiabilities,
+      };
+      const allRecords = history.length > 0 ? history : [employmentRecord];
+      setSalaryData({ employmentStatusInfo: allRecords });
+      return;
+    }
+  }, [fullDetail]);
+
+  // Fetch salary details when component mounts (fallback only when fullDetail prop not provided)
+  useEffect(() => {
+    if (id && fullDetail === undefined) {
       fetchData();
     }
-  }, [id]);
+  }, [id, fullDetail]);
 
   const fetchData = async () => {
     try {
