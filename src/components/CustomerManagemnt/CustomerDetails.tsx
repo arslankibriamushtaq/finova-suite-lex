@@ -916,7 +916,9 @@ const CustomerDetail = () => {
             }}
             onClick={() => {
               if (row.applicationNumber) {
-                navigate(`/FinancingApplications/AllApplications/View/${row.applicationNumber}`);
+                navigate(`/FinancingApplications/AllApplications/View/${row.applicationNumber}`, {
+                  state: { rowData: row }
+                });
               }
             }}
           >
