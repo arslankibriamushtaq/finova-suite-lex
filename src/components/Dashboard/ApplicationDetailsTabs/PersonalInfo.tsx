@@ -107,6 +107,20 @@ function PersonalInformation({ fullDetail }: any) {
         ar: data.id_expiry_date_hijri || data.id_expiry_date_h || "-",
       }),
     },
+    {
+      key: "mobile",
+      enLabel: "Mobile Number",
+      arLabel: "رقم الجوال",
+      enValueKey: "mobile",
+      arValueKey: "mobile",
+    },
+    {
+      key: "email",
+      enLabel: "Email",
+      arLabel: "البريد الإلكتروني",
+      enValueKey: "email",
+      arValueKey: "email",
+    },
   ];
 
   // Address Information field configuration
@@ -254,6 +268,8 @@ function PersonalInformation({ fullDetail }: any) {
         id_version: "-",
         id_issue_date_gregorian: pi.verificationDate || "-",
         id_expiry_date_gregorian: pi.iqamaExpiryDate || "-",
+        mobile: pi.mobile || "-",
+        email: pi.email || "-",
       });
       setAddressData({
         region_en: addr.regionName || "-",

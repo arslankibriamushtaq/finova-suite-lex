@@ -34,9 +34,23 @@ function SalaryDetails({ fullDetail }: any) {
         monthlyIncome: expenses.monthlyIncome,
         totalExpenses: expenses.totalExpenses,
         existingLiabilities: expenses.existingLiabilities,
+        // Monthly expense details
+        foodGroceries: expenses.foodGroceries,
+        utilities: expenses.utilities,
+        healthcare: expenses.healthcare,
+        communication: expenses.communication,
+        housingRent: expenses.housingRent,
+        clothingEssentials: expenses.clothingEssentials,
+        education: expenses.education,
+        transportation: expenses.transportation,
+        dependents: expenses.dependents,
       };
       const allRecords = history.length > 0 ? history : [employmentRecord];
-      setSalaryData({ employmentStatusInfo: allRecords });
+      setSalaryData({ 
+        employmentStatusInfo: allRecords,
+        monthlyExpenses: expenses,
+        verifiedEmployment: emp 
+      });
       return;
     }
   }, [fullDetail]);
@@ -429,6 +443,160 @@ function SalaryDetails({ fullDetail }: any) {
             >
               <div style={{ color: "#065F46", fontWeight: 700, fontSize: "14px" }}>
                 This Application has been approved
+              </div>
+            </div>
+          )}
+
+          {/* Monthly Expenses Summary Section */}
+          {salaryData?.monthlyExpenses && (
+            <div style={{ marginTop: "30px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                <div>
+                  <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "5px" }}>
+                    Monthly Expenses Summary
+                  </h2>
+                  <p style={{ color: "#666", fontSize: "14px", margin: 0 }}>
+                    Breakdown of monthly income and expenses
+                  </p>
+                </div>
+              </div>
+
+              <div style={{ border: "1px solid #E5E7EB", borderRadius: "8px", background: "#fff", padding: "20px" }}>
+                <Row gutter={[24, 24]}>
+                  {/* Income Section */}
+                  <Col xs={24} md={12}>
+                    <div style={{ marginBottom: "24px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+                        <DollarOutlined style={{ fontSize: "18px", color: "#666" }} />
+                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                          Monthly Income
+                        </h4>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>MONTHLY INCOME</span>
+                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                          {formatAmount(salaryData.monthlyExpenses.monthlyIncome)}
+                        </span>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>EXISTING LIABILITIES</span>
+                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                          {formatAmount(salaryData.monthlyExpenses.existingLiabilities)}
+                        </span>
+                      </div>
+                    </div>
+                  </Col>
+
+                  {/* Expense Summary Section */}
+                  <Col xs={24} md={12}>
+                    <div style={{ marginBottom: "24px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
+                        <ClockCircleOutlined style={{ fontSize: "18px", color: "#666" }} />
+                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                          Total Monthly Expenses
+                        </h4>
+                      </div>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", background: "#F5F5F5", borderRadius: "4px", paddingLeft: "12px", paddingRight: "12px" }}>
+                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>TOTAL EXPENSES</span>
+                        <span style={{ fontSize: "16px", color: "#000", fontWeight: 700 }}>
+                          {formatAmount(salaryData.monthlyExpenses.totalExpenses)}
+                        </span>
+                      </div>
+                    </div>
+                  </Col>
+
+                  {/* Expense Details Section */}
+                  {(salaryData.monthlyExpenses.foodGroceries || 
+                    salaryData.monthlyExpenses.utilities || 
+                    salaryData.monthlyExpenses.healthcare ||
+                    salaryData.monthlyExpenses.communication ||
+                    salaryData.monthlyExpenses.housingRent ||
+                    salaryData.monthlyExpenses.clothingEssentials ||
+                    salaryData.monthlyExpenses.education ||
+                    salaryData.monthlyExpenses.transportation) && (
+                    <Col xs={24}>
+                      <div style={{ marginBottom: "24px" }}>
+                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000", marginBottom: "16px" }}>
+                          Expense Breakdown
+                        </h4>
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
+                          {salaryData.monthlyExpenses.foodGroceries && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Food & Groceries</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.foodGroceries)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.utilities && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Utilities</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.utilities)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.healthcare && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Healthcare</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.healthcare)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.communication && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Communication</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.communication)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.housingRent && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Housing Rent</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.housingRent)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.clothingEssentials && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Clothing & Essentials</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.clothingEssentials)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.education && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Education</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.education)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.transportation && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Transportation</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {formatAmount(salaryData.monthlyExpenses.transportation)}
+                              </div>
+                            </div>
+                          )}
+                          {salaryData.monthlyExpenses.dependents && (
+                            <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
+                              <span style={{ fontSize: "14px", color: "#666" }}>Dependents</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                                {salaryData.monthlyExpenses.dependents}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </Col>
+                  )}
+                </Row>
               </div>
             </div>
           )}
