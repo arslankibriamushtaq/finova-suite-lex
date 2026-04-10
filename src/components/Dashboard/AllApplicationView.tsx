@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 
 import SimahCheckTab from "./SimahCheckTab";
@@ -13,7 +13,7 @@ import LoanInformation from "./ApplicationDetailsTabs/LoanInfo";
 import SalaryDetails from "./ApplicationDetailsTabs/SalaryDetails";
 import Document from "./ApplicationDetailsTabs/Document";
 import ReschedulingDocuments from "./ApplicationDetailsTabs/ReschedulingDocuments";
-import { getApplicationFullDetail } from "../../redux/apis/apisLendingService";
+import { getApplicationFullDetail, getApplicationByNumber } from "../../redux/apis/apisLendingService";
 import Loader from "../Loader/Loader";
 
 const AllApplicationView = () => {
@@ -26,14 +26,39 @@ const AllApplicationView = () => {
   const [fullDetail, setFullDetail] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
-  // Get applicationId - from rowData (UUID) or we need to fetch by app number
+  // Get applicationId (UUID) - prioritize from rowData, convert from application number if needed
   const applicationId = rowData?.id || rowData?.applicationId;
 
   useEffect(() => {
+    // If we have UUID from rowData, use it directly
     if (applicationId) {
       fetchFullDetail(applicationId);
+    } 
+    // If we only have application number in URL (id), convert it to UUID first
+    else if (id && id.startsWith('APP-')) {
+      resolveApplicationIdAndFetch(id);
     }
-  }, [applicationId]);
+  }, [applicationId, id]);
+
+  // Resolve application number to UUID, then fetch full details
+  const resolveApplicationIdAndFetch = async (applicationNumber: string) => {
+    try {
+      setLoading(true);
+      const response = await getApplicationByNumber(applicationNumber);
+      const applications = response?.data?.data || [];
+      
+      if (applications.length > 0) {
+        const appId = applications[0].id;
+        await fetchFullDetail(appId);
+      } else {
+        console.error("Application not found for number:", applicationNumber);
+      }
+    } catch (error) {
+      console.error("Error resolving application ID:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const fetchFullDetail = async (appId: string) => {
     try {

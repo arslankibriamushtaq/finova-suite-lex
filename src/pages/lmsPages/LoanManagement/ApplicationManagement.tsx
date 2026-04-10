@@ -208,6 +208,10 @@ const ApplicationManagement = () => {
       navigate(`/lms/AllApplications/ViewApplication`, {
         state: row,
       });
+    } else if (key === "viewDetail") {
+      navigate(`/FinancingApplications/AllApplications/View/${row.applicationId}`, {
+        state: { rowData: row },
+      });
     } else if (key == "disburse") {
       setDisburseData(row);
       setDisberseDialog(true);
@@ -392,6 +396,9 @@ const ApplicationManagement = () => {
           </Menu.Item>
         </>
       )}
+      <Menu.Item key="viewDetail" icon={<EyeOutlined />}>
+        View Detail
+      </Menu.Item>
       {/* <Menu.Item key="edit" icon={<EditOutlined />}>
         Edit
       </Menu.Item> */}

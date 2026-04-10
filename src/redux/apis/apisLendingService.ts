@@ -36,6 +36,10 @@ export function getLoanApplications() {
   return axiosLendingService.get(`/api/v1/loan-applications`);
 }
 
+export function getApplicationByNumber(applicationNumber: string) {
+  return axiosLendingService.get(`/api/v1/loan-applications?applicationNumber=${applicationNumber}`);
+}
+
 export function getApplicationInstallments(applicationId: string) {
   return axiosLendingService.get(`/api/v1/loans/application/${applicationId}/installments`);
 }

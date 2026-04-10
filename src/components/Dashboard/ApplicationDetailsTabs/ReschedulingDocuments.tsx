@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import { getReschedulingRequestDetails, updateDocStatus } from "../../../redux/apis/apisCrud";
+import { getReschedulesByApplication } from "../../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 import Loader from "../../Loader/Loader";
 import TableView from "../../TableView/TableView";
@@ -27,14 +28,19 @@ function ReschedulingDocuments({ fullDetail }: any) {
   const [documents, setDocuments] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [reschedulingData, setReschedulingData] = useState<any>(null);
+  const [rescheduleHistory, setRescheduleHistory] = useState<any[]>([]);
+  const [historyLoading, setHistoryLoading] = useState(false);
 
   const loanApplicationId = rowData?.id || rowData?.loan_application_id;
+  const applicationId = rowData?.id || rowData?.applicationId;
 
   useEffect(() => {
     if (fullDetail?.reschedulingRequest) {
       const rr = fullDetail.reschedulingRequest;
       setReschedulingData(rr);
-      setDocuments(rr.requests || []);
+      // Use requests array from rescheduling request
+      setRescheduleHistory(Array.isArray(rr.requests) ? rr.requests : []);
+      setHistoryLoading(false);
       return;
     }
   }, [fullDetail]);
@@ -43,11 +49,27 @@ function ReschedulingDocuments({ fullDetail }: any) {
     if (fullDetail !== undefined) return;
     const applicationId = rowData?.id || rowData?.loan_application_id;
 
-    if (applicationId && !isNaN(Number(applicationId))) {
-      const numericId = Number(applicationId);
-      fetchReschedulingRequestDetails(numericId);
+    if (applicationId) {
+      fetchRescheduleHistory(applicationId);
     }
   }, [rowData?.id, rowData?.loan_application_id, fullDetail]);
+
+  const fetchRescheduleHistory = async (appId: string) => {
+    if (!appId) return;
+
+    setHistoryLoading(true);
+    try {
+      const response = await getReschedulesByApplication(appId);
+      const history = response?.data?.data?.reschedules || [];
+      setRescheduleHistory(Array.isArray(history) ? history : []);
+    } catch (error: any) {
+      console.error("Error fetching reschedule history:", error);
+      toast.error(error?.response?.data?.message || "Failed to fetch reschedule history");
+      setRescheduleHistory([]);
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
 
   const fetchReschedulingRequestDetails = async (loanApplicationId: number) => {
     if (!loanApplicationId) {
@@ -215,119 +237,138 @@ function ReschedulingDocuments({ fullDetail }: any) {
     },
   ];
 
+  const historyTableHeaders = [
+    {
+      name: "Reschedule Type",
+      selector: (row: any) => row.rescheduleType?.replace(/_/g, " ") || "-",
+      sortable: true,
+      width: "140px",
+    },
+    {
+      name: "Status",
+      cell: (row: any) => {
+        const status = row.status || "-";
+        const statusColor = getDocumentStatusColor(status);
+        
+        return (
+          <span 
+            className="badge"
+            style={{ 
+              fontSize: "12px", 
+              padding: "6px 12px",
+              fontWeight: "500",
+              maxWidth: "100%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+              display: "inline-block",
+              borderRadius: "16px",
+              textTransform: "capitalize",
+              ...statusColor
+            }}
+            title={status}
+          >
+            {status}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Extension Months",
+      selector: (row: any) => row.extensionMonths != null ? `${row.extensionMonths} months` : "-",
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Holiday Months",
+      selector: (row: any) => row.holidayMonths != null ? `${row.holidayMonths} months` : "-",
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "New Tenure Months",
+      selector: (row: any) => row.newTenureMonths != null ? `${row.newTenureMonths} months` : "-",
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Old Installment",
+      selector: (row: any) => row.oldInstallment != null ? `SAR ${parseFloat(row.oldInstallment).toFixed(2)}` : "-",
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "New Installment",
+      selector: (row: any) => row.newInstallment != null ? `SAR ${parseFloat(row.newInstallment).toFixed(2)}` : "-",
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Old Maturity Date",
+      selector: (row: any) => row.oldMaturityDate ? new Date(row.oldMaturityDate).toLocaleDateString() : "-",
+      sortable: true,
+      width: "140px",
+    },
+    {
+      name: "New Maturity Date",
+      selector: (row: any) => row.newMaturityDate ? new Date(row.newMaturityDate).toLocaleDateString() : "-",
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Profit Rate",
+      selector: (row: any) => row.newProfitRate || "-",
+      sortable: true,
+      width: "100px",
+    },
+    {
+      name: "Write Off Amount",
+      selector: (row: any) => row.writeOffAmount != null ? `SAR ${parseFloat(row.writeOffAmount).toFixed(2)}` : "-",
+      sortable: true,
+      width: "140px",
+    },
+    {
+      name: "Justification",
+      selector: (row: any) => row.justification || "-",
+      sortable: false,
+      width: "250px",
+    },
+    {
+      name: "Created At",
+      selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
+      sortable: true,
+      width: "120px",
+    },
+  ];
+
   if (loading) {
     return <Loader />;
   }
 
   return (
     <div className="p-3">
-      {reschedulingData && (
-        <div className="p-3 mb-3" style={{ background: "white" }}>
-          <div className="row p-3 g-3 align-items-center account-card">
-            <div className="col-12">
-              <h5 
-                style={{ 
-                  fontSize: "16px", 
-                  fontWeight: "600", 
-                  marginBottom: "24px",
-                  padding: "12px",
-                  backgroundColor: "#f8f9fa",
-                  borderRadius: "4px"
-                }}
-              >
-                Rescheduling Request Details
-              </h5>
-              <div
-                className="d-flex justify-content-between align-items-center mt-2 mb-3"
-                style={{ borderBottom: "1px solid #CFCFCF" }}
-              >
-                <p
-                  style={{
-                    color: "#0B0B0B",
-                    fontSize: "14px",
-                    lineHeight: "1.5rem",
-                  }}
-                >
-                  Purpose of Rescheduling
-                </p>
-                <span
-                  style={{
-                    fontWeight: "600",
-                    color: "#0B0B0B",
-                    fontSize: "14px",
-                  }}
-                >
-                  {reschedulingData.purpose_of_rescheduling?.title || "-"}
-                </span>
-              </div>
-              <div
-                className="d-flex justify-content-between align-items-center mt-2 mb-3"
-                style={{ borderBottom: "1px solid #CFCFCF" }}
-              >
-                <p
-                  style={{
-                    color: "#0B0B0B",
-                    fontSize: "14px",
-                    lineHeight: "1.5rem",
-                  }}
-                >
-                  Type
-                </p>
-                <span
-                  style={{
-                    fontWeight: "600",
-                    color: "#0B0B0B",
-                    fontSize: "14px",
-                  }}
-                >
-                  {reschedulingData.type || "-"}
-                </span>
-              </div>
-              <div
-                className="d-flex justify-content-between align-items-center mt-2 mb-3"
-                style={{ borderBottom: "1px solid #CFCFCF" }}
-              >
-                <p
-                  style={{
-                    color: "#0B0B0B",
-                    fontSize: "14px",
-                    lineHeight: "1.5rem",
-                  }}
-                >
-                  Status
-                </p>
-                <span
-                  style={{
-                    fontWeight: "600",
-                    color: "#0B0B0B",
-                    fontSize: "14px",
-                  }}
-                >
-                  {reschedulingData.status || "-"}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-      
-      <div className="mb-3">
-        <h5 style={{ fontSize: "16px", fontWeight: "600" }}>
-          Rescheduling Documents
+      {/* Reschedule History Section */}
+      <div>
+        <h5 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px" }}>
+          Reschedule History
         </h5>
+        
+        {historyLoading ? (
+          <Loader />
+        ) : rescheduleHistory.length > 0 ? (
+          <TableView
+            header={historyTableHeaders}
+            data={rescheduleHistory}
+            paginationShow={false}
+          />
+        ) : (
+          <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
+            No reschedule history available
+          </div>
+        )}
       </div>
-      
-      {documents.length > 0 ? (
-        <TableView
-          header={tableHeaders}
-          data={documents}
-          paginationShow={false}
-        />
-      ) : (
-        <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-          No documents available
-        </div>
-      )}
     </div>
   );
 }
