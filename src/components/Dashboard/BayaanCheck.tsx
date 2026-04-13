@@ -86,7 +86,7 @@ function BayaanCheck({ fullDetail }: any) {
   return (
     <>
     {loading && <Loader />}
-    <div className="product-tabs-container product-settings-tabs simah-tabs">
+    <div className="product-tabs-container product-settings-tabs simah-tabs" style={{ fontFamily: 'inherit', fontSize: '14px' }}>
       <Tabs
         activeKey={active}
         className="d-flex gap-1 mt-4"

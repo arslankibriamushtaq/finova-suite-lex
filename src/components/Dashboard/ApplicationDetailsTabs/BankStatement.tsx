@@ -16,6 +16,7 @@ interface Transaction {
 
 function BankStatement({ financialData }: any) {
   const [accountData, setAccountData] = useState<any>(null);
+  const [disbursementAccount, setDisbursementAccount] = useState<any>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const { id } = useParams();
 
@@ -51,34 +52,32 @@ function BankStatement({ financialData }: any) {
   }, [id, financialData]);
 
   const extractData = (data: any) => {
-    // Handle new API response structure with accounts array
-    if (data.accounts && Array.isArray(data.accounts) && data.accounts.length > 0) {
-      // Get the first account (or primary account if available)
-      const account = data.accounts.find((acc: any) => acc.is_primary) || data.accounts[0];
-      
-      // Set account data
+    const accountsList = data.accounts || data.bankAccounts || data.bank_accounts || [];
+    const accountsArray = Array.isArray(accountsList) ? accountsList : [];
+    const account = accountsArray.find((acc: any) => acc.is_primary) || accountsArray[0];
+
+    setDisbursementAccount(data.disbursementAccount || data.disbursement_account || null);
+
+    if (account) {
       setAccountData({
-        account_holder_name: account.account_holder_name || "",
-        bank_name: account.bank?.name || account.bank?.name_ar || "",
-        iban: account.iban || "",
+        account_holder_name: account.account_holder_name || account.holder_name || account.name || "",
+        bank_name: account.bank?.name || account.bank?.name_ar || account.bank || account.provider_id || "",
+        iban: account.iban || account.IBAN || "",
         account_id: account.account_id || "",
       });
 
-      // Extract and map transactions
-      const transactionsData = account.transactions || [];
-      const mappedTransactions = transactionsData.map((txn: any) => ({
-        transaction_id: txn.transaction_id || "",
+      const transactionsData = account.transactions || account.transaction_list || account.transaction_details || [];
+      const mappedTransactions = (Array.isArray(transactionsData) ? transactionsData : []).map((txn: any) => ({
+        transaction_id: txn.transaction_id || txn.id || "",
         account_id: account.account_id || "",
-        provider_id: account.bank?.name || account.bank?.name_ar || "",
-        credit_debit_indicator: txn.transaction_type || (parseFloat(txn.amount || 0) >= 0 ? "Credit" : "Debit") || "Debit",
+        provider_id: account.bank?.name || account.bank?.name_ar || account.bank || account.provider_id || "",
+        credit_debit_indicator: txn.transaction_type || txn.credit_debit_indicator || txn.indicator || (parseFloat(txn.amount || 0) >= 0 ? "Credit" : "Debit") || "Debit",
         amount: txn.amount || "0.00",
         currency: txn.currency || "SAR",
-        booking_date_time: txn.transaction_date || txn.booking_date_time || "",
+        booking_date_time: txn.transaction_date || txn.booking_date_time || txn.date || "",
       }));
-      
       setTransactions(mappedTransactions);
     } else {
-      // Fallback to old structure
       const accountInfo = data.account_info || data.account || data;
       setAccountData(accountInfo);
       const transactionsData = data.transactions || data.transaction_list || data.transaction_details || [];
@@ -109,11 +108,11 @@ function BankStatement({ financialData }: any) {
 //   };
 
   // Check if data is empty
-  const isAccountDataEmpty = !accountData || Object.keys(accountData).length === 0;
+  const isAccountDataEmpty = (!accountData || Object.keys(accountData).length === 0) && !disbursementAccount;
   const isTransactionsEmpty = !transactions || transactions.length === 0;
 
   return (
-    <div style={{ padding: "20px", background: "#F4F4F4", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "#F4F4F4", minHeight: "100vh", fontFamily: "inherit", fontSize: "14px" }}>
       {/* Top Section - Account Information */}
       <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
         {isAccountDataEmpty ? (
@@ -191,6 +190,33 @@ function BankStatement({ financialData }: any) {
         )}
       </div>
 
+      {disbursementAccount && (
+        <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+          <div style={{ fontSize: "18px", fontWeight: 600, color: "#000", marginBottom: "12px" }}>
+            Disbursement Account
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
+            <div>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>Account Holder</div>
+              <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                {disbursementAccount.account_holder_name || disbursementAccount.holder_name || disbursementAccount.name || "-"}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>Bank Name</div>
+              <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                {disbursementAccount.bank?.name || disbursementAccount.bank || disbursementAccount.provider_id || "-"}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>IBAN</div>
+              <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                {disbursementAccount.iban || disbursementAccount.IBAN || "-"}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Bottom Section - Transaction Details */}
       {isTransactionsEmpty ? (
         <div style={{ background: "#fff", padding: "40px", borderRadius: "8px", textAlign: "center", color: "#000", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
