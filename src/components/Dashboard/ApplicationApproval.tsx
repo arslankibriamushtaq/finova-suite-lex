@@ -249,7 +249,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
   if (error) return <div style={{ color: 'crimson' }}>{error}</div>;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: "20px", fontFamily: 'inherit', fontSize: '14px' }}>
       <div style={{ 
         background: "white", 
         borderRadius: "8px",

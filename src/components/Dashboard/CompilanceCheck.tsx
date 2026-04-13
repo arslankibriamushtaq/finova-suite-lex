@@ -176,7 +176,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
   const groupAnswersByCategory = () => {
     const grouped: { [key: string]: any[] } = {};
     answers.forEach((answer) => {
-      const category = answer.data?.category || "Other";
+      const category = answer.category || answer.data?.category || "Other";
       if (!grouped[category]) {
         grouped[category] = [];
       }
@@ -186,6 +186,10 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
   };
 
   const groupedAnswers = groupAnswersByCategory();
+  const complianceHistoryEntries = complianceHistory && typeof complianceHistory === "object"
+    ? Object.entries(complianceHistory)
+    : [];
+  const hasComplianceHistory = complianceHistoryEntries.length > 0;
 
   // Helper function to format category name (capitalize first letter)
   const formatCategoryName = (category: string) => {
@@ -198,7 +202,24 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
       <div className="profile-sec mt-3 mb-3">
         <div className="row g-3 align-items-center account-card">
           <div className="col-12">
-            <div className="p-4" style={{ background: "white", borderRadius: "8px" }}>
+            <div className="p-4" style={{ background: "white", borderRadius: "8px", fontFamily: 'inherit', fontSize: '14px' }}>
+              {hasComplianceHistory && (
+                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "8px", background: "#F8FAFC", border: "1px solid #E5E7EB" }}>
+                  <h4 style={{ fontSize: "16px", fontWeight: 600, color: "#000", marginBottom: "12px" }}>
+                    KYC / Compliance Summary
+                  </h4>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
+                    {complianceHistoryEntries.map(([key, value]) => (
+                      <div key={String(key)} style={{ padding: "12px", background: "#fff", borderRadius: "6px", border: "1px solid #E5E7EB" }}>
+                        <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>{String(key)}</div>
+                        <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                          {typeof value === "object" ? JSON.stringify(value) : String(value ?? "-")}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               {/* Compliance Questions in Two Columns */}
               {answers.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
