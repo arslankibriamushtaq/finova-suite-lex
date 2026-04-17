@@ -978,101 +978,102 @@ const DasbhboardSidebar = () => {
         //     // },
         //   ],
         // },
-        // hasAccess("reports_module") &&
-        // {
-        //   label: "Reports",
-        //   Link: "Reports",
-        //   img: Images.reportsIconDark,
-        //   active: pathname.split("/").includes("Reports"),
-        //   submenu: [
-        //     //  hasAccess("account_report_module") && 
-        //      {
-        //       label: "Account Report",
-        //       Link: "AccountReportsList",
-        //       LinkLable: "/Lms/Reports",
-        //       active: pathname.includes("/Lms/Reports/AccountReportsList"),
+        hasAccess("reports_module") &&
+        {
+          label: "Reports",
+          Link: "Reports",
+          img: Images.reportsIconDark,
+          active: pathname.split("/").includes("Reports"),
+          submenu: [
+            //  hasAccess("account_report_module") && 
+             {
+              label: "Account Report",
+              Link: "AccountReportsList",
+              LinkLable: "/Lms/Reports",
+              active: pathname.includes("/Lms/Reports/AccountReportsList"),
     
-        //     },
-        //     //  hasAccess("simah_report_module") &&
-        //       {
-        //       label: "Simah Report",
-        //       Link: "SimahReportsList",
-        //       LinkLable: "/Lms/Reports",
-        //       active: pathname.includes("/Lms/Reports/SimahReportsList"),
+            },
+            //  hasAccess("simah_report_module") &&
+              {
+              label: "Simah Report",
+              Link: "SimahReportsList",
+              LinkLable: "/Lms/Reports",
+              active: pathname.includes("/Lms/Reports/SimahReportsList"),
     
-        //     },
-        //     // hasAccess("accounting_financing_module") && {
-        //     //   label: "Accounting & Financing",
-        //     //   Link: "AccountingFinancing",
-        //     //   LinkLable: "/Lms/Reports",
-        //     //   active: pathname.split("/").includes("AccountingFinancing"),
-        //     //   menu: [
-        //     //     hasAccess("voucher_module") && {
-        //     //       label: "Voucher",
-        //     //       link: "vouchers",
-        //     //       linkLable: "AccountingFinancing",
-        //     //       active: pathname.split("/").includes("vouchers"),
-        //     //     },
-        //     //     hasAccess("day_book_module") && {
-        //     //       label: "Day Book",
-        //     //       link: "daybook",
-        //     //       linkLable: "AccountingFinancing",
-        //     //       active: pathname.split("/").includes("daybook"),
-        //     //     },
-        //     //     hasAccess("trial_balance_module") && {
-        //     //       label: "Trial Balance",
-        //     //       link: "trialbalance",
-        //     //       linkLable: "AccountingFinancing",
-        //     //       active: pathname.split("/").includes("trialbalance"),
-        //     //     },
-        //     //     hasAccess("ledger_module") && {
-        //     //       label: "Ledger",
-        //     //       link: "ledger",
-        //     //       linkLable: "AccountingFinancing",
-        //     //       active: pathname.split("/").includes("ledger"),
-        //     //     },
-        //     //   ].filter(Boolean),
-        //     // },
-        //     // {
-        //     //   label: "Loans Reports",
-        //     //   Link: "loans",
-        //     //   LinkLable: "/Lms/Reports",
-        //     //   active: pathname.split("/").includes("loans"),
-        //     //   submenu: [
-        //     //     hasAccess("overdue_loan_module") && {
-        //     //       label: "Overdue Loan",
-        //     //       link: "overdue",
-        //     //       linkLable: "loans",
-        //     //       active: pathname.split("/").includes("overdue"),
-        //     //     },
-        //     //     hasAccess("non_performing_loan_module") && {
-        //     //       label: "Non Performing Loan",
-        //     //       link: "performingLoans",
-        //     //       linkLable: "loans",
-        //     //       active: pathname.split("/").includes("performingLoans"),
-        //     //     },
-        //     //     hasAccess("due_loan_module") && {
-        //     //       label: "Due Loan",
-        //     //       link: "due",
-        //     //       linkLable: "loans",
-        //     //       active: pathname.split("/").includes("due"),
-        //     //     },
-        //     //     hasAccess("early_settlement_module") && {
-        //     //       label: "Early Settlement",
-        //     //       link: "earlySettlement",
-        //     //       linkLable: "loans",
-        //     //       active: pathname.split("/").includes("earlySettlement"),
-        //     //     },
-        //     //     hasAccess("write_off_loan_module") && {
-        //     //       label: "Write Off Loan",
-        //     //       link: "writeOff",
-        //     //       linkLable: "loans",
-        //     //       active: pathname.split("/").includes("writeOff"),
-        //     //     },
-        //     //   ].filter(Boolean),
-        //     // },
-        //   ].filter(Boolean),
-        // },
+            },
+            // hasAccess("accounting_financing_module") &&
+             {
+              label: "Accounting & Financing",
+              Link: "AccountingFinancing",
+              LinkLable: "/Lms/Reports",
+              active: pathname.split("/").includes("AccountingFinancing"),
+              menu: [
+                hasAccess("voucher_module") && {
+                  label: "Voucher",
+                  link: "vouchers",
+                  linkLable: "AccountingFinancing",
+                  active: pathname.split("/").includes("vouchers"),
+                },
+                hasAccess("day_book_module") && {
+                  label: "Day Book",
+                  link: "daybook",
+                  linkLable: "AccountingFinancing",
+                  active: pathname.split("/").includes("daybook"),
+                },
+                hasAccess("trial_balance_module") && {
+                  label: "Trial Balance",
+                  link: "trialbalance",
+                  linkLable: "AccountingFinancing",
+                  active: pathname.split("/").includes("trialbalance"),
+                },
+                hasAccess("ledger_module") && {
+                  label: "Ledger",
+                  link: "ledger",
+                  linkLable: "AccountingFinancing",
+                  active: pathname.split("/").includes("ledger"),
+                },
+              ].filter(Boolean),
+            },
+            {
+              label: "Loans Reports",
+              Link: "loans",
+              LinkLable: "/Lms/Reports",
+              active: pathname.split("/").includes("loans"),
+              submenu: [
+                hasAccess("overdue_loan_module") && {
+                  label: "Overdue Loan",
+                  link: "overdue",
+                  linkLable: "loans",
+                  active: pathname.split("/").includes("overdue"),
+                },
+                hasAccess("non_performing_loan_module") && {
+                  label: "Non Performing Loan",
+                  link: "performingLoans",
+                  linkLable: "loans",
+                  active: pathname.split("/").includes("performingLoans"),
+                },
+                hasAccess("due_loan_module") && {
+                  label: "Due Loan",
+                  link: "due",
+                  linkLable: "loans",
+                  active: pathname.split("/").includes("due"),
+                },
+                hasAccess("early_settlement_module") && {
+                  label: "Early Settlement",
+                  link: "earlySettlement",
+                  linkLable: "loans",
+                  active: pathname.split("/").includes("earlySettlement"),
+                },
+                hasAccess("write_off_loan_module") && {
+                  label: "Write Off Loan",
+                  link: "writeOff",
+                  linkLable: "loans",
+                  active: pathname.split("/").includes("writeOff"),
+                },
+              ].filter(Boolean),
+            },
+          ].filter(Boolean),
+        },
         // hasAccess("accounting_financing_module") &&
         // {
         //   label: "Accounting & Financing",

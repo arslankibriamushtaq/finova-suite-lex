@@ -320,7 +320,7 @@ const Ledger = () => {
 
           <div className="col-2 text-end mt-4">
             <button
-              className="invoice-btn bg-dark"
+              className="invoice-btn bg-dark text-white"
                onClick={() => {
                 exportToCSV(ledgerData, "ledgerData");
               }}

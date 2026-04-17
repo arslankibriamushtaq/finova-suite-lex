@@ -511,7 +511,7 @@ const Vouchers = () => {
           </div>
           <div className="col-2 d-flex justify-content-end">
             <button
-              className="invoice-btn bg-dark text-end"
+              className="invoice-btn bg-dark text-end text-white"
               onClick={() => {
                 exportToCSV(allCallActivity, "Voucher");
               }}
