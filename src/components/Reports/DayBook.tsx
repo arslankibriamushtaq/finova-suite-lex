@@ -148,7 +148,7 @@ const DayBook = () => {
 
           <div className="col-2 text-end">
             <button
-              className="invoice-btn bg-dark"
+              className="invoice-btn bg-dark text-white"
               onClick={() => {
                 setModal(true);
               }}

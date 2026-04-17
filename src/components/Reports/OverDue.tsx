@@ -195,7 +195,7 @@ const OverDue = () => {
               </label>
                     <Select id="voucherType" /> */}
               <button
-                className="invoice-btn bg-dark mt-4 "
+                className="invoice-btn bg-primary text-white mt-4 "
                 onClick={() => {
                   setFromDate("");
                   setToDate("");
@@ -226,7 +226,7 @@ const OverDue = () => {
           </div>
           <div className="col-2 text-end">
             <button
-              className="invoice-btn mt-4 bg-dark"
+              className="invoice-btn mt-4 bg-primary text-white"
               onClick={() => {
                 exportToCSV(allCallActivity, "OverDueLoans");
               }}
