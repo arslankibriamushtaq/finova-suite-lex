@@ -1248,7 +1248,7 @@ const DasbhboardSidebar = () => {
               label: "Chart of account",
               Link: "ChartOfAccount",
               LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccount"),
+              active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
             },
             //hasAccess("coa_configuration_module") &&
              {
@@ -1256,6 +1256,12 @@ const DasbhboardSidebar = () => {
               Link: "CoaConfiguration",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
+            },
+             {
+              label: "Chart of accounts field",
+              Link: "ChartOfAccountFields",
+              LinkLable: "/Lms/ChartOfAccount",
+              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccountFields"),
             },
           ].filter(Boolean),
         },

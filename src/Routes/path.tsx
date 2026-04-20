@@ -217,6 +217,7 @@ import CollateralManagementEdit from "../pages/lmsPages/LoanManagement/Collectro
 import CollateralAllocation from "../pages/lmsPages/LoanManagement/CollateralAllocation";
 import AccountMapping from "../components/ChartOfAccount/accountMapping";
 import Coa from "../components/ChartOfAccount/coa";
+import ChartOfAccountFields from "../components/ChartOfAccount/ChartOfAccountFields";
 import GenerateInvoice from "../components/Loans/GenerateInvoice";
 // import Days from "../components/Reports/Days";
 import Buisness from "../components/Customers/Buisness";
@@ -1365,6 +1366,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/ChartOfAccount/ChartOfAccount",
           element: <Coa />,
+        },
+        {
+          path: "Lms/ChartOfAccount/ChartOfAccountFields",
+          element: <ChartOfAccountFields />,
         },
         {
           path: "Lms/Customers/AllCustomers",

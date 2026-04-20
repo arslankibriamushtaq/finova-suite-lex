@@ -19,9 +19,11 @@ import {
   getVauchers,
   getVoucherById,
   updateVoucher,
+  getJournalVouchersReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
+import dayjs from "dayjs";
 const Vouchers = () => {
   const [modal, setModal] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
@@ -76,40 +78,44 @@ const Vouchers = () => {
 
   // const [loading, setLoading] = useState(false)
 
+  const [fromDate, setFromDate] = useState<any>(dayjs().startOf('month'));
+  const [toDate, setToDate] = useState<any>(dayjs().endOf('month'));
+  const [referenceType, setReferenceType] = useState<string>("");
+  const [status, setStatus] = useState<string>("POSTED");
+
   const handleSubmit = async () => {
     try {
       setSkelitonLoading(true);
-      const data = {
-        pageNo: page,
-        pageSize: pageSize,
-        from: null,
-        to: null,
-      };
-      const res = await getVauchers(data);
-      if (res?.data?.success) {
-        const responseData = res.data.data;
-        setAllCallActivity(responseData || []);
+      const res = await getJournalVouchersReport(
+        fromDate ? fromDate.format("YYYY-MM-DD") : "",
+        toDate ? toDate.format("YYYY-MM-DD") : "",
+        referenceType,
+        status
+      );
+      if (res?.data) {
+        // Some APIs return { success: true, data: [...] }, others return data directly
+        const responseData = res.data.success ? res.data.data : res.data;
         
-        // Extract pagination data from API response
-        const pageInfo = res?.data?.pageInfo;
-        const totalItems = pageInfo?.totalItems || 0;
+        // Handle different data structures (array directly or { items: [] })
+        const items = Array.isArray(responseData) ? responseData : (responseData?.items || []);
+        setAllCallActivity(items);
+        
+        const totalItems = res?.data?.pageInfo?.totalItems || (Array.isArray(responseData) ? responseData.length : (responseData?.totalItems || items.length));
         setTotalRows(totalItems);
         
-        // Calculate from and to based on pagination
         const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
         const calculatedTo = Math.min(page * pageSize, totalItems);
         setFrom(calculatedFrom);
         setTo(calculatedTo);
       } else {
-        toast.error(res?.data?.notificationMessage);
-        // Reset pagination values on error
+        toast.error(res?.data?.notificationMessage || "Failed to fetch vouchers");
+        setAllCallActivity([]);
         setTotalRows(0);
-        setFrom(0);
-        setTo(0);
       }
     } catch (error: any) {
-      toast.error(error?.message);
-      setSkelitonLoading(false);
+      console.error("Error fetching vouchers:", error);
+      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch vouchers");
+      setAllCallActivity([]);
     } finally {
       setSkelitonLoading(false);
     }
@@ -311,9 +317,9 @@ const Vouchers = () => {
         CreditAccount: item.creditAccount,
         Amount: item.amount,
         Currency: item.currency,
-        // Status: getApprovalStatus(item.approvalStatus),
-        Status: item?.approvalStatus,
+        Status: item?.approvalStatus || item?.status,
         VoucherType: item.voucherType,
+        ReferenceType: item.referenceType || "-",
       };
     });
 
@@ -322,7 +328,7 @@ const Vouchers = () => {
     handleAccounts();
     LedgerDetails();
     return () => {};
-  }, [id, page, pageSize]);
+  }, [id, page, pageSize, fromDate, toDate, status, referenceType]);
   const handleChange = (key: string, row: any) => {
     if (key === "Edit") {
       handleEditClick(row);
@@ -366,6 +372,10 @@ const Vouchers = () => {
     {
       name: "Voucher Type",
       selector: (row: { VoucherType: any }) => row.VoucherType,
+    },
+    {
+      name: "Reference Type",
+      selector: (row: { ReferenceType: any }) => row.ReferenceType,
     },
     // {
     //   name: "Debit Account",
@@ -475,7 +485,11 @@ const Vouchers = () => {
               <label htmlFor="fromDate" className="form-label">
                 From
               </label>
-              <DatePicker />
+              <DatePicker 
+                value={fromDate}
+                onChange={(date) => setFromDate(date)}
+                format="YYYY-MM-DD"
+              />
             </div>
 
             {/* To Date */}
@@ -483,31 +497,64 @@ const Vouchers = () => {
               <label htmlFor="toDate" className="form-label">
                 To
               </label>
-              <DatePicker />
+              <DatePicker 
+                value={toDate}
+                onChange={(date) => setToDate(date)}
+                format="YYYY-MM-DD"
+              />
             </div>
 
-            {/* Voucher Type Select */}
+            {/* Reference Type */}
             <div className="col-md-3">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
+              <label htmlFor="referenceType" className="form-label">
+                Reference Type
               </label>
-              <Select id="voucherType" /> */}
+              <Input 
+                value={referenceType}
+                onChange={(e) => setReferenceType(e.target.value)}
+                placeholder="Reference Type"
+              />
             </div>
 
-            {/* Account Select */}
+            {/* Status */}
             <div className="col-md-3">
-              {/* <label htmlFor="account" className="form-label">
-                Account
+              <label htmlFor="status" className="form-label">
+                Status
               </label>
-              <Select id="account" /> */}
+              <Select 
+                value={status}
+                onChange={(value) => setStatus(value)}
+                style={{ width: '100%' }}
+              >
+                <Select.Option value="POSTED">POSTED</Select.Option>
+                <Select.Option value="DRAFT">DRAFT</Select.Option>
+                <Select.Option value="PENDING">PENDING</Select.Option>
+                <Select.Option value="REJECTED">REJECTED</Select.Option>
+              </Select>
             </div>
-          </div>
-          <div className="col-md-3 mt-3">
-            {/* <Button
-              className="mt-2"
-            >
-              Clear
-            </Button> */}
+
+            <div className="col-md-2">
+              <div className="d-flex gap-2">
+                <button
+                  className="mt-4 invoice-btn bg-dark text-white"
+                  onClick={handleSubmit}
+                  disabled={skelitonLoading}
+                >
+                  {skelitonLoading ? "..." : "Search"}
+                </button>
+                <button
+                  className="mt-4 invoice-btn bg-secondary text-white"
+                  onClick={() => {
+                    setFromDate(dayjs().startOf('month'));
+                    setToDate(dayjs().endOf('month'));
+                    setStatus("POSTED");
+                    setReferenceType("");
+                  }}
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
           </div>
           <div className="col-2 d-flex justify-content-end">
             <button

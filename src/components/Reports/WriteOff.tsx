@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TableView from "../TableView/TableView";
 import { DatePicker } from "antd";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  getAllReports,
+  getWriteOffLoansReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 const WriteOff = () => {
-  const [fromDate, setFromDate] = useState<any>("");
-  const [toDate, setToDate] = useState<any>("");
+  const [period, setPeriod] = useState<any>(dayjs("2026-03"));
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -24,22 +23,14 @@ const WriteOff = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getAllReports(
-        page,
-        pageSize,
-        4,
-        fromDate,
-        toDate
-      );
+      const res = await getWriteOffLoansReport(period.format("YYYY-MM"));
       if (res) {
-        const data = res.data.data;
-        setAllCallActivity(data || []);
-        
-        // Extract pagination data from API response
-        const pageInfo = res?.data?.pageInfo;
-        const totalItems = pageInfo?.totalItems || 0;
+        const data = res.data.data?.items;
+        setAllCallActivity(Array.isArray(data) ? data : []);
+
+        const totalItems = Array.isArray(data) ? data.length : 0;
         setTotalRows(totalItems);
-        
+
         // Calculate from and to based on pagination
         const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
         const calculatedTo = Math.min(page * pageSize, totalItems);
@@ -47,7 +38,12 @@ const WriteOff = () => {
         setTo(calculatedTo);
       }
     } catch (error: any) {
-      toast.error(error?.message);
+      console.error("Error fetching write off loans:", error);
+      toast.error(error?.message || "Failed to fetch write off loans");
+      setAllCallActivity([]);
+      setTotalRows(0);
+      setFrom(0);
+      setTo(0);
     } finally {
       setLoading(false);
     }
@@ -60,60 +56,56 @@ const WriteOff = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
+  const mappedData = useMemo(() => {
+    return (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
       return {
-        customerName: item.customerName ? item.customerName : "-",
-        loanAmount: item.loanAmount ? item.loanAmount : "-",
-        remaingAmount: item.remaingAmount ? item.remaingAmount : "-",
-        date: formatDate(item.date ? item.date : "_"),
-        iqamaId: item.iqamaId ? item.iqamaId : "-",
-        status: "Write Off",
-        applicationNum: item.applicationNum ? item.applicationNum : "-",
+        loanId: item.loanId || "-",
+        customerId: item.customerId || "-",
+        facilityType: item.facilityType || "-",
+        writeOffAmount: item.writeOffAmount != null ? `${item.writeOffAmount} SAR` : "-",
+        paymentStatus: item.paymentStatus || "-",
+        writeOffDate: item.writeOffDate ? formatDate(item.writeOffDate) : "-",
       };
     });
+  }, [allCallActivity]);
 
   useEffect(() => {
     handleSubmit();
-    return () => { };
-  }, [id, page, pageSize, fromDate]);
+  }, [id, page, pageSize]);
   const Call_Activity_Header = [
+    // {
+    //   name: "Loan ID",
+    //   selector: (row: any) => row.loanId,
+    //   width: "250px"
+    // },
+    // {
+    //   name: "Customer ID",
+    //   selector: (row: any) => row.customerId,
+    //   width: "250px"
+    // },
     {
-      name: "Customer",
-      cell: (row: any) => row.customerName,
+      name: "Facility Type",
+      selector: (row: any) => row.facilityType,
     },
     {
-      name: "Loan Amount",
-      selector: (row: { loanAmount: any }) => row.loanAmount,
+      name: "Write Off Amount",
+      selector: (row: any) => row.writeOffAmount,
     },
     {
-      name: "Overdue Amount",
-      selector: (row: { remaingAmount: any }) => row.remaingAmount,
+      name: "Payment Status",
+      selector: (row: any) => row.paymentStatus,
     },
     {
-      name: "Payable Status",
-      selector: (row: { status: any }) => row.status,
-    },
-    {
-      name: "Iqama ID",
-      selector: (row: { iqamaId: any }) => row.iqamaId,
-    },
-    {
-      name: "Loan Application No.",
-      selector: (row: { applicationNum: any }) => row.applicationNum,
-    },
-    {
-      name: "Date",
-      selector: (row: { date: any }) => row.date,
+      name: "Write Off Date",
+      selector: (row: any) => row.writeOffDate,
     },
   ];
 
   useEffect(() => {
-    if (fromDate && toDate) {
+    if (period) {
       handleSubmit();
     }
-  }, [fromDate, toDate]);
+  }, [period]);
   const exportToCSV = (data: any[], fileName: string) => {
     const csvRows = [];
     const headers = Object.keys(data[0]); // Assuming all objects have the same keys
@@ -132,26 +124,8 @@ const WriteOff = () => {
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
   };
-  const handleFromDateChange = (date: any) => {
-    const dateFrom = dayjs(date);
-    if (dateFrom) {
-      const formattedDate = dateFrom.format("YYYY-MM-DDTHH:mm:ss");
-      setFromDate(formattedDate);
-    } else {
-      setFromDate(null); // Handle case when date is cleared
-    }
-  };
+  // handleFromDateChange and handleToDateChange removed as they are no longer needed
 
-  // Handle "to" date change
-  const handleToDateChange = (date: any | null) => {
-    const dateTo = dayjs(date);
-    if (dateTo) {
-      const formattedDate = dateTo.format("YYYY-MM-DDTHH:mm:ss");
-      setToDate(formattedDate);
-    } else {
-      setToDate(null); // Handle case when date is cleared
-    }
-  };
 
   return (
     <>
@@ -173,53 +147,15 @@ const WriteOff = () => {
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
+            <div className="col-md-6">
+              <label className="form-label">Period</label>
               <DatePicker
-                onChange={(e: any) => {
-                  handleFromDateChange(e);
-                }}
-                placeholder="Select From Date"
+                picker="month"
+                value={period}
+                onChange={(date) => setPeriod(date)}
+                format="YYYY-MM"
+                allowClear={false}
               />
-            </div>
-
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker
-                onChange={handleToDateChange}
-                placeholder="Select To Date"
-              />
-            </div>
-
-            {/* Voucher Type Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-                    <Select id="voucherType" /> */}
-              <button
-                className="mt-4 invoice-btn bg-dark text-white"
-                onClick={() => {
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                Clear
-              </button>
-            </div>
-
-            {/* Account Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
             </div>
           </div>
           <div className="col-md-3 mt-3">
