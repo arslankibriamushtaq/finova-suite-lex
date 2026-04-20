@@ -140,7 +140,7 @@ const TenantsLeads = () => {
     }
   }, [searchValue]);
   useEffect(() => {
-    getBusinessCategory();
+    // getBusinessCategory();
     getBusinessType();
     handleSubmit();
     setInitialRendor(true);

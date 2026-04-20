@@ -24,11 +24,9 @@ import { RiDeleteBin6Line } from "react-icons/ri";
 import { Images } from "../Config/Images";
 
 const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
-  const [accountCode, setaccountCode] = useState<any>(null);
   const [searchValue, setSearchValue] = useState("");
   const [initialRendor, setInitialRendor] = useState(false);
   const [editRowId, setEditRowId] = useState<any>(null);
-  const [editFormData, setEditFormData] = useState<any>({});
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -36,53 +34,34 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
   const [from, setFrom] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
   const [accountTitle, setaccountTitle] = useState<any>(null);
-  const [accountBalance, setAccountBalance] = useState<any>(null);
-  const [bankAccountNumber, setBankAccountNumber] = useState<any>(null);
-  const [bic, setBic] = useState<any>(null);
   const [updateModel, setUpdateModel] = useState(false);
   const [ledgerData, setLedgerData] = useState<any>();
   const [loading, setLoading] = useState(false);
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
   const [accountType, setAccountType] = useState<any>(null);
-  const { Option } = Select;
   // useEffect(() => {
   //   // if (fromDate && toDate) {
   //     ledgerAccount();
   //   // }
   // }, [fromDate, toDate]);
-  const handleInputChange = (event: any) => {
-    const { name, value } = event.target;
-    setEditFormData({ ...editFormData, [name]: value });
-  };
   const updateAccount = async () => {
     let body: any = {
-      accountId: editRowId.id,
       accountName: accountTitle,
-      accountBalance: accountBalance,
-      // accountType: accountType,
-      accountCode: accountCode,
-      accountType:
-        typeof accountType === "string"
-          ? accountType === "Debit"
-            ? 0
-            : 1
-          : accountType,
-      bankAccountNumber,
-      bic,
+      accountNameAr: null,
     };
-    toast.promise(updateAccountLedger(body), {
+    toast.promise(updateAccountLedger(editRowId.id, body), {
       loading: "Updating account...",
       success: (response) => {
-        if (response?.data?.notificationMessage === "Operation successful.") {
+        if (response?.data?.message === "success" || response?.status === 200) {
           setUpdateModel(false);
           ledgerAccount();
-          return response.data.notificationMessage;
+          return "Account updated successfully.";
         } else {
-          throw new Error(response?.data?.notificationMessage);
+          throw new Error(response?.data?.message || "Update failed");
         }
       },
-      error: (error) => error?.message || error?.data?.notificationMessage,
+      error: (error) => error?.message || "Update failed",
     });
   };
 
@@ -91,7 +70,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
       placeholder="Search"
       value={searchValue}
       prefix={<FaSearch />}
-      onChange={(e) => setSearchValue(e.target.value)}
+      onChange={(e:any) => setSearchValue(e.target.value)}
     />
   );
 
@@ -102,11 +81,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
           setUpdateModel(true);
           setEditRowId(row);
           setaccountTitle(row.accountTitle);
-          setAccountBalance(row.accountBalance);
           setAccountType(row.accountType);
-          setBankAccountNumber(row.bankAccountNumber);
-          setBic(row.bic);
-          setaccountCode(row?.accountCode);
         }}
         key="edit"
         icon={<FaPencilAlt />}
@@ -132,7 +107,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
       selector: (row: { accountCode: any }) => row.accountCode,
     },
     {
-      name: "Account Title",
+      name: "Account Name",
       cell: (row: { accountTitle: any }) => (
         <span style={{ whiteSpace: "break-spaces" }}>{row.accountTitle}</span>
       ),
@@ -141,24 +116,10 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
       name: "Account Type",
       selector: (row: { accountType: any }) => row.accountType,
     },
-    // {
-    //   name: "Account Parent",
-    //   selector: (row: { accountGroup: any }) => row.accountGroup,
-    // },
     {
-      name: "Account Balance",
-      selector: (row: { accountBalance: any }) => row.accountBalance,
+      name: "Status",
+      selector: (row: { status: any }) => row.status,
     },
-    {
-      name: "IBAN",
-      selector: (row: { bankAccountNumber: any }) =>
-        row.bankAccountNumber || "-",
-    },
-    {
-      name: "BIC",
-      selector: (row: { bic: any }) => row.bic || "-",
-    },
-
     {
       name: "Actions",
       cell: (row: any) => (
@@ -181,20 +142,18 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
 
   const deleteAccount = async (row: any) => {
     toast.promise(deleteChartOfAccount(row?.id), {
-      loading: "Deleting account...",
+      loading: "Deactivating account...",
       success: (response) => {
-        if (response?.data?.notificationMessage === "Operation successful.") {
+        if (response?.data?.message === "success" || response?.status === 200) {
           ledgerAccount();
           setShowPopup(false);
           setEditRowId("");
-          return response.data.notificationMessage;
+          return "Account deactivated successfully.";
         } else {
-          throw new Error(
-            response?.data?.notificationMessage || "Deletion failed!"
-          );
+          throw new Error(response?.data?.message || "Deactivation failed!");
         }
       },
-      error: (error) => error?.message || error?.data?.notificationMessage,
+      error: (error) => error?.message || "Deactivation failed",
     });
   };
 
@@ -212,20 +171,12 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
         dates
       );
       if (response) {
-        const data = response.data.data;
-        setLedgerData(data || []);
-        setcsvData(data || []);
-        
-        // Extract pagination data from API response
-        const pageInfo = response?.data?.pageInfo;
-        const totalItems = pageInfo?.totalItems || 0;
-        setTotalRows(totalItems);
-        
-        // Calculate from and to based on pagination
-        const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
-        const calculatedTo = Math.min(page * pageSize, totalItems);
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
+        const data = response.data.data || [];
+        setLedgerData(data);
+        setcsvData(data);
+        setTotalRows(data.length);
+        setFrom(data.length > 0 ? 1 : 0);
+        setTo(data.length);
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -246,13 +197,11 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
     ledgerData.map((item: any) => {
       return {
         accountTitle: item.accountName,
+        accountNameAr: item.accountNameAr || "",
         accountCode: item.accountCode,
-        accountGroup: item.parentAccountName || "-",
-        accountType: item.accountType === 0 ? "Debit" : "Credit",
+        accountType: item.accountType,
+        status: item.status,
         id: item.id,
-        accountBalance: item.accountBalance || 0,
-        bankAccountNumber: item?.bankAccountNumber || "",
-        bic: item?.bic || "",
       };
     });
   useEffect(() => {
@@ -292,7 +241,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
               borderRadius: "32px",
             }}
             placeholder="Filter by date"
-            onChange={(date) => setFromDate(date)}
+            onChange={(date:any) => setFromDate(date)}
           />
           {/* <DatePicker
             style={{
@@ -369,8 +318,8 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
           </div>
         </Modal.Body>
       </Modal>
-      <Modal show={updateModel} centered size="lg">
-        <Modal.Header>
+      <Modal show={updateModel} onHide={()=>{setUpdateModel(false)}}  centered size="lg">
+        <Modal.Header closeButton>
           <Modal.Title className="modal-title">Update Account</Modal.Title>
           <div className="cursor-pointer" onClick={() => setUpdateModel(false)}>
             <img /* src={Images.closeBtn} */ alt="" />
@@ -384,59 +333,16 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountTitle}
-                onChange={(e) => setaccountTitle(e.target.value)}
+                onChange={(e:any) => setaccountTitle(e.target.value)}
               />
             </div>
-            <div className="col-6">
-              <h6 className="">Account Balance</h6>
-              <Input
-                type="text"
-                className="w-3/4 border p-2"
-                value={accountBalance}
-                onChange={(e) => setAccountBalance(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="row py-2">
             <div className="col-6">
               <h6 className="">Account Type</h6>
-              <Select
-                className="w-3/4"
+              <Input
+                type="text"
+                className="w-3/4 border p-2"
                 value={accountType}
-                onChange={(value) => setAccountType(value)}
-                placeholder="Select Account Type"
-              >
-                <Option value={0}>Debit</Option>
-                <Option value={1}>Credit</Option>
-              </Select>
-            </div>
-            <div className="col">
-              <h6 className="">IBAN</h6>
-              <Input
-                type="text"
-                className="w-3/4 border p-2"
-                value={bankAccountNumber}
-                onChange={(e) => setBankAccountNumber(e.target.value)}
-              />
-            </div>
-          </div>
-          <div className="row py-2">
-            <div className="col-6">
-              <h6 className="">BIC</h6>
-              <Input
-                type="text"
-                className="w-3/4 border p-2"
-                value={bic}
-                onChange={(e) => setBic(e.target.value)}
-              />
-            </div>
-            <div className="col">
-              <h6 className="">Account Code</h6>
-              <Input
-                type="text"
-                className="w-3/4 border p-2"
-                value={accountCode}
-                onChange={(e) => setaccountCode(e.target.value)}
+                disabled
               />
             </div>
           </div>
@@ -462,67 +368,43 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
 
 export default Account;
 function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
-  const [errors, setErrors] = useState<any>([]);
-
   const [accountCode, setaccountCode] = useState<any>(null);
   const [accountTitle, setaccountTitle] = useState<any>(null);
-  const [accountBalance, setAccountBalance] = useState<any>(null);
-  const [bankAccountNumber, setBankAccountNumber] = useState<any>(null);
-  const [bic, setBic] = useState<any>(null);
-  const [parentGroupId, setparentGroupId] = useState<any>(null);
-  const [ledgerData, setLedgerData] = useState<any>();
-  const [loading, setLoading] = useState(false);
-  const [pageSize, setPageSize] = useState(10);
-  const [page, setPage] = useState(1);
-  const [totalRows, setTotalRows] = useState(0);
-  const ledgerAccount = async () => {
-    try {
-      setLoading(true);
-      const response = await getLedgerAccount(page, pageSize, "");
-      if (response) {
-        const data = response.data.data;
-        setLedgerData(data || []);
+  const [accountNameAr, setAccountNameAr] = useState<any>(null);
+  const [accountType, setAccountType] = useState<any>(null);
+  const [parentAccountCode, setParentAccountCode] = useState<any>(null);
+  const [isHeader, setIsHeader] = useState(false);
+  const { Option } = Select;
 
-        setTotalRows(response?.data?.pageInfo?.totalItems || 0);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    } finally {
-      setLoading(false);
-    }
-  };
   const addAccount = async (e: any) => {
     e.preventDefault();
 
     let body: any = {
-      accountCode: Number(accountCode),
+      accountCode,
       accountName: accountTitle,
-      parentAccount: parentGroupId != null ? String(parentGroupId) : null,
-      accountBalance: accountBalance,
-      accountDescription: "string",
-      bankAccountNumber,
-      bic,
+      accountNameAr: accountNameAr || null,
+      accountType,
+      parentAccountCode: parentAccountCode || null,
+      isHeader,
     };
 
     toast.promise(addAccountLedger(body), {
       loading: "Processing...",
       success: (response) => {
-        if (response?.data?.notificationMessage === "Operation successful.") {
+        if (response?.data?.message === "success" || response?.status === 201 || response?.status === 200) {
           setAddGroupMod(false);
-          return response.data.notificationMessage;
+          return "Account created successfully.";
         } else {
-          throw new Error(response?.data?.notificationMessage);
+          throw new Error(response?.data?.message || "Creation failed");
         }
       },
-      error: (error) => error?.message || error?.data?.notificationMessage,
+      error: (error) => error?.message || "Creation failed",
     });
   };
-  // useEffect(() => {
-  //   ledgerAccount();
-  // }, []);
+
   return (
-    <Modal show={modal} centered size="lg">
-      <Modal.Header>
+    <Modal show={modal} centered onHide={()=>{setModal(false)}} size="lg">
+      <Modal.Header closeButton>
         <Modal.Title className="modal-title">Add Account</Modal.Title>
         <div className="cursor-pointer" onClick={() => setModal(false)}>
           <img /* src={Images.closeBtn} */ alt="" />
@@ -537,13 +419,8 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountCode}
-                onChange={(e) => setaccountCode(e.target.value)}
+                onChange={(e:any) => setaccountCode(e.target.value)}
               />
-              {errors.includes("accountCode") ? (
-                <div className="pt-1 text-danger fs-12"></div>
-              ) : (
-                <div className="pt-1 group-fs">No Error</div>
-              )}
             </div>
             <div className="col">
               <h6 className="">Account Name</h6>
@@ -551,76 +428,55 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountTitle}
-                onChange={(e) => setaccountTitle(e.target.value)}
+                onChange={(e:any) => setaccountTitle(e.target.value)}
               />
-              {errors.includes("accountTitle") ? (
-                <div className="pt-1 text-danger fs-12"></div>
-              ) : (
-                <div className="pt-1 group-fs">No Error</div>
-              )}
             </div>
           </div>
 
           <div className="row py-2">
-            {/* <div className="col">
-              <h6 className="">Account Parent</h6>
-              <Select value={parentGroupId} onChange={setparentGroupId}>
-                {ledgerData &&
-                  ledgerData?.map((option) => (
-                    <option key={option.accountCode} value={option.accountCode}>
-                      {option.accountName}
-                    </option>
-                  ))}
-              </Select>
-              {errors.includes("") ? (
-                <div className="pt-1 text-danger fs-12"></div>
-              ) : (
-                <div className="pt-1 group-fs">No Error</div>
-              )}
-            </div> */}
             <div className="col">
-              <h6 className="">IBAN</h6>
+              <h6 className="">Account Name (Arabic)</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
-                value={bankAccountNumber}
-                onChange={(e) => setBankAccountNumber(e.target.value)}
+                value={accountNameAr}
+                onChange={(e:any) => setAccountNameAr(e.target.value)}
               />
-              {errors.includes("accountCode") ? (
-                <div className="pt-1 text-danger fs-12"></div>
-              ) : (
-                <div className="pt-1 group-fs">No Error</div>
-              )}
             </div>
             <div className="col">
-              <h6 className="">Account Balance</h6>
-              <Input
-                type="text"
-                className="w-3/4 border p-2"
-                value={accountBalance}
-                onChange={(e) => setAccountBalance(e.target.value)}
-              />
-              {errors.includes("accountBalance") ? (
-                <div className="pt-1 text-danger fs-12"></div>
-              ) : (
-                <div className="pt-1 group-fs">No Error</div>
-              )}
+              <h6 className="">Account Type</h6>
+              <Select
+                className="w-full"
+                value={accountType}
+                onChange={(value: any) => setAccountType(value)}
+                placeholder="Select Account Type"
+              >
+                <Option value="ASSET">Asset</Option>
+                <Option value="LIABILITY">Liability</Option>
+                <Option value="INCOME">Income</Option>
+                <Option value="EXPENSE">Expense</Option>
+                <Option value="EQUITY">Equity</Option>
+              </Select>
             </div>
           </div>
+
           <div className="row py-2">
-            <div className="col-6">
-              <h6 className="">BIC</h6>
+            <div className="col">
+              <h6 className="">Parent Account Code</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
-                value={bic}
-                onChange={(e) => setBic(e.target.value)}
+                value={parentAccountCode}
+                onChange={(e:any) => setParentAccountCode(e.target.value)}
+                placeholder="Optional"
               />
-              {errors.includes("accountBalance") ? (
-                <div className="pt-1 text-danger fs-12"></div>
-              ) : (
-                <div className="pt-1 group-fs">No Error</div>
-              )}
+            </div>
+            <div className="col d-flex align-items-center gap-2 pt-4">
+              <Checkbox
+                checked={isHeader}
+                onChange={(e: any) => setIsHeader(e.target.checked)}
+              />
+              <h6 className="mb-0">Is Header Account</h6>
             </div>
           </div>
 
@@ -628,7 +484,6 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
             type="submit"
             style={{ float: "right" }}
             className="theme-btn-next"
-            // onClick={() => setModal(false)}
           >
             Add Account
           </button>

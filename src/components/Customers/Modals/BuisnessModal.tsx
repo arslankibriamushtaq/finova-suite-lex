@@ -659,12 +659,12 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
   };
 
   useEffect(() => {
-    getBusinessCategory();
-    getBusinessType();
+    // getBusinessCategory();
+    // getBusinessType();
     //getCountryBusiness();
     //getCitiesBusiness();
     //getLanguageBusiness();
-    fetchAllEPF();
+    // fetchAllEPF();
     return () => {};
   }, []);
 

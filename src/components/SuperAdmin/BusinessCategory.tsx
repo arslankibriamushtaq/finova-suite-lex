@@ -95,7 +95,7 @@ const BusinessCategory = () => {
     }
   };
   useEffect(() => {
-    getAllBusiness();
+    // getAllBusiness();
   }, []);
   const BusinessId = async (id: any) => {
     try {

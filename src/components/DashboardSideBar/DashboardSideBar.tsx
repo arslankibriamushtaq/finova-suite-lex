@@ -1236,29 +1236,29 @@ const DasbhboardSidebar = () => {
         //     // },
         //   ].filter(Boolean),
         // },
-        // hasAccess("accounting_financing_module") &&
-        // {
-        //   label: "Chart of account",
-        //   Link: "ChartOfAccount",
-        //   active: pathname.split("/").includes("ChartOfAccount"),
-        //   img: Images.accountCharts,
-        //   submenu: [
-        //     // hasAccess("chart_of_account_module") &&
-        //      {
-        //       label: "Chart of account",
-        //       Link: "ChartOfAccount",
-        //       LinkLable: "/Lms/ChartOfAccount",
-        //       active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccount"),
-        //     },
-        //     //hasAccess("coa_configuration_module") &&
-        //      {
-        //       label: "COA Configuration",
-        //       Link: "CoaConfiguration",
-        //       LinkLable: "/Lms/ChartOfAccount",
-        //       active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
-        //     },
-        //   ].filter(Boolean),
-        // },
+        hasAccess("accounting_financing_module") &&
+        {
+          label: "Chart of account",
+          Link: "ChartOfAccount",
+          active: pathname.split("/").includes("ChartOfAccount"),
+          img: Images.accountCharts,
+          submenu: [
+            // hasAccess("chart_of_account_module") &&
+             {
+              label: "Chart of account",
+              Link: "ChartOfAccount",
+              LinkLable: "/Lms/ChartOfAccount",
+              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccount"),
+            },
+            //hasAccess("coa_configuration_module") &&
+             {
+              label: "COA Configuration",
+              Link: "CoaConfiguration",
+              LinkLable: "/Lms/ChartOfAccount",
+              active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
+            },
+          ].filter(Boolean),
+        },
      
         // {
         //   label: "Setting",

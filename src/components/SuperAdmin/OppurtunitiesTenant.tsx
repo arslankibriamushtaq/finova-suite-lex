@@ -132,7 +132,7 @@ const OppurtunititesTenant = () => {
     }
   }, [searchValue]);
   useEffect(() => {
-    getBusinessCategory();
+    // getBusinessCategory();
     getBusinessType();
     handleSubmit();
     setInitialRendor(true);

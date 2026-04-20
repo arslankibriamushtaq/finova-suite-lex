@@ -173,7 +173,7 @@ const ApplicationManagement = () => {
               toast.success("Loan has been Approved and Invoices are Generated");
               setIsModalVisible(false);
               localStorage.setItem("tabs", "DueLoan");
-              ledgerAcoount();
+              getAll();
             }, 1000);
           } else {
             throw new Error("Invoice generation failed");
@@ -239,7 +239,7 @@ const ApplicationManagement = () => {
       navigate(`/Lms/LoanManagement/RescheduleHistory/${row.applicationId}`);
     }
   };
-  const ledgerAcoount = async () => {
+  const getAll = async () => {
     try {
       setSkelitonLoading(true);
       const response = await getLoanApplications();
@@ -357,7 +357,7 @@ const ApplicationManagement = () => {
         if(param?.accountNumber) {
           getApplicationByCustomer();
         }
-        ledgerAcoount();
+        getAll();
       }, 1500);
       return () => clearTimeout(timeoutId);
     }
@@ -368,7 +368,7 @@ const ApplicationManagement = () => {
       getApplicationByCustomer();
     }
     else{
-    ledgerAcoount();
+    getAll();
     }
   }, [page, pageSize]);
   const menu = (row: any) => (

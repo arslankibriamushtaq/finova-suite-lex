@@ -4,7 +4,7 @@ import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
 const axiosLms = Axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_BASE_LMS_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL,
   // withCredentials: true,
 });
 // let tokenValue = localStorage.getItem("awn-token");
@@ -20,7 +20,8 @@ axiosLms.interceptors.request.use((reqConfig) => {
     //   config.headers["Authorization"] = `Bearer ${tokenValue}`;
      config.headers["Authorization"] = `Bearer ${token}`;
       // config.headers["Authorization"] = `Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6IjQ4QTRGRTg4MzA0RkZFNjI1RTJFN0RFNzk4NjFFQTFEIiwidHlwIjoiYXQrand0In0.eyJuYmYiOjE3NjAxMDE5MjMsImV4cCI6MTc2MDEwNTUyMywiaXNzIjoiaHR0cHM6Ly9kZXYtc2VjLmF3bi1zYS5jb20vIiwiYXVkIjoiaHR0cHM6Ly9kZXYtc2VjLmF3bi1zYS5jb20vcmVzb3VyY2VzIiwiY2xpZW50X2lkIjoiODE5MTUyN2UtMDJkNC00ZWVjLTlkNjUtODk2MDI3MTA3NzhkIiwic3ViIjoiNjYwYzM0NjItZDFhYy00NGY0LWIwNWItNTQ2Y2U3NzllNTJkIiwiYXV0aF90aW1lIjoxNzU5OTI0ODA2LCJpZHAiOiJsb2NhbCIsInJvbGUiOiJTdXBlciBBZG1pbiIsInVzZXJOYW1lIjoic2hhaGlkIiwiVGVuYW50SWQiOiIxMTExMTExMS0yMjIyLTMzMzMtNDQ0NC01NTU1NTU1NTU1NTUiLCJDb21wYW55TmFtZSI6IkF3biIsImp0aSI6IjkxOUYwNUU4N0U0NkY1NzJBQzhERDk5MzA1MzU1OUFGIiwic2lkIjoiODlCNDYxNTQwQ0VBOTg0RDE2OUE1RTczMjgyMUQyMTYiLCJpYXQiOjE3NjAxMDE5MjMsInNjb3BlIjpbIm9wZW5pZCIsInByb2ZpbGUiLCJyb2xlIiwibG1zIl0sImFtciI6WyJwd2QiXX0.s1mpOOlLM5l2ISey1JJq9O0lZHOMTE1atBnWD2jO9sMPrcadexpRjbUjjdgPvew7jGNCK8tN6e_G0IixTzHRxG-aEaIcL3xBhZzPXincmtdkL9nZ7MtiykAFXHE8ntxSDXEil5JtBedE6RrD64BAgssPeIi6lRY44k5bEvctppwXSqYnlZrrpX8pxCs9IqvYRJ-bV2mPdJtuQAPXStd2d_MndGmhWKkpszGiFzhNhOWLMTScka5HEquCZUsDfbE1LRet2NlPiDIVSmlHd6gwbOm5v-NcOT_v8Fmc9RFdbkVL1omUTb1IWke-bmp9PWhs6mRB-q88E7Q1TjP6I3thSw`;
-      config.headers["Content-Type"] = "application/json";
+      // config.headers["Content-Type"] = "application/json";
+      
       config.headers["Request-Id"] = uuidv4();
  
       // console.log("Adding token", accessToken)
