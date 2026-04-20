@@ -1,16 +1,16 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TableView from "../TableView/TableView";
 import { DatePicker } from "antd";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  getAllReports,
+  getDueLoansReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs, { Dayjs } from "dayjs";
 const Due = () => {
-  const [fromDate, setFromDate] = useState<any>("");
-  const [toDate, setToDate] = useState<any>("");
+  const [fromDate, setFromDate] = useState<any>(dayjs("2026-04-01"));
+  const [toDate, setToDate] = useState<any>(dayjs("2026-04-30"));
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -22,20 +22,19 @@ const Due = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getAllReports(
-        page,
-        pageSize,
-        2,
-        fromDate,
-        toDate
+      const res = await getDueLoansReport(
+        fromDate.format("YYYY-MM-DD"),
+        toDate.format("YYYY-MM-DD")
       );
       if (res) {
-        const data = res.data.data;
-        setAllCallActivity(data || []);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
+        const data = res.data.data?.items;
+        setAllCallActivity(Array.isArray(data) ? data : []);
+        setTotalRows(Array.isArray(data) ? data.length : 0);
       }
     } catch (error: any) {
-      toast.error(error?.message);
+      console.error("Error fetching due loans:", error);
+      toast.error(error?.message || "Failed to fetch due loans");
+      setAllCallActivity([]);
     } finally {
       setLoading(false);
     }
@@ -48,52 +47,48 @@ const Due = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
+  const mappedData = useMemo(() => {
+    return (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
       return {
-        customerName: item.customerName ? item.customerName : "-",
-        loanAmount: item.loanAmount ? item.loanAmount : "-",
-        remaingAmount: item.remaingAmount ? item.remaingAmount : "-",
-        date: formatDate(item.date ? item.date : "_"),
-        iqamaId: item.iqamaId ? item.iqamaId : "-",
-        status: "Due",
-        applicationNum: item.applicationNum ? item.applicationNum : "-",
+        loanId: item.loanId || "-",
+        customerId: item.customerId || "-",
+        facilityType: item.facilityType || "-",
+        dueAmount: item.dueAmount != null ? `${item.dueAmount} SAR` : "-",
+        paymentStatus: item.paymentStatus || "-",
+        dueDate: item.dueDate ? formatDate(item.dueDate) : "-",
       };
     });
+  }, [allCallActivity]);
 
   useEffect(() => {
     handleSubmit();
-    return () => { };
-  }, [id, page, pageSize, fromDate]);
+  }, [id, page, pageSize, fromDate, toDate]);
   const Call_Activity_Header = [
     {
-      name: "Customer",
-      cell: (row: any) => row.customerName,
+      name: "Loan ID",
+      selector: (row: any) => row.loanId,
+      width: "250px"
     },
     {
-      name: "Loan Amount",
-      selector: (row: { loanAmount: any }) => row.loanAmount,
+      name: "Customer ID",
+      selector: (row: any) => row.customerId,
+      width: "250px"
     },
     {
-      name: "Overdue Amount",
-      selector: (row: { remaingAmount: any }) => row.remaingAmount,
+      name: "Facility Type",
+      selector: (row: any) => row.facilityType,
     },
     {
-      name: "Payable Status",
-      selector: (row: { status: any }) => row.status,
+      name: "Due Amount",
+      selector: (row: any) => row.dueAmount,
     },
     {
-      name: "Iqama ID",
-      selector: (row: { iqamaId: any }) => row.iqamaId,
+      name: "Payment Status",
+      selector: (row: any) => row.paymentStatus,
     },
     {
-      name: "Loan Application No.",
-      selector: (row: { applicationNum: any }) => row.applicationNum,
-    },
-    {
-      name: "Date",
-      selector: (row: { date: any }) => row.date,
+      name: "Due Date",
+      selector: (row: any) => row.dueDate,
     },
   ];
 
@@ -120,26 +115,8 @@ const Due = () => {
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
   };
-  const handleFromDateChange = (date: any) => {
-    const dateFrom = dayjs(date);
-    if (dateFrom) {
-      const formattedDate = dateFrom.format("YYYY-MM-DDTHH:mm:ss");
-      setFromDate(formattedDate);
-    } else {
-      setFromDate(null); // Handle case when date is cleared
-    }
-  };
-
-  // Handle "to" date change
-  const handleToDateChange = (date: any | null) => {
-    const dateTo = dayjs(date);
-    if (dateTo) {
-      const formattedDate = dateTo.format("YYYY-MM-DDTHH:mm:ss");
-      setToDate(formattedDate);
-    } else {
-      setToDate(null); // Handle case when date is cleared
-    }
-  };
+  // unused handlers removed
+  
 
   return (
     <>
@@ -167,10 +144,10 @@ const Due = () => {
                 From
               </label>
               <DatePicker
-                onChange={(e: any) => {
-                  handleFromDateChange(e);
-                }}
+                value={fromDate}
+                onChange={(date) => setFromDate(date)}
                 placeholder="Select From Date"
+                allowClear={false}
               />
             </div>
 
@@ -180,8 +157,10 @@ const Due = () => {
                 To
               </label>
               <DatePicker
-                onChange={handleToDateChange}
+                value={toDate}
+                onChange={(date) => setToDate(date)}
                 placeholder="Select To Date"
+                allowClear={false}
               />
             </div>
 

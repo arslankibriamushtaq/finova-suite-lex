@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TableView from "../TableView/TableView";
 import { DatePicker } from "antd";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  getAllReports,
+  getOverdueLoansReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
@@ -20,25 +20,27 @@ const OverDue = () => {
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [asOfDate, setAsOfDate] = useState<any>(dayjs("2026-03-30"));
+  const [productCode, setProductCode] = useState("MICROFINANCE");
   const id = useParams();
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getAllReports(
-        page,
-        pageSize,
-        2,
-        fromDate,
-        toDate
+      const res = await getOverdueLoansReport(
+        asOfDate.format("YYYY-MM-DD"),
+        1,
+        productCode
       );
       if (res) {
-        const data = res.data.data;
-        setAllCallActivity(data || []);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
+        const data = res.data.data?.items;
+        setAllCallActivity(Array.isArray(data) ? data : []);
+        setTotalRows(Array.isArray(data) ? data.length : 0);
       }
     } catch (error: any) {
-      toast.error(error?.message);
+      console.error("Error fetching overdue loans:", error);
+      toast.error(error?.message || "Failed to fetch overdue loans");
+      setAllCallActivity([]);
     } finally {
       setLoading(false);
     }
@@ -51,60 +53,56 @@ const OverDue = () => {
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
+  const mappedData = useMemo(() => {
+    return (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
       return {
-        customerName: item.customerName ? item.customerName : "-",
-        loanAmount: item.loanAmount ? item.loanAmount : "-",
-        remaingAmount: item.remaingAmount ? item.remaingAmount : "-",
-        date: formatDate(item.date ? item.date : "_"),
-        iqamaId: item.iqamaId ? item.iqamaId : "-",
-        status: "Overdue",
-        applicationNum: item.applicationNum ? item.applicationNum : "-",
+        loanId: item.loanId || "-",
+        customerId: item.customerId || "-",
+        facilityType: item.facilityType || "-",
+        overdueAmount: item.overdueAmount != null ? `${item.overdueAmount} SAR` : "-",
+        daysPastDue: item.daysPastDue != null ? item.daysPastDue : "-",
+        paymentStatus: item.paymentStatus || "-",
+        dueDate: item.dueDate ? formatDate(item.dueDate) : "-",
       };
     });
+  }, [allCallActivity]);
 
   useEffect(() => {
-    handleSubmit();
-    return () => { };
-  }, [id, page, pageSize, fromDate]);
+    if (asOfDate) {
+      handleSubmit();
+    }
+  }, [asOfDate, productCode]);
   const Call_Activity_Header = [
     {
-      name: "Customer",
-      cell: (row: any) => row.customerName,
+      name: "Loan ID",
+      selector: (row: any) => row.loanId,
+      width: "250px"
     },
     {
-      name: "Loan Amount",
-      selector: (row: { loanAmount: any }) => row.loanAmount,
+      name: "Customer ID",
+      selector: (row: any) => row.customerId,
+      width: "250px"
+    },
+    {
+      name: "Facility Type",
+      selector: (row: any) => row.facilityType,
     },
     {
       name: "Overdue Amount",
-      selector: (row: { remaingAmount: any }) => row.remaingAmount,
+      selector: (row: any) => row.overdueAmount,
     },
     {
-      name: "Payable Status",
-      selector: (row: { status: any }) => row.status,
+      name: "Days Past Due",
+      selector: (row: any) => row.daysPastDue,
     },
     {
-      name: "Iqama ID",
-      selector: (row: { iqamaId: any }) => row.iqamaId,
-    },
-    {
-      name: "Loan Application No.",
-      selector: (row: { applicationNum: any }) => row.applicationNum,
-    },
-    {
-      name: "Date",
-      selector: (row: { date: any }) => row.date,
+      name: "Due Date",
+      selector: (row: any) => row.dueDate,
     },
   ];
 
-  useEffect(() => {
-    if (fromDate && toDate) {
-      handleSubmit();
-    }
-  }, [fromDate, toDate]);
+  // Removed extra useEffect for fromDate/toDate
+  
   const exportToCSV = (data: any[], fileName: string) => {
     const csvRows = [];
     const headers = Object.keys(data[0]); // Assuming all objects have the same keys
@@ -164,53 +162,24 @@ const OverDue = () => {
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
+            <div className="col-md-6">
+              <label className="form-label">As Of Date</label>
               <DatePicker
-                onChange={(e: any) => {
-                  handleFromDateChange(e);
-                }}
-                placeholder="Select From Date"
+                value={asOfDate}
+                onChange={(date) => setAsOfDate(date)}
+                placeholder="Select Date"
+                allowClear={false}
               />
             </div>
-
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker
-                onChange={handleToDateChange}
-                placeholder="Select To Date"
+            <div className="col-md-6">
+              <label className="form-label">Product Code</label>
+              <input
+                type="text"
+                className="form-control"
+                value={productCode}
+                onChange={(e) => setProductCode(e.target.value)}
+                placeholder="Enter Product Code"
               />
-            </div>
-
-            {/* Voucher Type Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-                    <Select id="voucherType" /> */}
-              <button
-                className="invoice-btn bg-primary text-white mt-4 "
-                onClick={() => {
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                Clear
-              </button>
-            </div>
-
-            {/* Account Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
             </div>
           </div>
           <div className="col-md-3 mt-3">

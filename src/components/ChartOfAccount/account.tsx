@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import {
   addAccountLedger,
   deleteChartOfAccount,
+  activateChartOfAccount,
   getLedgerAccount,
   updateAccountLedger,
 } from "../../redux/apis/apisCrudLms";
@@ -40,6 +41,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
   const [accountType, setAccountType] = useState<any>(null);
+  const [accountNameAr, setAccountNameAr] = useState<any>(null);
   // useEffect(() => {
   //   // if (fromDate && toDate) {
   //     ledgerAccount();
@@ -48,7 +50,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
   const updateAccount = async () => {
     let body: any = {
       accountName: accountTitle,
-      accountNameAr: null,
+      accountNameAr: accountNameAr,
     };
     toast.promise(updateAccountLedger(editRowId.id, body), {
       loading: "Updating account...",
@@ -74,32 +76,36 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
     />
   );
 
-  const menu = (row: any) => (
-    <Menu onClick={({ key }: any) => console.log(key, row)}>
-      <Menu.Item
-        onClick={() => {
-          setUpdateModel(true);
-          setEditRowId(row);
-          setaccountTitle(row.accountTitle);
-          setAccountType(row.accountType);
-        }}
-        key="edit"
-        icon={<FaPencilAlt />}
-      >
-        Edit
-      </Menu.Item>
-      <Menu.Item
-        onClick={() => {
-          setShowPopup(true);
-          setEditRowId(row);
-        }}
-        key="view"
-        icon={<RiDeleteBin6Line />}
-      >
-        Delete
-      </Menu.Item>
-    </Menu>
-  );
+  const menu = (row: any) => {
+    const isActive = row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
+    return (
+      <Menu>
+        <Menu.Item
+          onClick={() => {
+            setUpdateModel(true);
+            setEditRowId(row);
+            setaccountTitle(row.accountTitle);
+            setAccountType(row.accountType);
+            setAccountNameAr(row.accountNameAr);
+          }}
+          key="edit"
+          icon={<FaPencilAlt />}
+        >
+          Edit
+        </Menu.Item>
+        <Menu.Item
+          onClick={() => {
+            toggleAccountStatus(row);
+          }}
+          key="toggle"
+          icon={<RiDeleteBin6Line />}
+          danger={isActive}
+        >
+          {isActive ? "Deactivate" : "Activate"}
+        </Menu.Item>
+      </Menu>
+    );
+  };
 
   const Account_Documents_List_Header = [
     {
@@ -118,7 +124,25 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
     },
     {
       name: "Status",
-      selector: (row: { status: any }) => row.status,
+      cell: (row: any) => {
+        const isActive = row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
+        return (
+          <div
+            style={{
+              padding: "5px 12px",
+              borderRadius: "32px",
+              fontSize: "11px",
+              fontWeight: "600",
+              backgroundColor: isActive ? "#28a745" : "#dc3545",
+              color: "white",
+              textAlign: "center",
+              width: "80px",
+            }}
+          >
+            {isActive ? "Active" : "Inactive"}
+          </div>
+        );
+      },
     },
     {
       name: "Actions",
@@ -140,20 +164,24 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
     },
   ];
 
-  const deleteAccount = async (row: any) => {
-    toast.promise(deleteChartOfAccount(row?.id), {
-      loading: "Deactivating account...",
+  const toggleAccountStatus = async (row: any) => {
+    const isActive = row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
+    const action = isActive ? "Deactivating" : "Activating";
+    const apiCall = isActive ? deleteChartOfAccount(row?.id) : activateChartOfAccount(row?.id);
+
+    toast.promise(apiCall, {
+      loading: `${action} account...`,
       success: (response) => {
-        if (response?.data?.message === "success" || response?.status === 200) {
+        if (response?.data?.message === "success" || response?.status === 200 || response?.status === 204) {
           ledgerAccount();
           setShowPopup(false);
           setEditRowId("");
-          return "Account deactivated successfully.";
+          return `Account ${isActive ? "deactivated" : "activated"} successfully.`;
         } else {
-          throw new Error(response?.data?.message || "Deactivation failed!");
+          throw new Error(response?.data?.message || `${action} failed!`);
         }
       },
-      error: (error) => error?.message || "Deactivation failed",
+      error: (error) => error?.message || `${action} failed`,
     });
   };
 
@@ -301,7 +329,7 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
             <Button
               className="col-4 d-flex cursor-pointer application-btn justify-content-center"
               onClick={() => {
-                deleteAccount(editRowId);
+                toggleAccountStatus(editRowId);
               }}
             >
               Yes
@@ -337,12 +365,12 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
               />
             </div>
             <div className="col-6">
-              <h6 className="">Account Type</h6>
+              <h6 className="">Account Name (Arabic)</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
-                value={accountType}
-                disabled
+                value={accountNameAr}
+                onChange={(e: any) => setAccountNameAr(e.target.value)}
               />
             </div>
           </div>
@@ -459,17 +487,23 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
               </Select>
             </div>
           </div>
-
           <div className="row py-2">
             <div className="col">
               <h6 className="">Parent Account Code</h6>
-              <Input
-                type="text"
-                className="w-3/4 border p-2"
+              <Select
+                showSearch
+                className="w-full"
                 value={parentAccountCode}
-                onChange={(e:any) => setParentAccountCode(e.target.value)}
-                placeholder="Optional"
-              />
+                onChange={(value: any) => setParentAccountCode(value)}
+                placeholder="Select Parent Account (Optional)"
+                allowClear
+              >
+                {mappedData?.map((item: any) => (
+                  <Option key={item.accountCode} value={item.accountCode}>
+                    {item.accountCode} - {item.accountTitle}
+                  </Option>
+                ))}
+              </Select>
             </div>
             <div className="col d-flex align-items-center gap-2 pt-4">
               <Checkbox

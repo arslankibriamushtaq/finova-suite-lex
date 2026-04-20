@@ -500,16 +500,68 @@ export function getLedgerAccount(page: any, pageSize: any, searchParam: any, dat
   //   params.append("toDate", dates.to);
   // }
 
-  return axios.get(`/ledger-service/api/v1/accounts`);
+  return axios.get(`/ledger-service/api/v1/accounts?${params.toString()}`);
 }
-export function getSimahReport() {
-  return axios.get(`/api/Application/GetAllSamaraReport`);
+export function getSimahReport(period: string) {
+  return axios.get(`/ledger-service/api/v1/reports/simah?period=${period}`);
+}
+export function getOverdueLoansReport(asOfDate: string, minDaysPastDue: number = 1, productCode: string = 'MICROFINANCE') {
+  return axios.get(`/ledger-service/api/v1/reports/overdue-loans?asOfDate=${asOfDate}&minDaysPastDue=${minDaysPastDue}&productCode=${productCode}`);
+}
+export function getDueLoansReport(fromDate: string, toDate: string) {
+  return axios.get(`/ledger-service/api/v1/reports/due-loans?fromDate=${fromDate}&toDate=${toDate}`);
+}
+export function getEarlySettlementReport(fromDate: string, toDate: string) {
+  return axios.get(`/ledger-service/api/v1/reports/early-settlement?fromDate=${fromDate}&toDate=${toDate}`);
+}
+export function getWriteOffLoansReport(period: string) {
+  return axios.get(`/ledger-service/api/v1/reports/write-off-loans?period=${period}`);
+}
+export function getTrialBalanceReport(date: string) {
+  return axios.get(`/ledger-service/api/v1/reports/trial-balance?date=${date}`);
+}
+export function getNplReport(asOfDate: string) {
+  return axios.get(`/ledger-service/api/v1/reports/npl?asOfDate=${asOfDate}`);
+}
+export function getJournalVouchersReport(fromDate: string, toDate: string, referenceType: string = "", status: string = "POSTED") {
+  return axios.get(`/ledger-service/api/v1/reports/journal-vouchers?fromDate=${fromDate}&toDate=${toDate}&referenceType=${referenceType}&status=${status}`);
+}
+export function getDaybookReport(date: string) {
+  return axios.get(`/ledger-service/api/v1/reports/day-book?date=${date}`);
+}
+export function getLedgerReport(fromDate: string, toDate: string, accountCode: string = "", accountId: string = "") {
+  return axios.get(`/ledger-service/api/v1/reports/ledger?fromDate=${fromDate}&toDate=${toDate}&accountCode=${accountCode}&accountId=${accountId}`);
 }
 export function getChartOfAccounts(productId?: number | string) {
   const url = productId 
     ? `/api/MapChartOfAccounts/GetAll?productId=${productId}`
     : `/api/MapChartOfAccounts/GetAll`;
   return axios.get(url);
+}
+
+// COA Fields CRUD
+export function getCoaFields(activeOnly: boolean = false) {
+  return axios.get(`/ledger-service/api/v1/lovs/coa-fields${activeOnly ? '?activeOnly=true' : ''}`);
+}
+
+export function getCoaFieldById(id: string) {
+  return axios.get(`/ledger-service/api/v1/lovs/coa-fields/${id}`);
+}
+
+export function createCoaField(data: any) {
+  return axios.post(`/ledger-service/api/v1/lovs/coa-fields`, data);
+}
+
+export function updateCoaField(id: string, data: any) {
+  return axios.put(`/ledger-service/api/v1/lovs/coa-fields/${id}`, data);
+}
+
+export function deactivateCoaField(id: string) {
+  return axios.post(`/ledger-service/api/v1/lovs/coa-fields/${id}/deactivate`);
+}
+
+export function activateCoaField(id: string) {
+  return axios.post(`/ledger-service/api/v1/lovs/coa-fields/${id}/activate`);
 }
 export function getGroupLedger(page: any, pageSize: any) {
   return axios.get(
@@ -796,6 +848,9 @@ export function uploadAccounts(body: any) {
 }
 export function deleteChartOfAccount(id: any) {
   return axios.post(`/ledger-service/api/v1/accounts/${id}/deactivate`, {});
+}
+export function activateChartOfAccount(id: any) {
+  return axios.post(`/ledger-service/api/v1/accounts/${id}/activate`, {});
 }
 export function updateAccountLedger(id: any, body: any) {
   return axios.put(`/ledger-service/api/v1/accounts/${id}`, body);
