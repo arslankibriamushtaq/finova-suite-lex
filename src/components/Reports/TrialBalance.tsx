@@ -12,7 +12,7 @@ const TrialBalance = () => {
   const [from, setFrom] = useState(0)
   const [totalRows, setTotalRows] = useState(0);
   const [ledgerData, setLedgerData] = useState<any>([]);
-  const [date, setDate] = useState<any>(dayjs("2026-03-30"));
+  const [date, setDate] = useState<any>(null);
   const [totals, setTotals] = useState<any>({ totalDebits: 0, totalCredits: 0, difference: 0 });
   const [loading, setLoading] = useState(false);
 
@@ -58,7 +58,8 @@ const TrialBalance = () => {
   const getDayBookReprtData = async () => {
     try {
       setLoading(true);
-      const response = await getTrialBalanceReport(date.format("YYYY-MM-DD"));
+      const finalDate = date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      const response = await getTrialBalanceReport(finalDate);
       if (response && response.data.data) {
         const reportData = response.data.data;
         const accounts = reportData.accounts || [];
@@ -152,7 +153,6 @@ const TrialBalance = () => {
                 value={date}
                 onChange={(d) => setDate(d)}
                 placeholder="Select Date"
-                allowClear={false}
               />
             </div>
 

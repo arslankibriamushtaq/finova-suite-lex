@@ -1,305 +1,193 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker } from "antd";
-import { useParams } from "react-router-dom";
+import { DatePicker, Input, Button } from "antd";
 import toast from "react-hot-toast";
 import {
-  getCustomerWiseLoanHistoryReport,
+  getLoanHistoryReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+
 const LoanHistoryReport = () => {
-  const [fromDate, setFromDate] = useState<any>("");
-  const [toDate, setToDate] = useState<any>("");
+  const [loanId, setLoanId] = useState<string>("");
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
-  const id = useParams();
+  const [viewMode, setViewMode] = useState<"list" | "detail">("list");
+  const [loanSummary, setLoanSummary] = useState<any>(null);
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (targetId?: string) => {
+    const idToUse = targetId || loanId;
+    if (!idToUse) {
+      toast.error("Please enter a Loan ID to view history");
+      return;
+    }
+
     try {
       setLoading(true);
-      const res = await getCustomerWiseLoanHistoryReport(
-        fromDate || undefined,
-        toDate || undefined
-      );
-      if (res) {
-        const data = res.data.data;
-        setAllCallActivity(data || []);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
+      const params: any = {};
+      if (fromDate) params.fromDate = fromDate;
+      if (toDate) params.toDate = toDate;
+      params.loanId = idToUse;
+
+      const res = await getLoanHistoryReport(params);
+
+      if (res && res.data) {
+        const responseData = res.data.data;
+        
+        // Handle Detail View (Loan Events)
+        const events = responseData.events || (Array.isArray(responseData) ? responseData : []);
+        setAllCallActivity(events);
+        setTotalRows(events.length);
+        setLoanSummary(responseData.summary || responseData.loanDetails || null);
+        setViewMode("detail");
       }
     } catch (error: any) {
-      toast.error(error?.message);
+      toast.error(error?.message || "Failed to fetch loan history");
+      setAllCallActivity([]);
+      setLoanSummary(null);
     } finally {
       setLoading(false);
     }
   };
 
   const formatDate = (isoString: any) => {
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
+    if (!isoString) return "-";
+    return dayjs(isoString).format("YYYY-MM-DD HH:mm");
   };
+
   const formatCurrency = (amount: any) => {
     if (amount === null || amount === undefined) return "-";
-    return typeof amount === "number" ? amount.toFixed(2) : amount;
+    return typeof amount === "number"
+      ? amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : amount;
   };
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
-      return {
-        customerName: item.customerName ? item.customerName : "-",
-        eventType: item.eventType ? item.eventType : "-",
-        eventDate: formatDate(item.eventDate ? item.eventDate : "_"),
-        description: item.description ? item.description : "-",
-        status: item.status ? item.status : "-",
-        amountEffected: item.amountEffected || item.amountEffected == 0 ? formatCurrency(item.amountEffected) : "-",
-        performedBy: item.performedBy ? item.performedBy : "-",
-      };
-    });
 
-  useEffect(() => {
-    handleSubmit();
-    return () => { };
-  }, [id, page, pageSize, fromDate]);
-  const Call_Activity_Header = [
-    {
-      name: "Customer",
-      cell: (row: any) => row.customerName,
+  const mappedData = useMemo(() => {
+    return (allCallActivity || []).map((item: any) => ({
+      eventDate: formatDate(item.eventDate || item.timestamp || item.date),
+      eventType: item.eventType || item.type || "-",
+      description: item.description || item.message || "-",
+      amount: formatCurrency(item.amount),
+      balanceAfter: formatCurrency(item.balanceAfter || item.remainingBalance),
+      performer: item.performer || item.user || "System",
+    }));
+  }, [allCallActivity]);
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (page - 1) * pageSize;
+    return mappedData.slice(startIndex, startIndex + pageSize);
+  }, [mappedData, page, pageSize]);
+
+  const Detail_Header = [
+    { name: "Event Date", selector: (row: any) => row.eventDate, sortable: true },
+    { 
+      name: "Event Type", 
+      selector: (row: any) => row.eventType,
+      cell: (row: any) => (
+        <span className="badge bg-light text-dark border fw-bold text-uppercase" style={{ fontSize: "10px" }}>
+          {row.eventType}
+        </span>
+      )
     },
-    {
-      name: "Event Date",
-      selector: (row: { eventDate: any }) => row.eventDate,
-    },
-    {
-      name: "Event Type",
-      selector: (row: { eventType: any }) => row.eventType,
-    },
-    {
-      name: "Description",
-      selector: (row: { description: any }) => row.description,
-      width: "250px",
-    },
-    {
-      name: "Status",
-      cell: (row: { status: any }) => {
-        const getStatusColor = (status: string) => {
-          switch (status?.toLowerCase()) {
-            case "paid":
-              return "rgba(63, 195, 128, 0.9)";
-            case "unpaid":
-              return "#F84D4D";
-            case "pending":
-              return "#FFC107";
-            case "approved":
-              return "rgba(63, 195, 128, 0.9)";
-            case "rejected":
-            case "reject":
-              return "#F84D4D";
-            default:
-              return "#6c757d";
-          }
-        };
-        
-        const getStatusLabel = (status: string) => {
-          switch (status?.toLowerCase()) {
-            case "paid":
-              return "Paid";
-            case "unpaid":
-              return "Unpaid";
-            case "pending":
-              return "Pending";
-            case "approved":
-              return "Approved";
-            case "rejected":
-            case "reject":
-              return "Rejected";
-            default:
-              return status || "-";
-          }
-        };
-        
-        return (
-          <div
-            style={{
-              padding: "8px 10px",
-              borderRadius: "32px",
-              fontSize: "12px",
-              backgroundColor: getStatusColor(row.status),
-              color: "white",
-              display: "inline-block",
-              textTransform: "capitalize",
-              fontWeight: "500"
-            }}
-          >
-            {getStatusLabel(row.status)}
-          </div>
-        );
-      },
-    },
-    {
-      name: "Amount Effected",
-      selector: (row: { amountEffected: any }) => row.amountEffected,
-    },
-    {
-      name: "Performed By",
-      selector: (row: { performedBy: any }) => row.performedBy,
-    },
+    { name: "Description", selector: (row: any) => row.description, grow: 2 },
+    { name: "Amount", selector: (row: any) => row.amount },
+    { name: "Balance After", selector: (row: any) => row.balanceAfter },
+    { name: "Performer", selector: (row: any) => row.performer },
   ];
 
-  useEffect(() => {
-    if (fromDate && toDate) {
-      handleSubmit();
-    }
-  }, [fromDate, toDate]);
   const exportToCSV = (data: any[], fileName: string) => {
-    const csvRows = [];
-    const headers = Object.keys(data[0]); // Assuming all objects have the same keys
-    csvRows.push(headers.join(",")); // Join header row with commas
-
-    // Loop through the data and generate CSV rows
+    if (!data || data.length === 0) { toast.error("No data to export"); return; }
+    const headers = Object.keys(data[0]);
+    const csvRows = [headers.join(",")];
     data.forEach((row) => {
-      const values = headers.map((header) => row[header]);
-      csvRows.push(values.join(","));
+      csvRows.push(headers.map((h) => {
+        const v = row[h];
+        return typeof v === "string" && v.includes(",") ? `"${v}"` : v;
+      }).join(","));
     });
-
-    // Create CSV string
-    const csvString = csvRows.join("\n");
-
-    // Create a Blob from the CSV string and trigger a download
-    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
-  };
-  const handleFromDateChange = (date: any) => {
-    const dateFrom = dayjs(date);
-    if (dateFrom) {
-      const formattedDate = dateFrom.format("YYYY-MM-DDTHH:mm:ss");
-      setFromDate(formattedDate);
-    } else {
-      setFromDate(null); // Handle case when date is cleared
-    }
-  };
-
-  // Handle "to" date change
-  const handleToDateChange = (date: any | null) => {
-    const dateTo = dayjs(date);
-    if (dateTo) {
-      const formattedDate = dateTo.format("YYYY-MM-DDTHH:mm:ss");
-      setToDate(formattedDate);
-    } else {
-      setToDate(null); // Handle case when date is cleared
-    }
   };
 
   return (
-    <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h5 className="mb-0">Customer Wise Loan History Report</h5>
-          </div>
-          {/* <div className="col-2 text-end">
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Create Voucher
-            </button>
-          </div> */}
-        </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
-              <DatePicker
-                onChange={(e: any) => {
-                  handleFromDateChange(e);
-                }}
-                placeholder="Select From Date"
-              />
-            </div>
+    <div className="col-12">
+      <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Loan History Timeline</h3>
+        <button className="invoice-btn bg-dark text-white" onClick={() => exportToCSV(mappedData, "LoanHistory")}>
+          Export CSV
+        </button>
+      </div>
 
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker
-                onChange={handleToDateChange}
-                placeholder="Select To Date"
-              />
-            </div>
-
-            {/* Voucher Type Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-                    <Select id="voucherType" /> */}
-              <button
-                className="invoice-btn bg-dark mt-4 "
-                onClick={() => {
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                Clear
-              </button>
-            </div>
-
-            {/* Account Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
-            </div>
+      <div className="bg-white p-4 rounded border mb-4 shadow-sm">
+        <div className="row g-3 align-items-end">
+          <div className="col-md-5">
+            <label className="mb-1 fw-bold text-muted small text-uppercase">Enter Loan UUID</label>
+            <Input 
+              placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" 
+              value={loanId}
+              onChange={(e) => setLoanId(e.target.value)}
+              className="w-100"
+            />
           </div>
-          <div className="col-md-3 mt-3">
-            {/* <button
-              className="mt-2 theme-btn-next bg-dark"
-              onClick={() => {
-                setFromDate("");
-                setToDate("");
-              }}
-            >
-              Clear
-            </button> */}
+          <div className="col-md-2">
+            <label className="mb-1 fw-bold text-muted small text-uppercase">From Date</label>
+            <DatePicker 
+              className="w-100" 
+              onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : "")} 
+            />
           </div>
-          <div className="col-2 text-end">
-            <button
-              className="invoice-btn mt-4 bg-dark"
-              onClick={() => {
-                exportToCSV(allCallActivity, "CustomerWiseLoanHistory");
-              }}
-            >
-              Export CSV
-            </button>
+          <div className="col-md-2">
+            <label className="mb-1 fw-bold text-muted small text-uppercase">To Date</label>
+            <DatePicker 
+              className="w-100" 
+              onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : "")} 
+            />
           </div>
-        </div>
-        <div className="cs-table p-2 mt-3">
-          <TableView
-            setPage={setPage}
-            setPageSize={setPageSize}
-            totalRows={totalRows}
-            header={Call_Activity_Header}
-            data={mappedData}
-            isLoading={loading}
-          />
+          <div className="col-md-2">
+            <Button className="theme-btn-next w-100" onClick={() => handleSubmit()} loading={loading} style={{ height: "38px" }}>
+              View History
+            </Button>
+          </div>
         </div>
       </div>
 
-      {/* <TableView /> */}
-    </>
+      {loanSummary && (
+        <div className="row mb-4">
+          <div className="col-md-12">
+            <div className="p-4 shadow-sm border bg-light rounded d-flex justify-content-between align-items-center">
+              <div>
+                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">Customer Name</small>
+                <h5 className="mb-0 fw-bold">{loanSummary.customerName || "-"}</h5>
+              </div>
+              <div className="text-end">
+                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">Loan Status</small>
+                <span className="badge bg-success">{loanSummary.status || "ACTIVE"}</span>
+              </div>
+              <div className="text-end">
+                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">Total Disbursed</small>
+                <h5 className="mb-0 fw-bold">{formatCurrency(loanSummary.disbursedAmount)} SAR</h5>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="cs-table p-2">
+        <TableView
+          setPage={setPage}
+          setPageSize={setPageSize}
+          totalRows={totalRows}
+          header={Detail_Header}
+          data={paginatedData}
+          isLoading={loading}
+        />
+      </div>
+    </div>
   );
 };
 

@@ -14,7 +14,7 @@ const DayBook = () => {
   const [to, setTo] = useState(0);
   const [dayData, setDayData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
-  const [date, setDate] = useState<any>(dayjs("2026-04-20"));
+  const [date, setDate] = useState<any>(null);
 
   useEffect(() => {
     getDayBookReprtData();
@@ -75,7 +75,8 @@ const DayBook = () => {
   const getDayBookReprtData = async () => {
     try {
       setLoading(true);
-      const res = await getDaybookReport(date.format("YYYY-MM-DD"));
+      const finalDate = date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      const res = await getDaybookReport(finalDate);
       if (res?.data) {
         const responseData = res.data.success ? res.data.data : res.data;
         const items = Array.isArray(responseData) ? responseData : (responseData?.items || []);
@@ -111,7 +112,6 @@ const DayBook = () => {
                 value={date} 
                 onChange={(d) => setDate(d)} 
                 format="YYYY-MM-DD"
-                allowClear={false}
                 bordered={false}
                 className="p-0"
               />

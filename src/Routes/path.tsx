@@ -229,6 +229,10 @@ import LoanDetailView from "../pages/lmsPages/LoanManagement/LoanDetailView";
 import LoanInvoice from "../pages/lmsPages/LoanManagement/LoanInvoice";
 import TrialBalance from "../components/Reports/TrialBalance";
 import AccountFinancing from "../components/Reports/AccountFinancing";
+import CollectionReport from "../components/Reports/CollectionReport";
+import ProfitRevenueReport from "../components/Reports/ProfitRevenueReport";
+import CashFlowReport from "../components/Reports/CashFlowReport";
+import CustomerStatementReport from "../components/Reports/CustomerStatementReport";
 import Loans from "../components/Reports/Loans";
 import Vouchers from "../components/Reports/Vouchers";
 import Ledger from "../components/Reports/Ledger";
@@ -236,6 +240,7 @@ import OverDue from "../components/Reports/OverDue";
 import PerformingLoans from "../components/Reports/PerformingLoans";
 import Due from "../components/Reports/Due";
 import EarlySettlement from "../components/Reports/EarlySettlement";
+import LoanDisbursementReport from "../components/Reports/LoanDisbursementReport";
 import WriteOff from "../components/Reports/WriteOff";
 import AccountReport from "../components/Reports/AccountReport";
 import AccountReportsList from "../components/Reports/AccountReportsList";
@@ -1479,6 +1484,22 @@ export const router = createBrowserRouter([
           element: <DayBook />,
         },
         {
+          path: "Lms/Reports/AccountingFinancing/collection",
+          element: <CollectionReport />,
+        },
+        {
+          path: "Lms/Reports/AccountingFinancing/profit-revenue",
+          element: <ProfitRevenueReport />,
+        },
+        {
+          path: "Lms/Reports/AccountingFinancing/cash-flow",
+          element: <CashFlowReport />,
+        },
+        {
+          path: "Lms/Reports/AccountingFinancing/customer-statement",
+          element: <CustomerStatementReport />,
+        },
+        {
           path: "Lms/Reports/loans/overdue",
           element: <OverDue />,
         },
@@ -1493,6 +1514,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/Reports/loans/earlySettlement",
           element: <EarlySettlement />,
+        },
+        {
+          path: "Lms/Reports/loans/disbursement",
+          element: <LoanDisbursementReport />,
         },
         {
           path: "Lms/Reports/loans/writeOff",
@@ -2052,6 +2077,22 @@ export const router = createBrowserRouter([
           element: <DayBook />,
         },
         {
+          path: "Lms/Reports/AccountingFinancing/collection",
+          element: <CollectionReport />,
+        },
+        {
+          path: "Lms/Reports/AccountingFinancing/profit-revenue",
+          element: <ProfitRevenueReport />,
+        },
+        {
+          path: "Lms/Reports/AccountingFinancing/cash-flow",
+          element: <CashFlowReport />,
+        },
+        {
+          path: "Lms/Reports/AccountingFinancing/customer-statement",
+          element: <CustomerStatementReport />,
+        },
+        {
           path: "Lms/Reports/loans/overdue",
           element: <OverDue />,
         },
@@ -2066,6 +2107,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/Reports/loans/earlySettlement",
           element: <EarlySettlement />,
+        },
+        {
+          path: "Lms/Reports/loans/disbursement",
+          element: <LoanDisbursementReport />,
         },
         {
           path: "Lms/Reports/loans/writeOff",

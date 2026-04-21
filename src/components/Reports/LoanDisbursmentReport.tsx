@@ -22,9 +22,9 @@ const LoanDisbursmentReport = () => {
       const res = await getLoanDisbursementReport(fromDate || undefined, toDate || undefined);
       if (res && res.data) {
         const data = res.data.data || [];
-        setAllCallActivity(data);
-        setTotalRows(data.length);
-        setPage(1); // Reset to first page when data changes
+        setAllCallActivity(Array.isArray(data) ? data : []);
+        setTotalRows(Array.isArray(data) ? data.length : 0);
+        setPage(1);
       }
     } catch (error: any) {
       toast.error(error?.message || "Failed to fetch loan disbursement report");

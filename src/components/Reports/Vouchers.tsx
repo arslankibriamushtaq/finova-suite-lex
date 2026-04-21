@@ -78,17 +78,24 @@ const Vouchers = () => {
 
   // const [loading, setLoading] = useState(false)
 
-  const [fromDate, setFromDate] = useState<any>(dayjs().startOf('month'));
-  const [toDate, setToDate] = useState<any>(dayjs().endOf('month'));
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
   const [referenceType, setReferenceType] = useState<string>("");
   const [status, setStatus] = useState<string>("POSTED");
+
+  useEffect(() => {
+    handleSubmit();
+  }, [fromDate, toDate, referenceType, status]);
 
   const handleSubmit = async () => {
     try {
       setSkelitonLoading(true);
+      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
+      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      
       const res = await getJournalVouchersReport(
-        fromDate ? fromDate.format("YYYY-MM-DD") : "",
-        toDate ? toDate.format("YYYY-MM-DD") : "",
+        start,
+        end,
         referenceType,
         status
       );

@@ -16,7 +16,7 @@ const SimahReport = ({ loader }: any) => {
   const [to, setTo] = useState(0);
   const [ledgerData, setLedgerData] = useState<any>([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<any>(dayjs("2026-03"));
+  const [period, setPeriod] = useState<any>(dayjs());
 
   const formatDate = (isoString: any) => {
     if (!isoString) return "-";

@@ -8,14 +8,15 @@ import dayjs from "dayjs";
 import { FaMoneyBillWave, FaChartBar, FaPercentage } from "react-icons/fa";
 
 const PerformingLoans = () => {
-  const [asOfDate, setAsOfDate] = useState<any>(dayjs("2026-03-30"));
+  const [asOfDate, setAsOfDate] = useState<any>(null);
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getNplReport(asOfDate.format("YYYY-MM-DD"));
+      const finalDate = asOfDate ? asOfDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      const res = await getNplReport(finalDate);
       if (res && res.data) {
         setReportData(res.data.data);
       }
@@ -33,9 +34,7 @@ const PerformingLoans = () => {
   }, [reportData]);
 
   useEffect(() => {
-    if (asOfDate) {
-      handleSubmit();
-    }
+    handleSubmit();
   }, [asOfDate]);
 
   const columns = [
@@ -63,7 +62,6 @@ const PerformingLoans = () => {
                 value={asOfDate}
                 onChange={(date) => setAsOfDate(date)}
                 format="YYYY-MM-DD"
-                allowClear={false}
                 bordered={false}
                 className="p-0"
               />
