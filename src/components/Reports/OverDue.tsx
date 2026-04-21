@@ -20,15 +20,16 @@ const OverDue = () => {
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [asOfDate, setAsOfDate] = useState<any>(dayjs("2026-03-30"));
+  const [asOfDate, setAsOfDate] = useState<any>(null);
   const [productCode, setProductCode] = useState("MICROFINANCE");
   const id = useParams();
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      const finalAsOfDate = asOfDate ? asOfDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
       const res = await getOverdueLoansReport(
-        asOfDate.format("YYYY-MM-DD"),
+        finalAsOfDate,
         1,
         productCode
       );
@@ -68,9 +69,7 @@ const OverDue = () => {
   }, [allCallActivity]);
 
   useEffect(() => {
-    if (asOfDate) {
-      handleSubmit();
-    }
+    handleSubmit();
   }, [asOfDate, productCode]);
   const Call_Activity_Header = [
     {
@@ -168,7 +167,6 @@ const OverDue = () => {
                 value={asOfDate}
                 onChange={(date) => setAsOfDate(date)}
                 placeholder="Select Date"
-                allowClear={false}
               />
             </div>
             <div className="col-md-6">

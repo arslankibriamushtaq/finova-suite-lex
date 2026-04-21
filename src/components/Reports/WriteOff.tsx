@@ -9,7 +9,7 @@ import {
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 const WriteOff = () => {
-  const [period, setPeriod] = useState<any>(dayjs("2026-03"));
+  const [period, setPeriod] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -23,7 +23,8 @@ const WriteOff = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getWriteOffLoansReport(period.format("YYYY-MM"));
+      const finalPeriod = period ? period.format("YYYY-MM") : dayjs().format("YYYY-MM");
+      const res = await getWriteOffLoansReport(finalPeriod);
       if (res) {
         const data = res.data.data?.items;
         setAllCallActivity(Array.isArray(data) ? data : []);
@@ -102,9 +103,7 @@ const WriteOff = () => {
   ];
 
   useEffect(() => {
-    if (period) {
-      handleSubmit();
-    }
+    handleSubmit();
   }, [period]);
   const exportToCSV = (data: any[], fileName: string) => {
     const csvRows = [];
@@ -154,7 +153,6 @@ const WriteOff = () => {
                 value={period}
                 onChange={(date) => setPeriod(date)}
                 format="YYYY-MM"
-                allowClear={false}
               />
             </div>
           </div>

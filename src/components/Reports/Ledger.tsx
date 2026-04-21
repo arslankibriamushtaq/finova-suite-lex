@@ -18,8 +18,8 @@ const Ledger = () => {
   const [to, setTo] = useState(0);
   const [ledgerData, setLedgerData] = useState<any>([]);
   const [customerData, setCustomerData] = useState<any[]>([]);
-  const [fromDate, setFromDate] = useState<any>(dayjs().startOf('month'));
-  const [toDate, setToDate] = useState<any>(dayjs().endOf('month'));
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
   const [selectedAccountCode, setSelectedAccountCode] = useState<string>("");
   const [selectedAccountId, setSelectedAccountId] = useState<string>("");
   const [responseData, setresponseData] = useState<any>();
@@ -77,16 +77,16 @@ const Ledger = () => {
     });
 
   const getLedgerReportData = async () => {
-    if (!fromDate || !toDate) {
-      toast.error("Please select a date range");
-      return;
-    }
+    // No mandatory date check to allow loading all data
 
     try {
       setLoading(true);
+      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
+      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      
       const res = await getLedgerReport(
-        fromDate.format("YYYY-MM-DD"),
-        toDate.format("YYYY-MM-DD"),
+        start,
+        end,
         selectedAccountCode === "all" ? "" : selectedAccountCode,
         selectedAccountId
       );

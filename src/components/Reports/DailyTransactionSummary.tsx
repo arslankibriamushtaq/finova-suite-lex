@@ -1,250 +1,162 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker } from "antd";
-import { useParams } from "react-router-dom";
+import { DatePicker, Button } from "antd";
 import toast from "react-hot-toast";
 import {
   getDailyTransactionReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+
 const DailyTransactionSummary = () => {
-  const [fromDate, setFromDate] = useState<any>("");
-  const [toDate, setToDate] = useState<any>("");
+  const [targetDate, setTargetDate] = useState<string>("");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [loading, setLoading] = useState(false);
-  const id = useParams();
+  const [summaryData, setSummaryData] = useState<any>(null);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getDailyTransactionReport(
-        fromDate,
-        toDate
-      );
-      if (res) {
-        const data = res.data.data;
-        setAllCallActivity(data || []);
-        setTotalRows(res?.data?.pageInfo?.totalItems || 0);
+      const finalDate = targetDate || dayjs().format("YYYY-MM-DD");
+      const res = await getDailyTransactionReport({ date: finalDate });
+      
+      if (res && res.data && res.data.data) {
+        const responseData = res.data.data;
+        const items = responseData.channels || [];
+        setAllCallActivity(items);
+        setTotalRows(items.length);
+        setSummaryData(responseData);
+        setPage(1);
       }
     } catch (error: any) {
-      toast.error(error?.message);
+      toast.error(error?.message || "Failed to fetch daily transaction summary");
+      setAllCallActivity([]);
+      setSummaryData(null);
     } finally {
       setLoading(false);
     }
   };
 
-  const formatDate = (isoString: any) => {
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
-    const day = String(date.getDate()).padStart(2, "0");
-    return `${year}-${month}-${day}`;
-  };
   const formatCurrency = (amount: any) => {
     if (amount === null || amount === undefined) return "-";
-    return typeof amount === "number" ? amount.toFixed(2) : amount;
+    return typeof amount === "number"
+      ? amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+      : amount;
   };
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
-      return {
-        customerName: item.customerName ? item.customerName : "-",
-        loanAmount: item.loanAmount || item.loanAmount == 0 ? formatCurrency(item.loanAmount) : "-",
-        remaingAmount: item.remaingAmount || item.remaingAmount == 0 ? formatCurrency(item.remaingAmount) : "-",
-        date: formatDate(item.date ? item.date : "_"),
-        iqamaId: item.iqamaId ? item.iqamaId : "-",
-        status: "Overdue",
-        applicationNum: item.applicationNum ? item.applicationNum : "-",
-      };
-    });
+
+  const mappedData = (allCallActivity || []).map((item: any) => ({
+    channel: item.channel?.replace(/_/g, " ") || "-",
+    amount: formatCurrency(item.amount ?? 0),
+    count: item.count ?? 0,
+  }));
+
+  const paginatedData = useMemo(() => {
+    const startIndex = (page - 1) * pageSize;
+    return mappedData.slice(startIndex, startIndex + pageSize);
+  }, [mappedData, page, pageSize]);
 
   useEffect(() => {
     handleSubmit();
-    return () => { };
-  }, [id, page, pageSize, fromDate]);
+  }, [targetDate]);
+
   const Call_Activity_Header = [
-    {
-      name: "Customer",
-      cell: (row: any) => row.customerName,
+    { 
+      name: "Channel Name", 
+      selector: (row: any) => row.channel,
+      cell: (row: any) => <span className="fw-bold">{row.channel}</span> 
     },
-    {
-      name: "Loan Amount",
-      selector: (row: { loanAmount: any }) => row.loanAmount,
-    },
-    {
-      name: "Overdue Amount",
-      selector: (row: { remaingAmount: any }) => row.remaingAmount,
-    },
-    {
-      name: "Payable Status",
-      selector: (row: { status: any }) => row.status,
-    },
-    {
-      name: "Iqama ID",
-      selector: (row: { iqamaId: any }) => row.iqamaId,
-    },
-    {
-      name: "Loan Application No.",
-      selector: (row: { applicationNum: any }) => row.applicationNum,
-    },
-    {
-      name: "Date",
-      selector: (row: { date: any }) => row.date,
+    { name: "Transaction Count", selector: (row: any) => row.count },
+    { 
+      name: "Total Amount", 
+      selector: (row: any) => row.amount,
+      cell: (row: any) => <span className="text-primary fw-bold">{row.amount} SAR</span> 
     },
   ];
 
-  useEffect(() => {
-    if (fromDate && toDate) {
-      handleSubmit();
-    }
-  }, [fromDate, toDate]);
   const exportToCSV = (data: any[], fileName: string) => {
-    const csvRows = [];
-    const headers = Object.keys(data[0]); // Assuming all objects have the same keys
-    csvRows.push(headers.join(",")); // Join header row with commas
-
-    // Loop through the data and generate CSV rows
+    if (!data || data.length === 0) { toast.error("No data to export"); return; }
+    const headers = Object.keys(data[0]);
+    const csvRows = [headers.join(",")];
     data.forEach((row) => {
-      const values = headers.map((header) => row[header]);
-      csvRows.push(values.join(","));
+      csvRows.push(headers.map((h) => {
+        const v = row[h];
+        return typeof v === "string" && v.includes(",") ? `"${v}"` : v;
+      }).join(","));
     });
-
-    // Create CSV string
-    const csvString = csvRows.join("\n");
-
-    // Create a Blob from the CSV string and trigger a download
-    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
-  };
-  const handleFromDateChange = (date: any) => {
-    const dateFrom = dayjs(date);
-    if (dateFrom) {
-      const formattedDate = dateFrom.format("YYYY-MM-DDTHH:mm:ss");
-      setFromDate(formattedDate);
-    } else {
-      setFromDate(null); // Handle case when date is cleared
-    }
-  };
-
-  // Handle "to" date change
-  const handleToDateChange = (date: any | null) => {
-    const dateTo = dayjs(date);
-    if (dateTo) {
-      const formattedDate = dateTo.format("YYYY-MM-DDTHH:mm:ss");
-      setToDate(formattedDate);
-    } else {
-      setToDate(null); // Handle case when date is cleared
-    }
   };
 
   return (
     <>
       <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h5 className="mb-0">Loan Disbursment Report</h5>
-          </div>
-          {/* <div className="col-2 text-end">
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Create Voucher
-            </button>
-          </div> */}
+        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">Daily Transaction Summary</h3>
+          <button className="invoice-btn bg-dark text-white" onClick={() => exportToCSV(mappedData, "DailyTransactions")}>
+            Export CSV
+          </button>
         </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center">
-            {/* From Date */}
+
+        <div className="bg-white p-4 rounded border mb-4 shadow-sm">
+          <div className="row g-3 align-items-end">
             <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
-              <DatePicker
-                onChange={(e: any) => {
-                  handleFromDateChange(e);
-                }}
-                placeholder="Select From Date"
+              <label className="mb-1 fw-bold text-muted small text-uppercase">Select Transaction Date</label>
+              <DatePicker 
+                className="w-100" 
+                onChange={(date) => setTargetDate(date ? date.format("YYYY-MM-DD") : "")} 
               />
             </div>
-
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker
-                onChange={handleToDateChange}
-                placeholder="Select To Date"
-              />
-            </div>
-
-            {/* Voucher Type Select */}
             <div className="col-md-2">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-                    <Select id="voucherType" /> */}
-              <button
-                className="invoice-btn bg-dark mt-4 "
-                onClick={() => {
-                  setFromDate("");
-                  setToDate("");
-                }}
-              >
-                Clear
-              </button>
+              <Button className="theme-btn-next w-100" onClick={handleSubmit} loading={loading} style={{ height: "38px" }}>
+                Generate Report
+              </Button>
             </div>
-
-            {/* Account Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
-            </div>
-          </div>
-          <div className="col-md-3 mt-3">
-            {/* <button
-              className="mt-2 theme-btn-next bg-dark"
-              onClick={() => {
-                setFromDate("");
-                setToDate("");
-              }}
-            >
-              Clear
-            </button> */}
-          </div>
-          <div className="col-2 text-end">
-            <button
-              className="invoice-btn mt-4 bg-dark"
-              onClick={() => {
-                exportToCSV(allCallActivity, "OverDueLoans");
-              }}
-            >
-              Export CSV
-            </button>
           </div>
         </div>
-        <div className="cs-table p-2 mt-3">
+
+        {summaryData && (
+          <div className="row mb-4">
+            <div className="col-md-3">
+              <div className="p-4 shadow-sm border bg-white rounded">
+                <small className="text-uppercase opacity-75 fw-bold text-muted">Total Credits</small>
+                <h4 className="mb-0 fw-bold text-success">{formatCurrency(summaryData.totalCredits)} SAR</h4>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="p-4 shadow-sm border bg-white rounded">
+                <small className="text-uppercase opacity-75 fw-bold text-muted">Total Debits</small>
+                <h4 className="mb-0 fw-bold text-danger">{formatCurrency(summaryData.totalDebits)} SAR</h4>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="p-4 shadow-sm border bg-white rounded">
+                <small className="text-uppercase opacity-75 fw-bold text-muted">Transaction Count</small>
+                <h4 className="mb-0 fw-bold">{summaryData.transactionCount}</h4>
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="p-4 shadow-sm border bg-white rounded">
+                <small className="text-uppercase opacity-75 fw-bold text-muted">Net Volume</small>
+                <h4 className="mb-0 fw-bold text-primary">{formatCurrency(summaryData.totalCredits - summaryData.totalDebits)} SAR</h4>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="cs-table p-2">
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}
             totalRows={totalRows}
             header={Call_Activity_Header}
-            data={mappedData}
+            data={paginatedData}
             isLoading={loading}
           />
         </div>
       </div>
-
-      {/* <TableView /> */}
     </>
   );
 };

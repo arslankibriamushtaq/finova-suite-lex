@@ -9,8 +9,8 @@ import {
 import { saveAs } from "file-saver";
 import dayjs, { Dayjs } from "dayjs";
 const Due = () => {
-  const [fromDate, setFromDate] = useState<any>(dayjs("2026-04-01"));
-  const [toDate, setToDate] = useState<any>(dayjs("2026-04-30"));
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -22,10 +22,9 @@ const Due = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const res = await getDueLoansReport(
-        fromDate.format("YYYY-MM-DD"),
-        toDate.format("YYYY-MM-DD")
-      );
+      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
+      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      const res = await getDueLoansReport(start, end);
       if (res) {
         const data = res.data.data?.items;
         setAllCallActivity(Array.isArray(data) ? data : []);
@@ -93,9 +92,7 @@ const Due = () => {
   ];
 
   useEffect(() => {
-    if (fromDate && toDate) {
-      handleSubmit();
-    }
+    handleSubmit();
   }, [fromDate, toDate]);
   const exportToCSV = (data: any[], fileName: string) => {
     const csvRows = [];
@@ -147,7 +144,6 @@ const Due = () => {
                 value={fromDate}
                 onChange={(date) => setFromDate(date)}
                 placeholder="Select From Date"
-                allowClear={false}
               />
             </div>
 
@@ -160,7 +156,6 @@ const Due = () => {
                 value={toDate}
                 onChange={(date) => setToDate(date)}
                 placeholder="Select To Date"
-                allowClear={false}
               />
             </div>
 

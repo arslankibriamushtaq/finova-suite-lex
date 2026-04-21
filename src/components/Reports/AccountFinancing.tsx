@@ -7,12 +7,16 @@ function AccountFinancing() {
     { label: "Daybook", link: "daybook" },
     { label: "Trial Balance", link: "trialbalance" },
     { label: "Ledger", link: "ledger" },
+    { label: "Collection", link: "collection" },
+    { label: "Profit & Revenue", link: "profit-revenue" },
+    { label: "Cash Flow", link: "cash-flow" },
+    { label: "Customer Statement", link: "customer-statement" },
     // { label: "Balance Sheet", link: "/balance-sheet" },
     // { label: "Profit & Loss", link: "/profit-loss" },
     // { label: "Cash Flow", link: "/cash-flow" },
     // { label: "Income Statement", link: "/income-statement" },
   ];
-  const handleButtonClick = (link) => {
+  const handleButtonClick = (link: any) => {
     navigate(link);
   };
   return (
