@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Col, Card } from "antd";
+import { Col, Card, Row } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import BarChart from "../../../components/lmsComponents/BarChart";
 import LineChart from "../../../components/lmsComponents/LineChart";
@@ -330,59 +330,62 @@ const Dashboard = () => {
             onClose={handleCloseModal}
           />
         )}
-        <div style={{backgroundColor:'var(--color-border-disabled)'}}>
-          <div className="d-flex align-items-center justify-content-between">
-            <div
-              className="d-flex align-items-center ms-2"
-              style={{ fontWeight: "600", fontSize: "20px", color: "var(--foreground)" }}
-            >
-              Overview
-            </div>
-            <div className="d-flex align-items-center">
-              <Radio.Group
-                value={radioValue}
-                onChange={(e) => handleRangeChange(e.target.value)}
-                buttonStyle="solid"
-                style={{ marginRight: "16px" }}
+         <div style={{backgroundColor:'var(--color-border-disabled)', padding: '10px'}}>
+          <Row gutter={[16, 16]} align="middle" justify="space-between">
+            <Col xs={24} md={8}>
+              <div
+                className="d-flex align-items-center ms-2"
+                style={{ fontWeight: "600", fontSize: "20px", color: "var(--foreground)" }}
               >
-                <Radio value="today">Today</Radio>
-                <Radio value="last-week">Last Week</Radio>
-                <Radio value="last-month">Last Month</Radio>
-              </Radio.Group>
-
-              <div className="d-flex gap-1 p-2">
-                <DatePicker
-                  className="date-picker"
-                  style={{backgroundColor:'white' ,borderRadius:'32px'}}
-                  placeholder="From"
-                  value={fromPicker}
-                  onChange={(date) => {
-                    setRadioValue("");
-                    setFromPicker(date);
-                    setFromDate(date);
-                  }}
-                />
-
-                <DatePicker
-                  className="date-picker"
-                  style={{backgroundColor:'white' ,borderRadius:'32px'}}
-                  placeholder="To"
-                  value={toPicker}
-                  onChange={(date) => {
-                    setToPicker(date);
-                    setToDate(date);
-                  }}
-                />
+                Overview
               </div>
-            </div>
-          </div>
+            </Col>
+            <Col xs={24} md={16}>
+              <div className="d-flex align-items-center justify-content-end flex-wrap gap-2">
+                <Radio.Group
+                  value={radioValue}
+                  onChange={(e) => handleRangeChange(e.target.value)}
+                  buttonStyle="solid"
+                >
+                  <Radio value="today">Today</Radio>
+                  <Radio value="last-week">Last Week</Radio>
+                  <Radio value="last-month">Last Month</Radio>
+                </Radio.Group>
+
+                <div className="d-flex gap-1">
+                  <DatePicker
+                    className="date-picker"
+                    style={{backgroundColor:'white' ,borderRadius:'32px'}}
+                    placeholder="From"
+                    value={fromPicker}
+                    onChange={(date) => {
+                      setRadioValue("");
+                      setFromPicker(date);
+                      setFromDate(date);
+                    }}
+                  />
+
+                  <DatePicker
+                    className="date-picker"
+                    style={{backgroundColor:'white' ,borderRadius:'32px'}}
+                    placeholder="To"
+                    value={toPicker}
+                    onChange={(date) => {
+                      setToPicker(date);
+                      setToDate(date);
+                    }}
+                  />
+                </div>
+              </div>
+            </Col>
+          </Row>
         </div>
         <div className="p-3">
-          <div className="d-flex mt-3 col-12 gap-3">
+           <Row gutter={[16, 16]} className="mt-3">
             {cardsData &&
               cardsData.map((card: any, index: any) => (
-                <Col style={{ flex: 7.5 }} key={index}>
-                  <div className="card-product p-4 text-dark">
+                <Col xs={24} sm={12} lg={8} key={index}>
+                  <div className="card-product p-4 text-dark h-100">
                     <div className="d-flex justify-content-between ">
                       <div style={{ fontSize: "14px", fontWeight: 600 }}>
                         {card.title}
@@ -434,8 +437,8 @@ const Dashboard = () => {
                 </Col>
               ))}
             {producer.map((card, index) => (
-              <Col style={{ flex: 4.5 }} key={index}>
-                <div className="card-product p-4 text-dark">
+              <Col xs={24} sm={12} lg={8} key={index}>
+                <div className="card-product p-4 text-dark h-100">
                   <div className="pb-3">{card.icon}</div>
                   <div
                     className="mt-4"
@@ -461,8 +464,8 @@ const Dashboard = () => {
               </Col>
             ))}
             {distributedAmount.map((card, index) => (
-              <Col style={{ flex: 6.8 }} key={index}>
-                <div className="card-product p-4 text-dark">
+              <Col xs={24} sm={12} lg={8} key={index}>
+                <div className="card-product p-4 text-dark h-100">
                   <div className="pb-3" style={{ filter: "invert(1)" }}>
                     {card.icon}
                   </div>
@@ -496,91 +499,86 @@ const Dashboard = () => {
                 </div>
               </Col>
             ))}
-          </div>
-          <div className="d-flex mt-3 col-12 gap-3">
-            <div className="d-flex p-3  card-product" style={{ flex: 8.5 }}>
-              {loans.map((card, index) => (
-                <Col span={9} key={index}>
-                  <div className="ms-2 text-dark">
-                    <div
-                      className="mt-2"
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        fontSize: "12px",
-                        fontWeight: "600",
-                        color: themeStyle.textColor,
-                      }}
-                    >
-                      {card.title}
-                      {card.title !== "Receivable Loan" && (
-                        <img src={Images.downArrow} alt="" className="ms-2" />
-                      )}
-                    </div>
-                    <div style={{ fontSize: "20px" }} className="mt-2">
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          color: themeStyle.textColor,
-                        }}
-                      >
-                        SAR{" "}
-                      </span>
-                      <span style={{ color: themeStyle.textColor,fontWeight: "600" }}>
-                        {loader ? <PulseLoading /> : card.value}
-                      </span>
-                    </div>
-                    <div
-                      className="mt-5"
-                      style={{
-                        fontSize: "12px",
-                        fontWeight: "600",
-                        color: themeStyle.textColor,
-                      }}
-                    >
-                      {card.title1}
-                    </div>
-                    <div style={{ fontSize: "20px" }} className="mt-2">
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          color: themeStyle.textColor,
-                        }}
-                      >
-                        SAR{" "}
-                      </span>
-                      <span style={{ color: themeStyle.textColor,fontWeight: "600" }}>
-                        {loader ? <PulseLoading /> : card.value1}
-                      </span>
-                    </div>
-                  </div>
-                </Col>
-              ))}
-            </div>
+          </Row>
+           <Row gutter={[16, 16]} className="mt-3">
+            <Col xs={24} lg={16}>
+              <div className="card-product p-3 h-100">
+                <Row gutter={[16, 16]}>
+                  {loans.map((card, index) => (
+                    <Col xs={24} sm={8} key={index}>
+                      <div className="text-dark">
+                        <div
+                          className="mt-2"
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                            fontSize: "12px",
+                            fontWeight: "600",
+                            color: themeStyle.textColor,
+                          }}
+                        >
+                          {card.title}
+                          {card.title !== "Receivable Loan" && (
+                            <img src={Images.downArrow} alt="" className="ms-2" />
+                          )}
+                        </div>
+                        <div style={{ fontSize: "20px" }} className="mt-2">
+                          <span
+                            style={{
+                              fontSize: "10px",
+                              color: themeStyle.textColor,
+                            }}
+                          >
+                            SAR{" "}
+                          </span>
+                          <span style={{ color: themeStyle.textColor,fontWeight: "600" }}>
+                            {loader ? <PulseLoading /> : card.value}
+                          </span>
+                        </div>
+                        <div
+                          className="mt-4"
+                          style={{
+                            fontSize: "12px",
+                            fontWeight: "600",
+                            color: themeStyle.textColor,
+                          }}
+                        >
+                          {card.title1}
+                        </div>
+                        <div style={{ fontSize: "20px" }} className="mt-2">
+                          <span
+                            style={{
+                              fontSize: "10px",
+                              color: themeStyle.textColor,
+                            }}
+                          >
+                            SAR{" "}
+                          </span>
+                          <span style={{ color: themeStyle.textColor,fontWeight: "600" }}>
+                            {loader ? <PulseLoading /> : card.value1}
+                          </span>
+                        </div>
+                      </div>
+                    </Col>
+                  ))}
+                </Row>
+              </div>
+            </Col>
 
-            <div className="" style={{ flex: 3.5 }}>
-              <Col>
+            <Col xs={24} lg={8}>
+              <div className="h-100">
                 <LineChart dashboardData={dashboardData} />
-              </Col>
-            </div>
-          </div>
-          <div className="d-flex mt-3 col-12 gap-3">
-            <div className="" style={{ flex: 8.8 }}>
-              <Col>
-                <Card title="All Customers">
-                  <BarChart dashboardData={dashboardData} />
-                </Card>
-              </Col>
-            </div>
-            {/* <div className="" style={{ flex: 3.5 }}>
-              <Col>
-                <Card title="All Customers">
-                  <PieChart />
-                </Card>
-              </Col>
-            </div> */}
-          </div>
+              </div>
+            </Col>
+          </Row>
+           <Row gutter={[16, 16]} className="mt-3">
+            <Col xs={24}>
+              <Card title="All Customers">
+                <BarChart dashboardData={dashboardData} />
+              </Card>
+            </Col>
+          </Row>
           <div className="col-12 mt-3">
             <Col>
               <Card title="Finance Details">

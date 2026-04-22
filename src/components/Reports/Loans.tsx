@@ -8,7 +8,12 @@ function Loans() {
     { label: "Due Loans Reports", link: "due" },
     { label: "Early Settlement Reports", link: "earlySettlement" },
     { label: "Write Off Loans Report", link: "writeOff" },
-    // { label: "Loan Portfolio Report", link: "brokenPromise" },
+    { label: "Loan Disbursement Report", link: "disbursement" },
+    { label: "Repayment Schedule Report", link: "repaymentScheduleReport" },
+    { label: "Loan Balance & Outstanding Report", link: "loanBalanceReport" },
+    // { label: "Loan History Report", link: "loanHistoryReport" },
+    { label: "Daily Transaction Summary", link: "dailyTransactionSummary" },
+    { label: "Performing Loans", link: "performingLoans" },
     // { label: "Aging Report", link: "aging" },
   ];
   const handleButtonClick = (link: any) => {

@@ -1,65 +1,76 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { DatePicker } from "antd";
 import TableView from "../TableView/TableView";
-import { getTrialList } from "../../redux/apis/apisCrudLms";
+import { getTrialBalanceReport } from "../../redux/apis/apisCrudLms";
+import dayjs from "dayjs";
+import toast from "react-hot-toast";
 const TrialBalance = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0)
   const [totalRows, setTotalRows] = useState(0);
-  const [ledgerData, setLedgerData] = useState<any>();
+  const [ledgerData, setLedgerData] = useState<any>([]);
+  const [date, setDate] = useState<any>(null);
+  const [totals, setTotals] = useState<any>({ totalDebits: 0, totalCredits: 0, difference: 0 });
   const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     getDayBookReprtData();
-  }, [page, pageSize]);
+  }, [page, pageSize, date]);
 
   const getAllDaybookReport = [
     {
-      name: "Particular",
-      selector: (row: { particular: string }) => row.particular,
+      name: "Account Code",
+      selector: (row: any) => row.accountCode,
     },
     {
-      name: "Opening Balance",
-      selector: (row: { openingBalance: number }) => row.openingBalance,
+      name: "Account Name",
+      selector: (row: any) => row.accountName,
     },
     {
-      name: "Debit",
-      selector: (row: { debit: number }) => row.debit,
+      name: "Account Type",
+      selector: (row: any) => row.accountType,
     },
     {
-      name: "Credit",
-      selector: (row: { credit: number }) => row.credit,
+      name: "Debit Balance",
+      selector: (row: any) => row.debitBalance,
     },
     {
-      name: "Closing Balance",
-      selector: (row: { closingBalance: number }) => row.closingBalance,
+      name: "Credit Balance",
+      selector: (row: any) => row.creditBalance,
     },
   ];
 
-  const mappedData =
-    ledgerData &&
-    ledgerData.map((item: any) => {
+  const mappedData = useMemo(() => {
+    return (Array.isArray(ledgerData) ? ledgerData : []).map((item: any) => {
       return {
-        id: item.id,
-        particular: item.particular,
-        openingBalance: item.openingBalance,
-        debit: item.debit,
-        credit: item.credit,
-        closingBalance: item.closingBalance,
+        accountCode: item.accountCode || "-",
+        accountName: item.accountName || "-",
+        accountType: item.accountType || "-",
+        debitBalance: item.debitBalance != null ? `${item.debitBalance.toLocaleString()} SAR` : "-",
+        creditBalance: item.creditBalance != null ? `${item.creditBalance.toLocaleString()} SAR` : "-",
       };
     });
+  }, [ledgerData]);
 
   const getDayBookReprtData = async () => {
     try {
       setLoading(true);
-      const resposne = await getTrialList(page, pageSize);
-      if (resposne) {
-        const data = resposne.data.data;
+      const finalDate = date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      const response = await getTrialBalanceReport(finalDate);
+      if (response && response.data.data) {
+        const reportData = response.data.data;
+        const accounts = reportData.accounts || [];
+        setLedgerData(accounts);
+        setTotals({
+          totalDebits: reportData.totalDebits || 0,
+          totalCredits: reportData.totalCredits || 0,
+          difference: reportData.difference || 0,
+        });
 
-        const totalItems = resposne?.data?.pageInfo?.totalItems || 0;
-        setLedgerData(data);
+        const totalItems = accounts.length;
         setTotalRows(totalItems);
         
         // Calculate from and to based on pagination
@@ -69,7 +80,9 @@ const TrialBalance = () => {
         setTo(calculatedTo);
       }
     } catch (error: any) { 
-      setLoading(false);
+      console.error("Error fetching trial balance:", error);
+      setLedgerData([]);
+      toast.error("Failed to fetch trial balance");
     } finally {
       setLoading(false);
     }
@@ -82,20 +95,22 @@ const TrialBalance = () => {
     }
 
     // Define CSV headers
-    const headers = ["Particular", "Opening Balance", "Debit", "Credit", "Closing Balance"];
+    const headers = ["Account Code", "Account Name", "Account Type", "Debit Balance", "Credit Balance"];
     
     // Convert data to CSV format
     const csvContent = [
       headers.join(","), // Header row
       ...mappedData.map((row: any) =>
         [
-          `"${row.particular || ""}"`,
-          row.openingBalance || 0,
-          row.debit || 0,
-          row.credit || 0,
-          row.closingBalance || 0,
+          `"${row.accountCode || ""}"`,
+          `"${row.accountName || ""}"`,
+          `"${row.accountType || ""}"`,
+          row.debitBalance || 0,
+          row.creditBalance || 0,
         ].join(",")
       ),
+      ["", "", "TOTALS", totals.totalDebits, totals.totalCredits].join(","),
+      ["", "", "DIFFERENCE", "", totals.difference].join(","),
     ].join("\n");
 
     // Create blob and download
@@ -104,7 +119,7 @@ const TrialBalance = () => {
     const url = URL.createObjectURL(blob);
     
     link.setAttribute("href", url);
-    link.setAttribute("download", `Trial_Balance_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute("download", `Trial_Balance_${date.format("YYYY-MM-DD")}.csv`);
     link.style.visibility = "hidden";
     
     document.body.appendChild(link);
@@ -132,20 +147,13 @@ const TrialBalance = () => {
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
-              <DatePicker />
-            </div>
-
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker />
+            <div className="col-md-6">
+              <label className="form-label">Date</label>
+              <DatePicker
+                value={date}
+                onChange={(d) => setDate(d)}
+                placeholder="Select Date"
+              />
             </div>
 
             {/* Voucher Type Select */}
@@ -195,6 +203,21 @@ const TrialBalance = () => {
           isLoading={loading}
         />
       </div>
+      {totals && (
+        <div className="mt-3 p-3 bg-light rounded">
+          <div className="row">
+            <div className="col-md-4">
+              <strong>Total Debits:</strong> {totals.totalDebits.toLocaleString()} SAR
+            </div>
+            <div className="col-md-4">
+              <strong>Total Credits:</strong> {totals.totalCredits.toLocaleString()} SAR
+            </div>
+            <div className="col-md-4 text-danger">
+              <strong>Difference:</strong> {totals.difference.toLocaleString()} SAR
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

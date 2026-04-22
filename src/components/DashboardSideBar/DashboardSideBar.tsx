@@ -7,31 +7,35 @@ import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
 import SubHeaderFlowLms from "../DashboardHeader/SubHeaderFlowLms";
-import { FaMobileAlt } from "react-icons/fa";
+import { FaMobileAlt, FaTimes } from "react-icons/fa";
 
-const DasbhboardSidebar = () => {
+const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolean }) => {
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const toggled = useSelector((state: RootState) => state.block.toggled);
+    const toggled = useSelector((state: RootState) => state.block.toggled);
+  const reduxCollapsed = useSelector((state: RootState) => state.block.collapsed);
+  const isCollapsed = effectiveCollapsed !== undefined ? effectiveCollapsed : reduxCollapsed;
   const location = useLocation();
   const pathname = location.pathname;
+
+  // Force close on mount (bypasses persistence)
+  useEffect(() => {
+    dispatch(authSlice.actions.setToggled(false));
+  }, [dispatch]);
 
   // Auto-open menu based on current route
   useEffect(() => {
     const matchIndex = sidebarItems.findIndex((item) => {
       const link = item.Link || "";
-      // Extract the top-level path segment from the item's Link
       const topSegment = link.split("/").filter(Boolean)[0];
       if (!topSegment) return false;
       return pathname.includes(`/${topSegment}`);
     });
     if (matchIndex !== -1) {
       setOpenSubmenuIndex(matchIndex);
-      
-      // Auto-open nested submenus based on active items
       const parentItem = sidebarItems[matchIndex];
       if (parentItem && Array.isArray(parentItem.menu)) {
         const nestedStates: Record<string, boolean> = {};
@@ -40,13 +44,10 @@ const DasbhboardSidebar = () => {
             const hasNestedSubmenu =
               (Array.isArray(submenuItem.submenu) && submenuItem.submenu.length > 0) ||
               (Array.isArray(submenuItem.menu) && submenuItem.menu.length > 0);
-            
             if (hasNestedSubmenu) {
               const nestedItems = submenuItem.submenu || submenuItem.menu;
               const isAnyChildActive = nestedItems.some((child: any) => child.active);
               const nestedKey = `${matchIndex}-${subIndex}`;
-              
-              // Auto-open if the submenu itself is active or any child is active
               if (submenuItem.active || isAnyChildActive) {
                 nestedStates[nestedKey] = true;
               }
@@ -57,6 +58,20 @@ const DasbhboardSidebar = () => {
       }
     }
   }, [pathname]);
+
+  // Force hide sidebar on mobile/zoom threshold
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 1024) {
+        dispatch(authSlice.actions.setToggled(false));
+      }
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [dispatch]);
 
   const permissionData = useSelector(
     (state: RootState) => state.block.permissions
@@ -1248,7 +1263,7 @@ const DasbhboardSidebar = () => {
               label: "Chart of account",
               Link: "ChartOfAccount",
               LinkLable: "/Lms/ChartOfAccount",
-              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccount"),
+              active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
             },
             //hasAccess("coa_configuration_module") &&
              {
@@ -1256,6 +1271,12 @@ const DasbhboardSidebar = () => {
               Link: "CoaConfiguration",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
+            },
+             {
+              label: "Chart of accounts field",
+              Link: "ChartOfAccountFields",
+              LinkLable: "/Lms/ChartOfAccount",
+              active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccountFields"),
             },
           ].filter(Boolean),
         },
@@ -1970,7 +1991,7 @@ const DasbhboardSidebar = () => {
   ) => (
     <div className="menu-items css-12w9als" key={item.label}>
       <SubMenu
-        label={item.label}
+        label={<span className="sidebar-label-text">{item.label}</span>}
         icon={
           item.img ? (
             <img
@@ -2010,7 +2031,7 @@ const DasbhboardSidebar = () => {
             return (
               <SubMenu
                 key={subIndex}
-                label={submenuItem.label}
+                label={<span className="sidebar-label-text">{submenuItem.label}</span>}
                 open={isNestedOpen}
                 className="nested-submenu"
                 onClick={(e) => {
@@ -2108,7 +2129,7 @@ const DasbhboardSidebar = () => {
                     />
                   }
                 >
-                  {submenuItem.label}
+                  <span className="sidebar-label-text">{submenuItem.label}</span>
                 </MenuItem>
               </Link>
             );
@@ -2124,21 +2145,20 @@ const DasbhboardSidebar = () => {
         transitionDuration={1000}
         onBackdropClick={() => dispatch(authSlice.actions.toggleSidebar())}
         toggled={toggled}
-        customBreakPoint="768px"
+        collapsed={isCollapsed}
+        customBreakPoint="1024px"
         collapsedWidth="80px"
         width="290px"
-        className="col-12 fw-bold menu-items css-12w9als"
+        className={`col-12 fw-bold menu-items css-12w9als ${isCollapsed ? "is-collapsed" : ""}`}
         style={{
           fontSize: "13px",
           backgroundColor:
             themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
+          display: window.innerWidth <= 1024 && !toggled ? "none" : "block",
         }}
       >
-        <span
-          onClick={() => {
-            navigate("/LOS/Dashboard");
-          }}
-          className="d-flex justify-content-center "
+        <div
+          className="d-flex align-items-center sidebar-logo-container px-3"
           style={{
             backgroundColor: themeStyle?.dashboardSibeBarFlow.flowSideBarLogoBg,
             paddingTop: "15px",
@@ -2148,13 +2168,24 @@ const DasbhboardSidebar = () => {
           <img 
             src={Images.FactoringLogo} 
             alt="logo" 
+            onClick={() => navigate("/LOS/Dashboard")}
             style={{
-              width: "150px",
+              width: isCollapsed ? "40px" : "150px",
               height: "auto",
-              maxHeight: "60px"
+              cursor: "pointer",
+              transition: "width 0.3s ease"
             }}
           />
-        </span>
+          {window.innerWidth <= 1024 && !isCollapsed && (
+            <button
+              className="ms-auto btn border-0 p-0"
+              style={{ color: "var(--theme-heading-text-color)", fontSize: "20px" }}
+              onClick={() => dispatch(authSlice.actions.toggleSidebar())}
+            >
+              <FaTimes />
+            </button>
+          )}
+        </div>
         <Menu>
           {sidebarItems.map((item, index) => (
             <React.Fragment key={index}>
@@ -2192,6 +2223,47 @@ const DasbhboardSidebar = () => {
           ))}
         </Menu>
       </Sidebar>
+      <style>
+        {`
+          /* Shared Sidebar Hover Logic */
+          .ps-sidebar-container {
+            overflow-x: hidden !important;
+          }
+          .ps-sidebar-root {
+            border-right: none !important;
+          }
+          /* Aggressively hide text labels when collapsed */
+          .is-collapsed .sidebar-label-text,
+          .is-collapsed .ps-menu-label,
+          .is-collapsed .ps-submenu-expand-icon {
+            display: none !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+          }
+          .is-collapsed .ps-menu-button,
+          .is-collapsed .ps-menu-button * {
+            font-size: 0 !important;
+            color: transparent !important;
+            line-height: 0 !important;
+          }
+          .is-collapsed .ps-menu-button {
+            justify-content: center !important;
+            padding: 0 !important;
+          }
+          .is-collapsed .ps-menu-icon {
+            margin-right: 0 !important;
+            margin-left: 0 !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: 100% !important;
+          }
+          .is-collapsed .sidebar-logo-container img {
+            max-width: 40px !important;
+            height: auto !important;
+          }
+        `}
+      </style>
     </>
   );
 };

@@ -1,11 +1,12 @@
 import axios from "../../utils/axios";
+import axiosLms from "../../utils/axiosLms";
 
 
 
 const tenantId = localStorage.getItem("tenantId");
 
 export function getAllCustomerIndividual(body: any) {
-  return axios.post(`/api/Individual/getall`, body);
+  return axiosLms.post(`/api/Individual/getall`, body);
 }
 
 export function getAllKycKyb(page: any, pageSize: any) {
@@ -59,18 +60,18 @@ export function updateCustomerAddress(body: any) {
 export function getDashboardInformation(body: any) {
   let url = `/api/Dashboard/GetInformation`;
   const params = [];
-  
+
   if (body?.from && body.from !== 'null') {
     params.push(`from=${body.from}`);
   }
   if (body?.to && body.to !== 'null') {
     params.push(`to=${body.to}`);
   }
-  
+
   if (params.length > 0) {
     url += `?${params.join('&')}`;
   }
-  
+
   return axios.get(url);
 }
 
@@ -79,7 +80,7 @@ export function createBussinessEmployee(body: any) {
 }
 
 export function getAllBussinessCustomer(body: any) {
-  return axios.post(`/api/Business/GetAll`, body);
+  return axiosLms.post(`/api/Business/GetAll`, body);
 }
 
 export function updateBusinessCustomerName(customerId: any, name: any) {
@@ -269,7 +270,7 @@ export function getPromiseById(id: any) {
 // Promise service (port 6009) - GetById with Request-Id = id (as per curl)
 export function getAllPromisesCustomer(page: any, pageSize: any) {
   return axios.get(`/api/Promise/GetAll?pageNo=${page}&pageSize=${pageSize}`);
-  
+
 }
 export function getPromiseDeleteId(id: any) {
   return axios.delete(`/api/Promise/Delete?id=${id}`);
@@ -500,16 +501,114 @@ export function getLedgerAccount(page: any, pageSize: any, searchParam: any, dat
   //   params.append("toDate", dates.to);
   // }
 
-  return axios.get(`/ledger-service/api/v1/accounts`);
+  return axios.get(`/ledger-service/api/v1/accounts?${params.toString()}`);
 }
-export function getSimahReport() {
-  return axios.get(`/api/Application/GetAllSamaraReport`);
+export function getSimahReport(period: string) {
+  return axios.get(`/ledger-service/api/v1/reports/simah?period=${period}`);
+}
+export function getOverdueLoansReport(asOfDate: string, minDaysPastDue: number = 1, productCode: string = 'MICROFINANCE') {
+  return axios.get(`/ledger-service/api/v1/reports/overdue-loans?asOfDate=${asOfDate}&minDaysPastDue=${minDaysPastDue}&productCode=${productCode}`);
+}
+export function getDueLoansReport(fromDate: string, toDate: string) {
+  return axios.get(`/ledger-service/api/v1/reports/due-loans?fromDate=${fromDate}&toDate=${toDate}`);
+}
+export function getEarlySettlementReport(params?: any) {
+  const filteredParams: any = {};
+  if (params) {
+    Object.keys(params).forEach(key => {
+      if (params[key] !== "" && params[key] !== null && params[key] !== undefined) {
+        filteredParams[key] = params[key];
+      }
+    });
+  }
+  const query = Object.keys(filteredParams).length > 0 ? `?${new URLSearchParams(filteredParams).toString()}` : "";
+  return axios.get(`/ledger-service/api/v1/reports/early-settlement${query}`);
+}
+export function getWriteOffLoansReport(period: string) {
+  return axios.get(`/ledger-service/api/v1/reports/write-off-loans?period=${period}`);
+}
+export function getTrialBalanceReport(date: string) {
+  return axios.get(`/ledger-service/api/v1/reports/trial-balance?date=${date}`);
+}
+export function getNplReport(asOfDate: string) {
+  return axios.get(`/ledger-service/api/v1/reports/npl?asOfDate=${asOfDate}`);
+}
+export function getJournalVouchersReport(fromDate: string, toDate: string, referenceType: string = "", status: string = "POSTED") {
+  return axios.get(`/ledger-service/api/v1/reports/journal-vouchers?fromDate=${fromDate}&toDate=${toDate}&referenceType=${referenceType}&status=${status}`);
+}
+export function getDaybookReport(date: string) {
+  return axios.get(`/ledger-service/api/v1/reports/day-book?date=${date}`);
+}
+export function getLedgerReport(fromDate: string, toDate: string, accountCode: string = "", accountId: string = "") {
+  return axios.get(`/ledger-service/api/v1/reports/ledger?fromDate=${fromDate}&toDate=${toDate}&accountCode=${accountCode}&accountId=${accountId}`);
+}
+export function getCollectionsReport(fromDate: string, toDate: string) {
+  return axios.get(`/ledger-service/api/v1/reports/collections?from=${fromDate}&to=${toDate}`);
+}
+export function getProfitRevenueReport(period: string) {
+  return axios.get(`/ledger-service/api/v1/reports/profit-revenue?period=${period}`);
+}
+export function getCashFlowReport(date: string) {
+  return axios.get(`/ledger-service/api/v1/reports/cash-flow?date=${date}`);
+}
+export function getCustomerStatementReport(customerId: string, paramsOrFromDate?: any, toDate?: string) {
+  let queryString = "";
+  if (typeof paramsOrFromDate === "string") {
+    // Legacy support: getCustomerStatementReport(id, from, to)
+    const p: any = {};
+    if (paramsOrFromDate) p.fromDate = paramsOrFromDate;
+    if (toDate) p.toDate = toDate;
+    queryString = new URLSearchParams(p).toString();
+  } else if (paramsOrFromDate && typeof paramsOrFromDate === "object") {
+    // New style: getCustomerStatementReport(id, { fromDate, toDate })
+    queryString = new URLSearchParams(paramsOrFromDate).toString();
+  }
+  return axios.get(`/ledger-service/api/v1/reports/customer-statement/${customerId.trim()}${queryString ? `?${queryString}` : ""}`);
+}
+export function getLoanDisbursementReport(paramsOrFromDate?: any, toDate?: string) {
+  let query = "";
+  if (typeof paramsOrFromDate === "string") {
+    // Old signature: getLoanDisbursementReport(fromDate, toDate)
+    const params: any = {};
+    if (paramsOrFromDate) params.fromDate = paramsOrFromDate;
+    if (toDate) params.toDate = toDate;
+    query = new URLSearchParams(params).toString();
+  } else if (paramsOrFromDate && typeof paramsOrFromDate === "object") {
+    // New signature: getLoanDisbursementReport({ fromDate, toDate, productCode, ... })
+    query = new URLSearchParams(paramsOrFromDate).toString();
+  }
+  return axios.get(`/ledger-service/api/v1/reports/loan-disbursement${query ? `?${query}` : ""}`);
 }
 export function getChartOfAccounts(productId?: number | string) {
-  const url = productId 
+  const url = productId
     ? `/api/MapChartOfAccounts/GetAll?productId=${productId}`
     : `/api/MapChartOfAccounts/GetAll`;
   return axios.get(url);
+}
+
+// COA Fields CRUD
+export function getCoaFields(activeOnly: boolean = false) {
+  return axios.get(`/ledger-service/api/v1/lovs/coa-fields${activeOnly ? '?activeOnly=true' : ''}`);
+}
+
+export function getCoaFieldById(id: string) {
+  return axios.get(`/ledger-service/api/v1/lovs/coa-fields/${id}`);
+}
+
+export function createCoaField(data: any) {
+  return axios.post(`/ledger-service/api/v1/lovs/coa-fields`, data);
+}
+
+export function updateCoaField(id: string, data: any) {
+  return axios.put(`/ledger-service/api/v1/lovs/coa-fields/${id}`, data);
+}
+
+export function deactivateCoaField(id: string) {
+  return axios.post(`/ledger-service/api/v1/lovs/coa-fields/${id}/deactivate`);
+}
+
+export function activateCoaField(id: string) {
+  return axios.post(`/ledger-service/api/v1/lovs/coa-fields/${id}/activate`);
 }
 export function getGroupLedger(page: any, pageSize: any) {
   return axios.get(
@@ -732,10 +831,10 @@ export function getAllFee(body: any) {
     body
   );
 }
-export function getFeeInfo(id:any) {
+export function getFeeInfo(id: any) {
   return axios.get(`/api/Fee/GetById/${id}`);
 }
-export function productDelete(id:any) {
+export function productDelete(id: any) {
   return axios.delete(`/api/Product/Delete?Id=${id}`);
 }
 export function updateFee(body: any) {
@@ -779,10 +878,10 @@ export function getAllWorkFlow(page: any, pageSize: any) {
   );
 }
 
-export function getWorkFlowInfo(id:any) {
+export function getWorkFlowInfo(id: any) {
   return axios.get(`/api/WorkFlowMapping/GetById?Id=${id}`);
 }
-export function deleteWorkFlowInfo(id:any) {
+export function deleteWorkFlowInfo(id: any) {
   return axios.delete(`/api/WorkFlowMapping/Delete?id=${id}`);
 }
 export function updateFWorkFlow(body: any) {
@@ -796,6 +895,9 @@ export function uploadAccounts(body: any) {
 }
 export function deleteChartOfAccount(id: any) {
   return axios.post(`/ledger-service/api/v1/accounts/${id}/deactivate`, {});
+}
+export function activateChartOfAccount(id: any) {
+  return axios.post(`/ledger-service/api/v1/accounts/${id}/activate`, {});
 }
 export function updateAccountLedger(id: any, body: any) {
   return axios.put(`/ledger-service/api/v1/accounts/${id}`, body);
@@ -822,7 +924,7 @@ export function getDeliquencybyID(productId: number | string) {
   return axios.get(`/api/DelinquencyNotifications/GetNotificationsByProductId/${productId}`);
 }
 
-        
+
 export function deleteEarlySettlementConfig(body: any) {
   return axios.delete(
     `/api/Delinquency/DeleteEarlySettlementConfigration?rangeNo=${body.rangeNo}&invoiceNo=${body.invoiceNo}`
@@ -913,68 +1015,68 @@ export function getPermissionsRoleId(id: any) {
   return axios.get(`/api/Role/GetById/${id}`);
 }
 export function getPermissionsByRolename(body: any) {
-  return axios.post(`/api/Permission/GetPermissionByRoleName`,body);
+  return axios.post(`/api/Permission/GetPermissionByRoleName`, body);
 }
 export function getDisburseApprovedAmountApiLogs() {
   return axios.get(`/api/DisburseApprovedAmountApiLogs/GetAll`);
 }
-export function postDisburseApprovedAmount(body:any){
+export function postDisburseApprovedAmount(body: any) {
   return axios.post(`/api/MonetaryTransaction/DisburseApprovedAmount`, body);
 }
-export function deleteDisburseApprovedAmountApiLog(id:any){
+export function deleteDisburseApprovedAmountApiLog(id: any) {
   return axios.delete(`/api/DisburseApprovedAmountApiLogs/Delete?id=${id}`);
 }
 export function GetAssignedPermissionByLosId(id: any) {
   return axios.get(`/api/AssignPermisison/GetAssignedPermissionByLosId${id && `/${id}`}`);
 }
-export function GetAllThirdPartyExpense(page: any, pageSize: any,expenseCategory:string) {
+export function GetAllThirdPartyExpense(page: any, pageSize: any, expenseCategory: string) {
   return axios.get(`/api/ThirdPartyServicesExpense/GetAll?pageNo=${page}&pageSize=${pageSize}&expenseCategory=${expenseCategory}`);
 }
-export function createThirdPartyServicesExpense(body:any){
+export function createThirdPartyServicesExpense(body: any) {
   return axios.post(`/api/ThirdPartyServicesExpense/Create`, body);
 }
-export function updateThirdPartyServicesExpense(body:any){
+export function updateThirdPartyServicesExpense(body: any) {
   return axios.put(`/api/ThirdPartyServicesExpense/Update`, body);
 }
 
-export function deleteThirdPartyServicesExpense(id:any){
+export function deleteThirdPartyServicesExpense(id: any) {
   return axios.delete(`/api/ThirdPartyServicesExpense/Delete?id=${id}`);
 }
 
 export function GetAllIndividualCustomer(page: any, pageSize: any) {
   return axios.get(`/api/Individual/GetAllIndividualCustomer?pageNo=${page}&pageSize=${pageSize}`);
 }
-export function GetLoanApprovalExpensesByNationalId(body:any){
+export function GetLoanApprovalExpensesByNationalId(body: any) {
   return axios.post(`/api/ThirdPartyServicesExpense/GetLoanApprovalExpensesByNationalId`, body);
 }
-export function GetOnboardingExpensesByNationalId(body:any){
+export function GetOnboardingExpensesByNationalId(body: any) {
   return axios.post(`/api/ThirdPartyServicesExpense/GetOnboardingExpensesByNationalId`, body);
 }
-export function GetAccountBlanceReport(body:any){
+export function GetAccountBlanceReport(body: any) {
   return axios.post(`/api/AccountBlanceReport/GetReport`, body);
 }
-export function GetCompanyData(){
+export function GetCompanyData() {
   return axios.get(`/api/Company/GetAll`);
 }
-export function GetVatNumberData(){
+export function GetVatNumberData() {
   return axios.get(`/api/Vat/GetAll`);
 }
-export function updateVatNumber(body:any){
+export function updateVatNumber(body: any) {
   return axios.put(`/api/Vat/Update`, body);
 }
-export function updateCompanyData(body:any){
+export function updateCompanyData(body: any) {
   return axios.put(`/api/Company/Update`, body);
 }
-export function GetAvailableLogDates(page: any, pageSize: any){
+export function GetAvailableLogDates(page: any, pageSize: any) {
   return axios.get(`/api/ApiLogs/GetLogs?pageNo=${page}&pageSize=${pageSize}`);
 }
-export function getLogsBydate(date:any) {
+export function getLogsBydate(date: any) {
   return axios.get(`/api/Logs/GetByDate?date=${date}`);
 }
-export function GetAvailableApiLogDates(page: any, pageSize: any){
+export function GetAvailableApiLogDates(page: any, pageSize: any) {
   return axios.get(`/api/ApiLogs/GetAvailableLogDates?pageNo=${page}&pageSize=${pageSize}`);
 }
-export function getApiLogsBydate(date:any) {
+export function getApiLogsBydate(date: any) {
   return axios.get(`/api/ApiLogs/GetByDate?date=${date}`);
 }
 export function getAllApiLogs(page: number = 1, pageSize: number = 10, filters?: any) {
@@ -988,10 +1090,10 @@ export function getAllApiLogs(page: number = 1, pageSize: number = 10, filters?:
   }
   return axios.get(url);
 }
-export function getReconciliationStatus(){
+export function getReconciliationStatus() {
   return axios.get('/api/Reconciliation/GetReconciliation')
 }
-export function GetAccountBalance(){
+export function GetAccountBalance() {
   return axios.get('/api/Reconciliation/GetAccountBalance')
 }
 export function getReconciliationAccounts() {
@@ -1000,10 +1102,10 @@ export function getReconciliationAccounts() {
 export function getReconciliationByAccount(accountNumber: string) {
   return axios.get(`/api/Reconciliation/GetReconciliationByAccount?accountNumber=${accountNumber}`)
 }
-export function GetRetryByApplicationId(applicationId:any,transactionType:any){
+export function GetRetryByApplicationId(applicationId: any, transactionType: any) {
   return axios.get(`/api/Retry/GetByApplicationId?applicationId=${applicationId}&transactionType=${transactionType}`)
 }
-export function GetRetryTransaction(paymentId:any){
+export function GetRetryTransaction(paymentId: any) {
   return axios.get(`/api/Retry/Retry?paymentId=${paymentId}`)
 }
 export function updateProductDelinquency(body: any) {
@@ -1012,9 +1114,9 @@ export function updateProductDelinquency(body: any) {
 export function GetTokenFromCode(code: string) {
   return axios.get(`/api/Auth/GetToken?code=${code}`);
 }
-export function GetReconciliationSummary(pageData:any,body: any) {
-  
-  return axios.post(`/api/Reconciliation/GetReconciliationSummary?pageNo=${pageData.pageNo}&pageSize=${pageData.pageSize}`,body);
+export function GetReconciliationSummary(pageData: any, body: any) {
+
+  return axios.post(`/api/Reconciliation/GetReconciliationSummary?pageNo=${pageData.pageNo}&pageSize=${pageData.pageSize}`, body);
 }
 export function getPoolAcount(body: any) {
   const params = new URLSearchParams();
@@ -1074,13 +1176,13 @@ export function GetErrorReport(body: any) {
 export function getLoanFees() {
   return axios.get(`/api/LoanFee/GetAll`);
 }
-export function getProductFeeByProductId(productId:string){
+export function getProductFeeByProductId(productId: string) {
   return axios.get(`/api/ProductFee/GetByProductId?productId=${productId}`)
 }
-export function DeleteProductFee(id:any){
+export function DeleteProductFee(id: any) {
   return axios.delete(`/api/ProductFee/DeleteByProductLoanFeeId?productLoanFeeId=${id}`);
 }
-export function AddProductFee(body:any){
+export function AddProductFee(body: any) {
   return axios.post(`/api/ProductFee/Create`, body);
 }
 export function getCommodityList(page: any, pageSize: any) {
@@ -1107,45 +1209,52 @@ export function modifyPaymentStatus(body: any) {
     body
   );
 }
-export function getLoanDisbursementReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/LoanDisbursement`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
+export function getRepaymentScheduleReport(params?: any) {
+  // If params is a string (legacy/direct ID usage), handle it
+  if (typeof params === "string") {
+    if (params.includes("-") && params.length > 20) {
+      return axios.get(`/ledger-service/api/v1/reports/repayment-schedule/${params}`);
+    }
+    // Fallback for old fromDate string
+    return axios.get(`/ledger-service/api/v1/reports/repayment-schedule?fromDate=${params}`);
   }
-  return axios.get(url);
+
+  // New standard: Pass object with params (fromDate, toDate, page, etc.)
+  const query = params ? new URLSearchParams(params).toString() : "";
+  return axios.get(`/ledger-service/api/v1/reports/repayment-schedule${query ? `?${query}` : ""}`);
 }
-export function getRepaymentScheduleReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/RepaymentSchedule`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-  return axios.get(url);
+export function getDailyTransactionReport(params?: any) {
+  const query = params ? new URLSearchParams(params).toString() : "";
+  return axios.get(`/ledger-service/api/v1/reports/daily-transaction-summary${query ? `?${query}` : ""}`);
 }
-export function getDailyTransactionReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/DailyTransactionsSummary`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
+// Consolidated Loan History Report API
+export function getLoanHistoryReport(params?: any) {
+  // 1. Handle Legacy String ID usage
+  if (typeof params === "string") {
+    if (params.includes("-") && params.length > 20) {
+      return axios.get(`/ledger-service/api/v1/reports/loan-history/${params}`);
+    }
+    return axios.get(`/ledger-service/api/v1/reports/loan-history?fromDate=${params}`);
   }
-  return axios.get(url);
+
+  // 2. Handle Object-based Params
+  const loanId = params?.loanId;
+  const filteredParams = { ...params };
+  if (loanId) delete (filteredParams as any).loanId;
+  
+  const queryString = Object.keys(filteredParams).length > 0 
+    ? `?${new URLSearchParams(filteredParams as any).toString()}` 
+    : "";
+    
+  const endpoint = loanId 
+    ? `/ledger-service/api/v1/reports/loan-history/${loanId.trim()}` 
+    : `/ledger-service/api/v1/reports/loan-history`;
+    
+  return axios.get(`${endpoint}${queryString}`);
 }
-export function getLoanBalanceReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/LoanBalanceOutstanding`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-  return axios.get(url);
+export function getLoanBalanceReport(params?: any) {
+  const query = params ? new URLSearchParams(params).toString() : "";
+  return axios.get(`/ledger-service/api/v1/reports/loan-balance-outstanding${query ? `?${query}` : ""}`);
 }
 export function getCollectionsDueReport(fromDate?: string, toDate?: string) {
   let url = `/api/Reports/CollectionsDue`;
@@ -1169,16 +1278,6 @@ export function getSkippedInstallmentsReport(fromDate?: string, toDate?: string)
 }
 export function getTopBorrowersReport(fromDate?: string, toDate?: string) {
   let url = `/api/Reports/TopBorrowers`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-  return axios.get(url);
-}
-export function getCustomerWiseLoanHistoryReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/CustomerWiseLoanHistory`;
   const params: string[] = [];
   if (fromDate) params.push(`fromDate=${fromDate}`);
   if (toDate) params.push(`toDate=${toDate}`);
