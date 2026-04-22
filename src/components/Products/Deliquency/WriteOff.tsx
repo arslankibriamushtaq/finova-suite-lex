@@ -156,9 +156,9 @@ const WriteOff = ({ productId, setSelectedTab }: any) => {
       const res = await createDeliquency(
         radioInputValue == "Percentage" ? body : bodyFixed
       );
-      if (res.data.notificationMessage == "Operation successful.") {
-        await createDelinquency();
-        toast.success(res.data.notificationMessage);
+      if (res?.data) {
+        // await createDelinquency();
+        toast.success(res?.data?.message);
         // localStorage.setItem("tabs", "DueLoan");
         setSelectedTab("Non-PerformingLoan");
         setLoader(false);
@@ -175,12 +175,12 @@ const WriteOff = ({ productId, setSelectedTab }: any) => {
     //setLoading(true);
     try {
       const res = await getDeliquency(productId);
-      if (res.data.notificationMessage == "Operation successful.") {
-        setradioInputValue(
-          res?.data?.data[3]?.isPercentage ? "Percentage" : "Fixed"
+      if (res?.data) {
+       
+        const data = res?.data?.data.find((item: { delinquencyTypeName: string; })=>item?.delinquencyTypeName === "WRITE_OFFS");
+ setradioInputValue(
+          data?.isPercentage ? "Percentage" : "Fixed"
         );
-        const data = res?.data?.data?.delinquencies.find((item: { delinquencyType: number; })=>item.delinquencyType === 4);
-
         setFormValues({
           ...formValues,
           penalty: data?.isPercentage
@@ -280,7 +280,7 @@ const WriteOff = ({ productId, setSelectedTab }: any) => {
           className="mt-4"
           style={{ borderBottom: "1px solid var(--color-border-light)" }}
         ></div>
-      {fieldsInvoice.map((field, index) => (
+      {/* {fieldsInvoice.map((field, index) => (
           <div key={index} className="mb-2 mt-2 d-flex gap-1">
             <div className="row" style={{ flex: 11.5 }}>
               <Col md={4} className="mb-3" key={index}>
@@ -323,7 +323,7 @@ const WriteOff = ({ productId, setSelectedTab }: any) => {
               </Col>
             </div>
           </div>
-        ))}
+        ))} */}
       <div className="col-12 d-flex justify-content-end mt-4 mb-5 align-items-center">
         <Button
           className="revert-btn mb-2 me-2"

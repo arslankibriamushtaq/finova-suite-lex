@@ -72,32 +72,32 @@ const Due = ({ productId, setSelectedTab }: any) => {
       placeholder: "Promises Per Loan",
     }, */
   ];
-const createDelinquency = async () => {
-  try {
-    const body = {
-      templateName: fieldsInvoice.templateName,
-      noOfDay: fieldsInvoice.Days,
-      notification: fieldsInvoice.notification,
-      delinquencyType: 2,
-      isPercentage: true,
-      penaltyPercentage: formValues.penalty,
-      fromDay: formValues.fromDay,
-      tillDay: formValues.tillDay,
-      penaltyType: 1,
-      productId,
-    };
+// const createDelinquency = async () => {
+//   try {
+//     const body = {
+//       templateName: fieldsInvoice.templateName,
+//       noOfDay: fieldsInvoice.Days,
+//       notification: fieldsInvoice.notification,
+//       delinquencyType: 2,
+//       isPercentage: true,
+//       penaltyPercentage: formValues.penalty,
+//       fromDay: formValues.fromDay,
+//       tillDay: formValues.tillDay,
+//       penaltyType: 1,
+//       productId,
+//     };
     
-    const res = await createDelinquencyNotifications(body);
+//     const res = await createDelinquencyNotifications(body);
     
-    if (res.data.notificationMessage == "Operation successful.") {
-      toast.success("Notification created successfully");
-    } else {
-      toast.error(res.data.errors?.[0] || "An error occurred");
-    }
-  } catch (error: any) {
-    toast.error(error.message || "An error occurred");
-  }
-};
+//     if (res?.data) {
+//       toast.success("Notification created successfully");
+//     } else {
+//       toast.error(res.data.errors?.[0] || "An error occurred");
+//     }
+//   } catch (error: any) {
+//     toast.error(error.message || "An error occurred");
+//   }
+// };
   const handleInputChange = (event: any) => {
     const { name, value, type } = event.target;
     setFormValues((prevValues: any) => ({ ...prevValues, [name]: value }));
@@ -134,12 +134,12 @@ const createDelinquency = async () => {
     //setLoading(true);
     try {
       const res = await getDeliquency(productId);
-      if (res.data.notificationMessage == "Operation successful.") {
+      if (res) {
 
-        setradioInputValue(
-          res?.data?.data[0]?.isPercentage ? "Percentage" : "Fixed"
+   const data = res?.data?.data?.find((item: { delinquencyTypeName: string; })=>item?.delinquencyTypeName === "DUE_LOAN");
+   setradioInputValue(
+          data?.isPercentage ? "Percentage" : "Fixed"
         );
-        const data = res?.data?.data?.delinquencies.find((item: { delinquencyType: number; })=>item.delinquencyType === 2);
 
         setFormValues({
           ...formValues,
@@ -184,9 +184,8 @@ const createDelinquency = async () => {
       const res = await createDeliquency(
         radioInputValue == "Percentage" ? body : bodyFixed
       );
-      if (res.data.notificationMessage == "Operation successful.") {
-        await createDelinquency();
-        toast.success(res.data.notificationMessage);
+      if (res?.data) {
+        toast.success(res.data.message);
         // localStorage.setItem("tabs", "DueLoan");
         setSelectedTab("LatePayment");
         setLoader(false);
@@ -284,7 +283,7 @@ const createDelinquency = async () => {
         style={{ borderBottom: "1px solid var(--color-border-light)" }}
       ></div>
       
-      <div className="mt-4 mb-3">
+      {/* <div className="mt-4 mb-3">
         <div
           className="d-flex align-items-center justify-content-between mb-3"
           style={{ fontSize: "15px", fontWeight: "Bold" }}
@@ -348,7 +347,7 @@ const createDelinquency = async () => {
             </Col>
           </Row>
         </div>
-      </div>
+      </div> */}
       <div className="col-12 d-flex justify-content-end mt-4 mb-5 align-items-center">
         <Button
           className="revert-btn mb-2 me-2"

@@ -633,13 +633,13 @@ export function getCollectrolDataByID(id: any) {
   return axios.get(`/api/Collateral/GetById/${id}`);
 }
 export function createDeliquency(body: any) {
-  return axios.put(`/api/Delinquency/Update`, body);
+  return axios.put(`/collections-service/api/v1/admin/delinquency-rules`, body);
 }
 export function getDeliquency(id: any) {
-  return axios.get(`/api/Delinquency/GetByProductId/${id}`);
+  return axios.get(`/collections-service/api/v1/admin/delinquency-rules?productId=${id}`);
 }
 export function updateDeliquency(body: any) {
-  return axios.put(`/api/Delinquency/Update`, body);
+  return axios.put(`/collections-service/api/v1/admin/delinquency-rules`, body);
 }
 
 // Principle based early settlement configuration

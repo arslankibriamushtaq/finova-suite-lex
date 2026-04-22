@@ -1260,84 +1260,84 @@ const DasbhboardSidebar = () => {
           ].filter(Boolean),
         },
      
-        // {
-        //   label: "Setting",
-        //   Link: "notification",
-        //   img: Images.SettingsIcon,
-        //   active: pathname.split("/").includes("Setting"),
-        //   submenu: [
-        //     // {
-        //     //   label: "Product Management",
-        //     //   Link: "ProductManagement",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/Lms/Setting/ProductManagement",
-        //     // },
-        //     {
-        //       label: "Product Fee",
-        //       Link: "ProductFee",
-        //       LinkLable: "/Lms/Setting",
-        //       active: pathname.includes("/Lms/Setting/ProductFee"),
-        //     },
-        //     // hasAccess("delinquency_module") && 
-        //     {
-        //       label: "Delinquency",
-        //       Link: "Deliquency",
-        //       LinkLable: "/Lms/Setting",
-        //       active: pathname.includes("/Lms/Setting/Deliquency"),
-        //     },
-        //     // hasAccess("workflow_mapping_module") && 
-        //     {
-        //       label: "Work Flow Mapping",
-        //       Link: "WorkFlowMapping",
-        //       LinkLable: "/Lms/Setting",
-        //       active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
-        //     },
-        //     // hasAccess("invoice_management_admin_module") && 
-        //     {
-        //       label: "Invoice Setting",
-        //       Link: "InvoiceSetting",
-        //       LinkLable: "/Lms/Setting",
-        //       active: pathname.includes("/Lms/Setting/InvoiceSetting"),
-        //     },
-        //     // {
-        //     //   label: "Calculator",
-        //     //   Link: "Calculator",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/Lms/Setting/Calculator",
-        //     // },
-        //     // {
-        //     //   label: "Search Function",
-        //     //   Link: "pdcmanagement",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/pdcmanagement",
-        //     // },
+        {
+          label: "Setting",
+          Link: "notification",
+          img: Images.SettingsIcon,
+          active: pathname.split("/").includes("Setting"),
+          submenu: [
+            // {
+            //   label: "Product Management",
+            //   Link: "ProductManagement",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/Lms/Setting/ProductManagement",
+            // },
+            // {
+            //   label: "Product Fee",
+            //   Link: "ProductFee",
+            //   LinkLable: "/Lms/Setting",
+            //   active: pathname.includes("/Lms/Setting/ProductFee"),
+            // },
+            // hasAccess("delinquency_module") && 
+            {
+              label: "Delinquency",
+              Link: "Deliquency",
+              LinkLable: "/Lms/Setting",
+              active: pathname.includes("/Lms/Setting/Deliquency"),
+            },
+            // hasAccess("workflow_mapping_module") && 
+            // {
+            //   label: "Work Flow Mapping",
+            //   Link: "WorkFlowMapping",
+            //   LinkLable: "/Lms/Setting",
+            //   active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
+            // },
+            // // hasAccess("invoice_management_admin_module") && 
+            // {
+            //   label: "Invoice Setting",
+            //   Link: "InvoiceSetting",
+            //   LinkLable: "/Lms/Setting",
+            //   active: pathname.includes("/Lms/Setting/InvoiceSetting"),
+            // },
+            // {
+            //   label: "Calculator",
+            //   Link: "Calculator",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/Lms/Setting/Calculator",
+            // },
+            // {
+            //   label: "Search Function",
+            //   Link: "pdcmanagement",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/pdcmanagement",
+            // },
     
-        //     // {
-        //     //   label: "Securization",
-        //     //   Link: "escrowmanagement",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/escrowmanagement",
-        //     // },
-        //     // {
-        //     //   label: "Tools",
-        //     //   Link: "transactionmanagement",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/transactionmanagement",
-        //     // },
-        //     // {
-        //     //   label: "Interface",
-        //     //   Link: "pdcmanagement",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/pdcmanagement",
-        //     // },
-        //     // {
-        //     //   label: "Pending Event Actions",
-        //     //   Link: "escrowmanagement",
-        //     //   LinkLable: "Setting",
-        //     //   active: pathname == "/escrowmanagement",
-        //     // },
-        //   ].filter(Boolean),
-        // },
+            // {
+            //   label: "Securization",
+            //   Link: "escrowmanagement",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/escrowmanagement",
+            // },
+            // {
+            //   label: "Tools",
+            //   Link: "transactionmanagement",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/transactionmanagement",
+            // },
+            // {
+            //   label: "Interface",
+            //   Link: "pdcmanagement",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/pdcmanagement",
+            // },
+            // {
+            //   label: "Pending Event Actions",
+            //   Link: "escrowmanagement",
+            //   LinkLable: "Setting",
+            //   active: pathname == "/escrowmanagement",
+            // },
+          ].filter(Boolean),
+        },
         // hasAccess("system_logs_module") &&
         // {
         //   label: "Logs",

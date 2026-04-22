@@ -10,10 +10,9 @@ const EarlySettlementCustomFrequency = (props: any) => {
   const [fields, setFields] = useState([
     { Time: "", Days: "", notification: "" },
   ]);
+  const firstConfig = props?.formValues?.earlySettlementConfigs?.[0];
   const [radioInputValue, setradioInputValue] = useState(
-    props?.formValues[0]?.invoiceRange == false
-      ? "SingleInvoice"
-      : "InvoiceRange"
+    firstConfig ? (firstConfig.isRange ? "InvoiceRange" : "SingleInvoice") : "InvoiceRange"
   );
 
   const [formValues, setFormValues] = useState<any>({

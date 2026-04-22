@@ -3,7 +3,7 @@ import { Button, Select } from "antd";
 import { Row, Col, Form, Modal, InputGroup } from "react-bootstrap";
 import Loader from "./Loader/Loader";
 import { Images } from "./Config/Images";
-import { updateEarlySettlement } from "../redux/apis/apisCrudLms";
+import { createDeliquency, updateEarlySettlement } from "../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 
 const EarlySettlementFixedFrequency = (props: any) => {
@@ -153,9 +153,9 @@ const EarlySettlementFixedFrequency = (props: any) => {
       invoiceRange: false,
     };
     try {
-      const res = await updateEarlySettlement(body);
-      if (res.data.notificationMessage == "Operation successful.") {
-        toast.success(res.data.notificationMessage);
+      const res = await createDeliquency(body);
+      if (res?.data) {
+        toast.success(res.data.message);
         // localStorage.setItem("tabs", "DueLoan");
         props?.setSelectedTab("DueLoan");
         setLoader(false);

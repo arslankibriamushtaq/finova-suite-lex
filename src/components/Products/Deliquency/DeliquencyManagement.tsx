@@ -10,6 +10,7 @@ import { Select } from "antd";
 import { getDeliquencybyID, getProducts } from "../../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import Default from "./Default";
+import { getAllProducts } from "../../../redux/apis/apisCrudProductManagement";
 
 const DeliquencyManagement = () => {
   localStorage.setItem("tabs", "EarlySettlement");
@@ -23,7 +24,7 @@ const DeliquencyManagement = () => {
   });
   const getProductId = async () => {
     try {
-      const res = await getProducts();
+      const res = await getAllProducts();
       if (res) {
         const data = res.data.data;
         setProdId(data);
@@ -41,21 +42,22 @@ const DeliquencyManagement = () => {
       toast.error(error?.message);
     }
   };
-  const getDeliquencyData = async (productId: number | string) => {
-    if (!productId) return;
-    try {
-      const res = await getDeliquencybyID(productId);
-      if (res) {
-        const data = res.data.data;
-        setDeliquencyData(data);
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    }
-  };
-  useEffect(() => {
+    useEffect(() => {
     getProductId();
   }, []);
+
+  const getDeliquencyData = async (productId: number | string) => {
+    // if (!productId) return;
+    // try {
+    //   const res = await getDeliquencybyID(productId);
+    //   if (res) {
+    //     const data = res.data.data;
+    //     setDeliquencyData(data);
+    //   }
+    // } catch (error: any) {
+    //   toast.error(error?.message);
+    // }
+  };
 
   // useEffect(() => {
   //   if (formValues.productID) {
@@ -124,16 +126,16 @@ const DeliquencyManagement = () => {
         />
       ),
     },
-    {
-      title: "Default",
-      key: "Default",
-      folder: (
-        <Default
-          productId={formValues?.productID}
-          setSelectedTab={setSelectedTab}
-        />
-      ),
-    },
+    // {
+    //   title: "Default",
+    //   key: "Default",
+    //   folder: (
+    //     <Default
+    //       productId={formValues?.productID}
+    //       setSelectedTab={setSelectedTab}
+    //     />
+    //   ),
+    // },
   ];
   return (
     <>
@@ -149,12 +151,12 @@ const DeliquencyManagement = () => {
               </Form.Label>
               <Select
                 value={formValues.productID}
-                onChange={(value) => {
+                onChange={(value:any) => {
                   const selectedProduct = prodId?.find((p: any) => p.id === value);
                   setFormValues((prevValues: any) => ({
                     ...prevValues,
                     productID: value,
-                    productName: selectedProduct?.name || "",
+                    productName: selectedProduct?.nameEn || "",
                   }));
                   getDeliquencyData(value);
                 }}
@@ -164,7 +166,7 @@ const DeliquencyManagement = () => {
               >
                 {prodId?.map((option: any) => (
                   <Select.Option key={option.id} value={option.id}>
-                    {option?.name}
+                    {option?.nameEn}
                   </Select.Option>
                 ))}
               </Select>

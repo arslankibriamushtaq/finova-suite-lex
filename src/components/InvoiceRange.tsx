@@ -1,25 +1,45 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "antd";
 import { Row, Col, Form, Modal } from "react-bootstrap";
 import { Images } from "./Config/Images";
-import {
-  deleteEarlySettlementConfig,
-  updateEarlySettlement,
-  updateEarlySettlementconfig,
-} from "../redux/apis/apisCrudLms";
+import { createDeliquency } from "../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import Loader from "./Loader/Loader";
 
+const groupByRangeNo = (configs: any[]): any[] => {
+  if (!configs?.length) return [];
+  const seen = new Map();
+  configs.filter((c: any) => c.isRange).forEach((c: any) => {
+    const key = `${c.minInvoiceOrder}_${c.maxInvoiceOrder}`;
+    if (!seen.has(key)) {
+      seen.set(key, {
+        rangeNo: c.rangeNo,
+        minInvoiceOrder: c.minInvoiceOrder,
+        maxInvoiceOrder: c.maxInvoiceOrder,
+        configurations: [{
+          fromDay: c.fromDay,
+          tillDay: c.tillDay,
+          discountAmount: c.discountAmount,
+          discountPercentage: c.discountPercentage,
+          penalty: null,
+        }],
+      });
+    }
+  });
+  return Array.from(seen.values());
+};
+
 const InvoiceRange = (props: any) => {
-  const [savedData, setSavedData] = useState(
-    props?.customInvoicesData ? props?.customInvoicesData?.ranges : []
-  );
+  const [savedData, setSavedData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const configs = props?.customInvoicesData ?? props?.initialValues?.earlySettlementConfigs;
+    setSavedData(groupByRangeNo(configs));
+  }, [props?.customInvoicesData, props?.initialValues]);
+
   const [loader, setLoader] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<any>(null);
   const [showModal, setShowModal] = useState(false);
-  const [fields, setFields] = useState([
-    { Time: "", Days: "", notification: "" },
-  ]);
   const [formValues, setFormValues] = useState<any>({
     penalty: "",
     fromDay: "",
@@ -45,63 +65,6 @@ const InvoiceRange = (props: any) => {
 
     setErrors(tempErrors);
     return isValid;
-  };
-  const updateSubmitForm = async () => {
-    if (!validateFields()) return;
-
-    setLoader(true);
-    const body = {
-      delinquencyType: 1,
-      isPercentage: props?.discount,
-      discountPercentage: 1,
-      // discountPercentage: Number(props?.discount ? props?.penalty : 0),
-      // discountAmount: Number(!formValues?.discount ? formValues?.penalty : 0),
-      // fromDay: Number(formValues?.fromDay),
-      // tillDay: Number(formValues?.tillDay),
-      penaltyType: 1,
-      productId: props?.productId,
-      isFixedEarlySettlement: false,
-      invoiceRange: true,
-      customEarlySettlement: savedData.map((item: any) => ({
-        customdiscountPercentage: Number(
-          props?.discount
-            ? item?.discountPercentage
-              ? item?.discountPercentage
-              : item?.penalty
-            : 0
-        ),
-        customdiscountAmount: Number(
-          !props?.discount
-            ? item?.discountAmount
-              ? item?.discountAmount
-              : item?.penalty
-            : 0
-        ),
-        customFromDay: Number(item?.fromDay),
-        customTillDay: Number(item?.tillDay),
-        // fromInvoice: Number(item?.fromInvoice),
-        // toInvoice: Number(item?.toInvoice),
-        invoiceOrder: Array.from(
-          { length: Number(item?.toInvoice) - Number(item?.fromInvoice) + 1 },
-          (_, i) => Number(item?.fromInvoice) + i
-        ),
-      })),
-    };
-    try {
-      const res = await updateEarlySettlementconfig(body);
-      if (res.data.notificationMessage == "Operation successful.") {
-        toast.success(res.data.notificationMessage);
-        // localStorage.setItem("tabs", "DueLoan");
-        props?.setSelectedTab("DueLoan");
-        setLoader(false);
-      } else {
-        toast.error(res.data.errors[0]);
-        setLoader(false);
-      }
-    } catch (error: any) {
-      setLoader(false);
-      toast.error(error.message || "An error occurred");
-    }
   };
   const [errors, setErrors] = useState({});
   const PercentageDetail = [
@@ -160,92 +123,109 @@ const InvoiceRange = (props: any) => {
   };
 
   /////
+  const buildConfigs = (existingCards: any[], newEntry?: any) => {
+    const isPercentage = !!props?.discount;
+    const existing = existingCards.map((card: any, index: number) => ({
+      kind: "RANGE",
+      rangeNo: card.rangeNo || index + 1,
+      minInvoiceOrder: Number(card.minInvoiceOrder),
+      maxInvoiceOrder: Number(card.maxInvoiceOrder),
+      fromDay: Number(card.configurations[0].fromDay),
+      tillDay: Number(card.configurations[0].tillDay),
+      isPercentage,
+      discountPercentage: isPercentage ? Number(card.configurations[0].discountPercentage ?? 0) : 0,
+      discountAmount: !isPercentage ? Number(card.configurations[0].discountAmount ?? 0) : 0,
+    }));
+    if (!newEntry) return existing;
+    return [
+      ...existing,
+      {
+        kind: "RANGE",
+        rangeNo: existingCards.length + 1,
+        minInvoiceOrder: Number(newEntry.fromInvoice),
+        maxInvoiceOrder: Number(newEntry.toInvoice),
+        fromDay: Number(newEntry.fromDay),
+        tillDay: Number(newEntry.tillDay),
+        isPercentage,
+        discountPercentage: isPercentage ? Number(newEntry.penalty) : 0,
+        discountAmount: !isPercentage ? Number(newEntry.penalty) : 0,
+      },
+    ];
+  };
+
   const handleSave = async () => {
     if (!validateFields()) return;
     setLoader(true);
+    const isPercentage = !!props?.discount;
     const body = {
-      // delinquencyType: 1,
-      isPercentage: props?.discount,
-      discountPercentage: Number(props?.discount ? props?.penalty : 0),
-      discountAmount: Number(!formValues?.discount ? formValues?.penalty : 0),
-      fromDay: Number(formValues?.fromDay),
-      tillDay: Number(formValues?.tillDay),
-      // penaltyType: 1,
-      DelinquencyId: props?.initialValues?.find((obj: any) => obj?.delinquencyType ===1)?.id,
-      // isFixedEarlySettlement: false,
-      isRange: true,
-      invoiceOrder: Array.from(
-          { length: Number(formValues?.toInvoice) - Number(formValues?.fromInvoice) + 1 },
-          (_, i) => Number(formValues?.fromInvoice) + i
-        ),
+      productId: props?.productId,
+      delinquencyType: 1,
+      isPercentage,
+      penaltyPercentage: 0,
+      penaltyAmount: 0,
+      fromDay: 0,
+      tillDay: 0,
+      penaltyType: 1,
+      isCustom: true,
+      charityFundAccount: "CHARITY_FUND_001",
+      configs: buildConfigs(savedData, formValues),
     };
     try {
-      const res = await updateEarlySettlementconfig(body);
-      if (res.data.notificationMessage == "Operation successful.") {
-        toast.success(res.data.notificationMessage);
-            const newCard ={
-        minInvoiceOrder: formValues.fromInvoice,
-        maxInvoiceOrder: formValues.toInvoice,
-        configurations:[
+      const res = await createDeliquency(body);
+      if (res?.data) {
+        toast.success(res.data.notificationMessage || "Saved successfully");
+        const newCard = {
+          minInvoiceOrder: formValues.fromInvoice,
+          maxInvoiceOrder: formValues.toInvoice,
+          configurations: [
             {
-                tillDay: formValues.tillDay,
-                fromDay: formValues.fromDay,
-                discountAmount:formValues.penalty,
-                discountPercentage: null,
-                penalty: null,
-            }
-        ]
-        }
-       setSavedData([...savedData, { ...newCard }]);
+              tillDay: formValues.tillDay,
+              fromDay: formValues.fromDay,
+              discountAmount: !isPercentage ? formValues.penalty : null,
+              discountPercentage: isPercentage ? formValues.penalty : null,
+              penalty: null,
+            },
+          ],
+        };
+        setSavedData([...savedData, { ...newCard }]);
+        setFormValues({ penalty: "", fromDay: "", tillDay: "", fromInvoice: "", toInvoice: "" });
         setLoader(false);
       } else {
-        toast.error(res.data.errors[0]);
+        toast.error(res.data.errors?.[0]);
         setLoader(false);
       }
     } catch (error: any) {
       setLoader(false);
       toast.error(error.message || "An error occurred");
     }
-   
-
   };
 
-  const handleRemove = (indexToRemove: any) => {
-    setSavedData(savedData.filter((_: any, index: any) => index !== indexToRemove));
-  };
-  const handleFieldChange = (
-    index: number,
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const values = [...fields];
-    values[index][event.target.name as keyof (typeof values)[number]] = event.target.value;
-    setFields(values);
-    // calculateSubtotal(values);
-  };
-  const handleRemoveField = (index: any) => {
-    const values = [...fields];
-    values.splice(index, 1);
-    setFields(values);
-    // calculateSubtotal(values);
-  };
-  const handleAddField = () => {
-    setFields([...fields, { Time: "", Days: "", notification: "" }]);
-  };
-  const DeleteEarlySettlmentCard = async (event: any, index: any, item: any) => {
+  const DeleteEarlySettlmentCard = async (event: any, index: any) => {
     event.stopPropagation();
-    const payload = {
-      rangeNo: item?.rangeNo,
-      invoiceNo: 0,
+    const remaining = savedData.filter((_: any, i: any) => i !== index);
+    setLoader(true);
+    const isPercentage = !!props?.discount;
+    const body = {
+      productId: props?.productId,
+      delinquencyType: 1,
+      isPercentage,
+      penaltyPercentage: 0,
+      penaltyAmount: 0,
+      fromDay: 0,
+      tillDay: 0,
+      penaltyType: 1,
+      isCustom: true,
+      charityFundAccount: "CHARITY_FUND_001",
+      configs: buildConfigs(remaining),
     };
     try {
-      const res = await deleteEarlySettlementConfig(payload);
-      if (res.data.notificationMessage == "Operation successful.") {
-        toast.success(res.data.notificationMessage);
-        const updatedData = savedData.filter((_: any, i: any) => i !== index);
-        setSavedData(updatedData);
+      const res = await createDeliquency(body);
+      if (res?.data) {
+        toast.success(res.data.notificationMessage || "Deleted successfully");
+        setSavedData(remaining);
         setLoader(false);
       } else {
-        toast.error(res.data.errors[0]);
+        toast.error(res.data.errors?.[0]);
         setLoader(false);
       }
     } catch (error: any) {
@@ -326,7 +306,7 @@ const InvoiceRange = (props: any) => {
             >
               <div className="d-flex justify-content-end">
                 <img
-                  onClick={(e) => DeleteEarlySettlmentCard(e, index, item)}
+                  onClick={(e) => DeleteEarlySettlmentCard(e, index)}
                   style={{ cursor: "pointer" }}
                   src={Images.closeBtn}
                   height={10}
