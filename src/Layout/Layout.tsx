@@ -1,22 +1,33 @@
+import "./sidebar-hover.css";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet } from "react-router-dom";
 import DasbhboardHeader from "../components/DashboardHeader/Header";
 import DasbhboardSideBar from "../components/DashboardSideBar/DashboardSideBar";
 
 import { RootState } from "../redux/rootReducer";
 import HeadingHeader from "../components/HeadingHeader";
+import { authSlice } from "../redux/apis/apisSlice";
 
 const Layout = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const [loading, setLoading] = useState(true);
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
-const location=window.location.pathname.split("/")[1]
+  const collapsed = useSelector((state: RootState) => state.block.collapsed);
+  const [isHovered, setIsHovered] = useState(false);
+  const location = window.location.pathname.split("/")[1];
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 1024;
+      setIsMobile(mobile);
+      if (mobile) {
+        dispatch(authSlice.actions.setToggled(false));
+      }
     };
+    handleResize(); // Call on mount
     setTimeout(() => {
       setLoading(false);
     }, 2000);
@@ -24,33 +35,43 @@ const location=window.location.pathname.split("/")[1]
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
-      {/* {loading ? (
-        <Loader />
-      ) : ( */}
       <div className={`flex ${isMobile ? "sidebar-mobile" : "side-bar"}`}>
         <div
           className={`flex ${isMobile ? "" : "colOne"}`}
+          onMouseEnter={() => !isMobile && setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           style={{
-            backgroundColor:
-              "var(--theme-flow-dashboard-sidebar-bg)",
+            backgroundColor: "var(--theme-flow-dashboard-sidebar-bg)",
+            width: isMobile ? "0" : (collapsed && !isHovered ? "80px" : "290px"),
+            minWidth: isMobile ? "0" : undefined,
+            overflow: isMobile ? "hidden" : undefined,
+            transition: "width 0.3s ease",
+            zIndex: 1005,
+            boxShadow: isHovered && collapsed ? "4px 0 15px rgba(0,0,0,0.15)" : "none"
           }}
         >
-          <DasbhboardSideBar />
+          <DasbhboardSideBar effectiveCollapsed={isMobile ? false : (collapsed && !isHovered)} />
         </div>
-        <div  style={{display:"block"}} className={`flex ${isMobile ? "" : "colTwo"}`}>
+        <div
+          style={{
+            display: "block",
+            width: "100%",
+            paddingLeft: isMobile ? "0" : (collapsed && !isHovered ? "80px" : "290px"),
+            transition: "padding-left 0.3s ease"
+          }}
+          className={`flex ${isMobile ? "" : "colTwo"}`}
+        >
           <DasbhboardHeader />
-        {
-          location=="Los" && <HeadingHeader />
-        }  
-          {/* <DashboardInfoSubHeader /> */}
+          {location == "Los" && <HeadingHeader />}
           <div
-            className="p-3"
+            className="page-content-area"
             style={{
               backgroundColor: themeBuilder?.appBackgroundColor,
+              padding: "1rem",
               minHeight: "94vh",
             }}
           >
@@ -58,7 +79,6 @@ const location=window.location.pathname.split("/")[1]
           </div>
         </div>
       </div>
-      {/* )} */}
     </>
   );
 };

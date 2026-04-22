@@ -69,6 +69,7 @@ const initialState: ApisState = {
   crNumber: "",
   refreshToken: "",
   permissions: [],
+  collapsed: false,
   selectedPromiseApplication: null,
 };
 
@@ -141,6 +142,12 @@ export const authSlice = createSlice({
     },
     toggleSidebar: (state) => {
       state.toggled = !state.toggled;
+    },
+    setToggled: (state, action) => {
+      state.toggled = action.payload;
+    },
+    setCollapsed: (state, action) => {
+      state.collapsed = action.payload;
     },
     setToken: (state, action) => {
       state.token = action.payload.token;
@@ -234,6 +241,7 @@ export const {
   setRefreshToken,
   setPermissions,
   setSelectedPromiseApplication,
+  setCollapsed,
 } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { FaBars, FaCog, FaSignOutAlt } from "react-icons/fa";
+import { FaBars, FaTimes, FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { createGlobalStyle } from "styled-components";
 import { authSlice, setToken } from "../../redux/apis/apisSlice";
@@ -10,6 +10,7 @@ import { Button } from "react-bootstrap";
 import { RiArrowDropDownFill } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { logOutApi } from "../../redux/apis/apisCrud";
+import { store } from "../../redux/store";
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -17,6 +18,7 @@ const DashboardHeader = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
+  const collapsed = useSelector((state: RootState) => state.block.collapsed);
 
   const pathname = window.location.pathname;
   const parts = pathname.split("/");
@@ -40,7 +42,7 @@ const DashboardHeader = () => {
       await logOutApi().catch((err) => {
         console.warn("Logout API failed, but proceeding with local logout:", err);
       });
-      
+
       // Always clear local data regardless of API success
       dispatch(setToken({ token: "" }));
       localStorage.removeItem("token");
@@ -75,21 +77,26 @@ const DashboardHeader = () => {
           view === "view"
             ? "border-bottom"
             : view === "account"
-            ? ""
-            : "header_layout"
+              ? ""
+              : "header_layout"
         }
       >
         <div className="d-flex">
-          {isMobile && (
-            <div>
-              <button
-                className="bar-btn"
-                onClick={() => dispatch(authSlice.actions.toggleSidebar())}
-              >
-                <FaBars />
-              </button>
-            </div>
-          )}
+          <div className="d-flex align-items-center ps-3">
+            <button
+              className="bar-btn"
+              style={{ position: "relative", zIndex: 1001 }}
+              onClick={() => {
+                if (window.innerWidth <= 1024) {
+                  dispatch(authSlice.actions.toggleSidebar());
+                } else {
+                  dispatch(authSlice.actions.setCollapsed(!collapsed));
+                }
+              }}
+            >
+              {collapsed ? <FaTimes /> : <FaBars />}
+            </button>
+          </div>
           {(view === "view" || view === "account") && (
             <div
               className="border-left"
@@ -120,10 +127,10 @@ const DashboardHeader = () => {
             >
               <div className="col-md-7 d-flex">
                 <div
-                  className="col-md-4 d-flex fs-20 fw-600 gap-3"
+                  className="col-md-4 d-flex fs-20 fw-600 gap-3 ps-3"
                   style={{ color: "var(--theme-heading-text-color)" }}
                 >
-                  <img src={Images.HeaderIcon} alt="Header Icon" />
+                  {/* <img src={Images.HeaderIcon} alt="Header Icon" /> */}
 
                   {splitCamelCase(view)}
                 </div>
