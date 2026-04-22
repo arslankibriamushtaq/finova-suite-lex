@@ -1,61 +1,75 @@
+import "./sidebar-hover.css";
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useLocation } from "react-router-dom";
 import DasbhboardHeader from "../components/DashboardHeader/Header";
 import { RootState } from "../redux/rootReducer";
-import SubHeaderFlow from "../components/DashboardHeader/SubHeaderFlow";
-import DasbhboardSideBarLms from "../components/DashboardSideBar/DasbhboardSideBarLms";
-import HeadingHeader from "../components/HeadingHeader";
 import DashboardSideBar from "../components/DashboardSideBar/DashboardSideBar";
- 
+import { authSlice } from "../redux/apis/apisSlice";
+
 const LayoutLms = () => {
-  const location=useLocation();
-  const pathname=location.pathname;
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
-  // const [loading, setLoading] = useState(true);
+  const location = useLocation();
+  const pathname = location.pathname;
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
- 
+  const collapsed = useSelector((state: RootState) => state.block.collapsed);
+  const [isHovered, setIsHovered] = useState(false);
+
+  const dispatch = useDispatch();
+
   useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 1024;
+      setIsMobile(mobile);
+      if (mobile) {
+        dispatch(authSlice.actions.setToggled(false));
+      }
     };
-    // setTimeout(() => {
-    //   setLoading(false);
-    // }, 2000);
+    handleResize(); // Call on mount
     window.addEventListener("resize", handleResize);
     return () => {
       window.removeEventListener("resize", handleResize);
     };
-  }, []);
- 
+  }, [dispatch]);
+
   return (
     <>
       <div className={`flex ${isMobile ? "sidebar-mobile" : "side-bar"}`}>
         <div
           className={`flex ${isMobile ? "" : "colOne"}`}
+          onMouseEnter={() => !isMobile && setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
           style={{
-            background: "var(--theme-flow-dashboard-sidebar-bg)",
-            zIndex: 0,
+            backgroundColor: "var(--theme-flow-dashboard-sidebar-bg)",
+            width: isMobile ? "0" : (collapsed && !isHovered ? "80px" : "290px"),
+            minWidth: isMobile ? "0" : undefined,
+            overflow: isMobile ? "hidden" : undefined,
+            transition: "width 0.3s ease",
+            zIndex: 1005,
+            boxShadow: isHovered && collapsed ? "4px 0 15px rgba(0,0,0,0.15)" : "none"
           }}
         >
-          <DashboardSideBar />
+          <DashboardSideBar effectiveCollapsed={isMobile ? false : (collapsed && !isHovered)} />
         </div>
-        <div  style={{display:"block"}} className={`flex ${isMobile ? "" : "colTwo"}`}>
+        <div
+          style={{
+            display: "block",
+            width: "100%",
+            paddingLeft: isMobile ? "0" : (collapsed && !isHovered ? "80px" : "290px"),
+            transition: "padding-left 0.3s ease"
+          }}
+          className={`flex ${isMobile ? "" : "colTwo"}`}
+        >
           <DasbhboardHeader />
-          {/* <SubHeaderFlow /> */}
-          {/* <HeadingHeader/> */}
           <div
-            className={pathname.includes("dashboard") ? "" : "p-3"}
-            style={{ backgroundColor: themeBuilder?.appBackgroundColor }}
+            className="page-content-area"
+            style={{ backgroundColor: themeBuilder?.appBackgroundColor, padding: "1rem" }}
           >
-            {/* <div className="service" style={{background: "white" ,padding: '1rem', borderRadius: "10px"}}> */}
             <Outlet />
-            {/* </div> */}
           </div>
         </div>
       </div>
-      {/* )} */}
     </>
   );
 };
-export default LayoutLms;
+export default LayoutLms;
