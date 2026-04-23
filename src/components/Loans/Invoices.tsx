@@ -9,6 +9,7 @@ import {
   repayManually,
   updateLoanInvoiceDueDate,
   waiveAmount,
+  executeWriteOff,
 } from "../../redux/apis/apisCrudLms";
 import { getApplicationInstallments } from "../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
@@ -23,9 +24,16 @@ import { setPayInvoices } from "../../redux/apis/apisSlice";
 
 // Payment status strings from lending-service
 const PAYMENT_STATUS = {
-  PAID: "PAID",
-  PENDING: "PENDING",
+  SCHEDULED: "SCHEDULED",
+  DUE: "DUE",
+  GRACE_PERIOD: "GRACE_PERIOD",
   OVERDUE: "OVERDUE",
+  PARTIALLY_PAID: "PARTIALLY_PAID",
+  PAID: "PAID",
+  WAIVED: "WAIVED",
+  DEFERRED: "DEFERRED",
+  WRITTEN_OFF: "WRITTEN_OFF",
+  PENDING: "PENDING",
   CANCELLED: "CANCELLED",
 } as const;
 
@@ -112,7 +120,7 @@ const Invoices = () => {
           View
         </Menu.Item>
 
-        {row.paymentStatus !== PAYMENT_STATUS.PAID && (
+        {row.isEligibleForWriteOff && (
           <Menu.Item
             onClick={() => {
               setWaveLateDialog(true);
@@ -169,146 +177,161 @@ const Invoices = () => {
     }
   };
 
-  const Customer_ALL_List_Header = [
-    // {
-    //   name: (
-    //     <Checkbox
-    //       className="ms-2"
-    //       onChange={(e) => handleSelectAllUnpaid(e.target.checked)}
-    //       indeterminate={
-    //         selectedInvoices.length > 0 &&
-    //         selectedInvoices.length <
-    //         invoices.filter((invoice) => invoice.paymentStatus !== 1).length
-    //       }
-    //     />
-    //   ),
-    //   cell: (row: any) => (
-    //     <div>
-    //       <Checkbox
-    //         checked={
-    //           selectedInvoices.some((item) => item.id === row.id) ||
-    //           selectedInvoices.some(
-    //             (item) => item.invoiceNumber === row.invoiceNumber
-    //           )
-    //         }
-    //         onChange={(e) => handleCheckboxChange(row, e.target.checked)}
-    //         disabled={row.paymentStatus === 1}
-    //       />
-    //     </div>
-    //   ),
-    //   width: "50px",
-    // },
+  const paymentStatusCell = (row: any) => {
+    const map: Record<string, { label: string; color: string }> = {
+      PAID: { label: "Paid", color: "var(--color-success)" },
+      PARTIALLY_PAID: { label: "Partially Paid", color: "var(--color-success)" },
+      SCHEDULED: { label: "Scheduled", color: "var(--color-disabled)" },
+      DUE: { label: "Due", color: "var(--color-warning)" },
+      GRACE_PERIOD: { label: "Grace Period", color: "var(--color-warning)" },
+      OVERDUE: { label: "Overdue", color: "var(--destructive)" },
+      WAIVED: { label: "Waived", color: "var(--color-disabled)" },
+      DEFERRED: { label: "Deferred", color: "var(--color-warning)" },
+      WRITTEN_OFF: { label: "Written Off", color: "var(--destructive)" },
+      PENDING: { label: "Pending", color: "var(--color-warning)" },
+      CANCELLED: { label: "Cancelled", color: "var(--color-disabled)" },
+    };
+    const cfg = map[row.paymentStatus] ?? { label: row.paymentStatus || "Unknown", color: "var(--color-disabled)" };
+    return (
+      <div style={{ padding: "0.22rem 1rem", borderRadius: "12px", backgroundColor: cfg.color, color: "var(--primary-foreground)", display: "inline-block" }}>
+        {cfg.label}
+      </div>
+    );
+  };
 
-    {
-      name: "Invoice ID",
-      selector: (row: any) => row.invoiceId,
-      width: "200px",
-    },
-    {
-      name: "Installment #",
-      selector: (row: any) => row.installmentNumber,
-      width: "120px",
-    },
-    {
-      name: "Due Date",
-      selector: (row: any) => row.dueDate || "-",
-      width: "130px",
-    },
+  const Customer_ALL_List_Header = [
+    { name: "Invoice ID", selector: (row: any) => row.invoiceId, width: "200px" },
+    { name: "Installment #", selector: (row: any) => row.installmentNumber, width: "120px" },
+    { name: "Due Date", selector: (row: any) => row.dueDate || "-", width: "130px" },
     {
       name: "Installment Amount",
       selector: (row: any) => row.installmentAmount,
-      cell: (row: any) => (
-        <NumberFormatter value={row?.installmentAmount} />
-      ),
+      cell: (row: any) => <NumberFormatter value={row?.installmentAmount} />,
       width: "160px",
     },
     {
       name: "Principal",
       selector: (row: any) => row.principalComponent,
-      cell: (row: any) => (
-        <NumberFormatter value={row?.principalComponent} />
-      ),
+      cell: (row: any) => <NumberFormatter value={row?.principalComponent} />,
       width: "130px",
     },
     {
       name: "Profit",
       selector: (row: any) => row.profitComponent,
-      cell: (row: any) => (
-        <NumberFormatter value={row?.profitComponent} />
-      ),
-      width: "130px",
+      cell: (row: any) => <NumberFormatter value={row?.profitComponent} />,
+      width: "110px",
     },
-    {
-      name: "Outstanding Balance",
-      selector: (row: any) => row.outstandingBalance,
-      cell: (row: any) => (
-        <NumberFormatter value={row?.outstandingBalance} />
-      ),
-      width: "170px",
-    },
+    // {
+    //   name: "Outstanding Balance",
+    //   selector: (row: any) => row.outstandingBalance,
+    //   cell: (row: any) => <NumberFormatter value={row?.outstandingBalance} />,
+    //   width: "170px",
+    // },
     {
       name: "Payment Status",
       selector: (row: any) => row.paymentStatus,
-      cell: (row: any) => {
-        const getStatusConfig = (status: string) => {
-          switch (status) {
-            case PAYMENT_STATUS.PAID:
-              return { label: "Paid", color: "var(--color-success)" };
-            case PAYMENT_STATUS.PENDING:
-              return { label: "Pending", color: "var(--color-warning)" };
-            case PAYMENT_STATUS.OVERDUE:
-              return { label: "Overdue", color: "var(--destructive)" };
-            case PAYMENT_STATUS.CANCELLED:
-              return { label: "Cancelled", color: "var(--color-disabled)" };
-            default:
-              return { label: status || "Unknown", color: "var(--color-disabled)" };
-          }
-        };
-
-        const statusConfig = getStatusConfig(row.paymentStatus);
-
-        return (
-          <div
-            style={{
-              padding: "0.22rem 1rem",
-              borderRadius: "12px",
-              backgroundColor: statusConfig.color,
-              color: "var(--primary-foreground)",
-              display: "inline-block",
-            }}
-          >
-            {statusConfig.label}
-          </div>
-        );
-      },
+      cell: paymentStatusCell,
       width: "150px",
     },
+    // {
+    //   name: "Delinquency Status",
+    //   selector: (row: any) => row.delinquencyStatus || "-",
+    //   width: "160px",
+    // },
     {
-      name: "Paid Date",
-      selector: (row: any) => row.paidDate ? new Date(row.paidDate).toLocaleDateString() : "-",
+      name: "DPD",
+      selector: (row: any) => row.dpd ?? "-",
+      width: "80px",
+    },
+    {
+      name: "Late Penalty",
+      selector: (row: any) => row.latePenaltyAmount,
+      cell: (row: any) => <NumberFormatter value={row?.latePenaltyAmount ?? 0} />,
       width: "130px",
     },
+    {
+      name: "Total Amount",
+      selector: (row: any) => row.outstandingBalance,
+      cell: (row: any) => <NumberFormatter value={row?.outstandingBalance ?? 0} />,
+      width: "170px",
+    },
+    { name: "Paid Date", selector: (row: any) => row.paidDate ? new Date(row.paidDate).toLocaleDateString() : "-", width: "120px" },
     {
       name: "Paid Amount",
       selector: (row: any) => row.paidAmount,
-      cell: (row: any) => (
-        row.paidAmount != null ? <NumberFormatter value={row?.paidAmount} /> : <span>-</span>
-      ),
-      width: "130px",
+      cell: (row: any) => row.paidAmount != null ? <NumberFormatter value={row?.paidAmount} /> : <span>-</span>,
+      width: "120px",
     },
     {
       name: "Actions",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button
-            className="gradient-btn"
-            type="primary"
-            style={{
-              borderColor: "var(--background)",
-              borderRadius: "8px",
-              padding: "10px 20px",
-            }}
-          >
+          <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "8px", padding: "10px 20px" }}>
+            Select <DownOutlined />
+          </Button>
+        </Dropdown>
+      ),
+    },
+  ];
+
+  const EarlySettlement_List_Header = [
+    { name: "Invoice ID", selector: (row: any) => row.invoiceId, width: "200px" },
+    { name: "Installment #", selector: (row: any) => row.installmentNumber, width: "120px" },
+    { name: "Due Date", selector: (row: any) => row.dueDate || "-", width: "130px" },
+    {
+      name: "Installment Amount",
+      selector: (row: any) => row.installmentAmount,
+      cell: (row: any) => <NumberFormatter value={row?.installmentAmount} />,
+      width: "160px",
+    },
+    // {
+    //   name: "Outstanding Balance",
+    //   selector: (row: any) => row.outstandingBalance,
+    //   cell: (row: any) => <NumberFormatter value={row?.outstandingBalance} />,
+    //   width: "170px",
+    // },
+    {
+      name: "Payment Status",
+      selector: (row: any) => row.paymentStatus,
+      cell: paymentStatusCell,
+      width: "150px",
+    },
+    // {
+    //   name: "Delinquency Status",
+    //   selector: (row: any) => row.delinquencyStatus || "-",
+    //   width: "160px",
+    // },
+    {
+      name: "ES Discount Amount",
+      selector: (row: any) => row.esDiscountAmount,
+      cell: (row: any) => row.esDiscountAmount != null ? <NumberFormatter value={row.esDiscountAmount} /> : <span>-</span>,
+      width: "170px",
+    },
+    {
+      name: "ES Discount %",
+      selector: (row: any) => row.esDiscountPercentage,
+      cell: (row: any) => row.esDiscountPercentage != null ? <span>{row.esDiscountPercentage}%</span> : <span>-</span>,
+      width: "130px",
+    },
+    {
+      name: "Valid Until Day",
+      selector: (row: any) => row.esValidUntilDay ?? "-",
+      width: "130px",
+    },
+    {
+      name: "Total After Discount",
+      selector: (row: any) => row.esTotalAfterDiscount,
+      cell: (row: any) =>
+        row.esTotalAfterDiscount != null
+          ? <NumberFormatter value={row.esTotalAfterDiscount} />
+          : <span>-</span>,
+      width: "170px",
+    },
+    {
+      name: "Actions",
+      cell: (row: any) => (
+        <Dropdown overlay={menu(row)} trigger={["click"]}>
+          <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "8px", padding: "10px 20px" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>
@@ -381,33 +404,38 @@ const Invoices = () => {
     setLoader(true);
     try {
       const body = {
-        accountId: lateFeeData?.accountId,
-        invoiceId: lateFeeData?.id,
-        charges: values?.totalAmount,
+        loanId: id?.id || "",
+        invoiceId: lateFeeData?.invoiceId || lateFeeData?.id,
+        reason: "Penalty Write-off Request",
+        triggerType: "MANUAL",
+        override: true
       };
 
-      const response = await waiveAmount(body);
+      const response = await executeWriteOff(body);
       if (
-        response.data.notificationMessage ==
-        "Request initiated for the operation"
+        response?.status === 200 ||
+        response?.data?.notificationMessage === "Request initiated for the operation" ||
+        response?.data?.message === "success"
       ) {
-        toast.success(response.data.notificationMessage);
+        toast.success(response?.data?.notificationMessage || "Operation successful");
         setLoader(false);
         setWaveLateDialog(false);
+        individualCustomer(); // refresh list
       } else {
         toast.error(
           response?.data?.data?.notificationMessage ||
           response?.data?.notificationMessage ||
-          response.data.errors[0]
+          response?.data?.errors?.[0] ||
+          "Failed"
         );
         setWaveLateDialog(false);
         setLoader(false);
       }
-    } catch (error) {
+    } catch (error: any) {
       setLoader(false);
       setWaveLateDialog(false);
       // Handle error case
-      toast.error("Failed to submit payment. Please try again.");
+      toast.error(error?.response?.data?.message || "Failed to submit write-off. Please try again.");
     }
   };
   const [loader, setLoader] = useState<boolean>(false);
@@ -472,33 +500,54 @@ const Invoices = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const mappedData =
-    allinvoiceList &&
-    allinvoiceList.map((item: any) => {
-      return {
-        invoiceId: item?.invoiceId || "-",
-        installmentNumber: item?.installmentNumber ?? "-",
-        dueDate: item?.dueDate || "-",
-        installmentAmount: item?.installmentAmount ?? 0,
-        principalComponent: item?.principalComponent ?? 0,
-        profitComponent: item?.profitComponent ?? 0,
-        outstandingBalance: item?.outstandingBalance ?? 0,
-        paymentStatus: item?.paymentStatus || "PENDING",
-        paidDate: item?.paidDate,
-        paidAmount: item?.paidAmount,
-        receiptAvailable: item?.receiptAvailable ?? false,
-        // Keep accountId for waive/update actions
-        accountId: item?.accountId,
-        id: item?.invoiceId,
-      };
-    });
 
-  // Split data into regular invoices and early settlement invoices
-  const regularInvoices = mappedData?.filter((invoice: any) => !invoice.isEarlySettlement) || [];
-  const earlySettlementInvoices = mappedData?.filter((invoice: any) => invoice.isEarlySettlement) || [];
+  const mapInvoice = (item: any) => ({
+    invoiceId: item?.invoiceId || "-",
+    installmentNumber: item?.installmentNumber ?? "-",
+    dueDate: item?.dueDate || "-",
+    installmentAmount: item?.installmentAmount ?? 0,
+    principalComponent: item?.principalComponent ?? 0,
+    profitComponent: item?.profitComponent ?? 0,
+    outstandingBalance: item?.installmentAmount + item?.delinquency?.latePenaltyAmount || 0,
+    paymentStatus: item?.paymentStatus || "PENDING",
+    paidDate: item?.paidDate,
+    paidAmount: item?.paidAmount,
+    receiptAvailable: item?.receiptAvailable ?? false,
+    accountId: item?.accountId,
+    id: item?.invoiceId,
+    // delinquency fields
+    delinquencyStatus: item?.delinquency?.status ?? "-",
+    dpd: item?.delinquency?.dpd ?? 0,
+    latePenaltyAmount: item?.delinquency?.latePenaltyAmount ?? 0,
+    delinquencyOutstanding: item?.delinquency?.outstandingAmount ?? 0,
+    // early settlement fields
+    esDiscountAmount: item?.delinquency?.earlySettlementDiscountAmount ?? null,
+    esDiscountPercentage: item?.delinquency?.earlySettlementDiscountPercentage ?? null,
+    esValidUntilDay: item?.delinquency?.earlySettlementValidUntilDay ?? null,
+    esTotalAfterDiscount: (() => {
+      const total = item?.delinquency?.totalAmount ?? item?.installmentAmount ?? 0;
+      const discAmt = item?.delinquency?.earlySettlementDiscountAmount;
+      const discPct = item?.delinquency?.earlySettlementDiscountPercentage;
+      if (discAmt != null) return total - discAmt;
+      if (discPct != null) return total - (total * discPct) / 100;
+      return null;
+    })(),
+    isEligibleForWriteOff: item?.delinquency?.isEligibleForWriteOff ?? false,
+  });
+
+  const regularInvoices = allinvoiceList?.map(mapInvoice) || [];
+
+  const earlySettlementInvoices = allinvoiceList
+    ?.filter(
+      (item: any) =>
+        item?.delinquency?.earlySettlementEligible === true &&
+        item?.paymentStatus !== PAYMENT_STATUS.DUE &&
+        item?.paymentStatus !== PAYMENT_STATUS.OVERDUE
+    )
+    .map(mapInvoice) || [];
 
   useEffect(() => {
-    handleAllReason();
+    // handleAllReason();
     individualCustomer();
     return () => { };
   }, [page, pageSize]);
@@ -512,32 +561,19 @@ const Invoices = () => {
         updatedAccId,
         updatedDate
       );
-      if (
-        response?.data?.notificationMessage ==
-        "Request initiated for the operation" ||
-        response?.data?.data?.notificationMessage ==
-        "Request initiated for the operation"
-      ) {
+      if (response) {
         toast.success(
-          response?.data?.data?.notificationMessage ||
-          response?.data?.notificationMessage
+          response?.data?.message
         );
         setLoader(false);
-      } else {
-        toast.error(
-          response?.data?.data?.notificationMessage ||
-          response?.data?.notificationMessage ||
-          response?.data?.errors[0]
-        );
-        setLoader(false);
+        setdueDateModal(false);
+        individualCustomer()
+        setUpdatedId("");
+        setUpdatedDate("");
+        setUpdatedAccId("");
       }
-      individualCustomer();
-      setdueDateModal(false);
-      setUpdatedId("");
-      setUpdatedDate("");
-      setUpdatedAccId("");
     } catch (error: any) {
-      toast.error(error?.message);
+      // toast.error(error?.message);
       setLoader(false);
     }
   };
@@ -696,21 +732,18 @@ const Invoices = () => {
             </div>
           </Tab>
           <Tab eventKey="earlySettlement" title="Early Settlement Invoices">
-            {/* <div className="col-11 mb-4 mt-3">
-              <h3>Early Settlement Invoices</h3>
-            </div> */}
             <div className="cs-table p-2">
               <TableView
                 setPage={setEarlySettlementPage}
                 setPageSize={setEarlySettlementPageSize}
                 page={earlySettlementPage}
                 pageSize={earlySettlementPageSize}
-                totalRows={earlySettlementInvoices?.length || 0}
-                header={Customer_ALL_List_Header}
+                totalRows={earlySettlementInvoices.length}
+                header={EarlySettlement_List_Header}
                 data={earlySettlementInvoices}
                 isLoading={skelitonLoading}
               />
-              {earlySettlementInvoices?.length == 0 && (
+              {!skelitonLoading && earlySettlementInvoices.length === 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}

@@ -101,7 +101,17 @@ const InvoiceRange = (props: any) => {
     },
   ];
   const handleCardClick = (item: any, index: any) => {
-    setSelectedInvoice({ ...item, index });
+    setSelectedInvoice({
+      ...item,
+      index,
+      fromInvoice: item.minInvoiceOrder,
+      toInvoice: item.maxInvoiceOrder,
+      fromDay: item.configurations[0].fromDay,
+      tillDay: item.configurations[0].tillDay,
+      penalty: props?.discount
+        ? item.configurations[0].discountPercentage
+        : item.configurations[0].discountAmount,
+    });
     setShowModal(true);
   };
 
@@ -110,11 +120,55 @@ const InvoiceRange = (props: any) => {
     setSelectedInvoice(null);
   };
 
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
+    const isPercentage = !!props?.discount;
+    const updatedItem = {
+      ...selectedInvoice,
+      minInvoiceOrder: selectedInvoice.fromInvoice,
+      maxInvoiceOrder: selectedInvoice.toInvoice,
+      configurations: [
+        {
+          fromDay: selectedInvoice.fromDay,
+          tillDay: selectedInvoice.tillDay,
+          discountPercentage: isPercentage ? selectedInvoice.penalty : null,
+          discountAmount: !isPercentage ? selectedInvoice.penalty : null,
+          penalty: null,
+        },
+      ],
+    };
+
     const updatedData = [...savedData];
-    updatedData[selectedInvoice?.index as number] = selectedInvoice;
-    setSavedData(updatedData);
-    handleClose();
+    updatedData[selectedInvoice?.index as number] = updatedItem;
+
+    setLoader(true);
+    const body = {
+      productId: props?.productId,
+      delinquencyType: 1,
+      isPercentage,
+      penaltyPercentage: 0,
+      penaltyAmount: 0,
+      fromDay: 0,
+      tillDay: 0,
+      penaltyType: 1,
+      isCustom: true,
+      charityFundAccount: "CHARITY_FUND_001",
+      configs: buildConfigs(updatedData),
+    };
+
+    try {
+      const res = await createDeliquency(body);
+      if (res?.data) {
+        toast.success(res.data.notificationMessage || "Updated successfully");
+        setSavedData(updatedData);
+        handleClose();
+      } else {
+        toast.error(res.data.errors?.[0]);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
+    } finally {
+      setLoader(false);
+    }
   };
   const handleInputChange = (event: any) => {
     const { name, value, type } = event.target;
@@ -431,7 +485,7 @@ const InvoiceRange = (props: any) => {
               </Form.Group>
               <Form.Group className="mb-2">
                 <Form.Label className="invoice-popup-label">
-                  Amount In Percentage
+                  {props?.discount ? "Amount In Percentage" : "Amount"}
                 </Form.Label>
                 <Form.Control
                   type="number"

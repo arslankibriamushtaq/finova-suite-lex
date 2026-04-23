@@ -44,6 +44,10 @@ export function getApplicationInstallments(applicationId: string) {
   return axiosLendingService.get(`/api/v1/loans/application/${applicationId}/installments`);
 }
 
+export function getEarlySettlementInvoices(loanId: string) {
+  return axiosLendingService.get(`/api/v1/loans/${loanId}/early-settlement/invoices`);
+}
+
 export function getApplicationFullDetail(applicationId: string) {
   return axiosLendingService.get(`/api/v1/loan-applications/${applicationId}/full-detail`);
 }
@@ -62,4 +66,20 @@ export function approveReschedule(applicationId: string, rescheduleId: string, b
 
 export function rejectReschedule(applicationId: string, rescheduleId: string, body: { approverRole: string; approvalNotes: string }) {
   return axiosLendingService.post(`/api/v1/loans/${applicationId}/reschedules/${rescheduleId}/reject`, body);
+}
+
+export function getInvoiceDetailById(invoiceId: string) {
+  return axiosLendingService.get(`/api/v1/loans/invoices/${invoiceId}`);
+}
+
+export function getPendingApprovals() {
+  return axiosLendingService.get(`/api/v1/manual-approvals?status=PENDING`);
+}
+
+export function approveManualApproval(taskId: string, body: { notes: string }) {
+  return axiosLendingService.post(`/api/v1/manual-approvals/${taskId}/approve`, body);
+}
+
+export function rejectManualApproval(taskId: string, body: { rejectionReason: string; notes: string }) {
+  return axiosLendingService.post(`/api/v1/manual-approvals/${taskId}/reject`, body);
 }

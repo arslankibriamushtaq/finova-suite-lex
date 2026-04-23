@@ -149,7 +149,7 @@ const DasbhboardSidebarLms = () => {
       active: pathname.split("/").includes("LoanManagement"),
       menu: [
         {
-          label: "All Applications",
+          label: "Applications",
           Link: "ApplicationManagement",
           LinkLable: "LoanManagement",
           active: pathname == "/lms/LoanManagement/ApplicationManagement",

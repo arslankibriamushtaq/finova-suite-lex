@@ -167,11 +167,25 @@ const SingleInvoice = (props: any) => {
     setShowModal(false);
     setSelectedInvoice(null);
   };
-  const handleUpdate = () => {
+  const handleUpdate = async () => {
     const updatedData = [...savedData];
     updatedData[selectedInvoice?.index as number] = selectedInvoice;
-    setSavedData(updatedData);
-    handleClose();
+
+    setLoader(true);
+    try {
+      const res = await callApi(buildConfigs(updatedData));
+      if (res?.data) {
+        toast.success(res.data.notificationMessage || "Updated successfully");
+        setSavedData(updatedData);
+        handleClose();
+      } else {
+        toast.error(res.data.errors?.[0]);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
+    } finally {
+      setLoader(false);
+    }
   };
 
   return (

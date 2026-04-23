@@ -1,6 +1,6 @@
 import { Input, Button } from "antd";
 import { useEffect, useState } from "react";
-import { getInvoicesByApplicationID } from "../../redux/apis/apisCrudLms";
+import { getInvoiceDetailById } from "../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import jsPDF from "jspdf";
@@ -21,12 +21,12 @@ function GenerateInvoice() {
 
   const getInvoicesById = async (id: any) => {
     try {
-      const res = await getInvoicesByApplicationID(id);
+      const res = await getInvoiceDetailById(id);
       if (res) {
-        const data = res?.data.data;
+        const data = res?.data.data || res?.data;
 
         setInvoiceData(data);
-        setTableData(data.invoiceDescriptions || []);
+        setTableData(data.lineItems || []);
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -56,13 +56,13 @@ function GenerateInvoice() {
         // NUCLEAR OPTION: Remove ALL stylesheets and style tags
         const allStylesheets = clonedDoc.querySelectorAll('link[rel="stylesheet"], style');
         allStylesheets.forEach((sheet: any) => sheet.remove());
-        
+
         // Remove all classes from all elements to prevent any CSS interference
         const allElements = clonedElement.querySelectorAll('*');
         allElements.forEach((el: any) => {
           // Completely remove className attribute
           el.removeAttribute('class');
-          
+
           // Keep only inline styles that are safe
           const inlineStyle = el.getAttribute('style');
           if (inlineStyle && inlineStyle.includes('oklch')) {
@@ -110,31 +110,31 @@ function GenerateInvoice() {
     <>
       <div style={{ backgroundColor: "var(--muted)", minHeight: "100vh", padding: "20px 0" }}>
         {/* Header with Download Button */}
-        <div 
-          className="d-flex justify-content-between align-items-center mb-3" 
+        <div
+          className="d-flex justify-content-between align-items-center mb-3"
           style={{ maxWidth: "900px", marginInline: 'auto', padding: "0 20px" }}
         >
           <h5 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Invoice View</h5>
-            <Button
-              type="primary"
-              onClick={downloadPDF}
-            style={{ 
+          <Button
+            type="primary"
+            onClick={downloadPDF}
+            style={{
               background: "var(--primary)",
               borderColor: "var(--primary)",
               padding: "8px 24px",
               height: "auto",
               fontWeight: 500
             }}
-            >
-              Download
-            </Button>
-          </div>
+          >
+            Download
+          </Button>
+        </div>
 
         {/* Invoice Content */}
         <div
           id="invoice-content"
-          style={{ 
-            maxWidth: "850px", 
+          style={{
+            maxWidth: "850px",
             marginInline: 'auto',
             backgroundColor: "var(--card)",
             padding: "50px",
@@ -159,12 +159,12 @@ function GenerateInvoice() {
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "25px" }}>
             {/* Left side - Company Info */}
             <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 600, fontSize: "15px", marginBottom: "6px", color: "var(--foreground)" }}>Company Name</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>{invoiceData?.from || "Factoring Valley"}</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>Address:{invoiceData?.address || "Saudi Arabia"}</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>VAT: {invoiceData?.vatNumber || "222"}</p>
+              <p style={{ fontWeight: 600, fontSize: "15px", marginBottom: "6px", color: "var(--foreground)" }}>{invoiceData?.company?.name || "Company Name"}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>{invoiceData?.company?.address}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>Email: {invoiceData?.company?.email}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>VAT: {invoiceData?.company?.vatNumber}</p>
             </div>
-            
+
             {/* Right side - Invoice Details */}
             <div style={{ minWidth: "270px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
@@ -173,7 +173,7 @@ function GenerateInvoice() {
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
                 <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Date</span>
-                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{new Date().toISOString().slice(0, 10)}</span>
+                <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{invoiceData?.invoiceDate || new Date().toISOString().slice(0, 10)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
                 <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Due Date</span>
@@ -191,10 +191,10 @@ function GenerateInvoice() {
             <p style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px", color: "var(--foreground)" }}>To:</p>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ margin: 0, fontWeight: 600, fontSize: "13px", color: "var(--foreground)" }}>
-                {invoiceData?.billingTo || "JAWAD JAWAD JAWAD JAWAD"}
+                {invoiceData?.customer?.name || "Customer Name"}
               </p>
               <div style={{ display: "flex", justifyContent: "start" }}>
-                <p style={{ margin: 0, fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Email</p>
+                <p style={{ margin: 0, fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>{invoiceData?.customer?.email}</p>
               </div>
             </div>
           </div>
@@ -202,8 +202,8 @@ function GenerateInvoice() {
           {/* Items Table */}
           <div style={{ marginBottom: "25px" }}>
             {/* Table Header */}
-            <div style={{ 
-              display: "grid", 
+            <div style={{
+              display: "grid",
               gridTemplateColumns: "3fr 1fr 1fr 1fr",
               backgroundColor: "var(--primary)",
               color: "var(--primary-foreground)",
@@ -218,53 +218,69 @@ function GenerateInvoice() {
               <div style={{ textAlign: "center" }}>VAT %</div>
             </div>
 
-            {/* Table Row */}
-            <div style={{ 
-              display: "grid", 
-              gridTemplateColumns: "3fr 1fr 1fr 1fr",
-              border: "1px solid var(--border)",
-              borderTop: "none",
-              padding: "10px 16px",
-              borderRadius: "0 0 3px 3px",
-              fontSize: "13px",
-              color: "var(--foreground)"
-            }}>
-              <div>{invoiceData?.discription || "Microban Revenue"}</div>
-              <div style={{ textAlign: "center" }}>1</div>
-              <div style={{ textAlign: "center" }}>{invoiceData?.processingFee || "86.09"}</div>
-              <div style={{ textAlign: "center" }}>{invoiceData?.tax || ""}</div>
-            </div>
+            {/* Table Rows */}
+            {invoiceData?.lineItems?.map((item: any, index: number) => (
+              <div
+                key={index}
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "3fr 1fr 1fr 1fr",
+                  border: "1px solid var(--border)",
+                  borderTop: "none",
+                  padding: "10px 16px",
+                  borderRadius: index === invoiceData.lineItems.length - 1 ? "0 0 3px 3px" : "0",
+                  fontSize: "13px",
+                  color: "var(--foreground)"
+                }}
+              >
+                <div>{item.description}</div>
+                <div style={{ textAlign: "center" }}>{item.quantity}</div>
+                <div style={{ textAlign: "center" }}>{item.unitPrice}</div>
+                <div style={{ textAlign: "center" }}>-</div>
+              </div>
+            ))}
           </div>
 
           {/* Totals Section */}
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "30px" }}>
             <div style={{ minWidth: "320px" }}>
-              {/* Total Before VAT */}
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
+              {/* Installment Amount */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
                 padding: "6px 0",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Total Before VAT</span>
-                <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{invoiceData?.processingFee || "86.09"}</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Installment Amount</span>
+                <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{Number(invoiceData?.installmentAmount || 0).toFixed(2)}</span>
               </div>
 
-              {/* VAT Amount */}
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
+              {/* Outstanding Amount */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
                 padding: "6px 0",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>VAT (15%)</span>
-                <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{invoiceData?.tax || "12.91"}</span>
+                {/* <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Outstanding Amount</span> */}
+                {/* <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{Number(invoiceData?.delinquency?.outstandingAmount || 0).toFixed(2)}</span> */}
               </div>
 
-              {/* Total After VAT with borders */}
-              <div style={{ 
-                display: "flex", 
-                justifyContent: "space-between", 
+              {/* Penalty */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "6px 0",
+                fontSize: "13px"
+              }}>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Penalty</span>
+                <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{Number(invoiceData?.delinquency?.latePenaltyAmount || 0).toFixed(2)}</span>
+              </div>
+
+              {/* Payable with borders */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
                 padding: "10px 0",
                 borderTop: "1px solid var(--border)",
                 borderBottom: "1px solid var(--border)",
@@ -272,20 +288,42 @@ function GenerateInvoice() {
                 marginBottom: "10px",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Total After VAT</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Payable</span>
                 <span style={{ fontWeight: 600, color: "var(--foreground)" }}>
-                  {(
-                    (Number(invoiceData?.totalAmount) || 0)
-                  ).toFixed(2)}
+                  {(() => {
+                    const status = invoiceData?.paymentStatus;
+                    const instAmt = Number(invoiceData?.installmentAmount || 0);
+                    const penalty = Number(invoiceData?.delinquency?.latePenaltyAmount || 0);
+                    const earlySettlementEligible = invoiceData?.delinquency?.earlySettlementEligible;
+
+                    if (status === "DUE" || status === "OVERDUE") {
+                      return (instAmt + penalty).toFixed(2);
+                    }
+                    if (earlySettlementEligible) {
+                      return Number(invoiceData?.delinquency?.totalAmount || instAmt).toFixed(2);
+                    }
+                    return instAmt.toFixed(2);
+                  })()}
                 </span>
               </div>
 
-              {/* Final Total */}
+              {/* Final Payable Total */}
               <div style={{ textAlign: "right" }}>
                 <h3 style={{ margin: 0, fontSize: "22px", fontWeight: 700, color: "var(--foreground)" }}>
-                  {(
-                    (Number(invoiceData?.totalAmount) || 0) 
-                ).toFixed(2)}
+                  {(() => {
+                    const status = invoiceData?.paymentStatus;
+                    const instAmt = Number(invoiceData?.installmentAmount || 0);
+                    const penalty = Number(invoiceData?.delinquency?.latePenaltyAmount || 0);
+                    const earlySettlementEligible = invoiceData?.delinquency?.earlySettlementEligible;
+
+                    if (status === "DUE" || status === "OVERDUE") {
+                      return (instAmt + penalty).toFixed(2);
+                    }
+                    if (earlySettlementEligible) {
+                      return Number(invoiceData?.delinquency?.totalAmount || instAmt).toFixed(2);
+                    }
+                    return instAmt.toFixed(2);
+                  })()}
                 </h3>
               </div>
             </div>

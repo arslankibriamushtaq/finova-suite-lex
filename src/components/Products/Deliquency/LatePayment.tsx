@@ -72,32 +72,32 @@ const LatePayment = ({ productId, setSelectedTab }: any) => {
       placeholder: "Promises Per Loan",
     }, */
   ];
-const createDelinquency = async () => {
-  try {
-    const body = {
-      templateName: fieldsInvoice.templateName,
-      noOfDay: fieldsInvoice.Days,
-      notification: fieldsInvoice.notification,
-      delinquencyType: 3,
-      isPercentage: true,
-      penaltyPercentage: formValues.penalty,
-      fromDay: formValues.fromDay,
-      tillDay: formValues.tillDay,
-      penaltyType: 1,
-      productId,
-    };
-    
-    const res = await createDelinquencyNotifications(body);
-    
-    if (res.data.notificationMessage == "Operation successful.") {
-      toast.success("Notification created successfully");
-    } else {
-      toast.error(res.data.errors?.[0] || "An error occurred");
+  const createDelinquency = async () => {
+    try {
+      const body = {
+        templateName: fieldsInvoice.templateName,
+        noOfDay: fieldsInvoice.Days,
+        notification: fieldsInvoice.notification,
+        delinquencyType: 3,
+        isPercentage: true,
+        penaltyPercentage: formValues.penalty,
+        fromDay: formValues.fromDay,
+        tillDay: formValues.tillDay,
+        penaltyType: 1,
+        productId,
+      };
+
+      const res = await createDelinquencyNotifications(body);
+
+      if (res.data.notificationMessage == "Operation successful.") {
+        toast.success("Notification created successfully");
+      } else {
+        toast.error(res.data.errors?.[0] || "An error occurred");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "An error occurred");
     }
-  } catch (error: any) {
-    toast.error(error.message || "An error occurred");
-  }
-};
+  };
   const handleInputChange = (event: any) => {
     const { name, value, type } = event.target;
     setFormValues((prevValues: any) => ({ ...prevValues, [name]: value }));
@@ -115,7 +115,7 @@ const createDelinquency = async () => {
       [name]: value
     }));
   };
-  
+
   const validateFields = () => {
     const newErrors: any = {};
     if (!formValues.penalty) newErrors.penalty = "Penalty is required";
@@ -135,8 +135,8 @@ const createDelinquency = async () => {
     try {
       const res = await getDeliquency(productId);
       if (res) {
-        const data = res?.data?.data?.find((item: { delinquencyTypeName: string; })=>item?.delinquencyTypeName === "LATE_PAYMENT");
-   setradioInputValue(
+        const data = res?.data?.data?.find((item: { delinquencyTypeName: string; }) => item?.delinquencyTypeName === "LATE_PAYMENT");
+        setradioInputValue(
           data?.isPercentage ? "Percentage" : "Fixed"
         );
         setFormValues({
@@ -160,7 +160,7 @@ const createDelinquency = async () => {
 
     setLoader(true);
     const body = {
-      delinquencyType: 2,
+      delinquencyType: 3,
       isPercentage: true,
       penaltyPercentage: formValues.penalty,
       fromDay: formValues.fromDay,
@@ -169,7 +169,7 @@ const createDelinquency = async () => {
       productId,
     };
     const bodyFixed = {
-      delinquencyType: 2,
+      delinquencyType: 3,
       isPercentage: false,
       penaltyAmount: formValues.penalty,
       fromDay: formValues.fromDay,
@@ -217,9 +217,8 @@ const createDelinquency = async () => {
               <Form.Group>
                 {field.type === "radio" && (
                   <Form.Check
-                    className={`mt-4 d-flex align-items-center gap-1 ${
-                      radioInputValue == field.value ? "accent-red" : ""
-                    }`}
+                    className={`mt-4 d-flex align-items-center gap-1 ${radioInputValue == field.value ? "accent-red" : ""
+                      }`}
                     type={field.type}
                     label={field.label}
                     name={field.name}
@@ -280,7 +279,7 @@ const createDelinquency = async () => {
         className="mt-4"
         style={{ borderBottom: "1px solid var(--color-border-light)" }}
       ></div>
-      
+
       {/* <div className="mt-4 mb-3">
         <div
           className="d-flex align-items-center justify-content-between mb-3"

@@ -103,10 +103,9 @@ export function updateLoanInvoiceDueDate(
   accountID: any,
   dueDate: any
 ) {
-  return axios.put(`/api/MonetaryTransaction/UpdateInvoiceDueDate`, {
-    invoiceId,
-    accountID,
-    dueDate,
+  return axios.patch(`/lending-service/api/v1/loans/invoices/${invoiceId}/due-date
+`, {
+    newDueDate:dueDate
   });
 }
 
@@ -1341,4 +1340,8 @@ export function deleteLatePayment(id: any) {
 }
 export function deleteDefaultPayment(id: any) {
   return axios.delete(`/api/Delinquency/DeleteDefaultPayment?id=${id}`);
+}
+
+export function executeWriteOff(body: any) {
+  return axiosLms.post(`/collections-service/api/v1/admin/write-offs/execute`, body);
 }

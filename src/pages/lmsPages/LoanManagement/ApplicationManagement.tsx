@@ -20,10 +20,10 @@ import {
   generateInvoices,
   modifyLoanStatus,
 } from "../../../redux/apis/apisCrudLms";
-import { getLoanApplications } from "../../../redux/apis/apisLendingService";
+import { getLoanApplications, getPendingApprovals, approveManualApproval, rejectManualApproval } from "../../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 
-import { Col, Form, Modal, Row } from "react-bootstrap";
+import { Col, Form, Modal, Row, Tabs, Tab } from "react-bootstrap";
 
 import {
   LoadingOutlined,
@@ -79,6 +79,12 @@ const ApplicationManagement = () => {
     { title: "Modify Loan Status", status: "wait" },
     { title: "Generate Invoices", status: "wait" },
   ]);
+  const [activeTab, setActiveTab] = useState("AllApplication");
+  const [manualModal, setManualModal] = useState(false);
+  const [manualActionType, setManualActionType] = useState<"approve" | "reject" | null>(null);
+  const [selectedTaskId, setSelectedTaskId] = useState<string | null>(null);
+  const [manualNotes, setManualNotes] = useState("");
+  const [manualRejectionReason, setManualRejectionReason] = useState("DBR_HIGH");
   const param = useParams();
   const [formValues, setFormValues] = useState<any>({
     accountNo: 0,
@@ -108,25 +114,25 @@ const ApplicationManagement = () => {
   const dispatch = useDispatch();
   const baseUrl = import.meta.env.VITE_REACT_APP_API_BASE_LMS_URL;
   async function GetApplicationByAccountNumber(accountNumber: string | number) {
-  try {
-    const response = await axios.get(
-      `${baseUrl}/api/Application/GetApplicationByAccountNumber/${accountNumber}`,
-      {
-        headers: {
-          'accept': 'text/plain',
-          'Request-Id': 'f1052f4d-b2a3-4038-8340-cdc06e89ffaf',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
+    try {
+      const response = await axios.get(
+        `${baseUrl}/api/Application/GetApplicationByAccountNumber/${accountNumber}`,
+        {
+          headers: {
+            'accept': 'text/plain',
+            'Request-Id': 'f1052f4d-b2a3-4038-8340-cdc06e89ffaf',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`,
+          }
         }
-      }
-    );
+      );
 
-    return response.data;
-  } catch (error) {
-    console.error('Error fetching application by account number:', error);
-    // Optional: throw error to be handled by the caller
-    throw error;
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching application by account number:', error);
+      // Optional: throw error to be handled by the caller
+      throw error;
+    }
   }
-}
   const handleInputChange = (event: any, groupName?: string) => {
     const { name, value } = event.target;
 
@@ -239,6 +245,41 @@ const ApplicationManagement = () => {
       navigate(`/Lms/LoanManagement/RescheduleHistory/${row.applicationId}`);
     }
   };
+
+  const handleManualAction = (key: string, row: any) => {
+    setSelectedTaskId(row.id);
+    if (key === "manualApprove") {
+      setManualActionType("approve");
+      setManualModal(true);
+    } else if (key === "manualReject") {
+      setManualActionType("reject");
+      setManualModal(true);
+    }
+  };
+
+  const submitManualAction = async () => {
+    if (!selectedTaskId || !manualActionType) return;
+    setLoader(true);
+    try {
+      if (manualActionType === "approve") {
+        await approveManualApproval(selectedTaskId, { notes: manualNotes });
+        toast.success("Application Approved Successfully");
+      } else {
+        await rejectManualApproval(selectedTaskId, {
+          rejectionReason: manualRejectionReason,
+          notes: manualNotes
+        });
+        toast.success("Application Rejected Successfully");
+      }
+      setManualModal(false);
+      setManualNotes("");
+      getPending();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || "Action failed");
+    } finally {
+      setLoader(false);
+    }
+  };
   const getAll = async () => {
     try {
       setSkelitonLoading(true);
@@ -255,10 +296,27 @@ const ApplicationManagement = () => {
       setSkelitonLoading(false);
     }
   };
-  const getApplicationByCustomer= async () => {
+
+  const getPending = async () => {
     try {
       setSkelitonLoading(true);
-    
+      const response = await getPendingApprovals();
+      const list = response?.data?.data || response?.data || [];
+      const dataArray = Array.isArray(list) ? list : [];
+      setApplicationData(dataArray);
+      setTotalRows(dataArray.length);
+      setFrom(dataArray.length > 0 ? 1 : 0);
+      setTo(dataArray.length);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch pending applications");
+    } finally {
+      setSkelitonLoading(false);
+    }
+  };
+  const getApplicationByCustomer = async () => {
+    try {
+      setSkelitonLoading(true);
+
       const response = await GetApplicationByAccountNumber(param?.accountNumber as string);
       if (response.success) {
         const data = response.data;
@@ -266,17 +324,17 @@ const ApplicationManagement = () => {
         const currentPage = response?.pageInfo?.page || page;
         const currentPageSize = response?.pageInfo?.pageSize || pageSize;
         const totalItems = response?.pageInfo?.totalItems || 0;
-        
+
         setTotalRows(totalItems);
-        
+
         // Calculate from and to based on page, pageSize, and totalItems
         const calculatedFrom = (currentPage - 1) * currentPageSize + 1;
         const calculatedTo = Math.min(currentPage * currentPageSize, totalItems);
-        
+
         setFrom(calculatedFrom);
         setTo(calculatedTo);
       }
-      else{
+      else {
         setApplicationData([]);
         setTotalRows(0);
         setFrom(0);
@@ -354,77 +412,98 @@ const ApplicationManagement = () => {
   useEffect(() => {
     if (initialRendor) {
       const timeoutId = setTimeout(() => {
-        if(param?.accountNumber) {
+        if (param?.accountNumber) {
           getApplicationByCustomer();
+        } else if (activeTab === "PendingApplication") {
+          getPending();
+        } else {
+          getAll();
         }
-        getAll();
       }, 1500);
       return () => clearTimeout(timeoutId);
     }
   }, [searchValue]);
   useEffect(() => {
     setInitialRendor(true);
-    if(param?.accountNumber) {
+    if (param?.accountNumber) {
       getApplicationByCustomer();
     }
-    else{
-    getAll();
+    else {
+      if (activeTab === "PendingApplication") {
+        getPending();
+      } else {
+        getAll();
+      }
     }
-  }, [page, pageSize]);
-  const menu = (row: any) => (
-    <Menu onClick={({ key }: any) => handleChange(key, row)}>
-      {row.laonStatus == "Pending" && (
-        <>
-          <Menu.Item key="approve" icon={<EditOutlined />}>
+  }, [page, pageSize, activeTab]);
+  const menu = (row: any) => {
+    if (activeTab === "PendingApplication") {
+      return (
+        <Menu onClick={({ key }: any) => handleManualAction(key, row)}>
+          <Menu.Item key="manualApprove" icon={<CheckCircleOutlined />}>
             Approve
           </Menu.Item>
-          <Menu.Item key="reject" icon={<EditOutlined />}>
+          <Menu.Item key="manualReject" icon={<CloseCircleOutlined />}>
             Reject
           </Menu.Item>
-        </>
-      )}
-      {row.laonStatus == "APPROVED" && (
-        <>
-          {/* <Menu.Item key="view" icon={<EyeOutlined />}>
-            View
-          </Menu.Item> */}
-          {/* <Menu.Item key="disburse" icon={<FaSortAmountUp />}>
-            Disburse Approve Amount
-          </Menu.Item> */}
-          <Menu.Item key="viewSchedule" icon={<EyeOutlined />}>
-            View Schedule
-          </Menu.Item>
-        </>
-      )}
-      <Menu.Item key="viewDetail" icon={<EyeOutlined />}>
-        View Detail
-      </Menu.Item>
-      {/* <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
-      </Menu.Item> */}
-      {/* <Menu.Item key="timeLine" icon={<ClockCircleOutlined />}>
-        Loan TimeLine
-      </Menu.Item> */}
-            {row.disbursementStatus == "Disbursed" && (
-        <>
-          {/* <Menu.Item key="disburseHistory" icon={<FaSortAmountUp />}>
-            Disburse History
-          </Menu.Item> */}
-          {/* <Menu.Item key="repayHistory" icon={<RiSecurePaymentLine/>}>
-            Repay History
-          </Menu.Item>
-          <Menu.Item key="brokenPromise" icon={<RiContractLeftFill/>}>
-              Broken Promise
-          </Menu.Item> */}
-        </>
-      )}
-      {row.rescheduleStatus && (
-        <Menu.Item key="rescheduleHistory" icon={<MdSchedule />}>
-          Reschedule History
+        </Menu>
+      );
+    }
+    return (
+      <Menu onClick={({ key }: any) => handleChange(key, row)}>
+        {row.laonStatus == "Pending" && (
+          <>
+            <Menu.Item key="approve" icon={<EditOutlined />}>
+              Approve
+            </Menu.Item>
+            <Menu.Item key="reject" icon={<EditOutlined />}>
+              Reject
+            </Menu.Item>
+          </>
+        )}
+        {row.laonStatus == "APPROVED" && (
+          <>
+            {/* <Menu.Item key="view" icon={<EyeOutlined />}>
+              View
+            </Menu.Item> */}
+            {/* <Menu.Item key="disburse" icon={<FaSortAmountUp />}>
+              Disburse Approve Amount
+            </Menu.Item> */}
+            <Menu.Item key="viewSchedule" icon={<EyeOutlined />}>
+              View Schedule
+            </Menu.Item>
+          </>
+        )}
+        <Menu.Item key="viewDetail" icon={<EyeOutlined />}>
+          View Detail
         </Menu.Item>
-      )}
-    </Menu>
-  );
+        {/* <Menu.Item key="edit" icon={<EditOutlined />}>
+          Edit
+        </Menu.Item> */}
+        {/* <Menu.Item key="timeLine" icon={<ClockCircleOutlined />}>
+          Loan TimeLine
+        </Menu.Item> */}
+        {row.disbursementStatus == "Disbursed" && (
+          <>
+            {/* <Menu.Item key="disburseHistory" icon={<FaSortAmountUp />}>
+              Disburse History
+            </Menu.Item> */}
+            {/* <Menu.Item key="repayHistory" icon={<RiSecurePaymentLine/>}>
+              Repay History
+            </Menu.Item>
+            <Menu.Item key="brokenPromise" icon={<RiContractLeftFill/>}>
+                Broken Promise
+            </Menu.Item> */}
+          </>
+        )}
+        {row.rescheduleStatus && (
+          <Menu.Item key="rescheduleHistory" icon={<MdSchedule />}>
+            Reschedule History
+          </Menu.Item>
+        )}
+      </Menu>
+    );
+  };
   const Account_Documents_List_Header = [
     {
       name: "Application No",
@@ -628,12 +707,12 @@ const ApplicationManagement = () => {
       case 4:
         return "Not Initiated";
       case 5:
-      return "Disbursed";
+        return "Disbursed";
       default:
         return "Unknown Status";
     }
   }
-    const formatDate = (isoString: any) => {
+  const formatDate = (isoString: any) => {
     const date = new Date(isoString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
@@ -655,28 +734,38 @@ const ApplicationManagement = () => {
         productId: item?.productId,
         productName: item?.productName || "-",
         shariaStructure: item?.shariaStructure || "-",
-        requestedAmount: item?.requestedAmount ?? "-",
-        requestedTenureMonths: item?.requestedTenureMonths,
+        requestedAmount: item?.requestedAmount || item?.totalAmount || "-",
+        requestedTenureMonths: item?.tenureMonths || item?.requestedTenureMonths,
         purposeOfFinance: item?.purposeOfFinance || "-",
         safeWatchStatus: item?.safeWatchStatus || "-",
         creditScore: item?.creditScore,
         createdAt: item?.createdAt,
         updatedAt: item?.updatedAt,
         // Keep for action menu compatibility
-        applicationId: item?.id,
-        loanId: item?.id,
+        applicationId: item?.applicationId || item?.id,
+        loanId: item?.applicationId || item?.id,
         applicationNo: item?.applicationNumber,
-        loanAmount: item?.requestedAmount,
+        loanAmount: item?.requestedAmount || item?.totalAmount,
         laonStatus: item?.status,
         disbursementStatus: item?.loanStatus === "ACTIVE" ? "Disbursed" : "Pending",
       };
     });
 
   // Client-side pagination
-  const paginationTotal = allMappedData?.length || 0;
+  const filteredData = (allMappedData || []).filter((item: any) => {
+    if (activeTab === "ApprovedApplication") {
+      return item.status?.includes("APPROVED") || item.status?.includes("COMPLETED");
+    }
+    if (activeTab === "CancelledApplication") {
+      return item.status?.includes("CANCELLED") || item.status?.includes("REJECTED");
+    }
+    return true;
+  });
+
+  const paginationTotal = filteredData.length;
   const paginationStartIndex = (page - 1) * pageSize;
   const paginationEndIndex = paginationStartIndex + pageSize;
-  const mappedData = allMappedData?.slice(paginationStartIndex, paginationEndIndex);
+  const mappedData = filteredData.slice(paginationStartIndex, paginationEndIndex);
   const paginationFrom = paginationTotal > 0 ? paginationStartIndex + 1 : 0;
   const paginationTo = Math.min(paginationEndIndex, paginationTotal);
   const paginationTotalPage = Math.ceil(paginationTotal / pageSize) || 1;
@@ -722,7 +811,7 @@ const ApplicationManagement = () => {
     { label: "Disbursement Status", value: 16 },
 
   ];
-  
+
   return (
     <div>
       {/* {loader && <Loader />} */}
@@ -747,12 +836,69 @@ const ApplicationManagement = () => {
           </div>
         </Modal.Body>
       </Modal>
-      <div className="col-12 d-flex  align-items-center mt-3">
+
+      <Modal
+        show={manualModal}
+        onHide={() => setManualModal(false)}
+        centered
+      >
+        <Modal.Header closeButton>
+          <Modal.Title style={{ fontSize: "18px", fontWeight: 700 }}>
+            {manualActionType === "approve" ? "Approve Application" : "Reject Application"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            {manualActionType === "reject" && (
+              <Form.Group className="mb-3">
+                <Form.Label style={{ fontSize: "14px", fontWeight: 500 }}>Rejection Reason</Form.Label>
+                <Select
+                  style={{ width: "100%" }}
+                  value={manualRejectionReason}
+                  onChange={(value) => setManualRejectionReason(value)}
+                >
+                  <Select.Option value="DBR_HIGH">DBR High</Select.Option>
+                  <Select.Option value="LOW_CREDIT_SCORE">Low Credit Score</Select.Option>
+                  <Select.Option value="INCOMPLETE_DOCS">Incomplete Documentation</Select.Option>
+                  <Select.Option value="OTHERS">Others</Select.Option>
+                </Select>
+              </Form.Group>
+            )}
+            <Form.Group className="mb-3">
+              <Form.Label style={{ fontSize: "14px", fontWeight: 500 }}>Notes</Form.Label>
+              <Input.TextArea
+                rows={4}
+                value={manualNotes}
+                onChange={(e) => setManualNotes(e.target.value)}
+                placeholder="Enter notes here..."
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="secondary"
+            onClick={() => setManualModal(false)}
+            style={{ borderRadius: "8px" }}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="gradient-btn"
+            type="primary"
+            onClick={submitManualAction}
+            style={{ borderRadius: "8px" }}
+          >
+            Submit
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      {/* <div className="col-12 d-flex  align-items-center mt-3">
         <div
           className="d-flex align-items-center col-6 justify-content-between mt-1"
           style={{ fontSize: "15px", fontWeight: "Bold" }}
         >
-          Application Management
+          Applications
         </div>
         <div className="col-6 d-flex justify-content-end">
           <span className="pe-3">
@@ -794,6 +940,18 @@ const ApplicationManagement = () => {
             Create Application
           </Button>
         </div>
+      </div> */}
+      <div className="mt-3">
+        <Tabs
+          activeKey={activeTab}
+          onSelect={(k: any) => { setActiveTab(k); setPage(1); }}
+          className="mb-3 custom-tabs"
+        >
+          <Tab eventKey="AllApplication" title="All Application" />
+          <Tab eventKey="ApprovedApplication" title="Approved Application" />
+          <Tab eventKey="CancelledApplication" title="Cancelled Application" />
+          <Tab eventKey="PendingApplication" title="Pending Application" />
+        </Tabs>
       </div>
       <div className="cs-table mt-3">
         <TableView

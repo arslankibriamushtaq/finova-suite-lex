@@ -102,7 +102,7 @@ const LatePayment = () => {
 
     setLoader(true);
     const body = {
-      delinquencyType: 2,
+      delinquencyType: 3,
       isPercentage: true,
       penaltyPercentage: formValues.penalty,
       fromDay: formValues.fromDay,
@@ -113,7 +113,7 @@ const LatePayment = () => {
       productId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     };
     const bodyFixed = {
-      delinquencyType: 2,
+      delinquencyType: 3,
       isPercentage: false,
       penaltyAmount: formValues.penalty,
       fromDay: formValues.fromDay,
