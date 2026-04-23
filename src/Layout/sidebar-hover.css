@@ -58,7 +58,7 @@
 }
 
 /* Add top margin at 175% zoom and beyond to prevent content sitting under navbar */
-@media (min-resolution: 1.75dppx) {
+/* @media (min-resolution: 1.75dppx) {
   .page-content-area {
     margin-top: 5rem !important;
   }
@@ -84,7 +84,7 @@
     padding-bottom: 1rem;
   }
 
-}
+} */
 
 /* ==========================================================================
    Mobile / Zoom mode (≤ 1024px) — Layout fixes
