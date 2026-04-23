@@ -1339,10 +1339,10 @@ export default function CraeteProductSettings() {
         response = await updateAdminFeeSlabs(productId, { slabs })
       } else if (activeTab === "duration") {
         const durationPayload = {
-          requestDurationDays: formData.request_duration || 30,
-          approvalDurationDays: formData.approval_duration || 5,
-          disbursementDurationDays: formData.disbursement_duration || 2,
-          repaymentDurationDays: formData.repayment_duration || 1825,
+          requestDurationDays: formData.request_duration || 0,
+          approvalDurationDays: formData.approval_duration || 0,
+          disbursementDurationDays: formData.disbursement_duration || 0,
+          repaymentDurationDays: formData.repayment_duration || 0,
         }
 
         response = await updateDurationSettings(productId, durationPayload)
