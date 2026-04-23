@@ -1,148 +1,196 @@
 import React, { useState, useEffect } from "react";
-import { Input, Select } from "antd";
-import { Row, Col, Form, Button } from "react-bootstrap";
+import { Select } from "antd";
+import { Row, Col, Form, Button, Tabs, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import {
   getChartOfAccounts,
   getLedgerAccount,
   MapLedgerAccount,
-  getProducts,
+  getCoaFields,
+  SaveChartOfAccounts,
 } from "../../redux/apis/apisCrudLms";
+import { getAllProducts } from "../../redux/apis/apisCrudProductManagement";
 import toast from "react-hot-toast";
-import Loader from "../Loader/Loader";
 
 const AccountMapping = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [customerData, setCustomerData] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<any>({});
   const [changedFields, setChangedFields] = useState<any>({});
-  const [accounts, setAccounts] = useState<any[]>([]);
+  const [dynamicFields, setDynamicFields] = useState<any[]>([]);
+  const [assignedFieldsData, setAssignedFieldsData] = useState<any[]>([]);
   const [searchValue, setSearchValue] = useState("");
-  const [initialRendor, setInitialRendor] = useState(false);
-  const navigate = useNavigate();
+  
+  // Product related state
+  const [prodId, setProdId] = useState<any[]>([]);
   const [formValues, setFormValues] = useState<any>({
     productID: "",
     productName: "",
   });
-  const [prodId, setProdId] = useState<any>();
-  
-  const getProductId = async () => {
-    try {
-      setLoading(true);
-      const res = await getProducts();
-      if (res) {
-        const data = res.data.data;
-        setProdId(data);
-        if (data && data.length > 0) {
-          const initialProduct = {
-            productID: data[0]?.id,
-            productName: data[0]?.name,
-          };
-          setFormValues(initialProduct);
-          // Call getChartOfAccountsData with the initial product ID
-          getChartOfAccountsData(data[0]?.id);
-        }
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    }
-  };
 
-  const getChartOfAccountsData = async (productId: number | string) => {
-    if (!productId) return;
+  // Tab related states
+  const [activeTab, setActiveTab] = useState<string>("assign");
+  const [selectedFields, setSelectedFields] = useState<string[]>([]);
+
+  const navigate = useNavigate();
+
+  const fetchInitialData = async () => {
     try {
       setLoading(true);
-      const response = await getLedgerAccount(1, 1000, "");
-      if (response) {
-        const valueMain = response?.data?.data || [];
-        const res = await getChartOfAccounts(productId);
-        if (res) {
-          const value = res?.data.data || [];
-          setAccounts(value);
-          const initialSelections: any = {};
-          value.forEach((account: any) => {
-            const match = valueMain?.find(
-              (customer: any) => customer.id === account.ledgerAccountId
-            );
-            if (match) {
-              initialSelections[account.accountType] = match.id;
-            }
-          });
-          setSelectedAccounts(initialSelections);
-        }
-        setCustomerData(valueMain);
+      
+      // Fetch dynamic fields - only needed for Tab 1
+      const coaResponse = await getCoaFields(true);
+      const fields = coaResponse?.data?.data || [];
+      setDynamicFields(fields);
+
+      // Fetch products
+      const productsRes = await getAllProducts();
+      if (productsRes?.data?.data) {
+        setProdId(productsRes.data.data);
       }
     } catch (error: any) {
-      toast.error(error.message);
+      toast.error(error?.message || "Failed to load data");
     } finally {
       setLoading(false);
     }
   };
+
+  const getChartOfAccountsData = async (productId: string) => {
+    if (!productId) {
+      setSelectedAccounts({});
+      setChangedFields({});
+      setSelectedFields([]);
+      setAssignedFieldsData([]);
+      return;
+    }
+    
+    try {
+      setLoading(true);
+      const res = await getChartOfAccounts(productId);
+      if (res) {
+        const mappedAccounts = res?.data?.data || res?.data || [];
+        
+        const assignedFields: string[] = [];
+        if (Array.isArray(mappedAccounts)) {
+          mappedAccounts.forEach((account: any) => {
+            if (account.fieldKey) {
+              assignedFields.push(account.fieldKey);
+            }
+          });
+        }
+        
+        setAssignedFieldsData(mappedAccounts);
+        setSelectedFields(assignedFields);
+        setSelectedAccounts({}); // Ready for recalculation once customerData exists
+        setChangedFields({});
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to load mapping data");
+      setSelectedAccounts({});
+      setSelectedFields([]);
+      setAssignedFieldsData([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const accountsDetailsForList = async () => {
     try {
-      // setLoading(true);
       const response = await getLedgerAccount(1, 1000, searchValue);
       if (response) {
         const valueMain = response?.data?.data || [];
-
         setCustomerData(valueMain);
       }
     } catch (error: any) {
       toast.error(error.message);
-    } finally {
-      setLoading(false);
     }
   };
-  const getBussinessTypeById = (id: any) => {
-    const cleanedId = String(id).replace(/,+$/, "");
-    const entry: any = customerData?.find(
-      (entry: any) => entry.id === cleanedId
-    );
 
-    return entry ? entry.accountName : "select option";
-  };
+  // Recalculate selected accounts for Tab 2 once data and dictionary is ready
+  useEffect(() => {
+    if (activeTab === "map" && assignedFieldsData.length > 0 && customerData.length > 0) {
+      const initialSelections: any = {};
+      assignedFieldsData.forEach((account: any) => {
+        const match = customerData?.find(
+          (customer: any) => 
+            customer.id === account.accountId || 
+            customer.id === account.ledgerAccountId || 
+            customer.id === account.chartOfAccountId ||
+            customer.accountCode === account.accountCode
+        );
 
-  const mapAccounts = async () => {
-    // Check if there are any non-wallet fields that require a product
-    const nonWalletFields = Object.keys(changedFields).filter(
-      (accountType) => !["24", "25", "32"].includes(accountType)
-    );
-    
-    if (nonWalletFields.length > 0 && !formValues.productID) {
+        if (match) {
+          initialSelections[account.coaFieldId] = match.id;
+        }
+      });
+      setSelectedAccounts(initialSelections);
+      setChangedFields({});
+    }
+  }, [assignedFieldsData, customerData, activeTab]);
+
+  const saveSelectedAccounts = async () => {
+    if (!formValues.productID) {
       toast.error("Please select a product");
       return;
     }
     
     try {
-      // Build array of payloads
-      const payloads = Object.entries(changedFields).map(([accountType, accountId]) => {
-        // Wallet fields (24, 25, 32) should have productId as null
-        const isWalletField = ["24", "25", "32"].includes(accountType);
-        return {
-          productId: isWalletField ? null : formValues.productID,
-          accountTypes: parseInt(accountType),
-          chartOfAccountId: accountId,
-        };
-      });
-      
-      // Call API once with all payloads
-      const res = await MapLedgerAccount(payloads);
+      setLoading(true);
+      const payload = { fieldKeys: selectedFields };
+      const res = await SaveChartOfAccounts(formValues.productID, payload);
       if (res) {
-        toast.success(res?.data?.notificationMessage);
+        toast.success(res?.data?.notificationMessage || "Accounts saved successfully");
+        getChartOfAccountsData(formValues.productID);
+      }
+    } catch (error: any) {
+      toast.error(error?.message || "Failed to save accounts");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mapAccounts = async () => {
+    if (!formValues.productID) {
+      toast.error("Please select a product");
+      return;
+    }
+    
+    if (Object.keys(selectedAccounts).length === 0) return;
+
+    try {
+      // Build array of payloads containing all mappings
+      const assignments = Object.entries(selectedAccounts)
+        .map(([coaFieldId, accountId]) => {
+          const field = assignedFieldsData.find((f: any) => f.coaFieldId === coaFieldId);
+          const account = customerData.find((a: any) => a.id === accountId);
+          
+          if (!field?.fieldKey || !account?.accountCode) return null;
+          
+          return {
+            fieldKey: field.fieldKey,
+            accountCode: account.accountCode,
+          };
+        })
+        .filter(Boolean); // removes nulls
+      
+      const payload = { assignments };
+
+      // Call API
+      const res = await MapLedgerAccount(formValues.productID, payload);
+      if (res) {
+        toast.success(res?.data?.notificationMessage || "Mapped successfully");
       }
       
       setChangedFields({});
       // Refresh the data after mapping
-      if (formValues.productID) {
-        getChartOfAccountsData(formValues.productID);
-      }
+      getChartOfAccountsData(formValues.productID);
     } catch (error: any) {
       toast.error(error.message);
     }
   };
+
   const handleSelectChange = (name: string, value: any) => {
     setSelectedAccounts((prevState: any) => ({
       ...prevState,
@@ -155,439 +203,19 @@ const AccountMapping = () => {
   };
 
   useEffect(() => {
-    getProductId();
-    setInitialRendor(true);
+    fetchInitialData();
   }, []);
+
   useEffect(() => {
-    if (initialRendor) {
-      const timeoutId = setTimeout(() => {
+    const timeoutId = setTimeout(() => {
+      // Only fetch ledger accounts when on Map tab
+      if (activeTab === "map") {
         accountsDetailsForList();
-      }, 1500);
+      }
+    }, 1000);
 
-      return () => clearTimeout(timeoutId);
-    }
-  }, [searchValue]);
-
-  const businessInformationFields = [
-    // {
-    //   label: "Disbursement Account",
-    //   type: "select",
-    //   name: "0",
-    //   options: customerData,
-    //   Placeholder: "Disbursement Account",
-    //   value: selectedAccounts[0]
-    //     ? selectedAccounts[0]
-    //     : null,
-    //   onChange: (value: string) => handleSelectChange("0", value),
-    // },
-    {
-      label: "Collection Account",
-      type: "select",
-      name: "1",
-      options: customerData,
-      Placeholder: "Collection Account",
-      value: selectedAccounts[1]
-        ? selectedAccounts[1]
-        : null,
-      onChange: (value: string) => handleSelectChange("1", value),
-    },
-    {
-      label: "Purchase Account",
-      type: "select",
-      name: "2",
-      options: customerData,
-      Placeholder: "Purchase Account",
-      value: selectedAccounts[2]
-        ? selectedAccounts[2]
-        : null,
-      onChange: (value: string) => handleSelectChange("2", value),
-    },
-    {
-      label: "Supplier Account",
-      type: "select",
-      name: "3",
-      options: customerData,
-      Placeholder: "Supplier Account",
-      value: selectedAccounts[3]
-        ? selectedAccounts[3]
-        : null,
-      onChange: (value: string) => handleSelectChange("3", value),
-    },
-    {
-      label: "Expense Account",
-      type: "select",
-      name: "4",
-      options: customerData,
-      Placeholder: "Expense Account",
-      value: selectedAccounts[4]
-        ? selectedAccounts[4]
-        : null,
-      onChange: (value: string) => handleSelectChange("4", value),
-    },
-    {
-      label: "Fee Account",
-      type: "select",
-      name: "5",
-      options: customerData,
-      Placeholder: "Fee Account",
-      value: selectedAccounts[5]
-        ? selectedAccounts[5]
-        : getBussinessTypeById(
-            accounts
-              .map((account) =>
-                account.accountType === "FeeAccount" ? account.accountId : null
-              )
-              .filter((accountId) => accountId !== null)
-          ),
-      onChange: (value: string) => handleSelectChange("5", value),
-    },
-    {
-      label: "VAT Account",
-      type: "select",
-      name: "6",
-      options: customerData,
-      Placeholder: "VAT Account",
-      value: selectedAccounts[6]
-        ? selectedAccounts[6]
-        : getBussinessTypeById(
-            accounts
-              .map((account) =>
-                account.accountType === "VatAccount" ? account.accountId : null
-              )
-              .filter((accountId) => accountId !== null)
-          ),
-      onChange: (value: string) => handleSelectChange("6", value),
-    },
-    {
-      label: "Accured Account",
-      type: "select",
-      name: "7",
-      options: customerData,
-      Placeholder: "Accured Account",
-      value: selectedAccounts[7]
-        ? selectedAccounts[7]
-        : null,
-      onChange: (value: string) => handleSelectChange("7", value),
-    },
-    {
-      label: "Output Vat Account",
-      type: "select",
-      name: "8",
-      options: customerData,
-      Placeholder: "Output Vat Account",
-      value: selectedAccounts[8]
-        ? selectedAccounts[8]
-        : null,
-      onChange: (value: string) => handleSelectChange("8", value),
-    },
-    {
-      label: "Output Interest Revenue Account",
-      type: "select",
-      name: "9",
-      options: customerData,
-      Placeholder: "Output Interest Revenue Account",
-      value: selectedAccounts[9]
-        ? selectedAccounts[9]
-        : null,
-      onChange: (value: string) => handleSelectChange("9", value),
-    },
-    {
-      label: "Receivable Account",
-      type: "select",
-      name: "10",
-      options: customerData,
-      Placeholder: "Receivable Account",
-      value: selectedAccounts[10]
-        ? selectedAccounts[10]
-        : null,
-      onChange: (value: string) => handleSelectChange("10", value),
-    },
-    {
-      label: "Other Taxes Account",
-      type: "select",
-      name: "11",
-      options: customerData,
-      Placeholder: "Other Taxes Account",
-      value: selectedAccounts[11]
-        ? selectedAccounts[11]
-        : null,
-      onChange: (value: string) => handleSelectChange("11", value),
-    },
-    {
-      label: "Processing Fee Account",
-      type: "select",
-      name: "12",
-      options: customerData,
-      Placeholder: "Processing Fee Account ",
-      value: selectedAccounts[12]
-        ? selectedAccounts[12]
-        : null,
-      onChange: (value: string) => handleSelectChange("12", value),
-    },
-    {
-      label: "Admin Fee Account",
-      type: "select",
-      name: "13",
-      options: customerData,
-      Placeholder: "Admin Fee Account",
-      value: selectedAccounts[13]
-        ? selectedAccounts[13]
-        : null,
-      onChange: (value: string) => handleSelectChange("13", value),
-    },
-    {
-      label: "Balloon Payment Account",
-      type: "select",
-      name: "14",
-      options: customerData,
-      Placeholder: "Balloon Payment Account",
-      value: selectedAccounts[14]
-        ? selectedAccounts[14]
-        : null,
-      onChange: (value: string) => handleSelectChange("14", value),
-    },
-    {
-      label: "Advance Payment Account",
-      type: "select",
-      name: "15",
-      options: customerData,
-      Placeholder: " Advance Payment Account",
-      value: selectedAccounts[15]
-        ? selectedAccounts[15]
-        : null,
-      onChange: (value: string) => handleSelectChange("15", value),
-    },
-    {
-      label: "Early Settlement Principle",
-      type: "select",
-      name: "16",
-      options: customerData,
-      Placeholder: "Early Settlement Principle",
-      value: selectedAccounts[16]
-        ? selectedAccounts[16]
-        : null,
-      onChange: (value: string) => handleSelectChange("16", value),
-    },
-    {
-      label: "Early Settlement Profit",
-      type: "select",
-      name: "17",
-      options: customerData,
-      Placeholder: "Early Settlement Profit",
-      value: selectedAccounts[17]
-        ? selectedAccounts[17]
-        : null,
-      onChange: (value: string) => handleSelectChange("17", value),
-    },
-    {
-      label: "Due Principle",
-      type: "select",
-      name: "18",
-      options: customerData,
-      Placeholder: "Due Principle",
-      value: selectedAccounts[18]
-        ? selectedAccounts[18]
-        : null,
-      onChange: (value: string) => handleSelectChange("18", value),
-    },
-    {
-      label: "Due Profit",
-      type: "select",
-      name: "19",
-      options: customerData,
-      Placeholder: "Due Profit",
-      value: selectedAccounts[19]
-        ? selectedAccounts[19]
-        : null,
-      onChange: (value: string) => handleSelectChange("19", value),
-    },
-    {
-      label: "Late Payment Principle",
-      type: "select",
-      name: "20",
-      options: customerData,
-      Placeholder: "Late Payment Principle",
-      value: selectedAccounts[20]
-        ? selectedAccounts[20]
-        : null,
-      onChange: (value: string) => handleSelectChange("20", value),
-    },
-    {
-      label: "Late Payment Profit",
-      type: "select",
-      name: "21",
-      options: customerData,
-      Placeholder: "Late Payment Profit",
-      value: selectedAccounts[21]
-        ? selectedAccounts[21]
-        : null,
-      onChange: (value: string) => handleSelectChange("21", value),
-    },
-    {
-      label: "Cash In",
-      type: "select",
-      name: "22",
-      options: customerData,
-      Placeholder: "Cash In",
-      value: selectedAccounts[22]
-        ? selectedAccounts[22]
-        : null,
-      onChange: (value: string) => handleSelectChange("22", value),
-    },
-    {
-      label: "Cash Out",
-      type: "select",
-      name: "23",
-      options: customerData,
-      Placeholder: "Cash Out",
-      value: selectedAccounts[23]
-        ? selectedAccounts[23]
-        : null,
-      onChange: (value: string) => handleSelectChange("23", value),
-    },
-    {
-      label: "Wallet",
-      type: "select",
-      name: "24",
-      options: customerData,
-      Placeholder: "Wallet",
-      value: selectedAccounts[24]
-        ? selectedAccounts[24]
-        : null,
-      onChange: (value: string) => handleSelectChange("24", value),
-    },
-    {
-      label: "Investment Wallet",
-      type: "select",
-      name: "25",
-      options: customerData,
-      Placeholder: "Wallet",
-      value: selectedAccounts[25]
-        ? selectedAccounts[25]
-        : null,
-      onChange: (value: string) => handleSelectChange("25", value),
-    },
-    {
-      label: "Investment Capital",
-      type: "select",
-      name: "26",
-      options: customerData,
-      Placeholder: "Capital",
-      value: selectedAccounts[26]
-        ? selectedAccounts[26]
-        : null,
-      onChange: (value: string) => handleSelectChange("26", value),
-    },
-    {
-      label: "Return Payable",
-      type: "select",
-      name: "27",
-      options: customerData,
-      Placeholder: "ReturnPayable",
-      value: selectedAccounts[27]
-        ? selectedAccounts[27]
-        : null,
-      onChange: (value: string) => handleSelectChange("27", value),
-    },
-    {
-      label: "Commodity Inventory Account",
-      type: "select",
-      name: "28",
-      options: customerData,
-      Placeholder: "Commodity Inventory Account",
-      value: selectedAccounts[28]
-        ? selectedAccounts[28]
-        : null,
-      onChange: (value: string) => handleSelectChange("28", value),
-    }, {
-      label: "Return Expense",
-      type: "select",
-      name: "29",
-      options: customerData,
-      Placeholder: "ReturnExpense",
-      value: selectedAccounts[29]
-        ? selectedAccounts[29]
-        : null,
-      onChange: (value: string) => handleSelectChange("29", value),
-    }, 
-    {
-      label: "Investment Processing Fee",
-      type: "select",
-      name: "30",
-      options: customerData,
-      Placeholder: "InvestmentProcessingFee",
-      value: selectedAccounts[30]
-        ? selectedAccounts[30]
-        : null,
-      onChange: (value: string) => handleSelectChange("30", value),
-    }, 
-    {
-      label: "Investment Vat",
-      type: "select",
-      name: "29",
-      options: customerData,
-      Placeholder: "InvestmentVat",
-      value: selectedAccounts[31]
-        ? selectedAccounts[31]
-        : null,
-      onChange: (value: string) => handleSelectChange("31", value),
-    }, 
-    {
-      label: "Investor Wallet",
-      type: "select",
-      name: "32",
-      options: customerData,
-      Placeholder: "Investor Wallet",
-      value: selectedAccounts[32]
-        ? selectedAccounts[32]
-        : null,
-      onChange: (value: string) => handleSelectChange("32", value),
-    }, 
-    {
-      label: "Payable Account",
-      type: "select",
-      name: "33",
-      options: customerData,
-      Placeholder: "Payable Account",
-      value: selectedAccounts[33]
-        ? selectedAccounts[33]
-        : null,
-      onChange: (value: string) => handleSelectChange("33", value),
-    }, 
-    {
-      label: "Factoring Valley Receivable Account",
-      type: "select",
-      name: "34",
-      options: customerData,
-      Placeholder: "Factoring Valley Receivable Account",
-      value: selectedAccounts[34]
-        ? selectedAccounts[34]
-        : null,
-      onChange: (value: string) => handleSelectChange("34", value),
-    }, 
-    {
-      label: "Cash Account",
-      type: "select",
-      name: "35",
-      options: customerData,
-      Placeholder: "Cash Account",
-      value: selectedAccounts[35]
-        ? selectedAccounts[35]
-        : null,
-      onChange: (value: string) => handleSelectChange("35", value),
-    }, 
-    {
-      label: "Supplier Commission",
-      type: "select",
-      name: "36",
-      options: customerData,
-      Placeholder: "Supplier Commission",
-      value: selectedAccounts[36]
-        ? selectedAccounts[36]
-        : null,
-      onChange: (value: string) => handleSelectChange("36", value),
-    }, 
-  ];
+    return () => clearTimeout(timeoutId);
+  }, [searchValue, activeTab]);
 
   return (
     <div>
@@ -604,111 +232,158 @@ const AccountMapping = () => {
       ) : (
         <>
           <Row>
-          <Col md={4} className="mb-3 pt-2">
-            <Form.Group>
-              <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                Select Product
-              </Form.Label>
-              <Select
-                showSearch
-                value={formValues.productID}
-                onChange={(value) => {
-                  const selectedProduct = prodId?.find((p: any) => p.id === value);
-                  setFormValues((prevValues: any) => ({
-                    ...prevValues,
-                    productID: value,
-                    productName: selectedProduct?.name || "",
-                  }));
-                  getChartOfAccountsData(value);
-                }}
-                defaultValue={formValues?.productID}
-                style={{ width: "100%" }}
-                placeholder="Select Product"
-                filterOption={(input, option: any) =>
-                  option?.children?.toLowerCase().includes(input.toLowerCase())
-                }
-              >
-                {prodId?.map((option: any) => (
-                  <Select.Option key={option.id} value={option.id}>
-                    {option?.name}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Group>
-          </Col>
-        </Row>
-        <div className="py-2">
-          <h4 style={{ fontSize: "16px", fontWeight: "600" }}>
-            Chart of Account Mapping
-          </h4>
-            <div className="d-flex justify-content-end mt-2">
-              {/* <TableHeaderFilter
-          searchInput={customSearchInput}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-        /> */}
-              {/* <span className="pe-2">
-                <Input
-                  placeholder="Search By Account Code/Name"
-                  value={searchValue}
-                  prefix={<SearchOutlined />}
-                  onChange={(e: any) => {
-                    setSearchValue(e.target.value);
+            <Col md={4} className="mb-3 pt-2">
+              <Form.Group>
+                <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
+                  Select Product
+                </Form.Label>
+                <Select
+                  showSearch
+                  value={formValues.productID || undefined}
+                  onChange={(value) => {
+                    const selectedProduct = prodId?.find((p: any) => p.id === value);
+                    setFormValues((prevValues: any) => ({
+                      ...prevValues,
+                      productID: value,
+                      productName: selectedProduct?.nameEn || "",
+                    }));
+                    getChartOfAccountsData(value);
                   }}
-                />
-              </span> */}
-            </div>
-            <Row className="mb-3">
-              {customerData &&
-                customerData.length > 0 &&
-                businessInformationFields.map((field: any, index) => (
-                  <Col md={4} key={index} className="pt-3">
-                    <Form.Group>
-                      <Form.Label
-                        className="mt-2"
-                        style={{ fontSize: "12px", fontWeight: "700" }}
-                      >
-                        {field.label}
-                      </Form.Label>
-                      <Select
-                        showSearch
-                        value={field.value}
-                        onChange={field.onChange}
-                        style={{ width: "100%", height: "40px" }}
-                        placeholder={field.Placeholder}
-                        filterOption={(input, option: any) =>
-                          option?.children?.toLowerCase().includes(input.toLowerCase())
+                  style={{ width: "100%" }}
+                  placeholder="Select Product"
+                  filterOption={(input, option: any) =>
+                    option?.children?.toLowerCase().includes(input.toLowerCase())
+                  }
+                >
+                  {prodId?.map((option: any) => (
+                    <Select.Option key={option.id} value={option.id}>
+                      {option?.nameEn}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Tabs
+            id="account-mapping-tabs"
+            activeKey={activeTab}
+            onSelect={(k: any) => setActiveTab(k)}
+            className="mb-3"
+          >
+            <Tab eventKey="assign" title="Assign Accounts">
+              <div className="py-2">
+                <h4 style={{ fontSize: "16px", fontWeight: "600" }}>
+                  Assign Accounts to Product
+                </h4>
+                <Row className="mb-3">
+                  {dynamicFields.sort((a, b) => a.displayOrder - b.displayOrder).map((field: any) => (
+                    <Col md={4} key={field.id} className="pt-3">
+                      <Form.Check
+                        type="checkbox"
+                        id={`checkbox-${field.id}`}
+                        label={
+                          <span style={{ fontSize: "14px", fontWeight: "500" }}>
+                            {field.fieldLabelEn} {field.mandatoryDefault && <span className="text-danger">*</span>}
+                          </span>
                         }
-                      >
-                        {(field.options || []).length > 0 ? (
-                          (field.options || []).map((option: any) => (
+                        checked={selectedFields.includes(field.fieldKey)}
+                        onChange={(e) => {
+                          if (e.target.checked) {
+                            setSelectedFields((prev) => [...prev, field.fieldKey]);
+                          } else {
+                            setSelectedFields((prev) => prev.filter((key) => key !== field.fieldKey));
+                          }
+                        }}
+                        disabled={!formValues.productID}
+                      />
+                    </Col>
+                  ))}
+                  {dynamicFields.length === 0 && (
+                    <Col className="pt-3 text-muted">
+                      No active fields available.
+                    </Col>
+                  )}
+                </Row>
+                <hr className="my-4" />
+                <div className="d-flex justify-content-end">
+                  <Button
+                    className="application-btn"
+                    style={{
+                      backgroundColor: "#EB0D0D",
+                      color: "#FCFCFC",
+                      border: "none",
+                    }}
+                    onClick={saveSelectedAccounts}
+                    disabled={!formValues.productID}
+                  >
+                    Save
+                  </Button>
+                </div>
+              </div>
+            </Tab>
+
+            <Tab eventKey="map" title="Map Ledger Accounts">
+              <div className="py-2">
+                <h4 style={{ fontSize: "16px", fontWeight: "600" }}>
+                  Chart of Account Mapping
+                </h4>
+                <Row className="mb-3">
+                  {assignedFieldsData.map((field: any) => (
+                    <Col md={4} key={field.id} className="pt-3">
+                      <Form.Group>
+                        <Form.Label
+                          className="mt-2"
+                          style={{ fontSize: "12px", fontWeight: "700" }}
+                          title={field.fieldKey}
+                        >
+                          {field.fieldLabelEn} {field.mandatoryOverride && <span className="text-danger">*</span>}
+                        </Form.Label>
+                        <Select
+                          showSearch
+                          value={selectedAccounts[field.coaFieldId] || null}
+                          onChange={(value) => handleSelectChange(field.coaFieldId, value)}
+                          style={{ width: "100%", height: "40px" }}
+                          placeholder={field.fieldLabelEn}
+                          filterOption={(input, option: any) =>
+                            option?.children?.toLowerCase().includes(input.toLowerCase())
+                          }
+                          allowClear={!field.mandatoryOverride}
+                          disabled={!formValues.productID}
+                        >
+                          {(customerData || []).map((option: any) => (
                             <Select.Option key={option.id} value={option.id}>
                               {option.accountName}
                             </Select.Option>
-                          ))
-                        ) : (
-                          <Select.Option>No Options Available</Select.Option>
-                        )}
-                      </Select>
-                    </Form.Group>
-                  </Col>
-                ))}
-            </Row>
-            <hr className="my-4" />
-            <div className="d-flex justify-content-end">
-              <Button
-                className="application-btn"
-                style={{
-                  backgroundColor: "#EB0D0D",
-                  color: "#FCFCFC",
-                  border: "none",
-                }}
-                onClick={mapAccounts}
-              >
-                Save
-              </Button>
-            </div>
-          </div>
+                          ))}
+                        </Select>
+                      </Form.Group>
+                    </Col>
+                  ))}
+                  {assignedFieldsData.length === 0 && (
+                    <Col className="pt-3 text-muted">
+                      No accounts assigned for this product. Please assign them in the first tab.
+                    </Col>
+                  )}
+                </Row>
+                <hr className="my-4" />
+                <div className="d-flex justify-content-end">
+                  <Button
+                    className="application-btn"
+                    style={{
+                      backgroundColor: "#EB0D0D",
+                      color: "#FCFCFC",
+                      border: "none",
+                    }}
+                    onClick={mapAccounts}
+                    disabled={Object.keys(changedFields).length === 0 || !formValues.productID}
+                  >
+                    Save Mapping
+                  </Button>
+                </div>
+              </div>
+            </Tab>
+          </Tabs>
         </>
       )}
     </div>

@@ -579,11 +579,11 @@ export function getLoanDisbursementReport(paramsOrFromDate?: any, toDate?: strin
   }
   return axios.get(`/ledger-service/api/v1/reports/loan-disbursement${query ? `?${query}` : ""}`);
 }
-export function getChartOfAccounts(productId?: number | string) {
-  const url = productId
-    ? `/api/MapChartOfAccounts/GetAll?productId=${productId}`
-    : `/api/MapChartOfAccounts/GetAll`;
-  return axios.get(url);
+export function getChartOfAccounts(productId: string) {
+  return axios.get(`/ledger-service/api/v1/products/${productId}/coa-fields`);
+}
+export function SaveChartOfAccounts(productId: string, data: any) {
+  return axios.put(`/ledger-service/api/v1/products/${productId}/coa-fields`, data);
 }
 
 // COA Fields CRUD
@@ -809,8 +809,8 @@ export function updateApplication(body: any) {
   return axios.put(`/api/Application/UpdateLoanApplicationInLMS`, body);
 }
 
-export function MapLedgerAccount(body: any) {
-  return axios.post(`/api/MapChartOfAccounts/Map`, body);
+export function MapLedgerAccount(productId: string, body: any) {
+  return axios.post(`/ledger-service/api/v1/products/${productId}/coa-fields/accounts`, body);
 }
 
 export function ApproveDisburseAmount(body: any) {
@@ -1241,15 +1241,15 @@ export function getLoanHistoryReport(params?: any) {
   const loanId = params?.loanId;
   const filteredParams = { ...params };
   if (loanId) delete (filteredParams as any).loanId;
-  
-  const queryString = Object.keys(filteredParams).length > 0 
-    ? `?${new URLSearchParams(filteredParams as any).toString()}` 
+
+  const queryString = Object.keys(filteredParams).length > 0
+    ? `?${new URLSearchParams(filteredParams as any).toString()}`
     : "";
-    
-  const endpoint = loanId 
-    ? `/ledger-service/api/v1/reports/loan-history/${loanId.trim()}` 
+
+  const endpoint = loanId
+    ? `/ledger-service/api/v1/reports/loan-history/${loanId.trim()}`
     : `/ledger-service/api/v1/reports/loan-history`;
-    
+
   return axios.get(`${endpoint}${queryString}`);
 }
 export function getLoanBalanceReport(params?: any) {
