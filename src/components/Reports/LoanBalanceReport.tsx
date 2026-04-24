@@ -13,7 +13,7 @@ const { Option } = Select;
 const LoanBalanceReport = () => {
   const [asOfDate, setAsOfDate] = useState<string>("");
   const [customerId, setCustomerId] = useState<string>("");
-  const [productCode, setProductCode] = useState<string>("");
+  const [productCode] = useState<string>("");  // hidden, not settable from UI
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -26,7 +26,7 @@ const LoanBalanceReport = () => {
       const params: any = {};
       params.asOfDate = asOfDate || dayjs().format("YYYY-MM-DD");
       if (customerId) params.customerId = customerId;
-      if (productCode) params.productCode = productCode;
+      if (productCode) params.productCode = productCode;  // still sent if value exists
 
       const res = await getLoanBalanceReport(params);
       if (res && res.data) {
@@ -39,10 +39,9 @@ const LoanBalanceReport = () => {
         } else if (responseData && responseData.items && Array.isArray(responseData.items)) {
           items = responseData.items;
         } else if (responseData && typeof responseData === 'object') {
-          // If it's a single object, wrap it in an array
           items = [responseData];
         }
-        
+
         setAllCallActivity(items);
         setTotalRows(responseData?.totalElements || items.length);
       }
@@ -56,7 +55,7 @@ const LoanBalanceReport = () => {
 
   useEffect(() => {
     handleSubmit();
-  }, [asOfDate, customerId, productCode]);
+  }, [asOfDate, customerId]);
 
   const formatDate = (isoString: any) => {
     if (!isoString) return "-";
@@ -142,40 +141,27 @@ const LoanBalanceReport = () => {
 
         <div className="bg-white p-4 rounded border mb-4 shadow-sm">
           <div className="row g-3 align-items-end">
-            <div className="col-md-3">
+            <div className="col-md-4">
               <label className="mb-1 fw-bold text-muted small text-uppercase">As of Date</label>
-              <DatePicker 
-                className="w-100" 
-                onChange={(date) => setAsOfDate(date ? date.format("YYYY-MM-DD") : "")} 
+              <DatePicker
+                className="w-100"
+                onChange={(date) => setAsOfDate(date ? date.format("YYYY-MM-DD") : "")}
               />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-4">
               <label className="mb-1 fw-bold text-muted small text-uppercase">Customer ID</label>
-              <Input 
+              <Input
                 placeholder="Enter Customer UUID"
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
               />
             </div>
-            <div className="col-md-3">
-              <label className="mb-1 fw-bold text-muted small text-uppercase">Product Code</label>
-              <Select 
-                className="w-100" 
-                placeholder="Select Product"
-                value={productCode}
-                onChange={(val) => setProductCode(val)}
-              >
-                <Option value="">All Products</Option>
-                <Option value="MICROFINANCE">Microfinance</Option>
-                <Option value="SME">SME Loan</Option>
-                <Option value="PERSONAL">Personal Loan</Option>
-              </Select>
-            </div>
-            <div className="col-md-3 d-flex gap-2">
+            {/* Product Code filter hidden — value sent to backend if set */}
+            <div className="col-md-4 d-flex gap-2">
               <Button className="theme-btn-next w-100" onClick={handleSubmit} loading={loading} style={{ height: "38px" }}>
                 Filter
               </Button>
-              <Button className="w-100" onClick={() => { setCustomerId(""); setProductCode(""); setAsOfDate(""); handleSubmit(); }} style={{ height: "38px" }}>
+              <Button className="w-100" onClick={() => { setCustomerId(""); setAsOfDate(""); handleSubmit(); }} style={{ height: "38px" }}>
                 Clear
               </Button>
             </div>

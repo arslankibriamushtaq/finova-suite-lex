@@ -62,10 +62,9 @@ const WriteOff = () => {
       return {
         loanId: item.loanId || "-",
         customerId: item.customerId || "-",
-        facilityType: item.facilityType || "-",
-        writeOffAmount: item.writeOffAmount != null ? `${item.writeOffAmount} SAR` : "-",
-        paymentStatus: item.paymentStatus || "-",
         writeOffDate: item.writeOffDate ? formatDate(item.writeOffDate) : "-",
+        principalWrittenOff: item.principalWrittenOff != null ? `${item.principalWrittenOff.toLocaleString()} SAR` : "-",
+        provisionReleased: item.provisionReleased != null ? `${item.provisionReleased.toLocaleString()} SAR` : "-",
       };
     });
   }, [allCallActivity]);
@@ -74,31 +73,27 @@ const WriteOff = () => {
     handleSubmit();
   }, [id, page, pageSize]);
   const Call_Activity_Header = [
-    // {
-    //   name: "Loan ID",
-    //   selector: (row: any) => row.loanId,
-    //   width: "250px"
-    // },
-    // {
-    //   name: "Customer ID",
-    //   selector: (row: any) => row.customerId,
-    //   width: "250px"
-    // },
     {
-      name: "Facility Type",
-      selector: (row: any) => row.facilityType,
+      name: "Loan ID",
+      selector: (row: any) => row.loanId,
+      width: "200px"
     },
     {
-      name: "Write Off Amount",
-      selector: (row: any) => row.writeOffAmount,
-    },
-    {
-      name: "Payment Status",
-      selector: (row: any) => row.paymentStatus,
+      name: "Customer ID",
+      selector: (row: any) => row.customerId,
+      width: "200px"
     },
     {
       name: "Write Off Date",
       selector: (row: any) => row.writeOffDate,
+    },
+    {
+      name: "Principal Written Off",
+      selector: (row: any) => row.principalWrittenOff,
+    },
+    {
+      name: "Provision Released",
+      selector: (row: any) => row.provisionReleased,
     },
   ];
 
@@ -171,7 +166,7 @@ const WriteOff = () => {
             <button
               className="mt-4 invoice-btn bg-dark text-white"
               onClick={() => {
-                exportToCSV(allCallActivity, "OverDueLoans");
+                exportToCSV(mappedData, "WriteOffLoans");
               }}
             >
               Export CSV
