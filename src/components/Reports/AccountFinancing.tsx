@@ -9,7 +9,7 @@ function AccountFinancing() {
     { label: "Ledger", link: "ledger" },
     { label: "Collection", link: "collection" },
     { label: "Profit & Revenue", link: "profit-revenue" },
-    { label: "Cash Flow", link: "cash-flow" },
+    // { label: "Cash Flow", link: "cash-flow" },
     { label: "Customer Statement", link: "customer-statement" },
     // { label: "Balance Sheet", link: "/balance-sheet" },
     // { label: "Profit & Loss", link: "/profit-loss" },

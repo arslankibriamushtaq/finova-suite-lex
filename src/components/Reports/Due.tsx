@@ -7,12 +7,12 @@ import {
   getDueLoansReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+
 const Due = () => {
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
-  const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -42,19 +42,24 @@ const Due = () => {
   const formatDate = (isoString: any) => {
     const date = new Date(isoString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
+
   const mappedData = useMemo(() => {
     return (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
       return {
-        loanId: item.loanId || "-",
-        customerId: item.customerId || "-",
-        facilityType: item.facilityType || "-",
-        dueAmount: item.dueAmount != null ? `${item.dueAmount} SAR` : "-",
-        paymentStatus: item.paymentStatus || "-",
+        loanAccountNumber: item.loanAccountNumber || "-",
+        customerName: item.customerName || "-",
+        productName: item.productName || "-",
+        installmentNumber: item.installmentNumber != null ? item.installmentNumber : "-",
         dueDate: item.dueDate ? formatDate(item.dueDate) : "-",
+        principalDue: item.principalDue != null ? `${Number(item.principalDue).toFixed(2)} SAR` : "-",
+        profitDue: item.profitDue != null ? `${Number(item.profitDue).toFixed(2)} SAR` : "-",
+        installmentAmount: item.installmentAmount != null ? `${Number(item.installmentAmount).toFixed(2)} SAR` : "-",
+        daysUntilDue: item.daysUntilDue != null ? item.daysUntilDue : "-",
+        status: item.status || "-",
       };
     });
   }, [allCallActivity]);
@@ -62,76 +67,84 @@ const Due = () => {
   useEffect(() => {
     handleSubmit();
   }, [id, page, pageSize, fromDate, toDate]);
+
   const Call_Activity_Header = [
     {
-      name: "Loan ID",
-      selector: (row: any) => row.loanId,
-      width: "250px"
+      name: "Loan Account No.",
+      selector: (row: any) => row.loanAccountNumber,
+      width: "180px",
     },
     {
-      name: "Customer ID",
-      selector: (row: any) => row.customerId,
-      width: "250px"
+      name: "Customer Name",
+      selector: (row: any) => row.customerName,
+      width: "160px",
     },
     {
-      name: "Facility Type",
-      selector: (row: any) => row.facilityType,
+      name: "Product",
+      selector: (row: any) => row.productName,
+      width: "140px",
     },
     {
-      name: "Due Amount",
-      selector: (row: any) => row.dueAmount,
-    },
-    {
-      name: "Payment Status",
-      selector: (row: any) => row.paymentStatus,
+      name: "Installment #",
+      selector: (row: any) => row.installmentNumber,
+      width: "120px",
     },
     {
       name: "Due Date",
       selector: (row: any) => row.dueDate,
+      width: "130px",
+    },
+    {
+      name: "Principal Due",
+      selector: (row: any) => row.principalDue,
+      width: "150px",
+    },
+    {
+      name: "Profit Due",
+      selector: (row: any) => row.profitDue,
+      width: "140px",
+    },
+    {
+      name: "Installment Amount",
+      selector: (row: any) => row.installmentAmount,
+      width: "170px",
+    },
+    {
+      name: "Days Until Due",
+      selector: (row: any) => row.daysUntilDue,
+      width: "140px",
+    },
+    {
+      name: "Status",
+      selector: (row: any) => row.status,
+      width: "120px",
     },
   ];
 
-  useEffect(() => {
-    handleSubmit();
-  }, [fromDate, toDate]);
   const exportToCSV = (data: any[], fileName: string) => {
-    const csvRows = [];
-    const headers = Object.keys(data[0]); // Assuming all objects have the same keys
-    csvRows.push(headers.join(",")); // Join header row with commas
-
-    // Loop through the data and generate CSV rows
+    if (!data || data.length === 0) {
+      toast.error("No data to export");
+      return;
+    }
+    const csvRows: string[] = [];
+    const headers = Object.keys(data[0]);
+    csvRows.push(headers.join(","));
     data.forEach((row) => {
       const values = headers.map((header) => row[header]);
       csvRows.push(values.join(","));
     });
-
-    // Create CSV string
     const csvString = csvRows.join("\n");
-
-    // Create a Blob from the CSV string and trigger a download
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
   };
-  // unused handlers removed
-  
 
   return (
     <>
       <div className="col-12">
         <div className="d-flex justify-content-between align-items-center">
           <div className="col-10">
-            <h5 className="mb-0">Due Loan</h5>
+            <h5 className="mb-0">Due Loans</h5>
           </div>
-          {/* <div className="col-2 text-end">
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Create Voucher
-            </button>
-          </div> */}
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
@@ -159,47 +172,25 @@ const Due = () => {
               />
             </div>
 
-            {/* Voucher Type Select */}
             <div className="col-md-2">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-                    <Select id="voucherType" /> */}
               <button
                 className="mt-4 invoice-btn bg-dark text-white"
                 onClick={() => {
-                  setFromDate("");
-                  setToDate("");
+                  setFromDate(null);
+                  setToDate(null);
                 }}
               >
                 Clear
               </button>
             </div>
 
-            {/* Account Select */}
-            <div className="col-md-2">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
-            </div>
-          </div>
-          <div className="col-md-3 mt-3">
-            {/* <button
-              className="mt-2 theme-btn-next bg-dark"
-              onClick={() => {
-                setFromDate("");
-                setToDate("");
-              }}
-            >
-              Clear
-            </button> */}
+            <div className="col-md-2"></div>
           </div>
           <div className="col-2 text-end">
             <button
               className="mt-4 invoice-btn bg-dark text-white"
               onClick={() => {
-                exportToCSV(allCallActivity, "OverDueLoans");
+                exportToCSV(mappedData, "OverDueLoans");
               }}
             >
               Export CSV
@@ -217,8 +208,6 @@ const Due = () => {
           />
         </div>
       </div>
-
-      {/* <TableView /> */}
     </>
   );
 };

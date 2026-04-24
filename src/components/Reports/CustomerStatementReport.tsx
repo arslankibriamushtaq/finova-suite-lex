@@ -29,12 +29,12 @@ const CustomerStatementReport = () => {
       setFetchingCustomers(true);
       const response = await getActiveOnboardings();
       const list = response?.data?.data || [];
-      
+
       const formatted = list.map((c: any) => ({
         label: `${c.fullName || c.name || c.businessName || 'Unknown'} (${c.customerType || 'Customer'})`,
         value: c.customerId || c.id || c.individualId
       })).filter((c: any) => c.value);
-      
+
       setCustomers(formatted);
       if (formatted.length > 0 && !customerId) {
         setCustomerId(formatted[0].value);
@@ -97,10 +97,10 @@ const CustomerStatementReport = () => {
       if (response && response.data) {
         const data = response.data.data;
         setTotals(data);
-        
+
         const entries = data?.entries || [];
         setReportData(Array.isArray(entries) ? entries : []);
-        
+
         const totalItems = response?.data?.pageInfo?.totalItems || (Array.isArray(entries) ? entries.length : 0);
         setTotalRows(totalItems);
 
@@ -162,7 +162,7 @@ const CustomerStatementReport = () => {
             )}
           </div>
           <div className="d-flex align-items-center gap-3">
-            <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border" style={{ minWidth: "300px" }}>
+            {/* <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border" style={{ minWidth: "300px" }}>
               <label className="mb-0 fw-bold text-muted small uppercase">Customer:</label>
               <Select
                 showSearch
@@ -175,12 +175,12 @@ const CustomerStatementReport = () => {
                 bordered={false}
                 options={customers}
               />
-            </div>
+            </div> */}
             <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border">
               <label className="mb-0 fw-bold text-muted small uppercase">From:</label>
-              <DatePicker 
-                value={fromDate} 
-                onChange={(d) => setFromDate(d)} 
+              <DatePicker
+                value={fromDate}
+                onChange={(d) => setFromDate(d)}
                 format="YYYY-MM-DD"
                 bordered={false}
                 className="p-0"
@@ -188,16 +188,16 @@ const CustomerStatementReport = () => {
             </div>
             <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border">
               <label className="mb-0 fw-bold text-muted small uppercase">To:</label>
-              <DatePicker 
-                value={toDate} 
-                onChange={(d) => setToDate(d)} 
+              <DatePicker
+                value={toDate}
+                onChange={(d) => setToDate(d)}
                 format="YYYY-MM-DD"
                 bordered={false}
                 className="p-0"
               />
             </div>
-            <Button 
-              className="invoice-btn bg-dark text-white" 
+            <Button
+              className="invoice-btn bg-dark text-white"
               onClick={exportToCSV}
               style={{ height: "42px" }}
             >

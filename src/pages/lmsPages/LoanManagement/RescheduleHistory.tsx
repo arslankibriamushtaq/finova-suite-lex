@@ -268,7 +268,7 @@ const RescheduleHistory = () => {
                   <Form.Label>Notes</Form.Label>
                   <Form.Control
                     as="textarea"
-                    rows={3}
+                    rows={1} className="pt-2"
                     placeholder={
                       modalAction === "approve"
                         ? "e.g. Approved after reviewing customer payment history"
@@ -288,7 +288,8 @@ const RescheduleHistory = () => {
             type="primary"
             loading={!!actionLoading}
             onClick={handleSubmit}
-            danger={modalAction === "reject"}
+            danger
+            style={{ backgroundColor: "#dc3545", borderColor: "#dc3545" }}
           >
             {modalAction === "approve" ? "Approve" : "Reject"}
           </Button>

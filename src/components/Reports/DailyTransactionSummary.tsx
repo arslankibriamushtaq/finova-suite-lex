@@ -22,7 +22,7 @@ const DailyTransactionSummary = () => {
       setLoading(true);
       const finalDate = targetDate || dayjs().format("YYYY-MM-DD");
       const res = await getDailyTransactionReport({ date: finalDate });
-      
+
       if (res && res.data && res.data.data) {
         const responseData = res.data.data;
         const items = responseData.channels || [];
@@ -63,16 +63,16 @@ const DailyTransactionSummary = () => {
   }, [targetDate]);
 
   const Call_Activity_Header = [
-    { 
-      name: "Channel Name", 
+    {
+      name: "Channel Name",
       selector: (row: any) => row.channel,
-      cell: (row: any) => <span className="fw-bold">{row.channel}</span> 
+      cell: (row: any) => <span className="fw-bold">{row.channel}</span>
     },
     { name: "Transaction Count", selector: (row: any) => row.count },
-    { 
-      name: "Total Amount", 
+    {
+      name: "Total Amount",
       selector: (row: any) => row.amount,
-      cell: (row: any) => <span className="text-primary fw-bold">{row.amount} SAR</span> 
+      cell: (row: any) => <span className="text-primary fw-bold">{row.amount} SAR</span>
     },
   ];
 
@@ -104,9 +104,9 @@ const DailyTransactionSummary = () => {
           <div className="row g-3 align-items-end">
             <div className="col-md-4">
               <label className="mb-1 fw-bold text-muted small text-uppercase">Select Transaction Date</label>
-              <DatePicker 
-                className="w-100" 
-                onChange={(date) => setTargetDate(date ? date.format("YYYY-MM-DD") : "")} 
+              <DatePicker
+                className="w-100"
+                onChange={(date) => setTargetDate(date ? date.format("YYYY-MM-DD") : "")}
               />
             </div>
             <div className="col-md-2">
@@ -119,30 +119,30 @@ const DailyTransactionSummary = () => {
 
         {summaryData && (
           <div className="row mb-4">
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="p-4 shadow-sm border bg-white rounded">
                 <small className="text-uppercase opacity-75 fw-bold text-muted">Total Credits</small>
                 <h4 className="mb-0 fw-bold text-success">{formatCurrency(summaryData.totalCredits)} SAR</h4>
               </div>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="p-4 shadow-sm border bg-white rounded">
                 <small className="text-uppercase opacity-75 fw-bold text-muted">Total Debits</small>
                 <h4 className="mb-0 fw-bold text-danger">{formatCurrency(summaryData.totalDebits)} SAR</h4>
               </div>
             </div>
-            <div className="col-md-3">
+            <div className="col-md-4">
               <div className="p-4 shadow-sm border bg-white rounded">
                 <small className="text-uppercase opacity-75 fw-bold text-muted">Transaction Count</small>
                 <h4 className="mb-0 fw-bold">{summaryData.transactionCount}</h4>
               </div>
             </div>
-            <div className="col-md-3">
+            {/* <div className="col-md-3">
               <div className="p-4 shadow-sm border bg-white rounded">
                 <small className="text-uppercase opacity-75 fw-bold text-muted">Net Volume</small>
                 <h4 className="mb-0 fw-bold text-primary">{formatCurrency(summaryData.totalCredits - summaryData.totalDebits)} SAR</h4>
               </div>
-            </div>
+            </div> */}
           </div>
         )}
 

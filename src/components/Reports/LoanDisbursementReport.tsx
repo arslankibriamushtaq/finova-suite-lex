@@ -14,9 +14,9 @@ const LoanDisbursementReport = () => {
   const [reportData, setReportData] = useState<any>([]);
   const [fromDate, setFromDate] = useState<any>(dayjs("2026-01-01"));
   const [toDate, setToDate] = useState<any>(dayjs("2026-03-31"));
-  const [productCode, setProductCode] = useState<string>("MICROFINANCE");
-  const [branch, setBranch] = useState<string>("RIYADH");
-  const [status, setStatus] = useState<string>("DISBURSED");
+  const [productCode] = useState<string>("MICROFINANCE");
+  const [branch] = useState<string>("RIYADH");
+  const [status] = useState<string>("DISBURSED");
   const [loading, setLoading] = useState(false);
   const [totals, setTotals] = useState<any>(null);
 
@@ -70,7 +70,7 @@ const LoanDisbursementReport = () => {
         toDate: toDate.format("YYYY-MM-DD"),
         productCode,
         branchOrChannel: branch,
-        status
+        status, // still sent to backend
       };
       
       const response = await getLoanDisbursementReport(params);
@@ -79,14 +79,12 @@ const LoanDisbursementReport = () => {
         let totalItems = 0;
         
         if (data && !Array.isArray(data) && data.items) {
-          // Response with summary and items
           setTotals(data);
           const items = data.items || [];
           setReportData(items);
           totalItems = data.pageInfo?.totalItems || items.length;
           setTotalRows(totalItems);
         } else {
-          // Direct array response
           const list = Array.isArray(data) ? data : (data?.items || []);
           setReportData(list);
           setTotals(data && !Array.isArray(data) ? data : null);
@@ -156,7 +154,7 @@ const LoanDisbursementReport = () => {
 
         <div className="bg-white p-3 rounded border mb-4 shadow-sm">
           <div className="row g-3">
-            <div className="col-md-2">
+            <div className="col-md-4">
               <label className="mb-1 fw-bold text-muted small uppercase">From Date</label>
               <DatePicker 
                 value={fromDate} 
@@ -166,7 +164,7 @@ const LoanDisbursementReport = () => {
                 className="w-100"
               />
             </div>
-            <div className="col-md-2">
+            <div className="col-md-4">
               <label className="mb-1 fw-bold text-muted small uppercase">To Date</label>
               <DatePicker 
                 value={toDate} 
@@ -176,46 +174,8 @@ const LoanDisbursementReport = () => {
                 className="w-100"
               />
             </div>
-            <div className="col-md-2">
-              <label className="mb-1 fw-bold text-muted small uppercase">Product</label>
-              <Select 
-                value={productCode} 
-                onChange={(v) => setProductCode(v)}
-                className="w-100"
-                options={[
-                  { label: "Microfinance", value: "MICROFINANCE" },
-                  { label: "SME Loan", value: "SME" },
-                  { label: "Personal Loan", value: "PERSONAL" },
-                ]}
-              />
-            </div>
-            <div className="col-md-2">
-              <label className="mb-1 fw-bold text-muted small uppercase">Branch</label>
-              <Select 
-                value={branch} 
-                onChange={(v) => setBranch(v)}
-                className="w-100"
-                options={[
-                  { label: "Riyadh", value: "RIYADH" },
-                  { label: "Jeddah", value: "JEDDAH" },
-                  { label: "Dammam", value: "DAMMAM" },
-                ]}
-              />
-            </div>
-            <div className="col-md-2">
-              <label className="mb-1 fw-bold text-muted small uppercase">Status</label>
-              <Select 
-                value={status} 
-                onChange={(v) => setStatus(v)}
-                className="w-100"
-                options={[
-                  { label: "Disbursed", value: "DISBURSED" },
-                  { label: "Pending", value: "PENDING" },
-                  { label: "Cancelled", value: "CANCELLED" },
-                ]}
-              />
-            </div>
-            <div className="col-md-2 d-flex align-items-end">
+            {/* Product, Branch, Status filters hidden — values sent silently to backend */}
+            <div className="col-md-4 d-flex align-items-end">
               <Button 
                 className="theme-btn-next w-100" 
                 onClick={fetchReportData} 

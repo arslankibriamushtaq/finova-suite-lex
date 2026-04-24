@@ -13,7 +13,7 @@ function Loans() {
     { label: "Loan Balance & Outstanding Report", link: "loanBalanceReport" },
     // { label: "Loan History Report", link: "loanHistoryReport" },
     { label: "Daily Transaction Summary", link: "dailyTransactionSummary" },
-    { label: "Performing Loans", link: "performingLoans" },
+    // { label: "Performing Loans", link: "performingLoans" },
     // { label: "Aging Report", link: "aging" },
   ];
   const handleButtonClick = (link: any) => {
