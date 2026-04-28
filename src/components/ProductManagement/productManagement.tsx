@@ -133,19 +133,39 @@ export default function ProductManagement() {
     try {
       setSkelitonLoading(true);
       const response = await getAllProducts(
-        page,
+        page - 1,
         pageSize,
-        // searchValue
+        searchTerm,
+        filters.status,
+        filters.country,
+        filters.master_category
       );
       if (response) {
-        // Support both { data: { data: [...], total, ... } } and { data: [...] } response shapes
-        const responseData = response?.data?.data;
-        const values = Array.isArray(responseData) ? responseData : (responseData?.data || responseData?.content || []);
+        console.log("Product API Response:", response.data);
+        // Support multiple response shapes:
+        // 1. { data: { data: [...], total: ... } }
+        // 2. { data: [...], total: ... }
+        // 3. Directly an array [...]
+        const responseData = response?.data;
+        const resultData = responseData?.data;
+        
+        // Aggressive search for the data array
+        const values = Array.isArray(resultData?.data) 
+          ? resultData.data 
+          : (Array.isArray(resultData) 
+            ? resultData 
+            : (Array.isArray(responseData) 
+              ? responseData 
+              : (resultData?.content || resultData?.products || resultData?.items || responseData?.data || responseData?.content || responseData?.products || responseData?.items || [])));
+            
+        const total = resultData?.total || resultData?.totalElements || responseData?.total || responseData?.totalElements || responseData?.pagination?.totalElements || values?.length || 0;
+        
         setTabData(values || []);
-        setTotalRows(responseData?.total || responseData?.totalElements || values?.length || 0);
-        setFrom(responseData?.from || 1);
-        setTo(responseData?.to || values?.length);
-        setTotalPage(responseData?.last_page || responseData?.totalPages || 0);
+        setTotalRows(total);
+        setFrom(resultData?.from || responseData?.from || 1);
+        setTo(resultData?.to || responseData?.to || values?.length);
+        // Calculate total pages locally to ensure it's always correct
+        setTotalPage(Math.ceil(total / pageSize) || 1);
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -161,7 +181,7 @@ export default function ProductManagement() {
   }
   useEffect(() => {
     getData();
-  }, [page, pageSize]);
+  }, [page, pageSize, searchTerm, filters]);
   useEffect(() => {
     getCountryList()
   }, [])
@@ -329,16 +349,16 @@ export default function ProductManagement() {
     tabData &&
     tabData.map((item: any) => {
       return {
-        id: item?.id,
-        productName: item?.nameEn || item?.name_en,
-        name_ar: item?.nameAr || item?.name_ar,
-        productCode: item?.productCode,
-        logo: item?.logoUrl || item?.logo,
-        email: item?.notificationEmail || item?.email,
-        country: item?.countryNameEn,
-        category: item?.masterCategoryId ? { name_en: item?.masterCategoryNameEn } : item?.category,
-        productType: item?.productType || item?.type,
-        status: item?.status,
+        id: item?.id || item?.productId || item?._id,
+        productName: item?.nameEn || item?.name_en || item?.name || item?.productName || item?.title || item?.title_en,
+        name_ar: item?.nameAr || item?.name_ar || item?.nameArName || item?.productNameAr || item?.title_ar || item?.nameAr,
+        productCode: item?.productCode || item?.code || item?.product_code,
+        logo: item?.logoUrl || item?.logo || item?.logo_url,
+        email: item?.notificationEmail || item?.email || item?.notification_email,
+        country: item?.countryNameEn || item?.countryName || item?.country || item?.country_name,
+        category: item?.masterCategoryId ? { name_en: item?.masterCategoryNameEn || item?.masterCategoryName } : (item?.category || { name_en: item?.categoryNameEn || item?.category_name }),
+        productType: item?.productType || item?.type || item?.categoryType || item?.product_type,
+        status: item?.status || item?.productStatus,
         wizardStep: item?.wizardStep,
         actions: item?.actions || [],
       };

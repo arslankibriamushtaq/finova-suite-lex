@@ -26,11 +26,11 @@ const TableView = ({
   page,
   totalRows,
   totalPage,
-  paginationShow =true,
+  paginationShow = true,
   searchFields = [],
   isLoading = false,
   skelitonLength,
-  paginationRowsPerPageOptions=[5, 10, 15, 20],
+  paginationRowsPerPageOptions = [5, 10, 15, 20],
   from,
   to,
   endpoint,
@@ -104,8 +104,8 @@ const TableView = ({
         //     ),
         //   };
         // }
-        
-      
+
+
         if (column.type === "list") {
           return {
             ...column,
@@ -332,8 +332,8 @@ const TableView = ({
               onChangePage={handlePage} // Update current page
               keyField="id"
               noDataComponent={noDataComponent}
-              // defaultSortFieldId={1}
-              // sortIcon={<CustomSortIcon />}
+            // defaultSortFieldId={1}
+            // sortIcon={<CustomSortIcon />}
             />
             {data?.length === 0 && (
               <div className="no-data-message">No data available</div>
@@ -341,61 +341,118 @@ const TableView = ({
             {endpoint && <div className="no-data-message">No APIs Enabled</div>}
 
             {paginationShow && (
-                <div className="pagination-div" style={conditionalStyles}>
-                  <div className="d-flex col-12  align-items-center">
-                    <div className="col-6">
-                      <span>
-                        Showing {`${from}`} to {`${to}`} of {`${totalRows}`}{" "}
-                        entries
-                      </span>
-                      <Select
-                        defaultValue={pageSize}
-                        onChange={handlePerChange}
-                        style={{ width: 80 }}
-                      >
-                        {[5, 10, 15, 20].map((size) => (
-                          <Select.Option key={size} value={size}>
-                            {size}
-                          </Select.Option>
-                        ))}
-                      </Select>
-                    </div>
-                    <div className="col-6 gap-2 d-flex justify-content-end">
-                      <button
-                        className="invoice-btn"
-                        onClick={() => setPage(1)}
-                        disabled={page === 1}
-                      >
-                        {<FontAwesomeIcon icon={faAnglesLeft} />}
-                      </button>
-                      <button
-                        className="invoice-btn"
-                        onClick={() => setPage(page - 1)}
-                        disabled={page === 1}
-                      >
-                        {`<`}
-                      </button>
-                      <button className="invoice-btn mid-button">
-                        {page || "0"}
-                      </button>
-                      <button
-                        className="invoice-btn"
-                        onClick={() => setPage(page + 1)}
-                        disabled={page === totalPage}
-                      >
-                        {`>`}
-                      </button>
-                      <button
-                        className="invoice-btn"
-                        onClick={() => setPage(totalPage)}
-                        disabled={page === totalPage}
-                      >
-                        {<FontAwesomeIcon icon={faAngleDoubleRight} />}
-                      </button>
-                    </div>
+              <div className="pagination-div" style={conditionalStyles}>
+                <div className="d-flex col-12  align-items-center">
+                  <div className="col-6">
+                    <span>
+                      Showing {`${from}`} to {`${to}`} of {`${totalRows}`}{" "}
+                      entries
+                    </span>
+                    <Select
+                      defaultValue={pageSize}
+                      onChange={handlePerChange}
+                      style={{ width: 80 }}
+                    >
+                      {[5, 10, 15, 20].map((size) => (
+                        <Select.Option key={size} value={size}>
+                          {size}
+                        </Select.Option>
+                      ))}
+                    </Select>
+                  </div>
+                  <div className="col-6 gap-2 d-flex justify-content-end">
+                    {(() => {
+                      const btnStyle = (isActive = false) => ({
+                        backgroundColor: isActive ? '#000000' : 'transparent',
+                        color: isActive ? '#ffffff' : 'var(--theme-table-body-text-color, #000)',
+                        border: '1px solid #dee2e6',
+                        minWidth: '35px',
+                        height: '35px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: '8px',
+                        fontWeight: isActive ? '600' : '400',
+                        padding: '0',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s'
+                      });
+
+                      return (
+                        <>
+                          <style>{`
+                              .pagination-btn-active {
+                                background-color: #000000 !important;
+                                color: #ffffff !important;
+                                border-color: #000000 !important;
+                              }
+                            `}</style>
+                          <button
+                            className="invoice-btn"
+                            onClick={() => setPage(1)}
+                            disabled={page === 1}
+                            style={btnStyle() as any}
+                          >
+                            {<FontAwesomeIcon icon={faAnglesLeft} />}
+                          </button>
+                          <button
+                            className="invoice-btn"
+                            onClick={() => setPage(page - 1)}
+                            disabled={page === 1}
+                            style={btnStyle() as any}
+                          >
+                            {`<`}
+                          </button>
+
+                          {/* Render page numbers */}
+                          {Array.from({ length: Math.min(5, totalPage) }, (_, i) => {
+                            let pageNum;
+                            if (totalPage <= 5) {
+                              pageNum = i + 1;
+                            } else if (page <= 3) {
+                              pageNum = i + 1;
+                            } else if (page >= totalPage - 2) {
+                              pageNum = totalPage - 4 + i;
+                            } else {
+                              pageNum = page - 2 + i;
+                            }
+
+                            const isActive = page === pageNum;
+                            return (
+                              <button
+                                key={pageNum}
+                                className={`invoice-btn ${isActive ? 'pagination-btn-active' : ''}`}
+                                onClick={() => setPage(pageNum)}
+                                style={btnStyle(isActive) as any}
+                              >
+                                {pageNum}
+                              </button>
+                            );
+                          })}
+
+                          <button
+                            className="invoice-btn"
+                            onClick={() => setPage(page + 1)}
+                            disabled={page === totalPage || totalPage === 0}
+                            style={btnStyle() as any}
+                          >
+                            {`>`}
+                          </button>
+                          <button
+                            className="invoice-btn"
+                            onClick={() => setPage(totalPage)}
+                            disabled={page === totalPage || totalPage === 0}
+                            style={btnStyle() as any}
+                          >
+                            {<FontAwesomeIcon icon={faAngleDoubleRight} />}
+                          </button>
+                        </>
+                      );
+                    })()}
                   </div>
                 </div>
-              )}
+              </div>
+            )}
           </>
         )}
       </div>
