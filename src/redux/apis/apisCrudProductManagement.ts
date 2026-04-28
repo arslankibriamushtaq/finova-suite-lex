@@ -12,8 +12,16 @@ const buildQueryString = (params: Record<string, any>): string => {
 // Products CRUD
 // ============================================================
 
-export function getAllProducts(page?: any, per_page?: any) {
-  const params: Record<string, any> = { page, per_page };
+export function getAllProducts(page?: any, size?: any, search?: string, status?: string, country?: string, master_category?: string) {
+  const params: Record<string, any> = {};
+  
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  if (status && status !== "all") params.status = status;
+  if (country && country !== "all") params.country = country;
+  if (master_category && master_category !== "all") params.master_category = master_category;
+
   return axiosProductManagement.get(`/api/v1/products${buildQueryString(params)}`);
 }
 
@@ -45,12 +53,20 @@ export function deleteProduct(productId: string) {
 // Categories
 // ============================================================
 
-export function getAllCategories() {
-  return axiosProductManagement.get(`/api/v1/product-categories`);
+export function getAllCategories(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosProductManagement.get(`/api/v1/product-categories${buildQueryString(params)}`);
 }
 
-export function getSubCategories(masterCategoryId: string) {
-  return axiosProductManagement.get(`/api/v1/product-categories/${masterCategoryId}/sub-categories`);
+export function getSubCategories(masterCategoryId: string, page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosProductManagement.get(`/api/v1/product-categories/${masterCategoryId}/sub-categories${buildQueryString(params)}`);
 }
 
 export function createMasterCategory(body: any) {

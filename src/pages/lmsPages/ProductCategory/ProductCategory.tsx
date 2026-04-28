@@ -26,6 +26,8 @@ const ProductCategory = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Modal state
   const [showFormModal, setShowFormModal] = useState(false);
@@ -49,14 +51,30 @@ const ProductCategory = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, pageSize, searchTerm]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllCategories();
-      const list = response?.data?.data || response?.data || [];
+      // Backend uses 0-based index for page
+      const response = await getAllCategories(page - 1, pageSize, searchTerm);
+      
+      // Response structure: { data: [...], pagination: { totalElements, totalPages, ... } }
+      const list = response?.data?.data;
       setData(Array.isArray(list) ? list : []);
+      
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        const total = pagination.totalElements || 0;
+        setTotalRows(total);
+        // Calculate total pages locally to ensure it matches pageSize
+        setTotalPage(Math.ceil(total / pageSize) || 1);
+      } else {
+        // Fallback if pagination is missing entirely
+        const listLen = Array.isArray(list) ? list.length : 0;
+        setTotalRows(listLen);
+        setTotalPage(Math.ceil(listLen / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch categories");
     } finally {
@@ -151,15 +169,6 @@ const ProductCategory = () => {
     }
   };
 
-  const filteredData = data.filter((item) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      (item?.code || "").toLowerCase().includes(term) ||
-      (item?.nameEn || "").toLowerCase().includes(term) ||
-      (item?.nameAr || "").toLowerCase().includes(term)
-    );
-  });
 
   const headers = [
     {
@@ -266,16 +275,16 @@ const ProductCategory = () => {
 
       <TableView
         header={headers}
-        data={filteredData}
-        totalRows={filteredData.length}
+        data={data} // Use data directly since filtering is now server-side
+        totalRows={totalRows}
         isLoading={isLoading}
-        from={1}
+        from={(page - 1) * pageSize + 1}
         page={page}
-        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        totalPage={totalPage}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={filteredData.length}
+        to={Math.min(page * pageSize, totalRows)}
       />
 
       {/* Add/Edit Modal */}
