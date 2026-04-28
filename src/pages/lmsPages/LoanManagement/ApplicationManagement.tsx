@@ -56,6 +56,7 @@ const ApplicationManagement = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0);
   const [loader, setLoader] = useState(false);
@@ -283,13 +284,15 @@ const ApplicationManagement = () => {
   const getAll = async () => {
     try {
       setSkelitonLoading(true);
-      const response = await getLoanApplications();
+      // Fetch a large number of records to handle filtering and pagination on client
+      // since backend status filtering for loan-applications seems unreliable.
+      const response = await getLoanApplications(0, 1000, searchValue);
+      
       const list = response?.data?.data || response?.data || [];
       const dataArray = Array.isArray(list) ? list : [];
       setApplicationData(dataArray);
-      setTotalRows(dataArray.length);
-      setFrom(dataArray.length > 0 ? 1 : 0);
-      setTo(dataArray.length);
+      
+      // We will calculate pagination state after mapping/filtering in the render block
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || "Failed to fetch loan applications");
     } finally {
@@ -300,13 +303,11 @@ const ApplicationManagement = () => {
   const getPending = async () => {
     try {
       setSkelitonLoading(true);
-      const response = await getPendingApprovals();
+      // Pending Approvals endpoint works better with status filtering
+      const response = await getPendingApprovals(0, 1000, searchValue);
       const list = response?.data?.data || response?.data || [];
       const dataArray = Array.isArray(list) ? list : [];
       setApplicationData(dataArray);
-      setTotalRows(dataArray.length);
-      setFrom(dataArray.length > 0 ? 1 : 0);
-      setTo(dataArray.length);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || "Failed to fetch pending applications");
     } finally {
@@ -751,24 +752,28 @@ const ApplicationManagement = () => {
       };
     });
 
-  // Client-side pagination
+  // Client-side filtering to ensure tab integrity
   const filteredData = (allMappedData || []).filter((item: any) => {
+    const status = (item.status || "").toUpperCase();
     if (activeTab === "ApprovedApplication") {
-      return item.status?.includes("APPROVED") || item.status?.includes("COMPLETED");
+      return status.includes("APPROVED") || status.includes("COMPLETED");
     }
     if (activeTab === "CancelledApplication") {
-      return item.status?.includes("CANCELLED") || item.status?.includes("REJECTED");
+      return status.includes("CANCELLED") || status.includes("REJECTED") || status.includes("EXPIRED");
     }
+    // PendingApplication tab data comes from a different endpoint already filtered by PENDING
     return true;
   });
 
+  // Calculate local pagination based on filtered results
   const paginationTotal = filteredData.length;
+  const paginationTotalPage = Math.ceil(paginationTotal / pageSize) || 1;
   const paginationStartIndex = (page - 1) * pageSize;
   const paginationEndIndex = paginationStartIndex + pageSize;
   const mappedData = filteredData.slice(paginationStartIndex, paginationEndIndex);
+  
   const paginationFrom = paginationTotal > 0 ? paginationStartIndex + 1 : 0;
   const paginationTo = Math.min(paginationEndIndex, paginationTotal);
-  const paginationTotalPage = Math.ceil(paginationTotal / pageSize) || 1;
   const validateFields = () => {
     const newErrors: any = {};
     Object.keys(formValues).forEach((key) => {
@@ -877,7 +882,6 @@ const ApplicationManagement = () => {
         </Modal.Body>
         <Modal.Footer>
           <Button
-            variant="secondary"
             onClick={() => setManualModal(false)}
             style={{ borderRadius: "8px" }}
           >

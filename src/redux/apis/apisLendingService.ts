@@ -32,8 +32,21 @@ export function deletePurposeOfFinance(id: string) {
 // Loan Applications
 // ============================================================
 
-export function getLoanApplications() {
-  return axiosLendingService.get(`/api/v1/loan-applications`);
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  return queryParams ? `?${queryParams}` : "";
+};
+
+export function getLoanApplications(page?: any, size?: any, search?: string, status?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  if (status && status !== "AllApplication") params.status = status;
+  return axiosLendingService.get(`/api/v1/loan-applications${buildQueryString(params)}`);
 }
 
 export function getApplicationByNumber(applicationNumber: string) {
@@ -72,8 +85,12 @@ export function getInvoiceDetailById(invoiceId: string) {
   return axiosLendingService.get(`/api/v1/loans/invoices/${invoiceId}`);
 }
 
-export function getPendingApprovals() {
-  return axiosLendingService.get(`/api/v1/manual-approvals?status=PENDING`);
+export function getPendingApprovals(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = { status: "PENDING" };
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosLendingService.get(`/api/v1/manual-approvals${buildQueryString(params)}`);
 }
 
 export function approveManualApproval(taskId: string, body: { notes: string }) {
