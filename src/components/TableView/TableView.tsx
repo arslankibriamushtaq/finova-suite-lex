@@ -223,7 +223,7 @@ const TableView = ({
 
   const handlePerChange = (newPerPage: number) => {
     setPageSize(newPerPage); // Call the parent handler to update pageSize
-    // setPage(1); // Reset to the first page
+    setPage(1); // Reset to the first page
   };
 
   const handlePage = (newPage: number) => {

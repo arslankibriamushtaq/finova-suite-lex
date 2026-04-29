@@ -4,8 +4,12 @@ import axiosLendingService from "../../utils/axiosLendingService";
 // Purpose of Finance
 // ============================================================
 
-export function getAllPurposeOfFinance() {
-  return axiosLendingService.get(`/api/v1/purpose-of-finance?activeOnly=false`);
+export function getAllPurposeOfFinance(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = { activeOnly: false };
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosLendingService.get(`/api/v1/purpose-of-finance${buildQueryString(params)}`);
 }
 
 export function getActivePurposeOfFinance() {

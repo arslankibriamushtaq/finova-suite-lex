@@ -29,6 +29,8 @@ const TemplateTypes = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Modal state
   const [showFormModal, setShowFormModal] = useState(false);
@@ -47,14 +49,24 @@ const TemplateTypes = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, pageSize, searchTerm]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllTemplateTypes();
-      const list = response?.data?.data || response?.data || [];
+      // Backend uses 0-based indexing for page
+      const response = await getAllTemplateTypes(page - 1, pageSize, searchTerm);
+      const list = response?.data?.data || [];
       setData(Array.isArray(list) ? list : []);
+
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        setTotalRows(pagination.totalElements || 0);
+        setTotalPage(pagination.totalPages || 1);
+      } else {
+        setTotalRows(list.length);
+        setTotalPage(Math.ceil(list.length / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch template types");
     } finally {
@@ -135,14 +147,6 @@ const TemplateTypes = () => {
     }
   };
 
-  const filteredData = data.filter((item) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      (item?.nameEn || item?.name || "").toLowerCase().includes(term) ||
-      (item?.category || "").toLowerCase().includes(term)
-    );
-  });
 
   const headers = [
     {
@@ -230,7 +234,10 @@ const TemplateTypes = () => {
           placeholder="Search by name or category"
           className="w-[280px]"
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => {
+            setSearchTerm(e.target.value);
+            setPage(1);
+          }}
         />
         <Button className="gap-2" onClick={handleAdd}>
           <Plus className="h-4 w-4" />
@@ -240,16 +247,16 @@ const TemplateTypes = () => {
 
       <TableView
         header={headers}
-        data={filteredData}
-        totalRows={filteredData.length}
+        data={data}
+        totalRows={totalRows}
         isLoading={isLoading}
-        from={1}
+        from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
         page={page}
-        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        totalPage={totalPage}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={filteredData.length}
+        to={Math.min(page * pageSize, totalRows)}
       />
 
       {/* Add/Edit Modal */}
