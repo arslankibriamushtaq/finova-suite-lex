@@ -1,4 +1,4 @@
- 
+
 import axios from "../../utils/axios";
 import Axios from "axios";
 import { store } from "../store";
@@ -183,10 +183,9 @@ export function testapi() {
 }
 export function serviceDashboardList(filter: any, from: any, to: any) {
   return axios.get(
-    `/api/service-report?filter_type=${
-      from && to
-        ? `custom&start_date=${from}&end_date=${to}`
-        : filter
+    `/api/service-report?filter_type=${from && to
+      ? `custom&start_date=${from}&end_date=${to}`
+      : filter
         ? filter
         : "today"
     }`
@@ -197,10 +196,9 @@ export function gameCenterDashboardList() {
 }
 export function onboardingDashboardList(filter: any, from: any, to: any) {
   return axios.get(
-    `/api/onboarding-report?filter_type=${
-      from && to
-        ? `custom&start_date=${from}&end_date=${to}`
-        : filter
+    `/api/onboarding-report?filter_type=${from && to
+      ? `custom&start_date=${from}&end_date=${to}`
+      : filter
         ? filter
         : "today"
     }`
@@ -208,10 +206,9 @@ export function onboardingDashboardList(filter: any, from: any, to: any) {
 }
 export function incomingOutgoingDashboardList(filter: any, from: any, to: any) {
   return axios.get(
-    `/api/fund-report?filter_type=${
-      from && to
-        ? `custom&start_date=${from}&end_date=${to}`
-        : filter
+    `/api/fund-report?filter_type=${from && to
+      ? `custom&start_date=${from}&end_date=${to}`
+      : filter
         ? filter
         : "today"
     }`
@@ -220,10 +217,9 @@ export function incomingOutgoingDashboardList(filter: any, from: any, to: any) {
 
 export function gamecenterLists(filter: any, from: any, to: any) {
   return axios.get(
-    `/api/game-center/stats?filter_type=${
-      from && to
-        ? `custom&start_date=${from}&end_date=${to}`
-        : filter
+    `/api/game-center/stats?filter_type=${from && to
+      ? `custom&start_date=${from}&end_date=${to}`
+      : filter
         ? filter
         : "today"
     }`
@@ -231,10 +227,9 @@ export function gamecenterLists(filter: any, from: any, to: any) {
 }
 export function mainDashboardList(filter: any, from: any, to: any) {
   return axios.get(
-    `/api/main-dashboard?filter_type=${
-      from && to
-        ? `custom&start_date=${from}&end_date=${to}`
-        : filter
+    `/api/main-dashboard?filter_type=${from && to
+      ? `custom&start_date=${from}&end_date=${to}`
+      : filter
         ? filter
         : "today"
     }`
@@ -354,9 +349,9 @@ export function getAllInProgressFinancingApplications(page: any, pageSize: any) 
     `/v1/applications/in-progress?page=${page}&per_page=${pageSize}`
   );
 }
-export function getApplicationsByStatus(body: any,page: any, pageSize: any,) {
+export function getApplicationsByStatus(body: any, page: any, pageSize: any,) {
   return axios.post(
-    `/v1/applications/applications-listing?page=${page}&per_page=${pageSize}`,body
+    `/v1/applications/applications-listing?page=${page}&per_page=${pageSize}`, body
   );
 }
 export function getAllComplaints(page: any, pageSize: any) {
@@ -580,14 +575,12 @@ export function getAlldepartments(
   selectedFilters: any
 ) {
   return axios.get(
-    `/api/portal/department?${
-      searchTerm
-        ? `search=${searchTerm}&${
-            selectedFilters
-              ? `filter_type=${selectedFilters}`
-              : `page=${page}&per_page=${pageSize}`
-          }`
+    `/api/portal/department?${searchTerm
+      ? `search=${searchTerm}&${selectedFilters
+        ? `filter_type=${selectedFilters}`
         : `page=${page}&per_page=${pageSize}`
+      }`
+      : `page=${page}&per_page=${pageSize}`
     }`
   );
 }
@@ -630,7 +623,7 @@ export function addRolePermissions(body: any) {
 export function getPermissionByRole(id: any) {
   return axios.get(`/v1/permissions?role_id=${id}`);
 }
-export function getProductsListing(page:any,pageSize:any) {
+export function getProductsListing(page: any, pageSize: any) {
   return axios.get(`/product?page=${page}&per_page=${pageSize}`);
 }
 export function createProduct(fd: FormData) {
@@ -717,7 +710,7 @@ export function deleteProductType(id: any) {
 export function updateProductTypeStatus(id: any, body: any) {
   return axios.post(`/product-type/status/${id}`, body);
 }
-export function getCities(page?: number, per_page?: number,search?: string) {
+export function getCities(page?: number, per_page?: number, search?: string) {
   const params = new URLSearchParams();
   params.append('page', String(page || 1));
   params.append('per_page', String(per_page || 50));
@@ -855,10 +848,10 @@ export function saveSteps(body: any, id: any) {
 export function UpdateProductStatus(body: any) {
   return axios.post(`product/updateproductstatus`, body);
 }
-export function getRejectedApplication(page:any,pageSize:any) {
+export function getRejectedApplication(page: any, pageSize: any) {
   return axios.get(`/partner-admin/rejected-applications?page=${page}&per_page=${pageSize}`);
 }
-export function getIncompleteApplication(page:any,pageSize:any) {
+export function getIncompleteApplication(page: any, pageSize: any) {
   return axios.get(`/partner-admin/incomplete-applications?page=${page}&per_page=${pageSize}`);
 }
 
@@ -868,14 +861,14 @@ export function TermsAndConditions(body: any, id: any) {
 export function FeesSettings(body: any, id: any) {
   return axios.put(`/products/${id}/settings/fees`, body);
 }
-export function adminFeeProducts(productId:any,partnerId:any) {
+export function adminFeeProducts(productId: any, partnerId: any) {
   return axios.get(`/processing-fee-slab?product_id=${productId}&partner_id=${partnerId}`);
 }
-export function UpdateProduct(body: any,id:any) {
+export function UpdateProduct(body: any, id: any) {
   return axios.post(`product/${id}/update`, body);
 }
 
-export function getProductById(id: any, type: string = 'basic'){
+export function getProductById(id: any, type: string = 'basic') {
   return axios.get(`/product/${id}?type=${type}`)
 }
 
@@ -894,7 +887,7 @@ export function deleteProcessingFeeSlab(id: any) {
 export const updateFeeSlabStatus = (id: number, status: number) => {
   return axios.get(`/processing-fee-slab/updatestatus/${id}?status=${status}`);
 };
-export function getPartnerAffiliateDashboard(id:any){
+export function getPartnerAffiliateDashboard(id: any) {
   return axios.get(`/partner-admin/affiliate-dashboard?partner_id=${id}`)
 }
 
@@ -956,7 +949,8 @@ export function getApplicationStatuses(id: any) {
   return axios.get(`/v1/applications/get-status?application_no=${id}`);
 }
 export function getCreditCheck(id: any) {
-  return axios.get(`/v1/applications/credit/${id}`);}
+  return axios.get(`/v1/applications/credit/${id}`);
+}
 export function getReqDocument(id: any) {
   return axios.get(`/products/documents?product_id=${id}`);
 }
@@ -1005,19 +999,19 @@ export function getActivityLogs(from: any, to: any) {
 }
 export function getApplicationActivityLogs(applicationId: string, fromDate?: string | null, toDate?: string | null) {
   const params: any = {};
-  
+
   if (applicationId) {
     params.application_id = applicationId;
   }
-  
+
   if (fromDate) {
     params.from = fromDate;
   }
-  
+
   if (toDate) {
     params.to = toDate;
   }
-  
+
   return axios.get(`/activity-logs`, { params });
 }
 
@@ -1044,12 +1038,12 @@ export function getApplicationDocuments(applicationNo: any) {
 export function requestApplicationDocuments(body: any) {
   return axios.post(`/v1/applications/request-document`, body);
 }
-  export function getAllApis() {
-    return axios.get(`/apis-management/all-apis`);
-  }
-  export function getPartnerAllApis() {
-    return axios.get(`/partner-admin/get-all-apis`);
-  }
+export function getAllApis() {
+  return axios.get(`/apis-management/all-apis`);
+}
+export function getPartnerAllApis() {
+  return axios.get(`/partner-admin/get-all-apis`);
+}
 
 export function updateApiStatus(body: any) {
   return axios.post(`/apis-management/change-api-status`, body);
@@ -1278,119 +1272,119 @@ export function getLosDashboardStatistics(fromDate?: string, toDate?: string) {
 }
 export function getContractTemplates() {
   return axios.get(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates`);
-  }
-  export function createContractTemplate(body: any) {
-    return axios.post(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates`, body);
-  }
-  export function deleteContractTemplate(id: any) {
-    return axios.delete(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates/${id}`);
-  }
-  export function updateContractTemplate(id: any, body: any) {
-    return axios.put(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates/${id}`, body);
-  }
+}
+export function createContractTemplate(body: any) {
+  return axios.post(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates`, body);
+}
+export function deleteContractTemplate(id: any) {
+  return axios.delete(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates/${id}`);
+}
+export function updateContractTemplate(id: any, body: any) {
+  return axios.put(`https://uat-v2-api.awn-sa.com/los/api/v2/contract-templates/${id}`, body);
+}
 
-  export function getLOVsByType(type: any, page?: number, per_page?: number, search?: string) {
-    const params = new URLSearchParams();
-    params.append('type', type);
-    params.append('page', String(page || 1));
-    params.append('per_page', String(per_page || 50));
-    if (search) params.append('search', search);
-    return axios.get(`/list-of-values?${params.toString()}`);
-  }
+export function getLOVsByType(type: any, page?: number, per_page?: number, search?: string) {
+  const params = new URLSearchParams();
+  params.append('type', type);
+  params.append('page', String(page || 1));
+  params.append('per_page', String(per_page || 50));
+  if (search) params.append('search', search);
+  return axios.get(`/list-of-values?${params.toString()}`);
+}
 
-  export function getComplianceQuestionTypes() {
-    return axios.get(`/compliance-questions/types/list`);
-  }
-  export function getFactors(page: number = 1, per_page: number = 50) {
-    return axios.get(`/factors?page=${page}&per_page=${per_page}`);
-  }
-  export function importProfessions(body: FormData) {
-    // Create a custom axios instance for this request to bypass the interceptor's Content-Type
-    const customAxios = Axios.create({
-      baseURL: import.meta.env.VITE_REACT_APP_API_BASE_URL,
-    });
-    customAxios.interceptors.request.use((reqConfig) => {
-      const config = { ...reqConfig };
-      const token = (store.getState() as any).block.token;
-      if (token) {
-        config.headers["Authorization"] = `Bearer ${token}`;
-        // Don't set Content-Type for FormData - let axios handle it automatically
-      }
-      return config;
-    });
-    return customAxios.post(`/professions/import`, body);
-  }
-  export function exportLeads() {
-    return axios.get(`/crm/leads/export`, {
-      responseType: 'blob',
-    });
-  }
-  export function exportPepCustomers() {
-    return axios.get(`/crm/pep-customers/export`, {
-      responseType: 'blob',
-    });
-  }
-  export function exportHighRiskUsers() {
-    return axios.get(`/crm/high-risk-users/export`, {
-      responseType: 'blob',
-    });
-  }
-  export function exportRejectedUsers() {
-    return axios.get(`/crm/rejected-users/export`, {
-      responseType: 'blob',
-    });
-  }
-  export function exportOpportunities() {
-    return axios.get(`/crm/opportunities/export`, {
-      responseType: 'blob',
-    });
-  }
+export function getComplianceQuestionTypes() {
+  return axios.get(`/compliance-questions/types/list`);
+}
+export function getFactors(page: number = 1, per_page: number = 50) {
+  return axios.get(`/factors?page=${page}&per_page=${per_page}`);
+}
+export function importProfessions(body: FormData) {
+  // Create a custom axios instance for this request to bypass the interceptor's Content-Type
+  const customAxios = Axios.create({
+    baseURL: import.meta.env.VITE_REACT_APP_API_BASE_URL,
+  });
+  customAxios.interceptors.request.use((reqConfig) => {
+    const config = { ...reqConfig };
+    const token = (store.getState() as any).block.token;
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+      // Don't set Content-Type for FormData - let axios handle it automatically
+    }
+    return config;
+  });
+  return customAxios.post(`/professions/import`, body);
+}
+export function exportLeads() {
+  return axios.get(`/crm/leads/export`, {
+    responseType: 'blob',
+  });
+}
+export function exportPepCustomers() {
+  return axios.get(`/crm/pep-customers/export`, {
+    responseType: 'blob',
+  });
+}
+export function exportHighRiskUsers() {
+  return axios.get(`/crm/high-risk-users/export`, {
+    responseType: 'blob',
+  });
+}
+export function exportRejectedUsers() {
+  return axios.get(`/crm/rejected-users/export`, {
+    responseType: 'blob',
+  });
+}
+export function exportOpportunities() {
+  return axios.get(`/crm/opportunities/export`, {
+    responseType: 'blob',
+  });
+}
 
-  export function getAllCustomersWithStatuses(page: number = 1, per_page: number = 20, search: string = '') {
-    let url = `/customers/users?page=${page}&per_page=${per_page}`;
-    if (search) url += `&search=${search}`;
-    return axios.get(url);
-  }
+export function getAllCustomersWithStatuses(page: number = 1, per_page: number = 20, search: string = '') {
+  let url = `/customers/users?page=${page}&per_page=${per_page}`;
+  if (search) url += `&search=${search}`;
+  return axios.get(url);
+}
 
-  export function getReschedulingDocuments(product_id: number) {
-    return axios.get(`/mobile/loan-application/product/${product_id}/required-documents`);
-  }
+export function getReschedulingDocuments(product_id: number) {
+  return axios.get(`/mobile/loan-application/product/${product_id}/required-documents`);
+}
 
-  export function createBlockEntity(body: any) {
-    return axios.post(`/block-entities/block`, body);
-  }
-  export function getBlockCodeTypes() {
-    return axios.get(`/block-entities/types`);
-  }
-  export function getBlockEntityById(id: number) {
-    return axios.get(`/block-entities/${id}`);
-  }
-  export function updateBlockEntity(id: number, body: any) {
-    return axios.put(`/block-entities/${id}`, body);
-  }
-  export function deleteBlockEntity(id: number) {
-    return axios.delete(`/block-entities/${id}`);
-  }
-  export function handleReschedulingRequest(loan_application_id: number, rescheduling_request_id: number,body: any) {
-    return axios.post(`/mobile/loan-application/${loan_application_id}/rescheduling-request/${rescheduling_request_id}/action`, body);
-  }
-  export function getReschedulingRequestDetails(loan_application_id: number) {
-    return axios.get(`/mobile/loan-application/${loan_application_id}/rescheduling-request`);
-  }
-  export function updateDocStatus(document_id: number, body: any) {
-    return axios.put(`/mobile/loan-application/rescheduling-request/update-documents-status/${document_id}`, body);
-  }
-  const buildQueryString = (params: Record<string, any>): string => {
-    const queryParams = Object.entries(params)
-      .filter(([_, value]) => value !== null && value !== undefined && value !== "")
-      .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-      .join("&");
-    return queryParams ? `?${queryParams}` : "";
+export function createBlockEntity(body: any) {
+  return axios.post(`/block-entities/block`, body);
+}
+export function getBlockCodeTypes() {
+  return axios.get(`/block-entities/types`);
+}
+export function getBlockEntityById(id: number) {
+  return axios.get(`/block-entities/${id}`);
+}
+export function updateBlockEntity(id: number, body: any) {
+  return axios.put(`/block-entities/${id}`, body);
+}
+export function deleteBlockEntity(id: number) {
+  return axios.delete(`/block-entities/${id}`);
+}
+export function handleReschedulingRequest(loan_application_id: number, rescheduling_request_id: number, body: any) {
+  return axios.post(`/mobile/loan-application/${loan_application_id}/rescheduling-request/${rescheduling_request_id}/action`, body);
+}
+export function getReschedulingRequestDetails(loan_application_id: number) {
+  return axios.get(`/mobile/loan-application/${loan_application_id}/rescheduling-request`);
+}
+export function updateDocStatus(document_id: number, body: any) {
+  return axios.put(`/mobile/loan-application/rescheduling-request/update-documents-status/${document_id}`, body);
+}
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  return queryParams ? `?${queryParams}` : "";
+};
+export function getAllProducts(page?: any, per_page?: any) {
+  const params: Record<string, any> = {
+    page,
+    per_page,
   };
-  export function getAllProducts(page?: any, per_page?: any) {
-    const params: Record<string, any> = {
-      page,
-      per_page,
-    };
-    return axios.get(`/v1/product${buildQueryString(params)}`);
-  }
+  return axios.get(`/v1/product${buildQueryString(params)}`);
+}

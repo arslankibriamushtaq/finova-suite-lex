@@ -4,8 +4,12 @@ import axiosCustomerService from "../../utils/axiosCustomerService";
 // Source of Wealth
 // ============================================================
 
-export function getAllSourceOfWealth() {
-  return axiosCustomerService.get(`/api/v1/reference-data/source-of-wealth`);
+export function getAllSourceOfWealth(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosCustomerService.get(`/api/v1/reference-data/source-of-wealth${buildQueryString(params)}`);
 }
 
 export function getActiveSourceOfWealth() {
@@ -32,8 +36,12 @@ export function deleteSourceOfWealth(id: string) {
 // Source of Funds
 // ============================================================
 
-export function getAllSourceOfFunds() {
-  return axiosCustomerService.get(`/api/v1/reference-data/source-of-funds`);
+export function getAllSourceOfFunds(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosCustomerService.get(`/api/v1/reference-data/source-of-funds${buildQueryString(params)}`);
 }
 
 export function getActiveSourceOfFunds() {
@@ -60,8 +68,12 @@ export function deleteSourceOfFunds(id: string) {
 // Net Worth Ranges
 // ============================================================
 
-export function getAllNetWorthRanges() {
-  return axiosCustomerService.get(`/api/v1/reference-data/net-worth-ranges`);
+export function getAllNetWorthRanges(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosCustomerService.get(`/api/v1/reference-data/net-worth-ranges${buildQueryString(params)}`);
 }
 
 export function getActiveNetWorthRanges() {
@@ -88,8 +100,20 @@ export function deleteNetWorthRange(id: string) {
 // Source of Income
 // ============================================================
 
-export function getAllSourceOfIncome() {
-  return axiosCustomerService.get(`/api/v1/reference-data/source-of-income`);
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  return queryParams ? `?${queryParams}` : "";
+};
+
+export function getAllSourceOfIncome(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosCustomerService.get(`/api/v1/reference-data/source-of-income${buildQueryString(params)}`);
 }
 
 export function getActiveSourceOfIncome() {

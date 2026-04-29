@@ -4,8 +4,20 @@ import axiosRiskService from "../../utils/axiosRiskService";
 // Credit Scoring Field Definitions
 // ============================================================
 
-export function getCreditScoringFieldDefinitions() {
-  return axiosRiskService.get(`/api/v1/risk/credit-scoring/field-definitions`);
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  return queryParams ? `?${queryParams}` : "";
+};
+
+export function getCreditScoringFieldDefinitions(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosRiskService.get(`/api/v1/risk/credit-scoring/field-definitions${buildQueryString(params)}`);
 }
 
 export function createCreditScoringFieldDefinition(body: any) {
