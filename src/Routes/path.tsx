@@ -206,6 +206,7 @@ import BrokenPromises from "../pages/lmsPages/LoanManagement/BrokenPromises";
 import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistory";
 import CreateInvoice from "../components/Loans/CreateInvoice";
 import DeliquencyManagement from "../components/Products/Deliquency/DeliquencyManagement";
+import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleConfigManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
 import ExcessPayment from "../components/Transaction History/ExcessPayment";
@@ -1324,6 +1325,10 @@ export const router = createBrowserRouter([
           element: <DeliquencyManagement />,
         },
         {
+          path: "Lms/Setting/Rescheduling",
+          element: <RescheduleConfigManagement />,
+        },
+        {
           path: "Lms/accountingFinancing/daybook",
           element: <DayBook />,
         },
@@ -1923,6 +1928,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/Setting/Deliquency",
           element: <DeliquencyManagement />,
+        },
+        {
+          path: "Lms/Setting/Rescheduling",
+          element: <RescheduleConfigManagement />,
         },
         {
           path: "Lms/accountingFinancing/daybook",

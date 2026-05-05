@@ -100,3 +100,22 @@ export function approveManualApproval(taskId: string, body: { notes: string }) {
 export function rejectManualApproval(taskId: string, body: { rejectionReason: string; notes: string }) {
   return axiosLendingService.post(`/api/v1/manual-approvals/${taskId}/reject`, body);
 }
+
+// ============================================================
+// Reschedule Configurations (Admin)
+// ============================================================
+
+export function getRescheduleConfigs() {
+  return axiosLendingService.get(`/api/v1/admin/reschedule-configs`);
+}
+
+export function getRescheduleConfigById(id: string) {
+  return axiosLendingService.get(`/api/v1/admin/reschedule-configs/${id}`);
+}
+
+export function updateRescheduleConfig(rescheduleType: string, body: any) {
+  return axiosLendingService.put(
+    `/api/v1/admin/reschedule-configs/${rescheduleType}`,
+    body
+  );
+}

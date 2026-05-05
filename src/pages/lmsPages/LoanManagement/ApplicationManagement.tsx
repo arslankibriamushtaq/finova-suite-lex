@@ -20,7 +20,7 @@ import {
   generateInvoices,
   modifyLoanStatus,
 } from "../../../redux/apis/apisCrudLms";
-import { getLoanApplications, getPendingApprovals, approveManualApproval, rejectManualApproval } from "../../../redux/apis/apisLendingService";
+import { getLoanApplications, approveManualApproval, rejectManualApproval } from "../../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 
 import { Col, Form, Modal, Row, Tabs, Tab } from "react-bootstrap";
@@ -274,7 +274,7 @@ const ApplicationManagement = () => {
       }
       setManualModal(false);
       setManualNotes("");
-      getPending();
+      getAll();
     } catch (error: any) {
       toast.error(error?.response?.data?.message || error?.message || "Action failed");
     } finally {
@@ -300,20 +300,6 @@ const ApplicationManagement = () => {
     }
   };
 
-  const getPending = async () => {
-    try {
-      setSkelitonLoading(true);
-      // Pending Approvals endpoint works better with status filtering
-      const response = await getPendingApprovals(0, 1000, searchValue);
-      const list = response?.data?.data || response?.data || [];
-      const dataArray = Array.isArray(list) ? list : [];
-      setApplicationData(dataArray);
-    } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch pending applications");
-    } finally {
-      setSkelitonLoading(false);
-    }
-  };
   const getApplicationByCustomer = async () => {
     try {
       setSkelitonLoading(true);
@@ -415,8 +401,6 @@ const ApplicationManagement = () => {
       const timeoutId = setTimeout(() => {
         if (param?.accountNumber) {
           getApplicationByCustomer();
-        } else if (activeTab === "PendingApplication") {
-          getPending();
         } else {
           getAll();
         }
@@ -428,13 +412,8 @@ const ApplicationManagement = () => {
     setInitialRendor(true);
     if (param?.accountNumber) {
       getApplicationByCustomer();
-    }
-    else {
-      if (activeTab === "PendingApplication") {
-        getPending();
-      } else {
-        getAll();
-      }
+    } else {
+      getAll();
     }
   }, [page, pageSize, activeTab]);
   const menu = (row: any) => {
@@ -505,6 +484,14 @@ const ApplicationManagement = () => {
       </Menu>
     );
   };
+  const formatSar = (value?: number | string | null) =>
+    value != null && value !== ""
+      ? `SAR ${parseFloat(String(value)).toLocaleString("en-US", {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2,
+        })}`
+      : "-";
+
   const Account_Documents_List_Header = [
     {
       name: "Application No",
@@ -531,10 +518,10 @@ const ApplicationManagement = () => {
       width: "150px",
     },
     {
-      name: "Amount",
-      selector: (row: any) => row.requestedAmount,
+      name: "Requested Amount",
+      selector: (row: any) => formatSar(row.requestedAmount),
       sortable: true,
-      width: "120px",
+      width: "160px",
     },
     {
       name: "Tenure",
@@ -543,10 +530,147 @@ const ApplicationManagement = () => {
       width: "120px",
     },
     {
+      name: "Profit Rate",
+      selector: (row: any) =>
+        row.profitRate != null ? `${parseFloat(row.profitRate).toFixed(2)}%` : "-",
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "Offered Amount",
+      selector: (row: any) => formatSar(row.offeredAmount),
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Total Amount",
+      selector: (row: any) =>
+        formatSar(row.totalPayable ?? row.offeredTotalPayable ?? row.totalAmount),
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Offered Installment",
+      selector: (row: any) => formatSar(row.offeredMonthlyInstallment),
+      sortable: true,
+      width: "170px",
+    },
+    {
       name: "Purpose",
       selector: (row: any) => row.purposeOfFinance,
       sortable: true,
       width: "130px",
+    },
+    {
+      name: "Employer",
+      selector: (row: any) => row.employerName || "-",
+      sortable: true,
+      width: "160px",
+    },
+    {
+      name: "Monthly Income",
+      selector: (row: any) => formatSar(row.monthlyIncome),
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Credit Score",
+      cell: (row: any) => {
+        const score = row.creditScore;
+        if (score == null) return <span>-</span>;
+        const bg =
+          score >= 700
+            ? "var(--color-status-green)"
+            : score >= 600
+              ? "var(--color-status-amber)"
+              : "var(--color-status-coral)";
+        return (
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              fontWeight: 500,
+              backgroundColor: bg,
+              color: "var(--primary-foreground)",
+            }}
+          >
+            {score}
+          </span>
+        );
+      },
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Current Step",
+      cell: (row: any) => (
+        <div
+          style={{
+            whiteSpace: "nowrap",
+            padding: "0.4rem 1rem",
+            borderRadius: "12px",
+            backgroundColor: "var(--color-status-blue)",
+            color: "var(--primary-foreground)",
+            fontSize: "12px",
+          }}
+        >
+          {row.stepperLabel || "-"}
+        </div>
+      ),
+      width: "180px",
+    },
+    {
+      name: "SafeWatch",
+      cell: (row: any) => {
+        const sw = row.safeWatchStatus;
+        if (!sw) return <span>-</span>;
+        return (
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              fontWeight: 500,
+              backgroundColor:
+                sw === "CLEAR"
+                  ? "var(--color-status-green)"
+                  : "var(--color-status-coral)",
+              color: "var(--primary-foreground)",
+            }}
+          >
+            {sw}
+          </span>
+        );
+      },
+      width: "130px",
+    },
+    {
+      name: "PaymentGuard",
+      cell: (row: any) => {
+        const pg = row.paymentGuardStatus;
+        if (!pg) return <span>-</span>;
+        return (
+          <span
+            style={{
+              padding: "6px 12px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              fontWeight: 500,
+              backgroundColor:
+                pg === "APPROVED"
+                  ? "var(--color-status-green)"
+                  : pg === "REJECTED"
+                    ? "var(--color-status-coral)"
+                    : "var(--color-status-amber)",
+              color: "var(--primary-foreground)",
+            }}
+          >
+            {pg}
+          </span>
+        );
+      },
+      width: "150px",
     },
     // {
     //   name: "Current Step",
@@ -724,54 +848,149 @@ const ApplicationManagement = () => {
     applicationData &&
     applicationData.map((item: any) => {
       return {
+        // Identifiers
         id: item?.id,
-        rescheduleStatus: item?.rescheduleStatus,
-        applicationNumber: item?.applicationNumber || "-",
-        customerId: item?.customerId,
-        nationalId: item?.nationalId || "-",
-        status: item?.displayStatus || "-",
-        stepperIndex: item?.stepperIndex,
-        stepperLabel: item?.stepperLabel || "-",
-        productId: item?.productId,
-        productName: item?.productName || "-",
-        shariaStructure: item?.shariaStructure || "-",
-        requestedAmount: item?.totalAmount || item?.totalAmount || "-",
-        requestedTenureMonths: item?.tenureMonths || item?.requestedTenureMonths,
-        purposeOfFinance: item?.purposeOfFinance || "-",
-        safeWatchStatus: item?.safeWatchStatus || "-",
-        creditScore: item?.creditScore,
-        createdAt: item?.createdAt,
-        updatedAt: item?.updatedAt,
-        // Keep for action menu compatibility
         applicationId: item?.applicationId || item?.id,
         loanId: item?.applicationId || item?.id,
+        applicationNumber: item?.applicationNumber || "-",
         applicationNo: item?.applicationNumber,
-        loanAmount: item?.requestedAmount || item?.totalAmount,
+        customerId: item?.customerId,
+        nationalId: item?.nationalId || "-",
+        workflowId: item?.workflowId,
+
+        // Status / workflow
+        status: item?.displayStatus || item?.status || "-",
+        displayStatus: item?.displayStatus,
         laonStatus: item?.displayStatus,
+        stepperIndex: item?.stepperIndex,
+        stepperLabel: item?.stepperLabel || "-",
+        rescheduleStatus: item?.rescheduleStatus,
         disbursementStatus: item?.loanStatus === "ACTIVE" ? "Disbursed" : "Pending",
+
+        // Product
+        productId: item?.productId,
+        productCode: item?.productCode,
+        productName: item?.productName || "-",
+        shariaStructure: item?.shariaStructure || "-",
+
+        // Request
+        requestedAmount: item?.requestedAmount ?? item?.totalAmount ?? "-",
+        totalAmount: item?.totalAmount,
+        requestedTenureMonths: item?.requestedTenureMonths ?? item?.tenureMonths,
+        purposeOfFinance: item?.purposeOfFinance || "-",
+        profitRate: item?.profitRate,
+        loanAmount: item?.requestedAmount || item?.totalAmount,
+
+        // Income & expenses
+        monthlyIncome: item?.monthlyIncome,
+        totalExpenses: item?.totalExpenses,
+        existingLiabilities: item?.existingLiabilities,
+        foodGroceries: item?.foodGroceries,
+        utilities: item?.utilities,
+        healthcare: item?.healthcare,
+        communication: item?.communication,
+        housingRent: item?.housingRent,
+        clothingEssentials: item?.clothingEssentials,
+        education: item?.education,
+        transportation: item?.transportation,
+
+        // Employment
+        employerName: item?.employerName,
+        employmentSector: item?.employmentSector,
+        employmentStatus: item?.employmentStatus,
+        basicSalary: item?.basicSalary,
+        totalSalary: item?.totalSalary,
+        employmentStartDate: item?.employmentStartDate,
+        verifiedSalary: item?.verifiedSalary,
+
+        // Risk / verification
+        safeWatchSessionId: item?.safeWatchSessionId,
+        safeWatchStatus: item?.safeWatchStatus || "-",
+        amlDeclarationCompleted: item?.amlDeclarationCompleted,
+        amlDeclarationAt: item?.amlDeclarationAt,
+        simahConsent: item?.simahConsent,
+        simahConsentAt: item?.simahConsentAt,
+        simahReferenceId: item?.simahReferenceId,
+        creditScore: item?.creditScore,
+        otpVerified: item?.otpVerified,
+        otpAttempts: item?.otpAttempts,
+        ivrVerified: item?.ivrVerified,
+        ivrAttempts: item?.ivrAttempts,
+
+        // Disbursement bank
+        disbursementBankCode: item?.disbursementBankCode,
+        disbursementBankName: item?.disbursementBankName,
+        disbursementIban: item?.disbursementIban,
+        ibanVerified: item?.ibanVerified,
+
+        // Offer
+        maxEligibleAmount: item?.maxEligibleAmount,
+        offeredAmount: item?.offeredAmount,
+        offeredMonthlyInstallment: item?.offeredMonthlyInstallment,
+        offeredTotalProfit: item?.offeredTotalProfit,
+        offeredTotalPayable: item?.offeredTotalPayable,
+        processingFee: item?.processingFee,
+        adminFee: item?.adminFee,
+        acceptedAmount: item?.acceptedAmount,
+        contractExpiresAt: item?.contractExpiresAt,
+
+        // Notifications / payment guard
+        nabaNotificationSent: item?.nabaNotificationSent,
+        paymentGuardStatus: item?.paymentGuardStatus || "-",
+
+        // Timestamps
+        createdAt: item?.createdAt,
+        updatedAt: item?.updatedAt,
       };
     });
 
-  // Client-side filtering to ensure tab integrity
+  // Client-side filtering to ensure tab integrity (all tabs use the same getLoanApplications API)
   const filteredData = (allMappedData || []).filter((item: any) => {
     const status = (item.status || "").toUpperCase();
     if (activeTab === "ApprovedApplication") {
       return status.includes("APPROVED") || status.includes("COMPLETED");
     }
     if (activeTab === "CancelledApplication") {
-      return status.includes("CANCELLED") || status.includes("REJECTED") || status.includes("EXPIRED");
+      return (
+        status.includes("CANCELLED") ||
+        status.includes("REJECTED") ||
+        status.includes("EXPIRED")
+      );
     }
-    // PendingApplication tab data comes from a different endpoint already filtered by PENDING
+    if (activeTab === "PendingApplication") {
+      return status === "MANUAL_REVIEW";
+    }
     return true;
   });
 
+  // Client-side search across common fields
+  const searchTerm = (searchValue || "").trim().toLowerCase();
+  const searchedData = searchTerm
+    ? filteredData.filter((item: any) => {
+        const haystack = [
+          item.applicationNumber,
+          item.nationalId,
+          item.productName,
+          item.productCode,
+          item.shariaStructure,
+          item.purposeOfFinance,
+          item.employerName,
+          item.status,
+          item.stepperLabel,
+        ]
+          .map((v) => (v != null ? String(v).toLowerCase() : ""))
+          .join(" ");
+        return haystack.includes(searchTerm);
+      })
+    : filteredData;
+
   // Calculate local pagination based on filtered results
-  const paginationTotal = filteredData.length;
+  const paginationTotal = searchedData.length;
   const paginationTotalPage = Math.ceil(paginationTotal / pageSize) || 1;
   const paginationStartIndex = (page - 1) * pageSize;
   const paginationEndIndex = paginationStartIndex + pageSize;
-  const mappedData = filteredData.slice(paginationStartIndex, paginationEndIndex);
-  
+  const mappedData = searchedData.slice(paginationStartIndex, paginationEndIndex);
+
   const paginationFrom = paginationTotal > 0 ? paginationStartIndex + 1 : 0;
   const paginationTo = Math.min(paginationEndIndex, paginationTotal);
   const validateFields = () => {
@@ -945,11 +1164,45 @@ const ApplicationManagement = () => {
           </Button>
         </div>
       </div> */}
+      <div className="d-flex justify-content-end mt-3 mb-2">
+        <Input
+          allowClear
+          placeholder="Search by application no, national ID, product, employer..."
+          value={searchValue}
+          prefix={<SearchOutlined />}
+          onChange={(e: any) => {
+            setSearchValue(e.target.value);
+            setPage(1);
+          }}
+          style={{ maxWidth: 380, borderRadius: 8 }}
+        />
+      </div>
+      <style>{`
+        .app-tabs.nav-tabs {
+          background: transparent !important;
+          border-bottom: 1px solid var(--border) !important;
+          padding: 0 !important;
+        }
+        .app-tabs.nav-tabs .nav-link {
+          background: transparent !important;
+          border: none !important;
+          color: var(--muted-foreground) !important;
+          min-width: auto !important;
+          padding: 10px 16px !important;
+        }
+        .app-tabs.nav-tabs .nav-item.show .nav-link,
+        .app-tabs.nav-tabs .nav-link.active {
+          background: transparent !important;
+          color: var(--primary) !important;
+          border: none !important;
+          border-bottom: 2px solid var(--primary) !important;
+        }
+      `}</style>
       <div className="mt-3">
         <Tabs
           activeKey={activeTab}
           onSelect={(k: any) => { setActiveTab(k); setPage(1); }}
-          className="mb-3 custom-tabs"
+          className="mb-3 app-tabs"
         >
           <Tab eventKey="AllApplication" title="All Application" />
           <Tab eventKey="ApprovedApplication" title="Approved Application" />

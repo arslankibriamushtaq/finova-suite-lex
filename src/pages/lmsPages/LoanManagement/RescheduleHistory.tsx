@@ -12,8 +12,104 @@ import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   DownOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "react-bootstrap";
+
+const formatLabel = (value?: string | null) =>
+  value ? value.replace(/_/g, " ") : "-";
+
+const formatCurrency = (value?: string | number | null) =>
+  value != null && value !== ""
+    ? `SAR ${parseFloat(String(value)).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })}`
+    : "-";
+
+const formatDate = (value?: string | null) =>
+  value ? new Date(value).toLocaleDateString() : "-";
+
+const formatDateTime = (value?: string | null) =>
+  value ? new Date(value).toLocaleString() : "-";
+
+const statusBgVar = (status?: string) => {
+  switch (status) {
+    case "APPLIED":
+    case "APPROVED":
+      return "var(--color-status-green)";
+    case "SUBMITTED":
+    case "REQUESTED":
+      return "var(--color-status-amber)";
+    case "REJECTED":
+    case "CANCELLED":
+      return "var(--color-status-coral)";
+    default:
+      return "var(--color-status-blue)";
+  }
+};
+
+const StatusPill = ({ status }: { status?: string }) => {
+  if (!status) return <span>-</span>;
+  return (
+    <span
+      style={{
+        padding: "6px 12px",
+        borderRadius: "32px",
+        fontSize: "12px",
+        fontWeight: 500,
+        backgroundColor: statusBgVar(status),
+        color: "var(--primary-foreground)",
+      }}
+    >
+      {status}
+    </span>
+  );
+};
+
+const InfoRow = ({
+  label,
+  value,
+}: {
+  label: string;
+  value: React.ReactNode;
+}) => (
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      gap: 12,
+      padding: "8px 0",
+      borderBottom: "1px solid var(--border)",
+    }}
+  >
+    <span style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+      {label}
+    </span>
+    <span
+      style={{
+        fontSize: 13,
+        fontWeight: 500,
+        textAlign: "right",
+        wordBreak: "break-word",
+      }}
+    >
+      {value ?? "-"}
+    </span>
+  </div>
+);
+
+const SectionTitle = ({ title }: { title: string }) => (
+  <h6
+    style={{
+      margin: "16px 0 8px",
+      fontWeight: 600,
+      color: "var(--foreground)",
+    }}
+  >
+    {title}
+  </h6>
+);
 
 const RescheduleHistory = () => {
   const [data, setData] = useState<any[]>([]);
@@ -22,9 +118,12 @@ const RescheduleHistory = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [modalAction, setModalAction] = useState<"approve" | "reject">("approve");
+  const [modalAction, setModalAction] = useState<"approve" | "reject">(
+    "approve"
+  );
   const [selectedRescheduleId, setSelectedRescheduleId] = useState("");
   const [approvalNotes, setApprovalNotes] = useState("");
+  const [detailsRow, setDetailsRow] = useState<any | null>(null);
   const params = useParams();
   const applicationId = params?.id || "";
 
@@ -36,7 +135,9 @@ const RescheduleHistory = () => {
       setData(Array.isArray(reschedules) ? reschedules : []);
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to fetch reschedule history"
+        error?.response?.data?.message ||
+          error?.message ||
+          "Failed to fetch reschedule history"
       );
     } finally {
       setSkelitonLoading(false);
@@ -71,7 +172,9 @@ const RescheduleHistory = () => {
       fetchReschedules();
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || error?.message || `Failed to ${modalAction} reschedule`
+        error?.response?.data?.message ||
+          error?.message ||
+          `Failed to ${modalAction} reschedule`
       );
     } finally {
       setActionLoading(null);
@@ -84,13 +187,25 @@ const RescheduleHistory = () => {
     }
   }, [applicationId]);
 
+  const isFinalStatus = (status: string) =>
+    status === "APPROVED" || status === "REJECTED" || status === "CANCELLED";
+
   const menu = (row: any) => (
     <Menu>
+      <Menu.Item
+        key="details"
+        icon={<EyeOutlined />}
+        onClick={() => setDetailsRow(row)}
+      >
+        Details
+      </Menu.Item>
       <Menu.Item
         key="approve"
         icon={<CheckCircleOutlined />}
         onClick={() => openModal(row.rescheduleId, "approve")}
-        disabled={actionLoading === row.rescheduleId || row.status === "APPROVED" || row.status === "REJECTED" || row.status === "CANCELLED"}
+        disabled={
+          actionLoading === row.rescheduleId || isFinalStatus(row.status)
+        }
       >
         Approve
       </Menu.Item>
@@ -98,7 +213,9 @@ const RescheduleHistory = () => {
         key="reject"
         icon={<CloseCircleOutlined />}
         onClick={() => openModal(row.rescheduleId, "reject")}
-        disabled={actionLoading === row.rescheduleId || row.status === "APPROVED" || row.status === "REJECTED" || row.status === "CANCELLED"}
+        disabled={
+          actionLoading === row.rescheduleId || isFinalStatus(row.status)
+        }
       >
         Reject
       </Menu.Item>
@@ -114,94 +231,48 @@ const RescheduleHistory = () => {
     },
     {
       name: "Reschedule Type",
-      selector: (row: any) => row.rescheduleType?.replace(/_/g, " ") || "-",
+      selector: (row: any) => formatLabel(row.rescheduleType),
       sortable: true,
       width: "180px",
     },
     {
       name: "Status",
-      cell: (row: any) => {
-        const status = row.status;
-        if (!status) return <span>-</span>;
-        return (
-          <span
-            style={{
-              padding: "6px 12px",
-              borderRadius: "32px",
-              fontSize: "12px",
-              fontWeight: "500",
-              backgroundColor:
-                status === "APPLIED"
-                  ? "var(--color-status-green)"
-                  : status === "SUBMITTED"
-                    ? "var(--color-status-amber)"
-                    : status === "REJECTED"
-                      ? "var(--color-status-coral)"
-                      : status === "APPROVED"
-                        ? "var(--color-status-green)"
-                        : "var(--color-status-blue)",
-              color: "var(--primary-foreground)",
-            }}
-          >
-            {status}
-          </span>
-        );
-      },
-      width: "140px",
-    },
-    {
-      name: "Principal",
-      selector: (row: any) =>
-        row.principalAmount != null ? `SAR ${parseFloat(row.principalAmount).toFixed(2)}` : "-",
-      sortable: true,
-      width: "140px",
-    },
-    {
-      name: "Extension",
-      selector: (row: any) =>
-        row.extensionMonths != null ? `${row.extensionMonths} months` : "-",
-      sortable: true,
-      width: "120px",
-    },
-    {
-      name: "New Tenure",
-      selector: (row: any) =>
-        row.after?.tenureMonths != null ? `${row.after.tenureMonths} months` : "-",
-      sortable: true,
+      cell: (row: any) => <StatusPill status={row.status} />,
       width: "130px",
     },
     {
-      name: "New Installment",
-      selector: (row: any) =>
-        row.after?.installmentAmount != null
-          ? `SAR ${parseFloat(row.after.installmentAmount).toFixed(2)}`
-          : "-",
+      name: "Principal",
+      selector: (row: any) => formatCurrency(row.principalAmount),
       sortable: true,
-      width: "160px",
+      width: "150px",
     },
     {
-      name: "Maturity Date",
-      selector: (row: any) =>
-        row.after?.maturityDate
-          ? new Date(row.after.maturityDate).toLocaleDateString()
-          : "-",
-      sortable: true,
-      width: "140px",
+      name: "Before (Tenure / Installment / Maturity)",
+      cell: (row: any) => (
+        <div style={{ fontSize: 12, lineHeight: 1.5 }}>
+          <div>{row.before?.tenureMonths ?? "-"} mo</div>
+          <div>{formatCurrency(row.before?.installmentAmount)}</div>
+          <div>{formatDate(row.before?.maturityDate)}</div>
+        </div>
+      ),
+      width: "250px",
     },
     {
-      name: "Justification",
-      selector: (row: any) => row.justification || "-",
-      sortable: true,
+      name: "After (Tenure / Installment / Maturity)",
+      cell: (row: any) => (
+        <div style={{ fontSize: 12, lineHeight: 1.5 }}>
+          <div>{row.after?.tenureMonths ?? "-"} mo</div>
+          <div>{formatCurrency(row.after?.installmentAmount)}</div>
+          <div>{formatDate(row.after?.maturityDate)}</div>
+        </div>
+      ),
       width: "250px",
     },
     {
       name: "Requested At",
-      selector: (row: any) =>
-        row.timeline?.requestedAt
-          ? new Date(row.timeline.requestedAt).toLocaleDateString()
-          : "-",
+      selector: (row: any) => formatDate(row.timeline?.requestedAt),
       sortable: true,
-      width: "130px",
+      width: "140px",
     },
     {
       name: "Action",
@@ -250,11 +321,8 @@ const RescheduleHistory = () => {
         to={toRow}
       />
 
-      <Modal
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        centered
-      >
+      {/* Approve / Reject Modal */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>
             {modalAction === "approve" ? "Approve" : "Reject"} Reschedule
@@ -268,7 +336,8 @@ const RescheduleHistory = () => {
                   <Form.Label>Notes</Form.Label>
                   <Form.Control
                     as="textarea"
-                    rows={1} className="pt-2"
+                    rows={1}
+                    className="pt-2"
                     placeholder={
                       modalAction === "approve"
                         ? "e.g. Approved after reviewing customer payment history"
@@ -293,6 +362,280 @@ const RescheduleHistory = () => {
           >
             {modalAction === "approve" ? "Approve" : "Reject"}
           </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Details Modal */}
+      <Modal
+        show={!!detailsRow}
+        onHide={() => setDetailsRow(null)}
+        centered
+        size="lg"
+        scrollable
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Reschedule Details</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {detailsRow && (
+            <div>
+              <SectionTitle title="Basic Information" />
+              <Row>
+                <Col md={6}>
+                  <InfoRow
+                    label="Loan Number"
+                    value={detailsRow.loanNumber || "-"}
+                  />
+                  <InfoRow
+                    label="Reschedule Type"
+                    value={formatLabel(detailsRow.rescheduleType)}
+                  />
+                  <InfoRow
+                    label="Status"
+                    value={<StatusPill status={detailsRow.status} />}
+                  />
+                </Col>
+                <Col md={6}>
+                  <InfoRow
+                    label="Principal Amount"
+                    value={formatCurrency(detailsRow.principalAmount)}
+                  />
+                  <InfoRow
+                    label="Reschedule ID"
+                    value={
+                      <span style={{ fontSize: 11 }}>
+                        {detailsRow.rescheduleId || "-"}
+                      </span>
+                    }
+                  />
+                  <InfoRow
+                    label="Loan ID"
+                    value={
+                      <span style={{ fontSize: 11 }}>
+                        {detailsRow.loanId || "-"}
+                      </span>
+                    }
+                  />
+                </Col>
+              </Row>
+
+              {(detailsRow.extensionMonths != null ||
+                detailsRow.holidayMonths != null ||
+                detailsRow.requestedSkipMonth ||
+                detailsRow.newProfitRate != null ||
+                detailsRow.writeOffAmount != null ||
+                detailsRow.profitWaiverAmount != null) && (
+                <>
+                  <SectionTitle title="Specifics" />
+                  <Row>
+                    <Col md={6}>
+                      {detailsRow.extensionMonths != null && (
+                        <InfoRow
+                          label="Extension Months"
+                          value={`${detailsRow.extensionMonths} months`}
+                        />
+                      )}
+                      {detailsRow.holidayMonths != null && (
+                        <InfoRow
+                          label="Holiday Months"
+                          value={`${detailsRow.holidayMonths} months`}
+                        />
+                      )}
+                      {detailsRow.requestedSkipMonth && (
+                        <InfoRow
+                          label="Requested Skip Month"
+                          value={formatDate(detailsRow.requestedSkipMonth)}
+                        />
+                      )}
+                    </Col>
+                    <Col md={6}>
+                      {detailsRow.newProfitRate != null && (
+                        <InfoRow
+                          label="New Profit Rate"
+                          value={`${detailsRow.newProfitRate}%`}
+                        />
+                      )}
+                      {detailsRow.writeOffAmount != null && (
+                        <InfoRow
+                          label="Write-off Amount"
+                          value={formatCurrency(detailsRow.writeOffAmount)}
+                        />
+                      )}
+                      {detailsRow.profitWaiverAmount != null && (
+                        <InfoRow
+                          label="Profit Waiver"
+                          value={formatCurrency(detailsRow.profitWaiverAmount)}
+                        />
+                      )}
+                    </Col>
+                  </Row>
+                </>
+              )}
+
+              {detailsRow.details && (
+                <>
+                  <SectionTitle title="Details" />
+                  <div
+                    style={{
+                      padding: 12,
+                      background: "var(--muted)",
+                      borderRadius: 8,
+                      fontSize: 13,
+                      lineHeight: 1.6,
+                      color: "var(--foreground)",
+                    }}
+                  >
+                    {detailsRow.details}
+                  </div>
+                </>
+              )}
+
+              {(detailsRow.justification || detailsRow.rejectionReason) && (
+                <>
+                  <SectionTitle title="Justification & Reason" />
+                  {detailsRow.justification && (
+                    <InfoRow
+                      label="Justification"
+                      value={detailsRow.justification}
+                    />
+                  )}
+                  {detailsRow.rejectionReason && (
+                    <InfoRow
+                      label="Rejection Reason"
+                      value={detailsRow.rejectionReason}
+                    />
+                  )}
+                </>
+              )}
+
+              <SectionTitle title="Before vs After" />
+              <div style={{ overflowX: "auto" }}>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    fontSize: 13,
+                  }}
+                >
+                  <thead>
+                    <tr style={{ background: "var(--muted)" }}>
+                      <th style={{ padding: 10, textAlign: "left" }}>Field</th>
+                      <th style={{ padding: 10, textAlign: "left" }}>Before</th>
+                      <th style={{ padding: 10, textAlign: "left" }}>After</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                      <td style={{ padding: 10 }}>Tenure (months)</td>
+                      <td style={{ padding: 10 }}>
+                        {detailsRow.before?.tenureMonths ?? "-"}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {detailsRow.after?.tenureMonths ?? "-"}
+                      </td>
+                    </tr>
+                    <tr style={{ borderBottom: "1px solid var(--border)" }}>
+                      <td style={{ padding: 10 }}>Installment Amount</td>
+                      <td style={{ padding: 10 }}>
+                        {formatCurrency(detailsRow.before?.installmentAmount)}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {formatCurrency(detailsRow.after?.installmentAmount)}
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style={{ padding: 10 }}>Maturity Date</td>
+                      <td style={{ padding: 10 }}>
+                        {formatDate(detailsRow.before?.maturityDate)}
+                      </td>
+                      <td style={{ padding: 10 }}>
+                        {formatDate(detailsRow.after?.maturityDate)}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <SectionTitle title="Timeline" />
+              <Row>
+                <Col md={6}>
+                  <InfoRow
+                    label="Requested At"
+                    value={formatDateTime(detailsRow.timeline?.requestedAt)}
+                  />
+                  <InfoRow
+                    label="Approved At"
+                    value={formatDateTime(detailsRow.timeline?.approvedAt)}
+                  />
+                  <InfoRow
+                    label="Applied At"
+                    value={formatDateTime(detailsRow.timeline?.appliedAt)}
+                  />
+                </Col>
+                <Col md={6}>
+                  <InfoRow
+                    label="Rejected At"
+                    value={formatDateTime(detailsRow.timeline?.rejectedAt)}
+                  />
+                  <InfoRow
+                    label="Cancelled At"
+                    value={formatDateTime(detailsRow.timeline?.cancelledAt)}
+                  />
+                </Col>
+              </Row>
+
+              <SectionTitle title="Approver" />
+              <Row>
+                <Col md={6}>
+                  <InfoRow
+                    label="Approver Role"
+                    value={formatLabel(detailsRow.approver?.approverRole)}
+                  />
+                  <InfoRow
+                    label="Approver ID"
+                    value={
+                      <span style={{ fontSize: 11 }}>
+                        {detailsRow.approver?.approverId || "-"}
+                      </span>
+                    }
+                  />
+                </Col>
+                <Col md={6}>
+                  <InfoRow
+                    label="Approval Notes"
+                    value={detailsRow.approver?.approvalNotes || "-"}
+                  />
+                </Col>
+              </Row>
+
+              <SectionTitle title="Sync Status" />
+              <Row>
+                <Col md={6}>
+                  <InfoRow
+                    label="Fineract Synced"
+                    value={detailsRow.sync?.fineractSynced ? "Yes" : "No"}
+                  />
+                  <InfoRow
+                    label="Fineract Reschedule ID"
+                    value={
+                      <span style={{ fontSize: 11 }}>
+                        {detailsRow.sync?.fineractRescheduleId || "-"}
+                      </span>
+                    }
+                  />
+                </Col>
+                <Col md={6}>
+                  <InfoRow
+                    label="GL Posted"
+                    value={detailsRow.sync?.glPosted ? "Yes" : "No"}
+                  />
+                </Col>
+              </Row>
+            </div>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={() => setDetailsRow(null)}>Close</Button>
         </Modal.Footer>
       </Modal>
     </div>

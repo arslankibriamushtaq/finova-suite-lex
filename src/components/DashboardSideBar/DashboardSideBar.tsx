@@ -1299,12 +1299,18 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   LinkLable: "/Lms/Setting",
             //   active: pathname.includes("/Lms/Setting/ProductFee"),
             // },
-            // hasAccess("delinquency_module") && 
+            // hasAccess("delinquency_module") &&
             {
               label: "Delinquency",
               Link: "Deliquency",
               LinkLable: "/Lms/Setting",
               active: pathname.includes("/Lms/Setting/Deliquency"),
+            },
+            {
+              label: "Rescheduling",
+              Link: "Rescheduling",
+              LinkLable: "/Lms/Setting",
+              active: pathname.includes("/Lms/Setting/Rescheduling"),
             },
             // hasAccess("workflow_mapping_module") && 
             // {
