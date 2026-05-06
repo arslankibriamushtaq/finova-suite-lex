@@ -486,27 +486,38 @@ export function deletePreference(id: any) {
 }
 
 export function getLedgerAccount(page: any, pageSize: any, searchParam: any, dates?: any) {
-  const params = new URLSearchParams({
-    PageNo: page,
-    PageSize: pageSize,
-    searchQuery: searchParam,
-  });
+  const params = new URLSearchParams();
+
+  // New (Spring-style) params — 0-based page.
+  const pageZeroBased = Math.max(0, Number(page ?? 1) - 1);
+  params.append("page", String(pageZeroBased));
+  params.append("size", String(pageSize ?? 10));
+  // Legacy params kept for backward compatibility with older backend builds.
+  params.append("PageNo", String(page ?? 1));
+  params.append("PageSize", String(pageSize ?? 10));
+
+  if (searchParam) {
+    params.append("search", searchParam);
+    params.append("searchQuery", searchParam);
+  }
 
   if (dates?.from) {
     params.append("Date", dates.from);
   }
 
-  // if (dates?.to) {
-  //   params.append("toDate", dates.to);
-  // }
-
   return axios.get(`/ledger-service/api/v1/accounts?${params.toString()}`);
 }
-export function getSimahReport(period: string) {
-  return axios.get(`/ledger-service/api/v1/reports/simah?period=${period}`);
+export function getSimahReport(period?: string) {
+  const qs = period ? `?period=${encodeURIComponent(period)}` : "";
+  return axios.get(`/ledger-service/api/v1/reports/simah${qs}`);
 }
-export function getOverdueLoansReport(asOfDate: string, minDaysPastDue: number = 1, productCode: string = 'MICROFINANCE') {
-  return axios.get(`/ledger-service/api/v1/reports/overdue-loans?asOfDate=${asOfDate}&minDaysPastDue=${minDaysPastDue}&productCode=${productCode}`);
+export function getOverdueLoansReport(asOfDate?: string, minDaysPastDue?: number, productCode?: string) {
+  const parts: string[] = [];
+  if (asOfDate) parts.push(`asOfDate=${encodeURIComponent(asOfDate)}`);
+  if (minDaysPastDue !== undefined && minDaysPastDue !== null) parts.push(`minDaysPastDue=${encodeURIComponent(String(minDaysPastDue))}`);
+  if (productCode) parts.push(`productCode=${encodeURIComponent(productCode)}`);
+  const qs = parts.length ? `?${parts.join("&")}` : "";
+  return axios.get(`/ledger-service/api/v1/reports/overdue-loans${qs}`);
 }
 export function getDueLoansReport(fromDate: string, toDate: string) {
   return axios.get(`/ledger-service/api/v1/reports/due-loans?fromDate=${fromDate}&toDate=${toDate}`);
@@ -532,11 +543,17 @@ export function getTrialBalanceReport(date: string) {
 export function getNplReport(asOfDate: string) {
   return axios.get(`/ledger-service/api/v1/reports/npl?asOfDate=${asOfDate}`);
 }
-export function getJournalVouchersReport(fromDate: string, toDate: string, referenceType: string = "", status: string = "POSTED") {
-  return axios.get(`/ledger-service/api/v1/reports/journal-vouchers?fromDate=${fromDate}&toDate=${toDate}&referenceType=${referenceType}&status=${status}`);
+export function getJournalVouchersReport(fromDate?: string, toDate?: string, referenceType?: string, status?: string) {
+  const parts: string[] = [];
+  if (fromDate) parts.push(`fromDate=${encodeURIComponent(fromDate)}`);
+  if (toDate) parts.push(`toDate=${encodeURIComponent(toDate)}`);
+  if (referenceType) parts.push(`referenceType=${encodeURIComponent(referenceType)}`);
+  if (status) parts.push(`status=${encodeURIComponent(status)}`);
+  const qs = parts.length ? `?${parts.join("&")}` : "";
+  return axios.get(`/ledger-service/api/v1/reports/journal-vouchers${qs}`);
 }
-export function getDaybookReport(date: string) {
-  return axios.get(`/ledger-service/api/v1/reports/day-book?date=${date}`);
+export function getDaybookReport() {
+  return axios.get(`/ledger-service/api/v1/reports/day-book`);
 }
 export function getLedgerReport(fromDate: string, toDate: string, accountCode: string = "", accountId: string = "") {
   return axios.get(`/ledger-service/api/v1/reports/ledger?fromDate=${fromDate}&toDate=${toDate}&accountCode=${accountCode}&accountId=${accountId}`);
@@ -573,8 +590,13 @@ export function getLoanDisbursementReport(paramsOrFromDate?: any, toDate?: strin
     if (toDate) params.toDate = toDate;
     query = new URLSearchParams(params).toString();
   } else if (paramsOrFromDate && typeof paramsOrFromDate === "object") {
-    // New signature: getLoanDisbursementReport({ fromDate, toDate, productCode, ... })
-    query = new URLSearchParams(paramsOrFromDate).toString();
+    // New signature: getLoanDisbursementReport({ fromDate, toDate, productCode, ... }).
+    // Drop empty / null / undefined values so we don't over-filter the result set.
+    const cleaned: Record<string, string> = {};
+    Object.entries(paramsOrFromDate).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") cleaned[k] = String(v);
+    });
+    query = new URLSearchParams(cleaned).toString();
   }
   return axios.get(`/ledger-service/api/v1/reports/loan-disbursement${query ? `?${query}` : ""}`);
 }
@@ -1252,7 +1274,14 @@ export function getLoanHistoryReport(params?: any) {
   return axios.get(`${endpoint}${queryString}`);
 }
 export function getLoanBalanceReport(params?: any) {
-  const query = params ? new URLSearchParams(params).toString() : "";
+  // Drop empty / null / undefined values so we don't over-filter the result set.
+  const cleaned: Record<string, string> = {};
+  if (params && typeof params === "object") {
+    Object.entries(params).forEach(([k, v]) => {
+      if (v !== undefined && v !== null && v !== "") cleaned[k] = String(v);
+    });
+  }
+  const query = Object.keys(cleaned).length ? new URLSearchParams(cleaned).toString() : "";
   return axios.get(`/ledger-service/api/v1/reports/loan-balance-outstanding${query ? `?${query}` : ""}`);
 }
 export function getCollectionsDueReport(fromDate?: string, toDate?: string) {

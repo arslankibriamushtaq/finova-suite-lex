@@ -140,13 +140,14 @@ export function deleteSourceOfIncome(id: string) {
 // Customers
 // ============================================================
 
-export function getCustomers(page: number = 1, per_page: number = 20, search: string = '', pep: string = '', status: string = '') {
-  const params: Record<string, any> = { page, per_page, search, pep, status };
-  const queryString = Object.entries(params)
-    .filter(([_, value]) => value !== null && value !== undefined && value !== "")
-    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
-    .join("&");
-  return axiosCustomerService.get(`/api/v1/customers${queryString ? `?${queryString}` : ""}`);
+export function getCustomers(page?: any, size?: any, search?: string, pep?: string, status?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  if (pep) params.pep = pep;
+  if (status) params.status = status;
+  return axiosCustomerService.get(`/api/v1/customers${buildQueryString(params)}`);
 }
 
 export function updateKycRisk(customerId: string, riskGrade: string) {

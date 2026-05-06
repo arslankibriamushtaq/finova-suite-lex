@@ -70,6 +70,7 @@ const ApplicationManagement = () => {
   const [customer, setCustomer] = useState<any>();
   const [prodId, setProdId] = useState<any>();
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [errors, setErrors] = useState<any>({});
   const [paymentMethod, setPaymentMethod] = useState("");
   const [selectApplicable, setSelectApplicable] = useState<any>();
@@ -284,10 +285,10 @@ const ApplicationManagement = () => {
   const getAll = async () => {
     try {
       setSkelitonLoading(true);
-      // Fetch a large number of records to handle filtering and pagination on client
-      // since backend status filtering for loan-applications seems unreliable.
-      const response = await getLoanApplications(0, 1000, searchValue);
-      
+      // Fetch a large window so search/status filtering and pagination can run on
+      // the client — backend status filtering for loan-applications is unreliable.
+      const response = await getLoanApplications(0, 1000);
+
       const list = response?.data?.data || response?.data || [];
       const dataArray = Array.isArray(list) ? list : [];
       setApplicationData(dataArray);
@@ -303,8 +304,9 @@ const ApplicationManagement = () => {
   const getPending = async () => {
     try {
       setSkelitonLoading(true);
-      // Pending Approvals endpoint works better with status filtering
-      const response = await getPendingApprovals(0, 1000, searchValue);
+      // Pending Approvals endpoint already returns only PENDING items; we filter
+      // by free-text search client-side for consistency with the other tabs.
+      const response = await getPendingApprovals(0, 1000);
       const list = response?.data?.data || response?.data || [];
       const dataArray = Array.isArray(list) ? list : [];
       setApplicationData(dataArray);
@@ -410,19 +412,15 @@ const ApplicationManagement = () => {
       toast.error(error?.message);
     }
   };
+  // Debounce the search input. Filtering is client-side (the backend's status
+  // filter is unreliable, so we already fetch a wide window and slice it locally),
+  // so this just feeds the filter — no refetch needed.
   useEffect(() => {
-    if (initialRendor) {
-      const timeoutId = setTimeout(() => {
-        if (param?.accountNumber) {
-          getApplicationByCustomer();
-        } else if (activeTab === "PendingApplication") {
-          getPending();
-        } else {
-          getAll();
-        }
-      }, 1500);
-      return () => clearTimeout(timeoutId);
-    }
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchValue.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
   }, [searchValue]);
   useEffect(() => {
     setInitialRendor(true);
@@ -752,17 +750,28 @@ const ApplicationManagement = () => {
       };
     });
 
-  // Client-side filtering to ensure tab integrity
+  // Client-side filtering: tab status + free-text search across key fields.
   const filteredData = (allMappedData || []).filter((item: any) => {
     const status = (item.status || "").toUpperCase();
+    let tabMatch = true;
     if (activeTab === "ApprovedApplication") {
-      return status.includes("APPROVED") || status.includes("COMPLETED");
+      tabMatch = status.includes("APPROVED") || status.includes("COMPLETED");
+    } else if (activeTab === "CancelledApplication") {
+      tabMatch = status.includes("CANCELLED") || status.includes("REJECTED") || status.includes("EXPIRED");
     }
-    if (activeTab === "CancelledApplication") {
-      return status.includes("CANCELLED") || status.includes("REJECTED") || status.includes("EXPIRED");
-    }
-    // PendingApplication tab data comes from a different endpoint already filtered by PENDING
-    return true;
+    // PendingApplication tab uses a different endpoint already filtered server-side.
+    if (!tabMatch) return false;
+
+    if (!debouncedSearch) return true;
+    const term = debouncedSearch.toLowerCase();
+    return (
+      (item.applicationNumber || "").toString().toLowerCase().includes(term) ||
+      (item.nationalId || "").toString().toLowerCase().includes(term) ||
+      (item.productName || "").toLowerCase().includes(term) ||
+      (item.shariaStructure || "").toLowerCase().includes(term) ||
+      (item.purposeOfFinance || "").toLowerCase().includes(term) ||
+      (item.status || "").toLowerCase().includes(term)
+    );
   });
 
   // Calculate local pagination based on filtered results
@@ -945,6 +954,16 @@ const ApplicationManagement = () => {
           </Button>
         </div>
       </div> */}
+      <div className="d-flex justify-content-end mt-3 mb-2">
+        <Input
+          placeholder="Search by application no, NID, product, status…"
+          prefix={<SearchOutlined />}
+          allowClear
+          value={searchValue}
+          onChange={(e: any) => setSearchValue(e.target.value)}
+          style={{ maxWidth: 360 }}
+        />
+      </div>
       <div className="mt-3">
         <Tabs
           activeKey={activeTab}

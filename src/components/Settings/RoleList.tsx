@@ -25,6 +25,8 @@ const RoleList = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [totalRows, setTotalRows] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [roleData, setRoleData] = useState<any>([]);
@@ -166,10 +168,41 @@ const RoleList = () => {
   const getRoleData = async () => {
     setSkelitonLoading(true);
     try {
-      const res = await getRoles();
-      if (res) {
-        const apiData = res?.data?.data;
-        setRoleData(apiData);
+      if (debouncedSearch) {
+        // Backend search support is unverified — fetch full set and filter client-side.
+        const res = await getRoles(0, 10000);
+        const all: any[] = Array.isArray(res?.data?.data) ? res.data.data : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          (item?.roleCode || "").toLowerCase().includes(term) ||
+          (item?.roleName || "").toLowerCase().includes(term) ||
+          (item?.roleNameAr || "").toLowerCase().includes(term) ||
+          (item?.description || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        setRoleData(filtered.slice(start, end));
+        setTotalRows(total);
+        setFrom(total > 0 ? start + 1 : 0);
+        setTo(Math.min(end, total));
+        setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+        return;
+      }
+
+      // Backend uses 0-based indexing for page
+      const res = await getRoles(page - 1, pageSize);
+      const apiData = Array.isArray(res?.data?.data) ? res.data.data : [];
+      setRoleData(apiData);
+
+      const pagination = res?.data?.pagination;
+      if (pagination) {
+        const total = pagination.totalElements || 0;
+        setTotalRows(total);
+        setTotalPage(pagination.totalPages || 1);
+        setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+        setTo(Math.min(page * pageSize, total));
+      } else {
         setTotalRows(apiData.length);
         setFrom(apiData.length ? 1 : 0);
         setTo(apiData.length);
@@ -229,15 +262,24 @@ const RoleList = () => {
     }
   };
 
+  // Debounce search so we don't refetch on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   useEffect(() => {
     getRoleData();
-  }, []);
+  }, [page, pageSize, debouncedSearch]);
 
   const mappedData =
     roleData &&
     roleData?.map((item: any, index: number) => ({
       id: item?.id,
-      Sr: index + 1,
+      Sr: (page - 1) * pageSize + index + 1,
       RoleCode: item?.roleCode,
       Name: item?.roleName,
       NameAr: item?.roleNameAr,
@@ -253,16 +295,25 @@ const RoleList = () => {
         <div className="d-flex mb-3 col-12 filter-select">
           <div className="d-flex gap-2 w-100 justify-content-between align-items-center">
             <h5 style={{ fontWeight: 600, margin: 0 }}>Role</h5>
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setShowModal(true);
-                setSelectedItem("add");
-                setFormData(emptyForm);
-              }}
-            >
-              Add New Role
-            </button>
+            <div className="d-flex align-items-center gap-2 flex-nowrap">
+              <Input
+                placeholder="Search by code, name, or description"
+                value={searchTerm}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+                allowClear
+                style={{ width: 280 }}
+              />
+              <button
+                className="theme-btn-next"
+                onClick={() => {
+                  setShowModal(true);
+                  setSelectedItem("add");
+                  setFormData(emptyForm);
+                }}
+              >
+                Add New Role
+              </button>
+            </div>
           </div>
         </div>
         <TableView
