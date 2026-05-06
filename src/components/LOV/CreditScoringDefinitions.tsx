@@ -36,6 +36,7 @@ const CreditScoringDefinitions = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [definitions, setDefinitions] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [totalRows, setTotalRows] = useState(0);
@@ -71,16 +72,48 @@ const CreditScoringDefinitions = () => {
   const [isDeletingItem, setIsDeletingItem] = useState(false);
   const [selectedForDelete, setSelectedForDelete] = useState<any>(null);
 
+  // Debounce search input so we only fire the request after the user stops typing.
+  // Without this, fast typing causes overlapping requests whose out-of-order
+  // responses can overwrite each other and show the wrong results.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   // Fetch data on component mount
   useEffect(() => {
     fetchDefinitions();
-  }, [page, pageSize, searchTerm]);
+  }, [page, pageSize, debouncedSearch]);
 
   const fetchDefinitions = async () => {
     try {
       setIsLoading(true);
+
+      if (debouncedSearch) {
+        // Backend does not filter on the `search` param, so fetch the full
+        // dataset and filter/paginate client-side. Dataset is small (LOV).
+        const response = await getCreditScoringFieldDefinitions(0, 10000);
+        const all: any[] = Array.isArray(response?.data?.data) ? response.data.data : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          (item.fieldKey || "").toLowerCase().includes(term) ||
+          (item.nameEn || "").toLowerCase().includes(term) ||
+          (item.nameAr || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const start = (page - 1) * pageSize;
+        setDefinitions(filtered.slice(start, start + pageSize));
+        setTotalRows(total);
+        setTotalPage(totalPages);
+        return;
+      }
+
       // Backend uses 0-based indexing for page
-      const response = await getCreditScoringFieldDefinitions(page - 1, pageSize, searchTerm);
+      const response = await getCreditScoringFieldDefinitions(page - 1, pageSize);
       const list = response?.data?.data || [];
       setDefinitions(Array.isArray(list) ? list : []);
 

@@ -35,6 +35,8 @@ const AllCustomers = () => {
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -581,11 +583,21 @@ const AllCustomers = () => {
     try {
       setSkelitonLoading(true);
 
-      const response = await getCustomers(1, 10000, "", "", "");
+      // Backend uses 0-based indexing for page
+      const response = await getCustomers(page - 1, pageSize, search, pep, status);
       if (response) {
         const list = response?.data?.data || [];
         const allData = Array.isArray(list) ? list : [];
         setData(allData);
+
+        const pagination = response?.data?.pagination;
+        if (pagination) {
+          setTotalRows(pagination.totalElements || 0);
+          setTotalPage(pagination.totalPages || 1);
+        } else {
+          setTotalRows(allData.length);
+          setTotalPage(Math.ceil(allData.length / pageSize) || 1);
+        }
       }
     } catch (error: any) {
       toast.error(error?.message);
@@ -595,20 +607,18 @@ const AllCustomers = () => {
   };
   useEffect(() => {
     getLeadsList();
-  }, []);
+  }, [page, pageSize, search, pep, status]);
 
   // Reset to page 1 when search/filters change
   useEffect(() => {
     setPage(1);
   }, [search, pep, status, pageSize]);
 
-  // Client-side search + mapping
-  const allMappedData =
-    data &&
-    data?.map((item: any, index: number) => {
+  const mappedData =
+    (data || []).map((item: any, index: number) => {
       return {
         id: item.id,
-        Sr: index + 1,
+        Sr: (page - 1) * pageSize + index + 1,
         name: item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
         nationalId: item?.nationalId || "-",
         cif: item?.cifNumber || "-",
@@ -629,31 +639,8 @@ const AllCustomers = () => {
       };
     });
 
-  // Client-side filtering
-  const filteredData = (allMappedData || []).filter((item: any) => {
-    if (search) {
-      const term = search.toLowerCase();
-      const matchesSearch =
-        (item.name || "").toLowerCase().includes(term) ||
-        (item.cif || "").toLowerCase().includes(term) ||
-        (item.email || "").toLowerCase().includes(term) ||
-        (item.phone || "").toLowerCase().includes(term) ||
-        (item.nationality || "").toLowerCase().includes(term);
-      if (!matchesSearch) return false;
-    }
-    if (pep && item.pep?.toLowerCase() !== pep.toLowerCase()) return false;
-    if (status && item.kycStatus?.toLowerCase() !== status.toLowerCase()) return false;
-    return true;
-  });
-
-  // Client-side pagination
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const total = filteredData.length;
-  const mappedData = filteredData.slice(startIndex, endIndex);
-  const fromValue = total > 0 ? startIndex + 1 : 0;
-  const toValue = Math.min(endIndex, total);
-  const totalPage = Math.ceil(total / pageSize) || 1;
+  const fromValue = totalRows > 0 ? (page - 1) * pageSize + 1 : 0;
+  const toValue = Math.min(page * pageSize, totalRows);
   const exportToCSV = async () => {
     try {
       toast.loading("Exporting CSV...", { id: "export-csv" });
@@ -661,7 +648,7 @@ const AllCustomers = () => {
       let allData: any[] = [];
 
       try {
-        const response = await getCustomers(1, 10000, search, pep, status);
+        const response = await getCustomers(0, 10000, search, pep, status);
         const list = response?.data?.data || [];
         allData = Array.isArray(list) ? list : [];
       } catch (pageError) {
@@ -864,7 +851,7 @@ const AllCustomers = () => {
       <TableView
         header={Activity_Loans_Header}
         data={mappedData}
-        totalRows={total}
+        totalRows={totalRows}
         isLoading={skelitonLoading}
         from={fromValue}
         page={page}

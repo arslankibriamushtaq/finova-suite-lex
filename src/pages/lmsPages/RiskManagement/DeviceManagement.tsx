@@ -32,11 +32,13 @@ import { Textarea } from "../../../components/ui/textarea";
 const DeviceManagement = () => {
   const [activeTab, setActiveTab] = useState<"all" | "blocked">("all");
   const [isLoading, setIsLoading] = useState(false);
-  const [allDevicesData, setAllDevicesData] = useState<any[]>([]);
-  const [blockedDevicesData, setBlockedDevicesData] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Block Device Modal State
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
@@ -54,22 +56,119 @@ const DeviceManagement = () => {
   const [selectedDeviceForDelete, setSelectedDeviceForDelete] = useState<any>(null);
   const [isDeletingDevice, setIsDeletingDevice] = useState(false);
 
+  // Debounce search so we don't refetch / refilter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   useEffect(() => {
     fetchDevicesData();
-  }, []);
+  }, [activeTab, page, pageSize, debouncedSearch]);
+
+  // The blocked-devices endpoint returns one entry per device with NIDs nested
+  // under `nidAssociations[]`, while the all-devices endpoint returns one row
+  // per device-NID pair. Flatten blocked devices so both tabs render the same
+  // row granularity (one row per NID).
+  const flattenBlockedDevices = (devices: any[]): any[] => {
+    const rows: any[] = [];
+    devices.forEach((device: any) => {
+      const associations = Array.isArray(device?.nidAssociations) ? device.nidAssociations : [];
+      if (associations.length === 0) {
+        rows.push({ ...device, nidHash: null, attemptCount: device?.totalAttempts || 0 });
+        return;
+      }
+      associations.forEach((assoc: any) => {
+        rows.push({
+          ...device,
+          nidHash: assoc?.nidHash || null,
+          attemptCount: assoc?.attemptCount ?? 0,
+          firstSeenAt: assoc?.firstSeenAt || device?.firstSeenAt,
+          lastSeenAt: assoc?.lastSeenAt || device?.lastSeenAt,
+        });
+      });
+    });
+    return rows;
+  };
 
   const fetchDevicesData = async () => {
     try {
       setIsLoading(true);
-      // Fetch all devices
-      const allResponse = await getAllDevices();
-      const allList = allResponse?.data?.data || allResponse?.data || [];
-      setAllDevicesData(Array.isArray(allList) ? allList : []);
+      const apiCall = activeTab === "all" ? getAllDevices : getBlockedDevices;
 
-      // Fetch blocked devices
-      const blockedResponse = await getBlockedDevices();
-      const blockedList = blockedResponse?.data?.data || blockedResponse?.data || [];
-      setBlockedDevicesData(Array.isArray(blockedList) ? blockedList : []);
+      // Blocked-devices endpoint isn't paginated — fetch the full list, flatten
+      // by nidAssociations, then handle search + pagination client-side.
+      if (activeTab === "blocked") {
+        const response = await apiCall();
+        const raw: any[] = Array.isArray(response?.data?.data)
+          ? response.data.data
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
+        let rows = flattenBlockedDevices(raw);
+
+        if (debouncedSearch) {
+          const term = debouncedSearch.toLowerCase();
+          rows = rows.filter((item: any) =>
+            (item?.deviceId || "").toLowerCase().includes(term) ||
+            (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
+            (item?.blockSource || "").toLowerCase().includes(term) ||
+            (item?.blockReason || "").toLowerCase().includes(term) ||
+            (item?.blockType || "").toLowerCase().includes(term) ||
+            (item?.nidHash || "").toLowerCase().includes(term)
+          );
+        }
+
+        const total = rows.length;
+        const start = (page - 1) * pageSize;
+        setData(rows.slice(start, start + pageSize));
+        setTotalRows(total);
+        setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+        return;
+      }
+
+      if (debouncedSearch) {
+        // Backend search support is unverified — fetch full set, filter client-side.
+        const response = await apiCall(0, 10000);
+        const all: any[] = Array.isArray(response?.data?.data)
+          ? response.data.data
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          (item?.deviceId || "").toLowerCase().includes(term) ||
+          (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
+          (item?.blockSource || "").toLowerCase().includes(term) ||
+          (item?.blockReason || "").toLowerCase().includes(term) ||
+          (item?.blockType || "").toLowerCase().includes(term) ||
+          (item?.nidHash || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const start = (page - 1) * pageSize;
+        setData(filtered.slice(start, start + pageSize));
+        setTotalRows(total);
+        setTotalPage(totalPages);
+        return;
+      }
+
+      // Backend uses 0-based indexing for page
+      const response = await apiCall(page - 1, pageSize);
+      const list = response?.data?.data || response?.data || [];
+      setData(Array.isArray(list) ? list : []);
+
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        setTotalRows(pagination.totalElements || 0);
+        setTotalPage(pagination.totalPages || 1);
+      } else {
+        setTotalRows(Array.isArray(list) ? list.length : 0);
+        setTotalPage(Math.ceil((Array.isArray(list) ? list.length : 0) / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message || "Failed to fetch devices"
@@ -77,19 +176,6 @@ const DeviceManagement = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const getFilteredData = (data: any[]) => {
-    if (!searchTerm) return data;
-    const term = searchTerm.toLowerCase();
-    return data.filter((item) => {
-      return (
-        (item?.deviceId || "").toLowerCase().includes(term) ||
-        (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
-        (item?.blockSource || "").toLowerCase().includes(term) ||
-        (item?.blockReason || "").toLowerCase().includes(term)
-      );
-    });
   };
 
   const formatDate = (dateString: string) => {
@@ -362,18 +448,18 @@ const DeviceManagement = () => {
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
     },
-    // {
-    //   name: "Fingerprint",
-    //   cell: (row: any) => (
-    //     <span
-    //       className="text-xs text-muted-foreground font-mono cursor-help"
-    //       title={row.deviceFingerprint}
-    //     >
-    //       {truncateHash(row.deviceFingerprint)}
-    //     </span>
-    //   ),
-    //   sortable: true,
-    // },
+    {
+      name: "NID Hash",
+      cell: (row: any) => (
+        <span
+          className="text-xs text-muted-foreground font-mono cursor-help"
+          title={row.nidHash || ""}
+        >
+          {row.nidHash ? truncateHash(row.nidHash) : "-"}
+        </span>
+      ),
+      sortable: true,
+    },
     {
       name: "Block Source",
       cell: (row: any) => (
@@ -472,22 +558,8 @@ const DeviceManagement = () => {
     },
   ];
 
-  const currentData = activeTab === "all" ? allDevicesData : blockedDevicesData;
-  const filteredData = getFilteredData(currentData);
-
-  // Client-side pagination (same pattern as AllCustomers.tsx)
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const total = filteredData.length;
-  const paginatedData = filteredData.slice(startIndex, endIndex);
-  const fromValue = total > 0 ? startIndex + 1 : 0;
-  const toValue = Math.min(endIndex, total);
-  const totalPage = Math.ceil(total / pageSize) || 1;
-
-  // Reset to page 1 when search or tab changes
-  useEffect(() => {
-    setPage(1);
-  }, [searchTerm, activeTab]);
+  const fromValue = totalRows > 0 ? (page - 1) * pageSize + 1 : 0;
+  const toValue = Math.min(page * pageSize, totalRows);
 
   return (
     <div className="w-full h-full bg-background p-6">
@@ -518,17 +590,20 @@ const DeviceManagement = () => {
               type="text"
               placeholder="Search by Device ID, Fingerprint, Block Source..."
               value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
+              onChange={(e) => setSearchTerm(e.target.value)}
               className="pl-12! pr-4 py-2.5 bg-white dark:bg-slate-950 border border-input rounded-lg focus-visible:ring-1"
             />
           </div>
         </div>
 
         {/* Tabs - Improved Design */}
-        <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as any)}>
+        <Tabs
+          value={activeTab}
+          onValueChange={(val) => {
+            setActiveTab(val as any);
+            setPage(1);
+          }}
+        >
           <div className="mb-4">
             <TabsList className="w-fit bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
               <TabsTrigger
@@ -561,8 +636,8 @@ const DeviceManagement = () => {
             <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
               <TableView
                 header={allDevicesHeaders}
-                data={paginatedData}
-                totalRows={total}
+                data={data}
+                totalRows={totalRows}
                 from={fromValue}
                 to={toValue}
                 page={page}
@@ -581,8 +656,8 @@ const DeviceManagement = () => {
             <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
               <TableView
                 header={blockedDevicesHeaders}
-                data={paginatedData}
-                totalRows={total}
+                data={data}
+                totalRows={totalRows}
                 from={fromValue}
                 to={toValue}
                 page={page}

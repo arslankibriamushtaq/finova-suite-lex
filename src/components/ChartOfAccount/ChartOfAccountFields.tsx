@@ -23,6 +23,19 @@ const ChartOfAccountFields = () => {
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
 
+  // Search state
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search so we don't refilter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   const getIsActive = (row: any) => {
     return row.active === true || row.active === 1 || String(row.active).toLowerCase() === 'true' ||
            row.isActive === true || row.isActive === 1 || String(row.isActive).toLowerCase() === 'true' ||
@@ -215,16 +228,44 @@ const ChartOfAccountFields = () => {
     },
   ];
 
+// Apply free-text search across the visible columns
+const filteredData = useMemo(() => {
+  if (!debouncedSearch) return data;
+  const term = debouncedSearch.toLowerCase();
+  return (data || []).filter((row: any) => {
+    const isActive = getIsActive(row);
+    return (
+      String(row.fieldKey || "").toLowerCase().includes(term) ||
+      String(row.fieldLabelEn || "").toLowerCase().includes(term) ||
+      String(row.fieldLabelAr || "").toLowerCase().includes(term) ||
+      String(row.category || "").toLowerCase().includes(term) ||
+      (isActive ? "active" : "inactive").includes(term)
+    );
+  });
+}, [data, debouncedSearch]);
+
+// Keep the table's totalRows in sync with the filtered set so pagination is correct
+useEffect(() => {
+  setTotalRows(filteredData.length);
+}, [filteredData]);
+
 // Client-side pagination for TableView
 const paginatedData = useMemo(() => {
   const start = (page - 1) * pageSize;
-  return data.slice(start, start + pageSize);
-}, [data, page, pageSize]);
+  return filteredData.slice(start, start + pageSize);
+}, [filteredData, page, pageSize]);
 
 return (
   <div className="p-3">
-    <div className="d-flex justify-content-between align-items-center mb-4">
-      <h4 className="mb-0">Chart of Accounts Fields</h4>
+    <h4 className="mb-3">Chart of Accounts Fields</h4>
+    <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <Input
+        placeholder="Search by key, label, category, status"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        allowClear
+        style={{ width: 320 }}
+      />
       <button className="theme-btn-next" onClick={() => openModal()}>
         Add New Field
       </button>
@@ -240,7 +281,7 @@ return (
         pageSize={pageSize}
         setPage={setPage}
         setPageSize={setPageSize}
-        from={(page - 1) * pageSize + 1}
+        from={totalRows > 0 ? (page - 1) * pageSize + 1 : 0}
         to={Math.min(page * pageSize, totalRows)}
       />
     </div>

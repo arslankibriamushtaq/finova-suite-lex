@@ -25,6 +25,7 @@ const AccountReportsList = ({
   const [initialRendor, setInitialRendor] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
+  const [totalPage, setTotalPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0);
@@ -32,6 +33,8 @@ const AccountReportsList = ({
   const [loading, setLoading] = useState(true);
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
@@ -111,40 +114,38 @@ const AccountReportsList = ({
       const response = await getLedgerAccount(
         page,
         pageSize,
-        '',
+        debouncedSearch,
         dates
       );
       if (response) {
-        const data = response.data.data;
-        const newdata = data.filter((item: any) => {
-          return item.bankAccountNumber !== "";
-        });
-        setLedgerData(newdata || []);
-        
-        // Extract pagination data from API response
+        const list = Array.isArray(response?.data?.data) ? response.data.data : [];
+        setLedgerData(list);
+
+        // New backend shape: { pagination: { page, size, totalElements, totalPages } }
+        const pagination = response?.data?.pagination;
         const pageInfo = response?.data?.pageInfo;
-        if (pageInfo) {
+
+        if (pagination) {
+          const totalItems = pagination.totalElements || 0;
+          setTotalRows(totalItems);
+          setTotalPage(pagination.totalPages || 1);
+          setFrom(totalItems > 0 ? (page - 1) * pageSize + 1 : 0);
+          setTo(totalItems > 0 ? Math.min(page * pageSize, totalItems) : 0);
+        } else if (pageInfo) {
+          // Legacy backend shape
           const currentPage = pageInfo.page || page;
           const currentPageSize = pageInfo.pageSize || pageSize;
           const totalItems = pageInfo.totalItems || 0;
-          
-          // Use totalItems from API for totalRows
           setTotalRows(totalItems);
-          
-          // Calculate from and to based on page, pageSize, and totalItems
-          const calculatedFrom = totalItems > 0 ? (currentPage - 1) * currentPageSize + 1 : 0;
-          const calculatedTo = totalItems > 0 ? Math.min(currentPage * currentPageSize, totalItems) : 0;
-          
-          setFrom(calculatedFrom);
-          setTo(calculatedTo);
+          setTotalPage(Math.ceil(totalItems / currentPageSize) || 1);
+          setFrom(totalItems > 0 ? (currentPage - 1) * currentPageSize + 1 : 0);
+          setTo(totalItems > 0 ? Math.min(currentPage * currentPageSize, totalItems) : 0);
         } else {
-          // Fallback if pageInfo is not available
-          const filteredCount = newdata.length;
-          setTotalRows(filteredCount);
-          const calculatedFrom = filteredCount > 0 ? 1 : 0;
-          const calculatedTo = filteredCount;
-          setFrom(calculatedFrom);
-          setTo(calculatedTo);
+          const count = list.length;
+          setTotalRows(count);
+          setTotalPage(Math.ceil(count / pageSize) || 1);
+          setFrom(count > 0 ? 1 : 0);
+          setTo(count);
         }
       }
     } catch (error: any) {
@@ -170,15 +171,20 @@ const AccountReportsList = ({
         bic: item?.bic || "",
       };
     });
+  // Debounce search so we don't refetch on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   useEffect(() => {
     if (initialRendor) {
-      const timeoutId = setTimeout(() => {
-        ledgerAccount();
-      }, 1000);
-
-      return () => clearTimeout(timeoutId);
+      ledgerAccount();
     }
-  }, [page, pageSize, loader]);
+  }, [page, pageSize, loader, debouncedSearch, initialRendor]);
   const showReports =()=>{
      const formattedRows = selectedRows.map((row) => ({
     ledgerAccountId: row.id,
@@ -191,7 +197,14 @@ const AccountReportsList = ({
   }
   return (
     <div>
-      <div className="d-flex justify-content-end mt-2">
+      <div className="d-flex justify-content-between mt-2 gap-2 flex-wrap">
+        <Input
+          placeholder="Search by code, name, or type"
+          value={searchTerm}
+          onChange={(e: any) => setSearchTerm(e.target.value)}
+          allowClear
+          style={{ width: 320 }}
+        />
         <div className="d-flex gap-2">
           <Button
             style={{
@@ -214,12 +227,14 @@ const AccountReportsList = ({
           page={page}
           pageSize={pageSize}
           totalRows={totalRows}
+          totalPage={totalPage}
           from={from}
           to={to}
           header={Account_Documents_List_Header}
           data={mappedData}
           style={{ borderRadius: "7px" }}
           isLoading={loading}
+          paginationShow={true}
         />
       </div>
     </div>
