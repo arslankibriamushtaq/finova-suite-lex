@@ -66,8 +66,13 @@ export function getPermissionByDepartment(id: any){
 export function storeDepartmentPermissions(body: any){
   return axiosFactoring.post(`/v1/departments/store-department-permissions`, body);
 }
-export function getRoles(){
-  return axiosFactoring.get(`/identity-service/api/v1/roles`);
+export function getRoles(page?: any, size?: any, search?: string){
+  const parts: string[] = [];
+  if (page !== undefined) parts.push(`page=${encodeURIComponent(page)}`);
+  if (size !== undefined) parts.push(`size=${encodeURIComponent(size)}`);
+  if (search) parts.push(`search=${encodeURIComponent(search)}`);
+  const qs = parts.length ? `?${parts.join("&")}` : "";
+  return axiosFactoring.get(`/identity-service/api/v1/roles${qs}`);
 }
 export function getRole(id: any){
   return axiosFactoring.get(`/identity-service/api/v1/roles/${id}`);
@@ -81,8 +86,13 @@ export function updateRole(id: any, body: any){
 export function deleteRole(id: any){
   return axiosFactoring.delete(`/identity-service/api/v1/roles/${id}`);
 }
-export function getEmployees(){
-  return axiosFactoring.get(`/identity-service/api/v1/employees`);
+export function getEmployees(page?: any, size?: any, search?: string){
+  const parts: string[] = [];
+  if (page !== undefined) parts.push(`page=${encodeURIComponent(page)}`);
+  if (size !== undefined) parts.push(`size=${encodeURIComponent(size)}`);
+  if (search) parts.push(`search=${encodeURIComponent(search)}`);
+  const qs = parts.length ? `?${parts.join("&")}` : "";
+  return axiosFactoring.get(`/identity-service/api/v1/employees${qs}`);
 }
 export function storeEmployee(body: any){
   return axiosFactoring.post(`/identity-service/api/v1/employees`, body);

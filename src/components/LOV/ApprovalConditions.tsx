@@ -46,8 +46,11 @@ interface ApprovalFieldDefinition {
 const ApprovalConditions = () => {
   const [conditions, setConditions] = useState<ApprovalFieldDefinition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Create Modal State
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -83,9 +86,19 @@ const ApprovalConditions = () => {
   const fetchConditions = async () => {
     setIsLoading(true);
     try {
-      const response = await getApprovalConditionFields();
-      const data = response?.data?.data || [];
-      setConditions(Array.isArray(data) ? data : []);
+      // Backend uses 0-based indexing for page
+      const response = await getApprovalConditionFields(page - 1, pageSize, searchTerm);
+      const list = response?.data?.data || [];
+      setConditions(Array.isArray(list) ? list : []);
+
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        setTotalRows(pagination.totalElements || 0);
+        setTotalPage(pagination.totalPages || 1);
+      } else {
+        setTotalRows(list.length);
+        setTotalPage(Math.ceil(list.length / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch approval conditions");
       setConditions([]);
@@ -96,7 +109,7 @@ const ApprovalConditions = () => {
 
   useEffect(() => {
     fetchConditions();
-  }, []);
+  }, [page, pageSize, searchTerm]);
 
   // Handle Create Submit
   const handleCreateSubmit = async () => {
@@ -229,14 +242,6 @@ const ApprovalConditions = () => {
     setIsCreateModalOpen(true);
   };
 
-  // Pagination
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedData = conditions.slice(startIndex, endIndex);
-  const total = conditions.length;
-  const totalPage = Math.ceil(total / pageSize);
-  const fromValue = total === 0 ? 0 : startIndex + 1;
-  const toValue = Math.min(endIndex, total);
 
   // Table Headers
   const tableHeaders = [
@@ -309,11 +314,21 @@ const ApprovalConditions = () => {
       <div className="px-6 py-4 bg-background">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">Approval Condition Fields</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage and view approval condition field definitions</p>
+            <div className="mt-4 max-w-sm">
+              <Input
+                placeholder="Search by key or name"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 self-start pt-1">
             <Button
               onClick={openCreateModal}
               size="sm"
@@ -322,16 +337,6 @@ const ApprovalConditions = () => {
               <Plus className="w-4 h-4" />
               Create
             </Button>
-            {/* <Button
-              onClick={fetchConditions}
-              disabled={isLoading}
-              size="sm"
-              variant="outline"
-              className="gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              {isLoading ? "Loading..." : "Refresh"}
-            </Button> */}
           </div>
         </div>
 
@@ -339,10 +344,10 @@ const ApprovalConditions = () => {
         <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
           <TableView
             header={tableHeaders}
-            data={paginatedData}
-            totalRows={total}
-            from={fromValue}
-            to={toValue}
+            data={conditions}
+            totalRows={totalRows}
+            from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+            to={Math.min(page * pageSize, totalRows)}
             page={page}
             totalPage={totalPage}
             setPage={setPage}

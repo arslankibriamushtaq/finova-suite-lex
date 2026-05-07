@@ -4,8 +4,20 @@ import axiosRiskService from "../../utils/axiosRiskService";
 // Credit Scoring Field Definitions
 // ============================================================
 
-export function getCreditScoringFieldDefinitions() {
-  return axiosRiskService.get(`/api/v1/risk/credit-scoring/field-definitions`);
+const buildQueryString = (params: Record<string, any>): string => {
+  const queryParams = Object.entries(params)
+    .filter(([_, value]) => value !== null && value !== undefined && value !== "")
+    .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
+    .join("&");
+  return queryParams ? `?${queryParams}` : "";
+};
+
+export function getCreditScoringFieldDefinitions(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosRiskService.get(`/api/v1/risk/credit-scoring/field-definitions${buildQueryString(params)}`);
 }
 
 export function createCreditScoringFieldDefinition(body: any) {
@@ -40,8 +52,12 @@ export function deleteProductCreditScoringCriteria(productId: string) {
 // Blacklist NID
 // ============================================================
 
-export function getAllBlacklistNid() {
-  return axiosRiskService.get(`/api/v1/risk/blacklist/nid`);
+export function getAllBlacklistNid(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosRiskService.get(`/api/v1/risk/blacklist/nid${buildQueryString(params)}`);
 }
 
 export function getBlacklistNidStatus(nid: string) {
@@ -80,8 +96,12 @@ export function removeBlacklistMobile(mobile: string) {
 // Fraud Rule Management
 // ============================================================
 
-export function getAllFraudRules() {
-  return axiosRiskService.get(`/api/v1/risk/fraud/rules`);
+export function getAllFraudRules(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosRiskService.get(`/api/v1/risk/fraud/rules${buildQueryString(params)}`);
 }
 
 export function getActiveFraudRules() {
@@ -108,12 +128,20 @@ export function updateFraudRuleParameters(ruleId: string, body: any) {
 // Device Management
 // ============================================================
 
-export function getAllDevices() {
-  return axiosRiskService.get(`/api/v1/risk/devices`);
+export function getAllDevices(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosRiskService.get(`/api/v1/risk/devices${buildQueryString(params)}`);
 }
 
-export function getBlockedDevices() {
-  return axiosRiskService.get(`/api/v1/risk/devices/blocked`);
+export function getBlockedDevices(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosRiskService.get(`/api/v1/risk/devices/blocked${buildQueryString(params)}`);
 }
 
 export function blockDevice(body: { deviceId: string; reason: string }) {

@@ -22,8 +22,11 @@ const BlacklistNid = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false);
@@ -34,16 +37,66 @@ const BlacklistNid = () => {
   const [removeTarget, setRemoveTarget] = useState<any>(null);
   const [isRemoving, setIsRemoving] = useState(false);
 
+  // Debounce search so we don't refetch / re-filter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, pageSize, debouncedSearch]);
+
+  // Extract NID value — nationalId is a nested object with .value
+  const getNidValue = (item: any): string => {
+    if (!item?.nationalId) return "-";
+    if (typeof item.nationalId === "object") return item.nationalId.value || "-";
+    return item.nationalId;
+  };
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllBlacklistNid();
+
+      if (debouncedSearch) {
+        // Filter client-side — backend search support is unverified.
+        const response = await getAllBlacklistNid(0, 10000);
+        const all: any[] = Array.isArray(response?.data?.data)
+          ? response.data.data
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          getNidValue(item).toLowerCase().includes(term) ||
+          (item?.reason || "").toLowerCase().includes(term) ||
+          (item?.status || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const start = (page - 1) * pageSize;
+        setData(filtered.slice(start, start + pageSize));
+        setTotalRows(total);
+        setTotalPage(totalPages);
+        return;
+      }
+
+      // Backend uses 0-based indexing for page
+      const response = await getAllBlacklistNid(page - 1, pageSize);
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
+
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        setTotalRows(pagination.totalElements || 0);
+        setTotalPage(pagination.totalPages || 1);
+      } else {
+        setTotalRows(Array.isArray(list) ? list.length : 0);
+        setTotalPage(Math.ceil((Array.isArray(list) ? list.length : 0) / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch blacklist NID data");
     } finally {
@@ -82,13 +135,6 @@ const BlacklistNid = () => {
     }
   };
 
-  // Extract NID value — nationalId is a nested object with .value
-  const getNidValue = (item: any): string => {
-    if (!item?.nationalId) return "-";
-    if (typeof item.nationalId === "object") return item.nationalId.value || "-";
-    return item.nationalId;
-  };
-
   const getNidType = (item: any): string => {
     if (typeof item?.nationalId === "object") return item.nationalId.typeDescription || "-";
     return "-";
@@ -109,16 +155,6 @@ const BlacklistNid = () => {
       setIsRemoving(false);
     }
   };
-
-  const filteredData = data.filter((item) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      getNidValue(item).toLowerCase().includes(term) ||
-      (item?.reason || "").toLowerCase().includes(term) ||
-      (item?.status || "").toLowerCase().includes(term)
-    );
-  });
 
   const headers = [
     {
@@ -218,16 +254,17 @@ const BlacklistNid = () => {
 
       <TableView
         header={headers}
-        data={filteredData}
-        totalRows={filteredData.length}
+        data={data}
+        totalRows={totalRows}
         isLoading={isLoading}
-        from={1}
+        from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+        to={Math.min(page * pageSize, totalRows)}
         page={page}
-        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        totalPage={totalPage}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={filteredData.length}
+        paginationShow={true}
       />
 
       {/* Add Modal */}

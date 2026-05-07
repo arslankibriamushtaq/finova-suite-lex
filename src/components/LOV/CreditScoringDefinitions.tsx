@@ -35,8 +35,12 @@ import {
 const CreditScoringDefinitions = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [definitions, setDefinitions] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Create Modal State
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -68,17 +72,59 @@ const CreditScoringDefinitions = () => {
   const [isDeletingItem, setIsDeletingItem] = useState(false);
   const [selectedForDelete, setSelectedForDelete] = useState<any>(null);
 
+  // Debounce search input so we only fire the request after the user stops typing.
+  // Without this, fast typing causes overlapping requests whose out-of-order
+  // responses can overwrite each other and show the wrong results.
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   // Fetch data on component mount
   useEffect(() => {
     fetchDefinitions();
-  }, []);
+  }, [page, pageSize, debouncedSearch]);
 
   const fetchDefinitions = async () => {
     try {
       setIsLoading(true);
-      const response = await getCreditScoringFieldDefinitions();
-      const data = response?.data?.data || response?.data || [];
-      setDefinitions(Array.isArray(data) ? data : []);
+
+      if (debouncedSearch) {
+        // Backend does not filter on the `search` param, so fetch the full
+        // dataset and filter/paginate client-side. Dataset is small (LOV).
+        const response = await getCreditScoringFieldDefinitions(0, 10000);
+        const all: any[] = Array.isArray(response?.data?.data) ? response.data.data : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          (item.fieldKey || "").toLowerCase().includes(term) ||
+          (item.nameEn || "").toLowerCase().includes(term) ||
+          (item.nameAr || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const start = (page - 1) * pageSize;
+        setDefinitions(filtered.slice(start, start + pageSize));
+        setTotalRows(total);
+        setTotalPage(totalPages);
+        return;
+      }
+
+      // Backend uses 0-based indexing for page
+      const response = await getCreditScoringFieldDefinitions(page - 1, pageSize);
+      const list = response?.data?.data || [];
+      setDefinitions(Array.isArray(list) ? list : []);
+
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        setTotalRows(pagination.totalElements || 0);
+        setTotalPage(pagination.totalPages || 1);
+      } else {
+        setTotalRows(list.length);
+        setTotalPage(Math.ceil(list.length / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message || "Failed to fetch credit scoring definitions"
@@ -255,14 +301,6 @@ const CreditScoringDefinitions = () => {
     }
   };
 
-  // Client-side pagination
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const total = definitions.length;
-  const paginatedData = definitions.slice(startIndex, endIndex);
-  const fromValue = total > 0 ? startIndex + 1 : 0;
-  const toValue = Math.min(endIndex, total);
-  const totalPage = Math.ceil(total / pageSize) || 1;
 
   const tableHeaders = [
     {
@@ -292,11 +330,10 @@ const CreditScoringDefinitions = () => {
     {
       name: "Status",
       cell: (row: any) => (
-        <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-          row.active
+        <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${row.active
             ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100"
             : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
-        }`}>
+          }`}>
           {row.active ? "Active" : "Inactive"}
         </span>
       ),
@@ -344,11 +381,21 @@ const CreditScoringDefinitions = () => {
       <div className="px-6 py-4 bg-background">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl font-bold text-foreground">Credit Scoring Field Definitions</h1>
             <p className="text-sm text-muted-foreground mt-1">Manage and view credit scoring field definitions</p>
+            <div className="mt-4 max-w-sm">
+              <Input
+                placeholder="Search by key or name"
+                value={searchTerm}
+                onChange={(e) => {
+                  setSearchTerm(e.target.value);
+                  setPage(1);
+                }}
+              />
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 self-start pt-1">
             <Button
               onClick={openCreateModal}
               size="sm"
@@ -357,16 +404,6 @@ const CreditScoringDefinitions = () => {
               <Plus className="w-4 h-4" />
               Create
             </Button>
-            {/* <Button
-              onClick={fetchDefinitions}
-              disabled={isLoading}
-              size="sm"
-              variant="outline"
-              className="gap-2"
-            >
-              <RefreshCw className="w-4 h-4" />
-              {isLoading ? "Loading..." : "Refresh"}
-            </Button> */}
           </div>
         </div>
 
@@ -374,10 +411,10 @@ const CreditScoringDefinitions = () => {
         <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
           <TableView
             header={tableHeaders}
-            data={paginatedData}
-            totalRows={total}
-            from={fromValue}
-            to={toValue}
+            data={definitions}
+            totalRows={totalRows}
+            from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+            to={Math.min(page * pageSize, totalRows)}
             page={page}
             totalPage={totalPage}
             setPage={setPage}

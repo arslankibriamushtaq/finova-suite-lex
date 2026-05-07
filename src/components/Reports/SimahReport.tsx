@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Button, DatePicker } from "antd";
+import { Button } from "antd";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { getSimahReport } from "../../redux/apis/apisCrudLms";
@@ -16,7 +16,6 @@ const SimahReport = ({ loader }: any) => {
   const [to, setTo] = useState(0);
   const [ledgerData, setLedgerData] = useState<any>([]);
   const [loading, setLoading] = useState(true);
-  const [period, setPeriod] = useState<any>(dayjs());
 
   const formatDate = (isoString: any) => {
     if (!isoString) return "-";
@@ -68,28 +67,41 @@ const SimahReport = ({ loader }: any) => {
     try {
       setLoading(true);
 
-      const response = await getSimahReport(period.format("YYYY-MM"));
+      // Backend requires a period (YYYY-MM) — calling without it returns 500.
+      // Always send the current month so the endpoint works without exposing
+      // a picker in the UI.
+      const response = await getSimahReport(dayjs().format("YYYY-MM"));
 
+      // Try every common envelope shape the backend might use:
+      //   { data: [...] }
+      //   { data: { items: [...] } }
+      //   { data: { data: [...] } }
+      //   { data: { reports: [...] } }
+      //   { data: { records: [...] } }
+      const root = response?.data;
+      const inner = root?.data;
+      const list: any[] = Array.isArray(root)
+        ? root
+        : Array.isArray(inner)
+          ? inner
+          : Array.isArray(inner?.items)
+            ? inner.items
+            : Array.isArray(inner?.reports)
+              ? inner.reports
+              : Array.isArray(inner?.records)
+                ? inner.records
+                : Array.isArray(inner?.data)
+                  ? inner.data
+                  : [];
 
-      const apiData = response?.data?.data?.items;
+      // eslint-disable-next-line no-console
+      console.log("[Simah] response =", root, "→ rows:", list.length);
 
-      if (Array.isArray(apiData)) {
-        const totalItems = apiData.length;
-        setLedgerData(apiData);
-        setTotalRows(totalItems);
-
-        // Calculate from and to based on pagination
-        const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
-        const calculatedTo = Math.min(page * pageSize, totalItems);
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
-      } else {
-        console.warn("⚠️ Unexpected API response structure:", response?.data);
-        setLedgerData([]);
-        setTotalRows(0);
-        setFrom(0);
-        setTo(0);
-      }
+      const totalItems = list.length;
+      setLedgerData(list);
+      setTotalRows(totalItems);
+      setFrom(totalItems > 0 ? (page - 1) * pageSize + 1 : 0);
+      setTo(Math.min(page * pageSize, totalItems));
     } catch (error: any) {
       console.error("❌ Error fetching Simah Report:", error);
       toast.error(error?.message || "Failed to fetch Simah Report");
@@ -123,10 +135,10 @@ const SimahReport = ({ loader }: any) => {
   // 🔁 EFFECT HOOK TO FETCH DATA
   // ===========================================
   useEffect(() => {
-    if (initialRender && period) {
+    if (initialRender) {
       fetchSimahReport();
     }
-  }, [page, pageSize, loader, initialRender, period]);
+  }, [page, pageSize, loader, initialRender]);
 
   // Recalculate from and to when page or pageSize changes
   useEffect(() => {
@@ -182,17 +194,7 @@ const SimahReport = ({ loader }: any) => {
   // ===========================================
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mt-2">
-        <div className="d-flex align-items-center gap-2">
-          <label className="mb-0">Period:</label>
-          <DatePicker
-            picker="month"
-            value={period}
-            onChange={(date) => setPeriod(date)}
-            allowClear={false}
-            format="YYYY-MM"
-          />
-        </div>
+      <div className="d-flex justify-content-end align-items-center mt-2">
         <Button
           style={{
             borderRadius: "8px",

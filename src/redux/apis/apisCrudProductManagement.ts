@@ -291,8 +291,12 @@ export const updateProductDocument = (docId: string, body: any) => {
 // Template Types CRUD
 // ============================================================
 
-export function getAllTemplateTypes() {
-  return axiosProductManagement.get(`/api/v1/template-types`);
+export function getAllTemplateTypes(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosProductManagement.get(`/api/v1/template-types${buildQueryString(params)}`);
 }
 
 export function getTemplateTypesByCategory(category: string) {
@@ -355,8 +359,12 @@ export function getProductsList() {
 // Approval Condition Fields CRUD
 // ============================================================
 
-export function getApprovalConditionFields() {
-  return axiosProductManagement.get(`/api/v1/approval-condition-fields`);
+export function getApprovalConditionFields(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosProductManagement.get(`/api/v1/approval-condition-fields${buildQueryString(params)}`);
 }
 
 export function createApprovalConditionField(body: any) {

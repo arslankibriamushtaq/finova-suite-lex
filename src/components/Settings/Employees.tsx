@@ -68,6 +68,8 @@ const Employees = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
   const [totalRows, setTotalRows] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [roleData, setRoleData] = useState<any[]>([]);
@@ -157,9 +159,18 @@ const Employees = () => {
     getRoleData();
   }, []);
 
+  // Debounce search input so we don't refetch on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   useEffect(() => {
     getEmployeesData();
-  }, [page, pageSize]);
+  }, [page, pageSize, debouncedSearch]);
 
   const handleDeleteConfirmed = async () => {
     if (!deleteTargetId) return;
@@ -234,10 +245,41 @@ const Employees = () => {
   const getEmployeesData = async () => {
     setSkelitonLoading(true);
     try {
-      const res = await getEmployees();
-      if (res) {
-        const list = Array.isArray(res?.data?.data) ? res.data.data : [];
-        setData(list);
+      if (debouncedSearch) {
+        // Backend search support is unverified — fetch full set and filter client-side.
+        const res = await getEmployees(0, 10000);
+        const all: any[] = Array.isArray(res?.data?.data) ? res.data.data : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          (item?.name || "").toLowerCase().includes(term) ||
+          (item?.email || "").toLowerCase().includes(term) ||
+          (item?.phone || "").toLowerCase().includes(term) ||
+          (item?.status || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const start = (page - 1) * pageSize;
+        const end = start + pageSize;
+        setData(filtered.slice(start, end));
+        setTotalRows(total);
+        setFrom(total > 0 ? start + 1 : 0);
+        setTo(Math.min(end, total));
+        setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+        return;
+      }
+
+      // Backend uses 0-based indexing for page
+      const res = await getEmployees(page - 1, pageSize);
+      const list = Array.isArray(res?.data?.data) ? res.data.data : [];
+      setData(list);
+
+      const pagination = res?.data?.pagination;
+      if (pagination) {
+        const total = pagination.totalElements || 0;
+        setTotalRows(total);
+        setTotalPage(pagination.totalPages || 1);
+        setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+        setTo(Math.min(page * pageSize, total));
+      } else {
         setTotalRows(list.length);
         setFrom(list.length ? 1 : 0);
         setTo(list.length);
@@ -268,7 +310,7 @@ const Employees = () => {
     const matchedRole = roleData.find((r: any) => r.id === roleId);
     return {
       id: item?.id,
-      Sr: index + 1,
+      Sr: (page - 1) * pageSize + index + 1,
       name: item?.name || "-",
       email: item?.email || "-",
       phone: item?.phone || "-",
@@ -284,17 +326,26 @@ const Employees = () => {
       <div className="service" style={{ background: "white", padding: "1rem", borderRadius: "10px" }}>
         <div className="d-flex justify-content-between align-items-center gap-2 mb-3 flex-nowrap">
           <h5 className="mb-0 fw-600" style={{ whiteSpace: "nowrap" }}>Employees List</h5>
-          <button
-            className="theme-btn-next"
-            onClick={() => {
-              setShowModal(true);
-              setSelectedItem("add");
-              setFormData({ ...emptyForm, password: generatePassword() });
-            }}
-            style={{ whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            Add New Employee
-          </button>
+          <div className="d-flex align-items-center gap-2 flex-nowrap">
+            <Input
+              placeholder="Search by name, email, phone, status"
+              value={searchTerm}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+              allowClear
+              style={{ width: 280 }}
+            />
+            <button
+              className="theme-btn-next"
+              onClick={() => {
+                setShowModal(true);
+                setSelectedItem("add");
+                setFormData({ ...emptyForm, password: generatePassword() });
+              }}
+              style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Add New Employee
+            </button>
+          </div>
         </div>
 
         <TableView

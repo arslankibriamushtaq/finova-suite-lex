@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Col, Modal, ModalHeader, Row } from "react-bootstrap";
 import * as Yup from "yup";
-import { DatePicker, Dropdown, Button, Menu, Select, Input } from "antd";
+import { Dropdown, Button, Menu, Select, Input } from "antd";
 import {
   DeleteOutlined,
   DownOutlined,
@@ -37,10 +37,14 @@ const Vouchers = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0);
   const [applications, setApplications] = useState<any>();
   const [skelitonLoading, setSkelitonLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [summary, setSummary] = useState<any>(null);
   const [formValues, setFormValues] = useState<any>({
     applicationID: "",
   });
@@ -76,53 +80,51 @@ const Vouchers = () => {
     }
   };
 
-  // const [loading, setLoading] = useState(false)
-
-  const [fromDate, setFromDate] = useState<any>(null);
-  const [toDate, setToDate] = useState<any>(null);
-  const [referenceType, setReferenceType] = useState<string>("");
-  const [status, setStatus] = useState<string>("POSTED");
-
-  useEffect(() => {
-    handleSubmit();
-  }, [fromDate, toDate, referenceType, status]);
-
   const handleSubmit = async () => {
     try {
       setSkelitonLoading(true);
-      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
-      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
-      
-      const res = await getJournalVouchersReport(
-        start,
-        end,
-        referenceType,
-        status
+      // Backend requires a date range — calling without it returns 500.
+      // Send a wide default range from code so the endpoint always works
+      // without exposing date pickers in the UI.
+      const start = "2000-01-01";
+      const end = dayjs().format("YYYY-MM-DD");
+      const res = await getJournalVouchersReport(start, end);
+
+      // Response shape from /ledger-service/api/v1/reports/journal-vouchers:
+      //   { data: { fromDate, toDate, totalVouchers, totalDebits, totalCredits, vouchers: [...] }, message, timestamp }
+      // Also tolerate a few legacy / variant shapes.
+      const root = res?.data;
+      const inner = root?.data;
+      const items: any[] = Array.isArray(inner?.vouchers)
+        ? inner.vouchers
+        : Array.isArray(inner)
+          ? inner
+          : Array.isArray(inner?.items)
+            ? inner.items
+            : Array.isArray(root)
+              ? root
+              : [];
+
+      // eslint-disable-next-line no-console
+      console.log("[Vouchers] response =", root, "→ rows:", items.length);
+
+      setAllCallActivity(items);
+      setSummary(
+        inner && typeof inner === "object" && !Array.isArray(inner)
+          ? {
+              fromDate: inner.fromDate,
+              toDate: inner.toDate,
+              totalVouchers: inner.totalVouchers,
+              totalDebits: inner.totalDebits,
+              totalCredits: inner.totalCredits,
+            }
+          : null
       );
-      if (res?.data) {
-        // Some APIs return { success: true, data: [...] }, others return data directly
-        const responseData = res.data.success ? res.data.data : res.data;
-        
-        // Handle different data structures (array directly or { items: [] })
-        const items = Array.isArray(responseData) ? responseData : (responseData?.items || []);
-        setAllCallActivity(items);
-        
-        const totalItems = res?.data?.pageInfo?.totalItems || (Array.isArray(responseData) ? responseData.length : (responseData?.totalItems || items.length));
-        setTotalRows(totalItems);
-        
-        const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
-        const calculatedTo = Math.min(page * pageSize, totalItems);
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
-      } else {
-        toast.error(res?.data?.notificationMessage || "Failed to fetch vouchers");
-        setAllCallActivity([]);
-        setTotalRows(0);
-      }
     } catch (error: any) {
       console.error("Error fetching vouchers:", error);
       toast.error(error?.response?.data?.message || error?.message || "Failed to fetch vouchers");
       setAllCallActivity([]);
+      setSummary(null);
     } finally {
       setSkelitonLoading(false);
     }
@@ -130,13 +132,15 @@ const Vouchers = () => {
   const exportToCSV = (data: any[], fileName: string) => {
       const updatedData = data?.map((item) => {
       return {
-        "Voucher No": item?.voucherNo,
-        "Application No": item?.applicationNo,
-        "Date": item?.date,
-        "Voucher Type": item?.voucherType,
-        "Amount": item?.amount,
-        "Currency": "SAR",
-        "Status": "Approved",
+        "Voucher No": item?.voucherNumber || item?.voucherNo || "",
+        "Date": item?.entryDate || item?.date || "",
+        "Reference Type": item?.referenceType || "",
+        "Transaction Type": item?.transactionType || item?.voucherType || "",
+        "Description": item?.description || "",
+        "Debit": item?.totalDebit ?? item?.debitAmount ?? item?.amount ?? 0,
+        "Credit": item?.totalCredit ?? item?.creditAmount ?? 0,
+        "Currency": item?.currency || "SAR",
+        "Status": item?.status || item?.approvalStatus || "",
       };
     });
     const csvRows = [];
@@ -309,33 +313,72 @@ const Vouchers = () => {
         return Number(value) > 0;
       }),
   });
-  const mappedData =
-    allCallActivity &&
-    allCallActivity.map((item: any) => {
-      return {
-        VoucherNo: item.voucherNo,
-        applicationId: item.applicationId,
-        applicationKey: item.applicationKey,
-        applicationNo: item.applicationNo,
-        Id: item.voucherId,
-        Date: formatDate(item.date),
-        Description: item.description,
-        DebitAccount: item.debitAccount,
-        CreditAccount: item.creditAccount,
-        Amount: item.amount,
-        Currency: item.currency,
-        Status: item?.approvalStatus || item?.status,
-        VoucherType: item.voucherType,
-        ReferenceType: item.referenceType || "-",
-      };
-    });
+  const mappedData = useMemo(() => {
+    const all = (allCallActivity || []).map((item: any) => ({
+      // Identifiers
+      Id: item.entryId || item.voucherId,
+      VoucherNo: item.voucherNumber || item.voucherNo || "-",
+      // Dates
+      Date: formatDate(item.entryDate || item.date),
+      ValueDate: formatDate(item.valueDate),
+      // Type / classification
+      ReferenceType: item.referenceType || "-",
+      TransactionType: item.transactionType || item.voucherType || "-",
+      // Amounts
+      Debit: item.totalDebit ?? item.debitAmount ?? item.amount ?? 0,
+      Credit: item.totalCredit ?? item.creditAmount ?? 0,
+      Currency: item.currency || "SAR",
+      // Other
+      Description: item.description || "-",
+      Status: item.status || item.approvalStatus || "-",
+      // Legacy aliases retained for the action menu / edit modal
+      applicationId: item.applicationId,
+      applicationNo: item.applicationNo,
+      VoucherType: item.transactionType || item.voucherType,
+    }));
+
+    if (!debouncedSearch) return all;
+    const term = debouncedSearch.toLowerCase();
+    return all.filter((row: any) =>
+      String(row.VoucherNo || "").toLowerCase().includes(term) ||
+      String(row.ReferenceType || "").toLowerCase().includes(term) ||
+      String(row.TransactionType || "").toLowerCase().includes(term) ||
+      String(row.Status || "").toLowerCase().includes(term) ||
+      String(row.Description || "").toLowerCase().includes(term) ||
+      String(row.Date || "").toLowerCase().includes(term)
+    );
+  }, [allCallActivity, debouncedSearch]);
+
+  // Client-side pagination on filtered rows so search and the pager stay in sync
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return mappedData.slice(start, start + pageSize);
+  }, [mappedData, page, pageSize]);
+
+  // Recompute totals + from/to whenever the filtered set or page changes
+  useEffect(() => {
+    const total = mappedData.length;
+    setTotalRows(total);
+    setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+    setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+    setTo(Math.min(page * pageSize, total));
+  }, [mappedData, page, pageSize]);
+
+  // Debounce search so we don't re-filter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   useEffect(() => {
     handleSubmit();
     handleAccounts();
     LedgerDetails();
     return () => {};
-  }, [id, page, pageSize, fromDate, toDate, status, referenceType]);
+  }, [id, page, pageSize]);
   const handleChange = (key: string, row: any) => {
     if (key === "Edit") {
       handleEditClick(row);
@@ -358,47 +401,63 @@ const Vouchers = () => {
       </Menu.Item>
     </Menu>
   );
+  const formatNumber = (n: any) => {
+    if (n === null || n === undefined || n === "") return "-";
+    const num = Number(n);
+    if (isNaN(num)) return String(n);
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
   const Call_Activity_Header = [
     {
       name: "Voucher No",
-      cell: (row: any) => row.VoucherNo,
-    },
-    {
-      name: "Application No",
-      selector: (row: { applicationNo: any }) => row.applicationNo || "-",
-      width: "200px",
+      selector: (row: any) => row.VoucherNo,
+      sortable: true,
+      width: "180px",
     },
     {
       name: "Date",
-      selector: (row: { Date: any }) => row.Date,
-    },
-    // {
-    //   name: "Description",
-    //   selector: (row: { Description: any }) => row.Description,
-    // },
-    {
-      name: "Voucher Type",
-      selector: (row: { VoucherType: any }) => row.VoucherType,
+      selector: (row: any) => row.Date,
+      sortable: true,
+      width: "120px",
     },
     {
       name: "Reference Type",
-      selector: (row: { ReferenceType: any }) => row.ReferenceType,
+      selector: (row: any) => row.ReferenceType,
+      sortable: true,
+      width: "140px",
     },
-    // {
-    //   name: "Debit Account",
-    //   selector: (row: { DebitAccount: any }) => row.DebitAccount,
-    // },
-    // {
-    //   name: "CreditAccount",
-    //   selector: (row: { CreditAccount: any }) => row.CreditAccount,
-    // },
     {
-      name: "Amount",
-      selector: (row: { Amount: any }) => row.Amount,
+      name: "Transaction Type",
+      selector: (row: any) => row.TransactionType,
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Description",
+      selector: (row: any) => row.Description,
+      grow: 2,
+    },
+    {
+      name: "Debit",
+      cell: (row: any) => (
+        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.Debit)}</span>
+      ),
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Credit",
+      cell: (row: any) => (
+        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.Credit)}</span>
+      ),
+      sortable: true,
+      width: "130px",
     },
     {
       name: "Currency",
-      selector: (row: { Currency: any }) => row.Currency,
+      selector: (row: any) => row.Currency,
+      width: "90px",
     },
     {
       name: "Status",
@@ -410,11 +469,11 @@ const Vouchers = () => {
             padding: "0.4rem 1rem",
             borderRadius: "12px",
             backgroundColor:
-              row.Status === "Approved"
+              row.Status === "POSTED" || row.Status === "Approved"
                 ? "#92BC83"
-                : row.Status === "Pending"
+                : row.Status === "DRAFT" || row.Status === "Pending"
                 ? "#FAB65E"
-                : row.Status === "Rejected"
+                : row.Status === "REJECTED" || row.Status === "Rejected"
                 ? "#F85F54"
                 : row.Status === "Under_Review"
                 ? "#959595"
@@ -485,102 +544,53 @@ const Vouchers = () => {
             </button>
           </div>
         </div>
-        <div className="d-flex mt-3 justify-content-between align-items-end">
-          <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
-              <DatePicker 
-                value={fromDate}
-                onChange={(date) => setFromDate(date)}
-                format="YYYY-MM-DD"
-              />
-            </div>
-
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker 
-                value={toDate}
-                onChange={(date) => setToDate(date)}
-                format="YYYY-MM-DD"
-              />
-            </div>
-
-            {/* Reference Type */}
-            <div className="col-md-3">
-              <label htmlFor="referenceType" className="form-label">
-                Reference Type
-              </label>
-              <Input 
-                value={referenceType}
-                onChange={(e) => setReferenceType(e.target.value)}
-                placeholder="Reference Type"
-              />
-            </div>
-
-            {/* Status */}
-            <div className="col-md-3">
-              <label htmlFor="status" className="form-label">
-                Status
-              </label>
-              <Select 
-                value={status}
-                onChange={(value) => setStatus(value)}
-                style={{ width: '100%' }}
-              >
-                <Select.Option value="POSTED">POSTED</Select.Option>
-                <Select.Option value="DRAFT">DRAFT</Select.Option>
-                <Select.Option value="PENDING">PENDING</Select.Option>
-                <Select.Option value="REJECTED">REJECTED</Select.Option>
-              </Select>
-            </div>
-
-            <div className="col-md-2">
-              <div className="d-flex gap-2">
-                <button
-                  className="mt-4 invoice-btn bg-dark text-white"
-                  onClick={handleSubmit}
-                  disabled={skelitonLoading}
-                >
-                  {skelitonLoading ? "..." : "Search"}
-                </button>
-                <button
-                  className="mt-4 invoice-btn bg-secondary text-white"
-                  onClick={() => {
-                    setFromDate(dayjs().startOf('month'));
-                    setToDate(dayjs().endOf('month'));
-                    setStatus("POSTED");
-                    setReferenceType("");
-                  }}
-                >
-                  Clear
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="col-2 d-flex justify-content-end">
-            <button
-              className="invoice-btn bg-dark text-end text-white"
-              onClick={() => {
-                exportToCSV(allCallActivity, "Voucher");
-              }}
-              /*  style={{
-             height: "3px",
-             border: "none",
-             borderRadius: "8px",
-             display: "flex",
-             alignItems: "center"
-           }} */
-            >
-              Export CSV
-            </button>
-          </div>
+        <div className="d-flex mt-3 justify-content-between align-items-center gap-2 flex-wrap">
+          <Input
+            placeholder="Search by voucher, type, status, description"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            allowClear
+            style={{ width: 360 }}
+          />
+          <button
+            className="invoice-btn bg-dark text-end text-white"
+            onClick={() => {
+              exportToCSV(allCallActivity, "Voucher");
+            }}
+          >
+            Export CSV
+          </button>
         </div>
+
+        {summary && (summary.totalVouchers !== undefined || summary.totalDebits !== undefined) && (
+          <div className="d-flex gap-3 mt-3 flex-wrap">
+            {summary.totalVouchers !== undefined && (
+              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
+                <div className="text-muted small">Total Vouchers</div>
+                <div className="fw-bold">{summary.totalVouchers}</div>
+              </div>
+            )}
+            {summary.totalDebits !== undefined && (
+              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
+                <div className="text-muted small">Total Debits</div>
+                <div className="fw-bold" style={{ fontFamily: "monospace" }}>{formatNumber(summary.totalDebits)}</div>
+              </div>
+            )}
+            {summary.totalCredits !== undefined && (
+              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
+                <div className="text-muted small">Total Credits</div>
+                <div className="fw-bold" style={{ fontFamily: "monospace" }}>{formatNumber(summary.totalCredits)}</div>
+              </div>
+            )}
+            {(summary.fromDate || summary.toDate) && (
+              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 200 }}>
+                <div className="text-muted small">Date Range</div>
+                <div className="fw-bold" style={{ fontSize: 13 }}>{summary.fromDate} → {summary.toDate}</div>
+              </div>
+            )}
+          </div>
+        )}
+
         <div className="cs-table p-2 mt-3">
           <TableView
             setPage={setPage}
@@ -588,11 +598,13 @@ const Vouchers = () => {
             page={page}
             pageSize={pageSize}
             totalRows={totalRows}
+            totalPage={totalPage}
             from={from}
             to={to}
             header={Call_Activity_Header}
-            data={mappedData}
+            data={paginatedData}
             isLoading={skelitonLoading}
+            paginationShow={true}
           />
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker } from "antd";
+import { Input } from "antd";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -10,20 +10,24 @@ import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 
 const Due = () => {
-  const [fromDate, setFromDate] = useState<any>(null);
-  const [toDate, setToDate] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
+  const [from, setFrom] = useState(0);
+  const [to, setTo] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const id = useParams();
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
-      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      // Wide default range so the endpoint always returns data without exposing pickers in the UI.
+      const start = "2000-01-01";
+      const end = dayjs().format("YYYY-MM-DD");
       const res = await getDueLoansReport(start, end);
       if (res) {
         const data = res.data.data?.items;
@@ -48,7 +52,7 @@ const Due = () => {
   };
 
   const mappedData = useMemo(() => {
-    return (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
+    const all = (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
       return {
         loanAccountNumber: item.loanAccountNumber || "-",
         customerName: item.customerName || "-",
@@ -62,11 +66,45 @@ const Due = () => {
         status: item.status || "-",
       };
     });
-  }, [allCallActivity]);
+
+    if (!debouncedSearch) return all;
+    const term = debouncedSearch.toLowerCase();
+    return all.filter((row: any) =>
+      String(row.loanAccountNumber).toLowerCase().includes(term) ||
+      String(row.customerName).toLowerCase().includes(term) ||
+      String(row.productName).toLowerCase().includes(term) ||
+      String(row.status).toLowerCase().includes(term) ||
+      String(row.dueDate).toLowerCase().includes(term)
+    );
+  }, [allCallActivity, debouncedSearch]);
+
+  // Client-side pagination on the filtered set
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return mappedData.slice(start, start + pageSize);
+  }, [mappedData, page, pageSize]);
+
+  // Keep totalRows / totalPage / from / to in sync with the filtered set
+  useEffect(() => {
+    const total = mappedData.length;
+    setTotalRows(total);
+    setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+    setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+    setTo(Math.min(page * pageSize, total));
+  }, [mappedData, page, pageSize]);
+
+  // Debounce search so we don't refilter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   useEffect(() => {
     handleSubmit();
-  }, [id, page, pageSize, fromDate, toDate]);
+  }, [id]);
 
   const Call_Activity_Header = [
     {
@@ -146,51 +184,19 @@ const Due = () => {
             <h5 className="mb-0">Due Loans</h5>
           </div>
         </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center">
-            {/* From Date */}
-            <div className="col-md-4">
-              <label htmlFor="fromDate" className="form-label">
-                From
-              </label>
-              <DatePicker
-                value={fromDate}
-                onChange={(date) => setFromDate(date)}
-                placeholder="Select From Date"
-              />
-            </div>
-
-            {/* To Date */}
-            <div className="col-md-4">
-              <label htmlFor="toDate" className="form-label">
-                To
-              </label>
-              <DatePicker
-                value={toDate}
-                onChange={(date) => setToDate(date)}
-                placeholder="Select To Date"
-              />
-            </div>
-
-            <div className="col-md-2">
-              <button
-                className="mt-4 invoice-btn bg-dark text-white"
-                onClick={() => {
-                  setFromDate(null);
-                  setToDate(null);
-                }}
-              >
-                Clear
-              </button>
-            </div>
-
-            <div className="col-md-2"></div>
-          </div>
-          <div className="col-2 text-end">
+        <div className="d-flex mt-3 justify-content-between align-items-center gap-2 flex-wrap">
+          <Input
+            placeholder="Search by loan, customer, product, or status"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            allowClear
+            style={{ width: 320 }}
+          />
+          <div className="text-end">
             <button
-              className="mt-4 invoice-btn bg-dark text-white"
+              className="invoice-btn bg-dark text-white"
               onClick={() => {
-                exportToCSV(mappedData, "OverDueLoans");
+                exportToCSV(mappedData, "DueLoans");
               }}
             >
               Export CSV
@@ -201,10 +207,16 @@ const Due = () => {
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}
+            page={page}
+            pageSize={pageSize}
             totalRows={totalRows}
+            totalPage={totalPage}
+            from={from}
+            to={to}
             header={Call_Activity_Header}
-            data={mappedData}
+            data={paginatedData}
             isLoading={loading}
+            paginationShow={true}
           />
         </div>
       </div>

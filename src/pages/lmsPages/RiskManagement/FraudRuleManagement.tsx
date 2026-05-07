@@ -31,8 +31,11 @@ const FraudRuleManagement = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Edit parameters modal
   const [showEditModal, setShowEditModal] = useState(false);
@@ -40,16 +43,62 @@ const FraudRuleManagement = () => {
   const [paramsList, setParamsList] = useState<ParamEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Debounce search so we don't refetch / re-filter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [page, pageSize, debouncedSearch]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await getAllFraudRules();
+
+      if (debouncedSearch) {
+        // Backend search support is unverified — fetch full set, filter client-side.
+        const response = await getAllFraudRules(0, 10000);
+        const all: any[] = Array.isArray(response?.data?.data)
+          ? response.data.data
+          : Array.isArray(response?.data)
+            ? response.data
+            : [];
+        const term = debouncedSearch.toLowerCase();
+        const filtered = all.filter((item: any) =>
+          (item?.ruleId || "").toLowerCase().includes(term) ||
+          (item?.scenarioName || "").toLowerCase().includes(term) ||
+          (item?.scenarioNameAr || "").toLowerCase().includes(term) ||
+          (item?.category || "").toLowerCase().includes(term) ||
+          (item?.defaultAction || "").toLowerCase().includes(term) ||
+          (item?.status || "").toLowerCase().includes(term)
+        );
+        const total = filtered.length;
+        const totalPages = Math.max(1, Math.ceil(total / pageSize));
+        const start = (page - 1) * pageSize;
+        setData(filtered.slice(start, start + pageSize));
+        setTotalRows(total);
+        setTotalPage(totalPages);
+        return;
+      }
+
+      // Backend uses 0-based indexing for page
+      const response = await getAllFraudRules(page - 1, pageSize);
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
+
+      const pagination = response?.data?.pagination;
+      if (pagination) {
+        setTotalRows(pagination.totalElements || 0);
+        setTotalPage(pagination.totalPages || 1);
+      } else {
+        setTotalRows(Array.isArray(list) ? list.length : 0);
+        setTotalPage(Math.ceil((Array.isArray(list) ? list.length : 0) / pageSize) || 1);
+      }
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch fraud rules");
     } finally {
@@ -139,17 +188,6 @@ const FraudRuleManagement = () => {
     updated[index] = { ...updated[index], [field]: newValue };
     setParamsList(updated);
   };
-
-  const filteredData = data.filter((item) => {
-    if (!searchTerm) return true;
-    const term = searchTerm.toLowerCase();
-    return (
-      (item?.ruleId || "").toLowerCase().includes(term) ||
-      (item?.scenarioName || "").toLowerCase().includes(term) ||
-      (item?.category || "").toLowerCase().includes(term) ||
-      (item?.status || "").toLowerCase().includes(term)
-    );
-  });
 
   const headers = [
     {
@@ -247,16 +285,17 @@ const FraudRuleManagement = () => {
 
       <TableView
         header={headers}
-        data={filteredData}
-        totalRows={filteredData.length}
+        data={data}
+        totalRows={totalRows}
         isLoading={isLoading}
-        from={1}
+        from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+        to={Math.min(page * pageSize, totalRows)}
         page={page}
-        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        totalPage={totalPage}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
-        to={filteredData.length}
+        paginationShow={true}
       />
 
       {/* Edit Parameters Modal */}
