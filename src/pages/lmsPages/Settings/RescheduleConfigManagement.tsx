@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Button, Dropdown, Menu } from "antd";
+import { Button, Dropdown, Input, Menu } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import {
@@ -108,6 +109,17 @@ const RescheduleConfigManagement = () => {
   const [showEdit, setShowEdit] = useState(false);
   const [form, setForm] = useState<FormState | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search so we don't refilter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const fetchData = async () => {
     try {
@@ -362,17 +374,42 @@ const RescheduleConfigManagement = () => {
   ];
 
   // Client-side pagination
-  const total = data.length;
+  // Free-text filter applied client-side
+  const filteredData = (() => {
+    if (!debouncedSearch) return data;
+    const term = debouncedSearch.toLowerCase();
+    return data.filter((row: any) =>
+      String(row.rescheduleType || "").toLowerCase().includes(term) ||
+      String(row.labelEn || "").toLowerCase().includes(term) ||
+      String(row.labelAr || "").toLowerCase().includes(term) ||
+      String(row.descriptionEn || "").toLowerCase().includes(term) ||
+      String(row.approverRole || "").toLowerCase().includes(term) ||
+      String(row.active ? "active" : "inactive").includes(term)
+    );
+  })();
+
+  const total = filteredData.length;
   const startIndex = (page - 1) * pageSize;
-  const paginatedData = data.slice(startIndex, startIndex + pageSize);
+  const paginatedData = filteredData.slice(startIndex, startIndex + pageSize);
   const fromRow = total > 0 ? startIndex + 1 : 0;
   const toRow = Math.min(startIndex + pageSize, total);
-  const totalPage = Math.ceil(total / pageSize) || 1;
+  const totalPage = Math.max(1, Math.ceil(total / pageSize));
 
   return (
     <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0">Rescheduling Configurations</h5>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Rescheduling Configurations</h3>
+      </div>
+
+      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <Input
+          allowClear
+          placeholder="Search by type, label, description, approver, status"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
       </div>
 
       <TableView
@@ -387,6 +424,7 @@ const RescheduleConfigManagement = () => {
         pageSize={pageSize}
         setPageSize={setPageSize}
         to={toRow}
+        paginationShow={true}
       />
 
       <Modal show={showEdit} onHide={closeEdit} centered size="lg" scrollable>
@@ -774,7 +812,7 @@ const RescheduleConfigManagement = () => {
                     setFormValue("rulesConfigText", e.target.value)
                   }
                   isInvalid={!!errors.rulesConfigText}
-                  style={{ fontFamily: "monospace", fontSize: 12 }}
+                  style={{ fontSize: 12 }}
                 />
                 <Form.Control.Feedback type="invalid">
                   {errors.rulesConfigText}

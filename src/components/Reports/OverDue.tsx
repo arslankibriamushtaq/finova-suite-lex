@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
-import { Input } from "antd";
+import { Col, Input, Row } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import { getOverdueLoansReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
@@ -99,23 +100,32 @@ const OverDue = () => {
 
   const mappedAndFiltered = useMemo(() => {
     const all = (rows || []).map((item: any) => ({
-      loanId: item.loanId || item.applicationId || "-",
-      customerId: item.customerId || item.customerName || "-",
-      facilityType: item.facilityType || item.productCode || item.productName || "-",
-      overdueAmount: item.overdueAmount ?? item.amountOverdue ?? item.amount ?? null,
+      loanAccountNumber: item.loanAccountNumber || item.loanId || item.applicationId || "-",
+      customerId: item.customerId || "-",
+      customerName: item.customerName || null,
+      nationalId: item.nationalId || null,
+      productName: item.productName || item.productCode || item.facilityType || "-",
+      principalOverdue: item.principalOverdue ?? null,
+      profitOverdue: item.profitOverdue ?? null,
+      penaltyAmount: item.penaltyAmount ?? null,
+      totalOverdue: item.totalOverdue ?? item.overdueAmount ?? item.amountOverdue ?? item.amount ?? null,
       daysPastDue: item.daysPastDue ?? item.dpd ?? null,
-      paymentStatus: item.paymentStatus || item.status || "-",
-      dueDate: item.dueDate || item.nextDueDate,
+      dpdBucket: item.dpdBucket || null,
+      oldestUnpaidDate: item.oldestUnpaidDate || item.dueDate || item.nextDueDate || null,
+      status: item.status || item.paymentStatus || "-",
       currency: item.currency || "SAR",
     }));
 
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
     return all.filter((row: any) =>
-      String(row.loanId || "").toLowerCase().includes(term) ||
+      String(row.loanAccountNumber || "").toLowerCase().includes(term) ||
       String(row.customerId || "").toLowerCase().includes(term) ||
-      String(row.facilityType || "").toLowerCase().includes(term) ||
-      String(row.paymentStatus || "").toLowerCase().includes(term)
+      String(row.customerName || "").toLowerCase().includes(term) ||
+      String(row.nationalId || "").toLowerCase().includes(term) ||
+      String(row.productName || "").toLowerCase().includes(term) ||
+      String(row.dpdBucket || "").toLowerCase().includes(term) ||
+      String(row.status || "").toLowerCase().includes(term)
     );
   }, [rows, debouncedSearch]);
 
@@ -123,6 +133,19 @@ const OverDue = () => {
     const start = (page - 1) * pageSize;
     return mappedAndFiltered.slice(start, start + pageSize);
   }, [mappedAndFiltered, page, pageSize]);
+
+  // Totals derived from the currently-visible (filtered) rows so the summary
+  // cards always match what's in the table.
+  const visibleTotals = useMemo(() => {
+    const totalOverdueAmount = mappedAndFiltered.reduce(
+      (acc: number, r: any) => acc + Number(r.totalOverdue ?? 0),
+      0
+    );
+    return {
+      totalLoans: mappedAndFiltered.length,
+      totalOverdueAmount,
+    };
+  }, [mappedAndFiltered]);
 
   useEffect(() => {
     const total = mappedAndFiltered.length;
@@ -132,25 +155,102 @@ const OverDue = () => {
     setTo(Math.min(page * pageSize, total));
   }, [mappedAndFiltered, page, pageSize]);
 
+  const dpdBucketColor = (bucket: string | null) => {
+    switch (String(bucket || "")) {
+      case "1-30": return "#FAB65E";
+      case "31-60": return "#F87E3D";
+      case "61-90": return "#F85F54";
+      case "90+":   return "#B71C1C";
+      default:      return "#959595";
+    }
+  };
+
   const headers = [
-    { name: "Loan ID", selector: (row: any) => row.loanId, sortable: true, width: "260px" },
-    { name: "Customer", selector: (row: any) => row.customerId, sortable: true },
-    { name: "Facility Type", selector: (row: any) => row.facilityType, sortable: true, width: "150px" },
     {
-      name: "Overdue Amount",
+      name: "Loan Account No",
+      selector: (row: any) => row.loanAccountNumber,
+      sortable: true,
+      width: "180px",
+    },
+    {
+      name: "Customer",
+      selector: (row: any) => row.customerName || row.customerId || "-",
+      sortable: true,
+    },
+    {
+      name: "National ID",
+      selector: (row: any) => row.nationalId || "-",
+      sortable: true,
+      width: "130px",
+    },
+    {
+      name: "Product",
+      selector: (row: any) => row.productName,
+      sortable: true,
+      width: "140px",
+    },
+    {
+      name: "Principal Overdue",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>
-          {row.overdueAmount != null ? `${formatNumber(row.overdueAmount)} ${row.currency || ""}`.trim() : "-"}
+        <span>{formatNumber(row.principalOverdue)}</span>
+      ),
+      sortable: true,
+      width: "150px",
+    },
+    {
+      name: "Profit Overdue",
+      cell: (row: any) => (
+        <span>{formatNumber(row.profitOverdue)}</span>
+      ),
+      sortable: true,
+      width: "140px",
+    },
+    {
+      name: "Penalty",
+      cell: (row: any) => (
+        <span>{formatNumber(row.penaltyAmount)}</span>
+      ),
+      sortable: true,
+      width: "120px",
+    },
+    {
+      name: "Total Overdue",
+      cell: (row: any) => (
+        <span style={{ fontWeight: 600 }}>
+          {row.totalOverdue != null ? `${formatNumber(row.totalOverdue)} ${row.currency || ""}`.trim() : "-"}
         </span>
       ),
       sortable: true,
       width: "180px",
     },
     {
-      name: "Days Past Due",
-      selector: (row: any) => row.daysPastDue ?? "-",
+      name: "DPD",
+      cell: (row: any) => (
+        <div className="d-flex align-items-center gap-2" style={{ whiteSpace: "nowrap" }}>
+          <span>{row.daysPastDue ?? "-"}</span>
+          {row.dpdBucket && (
+            <span
+              style={{
+                padding: "2px 8px",
+                borderRadius: 12,
+                fontSize: 11,
+                backgroundColor: dpdBucketColor(row.dpdBucket),
+                color: "white",
+              }}
+            >
+              {row.dpdBucket}
+            </span>
+          )}
+        </div>
+      ),
       sortable: true,
-      width: "120px",
+      width: "150px",
+    },
+    {
+      name: "Oldest Unpaid",
+      selector: (row: any) => formatDate(row.oldestUnpaidDate),
+      sortable: true,
+      width: "140px",
     },
     {
       name: "Status",
@@ -160,25 +260,19 @@ const OverDue = () => {
             padding: "4px 10px",
             borderRadius: "12px",
             fontSize: "12px",
-            backgroundColor: /OVERDUE|DEFAULT|NPL/i.test(String(row.paymentStatus))
+            backgroundColor: /OVERDUE|DEFAULT|NPL/i.test(String(row.status))
               ? "#F85F54"
-              : /CURRENT|ON_TIME|PAID/i.test(String(row.paymentStatus))
+              : /ACTIVE|CURRENT|ON_TIME|PAID/i.test(String(row.status))
                 ? "#92BC83"
                 : "#959595",
             color: "white",
             whiteSpace: "nowrap",
           }}
         >
-          {row.paymentStatus || "-"}
+          {row.status || "-"}
         </span>
       ),
-      width: "150px",
-    },
-    {
-      name: "Due Date",
-      selector: (row: any) => formatDate(row.dueDate),
-      sortable: true,
-      width: "130px",
+      width: "120px",
     },
   ];
 
@@ -187,18 +281,29 @@ const OverDue = () => {
       toast.error("No data to export");
       return;
     }
-    const csvHeaders = ["Loan ID", "Customer", "Facility Type", "Overdue Amount", "Currency", "Days Past Due", "Status", "Due Date"];
+    const csvHeaders = [
+      "Loan Account No", "Customer ID", "Customer Name", "National ID",
+      "Product", "Principal Overdue", "Profit Overdue", "Penalty",
+      "Total Overdue", "Currency", "Days Past Due", "DPD Bucket",
+      "Oldest Unpaid Date", "Status",
+    ];
     const csvRows = [csvHeaders.join(",")];
     mappedAndFiltered.forEach((row: any) => {
       const values = [
-        row.loanId,
+        row.loanAccountNumber,
         row.customerId,
-        row.facilityType,
-        row.overdueAmount ?? "",
+        row.customerName ?? "",
+        row.nationalId ?? "",
+        row.productName,
+        row.principalOverdue ?? "",
+        row.profitOverdue ?? "",
+        row.penaltyAmount ?? "",
+        row.totalOverdue ?? "",
         row.currency || "",
         row.daysPastDue ?? "",
-        row.paymentStatus,
-        formatDate(row.dueDate),
+        row.dpdBucket ?? "",
+        formatDate(row.oldestUnpaidDate),
+        row.status,
       ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
       csvRows.push(values.join(","));
     });
@@ -208,49 +313,62 @@ const OverDue = () => {
 
   return (
     <div className="col-12">
-      <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h5 className="mb-0">Overdue Loans</h5>
-        <div className="d-flex gap-2 flex-wrap">
-          <Input
-            placeholder="Search by loan ID, customer, facility, status"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            allowClear
-            style={{ width: 320 }}
-          />
-          <button
-            className="invoice-btn bg-dark text-white"
-            onClick={exportToCSV}
-            disabled={!mappedAndFiltered.length}
-          >
-            Export CSV
-          </button>
-        </div>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Overdue Loans</h3>
       </div>
 
-      {summary && (summary.totalOverdueAmount !== undefined || summary.totalLoans !== undefined || summary.asOfDate) && (
-        <div className="d-flex gap-3 mb-3 flex-wrap">
-          {summary.asOfDate && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">As Of Date</div>
-              <div className="fw-bold">{summary.asOfDate}</div>
-            </div>
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <Input
+          allowClear
+          placeholder="Search by loan ID, customer, facility, status"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!mappedAndFiltered.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+      </div>
+
+      {(mappedAndFiltered.length > 0 || summary) && (
+        <Row gutter={[16, 16]} className="mb-3">
+          {summary?.asOfDate && (
+            <Col xs={24} sm={12} lg={8}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>As Of Date</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {summary.asOfDate}
+                </div>
+              </div>
+            </Col>
           )}
-          {summary.totalLoans !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">Total Loans</div>
-              <div className="fw-bold">{summary.totalLoans}</div>
-            </div>
-          )}
-          {summary.totalOverdueAmount !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 180 }}>
-              <div className="text-muted small">Total Overdue</div>
-              <div className="fw-bold" style={{ fontFamily: "monospace" }}>
-                {formatNumber(summary.totalOverdueAmount)}
+          <Col xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Loans</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {visibleTotals.totalLoans}
               </div>
             </div>
-          )}
-        </div>
+          </Col>
+          <Col xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Overdue</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {formatNumber(visibleTotals.totalOverdueAmount)}
+              </div>
+            </div>
+          </Col>
+        </Row>
       )}
 
       <div className="cs-table p-2">

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox, Switch } from "antd";
+import { Button, DatePicker, Dropdown, Input, Menu, Select, Modal, Checkbox, Switch } from "antd";
 import TableView from "../TableView/TableView";
-import { FaFilter } from "react-icons/fa";
-import { Images } from "../Config/Images";
 import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk } from "../../redux/apis/apisCrud";
 import { getCustomers } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
-import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
+import { EyeOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -42,8 +40,6 @@ const AllCustomers = () => {
   const [toDate, setToDate] = useState(null);
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [pep, setPep] = useState('');
-  const [status, setStatus] = useState('');
   
   // Permissions
   const { hasPermission } = usePermissions();
@@ -584,7 +580,7 @@ const AllCustomers = () => {
       setSkelitonLoading(true);
 
       // Backend uses 0-based indexing for page
-      const response = await getCustomers(page - 1, pageSize, search, pep, status);
+      const response = await getCustomers(page - 1, pageSize, search, '', '');
       if (response) {
         const list = response?.data?.data || [];
         const allData = Array.isArray(list) ? list : [];
@@ -607,12 +603,12 @@ const AllCustomers = () => {
   };
   useEffect(() => {
     getLeadsList();
-  }, [page, pageSize, search, pep, status]);
+  }, [page, pageSize, search]);
 
-  // Reset to page 1 when search/filters change
+  // Reset to page 1 when search / page size changes
   useEffect(() => {
     setPage(1);
-  }, [search, pep, status, pageSize]);
+  }, [search, pageSize]);
 
   const mappedData =
     (data || []).map((item: any, index: number) => {
@@ -648,7 +644,7 @@ const AllCustomers = () => {
       let allData: any[] = [];
 
       try {
-        const response = await getCustomers(0, 10000, search, pep, status);
+        const response = await getCustomers(0, 10000, search, '', '');
         const list = response?.data?.data || [];
         allData = Array.isArray(list) ? list : [];
       } catch (pageError) {
@@ -755,45 +751,15 @@ const AllCustomers = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-end col-12 filter-select">
-        <Select
-          style={{ width: "120px", marginRight: "8px" }}
-          placeholder="PEP"
-          allowClear
-          value={pep || undefined}
-          onChange={(value) => setPep(value || '')}
-        >
-          <Select.Option value="1">Yes</Select.Option>
-          <Select.Option value="0">No</Select.Option>
-        </Select>
-
-        <Select
-          style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Status"
-          allowClear
-          value={status || undefined}
-          onChange={(value) => setStatus(value || '')}
-          suffixIcon={<FaFilter />}
-        >
-          <Select.Option value="active">Active</Select.Option>
-          <Select.Option value="inactive">Inactive</Select.Option>
-        </Select>
-
         <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
-          <div className="d-flex align-items-center gap-1 border px-2 ps-3 search-box">
-            <img src={Images.searchIconGray} alt="" />
-            <input
-              type="text"
-              style={{
-                border: "none",
-                outline: "none",
-                background: "transparent",
-              }}
-              className="p-2"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
+          <Input
+            allowClear
+            placeholder="Search..."
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: 1, borderRadius: 8 }}
+          />
           <div className="d-flex align-items-center">
             <div
               className="d-flex gap-1 p-2"

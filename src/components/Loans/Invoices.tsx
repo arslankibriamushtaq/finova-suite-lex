@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { FaSearchengin } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
 import { Dropdown, Input, Menu, Button, Checkbox } from "antd";
 import TableView from "../TableView/TableView";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,7 +14,7 @@ import { getApplicationInstallments } from "../../redux/apis/apisLendingService"
 import toast from "react-hot-toast";
 import { Modal, Row, Col, ModalHeader, ModalBody, Tab, Tabs } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { DownOutlined, EditOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import Loader from "../Loader/Loader";
 import * as Yup from "yup";
 import { NumberFormatter } from "../../App";
@@ -142,14 +141,6 @@ const Invoices = () => {
     );
   };
 
-  const customSearchInput = (
-    <Input
-      placeholder="Search Invoices"
-      value={searchValue}
-      prefix={<FaSearchengin />}
-      onChange={(e: any) => setSearchValue(e.target.value)}
-    />
-  );
   const button = [
     // { title: "edit", onClick: handleClick },
     // { title: "view", onClick: handleView },
@@ -546,6 +537,53 @@ const Invoices = () => {
     )
     .map(mapInvoice) || [];
 
+  // Debounce search so we don't refilter on every keystroke
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchValue.trim());
+      setPage(1);
+      setEarlySettlementPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchValue]);
+
+  // Free-text filter applied to whichever tab is active
+  const matchesSearch = (row: any, term: string) =>
+    String(row.invoiceId || "").toLowerCase().includes(term) ||
+    String(row.installmentNumber ?? "").toLowerCase().includes(term) ||
+    String(row.dueDate || "").toLowerCase().includes(term) ||
+    String(row.paymentStatus || "").toLowerCase().includes(term) ||
+    String(row.delinquencyStatus || "").toLowerCase().includes(term);
+
+  const filteredRegular = useMemo(() => {
+    if (!debouncedSearch) return regularInvoices;
+    const term = debouncedSearch.toLowerCase();
+    return regularInvoices.filter((row: any) => matchesSearch(row, term));
+  }, [regularInvoices, debouncedSearch]);
+
+  const filteredEarly = useMemo(() => {
+    if (!debouncedSearch) return earlySettlementInvoices;
+    const term = debouncedSearch.toLowerCase();
+    return earlySettlementInvoices.filter((row: any) => matchesSearch(row, term));
+  }, [earlySettlementInvoices, debouncedSearch]);
+
+  // Client-side pagination — slice each tab's filtered set
+  const paginatedRegular = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return filteredRegular.slice(start, start + pageSize);
+  }, [filteredRegular, page, pageSize]);
+
+  const paginatedEarly = useMemo(() => {
+    const start = (earlySettlementPage - 1) * earlySettlementPageSize;
+    return filteredEarly.slice(start, start + earlySettlementPageSize);
+  }, [filteredEarly, earlySettlementPage, earlySettlementPageSize]);
+
+  // Keep totalRows in sync with the active tab so the pager footer is correct.
+  useEffect(() => {
+    setTotalRows(activeTab === "loanInvoices" ? filteredRegular.length : filteredEarly.length);
+  }, [activeTab, filteredRegular.length, filteredEarly.length]);
+
   useEffect(() => {
     // handleAllReason();
     individualCustomer();
@@ -671,34 +709,48 @@ const Invoices = () => {
     <>
       {loader && <Loader />}
       <div>
-        <div className="col-11 mb-4 ">
+        <div className="col-11 mb-3">
           <h3>Loan Invoices</h3>
         </div>
 
-        <div className="col-12 d-flex justify-content-end">
-          {selectedInvoices.length > 0 ? (
+        <div className="d-flex flex-wrap justify-content-end align-items-center gap-2 mb-3">
+          {selectedInvoices.length > 0 && (
             <Button
               className="application-btn"
               style={{
                 color: "var(--primary-foreground)",
-
                 padding: "9px",
                 borderRadius: "8px",
                 border: "transparent",
+                height: 40,
+                flexShrink: 0,
               }}
               onClick={handleChangeInvoice}
             >
               Pay Invoices
             </Button>
-          ) : (
-            ""
           )}
+          <div className="col-12 col-md-4">
+            <Input
+              allowClear
+              placeholder="Search by invoice, installment, status"
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchValue}
+              onChange={(e: any) => setSearchValue(e.target.value)}
+              style={{ width: "100%", borderRadius: 8, height: 40 }}
+            />
+          </div>
         </div>
 
         <Tabs
           id="invoices-tabs"
           activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k || "loanInvoices")}
+          onSelect={(k) => {
+            setActiveTab(k || "loanInvoices");
+            // Reset paging on tab switch so the pager footer matches the active tab
+            setPage(1);
+            setEarlySettlementPage(1);
+          }}
           className="mt-3"
         >
           <Tab eventKey="loanInvoices" title="Loan Invoices">
@@ -708,20 +760,16 @@ const Invoices = () => {
                 setPageSize={setPageSize}
                 page={page}
                 pageSize={pageSize}
-                totalRows={regularInvoices?.length || 0}
+                totalRows={filteredRegular.length}
+                totalPage={Math.max(1, Math.ceil(filteredRegular.length / pageSize))}
+                from={filteredRegular.length > 0 ? (page - 1) * pageSize + 1 : 0}
+                to={Math.min(page * pageSize, filteredRegular.length)}
                 header={Customer_ALL_List_Header}
-                data={regularInvoices}
+                data={paginatedRegular}
                 isLoading={skelitonLoading}
+                paginationShow={true}
               />
-              {regularInvoices?.length == 0 && allinvoiceList?.length > 0 && (
-                <div
-                  className="d-flex justify-content-center mt-5"
-                  style={{ color: "var(--destructive)" }}
-                >
-                  No data found
-                </div>
-              )}
-              {allinvoiceList?.length == 0 && (
+              {!skelitonLoading && filteredRegular.length === 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}
@@ -738,12 +786,16 @@ const Invoices = () => {
                 setPageSize={setEarlySettlementPageSize}
                 page={earlySettlementPage}
                 pageSize={earlySettlementPageSize}
-                totalRows={earlySettlementInvoices.length}
+                totalRows={filteredEarly.length}
+                totalPage={Math.max(1, Math.ceil(filteredEarly.length / earlySettlementPageSize))}
+                from={filteredEarly.length > 0 ? (earlySettlementPage - 1) * earlySettlementPageSize + 1 : 0}
+                to={Math.min(earlySettlementPage * earlySettlementPageSize, filteredEarly.length)}
                 header={EarlySettlement_List_Header}
-                data={earlySettlementInvoices}
+                data={paginatedEarly}
                 isLoading={skelitonLoading}
+                paginationShow={true}
               />
-              {!skelitonLoading && earlySettlementInvoices.length === 0 && (
+              {!skelitonLoading && filteredEarly.length === 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}

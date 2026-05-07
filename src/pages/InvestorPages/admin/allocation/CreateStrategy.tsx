@@ -1453,7 +1453,7 @@ export default function CreateStrategy() {
                             const ruleInfo = ruleTypes.find(rt => rt.id === rule.type);
                             return (
                               <div key={rule.id} className="text-xs text-gray-600 flex items-center">
-                                <span className="w-4 h-4 bg-gray-100 rounded text-center text-xs font-mono mr-2">{index + 1}</span>
+                                <span className="w-4 h-4 bg-gray-100 rounded text-center text-xs mr-2">{index + 1}</span>
                                 {ruleInfo?.name}
                               </div>
                             );

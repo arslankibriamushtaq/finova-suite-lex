@@ -1,223 +1,269 @@
-import { useEffect, useState, useMemo } from "react";
-
-import { DatePicker } from "antd";
+import { useEffect, useMemo, useState } from "react";
+import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { getTrialBalanceReport } from "../../redux/apis/apisCrudLms";
-import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { saveAs } from "file-saver";
+import Loader from "../Loader/Loader";
+
+const formatAmount = (n: number | string | undefined | null) =>
+  Number(n || 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
 const TrialBalance = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
-  const [to, setTo] = useState(0);
-  const [from, setFrom] = useState(0)
-  const [totalRows, setTotalRows] = useState(0);
-  const [ledgerData, setLedgerData] = useState<any>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
   const [date, setDate] = useState<any>(null);
-  const [totals, setTotals] = useState<any>({ totalDebits: 0, totalCredits: 0, difference: 0 });
+  const [totals, setTotals] = useState<any>({
+    totalDebits: 0,
+    totalCredits: 0,
+    difference: 0,
+  });
   const [loading, setLoading] = useState(false);
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   useEffect(() => {
-    getDayBookReprtData();
-  }, [page, pageSize, date]);
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim().toLowerCase());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
-  const getAllDaybookReport = [
-    {
-      name: "Account Code",
-      selector: (row: any) => row.accountCode,
-    },
-    {
-      name: "Account Name",
-      selector: (row: any) => row.accountName,
-    },
-    {
-      name: "Account Type",
-      selector: (row: any) => row.accountType,
-    },
-    {
-      name: "Debit Balance",
-      selector: (row: any) => row.debitBalance,
-    },
-    {
-      name: "Credit Balance",
-      selector: (row: any) => row.creditBalance,
-    },
-  ];
+  useEffect(() => {
+    setPage(1);
+  }, [date, pageSize]);
 
-  const mappedData = useMemo(() => {
-    return (Array.isArray(ledgerData) ? ledgerData : []).map((item: any) => {
-      return {
-        accountCode: item.accountCode || "-",
-        accountName: item.accountName || "-",
-        accountType: item.accountType || "-",
-        debitBalance: item.debitBalance != null ? `${item.debitBalance.toLocaleString()} SAR` : "-",
-        creditBalance: item.creditBalance != null ? `${item.creditBalance.toLocaleString()} SAR` : "-",
-      };
-    });
-  }, [ledgerData]);
-
-  const getDayBookReprtData = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      const finalDate = date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      // Only send `date` when the user picks one; otherwise hit the bare endpoint.
+      const finalDate = date ? date.format("YYYY-MM-DD") : undefined;
       const response = await getTrialBalanceReport(finalDate);
-      if (response && response.data.data) {
-        const reportData = response.data.data;
-        const accounts = reportData.accounts || [];
-        setLedgerData(accounts);
+      if (response && response.data) {
+        const root = response.data?.data ?? response.data;
+        const list =
+          root?.accounts ||
+          root?.items ||
+          (Array.isArray(root) ? root : []);
+        setAccounts(Array.isArray(list) ? list : []);
         setTotals({
-          totalDebits: reportData.totalDebits || 0,
-          totalCredits: reportData.totalCredits || 0,
-          difference: reportData.difference || 0,
+          totalDebits: root?.totalDebits ?? 0,
+          totalCredits: root?.totalCredits ?? 0,
+          difference: root?.difference ?? 0,
         });
-
-        const totalItems = accounts.length;
-        setTotalRows(totalItems);
-        
-        // Calculate from and to based on pagination
-        const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
-        const calculatedTo = Math.min(page * pageSize, totalItems);
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
       }
-    } catch (error: any) { 
+    } catch (error: any) {
       console.error("Error fetching trial balance:", error);
-      setLedgerData([]);
-      toast.error("Failed to fetch trial balance");
+      toast.error(error?.message || "Failed to fetch trial balance");
+      setAccounts([]);
+      setTotals({ totalDebits: 0, totalCredits: 0, difference: 0 });
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [date]);
+
+  const filteredAccounts = useMemo(() => {
+    if (!debouncedSearch) return accounts;
+    return accounts.filter((row: any) => {
+      const code = (row.accountCode || "").toString().toLowerCase();
+      const name = (row.accountName || "").toString().toLowerCase();
+      const type = (row.accountType || "").toString().toLowerCase();
+      return (
+        code.includes(debouncedSearch) ||
+        name.includes(debouncedSearch) ||
+        type.includes(debouncedSearch)
+      );
+    });
+  }, [accounts, debouncedSearch]);
+
+  const totalRows = filteredAccounts.length;
+  const totalPage = Math.max(1, Math.ceil(totalRows / pageSize));
+
+  const mappedData = useMemo(
+    () =>
+      filteredAccounts
+        .slice((page - 1) * pageSize, page * pageSize)
+        .map((row: any, index: number) => ({
+          Sr: (page - 1) * pageSize + index + 1,
+          accountCode: row.accountCode || "-",
+          accountName: row.accountName || "-",
+          accountType: row.accountType || "-",
+          debitBalance: row.debitBalance ?? 0,
+          creditBalance: row.creditBalance ?? 0,
+        })),
+    [filteredAccounts, page, pageSize]
+  );
+
+  const columns = [
+    {
+      name: "S No",
+      selector: (row: any) => row.Sr,
+      sortable: true,
+      width: "70px",
+    },
+    {
+      name: "Account Code",
+      selector: (row: any) => row.accountCode,
+      sortable: true,
+    },
+    {
+      name: "Account Name",
+      selector: (row: any) => row.accountName,
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Account Type",
+      selector: (row: any) => row.accountType,
+      sortable: true,
+    },
+    {
+      name: "Debit Balance",
+      selector: (row: any) => `${formatAmount(row.debitBalance)} SAR`,
+      sortable: true,
+      right: true,
+    },
+    {
+      name: "Credit Balance",
+      selector: (row: any) => `${formatAmount(row.creditBalance)} SAR`,
+      sortable: true,
+      right: true,
+    },
+  ];
+
   const exportToCSV = () => {
-    if (!mappedData || mappedData.length === 0) {
-      alert("No data available to export");
+    if (!filteredAccounts || filteredAccounts.length === 0) {
+      toast.error("No data available to export");
       return;
     }
-
-    // Define CSV headers
-    const headers = ["Account Code", "Account Name", "Account Type", "Debit Balance", "Credit Balance"];
-    
-    // Convert data to CSV format
-    const csvContent = [
-      headers.join(","), // Header row
-      ...mappedData.map((row: any) =>
+    const headers = [
+      "Account Code",
+      "Account Name",
+      "Account Type",
+      "Debit Balance",
+      "Credit Balance",
+    ];
+    const csvLines = [
+      headers.join(","),
+      ...filteredAccounts.map((row: any) =>
         [
-          `"${row.accountCode || ""}"`,
-          `"${row.accountName || ""}"`,
-          `"${row.accountType || ""}"`,
-          row.debitBalance || 0,
-          row.creditBalance || 0,
+          `"${(row.accountCode || "").toString().replace(/"/g, '""')}"`,
+          `"${(row.accountName || "").toString().replace(/"/g, '""')}"`,
+          `"${(row.accountType || "").toString().replace(/"/g, '""')}"`,
+          row.debitBalance ?? 0,
+          row.creditBalance ?? 0,
         ].join(",")
       ),
       ["", "", "TOTALS", totals.totalDebits, totals.totalCredits].join(","),
       ["", "", "DIFFERENCE", "", totals.difference].join(","),
     ].join("\n");
 
-    // Create blob and download
-    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
-    const link = document.createElement("a");
-    const url = URL.createObjectURL(blob);
-    
-    link.setAttribute("href", url);
-    link.setAttribute("download", `Trial_Balance_${date.format("YYYY-MM-DD")}.csv`);
-    link.style.visibility = "hidden";
-    
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    const blob = new Blob([csvLines], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "trial_balance.csv");
   };
+
+  const isBalanced = Number(totals.difference || 0) === 0;
 
   return (
     <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h5 className="mb-0">Trial Balance</h5>
-          </div>
-          {/* <div className="col-2 text-end">
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Create Voucher
-            </button>
-          </div> */}
+      {loading && <Loader />}
+      <div className="service p-4">
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">Trial Balance</h3>
         </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center">
-            <div className="col-md-6">
-              <label className="form-label">Date</label>
-              <DatePicker
-                value={date}
-                onChange={(d) => setDate(d)}
-                placeholder="Select Date"
-              />
-            </div>
 
-            {/* Voucher Type Select */}
-            <div className="col-md-3">
-              {/* <label htmlFor="voucherType" className="form-label">
-                Voucher Type
-              </label>
-              <Select id="voucherType" /> */}
-            </div>
+        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <AntInput
+            allowClear
+            placeholder="Search by account code, name, or type"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <DatePicker
+            value={date}
+            onChange={(d) => setDate(d)}
+            format="YYYY-MM-DD"
+            placeholder="As of date"
+            style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 8, height: 40 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!filteredAccounts.length}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Export CSV
+          </button>
+        </div>
 
-            {/* Account Select */}
-            <div className="col-md-3">
-              {/* <label htmlFor="account" className="form-label">
-                Account
-              </label>
-              <Select id="account" /> */}
+        <AntRow gutter={[16, 16]} className="mb-3">
+          <AntCol xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14 }}>Total Debits</div>
+              <div style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatAmount(totals.totalDebits)}{" "}
+                <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
             </div>
-          </div>
-          {/* <div className="col-md-3 mt-3">
-            <button
-              className="btn btn-primary"
-            >
-              Search
-            </button>
-          </div> */}
-          <div className="col-2 text-end">
-            <button
-              className="invoice-btn bg-dark text-white"
-              onClick={exportToCSV}
-            >
-              Export CSV
-            </button>
-          </div>
+          </AntCol>
+          <AntCol xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14 }}>Total Credits</div>
+              <div style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatAmount(totals.totalCredits)}{" "}
+                <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
+            </div>
+          </AntCol>
+          <AntCol xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14 }}>Difference</div>
+              <div
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: isBalanced ? "var(--color-status-green)" : "var(--color-status-red)",
+                }}
+              >
+                {formatAmount(totals.difference)}{" "}
+                <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
+            </div>
+          </AntCol>
+        </AntRow>
+
+        <div className="cs-table p-2 bg-white rounded shadow-sm">
+          <TableView
+            data={mappedData}
+            header={columns}
+            setPage={setPage}
+            page={page}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalRows={totalRows}
+            totalPage={totalPage}
+            from={totalRows > 0 ? (page - 1) * pageSize + 1 : 0}
+            to={Math.min(page * pageSize, totalRows)}
+            isLoading={loading}
+            paginationShow={true}
+          />
         </div>
       </div>
-      <div className="cs-table p-2">
-        <TableView
-          setPage={setPage}
-          setPageSize={setPageSize}
-          page={page}
-          pageSize={pageSize}
-          to={to}
-          from={from}
-          totalRows={totalRows}
-          data={mappedData}
-          header={getAllDaybookReport}
-          isLoading={loading}
-        />
-      </div>
-      {totals && (
-        <div className="mt-3 p-3 bg-light rounded">
-          <div className="row">
-            <div className="col-md-4">
-              <strong>Total Debits:</strong> {totals.totalDebits.toLocaleString()} SAR
-            </div>
-            <div className="col-md-4">
-              <strong>Total Credits:</strong> {totals.totalCredits.toLocaleString()} SAR
-            </div>
-            <div className="col-md-4 text-danger">
-              <strong>Difference:</strong> {totals.difference.toLocaleString()} SAR
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

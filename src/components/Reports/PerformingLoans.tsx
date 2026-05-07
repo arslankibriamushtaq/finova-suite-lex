@@ -1,21 +1,31 @@
-import React, { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker } from "antd";
+import { Col, DatePicker, Input, Row } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import { getNplReport } from "../../redux/apis/apisCrudLms";
+import { saveAs } from "file-saver";
 import dayjs from "dayjs";
-
-import { FaMoneyBillWave, FaChartBar, FaPercentage } from "react-icons/fa";
 
 const PerformingLoans = () => {
   const [asOfDate, setAsOfDate] = useState<any>(null);
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search
+  useEffect(() => {
+    const handle = setTimeout(() => setDebouncedSearch(searchTerm.trim()), 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const finalDate = asOfDate ? asOfDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      // Send asOfDate only when the user has picked one; otherwise hit the bare
+      // endpoint (matches the curl shape).
+      const finalDate = asOfDate ? asOfDate.format("YYYY-MM-DD") : undefined;
       const res = await getNplReport(finalDate);
       if (res && res.data) {
         setReportData(res.data.data);
@@ -29,13 +39,36 @@ const PerformingLoans = () => {
     }
   };
 
-  const buckets = useMemo(() => {
-    return reportData?.buckets || [];
-  }, [reportData]);
-
   useEffect(() => {
     handleSubmit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [asOfDate]);
+
+  const formatNumber = (n: any) => {
+    if (n === null || n === undefined || n === "") return "-";
+    const num = Number(n);
+    if (isNaN(num)) return String(n);
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const buckets = useMemo(() => {
+    const all = reportData?.buckets || [];
+    if (!debouncedSearch) return all;
+    const term = debouncedSearch.toLowerCase();
+    return all.filter((row: any) =>
+      String(row.bucket || "").toLowerCase().includes(term)
+    );
+  }, [reportData, debouncedSearch]);
+
+  // Totals derived from the currently-visible (filtered) buckets so the summary
+  // matches what's in the table.
+  const visibleTotals = useMemo(() => {
+    const filteredOutstanding = buckets.reduce(
+      (acc: number, r: any) => acc + Number(r.outstanding ?? 0),
+      0
+    );
+    return { bucketCount: buckets.length, filteredOutstanding };
+  }, [buckets]);
 
   const columns = [
     {
@@ -44,101 +77,137 @@ const PerformingLoans = () => {
       sortable: true,
     },
     {
-      name: "Outstanding Amount (SAR)",
-      selector: (row: any) => row.outstanding?.toLocaleString() || "0",
+      name: "Outstanding Amount",
+      cell: (row: any) => (
+        <span>
+          {formatNumber(row.outstanding)} SAR
+        </span>
+      ),
       sortable: true,
     },
   ];
 
+  const exportToCSV = () => {
+    if (!buckets.length) {
+      toast.error("No data to export");
+      return;
+    }
+    const headers = ["Aging Bucket", "Outstanding (SAR)"];
+    const rows = buckets.map((r: any) =>
+      [r.bucket, r.outstanding ?? 0]
+        .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`)
+        .join(",")
+    );
+    const csv = [headers.join(","), ...rows].join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, `NPL_Report_${dayjs().format("YYYYMMDD")}.csv`);
+  };
+
   return (
-    <div className="p-3">
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Non-performing Loan Summary</h3>
-          <div className="d-flex align-items-center gap-3">
-            <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border">
-              <label className="mb-0 fw-bold text-muted small uppercase">As Of Date:</label>
-              <DatePicker
-                value={asOfDate}
-                onChange={(date) => setAsOfDate(date)}
-                format="YYYY-MM-DD"
-                bordered={false}
-                className="p-0"
-              />
-            </div>
-            <button
-              className="theme-btn-next px-4"
-              onClick={handleSubmit}
-              disabled={loading}
-              style={{ height: "42px" }}
-            >
-              {loading ? "Loading..." : "Refresh Report"}
-            </button>
-          </div>
-        </div>
+    <div className="col-12">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Non-performing Loan Summary</h3>
+      </div>
 
-        {reportData && (
-          <div className="row mb-4 g-3">
-            <div className="col-md-4">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <div className="text-muted small fw-bold mb-1">Total Outstanding</div>
-                    <div className="h3 mb-0 fw-bold text-black">{reportData.totalOutstanding?.toLocaleString()} <span className="small text-muted">SAR</span></div>
-                  </div>
-                  <div className="h3 text-muted opacity-50 mb-0">
-                    <FaMoneyBillWave />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <div className="text-muted small fw-bold mb-1">NPL Outstanding</div>
-                    <div className="h3 mb-0 fw-bold text-black">{reportData.nplOutstanding?.toLocaleString()} <span className="small text-muted">SAR</span></div>
-                  </div>
-                  <div className="h3 text-muted opacity-50 mb-0">
-                    <FaChartBar />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <div className="d-flex justify-content-between align-items-center">
-                  <div>
-                    <div className="text-muted small fw-bold mb-1">NPL Ratio</div>
-                    <div className="h3 mb-0 fw-bold text-black">{reportData.nplRatio}%</div>
-                  </div>
-                  <div className="h3 text-muted opacity-50 mb-0">
-                    <FaPercentage />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <Input
+          allowClear
+          placeholder="Search by bucket"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <DatePicker
+          placeholder="As of date"
+          value={asOfDate}
+          onChange={(d) => setAsOfDate(d)}
+          format="YYYY-MM-DD"
+          allowClear
+          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 8 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={handleSubmit}
+          disabled={loading}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          {loading ? "Loading..." : "Refresh"}
+        </button>
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!buckets.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+      </div>
 
-        <div className="cs-table p-0 bg-white rounded shadow-sm overflow-hidden">
-          <TableView
-            header={columns}
-            data={buckets}
-            isLoading={loading}
-            totalRows={buckets.length}
-            pageSize={buckets.length || 10}
-            page={1}
-            setPage={() => { }}
-            setPageSize={() => { }}
-            from={buckets.length > 0 ? 1 : 0}
-            to={buckets.length}
-          />
-        </div>
+      {reportData && (
+        <Row gutter={[16, 16]} className="mb-3">
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Outstanding</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {formatNumber(reportData.totalOutstanding)} SAR
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>NPL Outstanding</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {formatNumber(reportData.nplOutstanding)} SAR
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>NPL Ratio</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {reportData.nplRatio ?? 0}%
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Filtered Buckets</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {visibleTotals.bucketCount}
+              </div>
+            </div>
+          </Col>
+        </Row>
+      )}
+
+      <div className="cs-table p-0 bg-white rounded shadow-sm overflow-hidden">
+        <TableView
+          header={columns}
+          data={buckets}
+          isLoading={loading}
+          totalRows={buckets.length}
+          pageSize={buckets.length || 10}
+          page={1}
+          setPage={() => { }}
+          setPageSize={() => { }}
+          from={buckets.length > 0 ? 1 : 0}
+          to={buckets.length}
+        />
       </div>
     </div>
   );
 };
-
 
 export default PerformingLoans;

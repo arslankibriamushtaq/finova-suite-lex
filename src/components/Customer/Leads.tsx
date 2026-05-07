@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
-import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox, Switch } from "antd";
+import { Button, DatePicker, Dropdown, Input, Menu, Select, Modal, Checkbox, Switch } from "antd";
 import TableView from "../TableView/TableView";
-import { FaFilter } from "react-icons/fa";
-import { Images } from "../Config/Images";
 import { getCustomersByLifecycleStage } from "../../redux/apis/apisOnboardingService";
 import { blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, userActive, exportLeads } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
-import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
+import { EyeOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
 import MaskedValue from "../MaskedValue";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
@@ -38,8 +36,6 @@ const Leads = () => {
   const [toDate, setToDate] = useState(null);
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [pep, setPep] = useState('');
-  const [status, setStatus] = useState('');
   
   // Permissions
   const { hasPermission } = usePermissions();
@@ -699,97 +695,59 @@ const Leads = () => {
   const [selectedValue, setSelectedValue] = useState("today");
   return (
     <div className="service">
-      <div className="d-flex justify-content-end col-12 filter-select">
-        <Select
-          style={{ width: "120px", marginRight: "8px" }}
-          placeholder="PEP"
-          allowClear
-          value={pep || undefined}
-          onChange={(value) => setPep(value || '')}
-        >
-          <Select.Option value="1">Yes</Select.Option>
-          <Select.Option value="0">No</Select.Option>
-        </Select>
-
-        <Select
-          style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Status"
-          allowClear
-          value={status || undefined}
-          onChange={(value) => setStatus(value || '')}
-          suffixIcon={<FaFilter />}
-        >
-          <Select.Option value="active">Active</Select.Option>
-          <Select.Option value="inactive">Inactive</Select.Option>
-        </Select>
-
-        <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
-          <div className="d-flex align-items-center gap-1 border px-2 ps-3 search-box">
-            <img src={Images.searchIconGray} alt="" />
-            <input
-              type="text"
-              style={{
-                border: "none",
-                outline: "none",
-                background: "transparent",
+      <div className="filter-select col-12">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder="Search..."
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <div className="d-flex flex-wrap gap-2">
+            <DatePicker
+              className="date-picker"
+              placeholder="From"
+              value={fromDate}
+              onChange={(date) => {
+                setFromDate(date);
+                dispatch(
+                  authSlice.actions.setFromFilter({
+                    fromFilter: formatDate(date ? date : null),
+                  })
+                );
               }}
-              className="p-2"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              allowClear
+              style={{ height: 40 }}
+            />
+            <DatePicker
+              className="date-picker"
+              placeholder="To"
+              value={toDate}
+              onChange={(date) => {
+                setToDate(date);
+                dispatch(
+                  authSlice.actions.setToFilter({
+                    toFilter: formatDate(date),
+                  })
+                );
+                setSelectedValue(!toDate ? "" : "today");
+                dispatch(authSlice.actions.setTheme({ theme: "" }));
+              }}
+              allowClear
+              style={{ height: 40 }}
             />
           </div>
-          <div className="d-flex align-items-center">
-            <div
-              className="d-flex gap-1 p-2"
-              style={{ paddingLeft: "0px !important" }}
-            >
-              <DatePicker
-                className="date-picker"
-                placeholder="From"
-                value={fromDate}
-                onChange={(date) => {
-                  setFromDate(date);
-                  dispatch(
-                    authSlice.actions.setFromFilter({
-                      fromFilter: formatDate(date ? date : null),
-                    })
-                  );
-                }}
-                allowClear
-              />
-              <DatePicker
-                className="date-picker"
-                placeholder="To"
-                value={toDate}
-                onChange={(date) => {
-                  setToDate(date);
-                  dispatch(
-                    authSlice.actions.setToFilter({
-                      toFilter: formatDate(date),
-                    })
-                  );
-                  setSelectedValue(!toDate ? "" : "today");
-                  dispatch(authSlice.actions.setTheme({ theme: "" }));
-                }}
-                allowClear
-              />
-            </div>
-          </div>
           {canExportLeads && (
-            <button className="theme-btn-next" onClick={exportCSV}>
-                Export CSV
+            <button
+              className="theme-btn-next"
+              onClick={exportCSV}
+              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+            >
+              Export CSV
             </button>
-          )} 
-          {/* <button
-            className="invoice-btn"
-            onClick={() => {
-              exportToPDF();
-            }}
-          >
-            PDF
-          </button>
-          <button className="invoice-btn">Print</button> */}
+          )}
         </div>
       </div>
 

@@ -609,7 +609,7 @@ export default function InitialInvestList() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                <p className="text-sm text-gray-900 font-mono">{selectedInitialInvest.id}</p>
+                <p className="text-sm text-gray-900">{selectedInitialInvest.id}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Amount</label>

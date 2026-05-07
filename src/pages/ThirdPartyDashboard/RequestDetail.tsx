@@ -221,7 +221,6 @@ const RequestDetail = () => {
                 rows={10}
                 className="form-control"
                 style={{
-                  fontFamily: "monospace",
                   fontSize: "12px",
                   backgroundColor: "var(--color-surface-subtle)",
                 }}
@@ -240,7 +239,6 @@ const RequestDetail = () => {
                 rows={10}
                 className="form-control"
                 style={{
-                  fontFamily: "monospace",
                   fontSize: "12px",
                   backgroundColor: "var(--color-surface-subtle)",
                 }}

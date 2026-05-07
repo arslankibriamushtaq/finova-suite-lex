@@ -19,6 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 const NetWorthRanges = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -250,17 +252,19 @@ const NetWorthRanges = () => {
     <div className="service p-4">
       <h1 className="text-xl font-bold pb-3">Net Worth Ranges</h1>
 
-      <div className="d-flex justify-content-between mb-3 gap-2">
-        <Input
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <AntInput
+          allowClear
           placeholder="Search by code or name"
-          className="w-[280px]"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => {
             setSearchTerm(e.target.value);
             setPage(1);
           }}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
-        <Button className="gap-2" onClick={handleAdd}>
+        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
           Add New Record
         </Button>

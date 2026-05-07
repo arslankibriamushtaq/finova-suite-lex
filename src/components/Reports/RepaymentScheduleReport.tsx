@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker, Input, Button } from "antd";
+import { Col, Input, Row } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import {
   getRepaymentScheduleReport,
@@ -9,46 +10,58 @@ import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 
 const RepaymentScheduleReport = () => {
-  const [loanId, setLoanId] = useState<string>("");
-  const [fromDate, setFromDate] = useState<any>("");
-  const [toDate, setToDate] = useState<any>("");
-  const [allCallActivity, setAllCallActivity] = useState<any>([]);
+  // Default to the sample loan ID from the API contract so the page loads
+  // something on first paint. Replace it with any valid loan ID via the input.
+  const [loanId, setLoanId] = useState<string>(
+    "550e8400-e29b-41d4-a716-446655440000"
+  );
+  const [allCallActivity, setAllCallActivity] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
+  const [from, setFrom] = useState(0);
+  const [to, setTo] = useState(0);
   const [loading, setLoading] = useState(false);
   const [summary, setSummary] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const handleSubmit = async () => {
+    const trimmed = loanId.trim();
+    if (!trimmed) {
+      setAllCallActivity([]);
+      setSummary(null);
+      return;
+    }
     try {
       setLoading(true);
-
-      let res;
-      if (loanId && loanId.trim().length > 20) {
-        // Fetch specific loan schedule
-        res = await getRepaymentScheduleReport(loanId);
-      } else {
-        // Fetch all data with filters
-        const params: any = {};
-        params.fromDate = fromDate || "2000-01-01";
-        params.toDate = toDate || dayjs().format("YYYY-MM-DD");
-        res = await getRepaymentScheduleReport(params);
-      }
+      // Path-based endpoint: /reports/repayment-schedule/{loanId}
+      const res = await getRepaymentScheduleReport(trimmed);
 
       if (res && res.data) {
         const responseData = res.data.data;
-
         if (Array.isArray(responseData)) {
           setAllCallActivity(responseData);
-          setTotalRows(responseData.length);
           setSummary(null);
         } else if (responseData) {
-          const items = responseData.schedule || responseData.installments || responseData.items || [];
+          const items =
+            responseData.installments ||
+            responseData.schedule ||
+            responseData.items ||
+            [];
           setAllCallActivity(Array.isArray(items) ? items : []);
-          setTotalRows(Array.isArray(items) ? items.length : 0);
           setSummary(responseData);
         }
-        setPage(1);
       }
     } catch (error: any) {
       toast.error(error?.message || "Failed to fetch repayment schedule report");
@@ -61,193 +74,258 @@ const RepaymentScheduleReport = () => {
 
   useEffect(() => {
     handleSubmit();
-  }, [fromDate, toDate, loanId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loanId]);
 
   const formatDate = (isoString: any) => {
     if (!isoString) return "-";
     const date = new Date(isoString);
+    if (isNaN(date.getTime())) return String(isoString);
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
 
-  const formatCurrency = (amount: any) => {
-    if (amount === null || amount === undefined) return "-";
-    return typeof amount === "number"
-      ? amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-      : amount;
+  const formatNumber = (n: any) => {
+    if (n === null || n === undefined || n === "") return "-";
+    const num = Number(n);
+    if (isNaN(num)) return String(n);
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
-  const mappedData = (allCallActivity || []).map((item: any) => ({
-    installmentNo: item.installmentNo ?? item.installmentNumber ?? "-",
-    dueDate: item.dueDate ? formatDate(item.dueDate) : "-",
-    principalDue: item.principalDue != null ? formatCurrency(item.principalDue) : "-",
-    profitOrInterestDue:
-      item.profitOrInterestDue != null || item.interestDue != null
-        ? formatCurrency(item.profitOrInterestDue ?? item.interestDue)
-        : "-",
-    installmentAmount:
-      item.installmentAmount != null || item.totalDue != null
-        ? formatCurrency(item.installmentAmount ?? item.totalDue)
-        : "-",
-    remainingPrincipal:
-      item.remainingPrincipal != null || item.outstandingBalance != null
-        ? formatCurrency(item.remainingPrincipal ?? item.outstandingBalance)
-        : "-",
-    status: item.status || "-",
-    paymentDate: item.paymentDate ? formatDate(item.paymentDate) : "-",
-    penalty: item.penalty != null ? formatCurrency(item.penalty) : "-",
-  }));
+  const mappedData = useMemo(() => {
+    const all = (allCallActivity || []).map((item: any) => ({
+      installmentNo: item.installmentNo ?? item.installmentNumber ?? "-",
+      dueDate: item.dueDate || null,
+      principalDue: item.principalDue ?? null,
+      profitOrInterestDue: item.profitOrInterestDue ?? item.interestDue ?? null,
+      installmentAmount: item.installmentAmount ?? item.totalDue ?? null,
+      remainingPrincipal: item.remainingPrincipal ?? item.outstandingBalance ?? null,
+      penalty: item.penalty ?? null,
+      status: item.status || "-",
+      paymentDate: item.paymentDate || null,
+    }));
+
+    if (!debouncedSearch) return all;
+    const term = debouncedSearch.toLowerCase();
+    return all.filter((row: any) =>
+      String(row.installmentNo).toLowerCase().includes(term) ||
+      String(row.status).toLowerCase().includes(term) ||
+      String(formatDate(row.dueDate)).toLowerCase().includes(term) ||
+      String(formatDate(row.paymentDate)).toLowerCase().includes(term)
+    );
+  }, [allCallActivity, debouncedSearch]);
 
   const paginatedData = useMemo(() => {
-    const startIndex = (page - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return mappedData.slice(startIndex, endIndex);
+    const start = (page - 1) * pageSize;
+    return mappedData.slice(start, start + pageSize);
   }, [mappedData, page, pageSize]);
 
+  // Sync totalRows / totalPage / from / to with the filtered set
   useEffect(() => {
-    handleSubmit();
-  }, []);
+    const total = mappedData.length;
+    setTotalRows(total);
+    setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+    setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+    setTo(Math.min(page * pageSize, total));
+  }, [mappedData, page, pageSize]);
 
   const Call_Activity_Header = [
     { name: "Installment No.", selector: (row: any) => row.installmentNo },
-    { name: "Principal Due", selector: (row: any) => row.principalDue },
-    { name: "Profit/Interest Due", selector: (row: any) => row.profitOrInterestDue },
-    { name: "Installment Amount", selector: (row: any) => row.installmentAmount },
-    { name: "Remaining Principal", selector: (row: any) => row.remainingPrincipal },
-    { name: "Penalty", selector: (row: any) => row.penalty },
-    { name: "Due Date", selector: (row: any) => row.dueDate },
+    {
+      name: "Principal Due",
+      cell: (row: any) => <span>{formatNumber(row.principalDue)}</span>,
+    },
+    {
+      name: "Profit/Interest Due",
+      cell: (row: any) => <span>{formatNumber(row.profitOrInterestDue)}</span>,
+    },
+    {
+      name: "Installment Amount",
+      cell: (row: any) => <span>{formatNumber(row.installmentAmount)}</span>,
+    },
+    {
+      name: "Remaining Principal",
+      cell: (row: any) => <span>{formatNumber(row.remainingPrincipal)}</span>,
+    },
+    {
+      name: "Penalty",
+      cell: (row: any) => <span>{formatNumber(row.penalty)}</span>,
+    },
+    {
+      name: "Due Date",
+      selector: (row: any) => formatDate(row.dueDate),
+    },
     {
       name: "Status",
       cell: (row: any) => {
         const color = (() => {
-          switch (row.status?.toLowerCase()) {
-            case "paid": case "approved": return "rgba(63,195,128,0.9)";
-            case "unpaid": case "rejected": case "reject": return "#F84D4D";
-            case "pending": return "#FFC107";
-            default: return "#6c757d";
+          switch (String(row.status || "").toLowerCase()) {
+            case "paid":
+            case "approved":
+              return "rgba(63,195,128,0.9)";
+            case "unpaid":
+            case "rejected":
+            case "reject":
+              return "#F84D4D";
+            case "pending":
+              return "#FFC107";
+            default:
+              return "#6c757d";
           }
         })();
         return (
-          <div style={{ padding: "8px 10px", borderRadius: "32px", fontSize: "12px", backgroundColor: color, color: "white", display: "inline-block", textTransform: "capitalize", fontWeight: "500" }}>
+          <div
+            style={{
+              padding: "8px 10px",
+              borderRadius: "32px",
+              fontSize: "12px",
+              backgroundColor: color,
+              color: "white",
+              display: "inline-block",
+              textTransform: "capitalize",
+              fontWeight: 500,
+            }}
+          >
             {row.status || "-"}
           </div>
         );
       },
     },
-    { name: "Payment Date", selector: (row: any) => row.paymentDate },
+    {
+      name: "Payment Date",
+      selector: (row: any) => formatDate(row.paymentDate),
+    },
   ];
 
-  const exportToCSV = (data: any[], fileName: string) => {
-    if (!data || data.length === 0) { toast.error("No data to export"); return; }
-    const headers = Object.keys(data[0]);
-    const csvRows = [headers.join(",")];
-    data.forEach((row) => {
-      csvRows.push(headers.map((h) => {
-        const v = row[h];
-        return typeof v === "string" && v.includes(",") ? `"${v}"` : v;
-      }).join(","));
+  const exportToCSV = () => {
+    if (!mappedData.length) {
+      toast.error("No data to export");
+      return;
+    }
+    const csvHeaders = [
+      "Installment No.", "Due Date", "Principal Due", "Profit/Interest Due",
+      "Installment Amount", "Remaining Principal", "Penalty", "Status", "Payment Date",
+    ];
+    const csvRows = [csvHeaders.join(",")];
+    mappedData.forEach((r: any) => {
+      const values = [
+        r.installmentNo,
+        formatDate(r.dueDate),
+        r.principalDue ?? 0,
+        r.profitOrInterestDue ?? 0,
+        r.installmentAmount ?? 0,
+        r.remainingPrincipal ?? 0,
+        r.penalty ?? 0,
+        r.status,
+        formatDate(r.paymentDate),
+      ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
+      csvRows.push(values.join(","));
     });
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `${fileName}.csv`);
+    saveAs(blob, `RepaymentScheduleReport_${dayjs().format("YYYYMMDD")}.csv`);
   };
 
   return (
-    <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Repayment Schedule Report</h3>
-          <button className="invoice-btn bg-dark text-white" onClick={() => exportToCSV(mappedData, "RepaymentScheduleReport")}>
-            Export CSV
-          </button>
-        </div>
-
-        <div className="bg-white p-3 rounded border mb-4 shadow-sm">
-          <div className="row g-3 align-items-end">
-            <div className="col-md-3">
-              <label className="mb-1 fw-bold text-muted small text-uppercase">From Date</label>
-              <DatePicker
-                className="w-100"
-                onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : "")}
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="mb-1 fw-bold text-muted small text-uppercase">To Date</label>
-              <DatePicker
-                className="w-100"
-                onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : "")}
-              />
-            </div>
-            <div className="col-md-3">
-              <label className="mb-1 fw-bold text-muted small text-uppercase">Loan ID (Optional)</label>
-              <Input
-                value={loanId}
-                onChange={(e) => setLoanId(e.target.value)}
-                placeholder="Specific Loan ID"
-                className="w-100"
-              />
-            </div>
-            <div className="col-md-3 d-flex gap-2">
-              <Button className="theme-btn-next w-100" onClick={handleSubmit} loading={loading} style={{ height: "38px" }}>
-                Filter
-              </Button>
-              <button className="invoice-btn bg-dark text-white w-100" onClick={() => { setLoanId(""); setFromDate(""); setToDate(""); handleSubmit(); }}>
-                Clear
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {summary && (
-          <div className="row mb-4">
-            {summary.totalPrincipal != null && (
-              <div className="col-md-3">
-                <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                  <small className="text-uppercase opacity-75 fw-bold text-muted">Total Principal</small>
-                  <h4 className="mb-0 fw-bold">{formatCurrency(summary.totalPrincipal)} SAR</h4>
-                </div>
-              </div>
-            )}
-            {summary.totalProfit != null && (
-              <div className="col-md-3">
-                <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                  <small className="text-uppercase opacity-75 fw-bold text-muted">Total Profit</small>
-                  <h4 className="mb-0 fw-bold text-success">{formatCurrency(summary.totalProfit)} SAR</h4>
-                </div>
-              </div>
-            )}
-            {(summary.totalAmount != null || summary.totalRepayment != null) && (
-              <div className="col-md-3">
-                <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                  <small className="text-uppercase opacity-75 fw-bold text-muted">Total Repayment</small>
-                  <h4 className="mb-0 fw-bold text-primary">{formatCurrency(summary.totalAmount ?? summary.totalRepayment)} SAR</h4>
-                </div>
-              </div>
-            )}
-            {(summary.numberOfInstallments != null || summary.totalInstallments != null) && (
-              <div className="col-md-3">
-                <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                  <small className="text-uppercase opacity-75 fw-bold text-muted">Total Installments</small>
-                  <h4 className="mb-0 fw-bold text-dark">{summary.numberOfInstallments ?? summary.totalInstallments}</h4>
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        <div className="cs-table p-2">
-          <TableView
-            setPage={setPage}
-            setPageSize={setPageSize}
-            totalRows={totalRows}
-            header={Call_Activity_Header}
-            data={paginatedData}
-            isLoading={loading}
-          />
-        </div>
+    <div className="col-12">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Repayment Schedule Report</h3>
       </div>
-    </>
+
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <Input
+          allowClear
+          placeholder="Search by installment, status, date"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <Input
+          allowClear
+          placeholder="Loan ID"
+          value={loanId}
+          onChange={(e) => setLoanId(e.target.value)}
+          style={{ flex: "1 1 280px", minWidth: 240, borderRadius: 8, height: 40 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!mappedData.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+      </div>
+
+      {summary && (
+        <Row gutter={[16, 16]} className="mb-3">
+          {summary.disbursedPrincipal != null && (
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Disbursed Principal</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(summary.disbursedPrincipal)} SAR
+                </div>
+              </div>
+            </Col>
+          )}
+          {summary.totalProfit != null && (
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Profit</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(summary.totalProfit)} SAR
+                </div>
+              </div>
+            </Col>
+          )}
+          {summary.totalPayable != null && (
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Payable</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(summary.totalPayable)} SAR
+                </div>
+              </div>
+            </Col>
+          )}
+          {(summary.tenureMonths != null ||
+            summary.numberOfInstallments != null ||
+            summary.totalInstallments != null) && (
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {summary.tenureMonths != null ? "Tenure (Months)" : "Total Installments"}
+                </div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {summary.tenureMonths ?? summary.numberOfInstallments ?? summary.totalInstallments}
+                </div>
+              </div>
+            </Col>
+          )}
+        </Row>
+      )}
+
+      <div className="cs-table p-2">
+        <TableView
+          setPage={setPage}
+          setPageSize={setPageSize}
+          page={page}
+          pageSize={pageSize}
+          totalRows={totalRows}
+          totalPage={totalPage}
+          from={from}
+          to={to}
+          header={Call_Activity_Header}
+          data={paginatedData}
+          isLoading={loading}
+          paginationShow={true}
+        />
+      </div>
+    </div>
   );
 };
 

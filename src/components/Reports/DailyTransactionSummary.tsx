@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker, Button } from "antd";
+import { Col, DatePicker, Input, Row } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import {
   getDailyTransactionReport,
@@ -9,27 +10,43 @@ import { saveAs } from "file-saver";
 import dayjs from "dayjs";
 
 const DailyTransactionSummary = () => {
-  const [targetDate, setTargetDate] = useState<string>("");
-  const [allCallActivity, setAllCallActivity] = useState<any>([]);
+  const [targetDate, setTargetDate] = useState<any>(null);
+  const [allCallActivity, setAllCallActivity] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
+  const [from, setFrom] = useState(0);
+  const [to, setTo] = useState(0);
   const [loading, setLoading] = useState(false);
   const [summaryData, setSummaryData] = useState<any>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // Debounce search
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const finalDate = targetDate || dayjs().format("YYYY-MM-DD");
-      const res = await getDailyTransactionReport({ date: finalDate });
+      // Only send `date` when the user picks one; otherwise hit the bare endpoint.
+      const params = targetDate ? { date: targetDate.format("YYYY-MM-DD") } : undefined;
+      const res = await getDailyTransactionReport(params);
 
-      if (res && res.data && res.data.data) {
-        const responseData = res.data.data;
-        const items = responseData.channels || [];
-        setAllCallActivity(items);
-        setTotalRows(items.length);
-        setSummaryData(responseData);
-        setPage(1);
+      if (res && res.data) {
+        const responseData = res.data?.data ?? res.data;
+        const items =
+          responseData?.channels ||
+          responseData?.items ||
+          (Array.isArray(responseData) ? responseData : []);
+        setAllCallActivity(Array.isArray(items) ? items : []);
+        setSummaryData(responseData && !Array.isArray(responseData) ? responseData : null);
       }
     } catch (error: any) {
       toast.error(error?.message || "Failed to fetch daily transaction summary");
@@ -40,124 +57,181 @@ const DailyTransactionSummary = () => {
     }
   };
 
-  const formatCurrency = (amount: any) => {
-    if (amount === null || amount === undefined) return "-";
-    return typeof amount === "number"
-      ? amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-      : amount;
-  };
-
-  const mappedData = (allCallActivity || []).map((item: any) => ({
-    channel: item.channel?.replace(/_/g, " ") || "-",
-    amount: formatCurrency(item.amount ?? 0),
-    count: item.count ?? 0,
-  }));
-
-  const paginatedData = useMemo(() => {
-    const startIndex = (page - 1) * pageSize;
-    return mappedData.slice(startIndex, startIndex + pageSize);
-  }, [mappedData, page, pageSize]);
-
   useEffect(() => {
     handleSubmit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [targetDate]);
+
+  const formatNumber = (n: any) => {
+    if (n === null || n === undefined || n === "") return "-";
+    const num = Number(n);
+    if (isNaN(num)) return String(n);
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const mappedData = useMemo(() => {
+    const all = (allCallActivity || []).map((item: any) => ({
+      channel: item.channel?.replace(/_/g, " ") || "-",
+      amount: item.amount ?? 0,
+      count: item.count ?? 0,
+    }));
+
+    if (!debouncedSearch) return all;
+    const term = debouncedSearch.toLowerCase();
+    return all.filter((row: any) =>
+      String(row.channel).toLowerCase().includes(term)
+    );
+  }, [allCallActivity, debouncedSearch]);
+
+  // Visible totals derived from the filtered rows
+  const visibleTotals = useMemo(() => {
+    return mappedData.reduce(
+      (acc: any, r: any) => ({
+        totalAmount: acc.totalAmount + Number(r.amount ?? 0),
+        totalCount: acc.totalCount + Number(r.count ?? 0),
+        channelCount: acc.channelCount + 1,
+      }),
+      { totalAmount: 0, totalCount: 0, channelCount: 0 }
+    );
+  }, [mappedData]);
+
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return mappedData.slice(start, start + pageSize);
+  }, [mappedData, page, pageSize]);
+
+  // Sync totalRows / totalPage / from / to with the filtered set
+  useEffect(() => {
+    const total = mappedData.length;
+    setTotalRows(total);
+    setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+    setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+    setTo(Math.min(page * pageSize, total));
+  }, [mappedData, page, pageSize]);
 
   const Call_Activity_Header = [
     {
       name: "Channel Name",
-      selector: (row: any) => row.channel,
-      cell: (row: any) => <span className="fw-bold">{row.channel}</span>
+      cell: (row: any) => <span className="fw-bold">{row.channel}</span>,
     },
     { name: "Transaction Count", selector: (row: any) => row.count },
     {
       name: "Total Amount",
-      selector: (row: any) => row.amount,
-      cell: (row: any) => <span className="text-primary fw-bold">{row.amount} SAR</span>
+      cell: (row: any) => (
+        <span className="text-primary fw-bold">{formatNumber(row.amount)} SAR</span>
+      ),
     },
   ];
 
-  const exportToCSV = (data: any[], fileName: string) => {
-    if (!data || data.length === 0) { toast.error("No data to export"); return; }
-    const headers = Object.keys(data[0]);
-    const csvRows = [headers.join(",")];
-    data.forEach((row) => {
-      csvRows.push(headers.map((h) => {
-        const v = row[h];
-        return typeof v === "string" && v.includes(",") ? `"${v}"` : v;
-      }).join(","));
+  const exportToCSV = () => {
+    if (!mappedData.length) {
+      toast.error("No data to export");
+      return;
+    }
+    const csvHeaders = ["Channel Name", "Transaction Count", "Total Amount"];
+    const csvRows = [csvHeaders.join(",")];
+    mappedData.forEach((r: any) => {
+      const values = [r.channel, r.count, r.amount ?? 0]
+        .map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`)
+        .join(",");
+      csvRows.push(values);
     });
     const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `${fileName}.csv`);
+    saveAs(blob, `DailyTransactions_${dayjs().format("YYYYMMDD")}.csv`);
   };
 
   return (
-    <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Daily Transaction Summary</h3>
-          <button className="invoice-btn bg-dark text-white" onClick={() => exportToCSV(mappedData, "DailyTransactions")}>
-            Export CSV
-          </button>
-        </div>
-
-        <div className="bg-white p-4 rounded border mb-4 shadow-sm">
-          <div className="row g-3 align-items-end">
-            <div className="col-md-4">
-              <label className="mb-1 fw-bold text-muted small text-uppercase">Select Transaction Date</label>
-              <DatePicker
-                className="w-100"
-                onChange={(date) => setTargetDate(date ? date.format("YYYY-MM-DD") : "")}
-              />
-            </div>
-            <div className="col-md-2">
-              <Button className="theme-btn-next w-100" onClick={handleSubmit} loading={loading} style={{ height: "38px" }}>
-                Generate Report
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {summaryData && (
-          <div className="row mb-4">
-            <div className="col-md-4">
-              <div className="p-4 shadow-sm border bg-white rounded">
-                <small className="text-uppercase opacity-75 fw-bold text-muted">Total Credits</small>
-                <h4 className="mb-0 fw-bold text-success">{formatCurrency(summaryData.totalCredits)} SAR</h4>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="p-4 shadow-sm border bg-white rounded">
-                <small className="text-uppercase opacity-75 fw-bold text-muted">Total Debits</small>
-                <h4 className="mb-0 fw-bold text-danger">{formatCurrency(summaryData.totalDebits)} SAR</h4>
-              </div>
-            </div>
-            <div className="col-md-4">
-              <div className="p-4 shadow-sm border bg-white rounded">
-                <small className="text-uppercase opacity-75 fw-bold text-muted">Transaction Count</small>
-                <h4 className="mb-0 fw-bold">{summaryData.transactionCount}</h4>
-              </div>
-            </div>
-            {/* <div className="col-md-3">
-              <div className="p-4 shadow-sm border bg-white rounded">
-                <small className="text-uppercase opacity-75 fw-bold text-muted">Net Volume</small>
-                <h4 className="mb-0 fw-bold text-primary">{formatCurrency(summaryData.totalCredits - summaryData.totalDebits)} SAR</h4>
-              </div>
-            </div> */}
-          </div>
-        )}
-
-        <div className="cs-table p-2">
-          <TableView
-            setPage={setPage}
-            setPageSize={setPageSize}
-            totalRows={totalRows}
-            header={Call_Activity_Header}
-            data={paginatedData}
-            isLoading={loading}
-          />
-        </div>
+    <div className="col-12">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Daily Transaction Summary</h3>
       </div>
-    </>
+
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <Input
+          allowClear
+          placeholder="Search by channel"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <DatePicker
+          placeholder="Transaction date"
+          value={targetDate}
+          onChange={(d) => setTargetDate(d)}
+          format="YYYY-MM-DD"
+          allowClear
+          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 8 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!mappedData.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+      </div>
+
+      {(allCallActivity.length > 0 || summaryData) && (
+        <Row gutter={[16, 16]} className="mb-3">
+          {summaryData?.totalCredits != null && (
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Credits</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(summaryData.totalCredits)} SAR
+                </div>
+              </div>
+            </Col>
+          )}
+          {summaryData?.totalDebits != null && (
+            <Col xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Debits</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {formatNumber(summaryData.totalDebits)} SAR
+                </div>
+              </div>
+            </Col>
+          )}
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Transaction Count</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {visibleTotals.totalCount}
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Channels</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {visibleTotals.channelCount}
+              </div>
+            </div>
+          </Col>
+        </Row>
+      )}
+
+      <div className="cs-table p-2">
+        <TableView
+          setPage={setPage}
+          setPageSize={setPageSize}
+          page={page}
+          pageSize={pageSize}
+          totalRows={totalRows}
+          totalPage={totalPage}
+          from={from}
+          to={to}
+          header={Call_Activity_Header}
+          data={paginatedData}
+          isLoading={loading}
+          paginationShow={true}
+        />
+      </div>
+    </div>
   );
 };
 

@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import { Plus, ChevronDown, Pencil, Trash2, Settings } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
@@ -354,16 +356,24 @@ const AllProviderApis = () => {
 
   return (
     <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">All Provider APIs</h1>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">All Provider APIs</h3>
+      </div>
 
-      <div className="d-flex justify-content-between mb-3 gap-2">
-        <Input
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <AntInput
+          allowClear
           placeholder="Search by name, code, method, or endpoint"
-          className="w-[320px]"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
-        <Button className="gap-2" onClick={openAddDialog}>
+        <Button
+          className="gap-2"
+          onClick={openAddDialog}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
           <Plus className="h-4 w-4" />
           Add Provider API
         </Button>
@@ -497,11 +507,12 @@ const AllProviderApis = () => {
         isLoading={isLoading}
         from={total > 0 ? startIndex + 1 : 0}
         page={page}
-        totalPage={Math.ceil(total / pageSize) || 1}
+        totalPage={Math.max(1, Math.ceil(total / pageSize))}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
         to={Math.min(endIndex, total)}
+        paginationShow={true}
       />
     </div>
   );

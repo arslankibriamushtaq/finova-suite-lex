@@ -87,7 +87,7 @@ const IncomeRangeView = () => {
           column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
         >
           <Descriptions.Item label="Income Range ID">
-            <span className="font-mono text-sm">{incomeRangeData.id}</span>
+            <span className="text-sm">{incomeRangeData.id}</span>
           </Descriptions.Item>
           <Descriptions.Item label="Minimum Amount">
             {incomeRangeData.minimumAmount?.toLocaleString() || "0"} SAR
