@@ -349,6 +349,9 @@ const defaultFormData = {
       rules: []
     }
   ],
+  // Penalty Waiver Settings
+  penalty_waiver_allowed: false,
+  max_penalty_waivers_allowed: null,
   // Simah Check Rules fields
   minimum_simah_score_allowed: null,
   delinquency_allowed: false,
@@ -512,6 +515,9 @@ export default function CraeteProductSettings() {
           employment_status_vendor: defaultFormData.employment_status_vendor,
           commodity_vendor: defaultFormData.commodity_vendor,
           eligible_nationalities: defaultFormData.eligible_nationalities,
+          // Penalty Waiver Settings
+          penalty_waiver_allowed: fee.penaltyWaiverAllowed ?? product.penaltyWaiverAllowed ?? defaultFormData.penalty_waiver_allowed,
+          max_penalty_waivers_allowed: fee.maxPenaltyWaiversAllowed ?? product.maxPenaltyWaiversAllowed ?? defaultFormData.max_penalty_waivers_allowed,
           // Simah Check Rules fields — not yet in new API, keep defaults
           minimum_simah_score_allowed: defaultFormData.minimum_simah_score_allowed,
           delinquency_allowed: defaultFormData.delinquency_allowed,
@@ -1183,6 +1189,8 @@ export default function CraeteProductSettings() {
         maxDbrPercentage: formData.dbr_percentage || 0,
         dbrCalculationMethod: (formData.dbr_calculation_method || "GROSS_INCOME").toUpperCase(),
         dbrExceptions: Array.isArray(formData.dbr_exceptions) ? formData.dbr_exceptions.join("\n") : (formData.dbr_exceptions || ""),
+        penaltyWaiverAllowed: formData.penalty_waiver_allowed ?? false,
+        maxPenaltyWaiversAllowed: formData.penalty_waiver_allowed ? (formData.max_penalty_waivers_allowed ?? null) : null,
       }
       const response = await updateFeeSettings(productId, feePayload)
 
@@ -1447,6 +1455,8 @@ export default function CraeteProductSettings() {
           maxDbrPercentage: formData.dbr_percentage || 0,
           dbrCalculationMethod: (formData.dbr_calculation_method || "GROSS_INCOME").toUpperCase(),
           dbrExceptions: Array.isArray(formData.dbr_exceptions) ? formData.dbr_exceptions.join("\n") : (formData.dbr_exceptions || ""),
+          penaltyWaiverAllowed: formData.penalty_waiver_allowed ?? false,
+          maxPenaltyWaiversAllowed: formData.penalty_waiver_allowed ? (formData.max_penalty_waivers_allowed ?? null) : null,
         }
         response = await updateFeeSettings(productId, feePayload)
       } else {

@@ -204,9 +204,12 @@ import RetryTransaction from "../pages/lmsPages/LoanManagement/RetryTransaction"
 import ApplicationManagement from "../pages/lmsPages/LoanManagement/ApplicationManagement";
 import BrokenPromises from "../pages/lmsPages/LoanManagement/BrokenPromises";
 import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistory";
+import WaiveOffDetails from "../pages/lmsPages/LoanManagement/WaiveOffDetails";
 import CreateInvoice from "../components/Loans/CreateInvoice";
 import DeliquencyManagement from "../components/Products/Deliquency/DeliquencyManagement";
 import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleConfigManagement";
+import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyManagement";
+import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
 import ExcessPayment from "../components/Transaction History/ExcessPayment";
@@ -1329,6 +1332,14 @@ export const router = createBrowserRouter([
           element: <RescheduleConfigManagement />,
         },
         {
+          path: "Lms/Setting/DunningPolicy",
+          element: <DunningPolicyManagement />,
+        },
+        {
+          path: "Lms/Collections/WaiverRequests",
+          element: <WaiverRequestsManagement />,
+        },
+        {
           path: "Lms/accountingFinancing/daybook",
           element: <DayBook />,
         },
@@ -1420,6 +1431,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/LoanManagement/RescheduleHistory/:id",
           element: <RescheduleHistory />,
+        },
+        {
+          path: "Lms/LoanManagement/WaiveOffDetails/:applicationId",
+          element: <WaiveOffDetails />,
         },
         {
           path: "Lms/LoanManagement/ViewSchedule/:id",

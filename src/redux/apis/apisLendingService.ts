@@ -1,4 +1,5 @@
 import axiosLendingService from "../../utils/axiosLendingService";
+import axiosCollectionsService from "../../utils/axiosCollectionsService";
 
 // ============================================================
 // Purpose of Finance
@@ -122,4 +123,65 @@ export function updateRescheduleConfig(rescheduleType: string, body: any) {
     `/api/v1/admin/reschedule-configs/${rescheduleType}`,
     body
   );
+}
+
+// ============================================================
+// Dunning Policies (Admin)
+// ============================================================
+
+export function getDunningPolicies(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosLendingService.get(`/api/v1/admin/dunning-policies${buildQueryString(params)}`);
+}
+
+export function getDunningPolicyById(id: string) {
+  return axiosLendingService.get(`/api/v1/admin/dunning-policies/${id}`);
+}
+
+export function createDunningPolicy(body: any) {
+  return axiosLendingService.post(`/api/v1/admin/dunning-policies`, body);
+}
+
+export function updateDunningPolicy(id: string, body: any) {
+  return axiosLendingService.put(`/api/v1/admin/dunning-policies/${id}`, body);
+}
+
+export function deleteDunningPolicy(id: string) {
+  return axiosLendingService.delete(`/api/v1/admin/dunning-policies/${id}`);
+}
+
+// ============================================================
+// Waiver Requests (Collections)
+// ============================================================
+
+export function getWaiverRequests(page?: any, size?: any, status?: string, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (status && status !== "ALL") params.status = status;
+  if (search) params.search = search;
+  return axiosCollectionsService.get(`/api/v1/collections/waiver-requests${buildQueryString(params)}`);
+}
+
+export function getWaiverRequestsByApplication(applicationId: string) {
+  return axiosCollectionsService.get(`/api/v1/collections/waiver-requests/application/${applicationId}`);
+}
+
+export function approveWaiverRequest(id: string) {
+  return axiosCollectionsService.post(`/api/v1/collections/waiver-requests/${id}/approve`);
+}
+
+export function rejectWaiverRequest(id: string, body: { rejectionReason: string }) {
+  return axiosCollectionsService.post(`/api/v1/collections/waiver-requests/${id}/reject`, body);
+}
+
+export function approveWaiverByInvoice(invoiceId: string, body: { reason: string; amount: number }) {
+  return axiosCollectionsService.post(`/api/v1/collections/waiver-requests/invoice/${invoiceId}/approve`, body);
+}
+
+export function rejectWaiverByInvoice(invoiceId: string, body: { reason: string }) {
+  return axiosCollectionsService.post(`/api/v1/collections/waiver-requests/invoice/${invoiceId}/reject`, body);
 }

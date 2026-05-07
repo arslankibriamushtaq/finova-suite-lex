@@ -2,6 +2,7 @@ import { ArrowLeft, ArrowRight } from "lucide-react"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
+import { Switch } from "../../ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
 
 interface FeeSettingsTabProps {
@@ -140,9 +141,54 @@ export default function FeeSettingsTab({
             </div> */}
           </div>
           
+          {/* Penalty Waiver Settings */}
+          <div className="border-t pt-6">
+            <h3 className="text-lg font-medium mb-4">Penalty Waiver Settings</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label>Allow Penalty Waivers</Label>
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    checked={!!formData.penalty_waiver_allowed}
+                    onCheckedChange={(checked) => {
+                      updateFormData("penalty_waiver_allowed", checked);
+                      if (!checked) updateFormData("max_penalty_waivers_allowed", null);
+                    }}
+                  />
+                  <span className="text-sm text-muted-foreground">
+                    {formData.penalty_waiver_allowed ? "Enabled" : "Disabled"}
+                  </span>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  Allow customers to request penalty waivers on this product
+                </p>
+              </div>
+
+              {formData.penalty_waiver_allowed && (
+                <div className="space-y-2">
+                  <Label>Max Penalty Waivers Allowed</Label>
+                  <Input
+                    type="number"
+                    min={1}
+                    placeholder="e.g. 3"
+                    value={formData.max_penalty_waivers_allowed ?? ""}
+                    onChange={(e) =>
+                      updateFormData(
+                        "max_penalty_waivers_allowed",
+                        e.target.value === "" ? null : Number(e.target.value)
+                      )
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Maximum number of penalty waivers a customer may receive for this product
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
         </CardContent>
       </Card>
-      
+
 
       {/* Tab Navigation */}
       <div className="flex justify-between gap-3 pt-4">

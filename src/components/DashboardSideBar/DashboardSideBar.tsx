@@ -1282,6 +1282,22 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
      
         {
+          label: "Collections",
+          Link: "Collections/WaiverRequests",
+          img: Images.SettingsIcon,
+          imgActive: Images.SettingsIconDark,
+          active: pathname.split("/").includes("Collections"),
+          submenu: [
+            {
+              label: "Waiver Requests",
+              Link: "WaiverRequests",
+              LinkLable: "/Lms/Collections",
+              active: pathname.includes("/Lms/Collections/WaiverRequests"),
+            },
+          ].filter(Boolean),
+        },
+
+        {
           label: "Setting",
           Link: "notification",
           img: Images.SettingsIcon,
@@ -1312,7 +1328,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               LinkLable: "/Lms/Setting",
               active: pathname.includes("/Lms/Setting/Rescheduling"),
             },
-            // hasAccess("workflow_mapping_module") && 
+            {
+              label: "Dunning Policy",
+              Link: "DunningPolicy",
+              LinkLable: "/Lms/Setting",
+              active: pathname.includes("/Lms/Setting/DunningPolicy"),
+            },
+            // hasAccess("workflow_mapping_module") &&
             // {
             //   label: "Work Flow Mapping",
             //   Link: "WorkFlowMapping",

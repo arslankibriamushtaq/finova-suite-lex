@@ -11,11 +11,16 @@ import {
   waiveAmount,
   executeWriteOff,
 } from "../../redux/apis/apisCrudLms";
-import { getApplicationInstallments } from "../../redux/apis/apisLendingService";
+import {
+  getApplicationInstallments,
+  getWaiverRequestsByApplication,
+  approveWaiverByInvoice,
+  rejectWaiverByInvoice,
+} from "../../redux/apis/apisLendingService";
 import toast from "react-hot-toast";
 import { Modal, Row, Col, ModalHeader, ModalBody, Tab, Tabs } from "react-bootstrap";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { DownOutlined, EditOutlined, EyeOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import Loader from "../Loader/Loader";
 import * as Yup from "yup";
 import { NumberFormatter } from "../../App";
@@ -52,6 +57,16 @@ const Invoices = () => {
   const [activeTab, setActiveTab] = useState("loanInvoices");
   const [earlySettlementPage, setEarlySettlementPage] = useState(1);
   const [earlySettlementPageSize, setEarlySettlementPageSize] = useState(10);
+  const [waiverData, setWaiverData] = useState<any[]>([]);
+  const [waiverLoading, setWaiverLoading] = useState(false);
+  const [waiverPage, setWaiverPage] = useState(1);
+  const [waiverPageSize, setWaiverPageSize] = useState(15);
+  const [waiverModalType, setWaiverModalType] = useState<"approve" | "reject" | null>(null);
+  const [selectedWaiver, setSelectedWaiver] = useState<any>(null);
+  const [waiverReason, setWaiverReason] = useState("");
+  const [waiverAmount, setWaiverAmount] = useState("");
+  const [waiverActionLoading, setWaiverActionLoading] = useState(false);
+  const [waiverErrors, setWaiverErrors] = useState<Record<string, string>>({});
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [waveLateDialog, setWaveLateDialog] = useState(false);
   const [fileName, setFileName] = useState<string | null>("No file chosen");
@@ -535,6 +550,160 @@ const Invoices = () => {
     isEligibleForWriteOff: item?.delinquency?.isEligibleForWriteOff ?? false,
   });
 
+  const fetchWaiverData = async () => {
+    const applicationId = id?.id;
+    if (!applicationId) return;
+    try {
+      setWaiverLoading(true);
+      const res = await getWaiverRequestsByApplication(applicationId);
+      const list = res?.data?.data || res?.data || [];
+      setWaiverData(Array.isArray(list) ? list : []);
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch waiver requests");
+    } finally {
+      setWaiverLoading(false);
+    }
+  };
+
+  const openWaiverModal = (type: "approve" | "reject", row: any) => {
+    setSelectedWaiver(row);
+    setWaiverModalType(type);
+    setWaiverReason("");
+    setWaiverAmount("");
+    setWaiverErrors({});
+  };
+
+  const closeWaiverModal = () => {
+    setWaiverModalType(null);
+    setSelectedWaiver(null);
+    setWaiverReason("");
+    setWaiverAmount("");
+    setWaiverErrors({});
+  };
+
+  const validateWaiver = (): boolean => {
+    const e: Record<string, string> = {};
+    if (!waiverReason.trim()) e.reason = "Reason is required";
+    if (waiverModalType === "approve") {
+      if (!waiverAmount) {
+        e.amount = "Amount is required";
+      } else {
+        const amt = parseFloat(waiverAmount);
+        if (isNaN(amt) || amt <= 0) {
+          e.amount = "Enter a valid amount";
+        } else if (amt > parseFloat(selectedWaiver?.requestedAmount)) {
+          e.amount = `Cannot exceed requested amount`;
+        }
+      }
+    }
+    setWaiverErrors(e);
+    return Object.keys(e).length === 0;
+  };
+
+  const handleWaiverSubmit = async () => {
+    if (!validateWaiver() || !selectedWaiver) return;
+    try {
+      setWaiverActionLoading(true);
+      if (waiverModalType === "approve") {
+        await approveWaiverByInvoice(selectedWaiver.invoiceId, {
+          reason: waiverReason.trim(),
+          amount: parseFloat(waiverAmount),
+        });
+        toast.success("Waiver request approved successfully");
+      } else {
+        await rejectWaiverByInvoice(selectedWaiver.invoiceId, {
+          reason: waiverReason.trim(),
+        });
+        toast.success("Waiver request rejected");
+      }
+      closeWaiverModal();
+      fetchWaiverData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || `Failed to ${waiverModalType} waiver request`);
+    } finally {
+      setWaiverActionLoading(false);
+    }
+  };
+
+  const waiverActionMenu = (row: any) => (
+    <Menu
+      onClick={({ key }) => {
+        if (key === "approve") openWaiverModal("approve", row);
+        if (key === "reject") openWaiverModal("reject", row);
+      }}
+    >
+      <Menu.Item key="approve" icon={<CheckCircleOutlined />}>Approve</Menu.Item>
+      <Menu.Item key="reject" icon={<CloseCircleOutlined />} danger>Reject</Menu.Item>
+    </Menu>
+  );
+
+  const waiverTotal = waiverData.length;
+  const waiverStart = (waiverPage - 1) * waiverPageSize;
+  const paginatedWaiverData = waiverData.slice(waiverStart, waiverStart + waiverPageSize);
+  const waiverTotalPage = Math.ceil(waiverTotal / waiverPageSize) || 1;
+
+  const WaiverStatusPill = ({ status }: { status?: string }) => {
+    if (!status) return <span>-</span>;
+    const bg =
+      status === "APPROVED" ? "var(--color-status-green)" :
+      status === "REJECTED" ? "var(--color-status-coral)" :
+      status === "PENDING" ? "var(--color-status-amber)" : "var(--muted)";
+    return (
+      <span style={{ padding: "4px 12px", borderRadius: 32, fontSize: 12, fontWeight: 600, backgroundColor: bg, color: "var(--primary-foreground)", whiteSpace: "nowrap" }}>
+        {status}
+      </span>
+    );
+  };
+
+  const formatWaiverCurrency = (value?: number | null) =>
+    value != null ? `SAR ${parseFloat(String(value)).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-";
+
+  const formatWaiverDateTime = (value?: string | null) =>
+    value ? new Date(value).toLocaleString() : "-";
+
+  const WaiverColumns = [
+    { name: "#", cell: (_row: any, index: number) => waiverStart + index + 1, width: "60px" },
+    { name: "Invoice ID", selector: (row: any) => row.invoiceId || "-", width: "180px" },
+    { name: "Requested Amount", selector: (row: any) => formatWaiverCurrency(row.requestedAmount), width: "170px" },
+    {
+      name: "Reason",
+      cell: (row: any) => (
+        <span title={row.reason || ""} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any, overflow: "hidden", fontSize: 12 }}>
+          {row.reason || "-"}
+        </span>
+      ),
+      width: "200px",
+    },
+    { name: "Status", cell: (row: any) => <WaiverStatusPill status={row.status} />, width: "120px" },
+    {
+      name: "Rejection Reason",
+      cell: (row: any) => (
+        <span title={row.rejectionReason || ""} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any, overflow: "hidden", fontSize: 12, color: row.rejectionReason ? "var(--color-status-coral)" : "var(--muted-foreground)" }}>
+          {row.rejectionReason || "-"}
+        </span>
+      ),
+      width: "180px",
+    },
+    { name: "Requested At", selector: (row: any) => formatWaiverDateTime(row.requestedAt), width: "170px" },
+    { name: "Processed At", selector: (row: any) => formatWaiverDateTime(row.processedAt), width: "170px" },
+    {
+      name: "Action",
+      cell: (row: any) => {
+        if (row.status !== "PENDING") {
+          return <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>—</span>;
+        }
+        return (
+          <Dropdown overlay={waiverActionMenu(row)} trigger={["click"]}>
+            <Button className="gradient-btn" type="primary" style={{ borderColor: "white", borderRadius: 8, padding: "10px 20px" }}>
+              Select <DownOutlined />
+            </Button>
+          </Dropdown>
+        );
+      },
+      width: "140px",
+    },
+  ];
+
   const regularInvoices = allinvoiceList?.map(mapInvoice) || [];
 
   const earlySettlementInvoices = allinvoiceList
@@ -551,6 +720,10 @@ const Invoices = () => {
     individualCustomer();
     return () => { };
   }, [page, pageSize]);
+
+  useEffect(() => {
+    if (activeTab === "waiverRequests") fetchWaiverData();
+  }, [activeTab]);
 
   const handleUpdateDueDate = async () => {
     try {
@@ -749,6 +922,28 @@ const Invoices = () => {
                   style={{ color: "var(--destructive)" }}
                 >
                   No data found
+                </div>
+              )}
+            </div>
+          </Tab>
+          <Tab eventKey="waiverRequests" title="Waive Off Requests">
+            <div className="cs-table p-2">
+              <TableView
+                setPage={setWaiverPage}
+                setPageSize={setWaiverPageSize}
+                page={waiverPage}
+                pageSize={waiverPageSize}
+                totalRows={waiverTotal}
+                totalPage={waiverTotalPage}
+                from={waiverTotal > 0 ? waiverStart + 1 : 0}
+                to={Math.min(waiverStart + waiverPageSize, waiverTotal)}
+                header={WaiverColumns}
+                data={paginatedWaiverData}
+                isLoading={waiverLoading}
+              />
+              {!waiverLoading && waiverTotal === 0 && (
+                <div className="d-flex justify-content-center mt-5" style={{ color: "var(--destructive)" }}>
+                  No waiver requests found
                 </div>
               )}
             </div>
@@ -1342,6 +1537,74 @@ const Invoices = () => {
             )}
           </Formik>
         </Modal.Body>
+      </Modal>
+
+      {/* Waive Off Approve / Reject Modal */}
+      <Modal show={!!waiverModalType} onHide={closeWaiverModal} centered>
+        <Modal.Header closeButton>
+          <Modal.Title style={{ fontSize: 16 }}>
+            {waiverModalType === "approve" ? "Approve Waiver Request" : "Reject Waiver Request"}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            {waiverModalType === "approve" && (
+              <Col md={12} className="mb-3">
+                <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 4 }}>
+                  Waiver Amount (SAR) *
+                </label>
+                <input
+                  type="number"
+                  min={0.01}
+                  step={0.01}
+                  className={`form-control${waiverErrors.amount ? " is-invalid" : ""}`}
+                  placeholder={`Max: ${parseFloat(selectedWaiver?.requestedAmount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
+                  value={waiverAmount}
+                  onChange={(e) => {
+                    const max = parseFloat(selectedWaiver?.requestedAmount || 0);
+                    const val = e.target.value;
+                    if (val !== "" && parseFloat(val) > max) return;
+                    setWaiverAmount(val);
+                    if (waiverErrors.amount) setWaiverErrors((p) => ({ ...p, amount: "" }));
+                  }}
+                />
+                {waiverErrors.amount && <div className="invalid-feedback" style={{ display: "block" }}>{waiverErrors.amount}</div>}
+                <small className="text-muted" style={{ fontSize: 11 }}>
+                  Requested: {formatWaiverCurrency(selectedWaiver?.requestedAmount)} — cannot exceed this amount
+                </small>
+              </Col>
+            )}
+            <Col md={12} className="mb-1">
+              <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 4 }}>
+                {waiverModalType === "approve" ? "Approval Reason *" : "Rejection Reason *"}
+              </label>
+              <textarea
+                rows={3}
+                className={`form-control${waiverErrors.reason ? " is-invalid" : ""}`}
+                placeholder={waiverModalType === "approve" ? "Enter reason for approval..." : "Enter reason for rejection..."}
+                value={waiverReason}
+                onChange={(e) => {
+                  setWaiverReason(e.target.value);
+                  if (waiverErrors.reason) setWaiverErrors((p) => ({ ...p, reason: "" }));
+                }}
+              />
+              {waiverErrors.reason && <div className="invalid-feedback" style={{ display: "block" }}>{waiverErrors.reason}</div>}
+            </Col>
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={closeWaiverModal} disabled={waiverActionLoading}>Cancel</Button>
+          <Button
+            className="gradient-btn"
+            type="primary"
+            loading={waiverActionLoading}
+            onClick={handleWaiverSubmit}
+            danger={waiverModalType === "reject"}
+            style={{ borderColor: "white", borderRadius: 8, padding: "10px 20px" }}
+          >
+            {waiverModalType === "approve" ? "Approve" : "Reject"}
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );
