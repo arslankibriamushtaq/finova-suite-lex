@@ -245,6 +245,9 @@ const ApplicationManagement = () => {
     else if (key === "rescheduleHistory") {
       navigate(`/Lms/LoanManagement/RescheduleHistory/${row.applicationId}`);
     }
+    else if (key === "waiveOffDetails") {
+      navigate(`/Lms/LoanManagement/WaiveOffDetails/${row.applicationId}`);
+    }
   };
 
   const handleManualAction = (key: string, row: any) => {
@@ -481,6 +484,9 @@ const ApplicationManagement = () => {
             Reschedule History
           </Menu.Item>
         )}
+        <Menu.Item key="waiveOffDetails" icon={<EyeOutlined />}>
+          Waive Off Details
+        </Menu.Item>
       </Menu>
     );
   };
@@ -1914,6 +1920,7 @@ const ApplicationManagement = () => {
           </div>
         </Modal.Body>
       </Modal>
+
     </div>
   );
 };
