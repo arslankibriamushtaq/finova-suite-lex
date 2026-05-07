@@ -27,6 +27,7 @@ const groupByRangeNo = (configs: any[]): any[] => {
     }
   });
   return Array.from(seen.values());
+  
 };
 
 const InvoiceRange = (props: any) => {
