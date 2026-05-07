@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { FaSearchengin } from "react-icons/fa";
+import React, { useEffect, useMemo, useState } from "react";
 import { Dropdown, Input, Menu, Button, Checkbox } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { useNavigate, useParams } from "react-router-dom";
 import {
@@ -45,6 +45,7 @@ const PAYMENT_STATUS = {
 const Invoices = () => {
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
   const [allinvoiceList, setAllinvoiceList] = useState<any>();
@@ -157,14 +158,6 @@ const Invoices = () => {
     );
   };
 
-  const customSearchInput = (
-    <Input
-      placeholder="Search Invoices"
-      value={searchValue}
-      prefix={<FaSearchengin />}
-      onChange={(e: any) => setSearchValue(e.target.value)}
-    />
-  );
   const button = [
     // { title: "edit", onClick: handleClick },
     // { title: "view", onClick: handleView },
@@ -637,10 +630,23 @@ const Invoices = () => {
     </Menu>
   );
 
-  const waiverTotal = waiverData.length;
+  const filteredWaiverData = useMemo(() => {
+    if (!debouncedSearch) return waiverData;
+    return waiverData.filter((row: any) => {
+      return (
+        String(row.invoiceId || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.status || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.reason || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.rejectionReason || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.requestedAmount ?? "").toLowerCase().includes(debouncedSearch)
+      );
+    });
+  }, [waiverData, debouncedSearch]);
+
+  const waiverTotal = filteredWaiverData.length;
   const waiverStart = (waiverPage - 1) * waiverPageSize;
-  const paginatedWaiverData = waiverData.slice(waiverStart, waiverStart + waiverPageSize);
-  const waiverTotalPage = Math.ceil(waiverTotal / waiverPageSize) || 1;
+  const paginatedWaiverData = filteredWaiverData.slice(waiverStart, waiverStart + waiverPageSize);
+  const waiverTotalPage = Math.max(1, Math.ceil(waiverTotal / waiverPageSize));
 
   const WaiverStatusPill = ({ status }: { status?: string }) => {
     if (!status) return <span>-</span>;
@@ -704,9 +710,9 @@ const Invoices = () => {
     },
   ];
 
-  const regularInvoices = allinvoiceList?.map(mapInvoice) || [];
+  const allMappedInvoices: any[] = allinvoiceList?.map(mapInvoice) || [];
 
-  const earlySettlementInvoices = allinvoiceList
+  const allEarlySettlementInvoices: any[] = allinvoiceList
     ?.filter(
       (item: any) =>
         item?.delinquency?.earlySettlementEligible === true &&
@@ -714,6 +720,57 @@ const Invoices = () => {
         item?.paymentStatus !== PAYMENT_STATUS.OVERDUE
     )
     .map(mapInvoice) || [];
+
+  // Debounce the search input
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchValue.trim().toLowerCase());
+      setPage(1);
+      setEarlySettlementPage(1);
+      setWaiverPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchValue]);
+
+  const matchesInvoice = (row: any) => {
+    if (!debouncedSearch) return true;
+    return (
+      String(row.invoiceId || "").toLowerCase().includes(debouncedSearch) ||
+      String(row.installmentNumber ?? "").toLowerCase().includes(debouncedSearch) ||
+      String(row.dueDate || "").toLowerCase().includes(debouncedSearch) ||
+      String(row.paymentStatus || "").toLowerCase().includes(debouncedSearch) ||
+      String(row.delinquencyStatus || "").toLowerCase().includes(debouncedSearch)
+    );
+  };
+
+  const filteredRegularInvoices = useMemo(
+    () => allMappedInvoices.filter(matchesInvoice),
+    [allMappedInvoices, debouncedSearch]
+  );
+  const filteredEarlySettlementInvoices = useMemo(
+    () => allEarlySettlementInvoices.filter(matchesInvoice),
+    [allEarlySettlementInvoices, debouncedSearch]
+  );
+
+  const regularInvoicesTotal = filteredRegularInvoices.length;
+  const regularInvoicesTotalPage = Math.max(
+    1,
+    Math.ceil(regularInvoicesTotal / pageSize)
+  );
+  const regularInvoices = filteredRegularInvoices.slice(
+    (page - 1) * pageSize,
+    page * pageSize
+  );
+
+  const earlySettlementTotal = filteredEarlySettlementInvoices.length;
+  const earlySettlementTotalPage = Math.max(
+    1,
+    Math.ceil(earlySettlementTotal / earlySettlementPageSize)
+  );
+  const earlySettlementInvoices = filteredEarlySettlementInvoices.slice(
+    (earlySettlementPage - 1) * earlySettlementPageSize,
+    earlySettlementPage * earlySettlementPageSize
+  );
 
   useEffect(() => {
     // handleAllReason();
@@ -848,23 +905,31 @@ const Invoices = () => {
           <h3>Loan Invoices</h3>
         </div>
 
-        <div className="col-12 d-flex justify-content-end">
-          {selectedInvoices.length > 0 ? (
+        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <Input
+            allowClear
+            placeholder="Search by invoice ID, installment, status, due date"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchValue}
+            onChange={(e: any) => setSearchValue(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          {selectedInvoices.length > 0 && (
             <Button
               className="application-btn"
               style={{
                 color: "var(--primary-foreground)",
-
                 padding: "9px",
                 borderRadius: "8px",
                 border: "transparent",
+                height: 40,
+                whiteSpace: "nowrap",
+                flexShrink: 0,
               }}
               onClick={handleChangeInvoice}
             >
               Pay Invoices
             </Button>
-          ) : (
-            ""
           )}
         </div>
 
@@ -881,20 +946,16 @@ const Invoices = () => {
                 setPageSize={setPageSize}
                 page={page}
                 pageSize={pageSize}
-                totalRows={regularInvoices?.length || 0}
+                totalRows={regularInvoicesTotal}
+                totalPage={regularInvoicesTotalPage}
+                from={regularInvoicesTotal > 0 ? (page - 1) * pageSize + 1 : 0}
+                to={Math.min(page * pageSize, regularInvoicesTotal)}
                 header={Customer_ALL_List_Header}
                 data={regularInvoices}
                 isLoading={skelitonLoading}
+                paginationShow={true}
               />
-              {regularInvoices?.length == 0 && allinvoiceList?.length > 0 && (
-                <div
-                  className="d-flex justify-content-center mt-5"
-                  style={{ color: "var(--destructive)" }}
-                >
-                  No data found
-                </div>
-              )}
-              {allinvoiceList?.length == 0 && (
+              {!skelitonLoading && regularInvoicesTotal === 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}
@@ -911,12 +972,23 @@ const Invoices = () => {
                 setPageSize={setEarlySettlementPageSize}
                 page={earlySettlementPage}
                 pageSize={earlySettlementPageSize}
-                totalRows={earlySettlementInvoices.length}
+                totalRows={earlySettlementTotal}
+                totalPage={earlySettlementTotalPage}
+                from={
+                  earlySettlementTotal > 0
+                    ? (earlySettlementPage - 1) * earlySettlementPageSize + 1
+                    : 0
+                }
+                to={Math.min(
+                  earlySettlementPage * earlySettlementPageSize,
+                  earlySettlementTotal
+                )}
                 header={EarlySettlement_List_Header}
                 data={earlySettlementInvoices}
                 isLoading={skelitonLoading}
+                paginationShow={true}
               />
-              {!skelitonLoading && earlySettlementInvoices.length === 0 && (
+              {!skelitonLoading && earlySettlementTotal === 0 && (
                 <div
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}
@@ -940,6 +1012,7 @@ const Invoices = () => {
                 header={WaiverColumns}
                 data={paginatedWaiverData}
                 isLoading={waiverLoading}
+                paginationShow={true}
               />
               {!waiverLoading && waiverTotal === 0 && (
                 <div className="d-flex justify-content-center mt-5" style={{ color: "var(--destructive)" }}>

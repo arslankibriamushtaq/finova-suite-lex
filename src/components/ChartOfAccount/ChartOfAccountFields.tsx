@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
 import { Modal, Form, Input, Select, Switch, InputNumber, Button, Space, Popconfirm, Menu, Dropdown } from "antd";
 import toast from "react-hot-toast";
@@ -9,7 +9,7 @@ import {
   activateCoaField,
   deactivateCoaField
 } from "../../redux/apis/apisCrudLms";
-import { EditOutlined, PoweroffOutlined, CheckCircleOutlined, DownOutlined } from "@ant-design/icons";
+import { EditOutlined, PoweroffOutlined, CheckCircleOutlined, DownOutlined, SearchOutlined } from "@ant-design/icons";
 
 const ChartOfAccountFields = () => {
   const [data, setData] = useState([]);
@@ -22,12 +22,13 @@ const ChartOfAccountFields = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
 
   // Search state
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
-  // Debounce search so we don't refilter on every keystroke
+  // Debounce search so we don't refetch on every keystroke
   useEffect(() => {
     const handle = setTimeout(() => {
       setDebouncedSearch(searchTerm.trim());
@@ -45,12 +46,22 @@ const ChartOfAccountFields = () => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      // Adding a timestamp to avoid browser caching
-      const res = await getCoaFields();
+      // Backend uses 0-based page indexing. Pass search so the API can filter
+      // server-side (with client-side fallback below if it ignores the param).
+      const res = await getCoaFields(page - 1, pageSize, debouncedSearch || undefined);
       if (res && res.data) {
         const fields = res.data.data || [];
         setData(fields);
-        setTotalRows(fields.length);
+
+        // Read pagination from the new shape; fall back to row count if missing.
+        const pagination = res?.data?.pagination;
+        if (pagination?.totalElements != null) {
+          setTotalRows(pagination.totalElements);
+          setTotalPage(pagination.totalPages || Math.max(1, Math.ceil(pagination.totalElements / pageSize)));
+        } else {
+          setTotalRows(fields.length);
+          setTotalPage(Math.max(1, Math.ceil(fields.length / pageSize)));
+        }
       }
     } catch (error: any) {
       console.error("Error fetching COA fields:", error);
@@ -62,7 +73,8 @@ const ChartOfAccountFields = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, pageSize, debouncedSearch]);
 
   const handleAddEdit = async (values: any) => {
     try {
@@ -228,61 +240,45 @@ const ChartOfAccountFields = () => {
     },
   ];
 
-// Apply free-text search across the visible columns
-const filteredData = useMemo(() => {
-  if (!debouncedSearch) return data;
-  const term = debouncedSearch.toLowerCase();
-  return (data || []).filter((row: any) => {
-    const isActive = getIsActive(row);
-    return (
-      String(row.fieldKey || "").toLowerCase().includes(term) ||
-      String(row.fieldLabelEn || "").toLowerCase().includes(term) ||
-      String(row.fieldLabelAr || "").toLowerCase().includes(term) ||
-      String(row.category || "").toLowerCase().includes(term) ||
-      (isActive ? "active" : "inactive").includes(term)
-    );
-  });
-}, [data, debouncedSearch]);
-
-// Keep the table's totalRows in sync with the filtered set so pagination is correct
-useEffect(() => {
-  setTotalRows(filteredData.length);
-}, [filteredData]);
-
-// Client-side pagination for TableView
-const paginatedData = useMemo(() => {
-  const start = (page - 1) * pageSize;
-  return filteredData.slice(start, start + pageSize);
-}, [filteredData, page, pageSize]);
-
 return (
   <div className="p-3">
-    <h4 className="mb-3">Chart of Accounts Fields</h4>
-    <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div className="mb-3 pb-2 border-bottom">
+      <h3 className="mb-0 fw-bold text-dark">Chart of Accounts Fields</h3>
+    </div>
+
+    <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
       <Input
+        allowClear
         placeholder="Search by key, label, category, status"
+        prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        allowClear
-        style={{ width: 320 }}
+        style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
       />
-      <button className="theme-btn-next" onClick={() => openModal()}>
+      <button
+        type="button"
+        className="theme-btn-next"
+        onClick={() => openModal()}
+        style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+      >
         Add New Field
       </button>
     </div>
 
     <div className="cs-table p-2 bg-white rounded shadow-sm">
       <TableView
-        data={paginatedData}
+        data={data}
         header={columns}
         isLoading={loading}
         totalRows={totalRows}
+        totalPage={totalPage}
         page={page}
         pageSize={pageSize}
         setPage={setPage}
         setPageSize={setPageSize}
         from={totalRows > 0 ? (page - 1) * pageSize + 1 : 0}
         to={Math.min(page * pageSize, totalRows)}
+        paginationShow={true}
       />
     </div>
 

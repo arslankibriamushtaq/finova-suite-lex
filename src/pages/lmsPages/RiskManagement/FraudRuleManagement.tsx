@@ -19,6 +19,8 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 interface ParamEntry {
   key: string;
@@ -274,12 +276,14 @@ const FraudRuleManagement = () => {
     <div className="service p-4">
       <h1 className="text-xl font-bold pb-3">Fraud Rule Management</h1>
 
-      <div className="d-flex justify-content-between mb-3 gap-2">
-        <Input
+      <div className="d-flex flex-wrap align-items-center mb-3 gap-2">
+        <AntInput
+          allowClear
           placeholder="Search by rule ID, name, category, or status"
-          className="w-[320px]"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
       </div>
 

@@ -15,6 +15,8 @@ import {
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
 import { Plus, ChevronDown, Pencil, Trash2 } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 const CATEGORIES = ["KYC", "PAYMENT", "CREDIT_BUREAU", "GOVERNMENT", "COMMUNICATION", "COMPLIANCE", "BANKING", "RISK"];
 const AUTH_TYPES = ["API_KEY", "OAUTH2", "BASIC_AUTH", "CERTIFICATE", "HMAC", "NONE"];
@@ -250,16 +252,24 @@ const ProvidersList = () => {
 
   return (
     <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Providers</h1>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Providers</h3>
+      </div>
 
-      <div className="d-flex justify-content-between mb-3 gap-2">
-        <Input
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <AntInput
+          allowClear
           placeholder="Search by name, code, or category"
-          className="w-[280px]"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
-        <Button className="gap-2" onClick={openAddDialog}>
+        <Button
+          className="gap-2"
+          onClick={openAddDialog}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
           <Plus className="h-4 w-4" />
           Add Provider
         </Button>
@@ -398,11 +408,12 @@ const ProvidersList = () => {
         isLoading={isLoading}
         from={filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0}
         page={page}
-        totalPage={Math.ceil(filteredData.length / pageSize) || 1}
+        totalPage={Math.max(1, Math.ceil(filteredData.length / pageSize))}
         setPage={setPage}
         pageSize={pageSize}
         setPageSize={setPageSize}
         to={Math.min(page * pageSize, filteredData.length)}
+        paginationShow={true}
       />
     </div>
   );

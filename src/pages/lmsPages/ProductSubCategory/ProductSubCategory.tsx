@@ -27,6 +27,8 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 const ProductSubCategory = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -281,8 +283,8 @@ const ProductSubCategory = () => {
     <div className="service p-4">
       <h1 className="text-xl font-bold pb-3">Product Sub Categories</h1>
 
-      <div className="d-flex justify-content-between mb-3 gap-2">
-        <div className="d-flex gap-2">
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <div className="d-flex flex-wrap align-items-center gap-2" style={{ flex: "1 1 auto", minWidth: 0 }}>
           <Select
             value={selectedCategoryId}
             onValueChange={(value) => {
@@ -290,7 +292,7 @@ const ProductSubCategory = () => {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-[220px]">
+            <SelectTrigger className="w-[220px]" style={{ height: 40 }}>
               <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
@@ -301,14 +303,16 @@ const ProductSubCategory = () => {
               ))}
             </SelectContent>
           </Select>
-          <Input
+          <AntInput
+            allowClear
             placeholder="Search by code or name"
-            className="w-[280px]"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
         </div>
-        <Button className="gap-2" onClick={handleAdd}>
+        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
           Add New Record
         </Button>

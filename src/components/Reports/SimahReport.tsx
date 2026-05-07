@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { Button } from "antd";
+import { Button, DatePicker, Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { getSimahReport } from "../../redux/apis/apisCrudLms";
@@ -16,6 +17,19 @@ const SimahReport = ({ loader }: any) => {
   const [to, setTo] = useState(0);
   const [ledgerData, setLedgerData] = useState<any>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
+
+  // Debounce search so we don't refilter on every keystroke
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const formatDate = (isoString: any) => {
     if (!isoString) return "-";
@@ -67,10 +81,12 @@ const SimahReport = ({ loader }: any) => {
     try {
       setLoading(true);
 
-      // Backend requires a period (YYYY-MM) — calling without it returns 500.
-      // Always send the current month so the endpoint works without exposing
-      // a picker in the UI.
-      const response = await getSimahReport(dayjs().format("YYYY-MM"));
+      // Pass from/to dates if the user has picked them; otherwise send no
+      // params and let the backend return the default report.
+      const response = await getSimahReport({
+        from: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
+        to: toDate ? toDate.format("YYYY-MM-DD") : undefined,
+      });
 
       // Try every common envelope shape the backend might use:
       //   { data: [...] }
@@ -126,19 +142,42 @@ const SimahReport = ({ loader }: any) => {
       simahStatus: item.simahStatus || "-",
     })) || [], [ledgerData]);
 
+  const filteredData = useMemo(() => {
+    if (!debouncedSearch) return mappedData;
+    const term = debouncedSearch.toLowerCase();
+    return mappedData.filter((row: any) =>
+      String(row.loanId).toLowerCase().includes(term) ||
+      String(row.customerId).toLowerCase().includes(term) ||
+      String(row.facilityType).toLowerCase().includes(term) ||
+      String(row.paymentStatus).toLowerCase().includes(term) ||
+      String(row.simahStatus).toLowerCase().includes(term)
+    );
+  }, [mappedData, debouncedSearch]);
+
   const paginatedData = useMemo(() => {
     const startIndex = (page - 1) * pageSize;
-    return mappedData.slice(startIndex, startIndex + pageSize);
-  }, [mappedData, page, pageSize]);
+    return filteredData.slice(startIndex, startIndex + pageSize);
+  }, [filteredData, page, pageSize]);
+
+  // Sync totalRows / from / to with the filtered set
+  useEffect(() => {
+    const total = filteredData.length;
+    setTotalRows(total);
+    setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+    setTo(Math.min(page * pageSize, total));
+  }, [filteredData, page, pageSize]);
 
   // ===========================================
   // 🔁 EFFECT HOOK TO FETCH DATA
   // ===========================================
   useEffect(() => {
     if (initialRender) {
+      // Reset to page 1 when the date range changes; the table is client-side
+      // paginated so we just refetch the dataset on date change.
+      setPage(1);
       fetchSimahReport();
     }
-  }, [page, pageSize, loader, initialRender]);
+  }, [loader, initialRender, fromDate, toDate]);
 
   // Recalculate from and to when page or pageSize changes
   useEffect(() => {
@@ -194,18 +233,43 @@ const SimahReport = ({ loader }: any) => {
   // ===========================================
   return (
     <div>
-      <div className="d-flex justify-content-end align-items-center mt-2">
-        <Button
-          style={{
-            borderRadius: "8px",
-            border: "transparent",
-          }}
-          className="application-btn"
-          disabled={mappedData.length === 0}
-          onClick={() => exportToCSV(mappedData, `Simah_Report_${dayjs().format("YYYY-MM-DD")}`)}
-        >
-          Export Report
-        </Button>
+      <h3 className="mb-3" style={{ fontWeight: 600 }}>Simah Report</h3>
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+        <Input
+          allowClear
+          placeholder="Search by loan, customer, facility, status"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <div className="d-flex flex-wrap align-items-center gap-2" style={{ flexShrink: 0 }}>
+          <DatePicker
+            placeholder="From"
+            value={fromDate}
+            onChange={(d) => setFromDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ height: 40, borderRadius: 8 }}
+          />
+          <DatePicker
+            placeholder="To"
+            value={toDate}
+            onChange={(d) => setToDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ height: 40, borderRadius: 8 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            disabled={filteredData.length === 0}
+            onClick={() => exportToCSV(filteredData, `Simah_Report_${dayjs().format("YYYY-MM-DD")}`)}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Export Report
+          </button>
+        </div>
       </div>
 
       <div className="cs-table mt-2">
@@ -215,12 +279,14 @@ const SimahReport = ({ loader }: any) => {
           page={page}
           pageSize={pageSize}
           totalRows={totalRows}
+          totalPage={Math.max(1, Math.ceil(filteredData.length / pageSize))}
           from={from}
           to={to}
           header={Simah_Report_Header}
           data={paginatedData}
           style={{ borderRadius: "7px" }}
           isLoading={loading}
+          paginationShow={true}
         />
       </div>
     </div>

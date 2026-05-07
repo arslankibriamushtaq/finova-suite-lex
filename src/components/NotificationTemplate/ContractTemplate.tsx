@@ -21,6 +21,8 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
@@ -286,14 +288,16 @@ const ContractTemplate = () => {
     <div className="service p-4">
       <h1 className="text-xl font-bold pb-3">Contract Templates</h1>
 
-      <div className="d-flex justify-content-between mb-3 gap-2">
-        <Input
+      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+        <AntInput
+          allowClear
           placeholder="Search by name, product, or type"
-          className="w-[280px]"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
-        <Button className="gap-2" onClick={handleAdd}>
+        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
           Add New Contract Template
         </Button>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DatePicker, Button } from "antd";
+import { Col, DatePicker, Row } from "antd";
 import { getCollectionsReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
@@ -12,13 +12,16 @@ const CollectionReport = () => {
 
   useEffect(() => {
     fetchCollectionData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromDate, toDate]);
 
   const fetchCollectionData = async () => {
     try {
       setLoading(true);
-      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
-      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
+      // Send from/to only when the user picks them; otherwise hit the bare
+      // endpoint (matches the curl shape).
+      const start = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
+      const end = toDate ? toDate.format("YYYY-MM-DD") : undefined;
       const response = await getCollectionsReport(start, end);
       const data = response?.data?.data;
       if (data && !Array.isArray(data)) {
@@ -33,6 +36,13 @@ const CollectionReport = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const formatNumber = (n: any) => {
+    if (n === null || n === undefined || n === "") return "-";
+    const num = Number(n);
+    if (isNaN(num)) return String(n);
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   const exportToCSV = () => {
@@ -65,67 +75,77 @@ const CollectionReport = () => {
 
   return (
     <div className="col-12">
-      <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap gap-2">
+      <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark">Collection Report</h3>
-        <div className="d-flex align-items-center gap-3 flex-wrap">
-          <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border">
-            <label className="mb-0 fw-bold text-muted small uppercase">From:</label>
-            <DatePicker
-              onChange={(d) => setFromDate(d)}
-              format="YYYY-MM-DD"
-              bordered={false}
-              className="p-0"
-            />
-          </div>
-          <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border">
-            <label className="mb-0 fw-bold text-muted small uppercase">To:</label>
-            <DatePicker
-              onChange={(d) => setToDate(d)}
-              format="YYYY-MM-DD"
-              bordered={false}
-              className="p-0"
-            />
-          </div>
-          <Button
-            className="theme-btn-next"
-            onClick={fetchCollectionData}
-            loading={loading}
-            style={{ height: "42px" }}
-          >
-            Fetch Report
-          </Button>
-          <Button
-            className="invoice-btn bg-dark text-white"
-            onClick={exportToCSV}
-            disabled={!totals}
-            style={{ height: "42px" }}
-          >
-            Export CSV
-          </Button>
-        </div>
+      </div>
+
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <DatePicker
+          placeholder="From"
+          value={fromDate}
+          onChange={(d) => setFromDate(d)}
+          format="YYYY-MM-DD"
+          allowClear
+          style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 8 }}
+        />
+        <DatePicker
+          placeholder="To"
+          value={toDate}
+          onChange={(d) => setToDate(d)}
+          format="YYYY-MM-DD"
+          allowClear
+          style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 8 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={fetchCollectionData}
+          disabled={loading}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          {loading ? "Loading..." : "Refresh"}
+        </button>
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!totals}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
       </div>
 
       {totals ? (
-        <div className="row">
-          <div className="col-md-4 mb-3">
-            <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-              <small className="text-uppercase opacity-75 fw-bold text-muted">Total Collected</small>
-              <h4 className="mb-0 fw-bold">{Number(totals.totalCollected ?? 0).toLocaleString()} SAR</h4>
+        <Row gutter={[16, 16]} className="mb-3">
+          <Col xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Collected</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {formatNumber(totals.totalCollected ?? 0)} SAR
+              </div>
             </div>
-          </div>
-          <div className="col-md-4 mb-3">
-            <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-              <small className="text-uppercase opacity-75 fw-bold text-muted">On-Time Rate</small>
-              <h4 className="mb-0 fw-bold">{totals.onTimeRate ?? 0}%</h4>
+          </Col>
+          <Col xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>On-Time Rate</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {totals.onTimeRate ?? 0}%
+              </div>
             </div>
-          </div>
-          <div className="col-md-4 mb-3">
-            <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-              <small className="text-uppercase opacity-75 fw-bold text-muted">Collection Count</small>
-              <h4 className="mb-0 fw-bold">{totals.collectionCount ?? 0}</h4>
+          </Col>
+          <Col xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Collection Count</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {totals.collectionCount ?? 0}
+              </div>
             </div>
-          </div>
-        </div>
+          </Col>
+        </Row>
       ) : (
         !loading && (
           <div className="text-center py-5 text-muted">

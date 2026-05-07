@@ -34,7 +34,7 @@ export default function TermsConditionsTab({
               value={formData.terms_conditions_en}
               onChange={(e) => updateFormData("terms_conditions_en", e.target.value)}
               rows={10}
-              className={`font-mono text-sm ${errors.terms_conditions_en ? "border-red-500" : ""}`}
+              className={`text-sm ${errors.terms_conditions_en ? "border-red-500" : ""}`}
             />
             {errors.terms_conditions_en && (
               <p className="text-sm text-red-500 mt-1">{errors.terms_conditions_en}</p>
@@ -48,7 +48,7 @@ export default function TermsConditionsTab({
               onChange={(e) => updateFormData("terms_conditions_ar", e.target.value)}
               rows={10}
               dir="rtl"
-              className={`font-mono text-sm ${errors.terms_conditions_ar ? "border-red-500" : ""}`}
+              className={`text-sm ${errors.terms_conditions_ar ? "border-red-500" : ""}`}
             />
             {errors.terms_conditions_ar && (
               <p className="text-sm text-red-500 mt-1" dir="rtl">{errors.terms_conditions_ar}</p>

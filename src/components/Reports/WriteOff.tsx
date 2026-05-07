@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
-import { DatePicker } from "antd";
+import { DatePicker, Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -8,187 +9,206 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+
 const WriteOff = () => {
   const [period, setPeriod] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
-  const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const id = useParams();
+
+  // Debounce search
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const finalPeriod = period ? period.format("YYYY-MM") : dayjs().format("YYYY-MM");
+      // Only send `period` when the user picks one; otherwise hit the bare endpoint.
+      const finalPeriod = period ? period.format("YYYY-MM") : undefined;
       const res = await getWriteOffLoansReport(finalPeriod);
       if (res) {
-        const data = res.data.data?.items;
+        const root = res.data?.data ?? res.data;
+        const data = root?.items ?? root?.loans ?? root ?? [];
         setAllCallActivity(Array.isArray(data) ? data : []);
-
-        const totalItems = Array.isArray(data) ? data.length : 0;
-        setTotalRows(totalItems);
-
-        // Calculate from and to based on pagination
-        const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
-        const calculatedTo = Math.min(page * pageSize, totalItems);
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
       }
     } catch (error: any) {
       console.error("Error fetching write off loans:", error);
       toast.error(error?.message || "Failed to fetch write off loans");
       setAllCallActivity([]);
-      setTotalRows(0);
-      setFrom(0);
-      setTo(0);
     } finally {
       setLoading(false);
     }
   };
 
+  useEffect(() => {
+    handleSubmit();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, period]);
+
   const formatDate = (isoString: any) => {
+    if (!isoString) return "-";
     const date = new Date(isoString);
+    if (isNaN(date.getTime())) return String(isoString);
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-based
+    const month = String(date.getMonth() + 1).padStart(2, "0");
     const day = String(date.getDate()).padStart(2, "0");
     return `${year}-${month}-${day}`;
   };
-  const mappedData = useMemo(() => {
-    return (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => {
-      return {
-        loanId: item.loanId || "-",
-        customerId: item.customerId || "-",
-        writeOffDate: item.writeOffDate ? formatDate(item.writeOffDate) : "-",
-        principalWrittenOff: item.principalWrittenOff != null ? `${item.principalWrittenOff.toLocaleString()} SAR` : "-",
-        provisionReleased: item.provisionReleased != null ? `${item.provisionReleased.toLocaleString()} SAR` : "-",
-      };
-    });
-  }, [allCallActivity]);
 
+  const formatNumber = (n: any) => {
+    if (n === null || n === undefined || n === "") return "-";
+    const num = Number(n);
+    if (isNaN(num)) return String(n);
+    return num.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const mappedData = useMemo(() => {
+    const all = (Array.isArray(allCallActivity) ? allCallActivity : []).map((item: any) => ({
+      loanId: item.loanId || "-",
+      customerId: item.customerId || "-",
+      writeOffDate: item.writeOffDate || null,
+      principalWrittenOff: item.principalWrittenOff ?? 0,
+      provisionReleased: item.provisionReleased ?? 0,
+    }));
+
+    if (!debouncedSearch) return all;
+    const term = debouncedSearch.toLowerCase();
+    return all.filter((row: any) =>
+      String(row.loanId).toLowerCase().includes(term) ||
+      String(row.customerId).toLowerCase().includes(term) ||
+      String(formatDate(row.writeOffDate)).toLowerCase().includes(term)
+    );
+  }, [allCallActivity, debouncedSearch]);
+
+  // Client-side pagination
+  const paginatedData = useMemo(() => {
+    const start = (page - 1) * pageSize;
+    return mappedData.slice(start, start + pageSize);
+  }, [mappedData, page, pageSize]);
+
+  // Keep totalRows / totalPage / from / to in sync with the filtered set
   useEffect(() => {
-    handleSubmit();
-  }, [id, page, pageSize]);
+    const total = mappedData.length;
+    setTotalRows(total);
+    setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+    setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+    setTo(Math.min(page * pageSize, total));
+  }, [mappedData, page, pageSize]);
+
   const Call_Activity_Header = [
     {
       name: "Loan ID",
       selector: (row: any) => row.loanId,
-      width: "200px"
+      width: "200px",
     },
     {
       name: "Customer ID",
       selector: (row: any) => row.customerId,
-      width: "200px"
+      width: "200px",
     },
     {
       name: "Write Off Date",
-      selector: (row: any) => row.writeOffDate,
+      selector: (row: any) => formatDate(row.writeOffDate),
     },
     {
       name: "Principal Written Off",
-      selector: (row: any) => row.principalWrittenOff,
+      cell: (row: any) => <span>{formatNumber(row.principalWrittenOff)} SAR</span>,
     },
     {
       name: "Provision Released",
-      selector: (row: any) => row.provisionReleased,
+      cell: (row: any) => <span>{formatNumber(row.provisionReleased)} SAR</span>,
     },
   ];
 
-  useEffect(() => {
-    handleSubmit();
-  }, [period]);
-  const exportToCSV = (data: any[], fileName: string) => {
-    const csvRows = [];
-    const headers = Object.keys(data[0]); // Assuming all objects have the same keys
-    csvRows.push(headers.join(",")); // Join header row with commas
-
-    // Loop through the data and generate CSV rows
-    data.forEach((row) => {
-      const values = headers.map((header) => row[header]);
+  const exportToCSV = () => {
+    if (!mappedData.length) {
+      toast.error("No data to export");
+      return;
+    }
+    const csvHeaders = [
+      "Loan ID", "Customer ID", "Write Off Date",
+      "Principal Written Off", "Provision Released",
+    ];
+    const csvRows = [csvHeaders.join(",")];
+    mappedData.forEach((r: any) => {
+      const values = [
+        r.loanId,
+        r.customerId,
+        formatDate(r.writeOffDate),
+        r.principalWrittenOff ?? 0,
+        r.provisionReleased ?? 0,
+      ].map((v) => `"${String(v ?? "").replace(/"/g, '""')}"`);
       csvRows.push(values.join(","));
     });
-
-    // Create CSV string
-    const csvString = csvRows.join("\n");
-
-    // Create a Blob from the CSV string and trigger a download
-    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `${fileName}.csv`);
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, `WriteOffLoans_${dayjs().format("YYYYMMDD")}.csv`);
   };
-  // handleFromDateChange and handleToDateChange removed as they are no longer needed
-
 
   return (
-    <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h5 className="mb-0">Write Off Loan</h5>
-          </div>
-          {/* <div className="col-2 text-end">
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Create Voucher
-            </button>
-          </div> */}
-        </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center">
-          <div className="row align-items-center">
-            <div className="col-md-6">
-              <label className="form-label">Period</label>
-              <DatePicker
-                picker="month"
-                value={period}
-                onChange={(date) => setPeriod(date)}
-                format="YYYY-MM"
-              />
-            </div>
-          </div>
-          <div className="col-md-3 mt-3">
-            {/* <button
-              className="mt-2 theme-btn-next bg-dark"
-              onClick={() => {
-                setFromDate("");
-                setToDate("");
-              }}
-            >
-              Clear
-            </button> */}
-          </div>
-          <div className="col-2 text-end">
-            <button
-              className="mt-4 invoice-btn bg-dark text-white"
-              onClick={() => {
-                exportToCSV(mappedData, "WriteOffLoans");
-              }}
-            >
-              Export CSV
-            </button>
-          </div>
-        </div>
-        <div className="cs-table p-2 mt-3">
-          <TableView
-            setPage={setPage}
-            setPageSize={setPageSize}
-            totalRows={totalRows}
-            from={from}
-            to={to}
-            header={Call_Activity_Header}
-            data={mappedData}
-            isLoading={loading}
-          />
-        </div>
+    <div className="col-12">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Write Off Loan</h3>
       </div>
 
-      {/* <TableView /> */}
-    </>
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <Input
+          allowClear
+          placeholder="Search by loan ID, customer ID, date"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <DatePicker
+          picker="month"
+          placeholder="Period"
+          value={period}
+          onChange={(date) => setPeriod(date)}
+          format="YYYY-MM"
+          allowClear
+          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 8 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!mappedData.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+      </div>
+
+      <div className="cs-table p-2">
+        <TableView
+          setPage={setPage}
+          setPageSize={setPageSize}
+          page={page}
+          pageSize={pageSize}
+          totalRows={totalRows}
+          totalPage={totalPage}
+          from={from}
+          to={to}
+          header={Call_Activity_Header}
+          data={paginatedData}
+          isLoading={loading}
+          paginationShow={true}
+        />
+      </div>
+    </div>
   );
 };
 

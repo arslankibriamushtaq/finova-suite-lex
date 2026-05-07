@@ -1,8 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
-import { Button, Dropdown, Menu } from "antd";
-import { DownOutlined, CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
+import { ArrowLeft, FileText } from "lucide-react";
+import { Button, Dropdown, Input as AntInput, Menu } from "antd";
+import {
+  DownOutlined,
+  CheckCircleOutlined,
+  CloseCircleOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import Loader from "../../../components/Loader/Loader";
@@ -60,7 +65,9 @@ const WaiveOffDetails = () => {
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(15);
+  const [pageSize, setPageSize] = useState(10);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Action modal state
   const [modalType, setModalType] = useState<ModalType>(null);
@@ -172,11 +179,37 @@ const WaiveOffDetails = () => {
     </Menu>
   );
 
-  // client-side pagination
-  const total = data.length;
+  // Debounce the search input
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim().toLowerCase());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [pageSize]);
+
+  const filteredData = useMemo(() => {
+    if (!debouncedSearch) return data;
+    return data.filter((row: any) => {
+      return (
+        String(row.invoiceId || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.status || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.reason || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.rejectionReason || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.requestedAmount ?? "").toLowerCase().includes(debouncedSearch)
+      );
+    });
+  }, [data, debouncedSearch]);
+
+  // client-side pagination on the filtered set
+  const total = filteredData.length;
   const startIndex = (page - 1) * pageSize;
-  const paginatedData = data.slice(startIndex, startIndex + pageSize);
-  const totalPage = Math.ceil(total / pageSize) || 1;
+  const paginatedData = filteredData.slice(startIndex, startIndex + pageSize);
+  const totalPage = Math.max(1, Math.ceil(total / pageSize));
   const fromRow = total > 0 ? startIndex + 1 : 0;
   const toRow = Math.min(startIndex + pageSize, total);
 
@@ -302,26 +335,55 @@ const WaiveOffDetails = () => {
           <h5 className="mb-0" style={{ fontWeight: 600 }}>
             Waive Off Details
           </h5>
-          {applicationId && (
-            <p className="mb-0" style={{ fontSize: 12, color: "var(--muted-foreground)" }}>
-              Application ID: {applicationId}
-            </p>
-          )}
         </div>
 
         <div className="ms-auto">
           <span
             style={{
-              padding: "4px 12px",
-              borderRadius: 32,
-              fontSize: 12,
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 10,
+              padding: "8px 14px 8px 10px",
+              borderRadius: 999,
+              fontSize: 13,
               backgroundColor: "var(--muted)",
-              color: "var(--muted-foreground)",
+              border: "1px solid var(--border)",
+              color: "var(--foreground)",
+              lineHeight: 1,
+              boxShadow: "0 1px 2px rgba(0,0,0,0.04)",
             }}
           >
-            {total} request{total !== 1 ? "s" : ""}
+            <span
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: 24,
+                height: 24,
+                borderRadius: "50%",
+                backgroundColor: "var(--foreground)",
+                color: "var(--background)",
+              }}
+            >
+              <FileText size={13} />
+            </span>
+            <span style={{ fontWeight: 700, fontSize: 14 }}>{total}</span>
+            <span style={{ color: "var(--muted-foreground)", fontWeight: 500 }}>
+              {total === 1 ? "request" : "requests"}
+            </span>
           </span>
         </div>
+      </div>
+
+      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <AntInput
+          allowClear
+          placeholder="Search by invoice ID, status, reason, amount"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
       </div>
 
       <TableView
@@ -336,6 +398,7 @@ const WaiveOffDetails = () => {
         pageSize={pageSize}
         setPageSize={setPageSize}
         to={toRow}
+        paginationShow={true}
       />
 
       {/* Approve / Reject Modal */}

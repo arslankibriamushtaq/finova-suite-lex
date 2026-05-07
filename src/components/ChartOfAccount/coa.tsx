@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
-import { Button, Upload, UploadFile, UploadProps } from "antd";
+import { Button, DatePicker, Input, Upload, UploadFile, UploadProps } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import Papa from "papaparse";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Tab, Tabs } from "react-bootstrap";
@@ -52,6 +53,10 @@ const Coa = () => {
   const [ledgerData, setLedgerData] = useState<any>();
   const [csvData, setcsvData]= useState([])
   const [loading, setLoading] = useState(false);
+  // Lifted up from <Account /> so the search + date filter can sit on the
+  // same responsive row as the action buttons.
+  const [searchValue, setSearchValue] = useState("");
+  const [fromDate, setFromDate] = useState<any>(null);
 
   const addAccounts = async (data: any) => {
     setLoader(true);
@@ -452,6 +457,8 @@ const Coa = () => {
           setAddGroupMod={setAddGroupMod}
           addGroupMod={addGroupMod}
           setcsvData={setcsvData}
+          searchValue={searchValue}
+          fromDate={fromDate}
         />
       ),
     },
@@ -615,98 +622,84 @@ const Coa = () => {
     saveAs(blob, `${fileName}.csv`);
   };
   return (
-    <div className="py-2">
-      <div className="col-12 d-flex justify-content-end align-items-center">
-        {/* <Button
-          style={{
-            borderRadius: "8px",
-            border: "transparent",
-          }}
-          className="application-btn"
-          onClick={() => {
-            // setAddCustomerModal(true);
-          }}
-        >
-          Create Application
-        </Button> */}
+    <div className="py-2 col-12">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Chart of Accounts</h3>
       </div>
-      {/*       <h4 style={{ fontSize: "16px", fontWeight: "600" }}>Chart of Accounts</h4>
-       */}{" "}
-      <div className="mt-3 d-flex">
-        {errorsData?.length > 0 ? (
-          <div
-            className="col-6"
-            style={{
-              padding: "8px",
-              borderRadius: "10px",
-              border: "1px solid red",
-              maxHeight: "224px",
-              overflowY: "auto",
-            }}
-          >
-            <>
-              <div className="label">Errors</div>
-              {errorsData?.map((item: any, index: any) => (
-                <>
-                  <div className="pt-3">{`${index + 1}-${item}`}</div>
-                </>
-              ))}
-            </>
-          </div>
-        ) : (
-          <>
-            <div className="col-6"></div>
-          </>
-        )}
-        <div className="d-flex col-6 justify-content-end gap-2 mt-2">
-           <button
-              className="theme-btn-next bg-dark text-end"
-              onClick={() => {
-                exportToCSV(csvData, "Account");
-              }}
-            /*  style={{
-             height: "3px",
-             border: "none",
-             borderRadius: "8px",
-             display: "flex",
-             alignItems: "center"
-           }} */
-            >
-              Export CSV
-            </button>
+
+      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <Input
+          allowClear
+          placeholder="Search"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchValue}
+          onChange={(e: any) => setSearchValue(e.target.value)}
+          style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 8, height: 40 }}
+        />
+        <DatePicker
+          placeholder="Filter by date"
+          value={fromDate}
+          onChange={(date: any) => setFromDate(date)}
+          format="YYYY-MM-DD"
+          allowClear
+          style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={() => exportToCSV(csvData, "Account")}
+          disabled={!csvData?.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+        <Button
+          className="theme-btn-next"
+          onClick={handleDownload}
+          icon={<FaDownload />}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Template CSV
+        </Button>
+        <Upload {...uploadProps}>
           <Button
             className="theme-btn-next"
-            onClick={handleDownload}
-            icon={<FaDownload />}
+            type="primary"
+            icon={<FaUpload />}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Template CSV
+            Upload
           </Button>
-          <Upload {...uploadProps}>
-            <Button
-              className="theme-btn-next"
-              type="primary"
-              icon={<FaUpload />}
-            >
-              Upload
-            </Button>
-          </Upload>
-          {isChartOfAccountPage && (
-            <Button
-              className="theme-btn-next"
-              type="primary"
-              onClick={() => setAddGroupMod(true)}
-            >
-              Add Account
-            </Button>
-          )}
-          {/* <span
-            className="ms-2 d-flex align-items-center"
-            style={{ color: "red" }}
+        </Upload>
+        {isChartOfAccountPage && (
+          <Button
+            className="theme-btn-next"
+            type="primary"
+            onClick={() => setAddGroupMod(true)}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {uploadedDoc.length} document(s) uploaded
-          </span> */}
-        </div>
+            Add Account
+          </Button>
+        )}
       </div>
+
+      {errorsData?.length > 0 && (
+        <div
+          className="mb-3"
+          style={{
+            padding: "8px",
+            borderRadius: "10px",
+            border: "1px solid red",
+            maxHeight: "224px",
+            overflowY: "auto",
+          }}
+        >
+          <div className="label">Errors</div>
+          {errorsData.map((item: any, index: any) => (
+            <div key={index} className="pt-3">{`${index + 1}-${item}`}</div>
+          ))}
+        </div>
+      )}
       {isChartOfAccountPage && (
         <div className="pt-3">
           <Tabs

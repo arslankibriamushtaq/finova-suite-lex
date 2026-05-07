@@ -9,9 +9,10 @@ import {
   deleteDevice,
 } from "../../../redux/apis/apisRiskManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
-import { Input } from "../../../components/ui/input";
 import { Badge } from "../../../components/ui/badge";
-import { Search, RefreshCw, Lock, Unlock, Trash2, ChevronDown } from "lucide-react";
+import { RefreshCw, Lock, Unlock, Trash2, ChevronDown } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../../../components/ui/button";
 import {
   Dialog,
@@ -345,7 +346,7 @@ const DeviceManagement = () => {
     //   name: "Fingerprint",
     //   cell: (row: any) => (
     //     <span
-    //       className="text-xs text-muted-foreground font-mono cursor-help"
+    //       className="text-xs text-muted-foreground cursor-help"
     //       title={row.deviceFingerprint}
     //     >
     //       {truncateHash(row.deviceFingerprint)}
@@ -358,7 +359,7 @@ const DeviceManagement = () => {
       name: "NID Hash",
       cell: (row: any) => (
         <span
-          className="text-xs text-muted-foreground font-mono cursor-help"
+          className="text-xs text-muted-foreground cursor-help"
           title={row.nidHash}
         >
           {truncateHash(row.nidHash)}
@@ -369,7 +370,7 @@ const DeviceManagement = () => {
     {
       name: "Attempts",
       cell: (row: any) => (
-        <Badge variant="outline" className="font-mono">
+        <Badge variant="outline">
           {row.attemptCount || 0}
         </Badge>
       ),
@@ -377,7 +378,7 @@ const DeviceManagement = () => {
     {
       name: "NID Associations",
       cell: (row: any) => (
-        <Badge variant="secondary" className="font-mono text-white">
+        <Badge variant="secondary" className="text-white">
           {row.nidAssociationCount || 0}
         </Badge>
       ),
@@ -408,17 +409,22 @@ const DeviceManagement = () => {
     {
       name: "Actions",
       cell: (row: any) => (
-        <DropdownMenu>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1"
+            <button
+              type="button"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              Select <ChevronDown className="h-4 w-4" />
-            </Button>
+              Select
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
             <DropdownMenuItem
               onClick={() => openBlockModal(row)}
               disabled={row.blocked}
@@ -436,6 +442,7 @@ const DeviceManagement = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -452,7 +459,7 @@ const DeviceManagement = () => {
       name: "NID Hash",
       cell: (row: any) => (
         <span
-          className="text-xs text-muted-foreground font-mono cursor-help"
+          className="text-xs text-muted-foreground cursor-help"
           title={row.nidHash || ""}
         >
           {row.nidHash ? truncateHash(row.nidHash) : "-"}
@@ -491,7 +498,7 @@ const DeviceManagement = () => {
     {
       name: "Attempts",
       cell: (row: any) => (
-        <Badge variant="outline" className="font-mono">
+        <Badge variant="outline">
           {row.totalAttempts || 0}
         </Badge>
       ),
@@ -499,7 +506,7 @@ const DeviceManagement = () => {
     {
       name: "NID Count",
       cell: (row: any) => (
-        <Badge variant="secondary" className="font-mono text-white">
+        <Badge variant="secondary" className="text-white">
           {row.totalNidAssociations || 0}
         </Badge>
       ),
@@ -525,17 +532,22 @@ const DeviceManagement = () => {
     {
       name: "Actions",
       cell: (row: any) => (
-        <DropdownMenu>
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button
-              size="sm"
-              variant="outline"
-              className="gap-1"
+            <button
+              type="button"
+              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
             >
-              Select <ChevronDown className="h-4 w-4" />
-            </Button>
+              Select
+              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
             <DropdownMenuItem
               onClick={() => openUnblockModal(row)}
               className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
@@ -552,6 +564,7 @@ const DeviceManagement = () => {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -565,35 +578,31 @@ const DeviceManagement = () => {
     <div className="w-full h-full bg-background p-6">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8 flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Device Management</h1>
-            <p className="text-muted-foreground">Monitor and manage registered devices</p>
-          </div>
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-foreground mb-2">Device Management</h1>
+          <p className="text-muted-foreground">Monitor and manage registered devices</p>
+        </div>
+
+        {/* Search Bar + Refresh */}
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-6 gap-2">
+          <AntInput
+            allowClear
+            placeholder="Search by Device ID, Fingerprint, Block Source..."
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
           <Button
             onClick={fetchDevicesData}
             disabled={isLoading}
-            size="sm"
             variant="outline"
             className="gap-2"
+            style={{ flexShrink: 0, height: 40 }}
           >
             <RefreshCw className="w-4 h-4" />
             {isLoading ? "Loading..." : "Refresh"}
           </Button>
-        </div>
-
-        {/* Search Bar - Improved UI */}
-        <div className="mb-6">
-          <div className="relative flex items-center">
-            <Search className="absolute left-4 w-5 h-5 text-muted-foreground pointer-events-none" />
-            <Input
-              type="text"
-              placeholder="Search by Device ID, Fingerprint, Block Source..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-12! pr-4 py-2.5 bg-white dark:bg-slate-950 border border-input rounded-lg focus-visible:ring-1"
-            />
-          </div>
         </div>
 
         {/* Tabs - Improved Design */}
@@ -687,7 +696,7 @@ const DeviceManagement = () => {
                   <p className="text-sm">
                     <span className="font-medium text-foreground">Device ID:</span>
                     <br />
-                    <span className="text-xs font-mono bg-muted px-2 py-1 rounded mt-1 inline-block">
+                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
                       {selectedDeviceForBlock.deviceId}
                     </span>
                   </p>
@@ -760,7 +769,7 @@ const DeviceManagement = () => {
                   <p className="text-sm">
                     <span className="font-medium text-foreground">Device ID:</span>
                     <br />
-                    <span className="text-xs font-mono bg-muted px-2 py-1 rounded mt-1 inline-block">
+                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
                       {selectedDeviceForUnblock.deviceId}
                     </span>
                   </p>
@@ -822,7 +831,7 @@ const DeviceManagement = () => {
                   <p className="text-sm">
                     <span className="font-medium text-foreground">Device ID:</span>
                     <br />
-                    <span className="text-xs font-mono bg-muted px-2 py-1 rounded mt-1 inline-block">
+                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
                       {selectedDeviceForDelete.deviceId}
                     </span>
                   </p>

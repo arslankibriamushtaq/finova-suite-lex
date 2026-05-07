@@ -3,12 +3,13 @@ import TableView from "../TableView/TableView";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Col, Modal, ModalHeader, Row } from "react-bootstrap";
 import * as Yup from "yup";
-import { Dropdown, Button, Menu, Select, Input } from "antd";
+import { Dropdown, Button, DatePicker, Menu, Select, Input, Row as AntRow, Col as AntCol } from "antd";
 import {
   DeleteOutlined,
   DownOutlined,
   EditOutlined,
   EyeOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -44,6 +45,8 @@ const Vouchers = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
   const [summary, setSummary] = useState<any>(null);
   const [formValues, setFormValues] = useState<any>({
     applicationID: "",
@@ -83,11 +86,10 @@ const Vouchers = () => {
   const handleSubmit = async () => {
     try {
       setSkelitonLoading(true);
-      // Backend requires a date range — calling without it returns 500.
-      // Send a wide default range from code so the endpoint always works
-      // without exposing date pickers in the UI.
-      const start = "2000-01-01";
-      const end = dayjs().format("YYYY-MM-DD");
+      // Send fromDate/toDate only when the user has picked them; otherwise hit
+      // the bare endpoint (matches the curl shape the backend expects).
+      const start = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
+      const end = toDate ? toDate.format("YYYY-MM-DD") : undefined;
       const res = await getJournalVouchersReport(start, end);
 
       // Response shape from /ledger-service/api/v1/reports/journal-vouchers:
@@ -355,6 +357,14 @@ const Vouchers = () => {
     return mappedData.slice(start, start + pageSize);
   }, [mappedData, page, pageSize]);
 
+  // Totals derived from the currently-visible (filtered) rows so the summary
+  // cards always match what's shown in the table.
+  const visibleTotals = useMemo(() => {
+    const totalDebits = mappedData.reduce((acc: number, r: any) => acc + Number(r.Debit ?? 0), 0);
+    const totalCredits = mappedData.reduce((acc: number, r: any) => acc + Number(r.Credit ?? 0), 0);
+    return { totalVouchers: mappedData.length, totalDebits, totalCredits };
+  }, [mappedData]);
+
   // Recompute totals + from/to whenever the filtered set or page changes
   useEffect(() => {
     const total = mappedData.length;
@@ -378,7 +388,7 @@ const Vouchers = () => {
     handleAccounts();
     LedgerDetails();
     return () => {};
-  }, [id, page, pageSize]);
+  }, [id, page, pageSize, fromDate, toDate]);
   const handleChange = (key: string, row: any) => {
     if (key === "Edit") {
       handleEditClick(row);
@@ -441,7 +451,7 @@ const Vouchers = () => {
     {
       name: "Debit",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.Debit)}</span>
+        <span>{formatNumber(row.Debit)}</span>
       ),
       sortable: true,
       width: "130px",
@@ -449,7 +459,7 @@ const Vouchers = () => {
     {
       name: "Credit",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.Credit)}</span>
+        <span>{formatNumber(row.Credit)}</span>
       ),
       sortable: true,
       width: "130px",
@@ -529,66 +539,95 @@ const Vouchers = () => {
     <>
       {loading && <Loader />}
       <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h5 className="mb-0">Journal Voucher</h5>
-          </div>
-          <div className="col-2 text-end">
+        <h5 className="mb-3">Journal Voucher</h5>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <Input
+            allowClear
+            placeholder="Search by voucher, type, status, description"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <div className="d-flex flex-wrap align-items-center gap-2" style={{ flexShrink: 0 }}>
+            <DatePicker
+              placeholder="From"
+              value={fromDate}
+              onChange={(d) => { setFromDate(d); setPage(1); }}
+              format="YYYY-MM-DD"
+              allowClear
+              style={{ height: 40, borderRadius: 8 }}
+            />
+            <DatePicker
+              placeholder="To"
+              value={toDate}
+              onChange={(d) => { setToDate(d); setPage(1); }}
+              format="YYYY-MM-DD"
+              allowClear
+              style={{ height: 40, borderRadius: 8 }}
+            />
             <button
+              type="button"
               className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
+              onClick={() => setModal(true)}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
               Create Voucher
             </button>
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={() => exportToCSV(allCallActivity, "Voucher")}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Export CSV
+            </button>
           </div>
-        </div>
-        <div className="d-flex mt-3 justify-content-between align-items-center gap-2 flex-wrap">
-          <Input
-            placeholder="Search by voucher, type, status, description"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            allowClear
-            style={{ width: 360 }}
-          />
-          <button
-            className="invoice-btn bg-dark text-end text-white"
-            onClick={() => {
-              exportToCSV(allCallActivity, "Voucher");
-            }}
-          >
-            Export CSV
-          </button>
         </div>
 
-        {summary && (summary.totalVouchers !== undefined || summary.totalDebits !== undefined) && (
-          <div className="d-flex gap-3 mt-3 flex-wrap">
-            {summary.totalVouchers !== undefined && (
-              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-                <div className="text-muted small">Total Vouchers</div>
-                <div className="fw-bold">{summary.totalVouchers}</div>
+        {(allCallActivity?.length > 0 || summary) && (
+          <AntRow gutter={[16, 16]} className="mt-3">
+            <AntCol xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Vouchers</div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                  {visibleTotals.totalVouchers}
+                </div>
               </div>
-            )}
-            {summary.totalDebits !== undefined && (
-              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-                <div className="text-muted small">Total Debits</div>
-                <div className="fw-bold" style={{ fontFamily: "monospace" }}>{formatNumber(summary.totalDebits)}</div>
+            </AntCol>
+            <AntCol xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Debits</div>
+                <div
+                  className="mt-2"
+                  style={{ fontSize: 22, fontWeight: 700 }}
+                >
+                  {formatNumber(visibleTotals.totalDebits)}
+                </div>
               </div>
-            )}
-            {summary.totalCredits !== undefined && (
-              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-                <div className="text-muted small">Total Credits</div>
-                <div className="fw-bold" style={{ fontFamily: "monospace" }}>{formatNumber(summary.totalCredits)}</div>
+            </AntCol>
+            <AntCol xs={24} sm={12} lg={6}>
+              <div className="card-product p-4 text-dark h-100">
+                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Credits</div>
+                <div
+                  className="mt-2"
+                  style={{ fontSize: 22, fontWeight: 700 }}
+                >
+                  {formatNumber(visibleTotals.totalCredits)}
+                </div>
               </div>
-            )}
+            </AntCol>
             {(summary.fromDate || summary.toDate) && (
-              <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 200 }}>
-                <div className="text-muted small">Date Range</div>
-                <div className="fw-bold" style={{ fontSize: 13 }}>{summary.fromDate} → {summary.toDate}</div>
-              </div>
+              <AntCol xs={24} sm={12} lg={6}>
+                <div className="card-product p-4 text-dark h-100">
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>Date Range</div>
+                  <div className="mt-2" style={{ fontSize: 14, fontWeight: 600 }}>
+                    {summary.fromDate} → {summary.toDate}
+                  </div>
+                </div>
+              </AntCol>
             )}
-          </div>
+          </AntRow>
         )}
 
         <div className="cs-table p-2 mt-3">

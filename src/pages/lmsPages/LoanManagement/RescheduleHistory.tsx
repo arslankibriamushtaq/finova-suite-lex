@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Button, Dropdown, Menu } from "antd";
+import { useEffect, useMemo, useState } from "react";
+import { Button, Dropdown, Input as AntInput, Menu } from "antd";
 import TableView from "../../../components/TableView/TableView";
 import { useParams } from "react-router-dom";
 import {
@@ -13,6 +13,7 @@ import {
   CloseCircleOutlined,
   DownOutlined,
   EyeOutlined,
+  SearchOutlined,
 } from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "react-bootstrap";
 
@@ -115,6 +116,8 @@ const RescheduleHistory = () => {
   const [data, setData] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [showModal, setShowModal] = useState(false);
@@ -296,17 +299,57 @@ const RescheduleHistory = () => {
     },
   ];
 
-  // Client-side pagination
-  const total = data.length;
+  // Debounce the search input
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim().toLowerCase());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [pageSize]);
+
+  const filteredData = useMemo(() => {
+    if (!debouncedSearch) return data;
+    return data.filter((row: any) => {
+      return (
+        String(row.loanNumber || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.rescheduleType || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.status || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.justification || "").toLowerCase().includes(debouncedSearch) ||
+        String(row.rejectionReason || "").toLowerCase().includes(debouncedSearch)
+      );
+    });
+  }, [data, debouncedSearch]);
+
+  // Client-side pagination on the filtered set
+  const total = filteredData.length;
   const startIndex = (page - 1) * pageSize;
-  const paginatedData = data.slice(startIndex, startIndex + pageSize);
+  const paginatedData = filteredData.slice(startIndex, startIndex + pageSize);
   const fromRow = total > 0 ? startIndex + 1 : 0;
   const toRow = Math.min(startIndex + pageSize, total);
-  const totalPage = Math.ceil(total / pageSize) || 1;
+  const totalPage = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div>
-      <h5 className="mb-3">Reschedule History</h5>
+    <div className="service p-4">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Reschedule History</h3>
+      </div>
+
+      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <AntInput
+          allowClear
+          placeholder="Search by loan number, type, status, justification"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+      </div>
+
       <TableView
         header={columns}
         data={paginatedData}
@@ -319,6 +362,7 @@ const RescheduleHistory = () => {
         pageSize={pageSize}
         setPageSize={setPageSize}
         to={toRow}
+        paginationShow={true}
       />
 
       {/* Approve / Reject Modal */}
@@ -357,8 +401,16 @@ const RescheduleHistory = () => {
             type="primary"
             loading={!!actionLoading}
             onClick={handleSubmit}
-            danger
-            style={{ backgroundColor: "#dc3545", borderColor: "#dc3545" }}
+            danger={modalAction === "reject"}
+            style={
+              modalAction === "approve"
+                ? {
+                    backgroundColor: "var(--foreground)",
+                    borderColor: "var(--foreground)",
+                    color: "var(--background)",
+                  }
+                : { backgroundColor: "#dc3545", borderColor: "#dc3545" }
+            }
           >
             {modalAction === "approve" ? "Approve" : "Reject"}
           </Button>
@@ -635,7 +687,17 @@ const RescheduleHistory = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setDetailsRow(null)}>Close</Button>
+          <Button
+            type="primary"
+            onClick={() => setDetailsRow(null)}
+            style={{
+              backgroundColor: "var(--foreground)",
+              borderColor: "var(--foreground)",
+              color: "var(--background)",
+            }}
+          >
+            Close
+          </Button>
         </Modal.Footer>
       </Modal>
     </div>

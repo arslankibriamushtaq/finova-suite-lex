@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
-import { Input, Button } from "antd";
+import { Col, Input, Row } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import { getLoanBalanceReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
@@ -105,6 +106,28 @@ const LoanBalanceReport = () => {
     return filtered.slice(start, start + pageSize);
   }, [filtered, page, pageSize]);
 
+  // Totals derived from the currently-visible (filtered) rows so the summary
+  // cards always match what's in the table.
+  const visibleTotals = useMemo(() => {
+    return filtered.reduce(
+      (acc: any, r: any) => ({
+        totalCount: acc.totalCount + 1,
+        totalPrincipalOutstanding:
+          acc.totalPrincipalOutstanding + Number(r.principalOutstanding ?? 0),
+        totalProfitOutstanding:
+          acc.totalProfitOutstanding + Number(r.profitOutstanding ?? 0),
+        totalPenaltiesOutstanding:
+          acc.totalPenaltiesOutstanding + Number(r.penaltiesOutstanding ?? 0),
+      }),
+      {
+        totalCount: 0,
+        totalPrincipalOutstanding: 0,
+        totalProfitOutstanding: 0,
+        totalPenaltiesOutstanding: 0,
+      }
+    );
+  }, [filtered]);
+
   useEffect(() => {
     const total = filtered.length;
     setTotalRows(total);
@@ -135,7 +158,7 @@ const LoanBalanceReport = () => {
     {
       name: "Disbursed Amount",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.disbursedAmount)}</span>
+        <span>{formatNumber(row.disbursedAmount)}</span>
       ),
       sortable: true,
       width: "150px",
@@ -143,7 +166,7 @@ const LoanBalanceReport = () => {
     {
       name: "Total Paid",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.totalPaid)}</span>
+        <span>{formatNumber(row.totalPaid)}</span>
       ),
       sortable: true,
       width: "130px",
@@ -151,7 +174,7 @@ const LoanBalanceReport = () => {
     {
       name: "Principal O/S",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.principalOutstanding)}</span>
+        <span>{formatNumber(row.principalOutstanding)}</span>
       ),
       sortable: true,
       width: "140px",
@@ -159,7 +182,7 @@ const LoanBalanceReport = () => {
     {
       name: "Profit O/S",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.profitOutstanding)}</span>
+        <span>{formatNumber(row.profitOutstanding)}</span>
       ),
       sortable: true,
       width: "130px",
@@ -167,7 +190,7 @@ const LoanBalanceReport = () => {
     {
       name: "Penalties O/S",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.penaltiesOutstanding)}</span>
+        <span>{formatNumber(row.penaltiesOutstanding)}</span>
       ),
       sortable: true,
       width: "140px",
@@ -240,66 +263,65 @@ const LoanBalanceReport = () => {
 
   return (
     <div className="col-12">
-      <div className="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom flex-wrap gap-2">
+      <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark">Loan Balance & Outstanding Report</h3>
-        <div className="d-flex gap-2 flex-wrap">
-          <Input
-            placeholder="Search by loan, customer, product, status…"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            allowClear
-            style={{ width: 360 }}
-          />
-          <Button
-            className="invoice-btn bg-dark text-white"
-            onClick={exportToCSV}
-            disabled={!filtered.length}
-            style={{ height: "42px" }}
-          >
-            Export CSV
-          </Button>
-        </div>
       </div>
 
-      {summary && (
-        <div className="d-flex gap-3 mb-3 flex-wrap">
-          {summary.asOfDate && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">As Of Date</div>
-              <div className="fw-bold">{summary.asOfDate}</div>
-            </div>
-          )}
-          {summary.totalCount !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 140 }}>
-              <div className="text-muted small">Total Loans</div>
-              <div className="fw-bold">{summary.totalCount}</div>
-            </div>
-          )}
-          {summary.totalPrincipalOutstanding !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 200 }}>
-              <div className="text-muted small">Principal Outstanding</div>
-              <div className="fw-bold" style={{ fontFamily: "monospace" }}>
-                {formatNumber(summary.totalPrincipalOutstanding)} SAR
+      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+        <Input
+          allowClear
+          placeholder="Search by loan, customer, product, status…"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={exportToCSV}
+          disabled={!filtered.length}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Export CSV
+        </button>
+      </div>
+
+      {(items.length > 0 || summary) && (
+        <Row gutter={[16, 16]} className="mb-3">
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Loans</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {visibleTotals.totalCount}
               </div>
             </div>
-          )}
-          {summary.totalProfitOutstanding !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 200 }}>
-              <div className="text-muted small">Profit Outstanding</div>
-              <div className="fw-bold" style={{ fontFamily: "monospace" }}>
-                {formatNumber(summary.totalProfitOutstanding)} SAR
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Principal Outstanding</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatNumber(visibleTotals.totalPrincipalOutstanding)} SAR
               </div>
             </div>
-          )}
-          {summary.totalPenaltiesOutstanding !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 200 }}>
-              <div className="text-muted small">Penalties Outstanding</div>
-              <div className="fw-bold" style={{ fontFamily: "monospace" }}>
-                {formatNumber(summary.totalPenaltiesOutstanding)} SAR
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Profit Outstanding</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatNumber(visibleTotals.totalProfitOutstanding)} SAR
               </div>
             </div>
-          )}
-        </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Penalties Outstanding</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatNumber(visibleTotals.totalPenaltiesOutstanding)} SAR
+              </div>
+            </div>
+          </Col>
+        </Row>
       )}
 
       <div className="cs-table p-2">

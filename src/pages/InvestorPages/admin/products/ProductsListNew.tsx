@@ -298,7 +298,7 @@ export default function ProductsList() {
     {
       name: "Code",
       selector: (row: { code: any }) => (
-        <span className="text-sm text-gray-900 font-mono">{row.code}</span>
+        <span className="text-sm text-gray-900">{row.code}</span>
       ),
       sortable: true,
     },
@@ -835,7 +835,7 @@ export default function ProductsList() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                  <p className="text-sm text-gray-900 font-mono">{selectedProduct.id}</p>
+                  <p className="text-sm text-gray-900">{selectedProduct.id}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
@@ -847,7 +847,7 @@ export default function ProductsList() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Code</label>
-                  <p className="text-sm text-gray-900 font-mono">{selectedProduct.code}</p>
+                  <p className="text-sm text-gray-900">{selectedProduct.code}</p>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return</label>
@@ -877,7 +877,7 @@ export default function ProductsList() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Segment ID</label>
-                  <p className="text-sm text-gray-900 font-mono">{selectedProduct.segmentId}</p>
+                  <p className="text-sm text-gray-900">{selectedProduct.segmentId}</p>
                 </div>
               </div>
               <div>

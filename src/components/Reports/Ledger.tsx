@@ -1,131 +1,206 @@
-import { useEffect, useState } from "react";
-import { DatePicker, Select } from "antd";
+import { useEffect, useMemo, useState } from "react";
+import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import {
   getLedgerAccount,
   getLedgerReport,
 } from "../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
-import dayjs from "dayjs";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
+
+const formatAmount = (n: number | string | undefined | null) =>
+  Number(n || 0).toLocaleString(undefined, {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
 
 const Ledger = () => {
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
-  const [totalRows, setTotalRows] = useState(0);
-  const [from, setFrom] = useState(0);
-  const [to, setTo] = useState(0);
-  const [ledgerData, setLedgerData] = useState<any>([]);
-  const [customerData, setCustomerData] = useState<any[]>([]);
+  const [accounts, setAccounts] = useState<any[]>([]);
+  const [, setCustomerData] = useState<any[]>([]);
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
-  const [selectedAccountCode, setSelectedAccountCode] = useState<string>("");
-  const [selectedAccountId, setSelectedAccountId] = useState<string>("");
-  const [responseData, setresponseData] = useState<any>();
   const [loading, setLoading] = useState(false);
 
-  const getAllDaybookReport = [
+  // Search state with debounce
+  const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim().toLowerCase());
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
+
+  // Reset page on filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [fromDate, toDate, pageSize]);
+
+  // Flatten the response: each account has many `movements`. Render one row per
+  // movement (with parent account info) so the table reflects all transactions.
+  const allMovements = useMemo(() => {
+    const rows: any[] = [];
+    accounts.forEach((acc: any) => {
+      const movements = Array.isArray(acc?.movements) ? acc.movements : [];
+      movements.forEach((m: any) => {
+        rows.push({
+          accountCode: acc.accountCode || "-",
+          accountName: acc.accountName || "-",
+          accountType: acc.accountType || "-",
+          currency: acc.currency || "SAR",
+          entryDate: m.entryDate || "-",
+          voucherNumber: m.voucherNumber || "-",
+          referenceType: m.referenceType || "-",
+          transactionType: m.transactionType || "-",
+          description: m.description || "-",
+          debitAmount: Number(m.debitAmount || 0),
+          creditAmount: Number(m.creditAmount || 0),
+          runningBalance: Number(m.runningBalance || 0),
+          status: m.status || "-",
+        });
+      });
+    });
+    return rows;
+  }, [accounts]);
+
+  const filteredRows = useMemo(() => {
+    if (!debouncedSearch) return allMovements;
+    return allMovements.filter((r: any) => {
+      return (
+        r.accountCode.toLowerCase().includes(debouncedSearch) ||
+        r.accountName.toLowerCase().includes(debouncedSearch) ||
+        r.accountType.toLowerCase().includes(debouncedSearch) ||
+        r.voucherNumber.toLowerCase().includes(debouncedSearch) ||
+        r.description.toLowerCase().includes(debouncedSearch) ||
+        r.referenceType.toLowerCase().includes(debouncedSearch) ||
+        r.transactionType.toLowerCase().includes(debouncedSearch)
+      );
+    });
+  }, [allMovements, debouncedSearch]);
+
+  const totalRows = filteredRows.length;
+  const totalPage = Math.max(1, Math.ceil(totalRows / pageSize));
+
+  const mappedData = useMemo(
+    () =>
+      filteredRows
+        .slice((page - 1) * pageSize, page * pageSize)
+        .map((row: any, index: number) => ({
+          Sr: (page - 1) * pageSize + index + 1,
+          ...row,
+        })),
+    [filteredRows, page, pageSize]
+  );
+
+  // Cards reflect the filtered rows so they always match the table.
+  const visibleTotals = useMemo(() => {
+    return filteredRows.reduce(
+      (acc: any, row: any) => {
+        acc.debits += row.debitAmount;
+        acc.credits += row.creditAmount;
+        return acc;
+      },
+      { debits: 0, credits: 0 }
+    );
+  }, [filteredRows]);
+
+  const columns = [
     {
       name: "S No",
       selector: (row: { Sr: number }) => row.Sr,
       sortable: true,
-      width: '70px',
+      width: "70px",
     },
     {
-      name: "Account Code",
-      selector: (row: { accountCode: string }) => row.accountCode,
+      name: "Date",
+      selector: (row: any) => row.entryDate,
+      sortable: true,
+      width: "110px",
+    },
+    {
+      name: "Voucher #",
+      selector: (row: any) => row.voucherNumber,
+      sortable: true,
     },
     {
       name: "Account",
-      selector: (row: { account: string }) => row.account,
+      cell: (row: any) => (
+        <div className="d-flex flex-column">
+          <span className="fw-bold">{row.accountCode}</span>
+          <small className="text-muted">{row.accountName}</small>
+        </div>
+      ),
+      sortable: true,
     },
     {
-      name: "Opening Balance",
-      selector: (row: { openingBalance: number }) => row.openingBalance?.toLocaleString() || "0",
+      name: "Type",
+      selector: (row: any) => row.transactionType,
+      sortable: true,
+    },
+    {
+      name: "Description",
+      selector: (row: any) => row.description,
+      wrap: true,
+      grow: 2,
     },
     {
       name: "Debit",
-      selector: (row: { debit: number }) => row.debit?.toLocaleString() || "0",
+      selector: (row: any) => formatAmount(row.debitAmount),
+      sortable: true,
+      right: true,
     },
     {
       name: "Credit",
-      selector: (row: { credit: number }) => row.credit?.toLocaleString() || "0",
+      selector: (row: any) => formatAmount(row.creditAmount),
+      sortable: true,
+      right: true,
     },
     {
-      name: "Closing Balance",
-      selector: (row: { closingBalance: number }) => row.closingBalance?.toLocaleString() || "0",
+      name: "Running Balance",
+      selector: (row: any) => formatAmount(row.runningBalance),
+      right: true,
+    },
+    {
+      name: "Status",
+      selector: (row: any) => row.status,
     },
   ];
 
-  const mappedData =
-    ledgerData &&
-    ledgerData?.map((item: any, index: any) => {
-      return {
-        Sr: (page - 1) * pageSize + index + 1,
-        id: item.id || item.accountId,
-        transactionDate: item.transactionDate || "-",
-        voucherNo: item.voucherNo || "-",
-        accountCode: item.accountCode || "-",
-        account: item.account || item.accountName || "-",
-        debit: item.debit ?? item.totalDebits ?? 0,
-        credit: item.credit ?? item.totalCredits ?? 0,
-        openingBalance: item.openingBalance ?? 0,
-        closingBalance: item.closingBalance ?? 0,
-        applicationNo: item.applicationNo || item.applicationNumber || "-",
-      };
-    });
-
   const getLedgerReportData = async () => {
-    // No mandatory date check to allow loading all data
-
     try {
       setLoading(true);
-      const start = fromDate ? fromDate.format("YYYY-MM-DD") : "2000-01-01";
-      const end = toDate ? toDate.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
-      
-      const res = await getLedgerReport(
-        start,
-        end,
-        selectedAccountCode === "all" ? "" : selectedAccountCode,
-        selectedAccountId
-      );
-      
+      const start = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
+      const end = toDate ? toDate.format("YYYY-MM-DD") : undefined;
+
+      // Pull all accounts in one shot — backend paginates by accounts but each
+      // account has many movements, and we paginate movements client-side.
+      const res = await getLedgerReport(start, end, "", "", 0, 1000);
+
       if (res?.data) {
-        // Handle responses that might have { success: true, data: [...] } or { data: [...] }
         const dataField = res.data.data;
         const rootData = res.data;
-        
-        let list = [];
-        if (Array.isArray(dataField)) {
-          list = dataField;
-        } else if (dataField?.accounts && Array.isArray(dataField.accounts)) {
+
+        let list: any[] = [];
+        if (dataField?.accounts && Array.isArray(dataField.accounts)) {
           list = dataField.accounts;
-        } else if (Array.isArray(rootData)) {
-          list = rootData;
+        } else if (Array.isArray(dataField)) {
+          list = dataField;
         } else if (rootData?.accounts && Array.isArray(rootData.accounts)) {
           list = rootData.accounts;
-        } else {
-          // Fallback to other common structures
-          const potentialData = dataField || rootData;
-          list = potentialData?.ledgerListDto || potentialData?.ledgerReportDto || potentialData?.items || [];
         }
-        
-        setresponseData(dataField || rootData);
-        setLedgerData(list);
-        
-        const totalItems = res?.data?.pageInfo?.totalItems || (res.data.totalAccounts || list.length);
-        setTotalRows(totalItems);
-        
-        const calculatedFrom = totalItems > 0 ? (page - 1) * pageSize + 1 : 0;
-        const calculatedTo = Math.min(page * pageSize, totalItems);
-        setFrom(calculatedFrom);
-        setTo(calculatedTo);
+
+        setAccounts(list);
       }
     } catch (error: any) {
       console.error("Error fetching ledger:", error);
       toast.error(error?.message || "Failed to fetch ledger report");
-      setLedgerData([]);
+      setAccounts([]);
     } finally {
       setLoading(false);
     }
@@ -149,121 +224,125 @@ const Ledger = () => {
 
   useEffect(() => {
     getLedgerReportData();
-  }, [page, pageSize, fromDate, toDate, selectedAccountCode, selectedAccountId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromDate, toDate]);
 
-  const exportToCSV = (data: any[], fileName: string) => {
-    if (!data || data.length === 0) return;
-    const csvRows = [];
-    const headers = Object.keys(data[0]);
-    csvRows.push(headers.join(","));
-
-    data.forEach((row) => {
-      const values = headers.map((header) => row[header]);
-      csvRows.push(values.join(","));
-    });
-
-    const csvString = csvRows.join("\n");
-    const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
-    saveAs(blob, `${fileName}.csv`);
+  const exportToCSV = () => {
+    if (!filteredRows || filteredRows.length === 0) return;
+    const headers = [
+      "Date",
+      "Voucher #",
+      "Account Code",
+      "Account Name",
+      "Type",
+      "Description",
+      "Debit",
+      "Credit",
+      "Running Balance",
+      "Status",
+    ];
+    const rows = filteredRows.map((row: any) => [
+      row.entryDate,
+      row.voucherNumber,
+      row.accountCode,
+      `"${(row.accountName || "").replace(/"/g, '""')}"`,
+      row.transactionType,
+      `"${(row.description || "").replace(/"/g, '""')}"`,
+      row.debitAmount,
+      row.creditAmount,
+      row.runningBalance,
+      row.status,
+    ]);
+    const csv = [headers, ...rows].map((r) => r.join(",")).join("\n");
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    saveAs(blob, "ledger_report.csv");
   };
 
   return (
     <>
       {loading && <Loader />}
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+      <div className="service p-4">
+        <div className="mb-3 pb-2 border-bottom">
           <h3 className="mb-0 fw-bold text-dark">Ledger Report</h3>
-          <div className="d-flex align-items-center gap-2">
-             <button
-              className="invoice-btn bg-dark text-white px-4"
-              onClick={() => exportToCSV(ledgerData, "ledger_report")}
-              disabled={ledgerData.length === 0}
-            >
-              Export CSV
-            </button>
-            <button 
-              className="theme-btn-next px-4" 
-              onClick={getLedgerReportData} 
-              disabled={loading}
-              style={{ height: "42px" }}
-            >
-              {loading ? "..." : "Refresh"}
-            </button>
-          </div>
         </div>
 
-        <div className="row g-3 mb-4 align-items-end">
-          <div className="col-md-3">
-            <label className="form-label fw-bold text-muted small uppercase">From Date</label>
-            <DatePicker
-              value={fromDate}
-              onChange={(date) => setFromDate(date)}
-              format="YYYY-MM-DD"
-              className="w-100"
-              size="large"
-            />
-          </div>
-          <div className="col-md-3">
-            <label className="form-label fw-bold text-muted small uppercase">To Date</label>
-            <DatePicker
-              value={toDate}
-              onChange={(date) => setToDate(date)}
-              format="YYYY-MM-DD"
-              className="w-100"
-              size="large"
-            />
-          </div>
-          <div className="col-md-4">
-            <label className="form-label fw-bold text-muted small uppercase">Account</label>
-            <Select
-              className="w-100"
-              size="large"
-              placeholder="Select Account"
-              value={selectedAccountCode || "all"}
-              onChange={(value) => setSelectedAccountCode(value)}
-              showSearch
-              filterOption={(input, option: any) =>
-                option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-            >
-              <Select.Option value="all">All Accounts</Select.Option>
-              {customerData?.map((option) => (
-                <Select.Option key={option.accountCode} value={option.accountCode}>
-                  {option.accountCode} - {option.accountName}
-                </Select.Option>
-              ))}
-            </Select>
-          </div>
+        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+          <AntInput
+            allowClear
+            placeholder="Search by account, voucher, description, or type"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <DatePicker
+            value={fromDate}
+            onChange={(date) => setFromDate(date)}
+            format="YYYY-MM-DD"
+            placeholder="From Date"
+            style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 8, height: 40 }}
+          />
+          <DatePicker
+            value={toDate}
+            onChange={(date) => setToDate(date)}
+            format="YYYY-MM-DD"
+            placeholder="To Date"
+            style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 8, height: 40 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={filteredRows.length === 0}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Export CSV
+          </button>
         </div>
-      </div>
 
-      <div className="cs-table p-2 bg-white rounded shadow-sm border">
-        <TableView
-          data={mappedData}
-          header={getAllDaybookReport}
-          setPage={setPage}
-          page={page}
-          pageSize={pageSize}
-          setPageSize={setPageSize}
-          totalRows={totalRows}
-          from={from}
-          to={to}
-          isLoading={loading}
-          paginationRowsPerPageOptions={[10, 20, 50, 100]}
-        />
-        
-        {ledgerData?.length > 0 && !loading && (
-          <div className="d-flex justify-content-end gap-5 p-4 bg-light border-top rounded-bottom mt-2">
-            <div className="text-end">
-              <span className="text-muted small uppercase fw-bold d-block mb-1">Total Debit</span>
-              <h4 className="mb-0 fw-bold text-dark">{responseData?.totalDebitAmount?.toLocaleString() || "0.00"} <span className="small text-muted">SAR</span></h4>
+        <AntRow gutter={[16, 16]} className="mb-3">
+          <AntCol xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14 }}>Total Entries</div>
+              <div style={{ fontSize: 22, fontWeight: 700 }}>
+                {totalRows.toLocaleString()}
+              </div>
             </div>
-            <div className="text-end">
-              <span className="text-muted small uppercase fw-bold d-block mb-1">Total Credit</span>
-              <h4 className="mb-0 fw-bold text-dark">{responseData?.toalCreditAmount?.toLocaleString() || "0.00"} <span className="small text-muted">SAR</span></h4>
+          </AntCol>
+          <AntCol xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14 }}>Total Debits</div>
+              <div style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatAmount(visibleTotals.debits)}
+              </div>
             </div>
-          </div>
-        )}
+          </AntCol>
+          <AntCol xs={24} sm={12} lg={8}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14 }}>Total Credits</div>
+              <div style={{ fontSize: 22, fontWeight: 700 }}>
+                {formatAmount(visibleTotals.credits)}
+              </div>
+            </div>
+          </AntCol>
+        </AntRow>
+
+        <div className="cs-table p-2 bg-white rounded shadow-sm">
+          <TableView
+            data={mappedData}
+            header={columns}
+            setPage={setPage}
+            page={page}
+            pageSize={pageSize}
+            setPageSize={setPageSize}
+            totalRows={totalRows}
+            totalPage={totalPage}
+            from={totalRows > 0 ? (page - 1) * pageSize + 1 : 0}
+            to={Math.min(page * pageSize, totalRows)}
+            isLoading={loading}
+            paginationShow={true}
+          />
+        </div>
       </div>
     </>
   );

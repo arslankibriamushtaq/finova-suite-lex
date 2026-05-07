@@ -25,7 +25,7 @@ if(unmaskedCount>0){
 
     return (
         <>
-          <span style={{ fontFamily: "monospace" }}>{maskedPart}</span>
+          <span>{maskedPart}</span>
           {visiblePart}
         </>
       );
@@ -33,7 +33,7 @@ if(unmaskedCount>0){
 else{
     return (
         <>
-          <span style={{ fontFamily: "monospace" }}>******</span>
+          <span>******</span>
           
         </>
       );
