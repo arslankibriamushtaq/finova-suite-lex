@@ -10,7 +10,7 @@ import {
 } from "../../../redux/apis/apisRiskManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import { Badge } from "../../../components/ui/badge";
-import { RefreshCw, Lock, Unlock, Trash2, ChevronDown } from "lucide-react";
+import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../../../components/ui/button";
@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Textarea } from "../../../components/ui/textarea";
+import { Input } from "../../../components/ui/input";
 
 const DeviceManagement = () => {
   const [activeTab, setActiveTab] = useState<"all" | "blocked">("all");
@@ -55,6 +56,13 @@ const DeviceManagement = () => {
   // NID Associations Modal State
   const [isNidModalOpen, setIsNidModalOpen] = useState(false);
   const [selectedDeviceForNids, setSelectedDeviceForNids] = useState<any>(null);
+
+  // Add / Block Device Modal State
+  const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
+  const [addDeviceId, setAddDeviceId] = useState("");
+  const [addDeviceReason, setAddDeviceReason] = useState("");
+  const [isAddingDevice, setIsAddingDevice] = useState(false);
+  const [addDeviceErrors, setAddDeviceErrors] = useState<Record<string, string>>({});
 
   // Delete Device Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
@@ -153,6 +161,31 @@ const DeviceManagement = () => {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAddDevice = async () => {
+    const errors: Record<string, string> = {};
+    if (!addDeviceId.trim()) errors.deviceId = "Device ID is required";
+    if (!addDeviceReason.trim()) errors.reason = "Reason is required";
+    if (Object.keys(errors).length) { setAddDeviceErrors(errors); return; }
+    try {
+      setIsAddingDevice(true);
+      const response = await blockDevice({ deviceId: addDeviceId.trim(), reason: addDeviceReason.trim() });
+      if (response?.data?.success || response?.status === 200 || response?.status === 201) {
+        toast.success(response?.data?.message || "Device blocked successfully");
+        setIsAddDeviceModalOpen(false);
+        setAddDeviceId("");
+        setAddDeviceReason("");
+        setAddDeviceErrors({});
+        fetchDevicesData();
+      } else {
+        toast.error(response?.data?.message || "Failed to block device");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || "Failed to block device");
+    } finally {
+      setIsAddingDevice(false);
     }
   };
 
@@ -559,6 +592,14 @@ const DeviceManagement = () => {
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
           <Button
+            onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
+            className="gap-2 gradient-btn"
+            style={{ flexShrink: 0, height: 40, borderColor: "white", borderRadius: 8 }}
+          >
+            <Plus className="w-4 h-4" />
+            Block Device
+          </Button>
+          <Button
             onClick={fetchDevicesData}
             disabled={isLoading}
             variant="outline"
@@ -649,135 +690,132 @@ const DeviceManagement = () => {
 
       {/* Block Device Modal */}
       <Dialog open={isBlockModalOpen} onOpenChange={setIsBlockModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 mb-0">
-              <Lock className="w-5 h-5 text-destructive" />
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
               Block Device
             </DialogTitle>
-            <DialogDescription className="mb-0">
-              {selectedDeviceForBlock && (
-                <div className="mt-0 space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium text-foreground">Device ID:</span>
-                    <br />
-                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
-                      {selectedDeviceForBlock.deviceId}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            {selectedDeviceForBlock && (
+              <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForBlock.deviceId}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Reason for Blocking
-              </label>
-              <Textarea
-                placeholder="Enter the reason for blocking this device (e.g., Identity farming detected — multiple NIDs from same device)"
-                value={blockReason}
-                onChange={(e) => setBlockReason(e.target.value)}
-                className="min-h-[120px] resize-none"
-                disabled={isBlockingDevice}
-              />
-              <p className="text-xs text-muted-foreground">
-                {blockReason.length}/500 characters
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeBlockModal}
+          <div className="space-y-3 mt-1">
+            <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Reason for Blocking *</label>
+            <Textarea
+              placeholder="e.g. Identity farming detected — multiple NIDs from same device"
+              value={blockReason}
+              onChange={(e) => setBlockReason(e.target.value)}
+              className="resize-none"
+              style={{ minHeight: 100, background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}
               disabled={isBlockingDevice}
-            >
+            />
+            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{blockReason.length}/500</p>
+          </div>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" onClick={closeBlockModal} disabled={isBlockingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
               Cancel
             </Button>
-            <Button
-              type="button"
-              variant="destructive"
+            <button
               onClick={handleBlockDevice}
               disabled={isBlockingDevice || !blockReason.trim()}
-              className="gap-2"
+              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
             >
-              {isBlockingDevice ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Blocking...
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Block Device
-                </>
-              )}
-            </Button>
+              {isBlockingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Blocking...</> : <><Lock className="w-4 h-4" />Block Device</>}
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Unblock Device Modal */}
       <Dialog open={isUnblockModalOpen} onOpenChange={setIsUnblockModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 mb-0">
-              <Unlock className="w-5 h-5 text-green-600" />
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Unlock className="w-5 h-5" style={{ color: "var(--color-status-green)" }} />
               Unblock Device
             </DialogTitle>
-            <DialogDescription className="mb-0">
-              {selectedDeviceForUnblock && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium text-foreground">Device ID:</span>
-                    <br />
-                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
-                      {selectedDeviceForUnblock.deviceId}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            {selectedDeviceForUnblock && (
+              <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForUnblock.deviceId}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg border border-yellow-200 dark:border-yellow-900">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                ⚠️ Are you sure you want to unblock this device? Users will be able to use this device again.
+          <div className="py-3">
+            <div className="p-3 rounded-lg" style={{ background: "var(--color-status-amber)", opacity: 0.9 }}>
+              <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
+                ⚠️ Are you sure you want to unblock this device? Users will be able to use it again.
               </p>
             </div>
           </div>
-
-          <DialogFooter className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeUnblockModal}
-              disabled={isUnblockingDevice}
-            >
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={closeUnblockModal} disabled={isUnblockingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
               Cancel
             </Button>
-            <Button
-              type="button"
+            <button
               onClick={handleUnblockDevice}
               disabled={isUnblockingDevice}
-              className="gap-2 bg-green-600 hover:bg-green-700 text-white"
+              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
             >
-              {isUnblockingDevice ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Unblocking...
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-4 h-4" />
-                  Unblock Device
-                </>
-              )}
+              {isUnblockingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Unblocking...</> : <><Unlock className="w-4 h-4" />Unblock Device</>}
+            </button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add / Block Device Modal */}
+      <Dialog open={isAddDeviceModalOpen} onOpenChange={setIsAddDeviceModalOpen}>
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
+              Block Device
+            </DialogTitle>
+            <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+              Enter the Device ID and reason to manually block a device.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-1">
+            <div className="space-y-1">
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Device ID *</label>
+              <Input
+                placeholder="e.g. AP3A.240905.015.A2"
+                value={addDeviceId}
+                onChange={(e) => { setAddDeviceId(e.target.value); if (addDeviceErrors.deviceId) setAddDeviceErrors((p) => ({ ...p, deviceId: "" })); }}
+                style={{ background: "var(--input)", color: "var(--foreground)", borderColor: addDeviceErrors.deviceId ? "var(--color-status-coral)" : "var(--border)" }}
+                disabled={isAddingDevice}
+              />
+              {addDeviceErrors.deviceId && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.deviceId}</p>}
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Reason *</label>
+              <Textarea
+                placeholder="e.g. Identity farming detected — multiple NIDs from same device"
+                value={addDeviceReason}
+                onChange={(e) => { setAddDeviceReason(e.target.value); if (addDeviceErrors.reason) setAddDeviceErrors((p) => ({ ...p, reason: "" })); }}
+                className="resize-none"
+                style={{ minHeight: 100, background: "var(--input)", color: "var(--foreground)", borderColor: addDeviceErrors.reason ? "var(--color-status-coral)" : "var(--border)" }}
+                disabled={isAddingDevice}
+              />
+              {addDeviceErrors.reason && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.reason}</p>}
+            </div>
+          </div>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" onClick={() => setIsAddDeviceModalOpen(false)} disabled={isAddingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
+              Cancel
             </Button>
+            <button
+              onClick={handleAddDevice}
+              disabled={isAddingDevice}
+              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
+            >
+              {isAddingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Blocking...</> : <><Lock className="w-4 h-4" />Block Device</>}
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -806,6 +844,7 @@ const DeviceManagement = () => {
                     <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Attempts</th>
                     <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">First Seen</th>
                     <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Last Seen</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -828,12 +867,32 @@ const DeviceManagement = () => {
                         {assoc.mobileNumber || <span className="text-muted-foreground italic">—</span>}
                       </td>
                       <td className="px-3 py-2">
-                        <Badge variant={assoc.attemptCount > 0 ? "destructive" : "outline"} className="text-xs">
+                        <Badge
+                          style={{ background: assoc.attemptCount > 0 ? "var(--color-status-coral)" : undefined, color: assoc.attemptCount > 0 ? "var(--primary-foreground)" : undefined }}
+                          variant={assoc.attemptCount > 0 ? "outline" : "outline"}
+                          className="text-xs"
+                        >
                           {assoc.attemptCount ?? 0}
                         </Badge>
                       </td>
                       <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(assoc.firstSeenAt)}</td>
                       <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(assoc.lastSeenAt)}</td>
+                      <td className="px-3 py-2">
+                        <button
+                          onClick={() => {
+                            setIsNidModalOpen(false);
+                            setAddDeviceId(selectedDeviceForNids?.deviceId || "");
+                            setAddDeviceReason("");
+                            setAddDeviceErrors({});
+                            setIsAddDeviceModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border transition-colors"
+                          style={{ background: "var(--color-status-coral)", color: "var(--primary-foreground)", borderColor: "transparent" }}
+                        >
+                          <Lock className="w-3 h-3" />
+                          Block
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -850,63 +909,37 @@ const DeviceManagement = () => {
 
       {/* Delete Device Modal */}
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 mb-0">
-              <Trash2 className="w-5 h-5 text-destructive" />
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Trash2 className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
               Delete Device
             </DialogTitle>
-            <DialogDescription className="mb-0">
-              {selectedDeviceForDelete && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium text-foreground">Device ID:</span>
-                    <br />
-                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
-                      {selectedDeviceForDelete.deviceId}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            {selectedDeviceForDelete && (
+              <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForDelete.deviceId}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="p-3 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-900">
-              <p className="text-sm text-red-800 dark:text-red-200">
-                ⚠️ This action cannot be undone. The device will be permanently deleted from the system.
+          <div className="py-3">
+            <div className="p-3 rounded-lg" style={{ background: "var(--color-status-coral)", opacity: 0.9 }}>
+              <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
+                ⚠️ This action cannot be undone. The device will be permanently deleted.
               </p>
             </div>
           </div>
-
-          <DialogFooter className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeDeleteModal}
-              disabled={isDeletingDevice}
-            >
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={closeDeleteModal} disabled={isDeletingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
               Cancel
             </Button>
-            <Button
-              type="button"
+            <button
               onClick={handleDeleteDevice}
               disabled={isDeletingDevice}
-              variant="destructive"
-              className="gap-2"
+              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
+              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
             >
-              {isDeletingDevice ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4" />
-                  Delete Device
-                </>
-              )}
-            </Button>
+              {isDeletingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Deleting...</> : <><Trash2 className="w-4 h-4" />Delete Device</>}
+            </button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
