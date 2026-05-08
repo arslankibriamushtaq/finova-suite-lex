@@ -52,6 +52,10 @@ const DeviceManagement = () => {
   const [selectedDeviceForUnblock, setSelectedDeviceForUnblock] = useState<any>(null);
   const [isUnblockingDevice, setIsUnblockingDevice] = useState(false);
 
+  // NID Associations Modal State
+  const [isNidModalOpen, setIsNidModalOpen] = useState(false);
+  const [selectedDeviceForNids, setSelectedDeviceForNids] = useState<any>(null);
+
   // Delete Device Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDeviceForDelete, setSelectedDeviceForDelete] = useState<any>(null);
@@ -70,38 +74,12 @@ const DeviceManagement = () => {
     fetchDevicesData();
   }, [activeTab, page, pageSize, debouncedSearch]);
 
-  // The blocked-devices endpoint returns one entry per device with NIDs nested
-  // under `nidAssociations[]`, while the all-devices endpoint returns one row
-  // per device-NID pair. Flatten blocked devices so both tabs render the same
-  // row granularity (one row per NID).
-  const flattenBlockedDevices = (devices: any[]): any[] => {
-    const rows: any[] = [];
-    devices.forEach((device: any) => {
-      const associations = Array.isArray(device?.nidAssociations) ? device.nidAssociations : [];
-      if (associations.length === 0) {
-        rows.push({ ...device, nidHash: null, attemptCount: device?.totalAttempts || 0 });
-        return;
-      }
-      associations.forEach((assoc: any) => {
-        rows.push({
-          ...device,
-          nidHash: assoc?.nidHash || null,
-          attemptCount: assoc?.attemptCount ?? 0,
-          firstSeenAt: assoc?.firstSeenAt || device?.firstSeenAt,
-          lastSeenAt: assoc?.lastSeenAt || device?.lastSeenAt,
-        });
-      });
-    });
-    return rows;
-  };
-
   const fetchDevicesData = async () => {
     try {
       setIsLoading(true);
       const apiCall = activeTab === "all" ? getAllDevices : getBlockedDevices;
 
-      // Blocked-devices endpoint isn't paginated — fetch the full list, flatten
-      // by nidAssociations, then handle search + pagination client-side.
+      // Blocked-devices endpoint — one row per device, nidAssociations nested
       if (activeTab === "blocked") {
         const response = await apiCall();
         const raw: any[] = Array.isArray(response?.data?.data)
@@ -109,7 +87,7 @@ const DeviceManagement = () => {
           : Array.isArray(response?.data)
             ? response.data
             : [];
-        let rows = flattenBlockedDevices(raw);
+        let rows = raw;
 
         if (debouncedSearch) {
           const term = debouncedSearch.toLowerCase();
@@ -118,8 +96,7 @@ const DeviceManagement = () => {
             (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
             (item?.blockSource || "").toLowerCase().includes(term) ||
             (item?.blockReason || "").toLowerCase().includes(term) ||
-            (item?.blockType || "").toLowerCase().includes(term) ||
-            (item?.nidHash || "").toLowerCase().includes(term)
+            (item?.blockType || "").toLowerCase().includes(term)
           );
         }
 
@@ -454,31 +431,16 @@ const DeviceManagement = () => {
       name: "Device ID",
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
-    },
-    {
-      name: "NID Hash",
-      cell: (row: any) => (
-        <span
-          className="text-xs text-muted-foreground cursor-help"
-          title={row.nidHash || ""}
-        >
-          {row.nidHash ? truncateHash(row.nidHash) : "-"}
-        </span>
-      ),
-      sortable: true,
+      width: "160px",
     },
     {
       name: "Block Source",
       cell: (row: any) => (
-        <Badge
-          variant="destructive"
-          className="text-xs"
-          title={row.blockSource}
-        >
+        <Badge variant="destructive" className="text-xs" title={row.blockSource}>
           {row.blockSource || "MANUAL"}
         </Badge>
       ),
-      sortable: true,
+      width: "160px",
     },
     {
       name: "Block Type",
@@ -493,41 +455,52 @@ const DeviceManagement = () => {
           {row.blockType || "UNKNOWN"}
         </Badge>
       ),
-      sortable: true,
+      width: "130px",
     },
     {
-      name: "Attempts",
+      name: "Admin Blocked",
       cell: (row: any) => (
-        <Badge variant="outline">
-          {row.totalAttempts || 0}
+        <Badge className={row.adminBlocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-gray-100 text-gray-600 hover:bg-gray-100"}>
+          {row.adminBlocked ? "Yes" : "No"}
         </Badge>
       ),
+      width: "120px",
     },
     {
-      name: "NID Count",
+      name: "Total Attempts",
+      cell: (row: any) => <Badge variant="outline">{row.totalAttempts ?? 0}</Badge>,
+      width: "120px",
+    },
+    {
+      name: "NID Associations",
       cell: (row: any) => (
-        <Badge variant="secondary" className="text-white">
-          {row.totalNidAssociations || 0}
-        </Badge>
+        <button
+          onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
+          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
+        >
+          {row.totalNidAssociations ?? (row.nidAssociations?.length ?? 0)} NIDs
+        </button>
       ),
+      width: "130px",
     },
     {
       name: "Block Reason",
       cell: (row: any) => (
-        <div className="text-sm text-muted-foreground truncate" title={row.blockReason}>
+        <span className="text-sm text-muted-foreground" title={row.blockReason || ""}>
           {row.blockReason || "-"}
-        </div>
+        </span>
       ),
-      sortable: true,
+      width: "160px",
     },
     {
       name: "First Seen",
-      cell: (row: any) => (
-        <div className="text-sm text-muted-foreground">
-          {formatDate(row.firstSeenAt)}
-        </div>
-      ),
-      sortable: true,
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.firstSeenAt)}</span>,
+      width: "160px",
+    },
+    {
+      name: "Last Seen",
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
+      width: "160px",
     },
     {
       name: "Actions",
@@ -537,37 +510,38 @@ const DeviceManagement = () => {
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              Select
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
-            <DropdownMenuItem
-              onClick={() => openUnblockModal(row)}
-              className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
-            >
-              <Unlock className="h-4 w-4" />
-              <span>Unblock Device</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => openDeleteModal(row)}
-              className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Delete Device</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onClick={() => openUnblockModal(row)}
+                className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
+              >
+                <Unlock className="h-4 w-4" />
+                <span>Unblock Device</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => openDeleteModal(row)}
+                className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete Device</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
+      width: "120px",
     },
   ];
 
@@ -813,6 +787,72 @@ const DeviceManagement = () => {
                 </>
               )}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* NID Associations Modal */}
+      <Dialog open={isNidModalOpen} onOpenChange={setIsNidModalOpen}>
+        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="text-base">NID Associations</DialogTitle>
+            <DialogDescription className="text-xs">
+              Device: <span className="font-mono font-medium text-foreground">{selectedDeviceForNids?.deviceId}</span>
+              {selectedDeviceForNids?.blockSource && (
+                <Badge variant="destructive" className="ml-2 text-xs">{selectedDeviceForNids.blockSource}</Badge>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-y-auto flex-1 mt-2">
+            {Array.isArray(selectedDeviceForNids?.nidAssociations) && selectedDeviceForNids.nidAssociations.length > 0 ? (
+              <table className="w-full text-sm border-collapse">
+                <thead>
+                  <tr className="border-b border-border bg-muted/50">
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">#</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">NID</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">NID Hash</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Mobile</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Attempts</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">First Seen</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Last Seen</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedDeviceForNids.nidAssociations.map((assoc: any, idx: number) => (
+                    <tr key={idx} className="border-b border-border/50 hover:bg-muted/30">
+                      <td className="px-3 py-2 text-muted-foreground">{idx + 1}</td>
+                      <td className="px-3 py-2">
+                        {assoc.nid ? (
+                          <span className="font-medium">{assoc.nid}</span>
+                        ) : (
+                          <span className="text-muted-foreground italic">—</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className="font-mono text-xs text-muted-foreground cursor-help" title={assoc.nidHash}>
+                          {assoc.nidHash ? truncateHash(assoc.nidHash, 14) : "-"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        {assoc.mobileNumber || <span className="text-muted-foreground italic">—</span>}
+                      </td>
+                      <td className="px-3 py-2">
+                        <Badge variant={assoc.attemptCount > 0 ? "destructive" : "outline"} className="text-xs">
+                          {assoc.attemptCount ?? 0}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(assoc.firstSeenAt)}</td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(assoc.lastSeenAt)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">No NID associations found</p>
+            )}
+          </div>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsNidModalOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
