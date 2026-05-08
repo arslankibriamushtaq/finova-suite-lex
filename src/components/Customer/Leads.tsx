@@ -695,7 +695,7 @@ const Leads = () => {
   const [selectedValue, setSelectedValue] = useState("today");
   return (
     <div className="service">
-      <div className="filter-select col-12">
+      <div className="filter-select col-12 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
