@@ -100,6 +100,7 @@ const SingleInvoice = (props: any) => {
     const body = {
       productId: props?.productId,
       delinquencyType: 1,
+      settlementStrategy: props?.settlementStrategy ?? 1,
       isPercentage,
       penaltyPercentage: 0,
       penaltyAmount: 0,
@@ -119,7 +120,7 @@ const SingleInvoice = (props: any) => {
     try {
       const res = await callApi(buildConfigs(savedData, formValues));
       if (res?.data) {
-        toast.success(res.data.notificationMessage || "Saved successfully");
+        toast.success("Saved successfully");
         const newCard = {
           invoiceOrder: formValues.invoiceNo,
           fromDay: formValues.fromDay,
@@ -147,7 +148,7 @@ const SingleInvoice = (props: any) => {
     try {
       const res = await callApi(buildConfigs(remaining));
       if (res?.data) {
-        toast.success(res.data.notificationMessage || "Deleted successfully");
+        toast.success("Deleted successfully");
         setSavedData(remaining);
       } else {
         toast.error(res.data.errors?.[0]);
@@ -175,7 +176,7 @@ const SingleInvoice = (props: any) => {
     try {
       const res = await callApi(buildConfigs(updatedData));
       if (res?.data) {
-        toast.success(res.data.notificationMessage || "Updated successfully");
+        toast.success("Updated successfully");
         setSavedData(updatedData);
         handleClose();
       } else {
