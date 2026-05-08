@@ -142,6 +142,16 @@ code {
 .bg-primary-50{
   background-color: rgba(0, 0, 0, 0.05);
 }
+/* Global placeholder color — light gray across all inputs, textareas, and antd fields */
+input::placeholder,
+textarea::placeholder,
+.ant-input::placeholder,
+.ant-input-affix-wrapper input::placeholder,
+.ant-input-search input::placeholder {
+  color: var(--muted-foreground) !important;
+  opacity: 1;
+}
+
 input.pl-9{
   padding-left: 2.25rem !important;
 }

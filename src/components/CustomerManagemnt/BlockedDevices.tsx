@@ -243,7 +243,7 @@ const BlockedDevices = () => {
     },
     {
       name: "Actions",
-      width: "15%",
+ 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button

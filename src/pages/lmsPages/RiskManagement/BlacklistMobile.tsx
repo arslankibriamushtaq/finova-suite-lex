@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { ChevronDown, Plus, ShieldOff } from "lucide-react";
+import { ChevronDown, Plus, ShieldOff, ShieldCheck } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -146,7 +146,7 @@ const BlacklistMobile = () => {
       name: "Action",
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
-        if (status !== "BLACKLISTED") return null;
+        if (status !== "BLACKLISTED" && status !== "REMOVED") return null;
         return (
           <div
             className="relative inline-block"
@@ -164,16 +164,29 @@ const BlacklistMobile = () => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
-                <DropdownMenuItem
-                  variant="destructive"
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    setRemoveTarget(row);
-                  }}
-                >
-                  <ShieldOff className="h-4 w-4" />
-                  Remove from Blacklist
-                </DropdownMenuItem>
+                {status === "REMOVED" ? (
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "" });
+                      setShowAddModal(true);
+                    }}
+                  >
+                    <ShieldCheck className="h-4 w-4" />
+                    Re-Blacklist
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setRemoveTarget(row);
+                    }}
+                  >
+                    <ShieldOff className="h-4 w-4" />
+                    Remove from Blacklist
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

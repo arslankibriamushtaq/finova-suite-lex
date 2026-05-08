@@ -10,7 +10,7 @@ import {
 } from "../../../redux/apis/apisRiskManagement";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import { Badge } from "../../../components/ui/badge";
-import { RefreshCw, Lock, Unlock, Trash2, ChevronDown } from "lucide-react";
+import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../../../components/ui/button";
@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Textarea } from "../../../components/ui/textarea";
+import { Input } from "../../../components/ui/input";
 
 const DeviceManagement = () => {
   const [activeTab, setActiveTab] = useState<"all" | "blocked">("all");
@@ -52,6 +53,17 @@ const DeviceManagement = () => {
   const [selectedDeviceForUnblock, setSelectedDeviceForUnblock] = useState<any>(null);
   const [isUnblockingDevice, setIsUnblockingDevice] = useState(false);
 
+  // NID Associations Modal State
+  const [isNidModalOpen, setIsNidModalOpen] = useState(false);
+  const [selectedDeviceForNids, setSelectedDeviceForNids] = useState<any>(null);
+
+  // Add / Block Device Modal State
+  const [isAddDeviceModalOpen, setIsAddDeviceModalOpen] = useState(false);
+  const [addDeviceId, setAddDeviceId] = useState("");
+  const [addDeviceReason, setAddDeviceReason] = useState("");
+  const [isAddingDevice, setIsAddingDevice] = useState(false);
+  const [addDeviceErrors, setAddDeviceErrors] = useState<Record<string, string>>({});
+
   // Delete Device Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDeviceForDelete, setSelectedDeviceForDelete] = useState<any>(null);
@@ -70,95 +82,14 @@ const DeviceManagement = () => {
     fetchDevicesData();
   }, [activeTab, page, pageSize, debouncedSearch]);
 
-  // The blocked-devices endpoint returns one entry per device with NIDs nested
-  // under `nidAssociations[]`, while the all-devices endpoint returns one row
-  // per device-NID pair. Flatten blocked devices so both tabs render the same
-  // row granularity (one row per NID).
-  const flattenBlockedDevices = (devices: any[]): any[] => {
-    const rows: any[] = [];
-    devices.forEach((device: any) => {
-      const associations = Array.isArray(device?.nidAssociations) ? device.nidAssociations : [];
-      if (associations.length === 0) {
-        rows.push({ ...device, nidHash: null, attemptCount: device?.totalAttempts || 0 });
-        return;
-      }
-      associations.forEach((assoc: any) => {
-        rows.push({
-          ...device,
-          nidHash: assoc?.nidHash || null,
-          attemptCount: assoc?.attemptCount ?? 0,
-          firstSeenAt: assoc?.firstSeenAt || device?.firstSeenAt,
-          lastSeenAt: assoc?.lastSeenAt || device?.lastSeenAt,
-        });
-      });
-    });
-    return rows;
-  };
-
   const fetchDevicesData = async () => {
     try {
       setIsLoading(true);
       const apiCall = activeTab === "all" ? getAllDevices : getBlockedDevices;
-
-      // Blocked-devices endpoint isn't paginated — fetch the full list, flatten
-      // by nidAssociations, then handle search + pagination client-side.
-      if (activeTab === "blocked") {
-        const response = await apiCall();
-        const raw: any[] = Array.isArray(response?.data?.data)
-          ? response.data.data
-          : Array.isArray(response?.data)
-            ? response.data
-            : [];
-        let rows = flattenBlockedDevices(raw);
-
-        if (debouncedSearch) {
-          const term = debouncedSearch.toLowerCase();
-          rows = rows.filter((item: any) =>
-            (item?.deviceId || "").toLowerCase().includes(term) ||
-            (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
-            (item?.blockSource || "").toLowerCase().includes(term) ||
-            (item?.blockReason || "").toLowerCase().includes(term) ||
-            (item?.blockType || "").toLowerCase().includes(term) ||
-            (item?.nidHash || "").toLowerCase().includes(term)
-          );
-        }
-
-        const total = rows.length;
-        const start = (page - 1) * pageSize;
-        setData(rows.slice(start, start + pageSize));
-        setTotalRows(total);
-        setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
-        return;
-      }
-
-      if (debouncedSearch) {
-        // Backend search support is unverified — fetch full set, filter client-side.
-        const response = await apiCall(0, 10000);
-        const all: any[] = Array.isArray(response?.data?.data)
-          ? response.data.data
-          : Array.isArray(response?.data)
-            ? response.data
-            : [];
-        const term = debouncedSearch.toLowerCase();
-        const filtered = all.filter((item: any) =>
-          (item?.deviceId || "").toLowerCase().includes(term) ||
-          (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
-          (item?.blockSource || "").toLowerCase().includes(term) ||
-          (item?.blockReason || "").toLowerCase().includes(term) ||
-          (item?.blockType || "").toLowerCase().includes(term) ||
-          (item?.nidHash || "").toLowerCase().includes(term)
-        );
-        const total = filtered.length;
-        const totalPages = Math.max(1, Math.ceil(total / pageSize));
-        const start = (page - 1) * pageSize;
-        setData(filtered.slice(start, start + pageSize));
-        setTotalRows(total);
-        setTotalPage(totalPages);
-        return;
-      }
+      const search = debouncedSearch || undefined;
 
       // Backend uses 0-based indexing for page
-      const response = await apiCall(page - 1, pageSize);
+      const response = await apiCall(page - 1, pageSize, search);
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
 
@@ -176,6 +107,31 @@ const DeviceManagement = () => {
       );
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleAddDevice = async () => {
+    const errors: Record<string, string> = {};
+    if (!addDeviceId.trim()) errors.deviceId = "Device ID is required";
+    if (!addDeviceReason.trim()) errors.reason = "Reason is required";
+    if (Object.keys(errors).length) { setAddDeviceErrors(errors); return; }
+    try {
+      setIsAddingDevice(true);
+      const response = await blockDevice({ deviceId: addDeviceId.trim(), reason: addDeviceReason.trim() });
+      if (response?.data?.success || response?.status === 200 || response?.status === 201) {
+        toast.success(response?.data?.message || "Device blocked successfully");
+        setIsAddDeviceModalOpen(false);
+        setAddDeviceId("");
+        setAddDeviceReason("");
+        setAddDeviceErrors({});
+        fetchDevicesData();
+      } else {
+        toast.error(response?.data?.message || "Failed to block device");
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || error?.message || "Failed to block device");
+    } finally {
+      setIsAddingDevice(false);
     }
   };
 
@@ -340,71 +296,43 @@ const DeviceManagement = () => {
       name: "Device ID",
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
-    //   width: "130px",
+      width: "160px",
     },
-    // {
-    //   name: "Fingerprint",
-    //   cell: (row: any) => (
-    //     <span
-    //       className="text-xs text-muted-foreground cursor-help"
-    //       title={row.deviceFingerprint}
-    //     >
-    //       {truncateHash(row.deviceFingerprint)}
-    //     </span>
-    //   ),
-    //   sortable: true,
-    // //   width: "150px",
-    // },
     {
-      name: "NID Hash",
+      name: "Fingerprint",
       cell: (row: any) => (
-        <span
-          className="text-xs text-muted-foreground cursor-help"
-          title={row.nidHash}
-        >
-          {truncateHash(row.nidHash)}
+        <span className="font-mono text-xs text-muted-foreground cursor-help" title={row.deviceFingerprint}>
+          {row.deviceFingerprint|| "-"}
         </span>
       ),
-      sortable: true,
-    },
-    {
-      name: "Attempts",
-      cell: (row: any) => (
-        <Badge variant="outline">
-          {row.attemptCount || 0}
-        </Badge>
-      ),
-    },
-    {
-      name: "NID Associations",
-      cell: (row: any) => (
-        <Badge variant="secondary" className="text-white">
-          {row.nidAssociationCount || 0}
-        </Badge>
-      ),
+      width: "350",
     },
     {
       name: "Status",
       cell: (row: any) => (
-        <Badge
-          className={`${
-            row.blocked
-              ? "bg-red-100 text-red-700 hover:bg-red-100"
-              : "bg-green-100 text-green-700 hover:bg-green-100"
-          }`}
-        >
+        <Badge className={row.blocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-green-100 text-green-700 hover:bg-green-100"}>
           {row.blocked ? "Blocked" : "Active"}
         </Badge>
       ),
+      width: "100px",
+    },
+    {
+      name: "Total Attempts",
+      cell: (row: any) => (
+        <Badge variant="outline">{row.totalAttempts ?? row.attemptCount ?? 0}</Badge>
+      ),
+      width: "120px",
+    },
+    {
+      name: "First Seen",
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.firstSeenAt)}</span>,
+      width: "160px",
     },
     {
       name: "Last Seen",
-      cell: (row: any) => (
-        <div className="text-sm text-muted-foreground">
-          {formatDate(row.lastSeenAt)}
-        </div>
-      ),
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
       sortable: true,
+      width: "160px",
     },
     {
       name: "Actions",
@@ -414,38 +342,47 @@ const DeviceManagement = () => {
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              Select
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
-            <DropdownMenuItem
-              onClick={() => openBlockModal(row)}
-              disabled={row.blocked}
-              className="cursor-pointer gap-2"
-            >
-              <Lock className="h-4 w-4" />
-              <span>Block Device</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => openDeleteModal(row)}
-              className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Delete Device</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              {Array.isArray(row.nidAssociations) && row.nidAssociations.length > 0 && (
+                <DropdownMenuItem
+                  onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
+                  className="cursor-pointer gap-2"
+                >
+                  <span>View Associations ({row.nidAssociations.length})</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                onClick={() => openBlockModal(row)}
+                disabled={row.blocked}
+                className="cursor-pointer gap-2"
+              >
+                <Lock className="h-4 w-4" />
+                <span>Block Device</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => openDeleteModal(row)}
+                className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete Device</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
+      width: "120px",
     },
   ];
 
@@ -454,31 +391,16 @@ const DeviceManagement = () => {
       name: "Device ID",
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
-    },
-    {
-      name: "NID Hash",
-      cell: (row: any) => (
-        <span
-          className="text-xs text-muted-foreground cursor-help"
-          title={row.nidHash || ""}
-        >
-          {row.nidHash ? truncateHash(row.nidHash) : "-"}
-        </span>
-      ),
-      sortable: true,
+      width: "160px",
     },
     {
       name: "Block Source",
       cell: (row: any) => (
-        <Badge
-          variant="destructive"
-          className="text-xs"
-          title={row.blockSource}
-        >
+        <Badge variant="destructive" className="text-xs" title={row.blockSource}>
           {row.blockSource || "MANUAL"}
         </Badge>
       ),
-      sortable: true,
+      width: "250px",
     },
     {
       name: "Block Type",
@@ -493,41 +415,40 @@ const DeviceManagement = () => {
           {row.blockType || "UNKNOWN"}
         </Badge>
       ),
-      sortable: true,
+      width: "130px",
     },
     {
-      name: "Attempts",
+      name: "Admin Blocked",
       cell: (row: any) => (
-        <Badge variant="outline">
-          {row.totalAttempts || 0}
+        <Badge className={row.adminBlocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-gray-100 text-gray-600 hover:bg-gray-100"}>
+          {row.adminBlocked ? "Yes" : "No"}
         </Badge>
       ),
+      width: "120px",
     },
     {
-      name: "NID Count",
-      cell: (row: any) => (
-        <Badge variant="secondary" className="text-white">
-          {row.totalNidAssociations || 0}
-        </Badge>
-      ),
+      name: "Total Attempts",
+      cell: (row: any) => <Badge variant="outline">{row.totalAttempts ?? 0}</Badge>,
+      width: "120px",
     },
     {
       name: "Block Reason",
       cell: (row: any) => (
-        <div className="text-sm text-muted-foreground truncate" title={row.blockReason}>
+        <span className="text-sm text-muted-foreground" title={row.blockReason || ""}>
           {row.blockReason || "-"}
-        </div>
+        </span>
       ),
-      sortable: true,
+      width: "160px",
     },
     {
       name: "First Seen",
-      cell: (row: any) => (
-        <div className="text-sm text-muted-foreground">
-          {formatDate(row.firstSeenAt)}
-        </div>
-      ),
-      sortable: true,
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.firstSeenAt)}</span>,
+      width: "160px",
+    },
+    {
+      name: "Last Seen",
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
+      width: "160px",
     },
     {
       name: "Actions",
@@ -537,37 +458,46 @@ const DeviceManagement = () => {
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              Select
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
-            <DropdownMenuItem
-              onClick={() => openUnblockModal(row)}
-              className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
-            >
-              <Unlock className="h-4 w-4" />
-              <span>Unblock Device</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => openDeleteModal(row)}
-              className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Delete Device</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              {Array.isArray(row.nidAssociations) && row.nidAssociations.length > 0 && (
+                <DropdownMenuItem
+                  onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
+                  className="cursor-pointer gap-2"
+                >
+                  <span>View Associations ({row.nidAssociations.length})</span>
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuItem
+                onClick={() => openUnblockModal(row)}
+                className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
+              >
+                <Unlock className="h-4 w-4" />
+                <span>Unblock Device</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => openDeleteModal(row)}
+                className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete Device</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
+      width: "120px",
     },
   ];
 
@@ -575,16 +505,12 @@ const DeviceManagement = () => {
   const toValue = Math.min(page * pageSize, totalRows);
 
   return (
-    <div className="w-full h-full bg-background p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="service p-4">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Device Management</h1>
-          <p className="text-muted-foreground">Monitor and manage registered devices</p>
-        </div>
+        <h1 className="text-xl font-bold pb-3">Device Management</h1>
 
         {/* Search Bar + Refresh */}
-        <div className="d-flex flex-wrap justify-content-between align-items-center mb-6 gap-2">
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
           <AntInput
             allowClear
             placeholder="Search by Device ID, Fingerprint, Block Source..."
@@ -613,8 +539,8 @@ const DeviceManagement = () => {
             setPage(1);
           }}
         >
-          <div className="mb-4">
-            <TabsList className="w-fit bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
+            <TabsList style={{ display: "inline-flex", width: "auto", flexShrink: 0 }} className="bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
               <TabsTrigger
                 value="all"
                 className="rounded-md border-0 px-6 py-2.5 font-medium text-base transition-all duration-200 data-[state=active]:bg-[var(--theme-secondary)] data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-muted/50"
@@ -638,12 +564,19 @@ const DeviceManagement = () => {
                 </span>
               </TabsTrigger>
             </TabsList>
+            <Button
+              className="gap-2"
+              onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
+              style={{ flexShrink: 0 }}
+            >
+              <Plus className="w-4 h-4" />
+              Block Device
+            </Button>
           </div>
 
           {/* All Devices Tab */}
           <TabsContent value="all" className="mt-0">
-            <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
-              <TableView
+            <TableView
                 header={allDevicesHeaders}
                 data={data}
                 totalRows={totalRows}
@@ -657,99 +590,60 @@ const DeviceManagement = () => {
                 isLoading={isLoading}
                 paginationShow={true}
               />
-            </div>
           </TabsContent>
 
           {/* Blocked Devices Tab */}
           <TabsContent value="blocked" className="mt-0">
-            <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
-              <TableView
-                header={blockedDevicesHeaders}
-                data={data}
-                totalRows={totalRows}
-                from={fromValue}
-                to={toValue}
-                page={page}
-                totalPage={totalPage}
-                setPage={setPage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                isLoading={isLoading}
-                paginationShow={true}
-              />
-            </div>
+            <TableView
+              header={blockedDevicesHeaders}
+              data={data}
+              totalRows={totalRows}
+              from={fromValue}
+              to={toValue}
+              page={page}
+              totalPage={totalPage}
+              setPage={setPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              isLoading={isLoading}
+              paginationShow={true}
+            />
           </TabsContent>
         </Tabs>
-      </div>
 
       {/* Block Device Modal */}
       <Dialog open={isBlockModalOpen} onOpenChange={setIsBlockModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 mb-0">
-              <Lock className="w-5 h-5 text-destructive" />
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
               Block Device
             </DialogTitle>
-            <DialogDescription className="mb-0">
-              {selectedDeviceForBlock && (
-                <div className="mt-0 space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium text-foreground">Device ID:</span>
-                    <br />
-                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
-                      {selectedDeviceForBlock.deviceId}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            {selectedDeviceForBlock && (
+              <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForBlock.deviceId}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">
-                Reason for Blocking
-              </label>
-              <Textarea
-                placeholder="Enter the reason for blocking this device (e.g., Identity farming detected — multiple NIDs from same device)"
-                value={blockReason}
-                onChange={(e) => setBlockReason(e.target.value)}
-                className="min-h-[120px] resize-none"
-                disabled={isBlockingDevice}
-              />
-              <p className="text-xs text-muted-foreground">
-                {blockReason.length}/500 characters
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeBlockModal}
+          <div className="space-y-3 mt-1">
+            <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Reason for Blocking *</label>
+            <Textarea
+              placeholder="e.g. Identity farming detected — multiple NIDs from same device"
+              value={blockReason}
+              onChange={(e) => setBlockReason(e.target.value)}
+              className="resize-none placeholder:text-muted-foreground"
+              style={{ minHeight: 100, background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}
               disabled={isBlockingDevice}
-            >
+            />
+            <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{blockReason.length}/500</p>
+          </div>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" onClick={closeBlockModal} disabled={isBlockingDevice}>
               Cancel
             </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={handleBlockDevice}
-              disabled={isBlockingDevice || !blockReason.trim()}
-              className="gap-2"
-            >
-              {isBlockingDevice ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Blocking...
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Block Device
-                </>
-              )}
+            <Button onClick={handleBlockDevice} disabled={isBlockingDevice || !blockReason.trim()} className="gap-2">
+              <Lock className="w-4 h-4" />
+              {isBlockingDevice ? "Blocking..." : "Block Device"}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -757,124 +651,202 @@ const DeviceManagement = () => {
 
       {/* Unblock Device Modal */}
       <Dialog open={isUnblockModalOpen} onOpenChange={setIsUnblockModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 mb-0">
-              <Unlock className="w-5 h-5 text-green-600" />
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Unlock className="w-5 h-5" style={{ color: "var(--color-status-green)" }} />
               Unblock Device
             </DialogTitle>
-            <DialogDescription className="mb-0">
-              {selectedDeviceForUnblock && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium text-foreground">Device ID:</span>
-                    <br />
-                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
-                      {selectedDeviceForUnblock.deviceId}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            {selectedDeviceForUnblock && (
+              <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForUnblock.deviceId}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="p-3 bg-yellow-50 dark:bg-yellow-950 rounded-lg border border-yellow-200 dark:border-yellow-900">
-              <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                ⚠️ Are you sure you want to unblock this device? Users will be able to use this device again.
+          <div className="py-3">
+            <div className="p-3 rounded-lg" style={{ background: "var(--color-status-amber)", opacity: 0.9 }}>
+              <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
+                ⚠️ Are you sure you want to unblock this device? Users will be able to use it again.
               </p>
             </div>
           </div>
-
-          <DialogFooter className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeUnblockModal}
-              disabled={isUnblockingDevice}
-            >
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={closeUnblockModal} disabled={isUnblockingDevice}>
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={handleUnblockDevice}
-              disabled={isUnblockingDevice}
-              className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-            >
-              {isUnblockingDevice ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Unblocking...
-                </>
-              ) : (
-                <>
-                  <Unlock className="w-4 h-4" />
-                  Unblock Device
-                </>
-              )}
+            <Button onClick={handleUnblockDevice} disabled={isUnblockingDevice} className="gap-2">
+              <Unlock className="w-4 h-4" />
+              {isUnblockingDevice ? "Unblocking..." : "Unblock Device"}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add / Block Device Modal */}
+      <Dialog open={isAddDeviceModalOpen} onOpenChange={setIsAddDeviceModalOpen}>
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
+              Block Device
+            </DialogTitle>
+            <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+              Enter the Device ID and reason to manually block a device.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 mt-1">
+            <div className="space-y-1">
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Device ID *</label>
+              <Input
+                placeholder="e.g. AP3A.240905.015.A2"
+                value={addDeviceId}
+                onChange={(e) => { setAddDeviceId(e.target.value); if (addDeviceErrors.deviceId) setAddDeviceErrors((p) => ({ ...p, deviceId: "" })); }}
+                className="placeholder:text-muted-foreground"
+                style={{ background: "var(--input)", color: "var(--foreground)", borderColor: addDeviceErrors.deviceId ? "var(--color-status-coral)" : "var(--border)" }}
+                disabled={isAddingDevice}
+              />
+              {addDeviceErrors.deviceId && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.deviceId}</p>}
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Reason *</label>
+              <Textarea
+                placeholder="e.g. Identity farming detected — multiple NIDs from same device"
+                value={addDeviceReason}
+                onChange={(e) => { setAddDeviceReason(e.target.value); if (addDeviceErrors.reason) setAddDeviceErrors((p) => ({ ...p, reason: "" })); }}
+                className="resize-none placeholder:text-muted-foreground"
+                style={{ minHeight: 100, background: "var(--input)", color: "var(--foreground)", borderColor: addDeviceErrors.reason ? "var(--color-status-coral)" : "var(--border)" }}
+                disabled={isAddingDevice}
+              />
+              {addDeviceErrors.reason && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.reason}</p>}
+            </div>
+          </div>
+          <DialogFooter className="gap-2 mt-2">
+            <Button variant="outline" onClick={() => setIsAddDeviceModalOpen(false)} disabled={isAddingDevice}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddDevice} disabled={isAddingDevice} className="gap-2">
+              <Lock className="w-4 h-4" />
+              {isAddingDevice ? "Blocking..." : "Block Device"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* NID Associations Modal */}
+      <Dialog open={isNidModalOpen} onOpenChange={setIsNidModalOpen}>
+        <DialogContent className="max-h-[80vh] overflow-hidden flex flex-col" style={{ width: "min(95vw, 900px)", maxWidth: "900px" }}>
+          <DialogHeader>
+            <DialogTitle className="text-base">NID/Mobile Associations</DialogTitle>
+            <DialogDescription className="text-xs">
+              Device: <span className="font-mono font-medium text-foreground">{selectedDeviceForNids?.deviceId}</span>
+              {selectedDeviceForNids?.blockSource && (
+                <Badge variant="destructive" className="ml-2 text-xs">{selectedDeviceForNids.blockSource}</Badge>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-auto flex-1 mt-2">
+            {Array.isArray(selectedDeviceForNids?.nidAssociations) && selectedDeviceForNids.nidAssociations.length > 0 ? (
+              <table className="text-sm border-collapse" style={{ minWidth: "700px", width: "100%" }}>
+                <thead>
+                  <tr className="border-b border-border bg-muted/50">
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">#</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">NID</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">NID Hash</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Mobile</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Attempts</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">First Seen</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Last Seen</th>
+                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {selectedDeviceForNids.nidAssociations.map((assoc: any, idx: number) => (
+                    <tr key={idx} className="border-b border-border/50 hover:bg-muted/30">
+                      <td className="px-3 py-2 text-muted-foreground">{idx + 1}</td>
+                      <td className="px-3 py-2">
+                        {assoc.nid ? (
+                          <span className="font-medium">{assoc.nid}</span>
+                        ) : (
+                          <span className="text-muted-foreground italic">—</span>
+                        )}
+                      </td>
+                      <td className="px-3 py-2">
+                        <span className="font-mono text-xs text-muted-foreground cursor-help" title={assoc.nidHash}>
+                          {assoc.nidHash ? truncateHash(assoc.nidHash, 14) : "-"}
+                        </span>
+                      </td>
+                      <td className="px-3 py-2">
+                        {assoc.mobileNumber || <span className="text-muted-foreground italic">—</span>}
+                      </td>
+                      <td className="px-3 py-2">
+                        <Badge
+                          style={{ background: assoc.attemptCount > 0 ? "var(--color-status-coral)" : undefined, color: assoc.attemptCount > 0 ? "var(--primary-foreground)" : undefined }}
+                          variant={assoc.attemptCount > 0 ? "outline" : "outline"}
+                          className="text-xs"
+                        >
+                          {assoc.attemptCount ?? 0}
+                        </Badge>
+                      </td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(assoc.firstSeenAt)}</td>
+                      <td className="px-3 py-2 text-xs text-muted-foreground whitespace-nowrap">{formatDate(assoc.lastSeenAt)}</td>
+                      <td className="px-3 py-2">
+                        <button
+                          onClick={() => {
+                            setIsNidModalOpen(false);
+                            setAddDeviceId(selectedDeviceForNids?.deviceId || "");
+                            setAddDeviceReason("");
+                            setAddDeviceErrors({});
+                            setIsAddDeviceModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium border transition-colors"
+                          style={{ background: "var(--color-status-coral)", color: "var(--primary-foreground)", borderColor: "transparent" }}
+                        >
+                          <Lock className="w-3 h-3" />
+                          Block
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">No NID associations found</p>
+            )}
+          </div>
+          <DialogFooter className="mt-4">
+            <Button variant="outline" onClick={() => setIsNidModalOpen(false)}>Close</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Delete Device Modal */}
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
-            <DialogTitle className="flex items-center gap-2 mb-0">
-              <Trash2 className="w-5 h-5 text-destructive" />
+            <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
+              <Trash2 className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
               Delete Device
             </DialogTitle>
-            <DialogDescription className="mb-0">
-              {selectedDeviceForDelete && (
-                <div className="mt-3 space-y-2">
-                  <p className="text-sm">
-                    <span className="font-medium text-foreground">Device ID:</span>
-                    <br />
-                    <span className="text-xs bg-muted px-2 py-1 rounded mt-1 inline-block">
-                      {selectedDeviceForDelete.deviceId}
-                    </span>
-                  </p>
-                </div>
-              )}
-            </DialogDescription>
+            {selectedDeviceForDelete && (
+              <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
+                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForDelete.deviceId}</span>
+              </DialogDescription>
+            )}
           </DialogHeader>
-
-          <div className="space-y-4 py-4">
-            <div className="p-3 bg-red-50 dark:bg-red-950 rounded-lg border border-red-200 dark:border-red-900">
-              <p className="text-sm text-red-800 dark:text-red-200">
-                ⚠️ This action cannot be undone. The device will be permanently deleted from the system.
+          <div className="py-3">
+            <div className="p-3 rounded-lg" style={{ background: "var(--color-status-coral)", opacity: 0.9 }}>
+              <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
+                ⚠️ This action cannot be undone. The device will be permanently deleted.
               </p>
             </div>
           </div>
-
-          <DialogFooter className="flex gap-3 justify-end">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={closeDeleteModal}
-              disabled={isDeletingDevice}
-            >
+          <DialogFooter className="gap-2">
+            <Button variant="outline" onClick={closeDeleteModal} disabled={isDeletingDevice}>
               Cancel
             </Button>
-            <Button
-              type="button"
-              onClick={handleDeleteDevice}
-              disabled={isDeletingDevice}
-              variant="destructive"
-              className="gap-2"
-            >
-              {isDeletingDevice ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />
-                  Deleting...
-                </>
-              ) : (
-                <>
-                  <Trash2 className="w-4 h-4" />
-                  Delete Device
-                </>
-              )}
+            <Button variant="destructive" onClick={handleDeleteDevice} disabled={isDeletingDevice} className="gap-2">
+              <Trash2 className="w-4 h-4" />
+              {isDeletingDevice ? "Deleting..." : "Delete Device"}
             </Button>
           </DialogFooter>
         </DialogContent>

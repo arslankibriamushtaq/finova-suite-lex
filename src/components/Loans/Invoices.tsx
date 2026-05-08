@@ -217,18 +217,18 @@ const Invoices = () => {
       cell: (row: any) => <NumberFormatter value={row?.installmentAmount} />,
       width: "160px",
     },
-    {
-      name: "Principal",
-      selector: (row: any) => row.principalComponent,
-      cell: (row: any) => <NumberFormatter value={row?.principalComponent} />,
-      width: "130px",
-    },
-    {
-      name: "Profit",
-      selector: (row: any) => row.profitComponent,
-      cell: (row: any) => <NumberFormatter value={row?.profitComponent} />,
-      width: "110px",
-    },
+    // {
+    //   name: "Principal",
+    //   selector: (row: any) => row.principalComponent,
+    //   cell: (row: any) => <NumberFormatter value={row?.principalComponent} />,
+    //   width: "130px",
+    // },
+    // {
+    //   name: "Profit",
+    //   selector: (row: any) => row.profitComponent,
+    //   cell: (row: any) => <NumberFormatter value={row?.profitComponent} />,
+    //   width: "110px",
+    // },
     // {
     //   name: "Outstanding Balance",
     //   selector: (row: any) => row.outstandingBalance,
@@ -256,6 +256,30 @@ const Invoices = () => {
       selector: (row: any) => row.latePenaltyAmount,
       cell: (row: any) => <NumberFormatter value={row?.latePenaltyAmount ?? 0} />,
       width: "130px",
+    },
+    {
+      name: "Waived Penalty",
+      selector: (row: any) => row.waivedPenaltyAmount,
+      cell: (row: any) =>
+        row.waivedPenaltyAmount != null ? (
+          <NumberFormatter value={row.waivedPenaltyAmount} />
+        ) : (
+          <span style={{ color: "var(--muted-foreground)" }}>-</span>
+        ),
+      omit: !allinvoiceList?.some((item: any) => item?.delinquency?.waivedPenaltyAmount != null || item?.waivedPenaltyAmount != null),
+      width: "140px",
+    },
+    {
+      name: "Total Penalty",
+      selector: (row: any) => row.remainingPenaltyAmount,
+      cell: (row: any) =>
+        row.remainingPenaltyAmount != null ? (
+          <NumberFormatter value={row.remainingPenaltyAmount} />
+        ) : (
+          <span style={{ color: "var(--muted-foreground)" }}>-</span>
+        ),
+      omit: !allinvoiceList?.some((item: any) => item?.delinquency?.remainingPenaltyAmount != null || item?.remainingPenaltyAmount != null),
+      width: "160px",
     },
     {
       name: "Total Amount",
@@ -516,7 +540,7 @@ const Invoices = () => {
     installmentAmount: item?.installmentAmount ?? 0,
     principalComponent: item?.principalComponent ?? 0,
     profitComponent: item?.profitComponent ?? 0,
-    outstandingBalance: item?.installmentAmount + item?.delinquency?.latePenaltyAmount || 0,
+    outstandingBalance: item?.delinquency?.outstandingAmount || 0,
     paymentStatus: item?.paymentStatus || "PENDING",
     paidDate: item?.paidDate,
     paidAmount: item?.paidAmount,
@@ -541,6 +565,8 @@ const Invoices = () => {
       return null;
     })(),
     isEligibleForWriteOff: item?.delinquency?.isEligibleForWriteOff ?? false,
+    waivedPenaltyAmount: item?.delinquency?.waivedPenaltyAmount ,
+    remainingPenaltyAmount: item?.delinquency?.remainingPenaltyAmount,
   });
 
   const fetchWaiverData = async () => {
