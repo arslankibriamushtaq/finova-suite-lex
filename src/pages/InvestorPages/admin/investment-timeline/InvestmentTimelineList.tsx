@@ -538,7 +538,7 @@ export default function InvestmentTimelineList() {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
-                <p className="text-sm text-gray-900 font-mono">{selectedInvestmentTimeline.id}</p>
+                <p className="text-sm text-gray-900">{selectedInvestmentTimeline.id}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Timeline Period</label>

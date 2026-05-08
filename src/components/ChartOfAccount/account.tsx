@@ -24,13 +24,28 @@ import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Images } from "../Config/Images";
 
-const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
-  const [searchValue, setSearchValue] = useState("");
+const Account = ({
+  loader,
+  setAddGroupMod,
+  addGroupMod,
+  setcsvData,
+  // Filters lifted up to <Coa /> so they share the row with the action buttons.
+  searchValue: searchValueProp,
+  fromDate: fromDateProp,
+}: any) => {
+  // Use props when provided, fall back to local state for any caller that
+  // doesn't pass them in.
+  const [localSearchValue] = useState("");
+  const [localFromDate] = useState<any>(null);
+  const searchValue = searchValueProp !== undefined ? searchValueProp : localSearchValue;
+  const fromDate = fromDateProp !== undefined ? fromDateProp : localFromDate;
+
   const [initialRendor, setInitialRendor] = useState(false);
   const [editRowId, setEditRowId] = useState<any>(null);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(1);
   const [to, setTo] = useState(0);
   const [from, setFrom] = useState(0);
   const [showPopup, setShowPopup] = useState(false);
@@ -38,7 +53,6 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
   const [updateModel, setUpdateModel] = useState(false);
   const [ledgerData, setLedgerData] = useState<any>();
   const [loading, setLoading] = useState(false);
-  const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
   const [accountType, setAccountType] = useState<any>(null);
   const [accountNameAr, setAccountNameAr] = useState<any>(null);
@@ -202,14 +216,32 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
         const data = response.data.data || [];
         setLedgerData(data);
         setcsvData(data);
-        setTotalRows(data.length);
-        setFrom(data.length > 0 ? 1 : 0);
-        setTo(data.length);
+
+        // Backend may return either { pagination: { totalElements, totalPages } }
+        // (new shape) or { pageInfo: { totalItems } } (legacy). Use whichever
+        // is present; otherwise fall back to the page's row count.
+        const pagination = response?.data?.pagination;
+        const pageInfo = response?.data?.pageInfo;
+        let total = 0;
+        if (pagination?.totalElements != null) {
+          total = pagination.totalElements;
+          setTotalPage(pagination.totalPages || Math.max(1, Math.ceil(total / pageSize)));
+        } else if (pageInfo?.totalItems != null) {
+          total = pageInfo.totalItems;
+          setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+        } else {
+          total = data.length;
+          setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
+        }
+        setTotalRows(total);
+        setFrom(total > 0 ? (page - 1) * pageSize + 1 : 0);
+        setTo(Math.min(page * pageSize, total));
       }
     } catch (error: any) {
       toast.error(error?.message);
       // Reset pagination values on error
       setTotalRows(0);
+      setTotalPage(1);
       setFrom(0);
       setTo(0);
     } finally {
@@ -232,6 +264,12 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
         id: item.id,
       };
     });
+  // Reset to page 1 whenever a filter changes so we always start at the top
+  // of the new result set.
+  useEffect(() => {
+    setPage(1);
+  }, [searchValue, fromDate, toDate]);
+
   useEffect(() => {
     if (initialRendor) {
       const timeoutId = setTimeout(() => {
@@ -240,48 +278,11 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
 
       return () => clearTimeout(timeoutId);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, searchValue, loader, fromDate, toDate]);
   return (
     <div>
       {/* {loading && <Loader />} */}
-      <div className="d-flex justify-content-end mt-2">
-        {/* <TableHeaderFilter
-          searchInput={customSearchInput}
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-        /> */}
-        <span className="pe-2">
-          <Input
-            placeholder="Search"
-            value={searchValue}
-            // className="col-3"
-            prefix={<SearchOutlined />}
-            onChange={(e: any) => {
-              setSearchValue(e.target.value);
-            }}
-          />
-        </span>
-        <div className="d-flex gap-2">
-          <DatePicker
-            style={{
-              background: "transparent",
-              border: "1px solid #D1D1D1",
-              borderRadius: "32px",
-            }}
-            placeholder="Filter by date"
-            onChange={(date:any) => setFromDate(date)}
-          />
-          {/* <DatePicker
-            style={{
-              background: "transparent",
-              border: "1px solid #D1D1D1",
-              borderRadius: "32px",
-            }}
-            placeholder="To"
-            onChange={(date) => setToDate(date)}
-          /> */}
-        </div>
-      </div>
 
       <div className="cs-table mt-2">
         <TableView
@@ -290,12 +291,14 @@ const Account = ({ loader, setAddGroupMod, addGroupMod, setcsvData }: any) => {
           page={page}
           pageSize={pageSize}
           totalRows={totalRows}
+          totalPage={totalPage}
           from={from}
           to={to}
           header={Account_Documents_List_Header}
           data={mappedData}
           style={{ borderRadius: "7px" }}
           isLoading={loading}
+          paginationShow={true}
         />
       </div>
 

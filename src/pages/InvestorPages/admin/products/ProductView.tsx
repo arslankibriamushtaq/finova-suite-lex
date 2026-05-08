@@ -111,7 +111,7 @@ const ProductView = () => {
           column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
         >
           <Descriptions.Item label="Product ID">
-            <span className="font-mono text-sm">{productData.id}</span>
+            <span className="text-sm">{productData.id}</span>
           </Descriptions.Item>
           <Descriptions.Item label="Product Name">
             <span className="font-semibold text-lg">{productData.name}</span>
@@ -120,7 +120,7 @@ const ProductView = () => {
             {productData.type || "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Product Code">
-            <span className="font-mono">{productData.code || "-"}</span>
+            <span>{productData.code || "-"}</span>
           </Descriptions.Item>
           <Descriptions.Item label="Description" span={2}>
             {productData.description || "-"}
@@ -154,7 +154,7 @@ const ProductView = () => {
             {productData.investmentDuration ? `${productData.investmentDuration} months` : "-"}
           </Descriptions.Item>
           <Descriptions.Item label="Segment ID">
-            <span className="font-mono text-sm">{productData.segmentId || "-"}</span>
+            <span className="text-sm">{productData.segmentId || "-"}</span>
           </Descriptions.Item>
           <Descriptions.Item label="Created At">
             {productData.createdAt ? new Date(productData.createdAt).toLocaleString() : "-"}

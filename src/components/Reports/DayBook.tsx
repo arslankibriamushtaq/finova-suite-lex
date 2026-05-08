@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import { Input } from "antd";
+import { Col, DatePicker, Input, Row } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { getDaybookReport } from "../../redux/apis/apisCrudLms";
 import Loader from "../Loader/Loader";
@@ -17,6 +18,8 @@ const DayBook = () => {
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [fromDate, setFromDate] = useState<any>(null);
+  const [toDate, setToDate] = useState<any>(null);
 
   // Debounce search so we don't refilter on every keystroke
   useEffect(() => {
@@ -29,13 +32,18 @@ const DayBook = () => {
 
   useEffect(() => {
     getDayBookReportData();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fromDate, toDate]);
 
   const getDayBookReportData = async () => {
     try {
       setLoading(true);
-      // Call without query params per API contract.
-      const res = await getDaybookReport();
+      // Send from/to only when the user has picked them; otherwise hit the
+      // bare endpoint (matches the curl shape the backend expects).
+      const res = await getDaybookReport({
+        from: fromDate ? fromDate.format("YYYY-MM-DD") : undefined,
+        to: toDate ? toDate.format("YYYY-MM-DD") : undefined,
+      });
 
       // Response shape from /ledger-service/api/v1/reports/day-book:
       //   { data: { entries: [...], reportDate, totalTransactions, totalDebits, totalCredits, difference }, message, timestamp }
@@ -125,7 +133,7 @@ const DayBook = () => {
     {
       name: "Debit",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.debitAmount)}</span>
+        <span>{formatNumber(row.debitAmount)}</span>
       ),
       sortable: true,
       width: "130px",
@@ -133,7 +141,7 @@ const DayBook = () => {
     {
       name: "Credit",
       cell: (row: any) => (
-        <span style={{ fontFamily: "monospace" }}>{formatNumber(row.creditAmount)}</span>
+        <span>{formatNumber(row.creditAmount)}</span>
       ),
       sortable: true,
       width: "130px",
@@ -179,6 +187,25 @@ const DayBook = () => {
     return filteredEntries.slice(start, start + pageSize);
   }, [filteredEntries, page, pageSize]);
 
+  // Totals derived from the currently-visible (filtered) rows so the summary
+  // cards always match what's in the table.
+  const visibleTotals = useMemo(() => {
+    const totalDebits = filteredEntries.reduce(
+      (acc: number, r: any) => acc + Number(r.debitAmount ?? 0),
+      0
+    );
+    const totalCredits = filteredEntries.reduce(
+      (acc: number, r: any) => acc + Number(r.creditAmount ?? 0),
+      0
+    );
+    return {
+      totalTransactions: filteredEntries.length,
+      totalDebits,
+      totalCredits,
+      difference: totalDebits - totalCredits,
+    };
+  }, [filteredEntries]);
+
   // Keep totals + from/to in sync with the filtered set
   useEffect(() => {
     const total = filteredEntries.length;
@@ -192,68 +219,97 @@ const DayBook = () => {
     <>
       {loading && <Loader />}
       <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom flex-wrap gap-2">
-          <div>
-            <h3 className="mb-0 fw-bold text-dark">Day Book</h3>
-            {summary?.reportDate && (
-              <small className="text-muted">Report date: {summary.reportDate}</small>
-            )}
-          </div>
-          <div className="d-flex align-items-center gap-2 flex-wrap">
-            <Input
-              placeholder="Search by voucher, account, reference, status…"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              allowClear
-              style={{ width: 320 }}
-            />
-            <button
-              className="theme-btn-next px-4"
-              onClick={getDayBookReportData}
-              disabled={loading}
-              style={{ height: "42px" }}
-            >
-              {loading ? "Loading..." : "Refresh"}
-            </button>
-          </div>
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">Day Book</h3>
+          {summary?.reportDate && (
+            <small className="text-muted">Report date: {summary.reportDate}</small>
+          )}
+        </div>
+        <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+          <Input
+            allowClear
+            placeholder="Search by voucher, account, reference, status…"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <DatePicker
+            placeholder="From"
+            value={fromDate}
+            onChange={(d) => setFromDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ height: 40, borderRadius: 8 }}
+          />
+          <DatePicker
+            placeholder="To"
+            value={toDate}
+            onChange={(d) => setToDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ height: 40, borderRadius: 8 }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={getDayBookReportData}
+            disabled={loading}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {loading ? "Loading..." : "Refresh"}
+          </button>
         </div>
       </div>
 
-      {summary && (summary.totalTransactions !== undefined || summary.totalDebits !== undefined) && (
-        <div className="d-flex gap-3 mb-3 flex-wrap">
-          {summary.totalTransactions !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">Total Transactions</div>
-              <div className="fw-bold">{summary.totalTransactions}</div>
-            </div>
-          )}
-          {summary.totalDebits !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">Total Debits</div>
-              <div className="fw-bold" style={{ fontFamily: "monospace" }}>{formatNumber(summary.totalDebits)}</div>
-            </div>
-          )}
-          {summary.totalCredits !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">Total Credits</div>
-              <div className="fw-bold" style={{ fontFamily: "monospace" }}>{formatNumber(summary.totalCredits)}</div>
-            </div>
-          )}
-          {summary.difference !== undefined && (
-            <div className="px-3 py-2 bg-light rounded border" style={{ minWidth: 160 }}>
-              <div className="text-muted small">Difference</div>
-              <div
-                className="fw-bold"
-                style={{
-                  fontFamily: "monospace",
-                  color: Number(summary.difference) === 0 ? "#198754" : "#dc3545",
-                }}
-              >
-                {formatNumber(summary.difference)}
+      {(entries.length > 0 || summary) && (
+        <Row gutter={[16, 16]} className="mb-3">
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Transactions</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {visibleTotals.totalTransactions}
               </div>
             </div>
-          )}
-        </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Debits</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {formatNumber(visibleTotals.totalDebits)}
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Credits</div>
+              <div
+                className="mt-2"
+                style={{ fontSize: 22, fontWeight: 700 }}
+              >
+                {formatNumber(visibleTotals.totalCredits)}
+              </div>
+            </div>
+          </Col>
+          <Col xs={24} sm={12} lg={6}>
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Difference</div>
+              <div
+                className="mt-2"
+                style={{
+                  fontSize: 22,
+                  fontWeight: 700,
+                  color: Number(visibleTotals.difference) === 0 ? "#198754" : "#dc3545",
+                }}
+              >
+                {formatNumber(visibleTotals.difference)}
+              </div>
+            </div>
+          </Col>
+        </Row>
       )}
 
       <div className="cs-table p-2">

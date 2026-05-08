@@ -9757,3 +9757,101 @@ div.menu-items a.ps-menu-button.ps-active::before{
   height: 100%;
   left: -5px;
 }
+
+/* ===== Global tabs (underline style) — applied across the project ===== */
+.nav-tabs {
+  background: transparent !important;
+  border-bottom: 1px solid var(--border) !important;
+  padding: 0 !important;
+}
+.nav-tabs .nav-item .nav-link,
+.nav-tabs .nav-link {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--muted-foreground) !important;
+  font-weight: 500 !important;
+  min-width: auto !important;
+  padding: 10px 16px !important;
+  margin-bottom: -1px !important;
+}
+.nav-tabs .nav-link:hover {
+  background: transparent !important;
+  color: var(--foreground) !important;
+  border-bottom: 2px solid transparent !important;
+}
+.nav-tabs .nav-item.show .nav-link,
+.nav-tabs .nav-link.active {
+  background: transparent !important;
+  color: var(--foreground) !important;
+  border: none !important;
+  border-bottom: 2px solid var(--foreground) !important;
+  font-weight: 700 !important;
+}
+
+/* Keep antd tabs visually consistent with the underline look */
+.ant-tabs-top > .ant-tabs-nav::before,
+.ant-tabs-bottom > .ant-tabs-nav::before {
+  border-bottom: 1px solid var(--border) !important;
+}
+.ant-tabs .ant-tabs-tab {
+  color: var(--muted-foreground) !important;
+  font-weight: 500 !important;
+  padding: 10px 16px !important;
+}
+.ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: var(--foreground) !important;
+  font-weight: 700 !important;
+}
+.ant-tabs .ant-tabs-ink-bar {
+  background: var(--foreground) !important;
+}
+
+/* ===== Remove blue focus shadow on all input fields globally ===== */
+.form-control:focus,
+.form-select:focus,
+input:focus,
+textarea:focus,
+select:focus,
+.ant-input:focus,
+.ant-input-focused,
+.ant-input:hover,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input-affix-wrapper:hover,
+.ant-input-number:focus,
+.ant-input-number-focused,
+.ant-input-number:hover,
+.ant-input-number-affix-wrapper:focus,
+.ant-input-number-affix-wrapper-focused,
+.ant-picker:focus,
+.ant-picker-focused,
+.ant-picker:hover,
+.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector,
+.ant-select-focused:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Use the foreground (black) border on hover & focus instead of blue */
+.form-control:hover,
+.form-control:focus,
+.form-select:hover,
+.form-select:focus,
+.ant-input:hover,
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-affix-wrapper:hover,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused,
+.ant-input-number:hover,
+.ant-input-number:focus,
+.ant-input-number-focused,
+.ant-picker:hover,
+.ant-picker:focus,
+.ant-picker-focused,
+.ant-select:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer):hover .ant-select-selector,
+.ant-select-focused:not(.ant-select-disabled):not(.ant-select-customize-input):not(.ant-pagination-size-changer) .ant-select-selector {
+  border-color: var(--foreground) !important;
+}

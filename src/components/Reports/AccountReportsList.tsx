@@ -8,6 +8,7 @@ import {
   Menu,
   Select,
 } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -197,27 +198,25 @@ const AccountReportsList = ({
   }
   return (
     <div>
-      <div className="d-flex justify-content-between mt-2 gap-2 flex-wrap">
+      <h3 className="mb-3" style={{ fontWeight: 600 }}>Account Reports</h3>
+      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
         <Input
+          allowClear
           placeholder="Search by code, name, or type"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e: any) => setSearchTerm(e.target.value)}
-          allowClear
-          style={{ width: 320 }}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
-        <div className="d-flex gap-2">
-          <Button
-            style={{
-              borderRadius: "8px",
-              border: "transparent",
-            }}
-            className="application-btn"
-            disabled={selectedRows.length === 0}
-            onClick={showReports}
-          >
-            View Reports
-          </Button>
-        </div>
+        <button
+          type="button"
+          className="theme-btn-next"
+          disabled={selectedRows.length === 0}
+          onClick={showReports}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          View Reports
+        </button>
       </div>
 
       <div className="cs-table mt-2">

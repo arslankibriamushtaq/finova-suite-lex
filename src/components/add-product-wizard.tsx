@@ -944,7 +944,7 @@ export function AddProductWizard({ open, onOpenChange }: AddProductWizardProps) 
                               onChange={(e) => updateFormData("terms_conditions_en", e.target.value)}
                               placeholder="Enter terms and conditions in English..."
                               rows={10}
-                              className="font-mono text-sm"
+                              className="text-sm"
                             />
                             <p className="text-xs text-muted-foreground">
                               Use placeholders: {`{{customer_name}}, {{product_name}}, {{amount}}`}
@@ -965,7 +965,7 @@ export function AddProductWizard({ open, onOpenChange }: AddProductWizardProps) 
                               placeholder="أدخل الشروط والأحكام باللغة العربية..."
                               rows={10}
                               dir="rtl"
-                              className="font-mono text-sm"
+                              className="text-sm"
                             />
                             <p className="text-xs text-muted-foreground" dir="rtl">
                               استخدم المتغيرات: {`{{customer_name}}, {{product_name}}, {{amount}}`}

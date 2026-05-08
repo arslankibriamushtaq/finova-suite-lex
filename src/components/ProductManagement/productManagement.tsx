@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react"
-import {
-  Search,
-  Plus,
-  Filter,
-  // Download,
-
-} from "lucide-react"
+import { Plus } from "lucide-react"
+import { Input } from "antd"
+import { SearchOutlined } from "@ant-design/icons"
 import { Button } from "../ui/button"
 import { Card, CardContent } from "../ui/card"
-import { Input } from "../ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { useRouter } from "../../lib/router"
 import { ProductFilters } from "../../lib/types"
-import { customerTypes, mockCommodities, productCategories } from "../../lib/mock-data"
 import { useLanguage } from "../../hooks/use-language"
 // import { LanguageSwitcher } from "../language-switcher"
 import { getAllProducts, deleteProduct } from "../../redux/apis/apisCrudProductManagement"
@@ -25,7 +18,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu"
 import { ChevronDown, Pencil, Check, X, ShieldCheck, Trash2 } from "lucide-react"
-import { getCountries } from "../../redux/apis/apisCrud"
 import {
   Dialog,
   DialogContent,
@@ -52,7 +44,9 @@ export default function ProductManagement() {
   const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
 
   const [searchTerm, setSearchTerm] = useState("")
-  const [filters, setFilters] = useState<ProductFilters>({
+  // Filters kept at default ("all") since the filter UI was removed; the API
+  // treats "all" as no filter, so the existing call signature still works.
+  const [filters] = useState<ProductFilters>({
     status: "all",
     commodity_id: "all",
     country: "all",
@@ -60,7 +54,6 @@ export default function ProductManagement() {
     customer_type: "all",
     has_commodity: undefined,
   })
-  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false)
   const [tabData, setTabData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -69,7 +62,6 @@ export default function ProductManagement() {
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
- const [countries, setCountries] = useState<any>([])
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteProductId, setDeleteProductId] = useState<string | null>(null)
   const [deleting, setDeleting] = useState(false)
@@ -173,18 +165,9 @@ export default function ProductManagement() {
       setSkelitonLoading(false);
     }
   };
-  const getCountryList = async () => {
-    const response = await getCountries(2,100)
-    if (response?.data?.success) {
-      setCountries(response?.data?.data?.data)
-    }
-  }
   useEffect(() => {
     getData();
   }, [page, pageSize, searchTerm, filters]);
-  useEffect(() => {
-    getCountryList()
-  }, [])
   const Table_Headers = [
     {
       name: "Product Name",
@@ -409,144 +392,15 @@ export default function ProductManagement() {
       <div className="container mx-auto px-6 py-6">
         <Card className="mb-6">
           <CardContent>
-            <div className="flex flex-col gap-4">
-              <div
-                className={`flex flex-col gap-4 md:flex-row md:items-center md:justify-between ${isRTL ? "rtl:flex-row-reverse" : ""}`}
-              >
-                <div className={`flex flex-1 gap-4 flex-wrap ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
-                  <div className="relative flex-1 min-w-64">
-                    <Search
-                      className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground ${isRTL ? "right-3" : "left-3"}`}
-                    />
-                    <Input
-                      placeholder={t("products.search")}
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className={isRTL ? "pr-9" : "pl-9"}
-                      dir={isRTL ? "rtl" : "ltr"}
-                    />
-                  </div>
-
-                  <Select
-                    value={filters.status}
-                    onValueChange={(value: any) => setFilters((prev) => ({ ...prev, status: value }))}
-                  >
-                    <SelectTrigger className="w-32">
-                      <SelectValue placeholder={t("table.status")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Status</SelectItem>
-                      <SelectItem value="active">{t("status.active")}</SelectItem>
-                      <SelectItem value="inactive">Inactive</SelectItem>
-                      <SelectItem value="draft">{t("status.draft")}</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={filters.country}
-                    onValueChange={(value: string) => setFilters((prev: any) => ({ ...prev, country: value }))}
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder={t("table.country")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Countries</SelectItem>
-                      {countries.map((country: any) => (
-                        <SelectItem key={country.code} value={country.code}>
-                          {country.country_name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={filters.master_category}
-                    onValueChange={(value: string) => setFilters((prev: any) => ({ ...prev, master_category: value }))}
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder={t("table.productType")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Types</SelectItem>
-                      {productCategories.map((category: any) => (
-                        <SelectItem key={category} value={category}>
-                          {category}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="gap-2 bg-transparent"
-                    onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-                  >
-                    <Filter className="h-4 w-4" />
-                    {t("products.filters")}
-                  </Button>
-                </div>
-              </div>
-
-              {showAdvancedFilters && (
-                <div className={`flex flex-wrap gap-4 pt-4 border-t ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
-                  <Select
-                    value={filters.customer_type}
-                    onValueChange={(value: any) => setFilters((prev: any) => ({ ...prev, customer_type: value }))}
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Customer Type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Customer Types</SelectItem>
-                      {customerTypes.map((type: any) => (
-                        <SelectItem key={type} value={type}>
-                          {type}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={filters.commodity_id}
-                    onValueChange={(value: any) => setFilters((prev: any) => ({ ...prev, commodity_id: value }))}
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Commodity" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Commodities</SelectItem>
-                      {mockCommodities.map((commodity: any) => (
-                        <SelectItem key={commodity.id} value={commodity.id}>
-                          {commodity.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-
-                  <Select
-                    value={filters.has_commodity?.toString() || "all"}
-                    onValueChange={(value: any) =>
-                      setFilters((prev: any) => ({
-                        ...prev,
-                        has_commodity: value === "all" ? undefined : value === "true",
-                      }))
-                    }
-                  >
-                    <SelectTrigger className="w-40">
-                      <SelectValue placeholder="Has Commodity?" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Products</SelectItem>
-                      <SelectItem value="true">With Commodity</SelectItem>
-                      <SelectItem value="false">Without Commodity</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
+            <Input
+              allowClear
+              placeholder={t("products.search")}
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              dir={isRTL ? "rtl" : "ltr"}
+              style={{ borderRadius: 8, height: 40 }}
+            />
           </CardContent>
         </Card>
 

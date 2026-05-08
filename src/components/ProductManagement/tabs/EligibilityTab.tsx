@@ -34,7 +34,7 @@ export default function EligibilityTab({
               value={formData.eligibility_criteria_en || ""}
               onChange={(e) => updateFormData("eligibility_criteria_en", e.target.value)}
               rows={10}
-              className={`font-mono text-sm ${errors.eligibility_criteria_en ? "border-red-500" : ""}`}
+              className={`text-sm ${errors.eligibility_criteria_en ? "border-red-500" : ""}`}
             />
             {errors.eligibility_criteria_en && (
               <p className="text-sm text-red-500 mt-1">{errors.eligibility_criteria_en}</p>
@@ -48,7 +48,7 @@ export default function EligibilityTab({
               onChange={(e) => updateFormData("eligibility_criteria_ar", e.target.value)}
               rows={10}
               dir="rtl"
-              className={`font-mono text-sm ${errors.eligibility_criteria_ar ? "border-red-500" : ""}`}
+              className={`text-sm ${errors.eligibility_criteria_ar ? "border-red-500" : ""}`}
             />
             {errors.eligibility_criteria_ar && (
               <p className="text-sm text-red-500 mt-1" dir="rtl">{errors.eligibility_criteria_ar}</p>

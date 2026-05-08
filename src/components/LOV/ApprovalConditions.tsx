@@ -8,6 +8,8 @@ import {
   deleteApprovalConditionField,
 } from "../../redux/apis/apisCrudProductManagement";
 import { RefreshCw, Edit2, Trash2, Plus, ChevronDown } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../ui/button";
 import {
   Dialog,
@@ -313,26 +315,25 @@ const ApprovalConditions = () => {
     <div className="w-full">
       <div className="px-6 py-4 bg-background">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold text-foreground">Approval Condition Fields</h1>
-            <p className="text-sm text-muted-foreground mt-1">Manage and view approval condition field definitions</p>
-            <div className="mt-4 max-w-sm">
-              <Input
-                placeholder="Search by key or name"
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value);
-                  setPage(1);
-                }}
-              />
-            </div>
-          </div>
-          <div className="flex gap-2 self-start pt-1">
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-foreground">Approval Condition Fields</h1>
+          <p className="text-sm text-muted-foreground mt-1">Manage and view approval condition field definitions</p>
+          <div className="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-2">
+            <AntInput
+              allowClear
+              placeholder="Search by key or name"
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setPage(1);
+              }}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            />
             <Button
               onClick={openCreateModal}
-              size="sm"
               className="gap-2"
+              style={{ flexShrink: 0 }}
             >
               <Plus className="w-4 h-4" />
               Create

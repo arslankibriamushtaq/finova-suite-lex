@@ -10,6 +10,7 @@ import {
   Row,
   Col,
 } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import {
   getEmployees,
@@ -324,16 +325,17 @@ const Employees = () => {
   return (
     <>
       <div className="service" style={{ background: "white", padding: "1rem", borderRadius: "10px" }}>
-        <div className="d-flex justify-content-between align-items-center gap-2 mb-3 flex-nowrap">
-          <h5 className="mb-0 fw-600" style={{ whiteSpace: "nowrap" }}>Employees List</h5>
-          <div className="d-flex align-items-center gap-2 flex-nowrap">
-            <Input
-              placeholder="Search by name, email, phone, status"
-              value={searchTerm}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              allowClear
-              style={{ width: 280 }}
-            />
+        <h5 className="mb-3 fw-600">Employees List</h5>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <Input
+            allowClear
+            placeholder="Search by name, email, phone, status"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <div className="d-flex align-items-center gap-2 flex-nowrap" style={{ flexShrink: 0 }}>
             <button
               className="theme-btn-next"
               onClick={() => {

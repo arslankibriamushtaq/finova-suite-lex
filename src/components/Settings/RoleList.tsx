@@ -11,7 +11,7 @@ import {
 } from "antd";
 import TableView from "../TableView/TableView";
 import { getRoles, saveRole, updateRole, deleteRole } from "../../redux/apis/apisCrudFactoring";
-import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 
@@ -292,29 +292,27 @@ const RoleList = () => {
   return (
     <>
       <div className="service" style={{ background: "white", padding: "1rem", borderRadius: "10px" }}>
-        <div className="d-flex mb-3 col-12 filter-select">
-          <div className="d-flex gap-2 w-100 justify-content-between align-items-center">
-            <h5 style={{ fontWeight: 600, margin: 0 }}>Role</h5>
-            <div className="d-flex align-items-center gap-2 flex-nowrap">
-              <Input
-                placeholder="Search by code, name, or description"
-                value={searchTerm}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-                allowClear
-                style={{ width: 280 }}
-              />
-              <button
-                className="theme-btn-next"
-                onClick={() => {
-                  setShowModal(true);
-                  setSelectedItem("add");
-                  setFormData(emptyForm);
-                }}
-              >
-                Add New Role
-              </button>
-            </div>
-          </div>
+        <h5 className="mb-3" style={{ fontWeight: 600 }}>Role</h5>
+        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+          <Input
+            allowClear
+            placeholder="Search by code, name, or description"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <button
+            className="theme-btn-next"
+            onClick={() => {
+              setShowModal(true);
+              setSelectedItem("add");
+              setFormData(emptyForm);
+            }}
+            style={{ whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Add New Role
+          </button>
         </div>
         <TableView
           header={Activity_Loans_Header}
