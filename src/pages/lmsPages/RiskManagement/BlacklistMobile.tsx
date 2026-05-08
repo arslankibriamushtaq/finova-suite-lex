@@ -146,25 +146,7 @@ const BlacklistMobile = () => {
       name: "Action",
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
-        if (status === "REMOVED") {
-          return (
-            <div onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
-              <button
-                type="button"
-                onClick={() => {
-                  setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "" });
-                  setShowAddModal(true);
-                }}
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium"
-                style={{ background: "var(--color-status-green)", color: "var(--primary-foreground)", border: "none" }}
-              >
-                <ShieldCheck className="h-4 w-4" />
-                Re-Blacklist
-              </button>
-            </div>
-          );
-        }
-        if (status !== "BLACKLISTED") return null;
+        if (status !== "BLACKLISTED" && status !== "REMOVED") return null;
         return (
           <div
             className="relative inline-block"
@@ -182,16 +164,29 @@ const BlacklistMobile = () => {
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
-                <DropdownMenuItem
-                  variant="destructive"
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    setRemoveTarget(row);
-                  }}
-                >
-                  <ShieldOff className="h-4 w-4" />
-                  Remove from Blacklist
-                </DropdownMenuItem>
+                {status === "REMOVED" ? (
+                  <DropdownMenuItem
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "" });
+                      setShowAddModal(true);
+                    }}
+                  >
+                    <ShieldCheck className="h-4 w-4" />
+                    Re-Blacklist
+                  </DropdownMenuItem>
+                ) : (
+                  <DropdownMenuItem
+                    variant="destructive"
+                    onSelect={(e) => {
+                      e.preventDefault();
+                      setRemoveTarget(row);
+                    }}
+                  >
+                    <ShieldOff className="h-4 w-4" />
+                    Remove from Blacklist
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>

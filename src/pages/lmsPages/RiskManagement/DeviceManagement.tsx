@@ -86,64 +86,10 @@ const DeviceManagement = () => {
     try {
       setIsLoading(true);
       const apiCall = activeTab === "all" ? getAllDevices : getBlockedDevices;
-
-      // Blocked-devices endpoint — one row per device, nidAssociations nested
-      if (activeTab === "blocked") {
-        const response = await apiCall();
-        const raw: any[] = Array.isArray(response?.data?.data)
-          ? response.data.data
-          : Array.isArray(response?.data)
-            ? response.data
-            : [];
-        let rows = raw;
-
-        if (debouncedSearch) {
-          const term = debouncedSearch.toLowerCase();
-          rows = rows.filter((item: any) =>
-            (item?.deviceId || "").toLowerCase().includes(term) ||
-            (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
-            (item?.blockSource || "").toLowerCase().includes(term) ||
-            (item?.blockReason || "").toLowerCase().includes(term) ||
-            (item?.blockType || "").toLowerCase().includes(term)
-          );
-        }
-
-        const total = rows.length;
-        const start = (page - 1) * pageSize;
-        setData(rows.slice(start, start + pageSize));
-        setTotalRows(total);
-        setTotalPage(Math.max(1, Math.ceil(total / pageSize)));
-        return;
-      }
-
-      if (debouncedSearch) {
-        // Backend search support is unverified — fetch full set, filter client-side.
-        const response = await apiCall(0, 10000);
-        const all: any[] = Array.isArray(response?.data?.data)
-          ? response.data.data
-          : Array.isArray(response?.data)
-            ? response.data
-            : [];
-        const term = debouncedSearch.toLowerCase();
-        const filtered = all.filter((item: any) =>
-          (item?.deviceId || "").toLowerCase().includes(term) ||
-          (item?.deviceFingerprint || "").toLowerCase().includes(term) ||
-          (item?.blockSource || "").toLowerCase().includes(term) ||
-          (item?.blockReason || "").toLowerCase().includes(term) ||
-          (item?.blockType || "").toLowerCase().includes(term) ||
-          (item?.nidHash || "").toLowerCase().includes(term)
-        );
-        const total = filtered.length;
-        const totalPages = Math.max(1, Math.ceil(total / pageSize));
-        const start = (page - 1) * pageSize;
-        setData(filtered.slice(start, start + pageSize));
-        setTotalRows(total);
-        setTotalPage(totalPages);
-        return;
-      }
+      const search = debouncedSearch || undefined;
 
       // Backend uses 0-based indexing for page
-      const response = await apiCall(page - 1, pageSize);
+      const response = await apiCall(page - 1, pageSize, search);
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
 
@@ -356,10 +302,10 @@ const DeviceManagement = () => {
       name: "Fingerprint",
       cell: (row: any) => (
         <span className="font-mono text-xs text-muted-foreground cursor-help" title={row.deviceFingerprint}>
-          {row.deviceFingerprint ? truncateHash(row.deviceFingerprint) : "-"}
+          {row.deviceFingerprint|| "-"}
         </span>
       ),
-      width: "150px",
+      width: "350",
     },
     {
       name: "Status",
@@ -376,24 +322,6 @@ const DeviceManagement = () => {
         <Badge variant="outline">{row.totalAttempts ?? row.attemptCount ?? 0}</Badge>
       ),
       width: "120px",
-    },
-    {
-      name: "NID Associations",
-      cell: (row: any) => {
-        const count = row.totalNidAssociations ?? row.nidAssociationCount ?? (Array.isArray(row.nidAssociations) ? row.nidAssociations.length : 0);
-        const hasAssoc = Array.isArray(row.nidAssociations) && row.nidAssociations.length > 0;
-        return hasAssoc ? (
-          <button
-            onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
-            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
-          >
-            {count} NIDs
-          </button>
-        ) : (
-          <Badge variant="secondary" className="text-white">{count}</Badge>
-        );
-      },
-      width: "140px",
     },
     {
       name: "First Seen",
@@ -425,6 +353,14 @@ const DeviceManagement = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              {Array.isArray(row.nidAssociations) && row.nidAssociations.length > 0 && (
+                <DropdownMenuItem
+                  onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
+                  className="cursor-pointer gap-2"
+                >
+                  <span>View Associations ({row.nidAssociations.length})</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={() => openBlockModal(row)}
                 disabled={row.blocked}
@@ -464,7 +400,7 @@ const DeviceManagement = () => {
           {row.blockSource || "MANUAL"}
         </Badge>
       ),
-      width: "160px",
+      width: "250px",
     },
     {
       name: "Block Type",
@@ -494,18 +430,6 @@ const DeviceManagement = () => {
       name: "Total Attempts",
       cell: (row: any) => <Badge variant="outline">{row.totalAttempts ?? 0}</Badge>,
       width: "120px",
-    },
-    {
-      name: "NID Associations",
-      cell: (row: any) => (
-        <button
-          onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
-          className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
-        >
-          {row.totalNidAssociations ?? (row.nidAssociations?.length ?? 0)} NIDs
-        </button>
-      ),
-      width: "130px",
     },
     {
       name: "Block Reason",
@@ -545,6 +469,14 @@ const DeviceManagement = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              {Array.isArray(row.nidAssociations) && row.nidAssociations.length > 0 && (
+                <DropdownMenuItem
+                  onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
+                  className="cursor-pointer gap-2"
+                >
+                  <span>View Associations ({row.nidAssociations.length})</span>
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 onClick={() => openUnblockModal(row)}
                 className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
@@ -573,16 +505,12 @@ const DeviceManagement = () => {
   const toValue = Math.min(page * pageSize, totalRows);
 
   return (
-    <div className="w-full h-full bg-background p-6">
-      <div className="max-w-7xl mx-auto">
+    <div className="service p-4">
         {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-foreground mb-2">Device Management</h1>
-          <p className="text-muted-foreground">Monitor and manage registered devices</p>
-        </div>
+        <h1 className="text-xl font-bold pb-3">Device Management</h1>
 
         {/* Search Bar + Refresh */}
-        <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
           <AntInput
             allowClear
             placeholder="Search by Device ID, Fingerprint, Block Source..."
@@ -636,20 +564,19 @@ const DeviceManagement = () => {
                 </span>
               </TabsTrigger>
             </TabsList>
-            <button
+            <Button
+              className="gap-2"
               onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
-              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium"
-              style={{ borderColor: "white", color: "var(--primary-foreground)", height: 40 }}
+              style={{ flexShrink: 0 }}
             >
               <Plus className="w-4 h-4" />
               Block Device
-            </button>
+            </Button>
           </div>
 
           {/* All Devices Tab */}
           <TabsContent value="all" className="mt-0">
-            <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
-              <TableView
+            <TableView
                 header={allDevicesHeaders}
                 data={data}
                 totalRows={totalRows}
@@ -663,30 +590,26 @@ const DeviceManagement = () => {
                 isLoading={isLoading}
                 paginationShow={true}
               />
-            </div>
           </TabsContent>
 
           {/* Blocked Devices Tab */}
           <TabsContent value="blocked" className="mt-0">
-            <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
-              <TableView
-                header={blockedDevicesHeaders}
-                data={data}
-                totalRows={totalRows}
-                from={fromValue}
-                to={toValue}
-                page={page}
-                totalPage={totalPage}
-                setPage={setPage}
-                pageSize={pageSize}
-                setPageSize={setPageSize}
-                isLoading={isLoading}
-                paginationShow={true}
-              />
-            </div>
+            <TableView
+              header={blockedDevicesHeaders}
+              data={data}
+              totalRows={totalRows}
+              from={fromValue}
+              to={toValue}
+              page={page}
+              totalPage={totalPage}
+              setPage={setPage}
+              pageSize={pageSize}
+              setPageSize={setPageSize}
+              isLoading={isLoading}
+              paginationShow={true}
+            />
           </TabsContent>
         </Tabs>
-      </div>
 
       {/* Block Device Modal */}
       <Dialog open={isBlockModalOpen} onOpenChange={setIsBlockModalOpen}>
@@ -715,17 +638,13 @@ const DeviceManagement = () => {
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{blockReason.length}/500</p>
           </div>
           <DialogFooter className="gap-2 mt-2">
-            <Button variant="outline" onClick={closeBlockModal} disabled={isBlockingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
+            <Button variant="outline" onClick={closeBlockModal} disabled={isBlockingDevice}>
               Cancel
             </Button>
-            <button
-              onClick={handleBlockDevice}
-              disabled={isBlockingDevice || !blockReason.trim()}
-              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
-              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
-            >
-              {isBlockingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Blocking...</> : <><Lock className="w-4 h-4" />Block Device</>}
-            </button>
+            <Button onClick={handleBlockDevice} disabled={isBlockingDevice || !blockReason.trim()} className="gap-2">
+              <Lock className="w-4 h-4" />
+              {isBlockingDevice ? "Blocking..." : "Block Device"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -752,17 +671,13 @@ const DeviceManagement = () => {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={closeUnblockModal} disabled={isUnblockingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
+            <Button variant="outline" onClick={closeUnblockModal} disabled={isUnblockingDevice}>
               Cancel
             </Button>
-            <button
-              onClick={handleUnblockDevice}
-              disabled={isUnblockingDevice}
-              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
-              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
-            >
-              {isUnblockingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Unblocking...</> : <><Unlock className="w-4 h-4" />Unblock Device</>}
-            </button>
+            <Button onClick={handleUnblockDevice} disabled={isUnblockingDevice} className="gap-2">
+              <Unlock className="w-4 h-4" />
+              {isUnblockingDevice ? "Unblocking..." : "Unblock Device"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -786,6 +701,7 @@ const DeviceManagement = () => {
                 placeholder="e.g. AP3A.240905.015.A2"
                 value={addDeviceId}
                 onChange={(e) => { setAddDeviceId(e.target.value); if (addDeviceErrors.deviceId) setAddDeviceErrors((p) => ({ ...p, deviceId: "" })); }}
+                className="placeholder:text-muted-foreground"
                 style={{ background: "var(--input)", color: "var(--foreground)", borderColor: addDeviceErrors.deviceId ? "var(--color-status-coral)" : "var(--border)" }}
                 disabled={isAddingDevice}
               />
@@ -805,17 +721,13 @@ const DeviceManagement = () => {
             </div>
           </div>
           <DialogFooter className="gap-2 mt-2">
-            <Button variant="outline" onClick={() => setIsAddDeviceModalOpen(false)} disabled={isAddingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
+            <Button variant="outline" onClick={() => setIsAddDeviceModalOpen(false)} disabled={isAddingDevice}>
               Cancel
             </Button>
-            <button
-              onClick={handleAddDevice}
-              disabled={isAddingDevice}
-              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
-              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
-            >
-              {isAddingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Blocking...</> : <><Lock className="w-4 h-4" />Block Device</>}
-            </button>
+            <Button onClick={handleAddDevice} disabled={isAddingDevice} className="gap-2">
+              <Lock className="w-4 h-4" />
+              {isAddingDevice ? "Blocking..." : "Block Device"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -824,7 +736,7 @@ const DeviceManagement = () => {
       <Dialog open={isNidModalOpen} onOpenChange={setIsNidModalOpen}>
         <DialogContent className="max-h-[80vh] overflow-hidden flex flex-col" style={{ width: "min(95vw, 900px)", maxWidth: "900px" }}>
           <DialogHeader>
-            <DialogTitle className="text-base">NID Associations</DialogTitle>
+            <DialogTitle className="text-base">NID/Mobile Associations</DialogTitle>
             <DialogDescription className="text-xs">
               Device: <span className="font-mono font-medium text-foreground">{selectedDeviceForNids?.deviceId}</span>
               {selectedDeviceForNids?.blockSource && (
@@ -929,17 +841,13 @@ const DeviceManagement = () => {
             </div>
           </div>
           <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={closeDeleteModal} disabled={isDeletingDevice} style={{ borderColor: "var(--border)", color: "var(--foreground)" }}>
+            <Button variant="outline" onClick={closeDeleteModal} disabled={isDeletingDevice}>
               Cancel
             </Button>
-            <button
-              onClick={handleDeleteDevice}
-              disabled={isDeletingDevice}
-              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-50"
-              style={{ borderColor: "white", color: "var(--primary-foreground)" }}
-            >
-              {isDeletingDevice ? <><div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin" />Deleting...</> : <><Trash2 className="w-4 h-4" />Delete Device</>}
-            </button>
+            <Button variant="destructive" onClick={handleDeleteDevice} disabled={isDeletingDevice} className="gap-2">
+              <Trash2 className="w-4 h-4" />
+              {isDeletingDevice ? "Deleting..." : "Delete Device"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
