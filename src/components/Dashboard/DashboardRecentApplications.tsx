@@ -204,7 +204,7 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
           marginBottom: 20,
         }}
       >
-        <h5 style={{ fontWeight: 600, fontSize: "20px", margin: 0 }}>Recent Applications</h5>
+        <h5 className="mt-4" style={{ fontWeight: 600, fontSize: "20px", margin: 0 }}>Recent Applications</h5>
        
       </div>
       <TableView

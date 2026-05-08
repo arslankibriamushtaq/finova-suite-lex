@@ -78,14 +78,22 @@ const DashboardOverview: React.FC<{applicationData: any,loading: boolean}> = ({a
     }
   };
 
+  const formatValue = (val: any) => {
+    if (val == null || typeof val === "object") return val;
+    const num = Number(val);
+    if (isNaN(num)) return val;
+    return num.toLocaleString(undefined, {
+      maximumFractionDigits: 2,
+    });
+  };
+
   return (
-    <div className="row gy-2 dashboard-stats" style={styles.row}>
+    <div className="row gy-3 dashboard-stats">
       {statsData.map((stat, index) => {
         return (
           <div
             key={index}
-            className="col-md-3 mb-3"
-            style={styles.col}
+            className="col-12 col-sm-6 col-lg-3 d-flex"
           >
             <div
               className={`total-loan ${stat.activeClass || ""}`}
@@ -101,7 +109,7 @@ const DashboardOverview: React.FC<{applicationData: any,loading: boolean}> = ({a
                 </label>
 
                 <p className="p-theme cards-text" style={styles.value}>
-                  {stat.value}
+                  {formatValue(stat.value)}
                 </p>
               </div>
 
@@ -120,45 +128,52 @@ const DashboardOverview: React.FC<{applicationData: any,loading: boolean}> = ({a
   );
 };
 
-// ✅ Inline styles
 const styles: { [key: string]: React.CSSProperties } = {
-  row: {
-    display: "flex",
-    flexWrap: "wrap",
-  },
-
   totalLoan: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    gap: 12,
     borderRadius: 10,
     padding: "18px 20px",
     background: "var(--background)",
     boxShadow: "0 2px 6px rgba(0,0,0,0.08)",
     transition: "all 0.2s ease-in-out",
+    width: "100%",
+    height: "100%",
+    minHeight: 110,
   },
   cardLeft: {
     display: "flex",
     flexDirection: "column",
+    justifyContent: "space-between",
+    gap: 8,
+    minWidth: 0,
+    flex: 1,
   },
   labelTheme: {
     fontSize: 13,
     fontWeight: 500,
     color: "var(--muted-foreground)",
+    lineHeight: 1.3,
   },
   value: {
     fontSize: 22,
     fontWeight: 700,
     color: "var(--foreground)",
-    margin: "8px 0 0 0",
+    margin: 0,
+    whiteSpace: "nowrap",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
   },
   cardRite: {
     display: "flex",
     alignItems: "center",
     justifyContent: "flex-end",
+    flexShrink: 0,
   },
   img: {
-    height: 45,
+    height: 40,
     width: "auto",
     objectFit: "contain",
   },
