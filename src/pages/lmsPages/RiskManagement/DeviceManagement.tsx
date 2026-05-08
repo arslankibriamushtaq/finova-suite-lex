@@ -317,71 +317,61 @@ const DeviceManagement = () => {
       name: "Device ID",
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
-    //   width: "130px",
+      width: "160px",
     },
-    // {
-    //   name: "Fingerprint",
-    //   cell: (row: any) => (
-    //     <span
-    //       className="text-xs text-muted-foreground cursor-help"
-    //       title={row.deviceFingerprint}
-    //     >
-    //       {truncateHash(row.deviceFingerprint)}
-    //     </span>
-    //   ),
-    //   sortable: true,
-    // //   width: "150px",
-    // },
     {
-      name: "NID Hash",
+      name: "Fingerprint",
       cell: (row: any) => (
-        <span
-          className="text-xs text-muted-foreground cursor-help"
-          title={row.nidHash}
-        >
-          {truncateHash(row.nidHash)}
+        <span className="font-mono text-xs text-muted-foreground cursor-help" title={row.deviceFingerprint}>
+          {row.deviceFingerprint ? truncateHash(row.deviceFingerprint) : "-"}
         </span>
       ),
-      sortable: true,
-    },
-    {
-      name: "Attempts",
-      cell: (row: any) => (
-        <Badge variant="outline">
-          {row.attemptCount || 0}
-        </Badge>
-      ),
-    },
-    {
-      name: "NID Associations",
-      cell: (row: any) => (
-        <Badge variant="secondary" className="text-white">
-          {row.nidAssociationCount || 0}
-        </Badge>
-      ),
+      width: "150px",
     },
     {
       name: "Status",
       cell: (row: any) => (
-        <Badge
-          className={`${
-            row.blocked
-              ? "bg-red-100 text-red-700 hover:bg-red-100"
-              : "bg-green-100 text-green-700 hover:bg-green-100"
-          }`}
-        >
+        <Badge className={row.blocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-green-100 text-green-700 hover:bg-green-100"}>
           {row.blocked ? "Blocked" : "Active"}
         </Badge>
       ),
+      width: "100px",
+    },
+    {
+      name: "Total Attempts",
+      cell: (row: any) => (
+        <Badge variant="outline">{row.totalAttempts ?? row.attemptCount ?? 0}</Badge>
+      ),
+      width: "120px",
+    },
+    {
+      name: "NID Associations",
+      cell: (row: any) => {
+        const count = row.totalNidAssociations ?? row.nidAssociationCount ?? (Array.isArray(row.nidAssociations) ? row.nidAssociations.length : 0);
+        const hasAssoc = Array.isArray(row.nidAssociations) && row.nidAssociations.length > 0;
+        return hasAssoc ? (
+          <button
+            onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
+            className="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-medium bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 transition-colors"
+          >
+            {count} NIDs
+          </button>
+        ) : (
+          <Badge variant="secondary" className="text-white">{count}</Badge>
+        );
+      },
+      width: "140px",
+    },
+    {
+      name: "First Seen",
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.firstSeenAt)}</span>,
+      width: "160px",
     },
     {
       name: "Last Seen",
-      cell: (row: any) => (
-        <div className="text-sm text-muted-foreground">
-          {formatDate(row.lastSeenAt)}
-        </div>
-      ),
+      cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
       sortable: true,
+      width: "160px",
     },
     {
       name: "Actions",
@@ -391,38 +381,39 @@ const DeviceManagement = () => {
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
         >
-        <DropdownMenu modal={false}>
-          <DropdownMenuTrigger asChild>
-            <button
-              type="button"
-              className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-            >
-              Select
-              <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
-            <DropdownMenuItem
-              onClick={() => openBlockModal(row)}
-              disabled={row.blocked}
-              className="cursor-pointer gap-2"
-            >
-              <Lock className="h-4 w-4" />
-              <span>Block Device</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => openDeleteModal(row)}
-              className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
-            >
-              <Trash2 className="h-4 w-4" />
-              <span>Delete Device</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onClick={() => openBlockModal(row)}
+                disabled={row.blocked}
+                className="cursor-pointer gap-2"
+              >
+                <Lock className="h-4 w-4" />
+                <span>Block Device</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => openDeleteModal(row)}
+                className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
+              >
+                <Trash2 className="h-4 w-4" />
+                <span>Delete Device</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
+      width: "120px",
     },
   ];
 
