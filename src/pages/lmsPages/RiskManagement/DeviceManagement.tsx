@@ -582,7 +582,7 @@ const DeviceManagement = () => {
         </div>
 
         {/* Search Bar + Refresh */}
-        <div className="d-flex flex-wrap justify-content-between align-items-center mb-6 gap-2">
+        <div className="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
           <AntInput
             allowClear
             placeholder="Search by Device ID, Fingerprint, Block Source..."
@@ -591,14 +591,6 @@ const DeviceManagement = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
-          <Button
-            onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
-            className="gap-2 gradient-btn"
-            style={{ flexShrink: 0, height: 40, borderColor: "white", borderRadius: 8 }}
-          >
-            <Plus className="w-4 h-4" />
-            Block Device
-          </Button>
           <Button
             onClick={fetchDevicesData}
             disabled={isLoading}
@@ -619,7 +611,7 @@ const DeviceManagement = () => {
             setPage(1);
           }}
         >
-          <div className="mb-4">
+          <div className="d-flex align-items-center justify-content-between mb-4">
             <TabsList className="w-fit bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
               <TabsTrigger
                 value="all"
@@ -644,6 +636,14 @@ const DeviceManagement = () => {
                 </span>
               </TabsTrigger>
             </TabsList>
+            <button
+              onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
+              className="gradient-btn inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium"
+              style={{ borderColor: "white", color: "var(--primary-foreground)", height: 40 }}
+            >
+              <Plus className="w-4 h-4" />
+              Block Device
+            </button>
           </div>
 
           {/* All Devices Tab */}
@@ -708,7 +708,7 @@ const DeviceManagement = () => {
               placeholder="e.g. Identity farming detected — multiple NIDs from same device"
               value={blockReason}
               onChange={(e) => setBlockReason(e.target.value)}
-              className="resize-none"
+              className="resize-none placeholder:text-muted-foreground"
               style={{ minHeight: 100, background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}
               disabled={isBlockingDevice}
             />
@@ -797,7 +797,7 @@ const DeviceManagement = () => {
                 placeholder="e.g. Identity farming detected — multiple NIDs from same device"
                 value={addDeviceReason}
                 onChange={(e) => { setAddDeviceReason(e.target.value); if (addDeviceErrors.reason) setAddDeviceErrors((p) => ({ ...p, reason: "" })); }}
-                className="resize-none"
+                className="resize-none placeholder:text-muted-foreground"
                 style={{ minHeight: 100, background: "var(--input)", color: "var(--foreground)", borderColor: addDeviceErrors.reason ? "var(--color-status-coral)" : "var(--border)" }}
                 disabled={isAddingDevice}
               />
@@ -822,7 +822,7 @@ const DeviceManagement = () => {
 
       {/* NID Associations Modal */}
       <Dialog open={isNidModalOpen} onOpenChange={setIsNidModalOpen}>
-        <DialogContent className="sm:max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+        <DialogContent className="max-h-[80vh] overflow-hidden flex flex-col" style={{ width: "min(95vw, 900px)", maxWidth: "900px" }}>
           <DialogHeader>
             <DialogTitle className="text-base">NID Associations</DialogTitle>
             <DialogDescription className="text-xs">
@@ -832,9 +832,9 @@ const DeviceManagement = () => {
               )}
             </DialogDescription>
           </DialogHeader>
-          <div className="overflow-y-auto flex-1 mt-2">
+          <div className="overflow-auto flex-1 mt-2">
             {Array.isArray(selectedDeviceForNids?.nidAssociations) && selectedDeviceForNids.nidAssociations.length > 0 ? (
-              <table className="w-full text-sm border-collapse">
+              <table className="text-sm border-collapse" style={{ minWidth: "700px", width: "100%" }}>
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
                     <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">#</th>
