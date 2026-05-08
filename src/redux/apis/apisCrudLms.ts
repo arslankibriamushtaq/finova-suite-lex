@@ -554,12 +554,21 @@ export function getNplReport(asOfDate?: string) {
   const qs = asOfDate ? `?asOfDate=${encodeURIComponent(asOfDate)}` : "";
   return axios.get(`/ledger-service/api/v1/reports/npl${qs}`);
 }
-export function getJournalVouchersReport(fromDate?: string, toDate?: string, referenceType?: string, status?: string) {
+export function getJournalVouchersReport(
+  fromDate?: string,
+  toDate?: string,
+  referenceType?: string,
+  status?: string,
+  page?: number,
+  size?: number
+) {
   const parts: string[] = [];
   if (fromDate) parts.push(`fromDate=${encodeURIComponent(fromDate)}`);
   if (toDate) parts.push(`toDate=${encodeURIComponent(toDate)}`);
   if (referenceType) parts.push(`referenceType=${encodeURIComponent(referenceType)}`);
   if (status) parts.push(`status=${encodeURIComponent(status)}`);
+  if (page !== undefined && page !== null) parts.push(`page=${encodeURIComponent(String(page))}`);
+  if (size !== undefined && size !== null) parts.push(`size=${encodeURIComponent(String(size))}`);
   const qs = parts.length ? `?${parts.join("&")}` : "";
   return axios.get(`/ledger-service/api/v1/reports/journal-vouchers${qs}`);
 }
@@ -617,7 +626,14 @@ export function getCustomerStatementReport(customerId: string, paramsOrFromDate?
     // New style: getCustomerStatementReport(id, { fromDate, toDate })
     queryString = new URLSearchParams(paramsOrFromDate).toString();
   }
-  return axios.get(`/ledger-service/api/v1/reports/customer-statement/${customerId.trim()}${queryString ? `?${queryString}` : ""}`);
+  return axios.get(
+    `/ledger-service/api/v1/reports/customer-statement/${customerId.trim()}${queryString ? `?${queryString}` : ""}`,
+    {
+      headers: {
+        "X-Tenant-Id": "00000000-0000-0000-0000-000000000001",
+      },
+    }
+  );
 }
 export function getLoanDisbursementReport(paramsOrFromDate?: any, toDate?: string) {
   let query = "";

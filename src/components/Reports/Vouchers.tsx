@@ -83,6 +83,20 @@ const Vouchers = () => {
     }
   };
 
+  const extractVouchers = (root: any): { items: any[]; inner: any } => {
+    const inner = root?.data;
+    const items: any[] = Array.isArray(inner?.vouchers)
+      ? inner.vouchers
+      : Array.isArray(inner)
+        ? inner
+        : Array.isArray(inner?.items)
+          ? inner.items
+          : Array.isArray(root)
+            ? root
+            : [];
+    return { items, inner };
+  };
+
   const handleSubmit = async () => {
     try {
       setSkelitonLoading(true);
@@ -90,33 +104,36 @@ const Vouchers = () => {
       // the bare endpoint (matches the curl shape the backend expects).
       const start = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
       const end = toDate ? toDate.format("YYYY-MM-DD") : undefined;
-      const res = await getJournalVouchersReport(start, end);
 
-      // Response shape from /ledger-service/api/v1/reports/journal-vouchers:
-      //   { data: { fromDate, toDate, totalVouchers, totalDebits, totalCredits, vouchers: [...] }, message, timestamp }
-      // Also tolerate a few legacy / variant shapes.
-      const root = res?.data;
-      const inner = root?.data;
-      const items: any[] = Array.isArray(inner?.vouchers)
-        ? inner.vouchers
-        : Array.isArray(inner)
-          ? inner
-          : Array.isArray(inner?.items)
-            ? inner.items
-            : Array.isArray(root)
-              ? root
-              : [];
+      // Backend caps each response at ~20 rows even when we ask for more, so
+      // walk every page returned in `pagination.totalPages` and concatenate.
+      const firstRes = await getJournalVouchersReport(start, end, undefined, undefined, 0, 100);
+      const firstRoot = firstRes?.data;
+      const firstParsed = extractVouchers(firstRoot);
+      let combined: any[] = [...firstParsed.items];
 
-      // eslint-disable-next-line no-console
-      console.log("[Vouchers] response =", root, "→ rows:", items.length);
+      const pagination = firstRoot?.pagination;
+      const totalPagesFromApi = Number(pagination?.totalPages) || 1;
 
-      setAllCallActivity(items);
+      if (totalPagesFromApi > 1) {
+        const remaining = await Promise.all(
+          Array.from({ length: totalPagesFromApi - 1 }, (_, i) =>
+            getJournalVouchersReport(start, end, undefined, undefined, i + 1, 100)
+              .then((r) => extractVouchers(r?.data).items)
+              .catch(() => [])
+          )
+        );
+        combined = combined.concat(...remaining);
+      }
+
+      setAllCallActivity(combined);
+      const inner = firstParsed.inner;
       setSummary(
         inner && typeof inner === "object" && !Array.isArray(inner)
           ? {
               fromDate: inner.fromDate,
               toDate: inner.toDate,
-              totalVouchers: inner.totalVouchers,
+              totalVouchers: inner.totalVouchers ?? combined.length,
               totalDebits: inner.totalDebits,
               totalCredits: inner.totalCredits,
             }
@@ -388,7 +405,8 @@ const Vouchers = () => {
     handleAccounts();
     LedgerDetails();
     return () => {};
-  }, [id, page, pageSize, fromDate, toDate]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, fromDate, toDate]);
   const handleChange = (key: string, row: any) => {
     if (key === "Edit") {
       handleEditClick(row);
