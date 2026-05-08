@@ -611,8 +611,8 @@ const DeviceManagement = () => {
             setPage(1);
           }}
         >
-          <div className="d-flex align-items-center justify-content-between mb-4">
-            <TabsList className="w-fit bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
+            <TabsList style={{ display: "inline-flex", width: "auto", flexShrink: 0 }} className="bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
               <TabsTrigger
                 value="all"
                 className="rounded-md border-0 px-6 py-2.5 font-medium text-base transition-all duration-200 data-[state=active]:bg-[var(--theme-secondary)] data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-muted/50"

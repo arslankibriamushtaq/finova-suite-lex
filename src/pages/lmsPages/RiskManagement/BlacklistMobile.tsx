@@ -16,7 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { ChevronDown, Plus, ShieldOff } from "lucide-react";
+import { ChevronDown, Plus, ShieldOff, ShieldCheck } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -146,6 +146,24 @@ const BlacklistMobile = () => {
       name: "Action",
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
+        if (status === "REMOVED") {
+          return (
+            <div onClick={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "" });
+                  setShowAddModal(true);
+                }}
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium"
+                style={{ background: "var(--color-status-green)", color: "var(--primary-foreground)", border: "none" }}
+              >
+                <ShieldCheck className="h-4 w-4" />
+                Re-Blacklist
+              </button>
+            </div>
+          );
+        }
         if (status !== "BLACKLISTED") return null;
         return (
           <div
