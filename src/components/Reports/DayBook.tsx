@@ -221,9 +221,6 @@ const DayBook = () => {
       <div className="col-12">
         <div className="mb-3 pb-2 border-bottom">
           <h3 className="mb-0 fw-bold text-dark">Day Book</h3>
-          {summary?.reportDate && (
-            <small className="text-muted">Report date: {summary.reportDate}</small>
-          )}
         </div>
         <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
           <Input

@@ -26,28 +26,53 @@ const LoanDisbursementReport = () => {
     return () => clearTimeout(handle);
   }, [searchTerm]);
 
+  const extractItems = (root: any): { items: any[]; inner: any } => {
+    const inner = root?.data ?? root;
+    const items: any[] = Array.isArray(inner?.items)
+      ? inner.items
+      : Array.isArray(inner)
+        ? inner
+        : [];
+    return { items, inner };
+  };
+
   const fetchReportData = async () => {
     try {
       setLoading(true);
       // Only send dates when the user picks them; otherwise hit the bare endpoint.
-      const params: any = {};
-      if (fromDate) params.fromDate = fromDate.format("YYYY-MM-DD");
-      if (toDate) params.toDate = toDate.format("YYYY-MM-DD");
+      const baseParams: any = {};
+      if (fromDate) baseParams.fromDate = fromDate.format("YYYY-MM-DD");
+      if (toDate) baseParams.toDate = toDate.format("YYYY-MM-DD");
 
-      const response = await getLoanDisbursementReport(
-        Object.keys(params).length ? params : undefined
-      );
-      if (response && response.data) {
-        const data = response.data.data ?? response.data;
-        if (data && !Array.isArray(data) && data.items) {
-          setTotals(data);
-          setReportData(data.items || []);
-        } else {
-          const list = Array.isArray(data) ? data : data?.items || [];
-          setReportData(list);
-          setTotals(data && !Array.isArray(data) ? data : null);
-        }
+      // Backend caps each response at ~20 rows even when we ask for more, so
+      // walk every page returned in `pagination.totalPages` and concatenate.
+      const firstParams = { ...baseParams, page: 0, size: 100 };
+      const firstRes = await getLoanDisbursementReport(firstParams);
+      const firstRoot = firstRes?.data;
+      const firstParsed = extractItems(firstRoot);
+      let combined: any[] = [...firstParsed.items];
+
+      const pagination = firstRoot?.pagination;
+      const totalPagesFromApi = Number(pagination?.totalPages) || 1;
+
+      if (totalPagesFromApi > 1) {
+        const remaining = await Promise.all(
+          Array.from({ length: totalPagesFromApi - 1 }, (_, i) =>
+            getLoanDisbursementReport({ ...baseParams, page: i + 1, size: 100 })
+              .then((r) => extractItems(r?.data).items)
+              .catch(() => [])
+          )
+        );
+        combined = combined.concat(...remaining);
       }
+
+      const inner = firstParsed.inner;
+      setReportData(combined);
+      setTotals(
+        inner && typeof inner === "object" && !Array.isArray(inner)
+          ? { ...inner, items: combined }
+          : null
+      );
     } catch (error: any) {
       console.error("Error fetching disbursement report:", error);
       toast.error(error?.message || "Failed to fetch report");
