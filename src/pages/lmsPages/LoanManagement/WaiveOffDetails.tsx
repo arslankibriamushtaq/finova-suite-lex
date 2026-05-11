@@ -306,11 +306,11 @@ const WaiveOffDetails = () => {
   ];
 
   return (
-    <div>
+    <div className="service waive-off-details-page">
       {loading && <Loader />}
 
       {/* Header */}
-      <div className="d-flex align-items-center gap-3 mb-4" style={{ flexWrap: "wrap" }}>
+      <div className="d-flex align-items-center gap-3 mb-3 pb-2 border-bottom" style={{ flexWrap: "wrap" }}>
         <button
           onClick={() => navigate(-1)}
           style={{
@@ -331,11 +331,7 @@ const WaiveOffDetails = () => {
 
         <div style={{ height: 20, width: 1, backgroundColor: "var(--border)" }} />
 
-        <div>
-          <h5 className="mb-0" style={{ fontWeight: 600 }}>
-            Waive Off Details
-          </h5>
-        </div>
+        <h3 className="mb-0 fw-bold text-dark">Waive Off Details</h3>
 
         <div className="ms-auto">
           <span
@@ -375,17 +371,37 @@ const WaiveOffDetails = () => {
         </div>
       </div>
 
-      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
-        <AntInput
-          allowClear
-          placeholder="Search by invoice ID, status, reason, amount"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-        />
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search by invoice ID, status, reason, amount"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+        </div>
       </div>
 
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
       <TableView
         header={columns}
         data={paginatedData}
@@ -400,6 +416,7 @@ const WaiveOffDetails = () => {
         to={toRow}
         paginationShow={true}
       />
+      </div>
 
       {/* Approve / Reject Modal */}
       <Modal show={!!modalType} onHide={closeModal} centered>

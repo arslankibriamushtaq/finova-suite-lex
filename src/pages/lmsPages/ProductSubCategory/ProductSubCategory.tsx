@@ -280,11 +280,21 @@ const ProductSubCategory = () => {
   ];
 
   return (
-    <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Product Sub Categories</h1>
+    <div className="service product-subcategory-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Product Sub Categories</h3>
+      </div>
 
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-        <div className="d-flex flex-wrap align-items-center gap-2" style={{ flex: "1 1 auto", minWidth: 0 }}>
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Select
             value={selectedCategoryId}
             onValueChange={(value) => {
@@ -292,7 +302,9 @@ const ProductSubCategory = () => {
               setPage(1);
             }}
           >
-            <SelectTrigger className="w-[220px]" style={{ height: 40 }}>
+            <SelectTrigger
+              style={{ height: 40, flex: "1 1 200px", minWidth: 180 }}
+            >
               <SelectValue placeholder="Select Category" />
             </SelectTrigger>
             <SelectContent>
@@ -311,26 +323,41 @@ const ProductSubCategory = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
+          <Button
+            className="gap-2"
+            onClick={handleAdd}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            <Plus className="h-4 w-4" />
+            Add New Record
+          </Button>
         </div>
-        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
-          <Plus className="h-4 w-4" />
-          Add New Record
-        </Button>
       </div>
 
-      <TableView
-        header={headers}
-        data={data}
-        totalRows={totalRows}
-        isLoading={isLoading}
-        from={(page - 1) * pageSize + 1}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={Math.min(page * pageSize, totalRows)}
-      />
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={headers}
+          data={data}
+          totalRows={totalRows}
+          isLoading={isLoading}
+          from={(page - 1) * pageSize + 1}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={Math.min(page * pageSize, totalRows)}
+        />
+      </div>
 
       {/* Add/Edit Modal */}
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>

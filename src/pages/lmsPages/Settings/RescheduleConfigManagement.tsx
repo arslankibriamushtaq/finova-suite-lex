@@ -396,36 +396,57 @@ const RescheduleConfigManagement = () => {
   const totalPage = Math.max(1, Math.ceil(total / pageSize));
 
   return (
-    <div>
+    <div className="service rescheduling-config-page">
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark">Rescheduling Configurations</h3>
       </div>
 
-      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
-        <Input
-          allowClear
-          placeholder="Search by type, label, description, approver, status"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-        />
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder="Search by type, label, description, approver, status"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+        </div>
       </div>
 
-      <TableView
-        header={columns}
-        data={paginatedData}
-        totalRows={total}
-        isLoading={loading}
-        from={fromRow}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={toRow}
-        paginationShow={true}
-      />
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={columns}
+          data={paginatedData}
+          totalRows={total}
+          isLoading={loading}
+          from={fromRow}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={toRow}
+          paginationShow={true}
+        />
+      </div>
 
       <Modal show={showEdit} onHide={closeEdit} centered size="lg" scrollable>
         <Modal.Header closeButton>

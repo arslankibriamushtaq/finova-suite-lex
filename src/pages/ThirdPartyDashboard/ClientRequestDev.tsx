@@ -136,21 +136,35 @@ const ClientRequestDev = () => {
   ];
 
   return (
-    <div className="service">
-      <h2 className="d-flex justify-content-between align-items-center mb-3">Client Request Dev</h2>
-      <TableView
-        header={Headers}
-        data={data}
-        totalRows={totalRows}
-        isLoading={skelitonLoading}
-        from={from}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={to}
-      />
+    <div className="service client-request-dev-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Client Request Dev</h3>
+      </div>
+
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={Headers}
+          data={data}
+          totalRows={totalRows}
+          isLoading={skelitonLoading}
+          from={from}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={to}
+        />
+      </div>
     </div>
   );
 };

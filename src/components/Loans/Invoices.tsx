@@ -926,45 +926,65 @@ const Invoices = () => {
   return (
     <>
       {loader && <Loader />}
-      <div>
-        <div className="col-11 mb-4 ">
-          <h3>Loan Invoices</h3>
+      <div className="service invoices-page">
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">Loan Invoices</h3>
         </div>
 
-        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
-          <Input
-            allowClear
-            placeholder="Search by invoice ID, installment, status, due date"
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchValue}
-            onChange={(e: any) => setSearchValue(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-          />
-          {selectedInvoices.length > 0 && (
-            <Button
-              className="application-btn"
-              style={{
-                color: "var(--primary-foreground)",
-                padding: "9px",
-                borderRadius: "8px",
-                border: "transparent",
-                height: 40,
-                whiteSpace: "nowrap",
-                flexShrink: 0,
-              }}
-              onClick={handleChangeInvoice}
-            >
-              Pay Invoices
-            </Button>
-          )}
-        </div>
-
-        <Tabs
-          id="invoices-tabs"
-          activeKey={activeTab}
-          onSelect={(k) => setActiveTab(k || "loanInvoices")}
-          className="mt-3"
+        {/* Filters card */}
+        <div
+          className="bg-white p-3 mb-3"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+          }}
         >
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <Input
+              allowClear
+              placeholder="Search by invoice ID, installment, status, due date"
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchValue}
+              onChange={(e: any) => setSearchValue(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            />
+            {selectedInvoices.length > 0 && (
+              <Button
+                className="application-btn"
+                style={{
+                  color: "var(--primary-foreground)",
+                  padding: "9px",
+                  borderRadius: 8,
+                  border: "transparent",
+                  height: 40,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                }}
+                onClick={handleChangeInvoice}
+              >
+                Pay Invoices
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Tabs + Table card */}
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
+          <Tabs
+            id="invoices-tabs"
+            activeKey={activeTab}
+            onSelect={(k) => setActiveTab(k || "loanInvoices")}
+            className="px-3 pt-3"
+          >
           <Tab eventKey="loanInvoices" title="Loan Invoices">
             <div className="cs-table p-2">
               <TableView
@@ -1048,6 +1068,7 @@ const Invoices = () => {
             </div>
           </Tab>
         </Tabs>
+        </div>
       </div>
       <Modal show={showModal} size="lg" centered>
         <Modal.Header

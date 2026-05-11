@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
 import { Col, Input, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -38,7 +38,7 @@ const LoanBalanceReport = () => {
   const fetchReport = async () => {
     try {
       setLoading(true);
-      // Call without filters — the backend defaults asOfDate to today.
+      // Call without filters â€” the backend defaults asOfDate to today.
       const res = await getLoanBalanceReport();
 
       // Response shape: { data: { asOfDate, totalCount, totalPrincipalOutstanding,
@@ -56,7 +56,7 @@ const LoanBalanceReport = () => {
               : [];
 
       // eslint-disable-next-line no-console
-      console.log("[LoanBalance] response =", root, "→ rows:", list.length);
+      console.log("[LoanBalance] response =", root, "â†’ rows:", list.length);
 
       setItems(list);
       setSummary(
@@ -267,10 +267,18 @@ const LoanBalanceReport = () => {
         <h3 className="mb-0 fw-bold text-dark">Loan Balance & Outstanding Report</h3>
       </div>
 
-      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by loan, customer, product, status…"
+          placeholder="Search by loan, customer, product, statusâ€¦"
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -285,6 +293,7 @@ const LoanBalanceReport = () => {
         >
           Export CSV
         </button>
+        </div>
       </div>
 
       {(items.length > 0 || summary) && (
@@ -324,7 +333,15 @@ const LoanBalanceReport = () => {
         </Row>
       )}
 
-      <div className="cs-table p-2">
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           header={columns}
           data={paginated}

@@ -24,17 +24,9 @@ function AccountFinancing() {
   };
 
   return (
-    <div>
-      <div
-        className="d-flex justify-content-between align-items-center mb-4 pb-2"
-        style={{ borderBottom: "1px solid var(--border)" }}
-      >
-        <h5
-          className="mb-0"
-          style={{ fontWeight: 600, color: "var(--foreground)" }}
-        >
-          Accounting & Financing Reports
-        </h5>
+    <div className="service account-financing-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Accounting & Financing Reports</h3>
       </div>
 
       <div

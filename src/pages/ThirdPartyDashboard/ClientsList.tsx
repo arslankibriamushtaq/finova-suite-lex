@@ -173,44 +173,65 @@ const ClientsList = () => {
   ];
 
   return (
-    <div className="service p-4">
+    <div className="service clients-list-page">
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark">Client List</h3>
       </div>
 
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <AntInput
-          allowClear
-          placeholder="Search by name, code, or status"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-        />
-        <Button
-          className="gap-2"
-          onClick={() => navigate("/ThirdPartyManagement/Clients/Add")}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          <Plus className="h-4 w-4" />
-          Add New Client
-        </Button>
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search by name, code, or status"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <Button
+            className="gap-2"
+            onClick={() => navigate("/ThirdPartyManagement/Clients/Add")}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            <Plus className="h-4 w-4" />
+            Add New Client
+          </Button>
+        </div>
       </div>
 
-      <TableView
-        header={headers}
-        data={filteredData.slice((page - 1) * pageSize, page * pageSize)}
-        totalRows={filteredData.length}
-        isLoading={isLoading}
-        from={filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0}
-        page={page}
-        totalPage={Math.max(1, Math.ceil(filteredData.length / pageSize))}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={Math.min(page * pageSize, filteredData.length)}
-        paginationShow={true}
-      />
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={headers}
+          data={filteredData.slice((page - 1) * pageSize, page * pageSize)}
+          totalRows={filteredData.length}
+          isLoading={isLoading}
+          from={filteredData.length > 0 ? (page - 1) * pageSize + 1 : 0}
+          page={page}
+          totalPage={Math.max(1, Math.ceil(filteredData.length / pageSize))}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={Math.min(page * pageSize, filteredData.length)}
+          paginationShow={true}
+        />
+      </div>
 
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-[420px]">

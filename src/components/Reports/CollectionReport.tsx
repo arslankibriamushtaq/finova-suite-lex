@@ -79,41 +79,50 @@ const CollectionReport = () => {
         <h3 className="mb-0 fw-bold text-dark">Collection Report</h3>
       </div>
 
-      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
-        <DatePicker
-          placeholder="From"
-          value={fromDate}
-          onChange={(d) => setFromDate(d)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 8 }}
-        />
-        <DatePicker
-          placeholder="To"
-          value={toDate}
-          onChange={(d) => setToDate(d)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 8 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={fetchCollectionData}
-          disabled={loading}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          {loading ? "Loading..." : "Refresh"}
-        </button>
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={exportToCSV}
-          disabled={!totals}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          Export CSV
-        </button>
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <DatePicker
+            placeholder="From"
+            value={fromDate}
+            onChange={(d) => setFromDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <DatePicker
+            placeholder="To"
+            value={toDate}
+            onChange={(d) => setToDate(d)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={fetchCollectionData}
+            disabled={loading}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            {loading ? "Loading..." : "Refresh"}
+          </button>
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            disabled={!totals}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Export CSV
+          </button>
+        </div>
       </div>
 
       {totals ? (

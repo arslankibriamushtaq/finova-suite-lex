@@ -301,94 +301,63 @@ const LoanInvoice = () => {
   const button = [{ title: "view" }];
 
   return (
-    <div>
+    <div className="service loan-invoice-page">
       <StringTest />
-      <div className="col-12 d-flex align-items-center">
-        <div className="col-10 d-flex pb-2  search-bar">
-          <div className="d-flex  structure justify-content-between">
-            <div className="d-grid">
-              <label htmlFor="" className="label-theme">
-                From
-              </label>
-              <DatePicker
-                style={{
-                  width: "200px",
-                  height: "36px",
-                  marginRight: "10px",
-                }}
-              />
-            </div>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Loan Invoice</h3>
+      </div>
 
-            <div className="d-grid">
-              <label htmlFor="" className="label-theme">
-                To
-              </label>
-              <DatePicker
-                style={{
-                  width: "200px",
-                  height: "36px",
-                }}
-              />
-            </div>
-          </div>
-          <div className="d-flex ps-2  structure justify-content-between">
-            <div className="d-grid">
-              <label htmlFor="" className="label-theme">
-                From
-              </label>
-              <DatePicker
-                style={{
-                  width: "200px",
-                  height: "36px",
-                  marginRight: "10px",
-                }}
-              />
-            </div>
-
-            <div className="d-grid">
-              <label htmlFor="" className="label-theme">
-                To
-              </label>
-              <DatePicker
-                style={{
-                  width: "200px",
-                  height: "36px",
-                }}
-              />
-            </div>
-          </div>
-          <div className="ps-2 d-flex align-items-center">
-            <Button
-              style={{
-                borderRadius: "8px",
-                border: "transparent",
-              }}
-              className="invoice-btn mt-3"
-              onClick={() => {
-                // setAddCustomerModal(true);
-              }}
-            >
-              Clear
-            </Button>
-          </div>
-        </div>
-        <div className="col-2 d-flex justify-content-end">
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <DatePicker
+            placeholder="From"
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <DatePicker
+            placeholder="To"
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <DatePicker
+            placeholder="From"
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <DatePicker
+            placeholder="To"
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
           <Button
-            style={{
-              borderRadius: "8px",
-              border: "transparent",
-            }}
-            className="invoice-btn mt-2"
-            onClick={() => {
-              // setAddCustomerModal(true);
-            }}
+            style={{ borderRadius: 8, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            className="invoice-btn"
+          >
+            Clear
+          </Button>
+          <Button
+            style={{ borderRadius: 8, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            className="invoice-btn"
           >
             Export CSV
           </Button>
         </div>
       </div>
 
-      <div className="cs-table p-2 mt-3">
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

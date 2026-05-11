@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
 import { Col, DatePicker, Input, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -146,7 +146,15 @@ const DailyTransactionSummary = () => {
         <h3 className="mb-0 fw-bold text-dark">Daily Transaction Summary</h3>
       </div>
 
-      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
           placeholder="Search by channel"
@@ -172,6 +180,7 @@ const DailyTransactionSummary = () => {
         >
           Export CSV
         </button>
+        </div>
       </div>
 
       {(allCallActivity.length > 0 || summaryData) && (
@@ -215,7 +224,15 @@ const DailyTransactionSummary = () => {
         </Row>
       )}
 
-      <div className="cs-table p-2">
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

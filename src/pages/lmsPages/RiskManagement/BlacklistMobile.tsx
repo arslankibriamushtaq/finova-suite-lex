@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -197,10 +197,13 @@ const BlacklistMobile = () => {
   ];
 
   return (
-    <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Blacklist Mobile</h1>
+    <div className="service">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Blacklist Mobile</h3>
+      </div>
 
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      <div className="bg-white p-3 mb-3" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
           placeholder="Search by mobile, reason, or status"
@@ -213,9 +216,11 @@ const BlacklistMobile = () => {
           <Plus className="h-4 w-4" />
           Add to Blacklist
         </Button>
+        </div>
       </div>
 
-      <TableView
+      <div className="bg-white" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
+        <TableView
         header={headers}
         data={filteredData}
         totalRows={filteredData.length}
@@ -228,6 +233,7 @@ const BlacklistMobile = () => {
         setPageSize={setPageSize}
         to={filteredData.length}
       />
+      </div>
 
       {/* Add Modal */}
       <Dialog open={showAddModal} onOpenChange={(open) => !open && setShowAddModal(false)}>

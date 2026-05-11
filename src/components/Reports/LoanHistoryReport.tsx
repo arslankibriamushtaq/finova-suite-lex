@@ -115,44 +115,52 @@ const LoanHistoryReport = () => {
   };
 
   return (
-    <div className="col-12">
-      <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
+    <div className="service loan-history-page">
+      <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark">Loan History Timeline</h3>
-        <button className="invoice-btn bg-dark text-white" onClick={() => exportToCSV(mappedData, "LoanHistory")}>
-          Export CSV
-        </button>
       </div>
 
-      <div className="bg-white p-4 rounded border mb-4 shadow-sm">
-        <div className="row g-3 align-items-end">
-          <div className="col-md-5">
-            <label className="mb-1 fw-bold text-muted small text-uppercase">Enter Loan UUID</label>
-            <Input 
-              placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" 
-              value={loanId}
-              onChange={(e) => setLoanId(e.target.value)}
-              className="w-100"
-            />
-          </div>
-          <div className="col-md-2">
-            <label className="mb-1 fw-bold text-muted small text-uppercase">From Date</label>
-            <DatePicker 
-              className="w-100" 
-              onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : "")} 
-            />
-          </div>
-          <div className="col-md-2">
-            <label className="mb-1 fw-bold text-muted small text-uppercase">To Date</label>
-            <DatePicker 
-              className="w-100" 
-              onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : "")} 
-            />
-          </div>
-          <div className="col-md-2">
-            <Button className="theme-btn-next w-100" onClick={() => handleSubmit()} loading={loading} style={{ height: "38px" }}>
-              View History
-            </Button>
-          </div>
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            placeholder="Enter Loan UUID — e.g. 550e8400-e29b-41d4-a716-446655440000"
+            value={loanId}
+            onChange={(e) => setLoanId(e.target.value)}
+            style={{ flex: "1 1 280px", minWidth: 220, height: 40, borderRadius: 8 }}
+          />
+          <DatePicker
+            placeholder="From"
+            onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : "")}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <DatePicker
+            placeholder="To"
+            onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : "")}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <Button
+            className="theme-btn-next"
+            onClick={() => handleSubmit()}
+            loading={loading}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            View History
+          </Button>
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={() => exportToCSV(mappedData, "LoanHistory")}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Export CSV
+          </button>
         </div>
       </div>
 
@@ -177,7 +185,15 @@ const LoanHistoryReport = () => {
         </div>
       )}
 
-      <div className="cs-table p-2">
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

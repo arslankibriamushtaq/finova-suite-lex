@@ -264,14 +264,21 @@ const WaiverRequestsManagement = () => {
   ];
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0">Waiver Requests</h5>
+    <div className="service waiver-requests-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Waiver Requests</h3>
       </div>
 
-      {/* Filters */}
-      <div className="d-flex gap-3 mb-3 flex-wrap align-items-end">
-        <div style={{ minWidth: 200 }}>
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             placeholder="Search by customer or loan..."
             value={searchTerm}
@@ -279,9 +286,8 @@ const WaiverRequestsManagement = () => {
               setSearchTerm(e.target.value);
               setPage(1);
             }}
+            style={{ flex: "1 1 240px", minWidth: 200, height: 40 }}
           />
-        </div>
-        <div style={{ minWidth: 160 }}>
           <Select
             value={statusFilter}
             onValueChange={(value) => {
@@ -289,7 +295,7 @@ const WaiverRequestsManagement = () => {
               setPage(1);
             }}
           >
-            <SelectTrigger>
+            <SelectTrigger style={{ flex: "1 1 180px", minWidth: 160, height: 40 }}>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
@@ -300,25 +306,36 @@ const WaiverRequestsManagement = () => {
               ))}
             </SelectContent>
           </Select>
+          <Badge variant="outline" className="text-xs" style={{ flexShrink: 0 }}>
+            {statusFilter === "ALL" ? "All requests" : `Showing: ${statusFilter}`}
+          </Badge>
         </div>
-        <Badge variant="outline" className="text-xs">
-          {statusFilter === "ALL" ? "All requests" : `Showing: ${statusFilter}`}
-        </Badge>
       </div>
 
-      <TableView
-        header={columns}
-        data={data}
-        totalRows={totalRows}
-        isLoading={isLoading}
-        from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={Math.min(page * pageSize, totalRows)}
-      />
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={columns}
+          data={data}
+          totalRows={totalRows}
+          isLoading={isLoading}
+          from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={Math.min(page * pageSize, totalRows)}
+        />
+      </div>
 
       {/* Reject Modal */}
       <Dialog open={!!rejectTarget} onOpenChange={(open) => !open && closeRejectModal()}>

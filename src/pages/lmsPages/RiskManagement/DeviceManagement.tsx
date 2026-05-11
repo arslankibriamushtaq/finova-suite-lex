@@ -505,12 +505,21 @@ const DeviceManagement = () => {
   const toValue = Math.min(page * pageSize, totalRows);
 
   return (
-    <div className="service p-4">
-        {/* Header */}
-        <h1 className="text-xl font-bold pb-3">Device Management</h1>
+    <div className="service device-management-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Device Management</h3>
+      </div>
 
-        {/* Search Bar + Refresh */}
-        <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
             placeholder="Search by Device ID, Fingerprint, Block Source..."
@@ -524,12 +533,13 @@ const DeviceManagement = () => {
             disabled={isLoading}
             variant="outline"
             className="gap-2"
-            style={{ flexShrink: 0, height: 40 }}
+            style={{ flexShrink: 0, height: 40, whiteSpace: "nowrap" }}
           >
             <RefreshCw className="w-4 h-4" />
             {isLoading ? "Loading..." : "Refresh"}
           </Button>
         </div>
+      </div>
 
         {/* Tabs - Improved Design */}
         <Tabs
@@ -576,7 +586,16 @@ const DeviceManagement = () => {
 
           {/* All Devices Tab */}
           <TabsContent value="all" className="mt-0">
-            <TableView
+            <div
+              className="bg-white"
+              style={{
+                borderRadius: 12,
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+                border: "1px solid var(--border)",
+                overflow: "hidden",
+              }}
+            >
+              <TableView
                 header={allDevicesHeaders}
                 data={data}
                 totalRows={totalRows}
@@ -590,24 +609,35 @@ const DeviceManagement = () => {
                 isLoading={isLoading}
                 paginationShow={true}
               />
+            </div>
           </TabsContent>
 
           {/* Blocked Devices Tab */}
           <TabsContent value="blocked" className="mt-0">
-            <TableView
-              header={blockedDevicesHeaders}
-              data={data}
-              totalRows={totalRows}
-              from={fromValue}
-              to={toValue}
-              page={page}
-              totalPage={totalPage}
-              setPage={setPage}
-              pageSize={pageSize}
-              setPageSize={setPageSize}
-              isLoading={isLoading}
-              paginationShow={true}
-            />
+            <div
+              className="bg-white"
+              style={{
+                borderRadius: 12,
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+                border: "1px solid var(--border)",
+                overflow: "hidden",
+              }}
+            >
+              <TableView
+                header={blockedDevicesHeaders}
+                data={data}
+                totalRows={totalRows}
+                from={fromValue}
+                to={toValue}
+                page={page}
+                totalPage={totalPage}
+                setPage={setPage}
+                pageSize={pageSize}
+                setPageSize={setPageSize}
+                isLoading={isLoading}
+                paginationShow={true}
+              />
+            </div>
           </TabsContent>
         </Tabs>
 
