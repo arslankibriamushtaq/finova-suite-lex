@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -63,7 +63,7 @@ const FraudRuleManagement = () => {
       setIsLoading(true);
 
       if (debouncedSearch) {
-        // Backend search support is unverified — fetch full set, filter client-side.
+        // Backend search support is unverified â€” fetch full set, filter client-side.
         const response = await getAllFraudRules(0, 10000);
         const all: any[] = Array.isArray(response?.data?.data)
           ? response.data.data
@@ -125,7 +125,7 @@ const FraudRuleManagement = () => {
     }
   };
 
-  // Parse parameters — JSON string containing array of {key, value, dataType, description}
+  // Parse parameters â€” JSON string containing array of {key, value, dataType, description}
   const parseParams = (params: any): ParamEntry[] => {
     try {
       const parsed = typeof params === "string" ? JSON.parse(params) : params;
@@ -273,10 +273,13 @@ const FraudRuleManagement = () => {
   ];
 
   return (
-    <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Fraud Rule Management</h1>
+    <div className="service">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Fraud Rule Management</h3>
+      </div>
 
-      <div className="d-flex flex-wrap align-items-center mb-3 gap-2">
+      <div className="bg-white p-3 mb-3" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
           placeholder="Search by rule ID, name, category, or status"
@@ -285,9 +288,11 @@ const FraudRuleManagement = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
         />
+        </div>
       </div>
 
-      <TableView
+      <div className="bg-white" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
+        <TableView
         header={headers}
         data={data}
         totalRows={totalRows}
@@ -301,6 +306,7 @@ const FraudRuleManagement = () => {
         setPageSize={setPageSize}
         paginationShow={true}
       />
+      </div>
 
       {/* Edit Parameters Modal */}
       <Dialog open={showEditModal} onOpenChange={(open) => !open && closeModal()}>
@@ -312,7 +318,7 @@ const FraudRuleManagement = () => {
           {selectedRule && (
             <div className="text-sm text-muted-foreground mb-2">
               <span className="font-medium text-foreground">{selectedRule.ruleId}</span>
-              {" — "}
+              {" â€” "}
               {selectedRule.scenarioName}
             </div>
           )}

@@ -259,37 +259,64 @@ const ProductCategory = () => {
   ];
 
   return (
-    <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Product Categories</h1>
-
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
-        <AntInput
-          allowClear
-          placeholder="Search by code or name"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-        />
-        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
-          <Plus className="h-4 w-4" />
-          Add New Record
-        </Button>
+    <div className="service product-category-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Product Categories</h3>
       </div>
 
-      <TableView
-        header={headers}
-        data={data} // Use data directly since filtering is now server-side
-        totalRows={totalRows}
-        isLoading={isLoading}
-        from={(page - 1) * pageSize + 1}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={Math.min(page * pageSize, totalRows)}
-      />
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search by code or name"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <Button
+            className="gap-2"
+            onClick={handleAdd}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            <Plus className="h-4 w-4" />
+            Add New Record
+          </Button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={headers}
+          data={data}
+          totalRows={totalRows}
+          isLoading={isLoading}
+          from={(page - 1) * pageSize + 1}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={Math.min(page * pageSize, totalRows)}
+        />
+      </div>
 
       {/* Add/Edit Modal */}
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
 import { DatePicker } from "antd";
 import { useParams } from "react-router-dom";
@@ -228,7 +228,15 @@ const BrokenPromise = () => {
             </button>
           </div>
         </div>
-        <div className="cs-table p-2 mt-3">
+        <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Col, Form, Row, Tab, Tabs } from "react-bootstrap";
+import { Tab, Tabs } from "react-bootstrap";
 import EarlySettlement from "./EarlySettlement";
 import Due from "./Due";
 import LatePayment from "./LatePayment";
@@ -138,44 +138,66 @@ const DeliquencyManagement = () => {
     // },
   ];
   return (
-    <>
-      <div className="">
-        <h2 className="col-md-12 pt-2 pb-2 d-flex align-items-center fs-6 fw-bold">
-          {"Delinquency Management"}
-        </h2>
-        <Row>
-          <Col md={4} className="mb-3">
-            <Form.Group>
-              <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                Select Product
-              </Form.Label>
-              <Select
-                value={formValues.productID}
-                onChange={(value:any) => {
-                  const selectedProduct = prodId?.find((p: any) => p.id === value);
-                  setFormValues((prevValues: any) => ({
-                    ...prevValues,
-                    productID: value,
-                    productName: selectedProduct?.nameEn || "",
-                  }));
-                  getDeliquencyData(value);
-                }}
-                defaultValue={formValues?.productID}
-                style={{ width: "100%" }}
-                placeholder="Select Product"
-              >
-                {prodId?.map((option: any) => (
-                  <Select.Option key={option.id} value={option.id}>
-                    {option?.nameEn}
-                  </Select.Option>
-                ))}
-              </Select>
-            </Form.Group>
-          </Col>
-        </Row>
+    <div className="service delinquency-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Delinquency Management</h3>
+      </div>
+
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <div style={{ flex: "1 1 280px", minWidth: 240 }}>
+            <label
+              className="d-block mb-1"
+              style={{ fontSize: 13, fontWeight: 600, color: "var(--muted-foreground)" }}
+            >
+              Select Product
+            </label>
+            <Select
+              value={formValues.productID}
+              onChange={(value: any) => {
+                const selectedProduct = prodId?.find((p: any) => p.id === value);
+                setFormValues((prevValues: any) => ({
+                  ...prevValues,
+                  productID: value,
+                  productName: selectedProduct?.nameEn || "",
+                }));
+                getDeliquencyData(value);
+              }}
+              defaultValue={formValues?.productID}
+              style={{ width: "100%", height: 40 }}
+              placeholder="Select Product"
+            >
+              {prodId?.map((option: any) => (
+                <Select.Option key={option.id} value={option.id}>
+                  {option?.nameEn}
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs + content card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <Tabs
           id="controlled-tab-example"
-          className="mt-30 position-relative tabs-overflow"
+          className="px-3 pt-3"
           activeKey={selectTab}
           onSelect={(tab: any) => {
             setSelectedTab(tab);
@@ -183,14 +205,12 @@ const DeliquencyManagement = () => {
         >
           {tapOptions.map((item: any) => (
             <Tab eventKey={item.key} title={item.title}>
-              {selectTab === item.key && item.folder}
+              <div className="p-3">{selectTab === item.key && item.folder}</div>
             </Tab>
           ))}
         </Tabs>
-
-        <div></div>
       </div>
-    </>
+    </div>
   );
 };
 export default DeliquencyManagement;

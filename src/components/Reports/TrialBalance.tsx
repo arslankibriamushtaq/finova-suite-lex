@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
@@ -184,7 +184,15 @@ const TrialBalance = () => {
           <h3 className="mb-0 fw-bold text-dark">Trial Balance</h3>
         </div>
 
-        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
             placeholder="Search by account code, name, or type"
@@ -210,6 +218,7 @@ const TrialBalance = () => {
             Export CSV
           </button>
         </div>
+      </div>
 
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
@@ -247,7 +256,15 @@ const TrialBalance = () => {
           </AntCol>
         </AntRow>
 
-        <div className="cs-table p-2 bg-white rounded shadow-sm">
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
           <TableView
             data={mappedData}
             header={columns}

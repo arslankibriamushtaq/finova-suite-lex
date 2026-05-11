@@ -232,25 +232,36 @@ const SimahReport = ({ loader }: any) => {
   // 🖥️ RENDER
   // ===========================================
   return (
-    <div>
-      <h3 className="mb-3" style={{ fontWeight: 600 }}>Simah Report</h3>
-      <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-        <Input
-          allowClear
-          placeholder="Search by loan, customer, facility, status"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-        />
-        <div className="d-flex flex-wrap align-items-center gap-2" style={{ flexShrink: 0 }}>
+    <div className="service simah-report-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Simah Report</h3>
+      </div>
+
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder="Search by loan, customer, facility, status"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
           <DatePicker
             placeholder="From"
             value={fromDate}
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ height: 40, borderRadius: 8 }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
           />
           <DatePicker
             placeholder="To"
@@ -258,7 +269,7 @@ const SimahReport = ({ loader }: any) => {
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ height: 40, borderRadius: 8 }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
           />
           <button
             type="button"
@@ -272,7 +283,16 @@ const SimahReport = ({ loader }: any) => {
         </div>
       </div>
 
-      <div className="cs-table mt-2">
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}
@@ -284,7 +304,6 @@ const SimahReport = ({ loader }: any) => {
           to={to}
           header={Simah_Report_Header}
           data={paginatedData}
-          style={{ borderRadius: "7px" }}
           isLoading={loading}
           paginationShow={true}
         />

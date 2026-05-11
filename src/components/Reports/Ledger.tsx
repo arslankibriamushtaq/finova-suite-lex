@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
@@ -178,7 +178,7 @@ const Ledger = () => {
       const start = fromDate ? fromDate.format("YYYY-MM-DD") : undefined;
       const end = toDate ? toDate.format("YYYY-MM-DD") : undefined;
 
-      // Pull all accounts in one shot — backend paginates by accounts but each
+      // Pull all accounts in one shot â€” backend paginates by accounts but each
       // account has many movements, and we paginate movements client-side.
       const res = await getLedgerReport(start, end, "", "", 0, 1000);
 
@@ -266,7 +266,15 @@ const Ledger = () => {
           <h3 className="mb-0 fw-bold text-dark">Ledger Report</h3>
         </div>
 
-        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+        <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
             placeholder="Search by account, voucher, description, or type"
@@ -299,6 +307,7 @@ const Ledger = () => {
             Export CSV
           </button>
         </div>
+      </div>
 
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
@@ -327,7 +336,15 @@ const Ledger = () => {
           </AntCol>
         </AntRow>
 
-        <div className="cs-table p-2 bg-white rounded shadow-sm">
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
           <TableView
             data={mappedData}
             header={columns}

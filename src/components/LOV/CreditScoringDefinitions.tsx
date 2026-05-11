@@ -379,38 +379,54 @@ const CreditScoringDefinitions = () => {
   ];
 
   return (
-    <div className="w-full">
-      <div className="px-6 py-4 bg-background">
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Credit Scoring Field Definitions</h1>
-          <p className="text-sm text-muted-foreground mt-1">Manage and view credit scoring field definitions</p>
-          <div className="d-flex flex-wrap justify-content-between align-items-center mt-4 gap-2">
-            <AntInput
-              allowClear
-              placeholder="Search by key or name"
-              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-              value={searchTerm}
-              onChange={(e) => {
-                setSearchTerm(e.target.value);
-                setPage(1);
-              }}
-              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-            />
-            <Button
-              onClick={openCreateModal}
-              className="gap-2"
-              style={{ flexShrink: 0 }}
-            >
-              <Plus className="w-4 h-4" />
-              Create
-            </Button>
-          </div>
-        </div>
+    <div className="service credit-scoring-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Credit Scoring Field Definitions</h3>
+      </div>
 
-        {/* Table */}
-        <div className="bg-white dark:bg-slate-950 rounded-lg border border-border shadow-sm">
-          <TableView
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search by key or name"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <Button
+            onClick={openCreateModal}
+            className="gap-2"
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            <Plus className="w-4 h-4" />
+            Create
+          </Button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
             header={tableHeaders}
             data={definitions}
             totalRows={totalRows}
@@ -606,7 +622,6 @@ const CreditScoringDefinitions = () => {
             </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
     </div>
   );
 };

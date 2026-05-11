@@ -262,31 +262,56 @@ form.setFieldsValue({
   };
 
   return (
-    <div className="service">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <div>
-          <h2>Broken Promises</h2>
-          {/* Application data comes from Redux on click; no application API call here */}
-        </div>
-
-        <Button type="primary" className="theme-btn-next" onClick={openCreate}>
-          Create Broken Promise
-        </Button>
+    <div className="service broken-promises-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Broken Promises</h3>
       </div>
 
-      <TableView
-        header={headers}
-         data={data}
-        totalRows={totalRows}
-        isLoading={isLoading}
-        from={from}
-        to={to}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-      />
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 w-100">
+          <Button
+            type="primary"
+            className="theme-btn-next"
+            onClick={openCreate}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Create Broken Promise
+          </Button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={headers}
+          data={data}
+          totalRows={totalRows}
+          isLoading={isLoading}
+          from={from}
+          to={to}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+        />
+      </div>
 
       <Modal
         title={editPromise ? "Edit Broken Promise" : "Create Broken Promise"}

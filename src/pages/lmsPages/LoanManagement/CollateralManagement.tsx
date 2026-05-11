@@ -312,33 +312,42 @@ const CollateralManagement = () => {
   }, [page, pageSize]);
   // const button = [{ title: "view" }];
   return (
-    <div>
+    <div className="service collateral-management-page">
       {loading && <Loader />}
-      <div className="col-12 d-flex align-items-center">
-        <div
-          className="col-6 d-flex align-items-center justify-content-start mt-1"
-          style={{ fontSize: "15px", fontWeight: "Bold" }}
-        >
-          Collaterals
-        </div>
-        <div className="col-6 d-flex justify-content-end">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Collaterals</h3>
+      </div>
+
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 w-100">
           <Button
-            style={{
-              borderRadius: "8px",
-              border: "transparent",
-            }}
+            style={{ borderRadius: 8, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="application-btn"
-            onClick={() => {
-              navigate("/lms/addcollateral/collateralmanagement");
-              // setAddCustomerModal(true);
-            }}
+            onClick={() => navigate("/lms/addcollateral/collateralmanagement")}
           >
             Add Collateral
           </Button>
         </div>
       </div>
 
-      <div className="cs-table mt-3">
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}
@@ -351,8 +360,8 @@ const CollateralManagement = () => {
         />
         {totalDataCollectrol?.length == 0 && !skelitonLoading && (
           <div
-            className="d-flex justify-content-center mt-5"
-            style={{ color: "red" }}
+            className="d-flex justify-content-center py-5"
+            style={{ color: "var(--destructive)" }}
           >
             No data found
           </div>

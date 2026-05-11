@@ -241,31 +241,50 @@ const ChartOfAccountFields = () => {
   ];
 
 return (
-  <div className="p-3">
+  <div className="service coa-fields-page">
     <div className="mb-3 pb-2 border-bottom">
       <h3 className="mb-0 fw-bold text-dark">Chart of Accounts Fields</h3>
     </div>
 
-    <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
-      <Input
-        allowClear
-        placeholder="Search by key, label, category, status"
-        prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-      />
-      <button
-        type="button"
-        className="theme-btn-next"
-        onClick={() => openModal()}
-        style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-      >
-        Add New Field
-      </button>
+    {/* Filters card */}
+    <div
+      className="bg-white p-3 mb-3"
+      style={{
+        borderRadius: 12,
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+        border: "1px solid var(--border)",
+      }}
+    >
+      <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+        <Input
+          allowClear
+          placeholder="Search by key, label, category, status"
+          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+        />
+        <button
+          type="button"
+          className="theme-btn-next"
+          onClick={() => openModal()}
+          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+        >
+          Add New Field
+        </button>
+      </div>
     </div>
 
-    <div className="cs-table p-2 bg-white rounded shadow-sm">
+    {/* Table card */}
+    <div
+      className="bg-white"
+      style={{
+        borderRadius: 12,
+        boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+        border: "1px solid var(--border)",
+        overflow: "hidden",
+      }}
+    >
       <TableView
         data={data}
         header={columns}

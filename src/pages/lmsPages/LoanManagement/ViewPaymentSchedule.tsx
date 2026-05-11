@@ -217,28 +217,41 @@ const LoanPaymentSchedule = () => {
     });
 
   return (
-    <div>
-      <div className="col-12 d-flex align-items-center mt-3">
-        <div
-          className="d-flex align-items-center col-6 justify-content-between mt-1"
-          style={{ fontSize: "15px", fontWeight: "Bold" }}
-        >
-          Loan Payment Schedule
-        </div>
-        <div className="col-6 d-flex justify-content-end">
+    <div className="service loan-payment-schedule-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Loan Payment Schedule</h3>
+      </div>
+
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 w-100">
           <Button
-            style={{ borderRadius: "8px", border: "transparent" }}
+            style={{ borderRadius: 8, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="application-btn"
-            onClick={() =>
-              navigate("/lms/LoanManagement/ApplicationManagement")
-            }
+            onClick={() => navigate("/lms/LoanManagement/ApplicationManagement")}
           >
             Back to Applications
           </Button>
         </div>
       </div>
 
-      <div className="cs-table mt-3">
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}

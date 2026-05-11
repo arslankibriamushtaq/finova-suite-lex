@@ -176,12 +176,23 @@ const RetryTransaction = () => {
   return (
     <>
       {loader && <Loader />}
-      <div>
-        <div className="col-11 mb-4 ">
-          <h3>{params.type === "1" ? "Disburse History" : "Repay History"}</h3>
+      <div className="service retry-transaction-page">
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">
+            {params.type === "1" ? "Disburse History" : "Repay History"}
+          </h3>
         </div>
 
-        <div className="cs-table p-2">
+        {/* Table card */}
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}
@@ -194,8 +205,8 @@ const RetryTransaction = () => {
           />
           {allTableList?.length == 0 && (
             <div
-              className="d-flex justify-content-center mt-5"
-              style={{ color: "red" }}
+              className="d-flex justify-content-center py-5"
+              style={{ color: "var(--destructive)" }}
             >
               No data found
             </div>

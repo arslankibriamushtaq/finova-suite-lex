@@ -622,65 +622,75 @@ const Coa = () => {
     saveAs(blob, `${fileName}.csv`);
   };
   return (
-    <div className="py-2 col-12">
+    <div className="service coa-page py-2">
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark">Chart of Accounts</h3>
       </div>
 
-      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
-        <Input
-          allowClear
-          placeholder="Search"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchValue}
-          onChange={(e: any) => setSearchValue(e.target.value)}
-          style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 8, height: 40 }}
-        />
-        <DatePicker
-          placeholder="Filter by date"
-          value={fromDate}
-          onChange={(date: any) => setFromDate(date)}
-          format="YYYY-MM-DD"
-          allowClear
-          style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8 }}
-        />
-        <button
-          type="button"
-          className="theme-btn-next"
-          onClick={() => exportToCSV(csvData, "Account")}
-          disabled={!csvData?.length}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          Export CSV
-        </button>
-        <Button
-          className="theme-btn-next"
-          onClick={handleDownload}
-          icon={<FaDownload />}
-          style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-        >
-          Template CSV
-        </Button>
-        <Upload {...uploadProps}>
-          <Button
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder="Search"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchValue}
+            onChange={(e: any) => setSearchValue(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <DatePicker
+            placeholder="Filter by date"
+            value={fromDate}
+            onChange={(date: any) => setFromDate(date)}
+            format="YYYY-MM-DD"
+            allowClear
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <button
+            type="button"
             className="theme-btn-next"
-            type="primary"
-            icon={<FaUpload />}
+            onClick={() => exportToCSV(csvData, "Account")}
+            disabled={!csvData?.length}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Upload
-          </Button>
-        </Upload>
-        {isChartOfAccountPage && (
+            Export CSV
+          </button>
           <Button
             className="theme-btn-next"
-            type="primary"
-            onClick={() => setAddGroupMod(true)}
+            onClick={handleDownload}
+            icon={<FaDownload />}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Add Account
+            Template CSV
           </Button>
-        )}
+          <Upload {...uploadProps}>
+            <Button
+              className="theme-btn-next"
+              type="primary"
+              icon={<FaUpload />}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Upload
+            </Button>
+          </Upload>
+          {isChartOfAccountPage && (
+            <Button
+              className="theme-btn-next"
+              type="primary"
+              onClick={() => setAddGroupMod(true)}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Add Account
+            </Button>
+          )}
+        </div>
       </div>
 
       {errorsData?.length > 0 && (
@@ -701,10 +711,18 @@ const Coa = () => {
         </div>
       )}
       {isChartOfAccountPage && (
-        <div className="pt-3">
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
           <Tabs
             id="controlled-tab-example"
-            className="mt-30 position-relative tabs-overflow"
+            className="px-3 pt-3"
             defaultActiveKey={"account"}
             activeKey={selectTab}
             onSelect={(tab: any) => setSelectedTab(tab)}
