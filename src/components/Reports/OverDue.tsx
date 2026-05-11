@@ -35,39 +35,50 @@ const OverDue = () => {
     fetchReport();
   }, []);
 
+  const extractItems = (root: any): { items: any[]; inner: any } => {
+    const inner = root?.data;
+    const items: any[] = Array.isArray(root)
+      ? root
+      : Array.isArray(inner)
+        ? inner
+        : Array.isArray(inner?.items)
+          ? inner.items
+          : Array.isArray(inner?.loans)
+            ? inner.loans
+            : Array.isArray(inner?.overdueLoans)
+              ? inner.overdueLoans
+              : Array.isArray(inner?.data)
+                ? inner.data
+                : [];
+    return { items, inner };
+  };
+
   const fetchReport = async () => {
     try {
       setLoading(true);
-      // Call without query params per API contract.
-      const res = await getOverdueLoansReport();
+      // Backend may cap each page, so walk every page and concatenate so we
+      // surface every overdue loan that the API returns.
+      const firstRes = await getOverdueLoansReport(undefined, undefined, undefined, 0, 100);
+      const firstRoot = firstRes?.data;
+      const firstParsed = extractItems(firstRoot);
+      let combined: any[] = [...firstParsed.items];
 
-      // Tolerate every common envelope:
-      //   { data: [...] }
-      //   { data: { items: [...], totals... } }
-      //   { data: { loans: [...] } }
-      //   { data: { overdueLoans: [...] } }
-      //   { data: { data: [...] } }
-      //   plain array
-      const root = res?.data;
-      const inner = root?.data;
-      const list: any[] = Array.isArray(root)
-        ? root
-        : Array.isArray(inner)
-          ? inner
-          : Array.isArray(inner?.items)
-            ? inner.items
-            : Array.isArray(inner?.loans)
-              ? inner.loans
-              : Array.isArray(inner?.overdueLoans)
-                ? inner.overdueLoans
-                : Array.isArray(inner?.data)
-                  ? inner.data
-                  : [];
+      const pagination = firstRoot?.pagination;
+      const totalPagesFromApi = Number(pagination?.totalPages) || 1;
 
-      // eslint-disable-next-line no-console
-      console.log("[OverDue] response =", root, "â†’ rows:", list.length);
+      if (totalPagesFromApi > 1) {
+        const remaining = await Promise.all(
+          Array.from({ length: totalPagesFromApi - 1 }, (_, i) =>
+            getOverdueLoansReport(undefined, undefined, undefined, i + 1, 100)
+              .then((r) => extractItems(r?.data).items)
+              .catch(() => [])
+          )
+        );
+        combined = combined.concat(...remaining);
+      }
 
-      setRows(list);
+      setRows(combined);
+      const inner = firstParsed.inner;
       setSummary(
         inner && typeof inner === "object" && !Array.isArray(inner) ? inner : null
       );

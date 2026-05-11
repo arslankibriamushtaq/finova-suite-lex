@@ -170,6 +170,16 @@ export function getClientRequestDev(records: number = 10, page: number = 1) {
   return axiosThirdParty.get(`/api/requests/dev?records=${records}&page=${page}`);
 }
 
+export function getClientRequestTest(page: number = 0, size: number = 10) {
+  return axiosMiddlewareThirdParty.get(
+    `/api/v1/client-requests/test?page=${page}&size=${size}`
+  );
+}
+
+export function getClientRequestTestDetail(id: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/client-requests/test/${id}`);
+}
+
 export function getRequestDetail(requestId: number) {
   return axiosThirdParty.get(`/api/requests/detail/${requestId}`);
 }

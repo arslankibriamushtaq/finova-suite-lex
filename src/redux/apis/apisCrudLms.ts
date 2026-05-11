@@ -515,11 +515,19 @@ export function getSimahReport(params?: { period?: string; from?: string; to?: s
   const qs = parts.length ? `?${parts.join("&")}` : "";
   return axios.get(`/ledger-service/api/v1/reports/simah${qs}`);
 }
-export function getOverdueLoansReport(asOfDate?: string, minDaysPastDue?: number, productCode?: string) {
+export function getOverdueLoansReport(
+  asOfDate?: string,
+  minDaysPastDue?: number,
+  productCode?: string,
+  page?: number,
+  size?: number
+) {
   const parts: string[] = [];
   if (asOfDate) parts.push(`asOfDate=${encodeURIComponent(asOfDate)}`);
   if (minDaysPastDue !== undefined && minDaysPastDue !== null) parts.push(`minDaysPastDue=${encodeURIComponent(String(minDaysPastDue))}`);
   if (productCode) parts.push(`productCode=${encodeURIComponent(productCode)}`);
+  if (page !== undefined && page !== null) parts.push(`page=${encodeURIComponent(String(page))}`);
+  if (size !== undefined && size !== null) parts.push(`size=${encodeURIComponent(String(size))}`);
   const qs = parts.length ? `?${parts.join("&")}` : "";
   return axios.get(`/ledger-service/api/v1/reports/overdue-loans${qs}`);
 }
