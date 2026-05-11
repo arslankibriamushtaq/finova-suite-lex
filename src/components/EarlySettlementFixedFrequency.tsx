@@ -142,6 +142,8 @@ const EarlySettlementFixedFrequency = (props: any) => {
     setLoader(true);
     const body = {
       delinquencyType: 1,
+      settlementStrategy: props?.settlementStrategy ?? 1,
+      isCustom: false,
       isPercentage: formValues?.discount,
       penaltyPercentage: Number(formValues?.discount ? formValues?.penalty : 0),
       penaltyAmount: Number(!formValues?.discount ? formValues?.penalty : 0),
@@ -155,7 +157,7 @@ const EarlySettlementFixedFrequency = (props: any) => {
     try {
       const res = await createDeliquency(body);
       if (res?.data) {
-        toast.success(res.data.message);
+        toast.success("Saved successfully");
         // localStorage.setItem("tabs", "DueLoan");
         props?.setSelectedTab("DueLoan");
         setLoader(false);

@@ -145,6 +145,7 @@ const InvoiceRange = (props: any) => {
     const body = {
       productId: props?.productId,
       delinquencyType: 1,
+      settlementStrategy: props?.settlementStrategy ?? 1,
       isPercentage,
       penaltyPercentage: 0,
       penaltyAmount: 0,
@@ -159,7 +160,7 @@ const InvoiceRange = (props: any) => {
     try {
       const res = await createDeliquency(body);
       if (res?.data) {
-        toast.success(res.data.notificationMessage || "Updated successfully");
+        toast.success("Updated successfully");
         setSavedData(updatedData);
         handleClose();
       } else {
@@ -215,6 +216,7 @@ const InvoiceRange = (props: any) => {
     const body = {
       productId: props?.productId,
       delinquencyType: 1,
+      settlementStrategy: props?.settlementStrategy ?? 1,
       isPercentage,
       penaltyPercentage: 0,
       penaltyAmount: 0,
@@ -228,7 +230,7 @@ const InvoiceRange = (props: any) => {
     try {
       const res = await createDeliquency(body);
       if (res?.data) {
-        toast.success(res.data.notificationMessage || "Saved successfully");
+        toast.success("Saved successfully");
         const newCard = {
           minInvoiceOrder: formValues.fromInvoice,
           maxInvoiceOrder: formValues.toInvoice,
@@ -263,6 +265,7 @@ const InvoiceRange = (props: any) => {
     const body = {
       productId: props?.productId,
       delinquencyType: 1,
+      settlementStrategy: props?.settlementStrategy ?? 1,
       isPercentage,
       penaltyPercentage: 0,
       penaltyAmount: 0,
@@ -276,7 +279,7 @@ const InvoiceRange = (props: any) => {
     try {
       const res = await createDeliquency(body);
       if (res?.data) {
-        toast.success(res.data.notificationMessage || "Deleted successfully");
+        toast.success("Deleted successfully");
         setSavedData(remaining);
         setLoader(false);
       } else {

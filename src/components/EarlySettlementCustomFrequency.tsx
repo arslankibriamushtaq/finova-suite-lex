@@ -190,6 +190,7 @@ const EarlySettlementCustomFrequency = (props: any) => {
           initialValues={props.formValues}
           radioInputValue={props?.formValues[0]?.invoiceRange}
           customInvoicesData={props.customInvoicesData}
+          settlementStrategy={props?.settlementStrategy ?? 1}
         />
       ) : (
         <InvoiceRange
@@ -199,6 +200,7 @@ const EarlySettlementCustomFrequency = (props: any) => {
           initialValues={props.formValues}
           radioInputValue={props?.formValues[0]?.invoiceRange}
           customInvoicesData={props.customInvoicesData}
+          settlementStrategy={props?.settlementStrategy ?? 1}
         />
       )}
 
