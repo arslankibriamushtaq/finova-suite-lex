@@ -914,7 +914,7 @@ export function updateApplication(body: any) {
 }
 
 export function MapLedgerAccount(productId: string, body: any) {
-  return axios.post(`/ledger-service/api/v1/products/${productId}/coa-fields/accounts`, body);
+  return axios.put(`/ledger-service/api/v1/products/${productId}/coa-fields/accounts`, body);
 }
 
 export function ApproveDisburseAmount(body: any) {
