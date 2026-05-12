@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -6,6 +6,8 @@ import {
   enableFraudRule,
   disableFraudRule,
   updateFraudRuleParameters,
+  assignBlockCodeToFraudRule,
+  getRiskBlockCodes,
 } from "../../../redux/apis/apisRiskManagement";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -18,7 +20,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
+import { ChevronDown, Pencil, Plus, Trash2, Link2 } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -45,6 +54,13 @@ const FraudRuleManagement = () => {
   const [paramsList, setParamsList] = useState<ParamEntry[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
+  // Assign block code modal
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [assignTarget, setAssignTarget] = useState<any>(null);
+  const [blockCodes, setBlockCodes] = useState<any[]>([]);
+  const [selectedBlockCodeId, setSelectedBlockCodeId] = useState<string>("");
+  const [isAssigning, setIsAssigning] = useState(false);
+
   // Debounce search so we don't refetch / re-filter on every keystroke
   useEffect(() => {
     const handle = setTimeout(() => {
@@ -58,12 +74,21 @@ const FraudRuleManagement = () => {
     fetchData();
   }, [page, pageSize, debouncedSearch]);
 
+  useEffect(() => {
+    getRiskBlockCodes()
+      .then((res) => {
+        const list = Array.isArray(res?.data) ? res.data : (res?.data?.data ?? []);
+        setBlockCodes(list);
+      })
+      .catch(() => {});
+  }, []);
+
   const fetchData = async () => {
     try {
       setIsLoading(true);
 
       if (debouncedSearch) {
-        // Backend search support is unverified â€” fetch full set, filter client-side.
+        // Backend search support is unverified â€" fetch full set, filter client-side.
         const response = await getAllFraudRules(0, 10000);
         const all: any[] = Array.isArray(response?.data?.data)
           ? response.data.data
@@ -125,7 +150,7 @@ const FraudRuleManagement = () => {
     }
   };
 
-  // Parse parameters â€” JSON string containing array of {key, value, dataType, description}
+  // Parse parameters â€" JSON string containing array of {key, value, dataType, description}
   const parseParams = (params: any): ParamEntry[] => {
     try {
       const parsed = typeof params === "string" ? JSON.parse(params) : params;
@@ -156,7 +181,6 @@ const FraudRuleManagement = () => {
 
     try {
       setIsSaving(true);
-      // Send back as array format matching the API structure
       const paramsArray = paramsList
         .filter((p) => p.key.trim())
         .map((p) => ({
@@ -181,6 +205,34 @@ const FraudRuleManagement = () => {
     setShowEditModal(false);
     setSelectedRule(null);
     setParamsList([]);
+  };
+
+  const handleOpenAssign = (rule: any) => {
+    setAssignTarget(rule);
+    setSelectedBlockCodeId(rule.blockCode?.id ?? rule.blockCodeId ?? "");
+    setShowAssignModal(true);
+  };
+
+  const closeAssignModal = () => {
+    setShowAssignModal(false);
+    setAssignTarget(null);
+    setSelectedBlockCodeId("");
+  };
+
+  const handleSaveAssign = async () => {
+    if (!assignTarget || !selectedBlockCodeId) return;
+    const ruleId = assignTarget.ruleId || assignTarget.id;
+    try {
+      setIsAssigning(true);
+      await assignBlockCodeToFraudRule(ruleId, selectedBlockCodeId);
+      toast.success("Block code assigned successfully");
+      setShowAssignModal(false);
+      fetchData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to assign block code");
+    } finally {
+      setIsAssigning(false);
+    }
   };
 
   const addParam = () => setParamsList([...paramsList, { key: "", value: "", dataType: "STRING", description: "" }]);
@@ -220,6 +272,20 @@ const FraudRuleManagement = () => {
       selector: (row: any) => row.defaultAction || "-",
       sortable: true,
       width: "120px",
+    },
+    {
+      name: "Assigned Block Code",
+      cell: (row: any) => {
+        const code = row.blockCode?.code ?? row.blockCodeCode ?? null;
+        return code ? (
+          <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
+            {code}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        );
+      },
+      width: "170px",
     },
     {
       name: "Status",
@@ -263,6 +329,15 @@ const FraudRuleManagement = () => {
               >
                 <Pencil className="h-4 w-4" />
                 Edit Parameters
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  handleOpenAssign(row);
+                }}
+              >
+                <Link2 className="h-4 w-4" />
+                Assign Block Code
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -318,7 +393,7 @@ const FraudRuleManagement = () => {
           {selectedRule && (
             <div className="text-sm text-muted-foreground mb-2">
               <span className="font-medium text-foreground">{selectedRule.ruleId}</span>
-              {" â€” "}
+              {" — "}
               {selectedRule.scenarioName}
             </div>
           )}
@@ -392,6 +467,51 @@ const FraudRuleManagement = () => {
             </Button>
             <Button onClick={handleSaveParams} disabled={isSaving}>
               {isSaving ? "Saving..." : "Update"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Block Code Modal */}
+      <Dialog open={showAssignModal} onOpenChange={(open) => !open && closeAssignModal()}>
+        <DialogContent className="sm:max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle>Assign Block Code</DialogTitle>
+          </DialogHeader>
+
+          {assignTarget && (
+            <div className="text-sm text-muted-foreground mb-2">
+              <span className="font-medium text-foreground">{assignTarget.ruleId}</span>
+              {" — "}
+              {assignTarget.scenarioName}
+            </div>
+          )}
+
+          <div className="space-y-1">
+            <Label className="font-semibold">Block Code</Label>
+            <Select
+              value={selectedBlockCodeId || ""}
+              onValueChange={(val) => setSelectedBlockCodeId(val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a block code" />
+              </SelectTrigger>
+              <SelectContent>
+                {blockCodes.map((bc: any) => (
+                  <SelectItem key={bc.id} value={String(bc.id)}>
+                    {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeAssignModal} disabled={isAssigning}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveAssign} disabled={isAssigning || !selectedBlockCodeId}>
+              {isAssigning ? "Assigning..." : "Assign"}
             </Button>
           </DialogFooter>
         </DialogContent>

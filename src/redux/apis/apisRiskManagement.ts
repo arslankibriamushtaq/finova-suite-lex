@@ -169,3 +169,15 @@ export function createRiskBlockCode(data: { code: string; description: string; t
 export function updateRiskBlockCode(id: string | number, data: { description: string; type: string; active: boolean }) {
   return axiosRiskService.put(`/api/v1/admin/risk/block-codes/${id}`, data, { headers: TENANT_HEADER });
 }
+
+export function assignBlockCodeToFraudRule(ruleId: string, blockCodeId: string) {
+  return axiosRiskService.put(`/api/v1/admin/risk/block-codes/${blockCodeId}`, { ruleId }, { headers: TENANT_HEADER });
+}
+
+export function getInternalChecksConfigs() {
+  return axiosRiskService.get(`/api/v1/admin/risk/internal-checks/configs`, { headers: TENANT_HEADER });
+}
+
+export function updateInternalCheckConfig(id: string | number, data: { enabled?: boolean; blockCodeId?: string | null }) {
+  return axiosRiskService.put(`/api/v1/admin/risk/internal-checks/configs/${id}`, data, { headers: TENANT_HEADER });
+}

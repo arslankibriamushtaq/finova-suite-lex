@@ -181,6 +181,7 @@ import MonthlyIncome from "../components/LOV/MonthlyIncome";
 import BlacklistNid from "../pages/lmsPages/RiskManagement/BlacklistNid";
 import BlacklistMobile from "../pages/lmsPages/RiskManagement/BlacklistMobile";
 import FraudRuleManagement from "../pages/lmsPages/RiskManagement/FraudRuleManagement";
+import InternalChecksConfig from "../pages/lmsPages/RiskManagement/InternalChecksConfig";
 import RejectedCustomers from "../components/Customer/SanctionedCustomers";
 import SmsTemplate from "../components/NotificationTemplate/SmsTemplate";
 import PushTemplate from "../components/NotificationTemplate/PushTemplate";
@@ -882,6 +883,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/RiskManagement/FraudRuleManagement",
             element: <FraudRuleManagement />,
+          },
+          {
+            path: "/LOS/RiskManagement/InternalChecksConfig",
+            element: <InternalChecksConfig />,
           },
           {
             path: "/LOS/RiskManagement/DeviceManagement",

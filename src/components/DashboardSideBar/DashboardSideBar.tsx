@@ -476,6 +476,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
         },
         {
+          label: "Internal Checks Config",
+          Link: "InternalChecksConfig",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/InternalChecksConfig",
+        },
+        {
           label: "Device Management",
           Link: "DeviceManagement",
           LinkLable: "/LOS/RiskManagement",
