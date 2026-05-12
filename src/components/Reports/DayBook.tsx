@@ -218,46 +218,56 @@ const DayBook = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="col-12">
+      <div className="service day-book-page">
         <div className="mb-3 pb-2 border-bottom">
           <h3 className="mb-0 fw-bold text-dark">Day Book</h3>
         </div>
-        <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
-          <Input
-            allowClear
-            placeholder="Search by voucher, account, reference, status…"
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-          />
-          <DatePicker
-            placeholder="From"
-            value={fromDate}
-            onChange={(d) => setFromDate(d)}
-            format="YYYY-MM-DD"
-            allowClear
-            style={{ height: 40, borderRadius: 8 }}
-          />
-          <DatePicker
-            placeholder="To"
-            value={toDate}
-            onChange={(d) => setToDate(d)}
-            format="YYYY-MM-DD"
-            allowClear
-            style={{ height: 40, borderRadius: 8 }}
-          />
-          <button
-            type="button"
-            className="theme-btn-next"
-            onClick={getDayBookReportData}
-            disabled={loading}
-            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            {loading ? "Loading..." : "Refresh"}
-          </button>
+
+        {/* Filters card */}
+        <div
+          className="bg-white p-3 mb-3"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <Input
+              allowClear
+              placeholder="Search by voucher, account, reference, status…"
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            />
+            <DatePicker
+              placeholder="From"
+              value={fromDate}
+              onChange={(d) => setFromDate(d)}
+              format="YYYY-MM-DD"
+              allowClear
+              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            />
+            <DatePicker
+              placeholder="To"
+              value={toDate}
+              onChange={(d) => setToDate(d)}
+              format="YYYY-MM-DD"
+              allowClear
+              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            />
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={getDayBookReportData}
+              disabled={loading}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              {loading ? "Loading..." : "Refresh"}
+            </button>
+          </div>
         </div>
-      </div>
 
       {(entries.length > 0 || summary) && (
         <Row gutter={[16, 16]} className="mb-3">
@@ -309,21 +319,30 @@ const DayBook = () => {
         </Row>
       )}
 
-      <div className="cs-table p-2">
-        <TableView
-          header={headers}
-          setPage={setPage}
-          setPageSize={setPageSize}
-          page={page}
-          pageSize={pageSize}
-          totalRows={totalRows}
-          totalPage={totalPage}
-          from={from}
-          to={to}
-          data={paginatedData}
-          isLoading={loading}
-          paginationShow={true}
-        />
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
+          <TableView
+            header={headers}
+            setPage={setPage}
+            setPageSize={setPageSize}
+            page={page}
+            pageSize={pageSize}
+            totalRows={totalRows}
+            totalPage={totalPage}
+            from={from}
+            to={to}
+            data={paginatedData}
+            isLoading={loading}
+            paginationShow={true}
+          />
+        </div>
       </div>
     </>
   );

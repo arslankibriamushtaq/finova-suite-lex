@@ -101,68 +101,91 @@ const CashFlowReport = () => {
   };
 
   return (
-    <>
-      <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center mb-4 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Cash Flow Report</h3>
-          <div className="d-flex align-items-center gap-3">
-            <div className="d-flex align-items-center gap-2 px-3 py-2 bg-white rounded border">
-              <label className="mb-0 fw-bold text-muted small uppercase">Date:</label>
-              <DatePicker 
-                onChange={(d) => setDate(d)} 
-                format="YYYY-MM-DD"
-                bordered={false}
-                className="p-0"
-              />
+    <div className="service cash-flow-report-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Cash Flow Report</h3>
+      </div>
+
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <DatePicker
+            onChange={(d) => setDate(d)}
+            format="YYYY-MM-DD"
+            placeholder="Date"
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <Button
+            className="theme-btn-next"
+            onClick={fetchReportData}
+            loading={loading}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Fetch Report
+          </Button>
+          <Button
+            className="theme-btn-next"
+            onClick={exportToCSV}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Export CSV
+          </Button>
+        </div>
+      </div>
+
+      {totals && (
+        <div className="row mb-3 g-3">
+          <div className="col-md-3 col-sm-6">
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Inflows</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {totals.totalInflows?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
             </div>
-            <Button
-              className="theme-btn-next"
-              onClick={fetchReportData}
-              loading={loading}
-              style={{ height: "42px" }}
-            >
-              Fetch Report
-            </Button>
-            <Button
-              className="invoice-btn bg-dark text-white"
-              onClick={exportToCSV}
-              style={{ height: "42px" }}
-            >
-              Export CSV
-            </Button>
+          </div>
+          <div className="col-md-3 col-sm-6">
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Outflows</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {totals.totalOutflows?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3 col-sm-6">
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Net Position</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {totals.netPosition?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
+            </div>
+          </div>
+          <div className="col-md-3 col-sm-6">
+            <div className="card-product p-4 text-dark h-100">
+              <div style={{ fontSize: 14, fontWeight: 600 }}>Bank Balance</div>
+              <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
+                {totals.bankBalance?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+              </div>
+            </div>
           </div>
         </div>
+      )}
 
-        {totals && (
-          <div className="row mb-4">
-            <div className="col-md-3">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <small className="text-uppercase opacity-75">Total Inflows</small>
-                <h4 className="mb-0">{totals.totalInflows?.toLocaleString()} SAR</h4>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <small className="text-uppercase opacity-75">Total Outflows</small>
-                <h4 className="mb-0">{totals.totalOutflows?.toLocaleString()} SAR</h4>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <small className="text-uppercase opacity-75">Net Position</small>
-                <h4 className="mb-0">{totals.netPosition?.toLocaleString()} SAR</h4>
-              </div>
-            </div>
-            <div className="col-md-3">
-              <div className="h-100 p-4 shadow-sm border bg-white" style={{ borderRadius: "6px" }}>
-                <small className="text-uppercase opacity-75">Bank Balance</small>
-                <h4 className="mb-0">{totals.bankBalance?.toLocaleString()} SAR</h4>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
-      <div className="cs-table p-2">
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           header={columns}
           setPage={setPage}
@@ -176,7 +199,7 @@ const CashFlowReport = () => {
           isLoading={loading}
         />
       </div>
-    </>
+    </div>
   );
 };
 

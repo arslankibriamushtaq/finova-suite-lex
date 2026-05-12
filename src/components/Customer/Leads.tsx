@@ -694,8 +694,20 @@ const Leads = () => {
 
   const [selectedValue, setSelectedValue] = useState("today");
   return (
-    <div className="service">
-      <div className="filter-select col-12 mb-3">
+    <div className="service leads-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Leads</h3>
+      </div>
+
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
@@ -705,45 +717,53 @@ const Leads = () => {
             onChange={(e) => setSearch(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
-          <div className="d-flex flex-wrap gap-2">
-            <DatePicker
-              className="date-picker"
-              placeholder="From"
-              value={fromDate}
-              onChange={(date) => {
-                setFromDate(date);
-                dispatch(
-                  authSlice.actions.setFromFilter({
-                    fromFilter: formatDate(date ? date : null),
-                  })
-                );
-              }}
-              allowClear
-              style={{ height: 40 }}
-            />
-            <DatePicker
-              className="date-picker"
-              placeholder="To"
-              value={toDate}
-              onChange={(date) => {
-                setToDate(date);
-                dispatch(
-                  authSlice.actions.setToFilter({
-                    toFilter: formatDate(date),
-                  })
-                );
-                setSelectedValue(!toDate ? "" : "today");
-                dispatch(authSlice.actions.setTheme({ theme: "" }));
-              }}
-              allowClear
-              style={{ height: 40 }}
-            />
-          </div>
+          <DatePicker
+            placeholder="From"
+            value={fromDate}
+            onChange={(date) => {
+              setFromDate(date);
+              dispatch(
+                authSlice.actions.setFromFilter({
+                  fromFilter: formatDate(date ? date : null),
+                })
+              );
+            }}
+            allowClear
+            style={{
+              flex: "1 1 180px",
+              minWidth: 160,
+              height: 40,
+              borderRadius: 8,
+              background: "#fff",
+            }}
+          />
+          <DatePicker
+            placeholder="To"
+            value={toDate}
+            onChange={(date) => {
+              setToDate(date);
+              dispatch(
+                authSlice.actions.setToFilter({
+                  toFilter: formatDate(date),
+                })
+              );
+              setSelectedValue(!toDate ? "" : "today");
+              dispatch(authSlice.actions.setTheme({ theme: "" }));
+            }}
+            allowClear
+            style={{
+              flex: "1 1 180px",
+              minWidth: 160,
+              height: 40,
+              borderRadius: 8,
+              background: "#fff",
+            }}
+          />
           {canExportLeads && (
             <button
               className="theme-btn-next"
               onClick={exportCSV}
-              style={{ flexShrink: 0, whiteSpace: "nowrap" }}
+              style={{ height: 40, flexShrink: 0, whiteSpace: "nowrap" }}
             >
               Export CSV
             </button>
@@ -751,19 +771,79 @@ const Leads = () => {
         </div>
       </div>
 
-      <TableView
-        header={Activity_Loans_Header}
-        data={mappedData}
-        totalRows={mappedData?.length || 0}
-        isLoading={skelitonLoading}
-        from={1}
-        page={page}
-        totalPage={Math.ceil((mappedData?.length || 0) / pageSize) || 1}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={mappedData?.length || 0}
-      />
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={Activity_Loans_Header}
+          data={mappedData}
+          totalRows={mappedData?.length || 0}
+          isLoading={skelitonLoading}
+          from={1}
+          page={page}
+          totalPage={Math.ceil((mappedData?.length || 0) / pageSize) || 1}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={mappedData?.length || 0}
+        />
+      </div>
+
+      <style>{`
+        .leads-page .rdt_TableCell {
+          font-size: 13.5px;
+          color: var(--foreground);
+          font-weight: 500;
+          letter-spacing: 0.1px;
+          padding-top: 14px !important;
+          padding-bottom: 14px !important;
+        }
+        .leads-page .rdt_TableCol,
+        .leads-page .rdt_TableCol *,
+        .leads-page .rdt_TableCol > div,
+        .leads-page .rdt_TableHeadRow {
+          color: #ffffff !important;
+          font-size: 13.5px !important;
+          font-weight: 600 !important;
+          letter-spacing: 0.2px;
+        }
+        .leads-page .rdt_TableRow {
+          border-bottom: 1px solid var(--border) !important;
+        }
+        .leads-page .rdt_TableRow:last-child {
+          border-bottom: none !important;
+        }
+        /* Date pickers in the filter card: match the search input */
+        .leads-page .ant-picker {
+          background: #fff !important;
+          border: 1px solid var(--border) !important;
+          color: var(--foreground) !important;
+          padding: 4px 11px !important;
+        }
+        .leads-page .ant-picker-input > input {
+          color: var(--foreground) !important;
+        }
+        .leads-page .ant-picker-input > input::placeholder {
+          color: var(--muted-foreground) !important;
+        }
+        /* Responsive: stack everything full-width on small screens */
+        @media (max-width: 575.98px) {
+          .leads-page .ant-input-affix-wrapper,
+          .leads-page .ant-picker,
+          .leads-page .theme-btn-next {
+            flex: 1 1 100% !important;
+            width: 100% !important;
+            min-width: 0 !important;
+          }
+        }
+      `}</style>
 
       {/* Block Codes Management Modal */}
       <Modal

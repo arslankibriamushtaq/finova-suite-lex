@@ -3,7 +3,6 @@ import { Plus } from "lucide-react"
 import { Input } from "antd"
 import { SearchOutlined } from "@ant-design/icons"
 import { Button } from "../ui/button"
-import { Card, CardContent } from "../ui/card"
 import { useRouter } from "../../lib/router"
 import { ProductFilters } from "../../lib/types"
 import { useLanguage } from "../../hooks/use-language"
@@ -348,81 +347,76 @@ export default function ProductManagement() {
     });
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="border-b bg-card">
-        <div className="container mx-auto px-6 py-4">
-          <div className={`flex items-center justify-between ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
-            <div className={isRTL ? "rtl:text-right" : ""}>
-              <h1 className="text-2xl font-semibold text-foreground">{t("products")}</h1>
-              <p className="text-sm text-muted-foreground mt-1">{t("products.subtitle")}</p>
-            </div>
-            <div className={`flex items-center gap-3 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
-              {/* <LanguageSwitcher />
-              <Button variant="outline" size="sm" className="gap-2 bg-transparent">
-                <Download className="h-4 w-4" />
-                {t("products.export")}
-              </Button> */}
-              {canAdd() && (
-                <Button className="gap-2" onClick={() => {
-                  // Clear all product-related storage before navigating to create new product
-                  try {
-                    // Clear localStorage
-                    localStorage.removeItem("productBasicInfoFormData")
-                    
-                    // Clear sessionStorage items related to product creation
-                    sessionStorage.removeItem("productId")
-                    sessionStorage.removeItem("productFormData")
-                    
-                    // Navigate to create product page
-                    router.push("/Los/ProductManagement/Categories")
-                  } catch (error) {
-                    console.error("Error clearing storage:", error)
-                    // Still navigate even if clearing fails
-                    router.push("/Los/ProductManagement/Categories")
-                  }
-                }}>
-                  <Plus className="h-4 w-4" />
-                  {t("products.addNew")}
-                </Button>
-              )}
-            </div>
-          </div>
+    <div className="service product-management-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">{t("products")}</h3>
+      </div>
+
+      {/* Filters card — search + Add New on one line */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder={t("products.search")}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            dir={isRTL ? "rtl" : "ltr"}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          {canAdd() && (
+            <Button
+              className="gap-2"
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+              onClick={() => {
+                try {
+                  localStorage.removeItem("productBasicInfoFormData")
+                  sessionStorage.removeItem("productId")
+                  sessionStorage.removeItem("productFormData")
+                  router.push("/Los/ProductManagement/Categories")
+                } catch (error) {
+                  console.error("Error clearing storage:", error)
+                  router.push("/Los/ProductManagement/Categories")
+                }
+              }}
+            >
+              <Plus className="h-4 w-4" />
+              {t("products.addNew")}
+            </Button>
+          )}
         </div>
       </div>
-      <div className="container mx-auto px-6 py-6">
-        <Card className="mb-6">
-          <CardContent>
-            <Input
-              allowClear
-              placeholder={t("products.search")}
-              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              dir={isRTL ? "rtl" : "ltr"}
-              style={{ borderRadius: 8, height: 40 }}
-            />
-          </CardContent>
-        </Card>
 
-        <div className="rounded-md border col-12">
-          <TableView
-            setPage={setPage}
-            setPageSize={setPageSize}
-            page={page}
-            pageSize={pageSize}
-            totalRows={totalRows}
-            totalPage={totalPage}
-            header={Table_Headers}
-            data={mappedData}
-            isLoading={skelitonLoading}
-            from={from}
-            to={to}
-          />
-        </div>
-
-
-
-        {/* </Card> */}
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          setPage={setPage}
+          setPageSize={setPageSize}
+          page={page}
+          pageSize={pageSize}
+          totalRows={totalRows}
+          totalPage={totalPage}
+          header={Table_Headers}
+          data={mappedData}
+          isLoading={skelitonLoading}
+          from={from}
+          to={to}
+        />
       </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

@@ -1679,6 +1679,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                  LinkLable: "/ThirdPartyManagement",
                  active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
                },
+               {
+                 label: "Client Request Test",
+                 Link: "RequestHistory/ClientRequestTest",
+                 LinkLable: "/ThirdPartyManagement",
+                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestTest"),
+               },
                /* {
                  label: "Request Detail",
                  Link: "RequestHistory/RequestDetail",

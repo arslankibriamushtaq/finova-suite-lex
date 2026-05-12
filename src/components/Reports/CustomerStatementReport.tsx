@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { DatePicker, Row as AntRow, Col as AntCol } from "antd";
 import TableView from "../TableView/TableView";
 import { getCustomerStatementReport } from "../../redux/apis/apisCrudLms";
@@ -19,7 +19,7 @@ const CustomerStatementReport = () => {
   const [reportData, setReportData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [totals, setTotals] = useState<any>(null);
-  // Client-side date filter — defaulted to current month start/end. Not sent
+  // Client-side date filter â€” defaulted to current month start/end. Not sent
   // to the API; only used to filter the rows we already have.
   const [fromDate, setFromDate] = useState<any>(dayjs().startOf("month"));
   const [toDate, setToDate] = useState<any>(dayjs().endOf("month"));
@@ -81,7 +81,7 @@ const CustomerStatementReport = () => {
   const fetchReportData = async () => {
     try {
       setLoading(true);
-      // Hit the bare endpoint with just the tenant ID — no date params.
+      // Hit the bare endpoint with just the tenant ID â€” no date params.
       const response = await getCustomerStatementReport(TENANT_ID);
       if (response && response.data) {
         const data = response.data.data;
@@ -164,7 +164,15 @@ const CustomerStatementReport = () => {
         <h3 className="mb-0 fw-bold text-dark">Customer Statement</h3>
       </div>
 
-      <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <DatePicker
           value={fromDate}
           onChange={(d) => setFromDate(d)}
@@ -188,6 +196,7 @@ const CustomerStatementReport = () => {
         >
           Export CSV
         </button>
+        </div>
       </div>
 
       {totals && (
@@ -227,7 +236,15 @@ const CustomerStatementReport = () => {
         </AntRow>
       )}
 
-      <div className="cs-table p-2 bg-white rounded shadow-sm">
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           header={columns}
           setPage={setPage}

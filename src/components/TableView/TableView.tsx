@@ -45,29 +45,36 @@ const TableView = ({
   const customStyles = {
     rows: {
       style: {
-        minHeight: "44px",
+        minHeight: "52px",
         padding: "0px 10px",
+        borderBottom: "1px solid var(--border)",
+        "&:last-of-type": {
+          borderBottom: "none",
+        },
       },
     },
     headCells: {
       style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
         justifyContent: "start",
         alignItems: "center",
         background: "var(--theme-table-background-color)",
-        color: "var(--theme-table-heading-color)",
-        fontSize: "12px",
-        fontWeight: "400",
+        color: "#ffffff",
+        fontSize: "13.5px",
+        fontWeight: "600",
+        letterSpacing: "0.2px",
+        textTransform: "none",
       },
     },
     cells: {
       style: {
-        paddingLeft: "8px",
-        paddingRight: "8px",
-        fontSize: "15px",
-        color: "var(--theme-table-body-text-color)",
-        borderTopLeftRadius: "10px",
+        paddingLeft: "16px",
+        paddingRight: "16px",
+        fontSize: "13.5px",
+        color: "var(--foreground)",
+        fontWeight: "500",
+        letterSpacing: "0.1px",
         justifyContent: "start",
         alignItems: "center",
       },

@@ -556,25 +556,36 @@ const Vouchers = () => {
   return (
     <>
       {loading && <Loader />}
-      <div className="col-12">
-        <h5 className="mb-3">Journal Voucher</h5>
-        <div className="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
-          <Input
-            allowClear
-            placeholder="Search by voucher, type, status, description"
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-          />
-          <div className="d-flex flex-wrap align-items-center gap-2" style={{ flexShrink: 0 }}>
+      <div className="service vouchers-page">
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">Journal Voucher</h3>
+        </div>
+
+        {/* Filters card */}
+        <div
+          className="bg-white p-3 mb-3"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <Input
+              allowClear
+              placeholder="Search by voucher, type, status, description"
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            />
             <DatePicker
               placeholder="From"
               value={fromDate}
               onChange={(d) => { setFromDate(d); setPage(1); }}
               format="YYYY-MM-DD"
               allowClear
-              style={{ height: 40, borderRadius: 8 }}
+              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
             />
             <DatePicker
               placeholder="To"
@@ -582,7 +593,7 @@ const Vouchers = () => {
               onChange={(d) => { setToDate(d); setPage(1); }}
               format="YYYY-MM-DD"
               allowClear
-              style={{ height: 40, borderRadius: 8 }}
+              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
             />
             <button
               type="button"
@@ -604,7 +615,7 @@ const Vouchers = () => {
         </div>
 
         {(allCallActivity?.length > 0 || summary) && (
-          <AntRow gutter={[16, 16]} className="mt-3">
+          <AntRow gutter={[16, 16]} className="mb-3">
             <AntCol xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
                 <div style={{ fontSize: 14, fontWeight: 600 }}>Total Vouchers</div>
@@ -648,7 +659,15 @@ const Vouchers = () => {
           </AntRow>
         )}
 
-        <div className="cs-table p-2 mt-3">
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}

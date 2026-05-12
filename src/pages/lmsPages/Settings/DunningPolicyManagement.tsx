@@ -9,6 +9,8 @@ import {
 } from "../../../components/ui/dropdown-menu";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { Label } from "../../../components/ui/label";
 import { Switch } from "../../../components/ui/switch";
 import {
@@ -61,11 +63,21 @@ const DunningPolicyManagement = () => {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [deleteTarget, setDeleteTarget] = useState<any>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // 2s debounce — match the rest of the project
+  useEffect(() => {
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchTerm.trim());
+      setPage(1);
+    }, 2000);
+    return () => clearTimeout(handle);
+  }, [searchTerm]);
 
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const response = await getDunningPolicies(page - 1, pageSize, searchTerm);
+      const response = await getDunningPolicies(page - 1, pageSize, debouncedSearch);
       const list = response?.data?.data;
       setData(Array.isArray(list) ? list : []);
       const pagination = response?.data?.pagination || response?.data?.pageInfo;
@@ -87,7 +99,7 @@ const DunningPolicyManagement = () => {
 
   useEffect(() => {
     fetchData();
-  }, [page, pageSize, searchTerm]);
+  }, [page, pageSize, debouncedSearch]);
 
   const openAdd = () => {
     setForm(emptyForm);
@@ -287,39 +299,67 @@ const DunningPolicyManagement = () => {
   ];
 
   return (
-    <div>
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h5 className="mb-0">Dunning Policies</h5>
-        <Button size="sm" className="gap-1" onClick={openAdd}>
-          <Plus className="h-4 w-4" />
-          Add Policy
-        </Button>
+    <div className="service dunning-policy-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Dunning Policies</h3>
       </div>
 
-      <div className="mb-3" style={{ maxWidth: 320 }}>
-        <Input
-          placeholder="Search policies..."
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setPage(1);
-          }}
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search by name, code, or description"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <Button
+            className="gap-1"
+            onClick={openAdd}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            <Plus className="h-4 w-4" />
+            Add Policy
+          </Button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={columns}
+          data={data}
+          totalRows={totalRows}
+          isLoading={isLoading}
+          from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={Math.min(page * pageSize, totalRows)}
         />
       </div>
-
-      <TableView
-        header={columns}
-        data={data}
-        totalRows={totalRows}
-        isLoading={isLoading}
-        from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={Math.min(page * pageSize, totalRows)}
-      />
 
       {/* Add / Edit Modal */}
       <Dialog open={showFormModal} onOpenChange={(open) => !open && closeModal()}>

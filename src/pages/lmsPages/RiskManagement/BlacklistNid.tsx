@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -52,7 +52,7 @@ const BlacklistNid = () => {
     fetchData();
   }, [page, pageSize, debouncedSearch]);
 
-  // Extract NID value — nationalId is a nested object with .value
+  // Extract NID value â€” nationalId is a nested object with .value
   const getNidValue = (item: any): string => {
     if (!item?.nationalId) return "-";
     if (typeof item.nationalId === "object") return item.nationalId.value || "-";
@@ -64,7 +64,7 @@ const BlacklistNid = () => {
       setIsLoading(true);
 
       if (debouncedSearch) {
-        // Filter client-side — backend search support is unverified.
+        // Filter client-side â€” backend search support is unverified.
         const response = await getAllBlacklistNid(0, 10000);
         const all: any[] = Array.isArray(response?.data?.data)
           ? response.data.data
@@ -251,10 +251,13 @@ const BlacklistNid = () => {
   ];
 
   return (
-    <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Blacklist NID</h1>
+    <div className="service">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Blacklist NID</h3>
+      </div>
 
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      <div className="bg-white p-3 mb-3" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
           placeholder="Search by NID, reason, or status"
@@ -267,9 +270,11 @@ const BlacklistNid = () => {
           <Plus className="h-4 w-4" />
           Add to Blacklist
         </Button>
+        </div>
       </div>
 
-      <TableView
+      <div className="bg-white" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
+        <TableView
         header={headers}
         data={data}
         totalRows={totalRows}
@@ -283,6 +288,7 @@ const BlacklistNid = () => {
         setPageSize={setPageSize}
         paginationShow={true}
       />
+      </div>
 
       {/* Add Modal */}
       <Dialog open={showAddModal} onOpenChange={(open) => !open && setShowAddModal(false)}>

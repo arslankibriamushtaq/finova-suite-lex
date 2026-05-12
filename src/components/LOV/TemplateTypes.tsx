@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+﻿import { useState, useEffect } from "react";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -228,10 +228,13 @@ const TemplateTypes = () => {
   ];
 
   return (
-    <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Template Types</h1>
+    <div className="service">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Template Types</h3>
+      </div>
 
-      <div className="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-2">
+      <div className="bg-white p-3 mb-3" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
           placeholder="Search by name or category"
@@ -247,9 +250,11 @@ const TemplateTypes = () => {
           <Plus className="h-4 w-4" />
           Add New Template Type
         </Button>
+        </div>
       </div>
 
-      <TableView
+      <div className="bg-white" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
+        <TableView
         header={headers}
         data={data}
         totalRows={totalRows}
@@ -262,6 +267,7 @@ const TemplateTypes = () => {
         setPageSize={setPageSize}
         to={Math.min(page * pageSize, totalRows)}
       />
+      </div>
 
       {/* Add/Edit Modal */}
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>

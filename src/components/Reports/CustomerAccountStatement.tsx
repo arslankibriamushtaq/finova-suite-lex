@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
 import { DatePicker } from "antd";
 import { useParams } from "react-router-dom";
@@ -139,20 +139,8 @@ const CustomerAccountStatement = () => {
   return (
     <>
       <div className="col-12">
-        <div className="d-flex justify-content-between align-items-center">
-          <div className="col-10">
-            <h5 className="mb-0">Loan Disbursment Report</h5>
-          </div>
-          {/* <div className="col-2 text-end">
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setModal(true);
-              }}
-            >
-              Create Voucher
-            </button>
-          </div> */}
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark">Loan Disbursment Report</h3>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
@@ -227,7 +215,15 @@ const CustomerAccountStatement = () => {
             </button>
           </div>
         </div>
-        <div className="cs-table p-2 mt-3">
+        <div
+          className="bg-white"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+            overflow: "hidden",
+          }}
+        >
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}

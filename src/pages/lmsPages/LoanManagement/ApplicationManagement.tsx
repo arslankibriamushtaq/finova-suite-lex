@@ -1043,7 +1043,10 @@ const ApplicationManagement = () => {
   ];
 
   return (
-    <div>
+    <div className="service application-management-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Application Management</h3>
+      </div>
       {/* {loader && <Loader />} */}
       <Modal
         show={isModalVisible}
@@ -1170,18 +1173,28 @@ const ApplicationManagement = () => {
           </Button>
         </div>
       </div> */}
-      <div className="d-flex justify-content-end mt-3 mb-2">
-        <Input
-          allowClear
-          placeholder="Search by application no, national ID, product, employer..."
-          value={searchValue}
-          prefix={<SearchOutlined />}
-          onChange={(e: any) => {
-            setSearchValue(e.target.value);
-            setPage(1);
-          }}
-          style={{ maxWidth: 380, borderRadius: 8 }}
-        />
+      {/* Filters card */}
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
+            allowClear
+            placeholder="Search by application no, national ID, product, employer..."
+            value={searchValue}
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            onChange={(e: any) => {
+              setSearchValue(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+        </div>
       </div>
       <style>{`
         .app-tabs.nav-tabs {
@@ -1204,19 +1217,28 @@ const ApplicationManagement = () => {
           border-bottom: 2px solid var(--primary) !important;
         }
       `}</style>
-      <div className="mt-3">
-        <Tabs
-          activeKey={activeTab}
-          onSelect={(k: any) => { setActiveTab(k); setPage(1); }}
-          className="mb-3 app-tabs"
-        >
-          <Tab eventKey="AllApplication" title="All Application" />
-          <Tab eventKey="ApprovedApplication" title="Approved Application" />
-          <Tab eventKey="CancelledApplication" title="Cancelled Application" />
-          <Tab eventKey="PendingApplication" title="Pending Application" />
-        </Tabs>
-      </div>
-      <div className="cs-table mt-3">
+      {/* Tabs + Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
+        <div className="px-3 pt-3">
+          <Tabs
+            activeKey={activeTab}
+            onSelect={(k: any) => { setActiveTab(k); setPage(1); }}
+            className="app-tabs"
+          >
+            <Tab eventKey="AllApplication" title="All Application" />
+            <Tab eventKey="ApprovedApplication" title="Approved Application" />
+            <Tab eventKey="CancelledApplication" title="Cancelled Application" />
+            <Tab eventKey="PendingApplication" title="Pending Application" />
+          </Tabs>
+        </div>
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}
@@ -1232,8 +1254,8 @@ const ApplicationManagement = () => {
         />
         {applicationData?.length == 0 && (
           <div
-            className="d-flex justify-content-center mt-5"
-            style={{ color: "red" }}
+            className="d-flex justify-content-center py-5"
+            style={{ color: "var(--destructive)" }}
           >
             No data found
           </div>

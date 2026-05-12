@@ -177,71 +177,89 @@ const ClientRequestProd = () => {
   };
 
   return (
-    <div className="service">
-      <h2 className="d-flex mb-3 justify-content-between align-items-center">Client Request Prod</h2>
-      
-      <div className="d-flex gap-2 mb-3 align-items-center">
-        <Select
-          /* className="form-control" */
-         
-          placeholder="Select Client"
-          // allowClear
-          value={selectedClient || undefined}
-          onChange={(value) => setSelectedClient(value || "")}
-        >
-          {clients.map((client: any) => (
-            <Option key={client.id} value={client.id.toString()}>
-              {client.name}
-            </Option>
-          ))}
-        </Select>
-
-        <Select
-          /* className="form-control" */
-       
-          placeholder="Select Service"
-          allowClear
-          value={selectedService || undefined}
-          onChange={(value) => setSelectedService(value || "")}
-        >
-          {services.map((service: any) => (
-            <Option key={service.id} value={service.id.toString()}>
-              {service.name}
-            </Option>
-          ))}
-        </Select>
-
-        <DatePicker
-          /* className="form-control" */
-          style={{ width: "100%" }}
-          placeholder="From"
-          value={fromDate}
-          onChange={(date) => setFromDate(date)}
-          format="YYYY-MM-DD"
-        />
-
-        <DatePicker
-          /* className="form-control" */
-          style={{ width: "100%" }}
-          placeholder="To"
-          value={toDate}
-          onChange={(date) => setToDate(date)}
-          format="YYYY-MM-DD"
-        />
-
-        <Button type="primary" onClick={handleFilter} style={{ backgroundColor: "var(--foreground)", flexShrink: 0 }}>
-          Filter
-        </Button>
-        <Button onClick={handleReset} style={{ flexShrink: 0 }}>Reset</Button>
+    <div className="service client-request-prod-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Client Request Prod</h3>
       </div>
 
-      {/* Custom Table */}
+      {/* Filters card */}
       <div
+        className="bg-white p-3 mb-3"
         style={{
-          border: "1px solid var(--color-border-subtle)",
-          borderRadius: "14px",
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Select
+            placeholder="Select Client"
+            value={selectedClient || undefined}
+            onChange={(value) => setSelectedClient(value || "")}
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40 }}
+          >
+            {clients.map((client: any) => (
+              <Option key={client.id} value={client.id.toString()}>
+                {client.name}
+              </Option>
+            ))}
+          </Select>
+
+          <Select
+            placeholder="Select Service"
+            allowClear
+            value={selectedService || undefined}
+            onChange={(value) => setSelectedService(value || "")}
+            style={{ flex: "1 1 200px", minWidth: 180, height: 40 }}
+          >
+            {services.map((service: any) => (
+              <Option key={service.id} value={service.id.toString()}>
+                {service.name}
+              </Option>
+            ))}
+          </Select>
+
+          <DatePicker
+            placeholder="From"
+            value={fromDate}
+            onChange={(date) => setFromDate(date)}
+            format="YYYY-MM-DD"
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <DatePicker
+            placeholder="To"
+            value={toDate}
+            onChange={(date) => setToDate(date)}
+            format="YYYY-MM-DD"
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+          />
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={handleFilter}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Filter
+          </button>
+          <button
+            type="button"
+            className="theme-btn-next"
+            onClick={handleReset}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
+      {/* Table card */}
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
           overflow: "hidden",
-          background: "var(--background)",
         }}
       >
         {/* Table Header */}

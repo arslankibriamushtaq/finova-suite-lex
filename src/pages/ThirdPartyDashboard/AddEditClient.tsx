@@ -434,6 +434,13 @@ const AddEditClient = () => {
                     allApiIds.length > 0 &&
                     allApiIds.every((aid) => selectedApis.has(aid));
 
+                  const providerLabel =
+                    (provider as any).name ||
+                    (provider as any).providerName ||
+                    (provider as any).code ||
+                    (provider as any).providerCode ||
+                    (provider as any).title ||
+                    provider.id;
                   return (
                     <div key={provider.id}>
                       {/* Provider checkbox */}
@@ -444,7 +451,12 @@ const AddEditClient = () => {
                             handleProviderToggle(provider.id, !!checked)
                           }
                         />
-                        <span className="text-sm font-medium ml-2">{provider.name}</span>
+                        <span
+                          className="text-sm font-medium ml-2"
+                          style={{ color: "var(--foreground)" }}
+                        >
+                          {providerLabel}
+                        </span>
                       </label>
 
                       {/* Child APIs — shown directly below the provider */}
@@ -468,20 +480,34 @@ const AddEditClient = () => {
                                 />
                                 <span className="text-sm font-semibold ml-2">Select All APIs</span>
                               </label>
-                              {apis.map((api) => (
-                                <label
-                                  key={api.id}
-                                  className="flex items-center gap-2.5 cursor-pointer"
-                                >
-                                  <Checkbox
-                                    checked={selectedApis.has(api.id)}
-                                    onCheckedChange={(checked) =>
-                                      handleApiToggle(api.id, !!checked)
-                                    }
-                                  />
-                                  <span className="text-sm font-normal ml-2">{api.name}</span>
-                                </label>
-                              ))}
+                              {apis.map((api) => {
+                                const apiLabel =
+                                  (api as any).name ||
+                                  (api as any).apiName ||
+                                  (api as any).code ||
+                                  (api as any).apiCode ||
+                                  (api as any).title ||
+                                  api.id;
+                                return (
+                                  <label
+                                    key={api.id}
+                                    className="flex items-center gap-2.5 cursor-pointer"
+                                  >
+                                    <Checkbox
+                                      checked={selectedApis.has(api.id)}
+                                      onCheckedChange={(checked) =>
+                                        handleApiToggle(api.id, !!checked)
+                                      }
+                                    />
+                                    <span
+                                      className="text-sm font-normal ml-2"
+                                      style={{ color: "var(--foreground)" }}
+                                    >
+                                      {apiLabel}
+                                    </span>
+                                  </label>
+                                );
+                              })}
                             </>
                           )}
                         </div>

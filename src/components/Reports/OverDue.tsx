@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
 import { Col, Input, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -35,39 +35,50 @@ const OverDue = () => {
     fetchReport();
   }, []);
 
+  const extractItems = (root: any): { items: any[]; inner: any } => {
+    const inner = root?.data;
+    const items: any[] = Array.isArray(root)
+      ? root
+      : Array.isArray(inner)
+        ? inner
+        : Array.isArray(inner?.items)
+          ? inner.items
+          : Array.isArray(inner?.loans)
+            ? inner.loans
+            : Array.isArray(inner?.overdueLoans)
+              ? inner.overdueLoans
+              : Array.isArray(inner?.data)
+                ? inner.data
+                : [];
+    return { items, inner };
+  };
+
   const fetchReport = async () => {
     try {
       setLoading(true);
-      // Call without query params per API contract.
-      const res = await getOverdueLoansReport();
+      // Backend may cap each page, so walk every page and concatenate so we
+      // surface every overdue loan that the API returns.
+      const firstRes = await getOverdueLoansReport(undefined, undefined, undefined, 0, 100);
+      const firstRoot = firstRes?.data;
+      const firstParsed = extractItems(firstRoot);
+      let combined: any[] = [...firstParsed.items];
 
-      // Tolerate every common envelope:
-      //   { data: [...] }
-      //   { data: { items: [...], totals... } }
-      //   { data: { loans: [...] } }
-      //   { data: { overdueLoans: [...] } }
-      //   { data: { data: [...] } }
-      //   plain array
-      const root = res?.data;
-      const inner = root?.data;
-      const list: any[] = Array.isArray(root)
-        ? root
-        : Array.isArray(inner)
-          ? inner
-          : Array.isArray(inner?.items)
-            ? inner.items
-            : Array.isArray(inner?.loans)
-              ? inner.loans
-              : Array.isArray(inner?.overdueLoans)
-                ? inner.overdueLoans
-                : Array.isArray(inner?.data)
-                  ? inner.data
-                  : [];
+      const pagination = firstRoot?.pagination;
+      const totalPagesFromApi = Number(pagination?.totalPages) || 1;
 
-      // eslint-disable-next-line no-console
-      console.log("[OverDue] response =", root, "→ rows:", list.length);
+      if (totalPagesFromApi > 1) {
+        const remaining = await Promise.all(
+          Array.from({ length: totalPagesFromApi - 1 }, (_, i) =>
+            getOverdueLoansReport(undefined, undefined, undefined, i + 1, 100)
+              .then((r) => extractItems(r?.data).items)
+              .catch(() => [])
+          )
+        );
+        combined = combined.concat(...remaining);
+      }
 
-      setRows(list);
+      setRows(combined);
+      const inner = firstParsed.inner;
       setSummary(
         inner && typeof inner === "object" && !Array.isArray(inner) ? inner : null
       );
@@ -317,7 +328,15 @@ const OverDue = () => {
         <h3 className="mb-0 fw-bold text-dark">Overdue Loans</h3>
       </div>
 
-      <div className="d-flex align-items-center gap-2 flex-wrap mb-3">
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
           placeholder="Search by loan ID, customer, facility, status"
@@ -335,6 +354,7 @@ const OverDue = () => {
         >
           Export CSV
         </button>
+        </div>
       </div>
 
       {(mappedAndFiltered.length > 0 || summary) && (
@@ -371,7 +391,15 @@ const OverDue = () => {
         </Row>
       )}
 
-      <div className="cs-table p-2">
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--border)",
+          overflow: "hidden",
+        }}
+      >
         <TableView
           header={headers}
           data={paginated}

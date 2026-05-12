@@ -170,32 +170,41 @@ const ProfitRevenueReport = () => {
           <h3 className="mb-0 fw-bold text-dark">Profit & Revenue Report</h3>
         </div>
 
-        <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
-          <AntInput
-            allowClear
-            placeholder="Search"
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-          />
-          <DatePicker
-            value={period}
-            onChange={(d) => setPeriod(d)}
-            picker="month"
-            format="YYYY-MM"
-            placeholder="Period"
-            style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 8, height: 40 }}
-          />
-          <button
-            type="button"
-            className="theme-btn-next"
-            onClick={exportToCSV}
-            disabled={!responseData}
-            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-          >
-            Export CSV
-          </button>
+        <div
+          className="bg-white p-3 mb-3"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <AntInput
+              allowClear
+              placeholder="Search"
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            />
+            <DatePicker
+              value={period}
+              onChange={(d) => setPeriod(d)}
+              picker="month"
+              format="YYYY-MM"
+              placeholder="Period"
+              style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 8, height: 40, background: "#fff" }}
+            />
+            <button
+              type="button"
+              className="theme-btn-next"
+              onClick={exportToCSV}
+              disabled={!responseData}
+              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Export CSV
+            </button>
+          </div>
         </div>
 
         <AntRow gutter={[16, 16]} className="mb-3">
@@ -226,7 +235,15 @@ const ProfitRevenueReport = () => {
         </AntRow>
 
         {items.length > 0 && (
-          <div className="cs-table p-2 bg-white rounded shadow-sm">
+          <div
+            className="bg-white"
+            style={{
+              borderRadius: 12,
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+              border: "1px solid var(--border)",
+              overflow: "hidden",
+            }}
+          >
             <TableView
               data={mappedData}
               header={columns}
