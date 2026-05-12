@@ -205,7 +205,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           label: "Customers",
           Link: "CustomerList",
               LinkLable: "/LOS/CustomerManagement",
-          active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails"),
+          active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails") || pathname.includes("/CostByCustomer") || pathname.includes("/OnboardingCostByCustomer"),
         },
    
       ].filter(Boolean),
@@ -954,7 +954,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               label: "All Applications",
               Link: "ApplicationManagement",
               LinkLable: "/Lms/LoanManagement",
-              active: pathname.includes("/Lms/LoanManagement/ApplicationManagement"),
+              active: pathname.includes("/Lms/LoanManagement/ApplicationManagement") || pathname.includes("/CostByApplication"),
             },
     
             // {

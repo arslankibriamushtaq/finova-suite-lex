@@ -124,6 +124,30 @@ export function deleteProviderApi(id: string) {
   return axiosMiddlewareThirdParty.delete(`/api/v1/provider-apis/${id}`);
 }
 
+
+
+// ============================================================
+// Cost Reports
+// ============================================================
+
+export function getCostReportByCustomer(customerId: string, env: string = "test") {
+  return axiosMiddlewareThirdParty.get(`/api/v1/cost-reports/by-customer/${customerId}`, {
+    params: { env },
+  });
+}
+
+export function getCostReportByApplication(applicationId: string, env: string = "test") {
+  return axiosMiddlewareThirdParty.get(`/api/v1/cost-reports/by-application/${applicationId}`, {
+    params: { env },
+  });
+}
+
+export function getOnboardingCostByCustomer(customerId: string, env: string = "test") {
+  return axiosMiddlewareThirdParty.get(`/api/v1/cost-reports/onboarding/${customerId}`, {
+    params: { env },
+  });
+}
+
 export function getEnvConfigsByApiId(apiId: string) {
   return axiosMiddlewareThirdParty.get(`/api/v1/env-configs/by-api/${apiId}`);
 }
@@ -146,4 +170,9 @@ export function updateEnvConfig(configId: string, body: any) {
 
 export function deleteEnvConfig(id: string) {
   return axiosMiddlewareThirdParty.delete(`/api/v1/env-configs/${id}`);
+}
+
+
+export function updateProviderApiCostByCode(code: string, body: { costPerCall: string; costCurrency: string }) {
+  return axiosMiddlewareThirdParty.put(`/api/v1/provider-apis/by-code/${code}/cost`, body);
 }

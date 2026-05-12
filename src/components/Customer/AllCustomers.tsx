@@ -6,6 +6,7 @@ import { getCustomers } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
+import { SaudiRiyal, UserPlus } from "lucide-react";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -63,6 +64,7 @@ const AllCustomers = () => {
   const [selectedUserForRiskChange, setSelectedUserForRiskChange] = useState<any>(null);
   const [newRisk, setNewRisk] = useState<string>("");
   const [isChangingRisk, setIsChangingRisk] = useState(false);
+
   const getRiskColor = (risk: string) => {
     const riskLower = risk.toLowerCase();
     switch (riskLower) {
@@ -260,6 +262,20 @@ const AllCustomers = () => {
       >
         Change Risk
       </Menu.Item>
+      <Menu.Item
+        key="costByCustomer"
+        icon={<SaudiRiyal size={14} />}
+        onClick={() => handleMenuClick("costByCustomer", row)}
+      >
+        Cost By Customer
+      </Menu.Item>
+      <Menu.Item
+        key="onboardingCostByCustomer"
+        icon={<UserPlus size={14} />}
+        onClick={() => handleMenuClick("onboardingCostByCustomer", row)}
+      >
+        Onboarding Cost By Customer
+      </Menu.Item>
       {/* <Menu.Item
         key="logout"
         icon={<LogoutOutlined />}
@@ -287,6 +303,12 @@ const AllCustomers = () => {
         setSelectedUserForRiskChange(data);
         setNewRisk(data.risk_status || "");
         setIsChangeRiskModalVisible(true);
+        break;
+      case "costByCustomer":
+        navigate(`/LOS/CustomerManagement/CostByCustomer/${data.id}`);
+        break;
+      case "onboardingCostByCustomer":
+        navigate(`/LOS/CustomerManagement/OnboardingCostByCustomer/${data.id}`);
         break;
       case "logout":
         // Handle force logout action
@@ -1299,6 +1321,7 @@ const AllCustomers = () => {
           )}
         </div>
       </Modal>
+
     </div>
   );
 };

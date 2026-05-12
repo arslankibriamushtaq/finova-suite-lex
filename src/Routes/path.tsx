@@ -30,6 +30,8 @@ import AllProviderApis from "../pages/ThirdPartyDashboard/AllProviderApis";
 import ProviderApiEnvConfig from "../pages/ThirdPartyDashboard/ProviderApiEnvConfig";
 import DashboardOnboarding from "../components/DashboardHeader/DashboardOnboarding";
 import AllCustomers from "../components/Customer/AllCustomers";
+import CostByCustomer from "../components/Customer/CostByCustomer";
+import OnboardingCostByCustomer from "../components/Customer/OnboardingCostByCustomer";
 import LmsAllCustomers from "../pages/lmsPages/Customers/AllCustomers";
 import Login from "../components/Login/login";
 import VerifyOtp from "../components/Login/VerifyOtp";
@@ -78,6 +80,7 @@ import RevenueSource from "../components/LOV/RevenueSource";
 import MandatoryReasonRescheduling from "../components/LOV/MandatoryReasonRescheduling";
 import InsuranceVendor from "../components/Dashboard/InsuranceVendor";
 import AllApplication from "../components/Dashboard/AllApplications";
+import CostByApplication from "../components/Application/CostByApplication";
 import AllApplicationView from "../components/Dashboard/AllApplicationView";
 import ApplicationDocuments from "../components/Dashboard/ApplicationDocuments";
 import ReschedulingRequest from "../components/Dashboard/ReschedulingRequest";
@@ -710,6 +713,10 @@ export const router = createBrowserRouter([
             element: <ApplicationActivityLogs />,
           },
           {
+            path: "/LOS/FinancingApplications/CostByApplication/:id",
+            element: <CostByApplication />,
+          },
+          {
             path: "/LOS/FinancingApplications/PendingFinancing",
             element: <PendingFinancing />,
           },
@@ -760,6 +767,14 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/CustomerManagement/CustomerList",
             element: <AllCustomers />,
+          },
+          {
+            path: "/LOS/CustomerManagement/CostByCustomer/:id",
+            element: <CostByCustomer />,
+          },
+          {
+            path: "/LOS/CustomerManagement/OnboardingCostByCustomer/:id",
+            element: <OnboardingCostByCustomer />,
           },
           { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
           { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
@@ -1427,6 +1442,10 @@ export const router = createBrowserRouter([
           element: <ApplicationManagement />,
         },
         {
+          path: "Lms/LoanManagement/CostByApplication/:id",
+          element: <CostByApplication />,
+        },
+        {
           path: "Lms/LoanManagement/BrokenPromises/:id",
           element: <BrokenPromises />,
         },
@@ -2032,6 +2051,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/LoanManagement/ApplicationManagement",
           element: <ApplicationManagement />,
+        },
+        {
+          path: "Lms/LoanManagement/CostByApplication/:id",
+          element: <CostByApplication />,
         },
         {
           path: "Lms/LoanManagement/BrokenPromises/:id",
