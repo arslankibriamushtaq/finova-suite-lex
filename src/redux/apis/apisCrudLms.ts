@@ -1,5 +1,6 @@
 import axios from "../../utils/axios";
 import axiosLms from "../../utils/axiosLms";
+import axiosMiddlewareThirdParty from "../../utils/axiosMiddlewareThirdParty";
 
 
 
@@ -1454,5 +1455,5 @@ export function deleteDefaultPayment(id: any) {
 }
 
 export function executeWriteOff(body: any) {
-  return axiosLms.post(`/collections-service/api/v1/admin/write-offs/execute`, body);
+  return axios.post(`/collections-service/api/v1/admin/write-offs/execute`, body);
 }
