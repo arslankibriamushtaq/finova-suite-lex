@@ -144,7 +144,8 @@ const AllCustomers = () => {
               color: "var(--primary-foreground)",
               display: "inline-block",
               textTransform: "capitalize",
-              fontWeight: "500"
+              fontWeight: "500",
+              whiteSpace: "nowrap"
             }}
           >
             {status.toLowerCase()}
@@ -169,7 +170,8 @@ const AllCustomers = () => {
               color: "var(--primary-foreground)",
               display: "inline-block",
               textTransform: "capitalize",
-              fontWeight: "500"
+              fontWeight: "500",
+              whiteSpace: "nowrap"
             }}
           >
             {stage.toLowerCase()}
@@ -205,7 +207,8 @@ const AllCustomers = () => {
               color: "var(--primary-foreground)",
               display: "inline-block",
               textTransform: "capitalize",
-              fontWeight: "500"
+              fontWeight: "500",
+              whiteSpace: "nowrap"
             }}
           >
             {displayRisk}
