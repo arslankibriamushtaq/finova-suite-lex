@@ -10,6 +10,7 @@ import {
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, FileOutlined, LogoutOutlined, SendOutlined, SyncOutlined } from "@ant-design/icons";
+import { SaudiRiyal } from "lucide-react";
 import * as XLSX from "xlsx";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
@@ -286,6 +287,13 @@ const AllApplication = () => {
       >
         Activity Logs
       </Menu.Item>
+      <Menu.Item
+        key="CostByApplication"
+        icon={<SaudiRiyal size={14} />}
+        onClick={() => handleMenuClick("CostByApplication", row)}
+      >
+        Cost By Application
+      </Menu.Item>
       {/* <Menu.Item
         key="Invoices"
         icon={<EyeOutlined />}
@@ -340,6 +348,11 @@ const AllApplication = () => {
         const encryptedId = encryptId(row.id);
         navigate(
           `/LOS/FinancingApplications/AllApplications/ActivityLogs/${encryptedId}`
+        );
+        break;
+      case "CostByApplication":
+        navigate(
+          `/LOS/FinancingApplications/CostByApplication/${row.loan_application_number || row.id}`
         );
         break;
       case "ResendLoginEmail":

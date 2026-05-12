@@ -36,6 +36,7 @@ import { Spin } from "antd";
 import axios from "axios";
 import { RiContractLeftFill, RiSecurePaymentLine } from "react-icons/ri";
 import { MdSchedule } from "react-icons/md";
+import { SaudiRiyal } from "lucide-react";
 
 const getApproveStepIcon = (stepIndex: any, status: any) => {
   const iconMap: any = {
@@ -248,6 +249,10 @@ const ApplicationManagement = () => {
     else if (key === "waiveOffDetails") {
       navigate(`/Lms/LoanManagement/WaiveOffDetails/${row.applicationId}`);
     }
+    else if (key === "costByApplication") {
+      const appCode = row.applicationNumber || row.applicationId;
+      navigate(`/Lms/LoanManagement/CostByApplication/${encodeURIComponent(appCode)}`);
+    }
   };
 
   const handleManualAction = (key: string, row: any) => {
@@ -459,6 +464,9 @@ const ApplicationManagement = () => {
         )}
         <Menu.Item key="viewDetail" icon={<EyeOutlined />}>
           View Detail
+        </Menu.Item>
+        <Menu.Item key="costByApplication" icon={<SaudiRiyal size={14} />}>
+          Cost By Application
         </Menu.Item>
         {/* <Menu.Item key="edit" icon={<EditOutlined />}>
           Edit

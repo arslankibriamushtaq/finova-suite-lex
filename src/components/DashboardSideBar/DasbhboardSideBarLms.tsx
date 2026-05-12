@@ -152,7 +152,7 @@ const DasbhboardSidebarLms = () => {
           label: "Applications",
           Link: "ApplicationManagement",
           LinkLable: "LoanManagement",
-          active: pathname == "/lms/LoanManagement/ApplicationManagement",
+          active: pathname == "/lms/LoanManagement/ApplicationManagement" || pathname.includes("/CostByApplication"),
         },
 
         // {

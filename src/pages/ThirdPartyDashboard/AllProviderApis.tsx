@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
-import { getAllProviderApis, createProviderApi, updateProviderApi, getProviderApiById, deleteProviderApi, getAllProviders } from "../../redux/apis/apisMiddlewareProviders";
+import { getAllProviderApis, createProviderApi, updateProviderApi, getProviderApiById, deleteProviderApi, getAllProviders, updateProviderApiCostByCode } from "../../redux/apis/apisMiddlewareProviders";
 import { Input } from "../../components/ui/input";
 import { Button } from "../../components/ui/button";
 import { Label } from "../../components/ui/label";
@@ -14,11 +14,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../components/ui/dropdown-menu";
-import { Plus, ChevronDown, Pencil, Trash2, Settings } from "lucide-react";
+import { Plus, ChevronDown, Pencil, Trash2, Settings, SaudiRiyal } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-
 const HTTP_METHODS = ["GET", "POST", "PUT", "DELETE", "PATCH"];
 
 const initialFormValues = {
@@ -171,6 +170,48 @@ const AllProviderApis = () => {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  const [costApi, setCostApi] = useState<any>(null);
+  const [costValues, setCostValues] = useState({ costPerCall: "", costCurrency: "SAR" });
+  const [isSavingCost, setIsSavingCost] = useState(false);
+
+  const openCostDialog = (row: any) => {
+    setCostApi(row);
+    setCostValues({
+      costPerCall: row?.costPerCall != null ? String(row.costPerCall) : "",
+      costCurrency: row?.costCurrency || "SAR",
+    });
+  };
+
+  const handleSaveCost = async () => {
+    if (!costApi?.code) {
+      toast.error("API code is missing");
+      return;
+    }
+    const trimmed = costValues.costPerCall?.toString().trim();
+    if (!trimmed || isNaN(Number(trimmed))) {
+      toast.error("Cost per call must be a valid number");
+      return;
+    }
+    if (!costValues.costCurrency?.trim()) {
+      toast.error("Currency is required");
+      return;
+    }
+    try {
+      setIsSavingCost(true);
+      await updateProviderApiCostByCode(costApi.code, {
+        costPerCall: Number(trimmed).toFixed(4),
+        costCurrency: costValues.costCurrency.trim(),
+      });
+      toast.success("Cost updated successfully");
+      setCostApi(null);
+      loadProviderApis();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || "Failed to update cost");
+    } finally {
+      setIsSavingCost(false);
+    }
+  };
+
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
@@ -321,6 +362,15 @@ const AllProviderApis = () => {
               >
                 <Pencil className="h-4 w-4" />
                 Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openCostDialog(row);
+                }}
+              >
+                <SaudiRiyal className="h-4 w-4" />
+                Update cost by API
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {
@@ -488,6 +538,56 @@ const AllProviderApis = () => {
             <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleSave} disabled={isSaving || isLoadingEdit}>
               {isSaving ? "Saving..." : editingApi ? "Update" : "Save"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!costApi} onOpenChange={(open) => { if (!open) setCostApi(null); }}>
+        <DialogContent className="max-w-[480px]">
+          <DialogHeader>
+            <DialogTitle>Update cost by API</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <Label>API Code</Label>
+              <Input value={costApi?.code || ""} disabled />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Cost per call *</Label>
+                <Input
+                  type="number"
+                  step="0.0001"
+                  min="0"
+                  placeholder="e.g. 2.7500"
+                  value={costValues.costPerCall}
+                  onChange={(e) => setCostValues({ ...costValues, costPerCall: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Currency *</Label>
+                <Select
+                  value={costValues.costCurrency}
+                  onValueChange={(val) => setCostValues({ ...costValues, costCurrency: val })}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select currency" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="SAR">SAR</SelectItem>
+                    <SelectItem value="USD">USD</SelectItem>
+                    <SelectItem value="EUR">EUR</SelectItem>
+                    <SelectItem value="AED">AED</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCostApi(null)} disabled={isSavingCost}>Cancel</Button>
+            <Button onClick={handleSaveCost} disabled={isSavingCost}>
+              {isSavingCost ? "Saving..." : "Update"}
             </Button>
           </DialogFooter>
         </DialogContent>
