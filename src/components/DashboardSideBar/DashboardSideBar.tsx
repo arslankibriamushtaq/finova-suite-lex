@@ -779,47 +779,47 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //     },
     //   ].filter(Boolean),
     // },
-    // hasAccess("block_code_module") &&
-    // {
-    //   label: "Block Codes",
-    //   Link: "BlockCodes",
-    //   LinkLable: "/LOS",
-    //   img: Images.SettingsIcon,
-    //   imgActive: Images.SettingsIconDark,
-    //   active: pathname.split("/").includes("BlockCodes"),
-    //   submenu: [
-    //     {
-    //       label: "All Block Codes",
-    //       Link: "AllBlockCodes",
-    //       LinkLable: "/LOS/BlockCodes",
-    //       active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
-    //     },
-    //     {
-    //       label: "Compliance",
-    //       Link: "Compliance",
-    //       LinkLable: "/LOS/BlockCodes",
-    //       active: pathname.includes("/LOS/BlockCodes/Compliance"),
-    //     },
-    //     {
-    //       label: "AML",
-    //       Link: "AML",
-    //       LinkLable: "/LOS/BlockCodes",
-    //       active: pathname.includes("/LOS/BlockCodes/AML"),
-    //     },
-    //     {
-    //       label: "Anti-Fraud",
-    //       Link: "AntiFraud",
-    //       LinkLable: "/LOS/BlockCodes",
-    //       active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
-    //     },
-    //     {
-    //       label: "Sanction",
-    //       Link: "Sanction",
-    //       LinkLable: "/LOS/BlockCodes",
-    //       active: pathname.includes("/LOS/BlockCodes/Sanction"),
-    //     },
-    //   ].filter(Boolean),
-    // },
+    hasAccess("block_code_module") &&
+    {
+      label: "Block Codes",
+      Link: "BlockCodes",
+      LinkLable: "/LOS",
+      img: Images.SettingsIcon,
+      imgActive: Images.SettingsIconDark,
+      active: pathname.split("/").includes("BlockCodes"),
+      submenu: [
+        {
+          label: "All Block Codes",
+          Link: "AllBlockCodes",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
+        },
+        {
+          label: "Compliance",
+          Link: "Compliance",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/Compliance"),
+        },
+        {
+          label: "AML",
+          Link: "AML",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/AML"),
+        },
+        {
+          label: "Anti-Fraud",
+          Link: "AntiFraud",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
+        },
+        {
+          label: "Sanction",
+          Link: "Sanction",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/Sanction"),
+        },
+      ].filter(Boolean),
+    },
     // {
     //   label: "Home Page Management",
     //   Link: "HomePageManagement",

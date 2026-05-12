@@ -6,12 +6,10 @@ import TableView from "../TableView/TableView";
 import { Images } from "../Config/Images";
 import arrowDown from "../../assets/images/arrow-down.png";
 import {
-  getBlockCodes,
-  getBlockCodesByType,
-  createBlockCode,
-  updateBlockCode,
-  deleteBlockCode,
-} from "../../redux/apis/apisCrud";
+  getRiskBlockCodes,
+  createRiskBlockCode,
+  updateRiskBlockCode,
+} from "../../redux/apis/apisRiskManagement";
 import toast from "react-hot-toast";
 
 const { TextArea } = Input;
@@ -97,16 +95,12 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
       sortable: true,
       cell: (row: any) => {
         const typeLabels: any = {
-          compliance: "Compliance",
-          aml: "AML",
-          anti_fraud: "Anti-Fraud",
-          sanction: "Sanction",
+          COMPLIANCE: "Compliance",
+          AML: "AML",
+          ANTI_FRAUD: "Anti-Fraud",
+          SANCTION: "Sanction",
         };
-        return (
-          <span style={{ textTransform: "capitalize" }}>
-            {typeLabels[row.type] || row.type}
-          </span>
-        );
+        return <span>{typeLabels[row.type] || row.type}</span>;
       },
     },
     {
@@ -150,79 +144,44 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
   const fetchData = async () => {
     try {
       setLoading(true);
-      
-      // Use type-specific endpoint if filtering by type
-      let response;
+      const response = await getRiskBlockCodes();
+      let dataArray: any[] = Array.isArray(response?.data) ? response.data : (response?.data?.data ?? []);
+
       if (defaultType) {
-        // For type-specific views, use the type endpoint
-        response = await getBlockCodesByType(defaultType);
-      } else {
-        response = await getBlockCodes(page, pageSize, search, type, status);
+        dataArray = dataArray.filter((item: any) => item.type === defaultType.toUpperCase());
+      } else if (type) {
+        dataArray = dataArray.filter((item: any) => item.type === type);
       }
-      
-      if (response?.data?.success) {
-        const responseData = response.data.data;
-        
-        // Handle direct array or paginated response
-        let dataArray = [];
-        let total = 0;
-        let fromPage = 0;
-        let toPage = 0;
-        let lastPage = 1;
-        
-        if (Array.isArray(responseData)) {
-          // Direct array response (from type endpoint)
-          dataArray = responseData;
-          
-          // Apply search filter if needed
-          if (search) {
-            dataArray = dataArray.filter((item: any) => 
-              item.code?.toLowerCase().includes(search.toLowerCase()) ||
-              item.description?.toLowerCase().includes(search.toLowerCase())
-            );
-          }
-          
-          // Apply status filter if needed
-          if (status !== '') {
-            const statusBool = status === '1';
-            dataArray = dataArray.filter((item: any) => item.status === statusBool);
-          }
-          
-          // Calculate pagination manually
-          total = dataArray.length;
-          const start = (page - 1) * pageSize;
-          const end = start + pageSize;
-          dataArray = dataArray.slice(start, end);
-          fromPage = dataArray.length > 0 ? start + 1 : 0;
-          toPage = start + dataArray.length;
-          lastPage = Math.ceil(total / pageSize);
-        } else if (responseData.data && Array.isArray(responseData.data)) {
-          // Paginated response
-          dataArray = responseData.data;
-          total = responseData.total || dataArray.length;
-          fromPage = responseData.from || (dataArray.length > 0 ? 1 : 0);
-          toPage = responseData.to || dataArray.length;
-          lastPage = responseData.last_page || 1;
-        }
-        
-        const mappedData = dataArray.map((item: any, index: number) => ({
-          sr: (page - 1) * pageSize + index + 1,
-          id: item.id,
-          code: item.code || "-",
-          description: item.description || "-",
-          type: item.type || "-",
-          status: item.status,
-          created_at: item.created_at,
-          updated_at: item.updated_at,
-          raw: item,
-        }));
-        
-        setData(mappedData);
-        setTotalRows(total);
-        setFrom(fromPage);
-        setTo(toPage);
-        setTotalPage(lastPage);
+
+      if (search) {
+        dataArray = dataArray.filter((item: any) =>
+          item.code?.toLowerCase().includes(search.toLowerCase()) ||
+          item.description?.toLowerCase().includes(search.toLowerCase())
+        );
       }
+
+      if (status !== '') {
+        const activeVal = status === '1';
+        dataArray = dataArray.filter((item: any) => (item.active ?? item.status) === activeVal);
+      }
+
+      const total = dataArray.length;
+      const start = (page - 1) * pageSize;
+      const paged = dataArray.slice(start, start + pageSize);
+
+      setData(paged.map((item: any, index: number) => ({
+        sr: start + index + 1,
+        id: item.id,
+        code: item.code || "-",
+        description: item.description || "-",
+        type: item.type || "-",
+        status: item.active ?? item.status,
+        raw: item,
+      })));
+      setTotalRows(total);
+      setFrom(paged.length > 0 ? start + 1 : 0);
+      setTo(start + paged.length);
+      setTotalPage(Math.ceil(total / pageSize));
     } catch (error: any) {
       toast.error(error?.message || "Failed to fetch data");
     } finally {
@@ -236,10 +195,10 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
 
   // Get placeholder based on type
   const getCodePlaceholder = () => {
-    if (defaultType === 'compliance') return 'e.g., COMP001';
-    if (defaultType === 'aml') return 'e.g., AML001';
-    if (defaultType === 'anti_fraud') return 'e.g., FRAUD001';
-    if (defaultType === 'sanction') return 'e.g., SANCT001';
+    if (defaultType === 'COMPLIANCE') return 'e.g., COMP001';
+    if (defaultType === 'AML') return 'e.g., AML001';
+    if (defaultType === 'ANTI_FRAUD') return 'e.g., FRAUD001';
+    if (defaultType === 'SANCTION') return 'e.g., SANCT001';
     return 'e.g., COMP001, AML001, FRAUD001, SANCT001';
   };
 
@@ -266,52 +225,30 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
     setIsModalVisible(true);
   };
 
-  const handleDelete = async (id: number) => {
-    Modal.confirm({
-      title: "Are you sure you want to delete this block code?",
-      content: "This action cannot be undone.",
-      okText: "Yes, Delete",
-      okType: "danger",
-      cancelText: "Cancel",
-      onOk: async () => {
-        try {
-          const response = await deleteBlockCode(id);
-          if (response?.data?.success) {
-            toast.success("Deleted successfully");
-            fetchData();
-          }
-        } catch (error: any) {
-          toast.error(error?.message || "Failed to delete");
-        }
-      },
-    });
+  const handleDelete = async (_id: number) => {
+    toast.error("Delete is not supported for block codes.");
   };
 
   const handleSubmit = async (values: any) => {
     try {
       setLoading(true);
-      const payload = {
-        code: values.code,
-        description: values.description || null,
-        type: values.type,
-        status: values.status ? true : false,
-      };
-
-      let response;
       if (editMode && currentRecord) {
-        response = await updateBlockCode(currentRecord.id, payload);
+        await updateRiskBlockCode(currentRecord.id, {
+          description: values.description || "",
+          type: values.type,
+          active: values.status ? true : false,
+        });
       } else {
-        response = await createBlockCode(payload);
+        await createRiskBlockCode({
+          code: values.code,
+          description: values.description || "",
+          type: values.type,
+        });
       }
-
-      if (response?.data?.success) {
-        toast.success(
-          editMode ? "Updated successfully" : "Created successfully"
-        );
-        setIsModalVisible(false);
-        form.resetFields();
-        fetchData();
-      }
+      toast.success(editMode ? "Updated successfully" : "Created successfully");
+      setIsModalVisible(false);
+      form.resetFields();
+      fetchData();
     } catch (error: any) {
       toast.error(error?.message || "Operation failed");
     } finally {
@@ -334,10 +271,10 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
             value={type || undefined}
             onChange={(value) => setType(value || '')}
           >
-            <Select.Option value="compliance">Compliance</Select.Option>
-            <Select.Option value="aml">AML</Select.Option>
-            <Select.Option value="anti_fraud">Anti-Fraud</Select.Option>
-            <Select.Option value="sanction">Sanction</Select.Option>
+            <Select.Option value="COMPLIANCE">Compliance</Select.Option>
+            <Select.Option value="AML">AML</Select.Option>
+            <Select.Option value="ANTI_FRAUD">Anti-Fraud</Select.Option>
+            <Select.Option value="SANCTION">Sanction</Select.Option>
           </Select>
         )}
 
@@ -439,10 +376,10 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
             rules={[{ required: true, message: "Please select type" }]}
           >
             <Select placeholder="Select type" disabled={!!defaultType}>
-              <Select.Option value="compliance">Compliance</Select.Option>
-              <Select.Option value="aml">AML</Select.Option>
-              <Select.Option value="anti_fraud">Anti-Fraud</Select.Option>
-              <Select.Option value="sanction">Sanction</Select.Option>
+              <Select.Option value="COMPLIANCE">Compliance</Select.Option>
+              <Select.Option value="AML">AML</Select.Option>
+              <Select.Option value="ANTI_FRAUD">Anti-Fraud</Select.Option>
+              <Select.Option value="SANCTION">Sanction</Select.Option>
             </Select>
           </Form.Item>
 

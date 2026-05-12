@@ -155,3 +155,17 @@ export function unblockDevice(deviceId: string) {
 export function deleteDevice(deviceId: string) {
   return axiosRiskService.delete(`/api/v1/risk/devices/${deviceId}`);
 }
+
+const TENANT_HEADER = { "X-Tenant-Id": "00000000-0000-0000-0000-000000000001" };
+
+export function getRiskBlockCodes() {
+  return axiosRiskService.get(`/api/v1/admin/risk/block-codes`, { headers: TENANT_HEADER });
+}
+
+export function createRiskBlockCode(data: { code: string; description: string; type: string }) {
+  return axiosRiskService.post(`/api/v1/admin/risk/block-codes`, data, { headers: TENANT_HEADER });
+}
+
+export function updateRiskBlockCode(id: string | number, data: { description: string; type: string; active: boolean }) {
+  return axiosRiskService.put(`/api/v1/admin/risk/block-codes/${id}`, data, { headers: TENANT_HEADER });
+}
