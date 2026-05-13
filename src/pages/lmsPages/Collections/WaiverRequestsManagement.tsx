@@ -8,9 +8,9 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 import { Label } from "../../../components/ui/label";
-import { Badge } from "../../../components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -279,14 +279,16 @@ const WaiverRequestsManagement = () => {
         }}
       >
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <Input
+          <AntInput
+            allowClear
             placeholder="Search by customer or loan..."
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            style={{ flex: "1 1 240px", minWidth: 200, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
           <Select
             value={statusFilter}
@@ -306,9 +308,6 @@ const WaiverRequestsManagement = () => {
               ))}
             </SelectContent>
           </Select>
-          <Badge variant="outline" className="text-xs" style={{ flexShrink: 0 }}>
-            {statusFilter === "ALL" ? "All requests" : `Showing: ${statusFilter}`}
-          </Badge>
         </div>
       </div>
 

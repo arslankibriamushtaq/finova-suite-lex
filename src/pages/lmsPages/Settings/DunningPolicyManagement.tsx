@@ -91,7 +91,15 @@ const DunningPolicyManagement = () => {
         setTotalPage(Math.ceil(arr.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch dunning policies");
+      if (error?.response?.status === 404) {
+        // Backend currently returns 404 for an empty resource on this list endpoint —
+        // render as an empty list instead of showing an error toast.
+        setData([]);
+        setTotalRows(0);
+        setTotalPage(1);
+      } else {
+        toast.error(error?.response?.data?.message || "Failed to fetch dunning policies");
+      }
     } finally {
       setIsLoading(false);
     }
