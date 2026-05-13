@@ -64,12 +64,16 @@ export function getBlacklistNidStatus(nid: string) {
   return axiosRiskService.get(`/api/v1/risk/blacklist/nid/${nid}/status`);
 }
 
-export function createBlacklistNid(body: { nationalId: string; reason: string }) {
+export function createBlacklistNid(body: { nationalId: string; reason: string; blockCodeId?: string | null }) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/nid`, body);
 }
 
 export function removeBlacklistNid(nid: string) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/nid/${nid}/remove`);
+}
+
+export function assignBlockCodeToNid(nationalId: string, blockCodeId: string) {
+  return axiosRiskService.put(`/api/v1/risk/blacklist/nid/${nationalId}/block-code`, { blockCodeId });
 }
 
 // ============================================================
@@ -84,12 +88,16 @@ export function getBlacklistMobileStatus(mobile: string) {
   return axiosRiskService.get(`/api/v1/risk/blacklist/mobile/${mobile}/status`);
 }
 
-export function createBlacklistMobile(body: { mobileNumber: string; reason: string }) {
+export function createBlacklistMobile(body: { mobileNumber: string; reason: string; blockCodeId?: string | null }) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/mobile`, body);
 }
 
 export function removeBlacklistMobile(mobile: string) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/mobile/${mobile}/remove`);
+}
+
+export function assignBlockCodeToMobile(mobileNumber: string, blockCodeId: string) {
+  return axiosRiskService.put(`/api/v1/risk/blacklist/mobile/${mobileNumber}/block-code`, { blockCodeId });
 }
 
 // ============================================================
@@ -154,4 +162,30 @@ export function unblockDevice(deviceId: string) {
 
 export function deleteDevice(deviceId: string) {
   return axiosRiskService.delete(`/api/v1/risk/devices/${deviceId}`);
+}
+
+const TENANT_HEADER = { "X-Tenant-Id": "00000000-0000-0000-0000-000000000001" };
+
+export function getRiskBlockCodes() {
+  return axiosRiskService.get(`/api/v1/admin/risk/block-codes`, { headers: TENANT_HEADER });
+}
+
+export function createRiskBlockCode(data: { code: string; description: string; type: string }) {
+  return axiosRiskService.post(`/api/v1/admin/risk/block-codes`, data, { headers: TENANT_HEADER });
+}
+
+export function updateRiskBlockCode(id: string | number, data: { description: string; type: string; active: boolean }) {
+  return axiosRiskService.put(`/api/v1/admin/risk/block-codes/${id}`, data, { headers: TENANT_HEADER });
+}
+
+export function assignBlockCodeToFraudRule(ruleId: string, blockCodeId: string) {
+  return axiosRiskService.put(`/api/v1/admin/risk/block-codes/${blockCodeId}`, { ruleId }, { headers: TENANT_HEADER });
+}
+
+export function getInternalChecksConfigs() {
+  return axiosRiskService.get(`/api/v1/admin/risk/internal-checks/configs`, { headers: TENANT_HEADER });
+}
+
+export function updateInternalCheckConfig(id: string | number, data: { active?: boolean; blockCodeId?: string | null }) {
+  return axiosRiskService.put(`/api/v1/admin/risk/internal-checks/configs/${id}`, data, { headers: TENANT_HEADER });
 }

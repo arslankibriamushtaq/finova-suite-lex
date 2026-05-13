@@ -1,10 +1,12 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
   getAllBlacklistNid,
   createBlacklistNid,
   removeBlacklistNid,
+  getRiskBlockCodes,
+  assignBlockCodeToNid,
 } from "../../../redux/apis/apisRiskManagement";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
@@ -16,7 +18,8 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { ChevronDown, Plus, ShieldOff, ShieldCheck } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
+import { ChevronDown, Plus, ShieldOff, ShieldCheck, Link2 } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -32,12 +35,18 @@ const BlacklistNid = () => {
 
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false);
-  const [formData, setFormData] = useState({ nationalId: "", reason: "" });
+  const [formData, setFormData] = useState({ nationalId: "", reason: "", blockCodeId: "" });
   const [isSaving, setIsSaving] = useState(false);
 
   // Remove modal
   const [removeTarget, setRemoveTarget] = useState<any>(null);
   const [isRemoving, setIsRemoving] = useState(false);
+
+  // Block codes
+  const [blockCodes, setBlockCodes] = useState<any[]>([]);
+  const [assignNidTarget, setAssignNidTarget] = useState<any>(null);
+  const [selectedNidBlockCodeId, setSelectedNidBlockCodeId] = useState("");
+  const [isAssigningNid, setIsAssigningNid] = useState(false);
 
   // Debounce search so we don't refetch / re-filter on every keystroke
   useEffect(() => {
@@ -52,7 +61,19 @@ const BlacklistNid = () => {
     fetchData();
   }, [page, pageSize, debouncedSearch]);
 
-  // Extract NID value â€” nationalId is a nested object with .value
+  useEffect(() => {
+    getRiskBlockCodes()
+      .then((res) => {
+        const list = Array.isArray(res?.data?.data) ? res.data.data : Array.isArray(res?.data) ? res.data : [];
+        setBlockCodes(list.filter((bc: any) => bc.active !== false));
+      })
+      .catch(() => {});
+  }, []);
+
+  const blockCodeMap: Record<string, string> = {};
+  blockCodes.forEach((bc: any) => { blockCodeMap[bc.id] = bc.code; });
+
+  // Extract NID value — nationalId is a nested object with .value
   const getNidValue = (item: any): string => {
     if (!item?.nationalId) return "-";
     if (typeof item.nationalId === "object") return item.nationalId.value || "-";
@@ -64,7 +85,7 @@ const BlacklistNid = () => {
       setIsLoading(true);
 
       if (debouncedSearch) {
-        // Filter client-side â€” backend search support is unverified.
+        // Filter client-side — backend search support is unverified.
         const response = await getAllBlacklistNid(0, 10000);
         const all: any[] = Array.isArray(response?.data?.data)
           ? response.data.data
@@ -107,7 +128,7 @@ const BlacklistNid = () => {
   };
 
   const handleAdd = () => {
-    setFormData({ nationalId: "", reason: "" });
+    setFormData({ nationalId: "", reason: "", blockCodeId: "" });
     setShowAddModal(true);
   };
 
@@ -126,6 +147,7 @@ const BlacklistNid = () => {
       await createBlacklistNid({
         nationalId: formData.nationalId.trim(),
         reason: formData.reason.trim(),
+        ...(formData.blockCodeId ? { blockCodeId: formData.blockCodeId } : {}),
       });
       toast.success("NID added to blacklist successfully");
       setShowAddModal(false);
@@ -197,6 +219,20 @@ const BlacklistNid = () => {
       width: "140px",
     },
     {
+      name: "Block Code",
+      cell: (row: any) => {
+        const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCodeId) : null;
+        return code ? (
+          <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
+            {code}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        );
+      },
+      width: "140px",
+    },
+    {
       name: "Action",
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
@@ -222,7 +258,7 @@ const BlacklistNid = () => {
                   <DropdownMenuItem
                     onSelect={(e) => {
                       e.preventDefault();
-                      setFormData({ nationalId: getNidValue(row), reason: row.reason || "" });
+                      setFormData({ nationalId: getNidValue(row), reason: row.reason || "", blockCodeId: row.blockCodeId || "" });
                       setShowAddModal(true);
                     }}
                   >
@@ -241,6 +277,17 @@ const BlacklistNid = () => {
                     Remove from Blacklist
                   </DropdownMenuItem>
                 )}
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    setAssignNidTarget(row);
+                    setSelectedNidBlockCodeId(row.blockCodeId || "");
+                    setShowAddModal(false);
+                  }}
+                >
+                  <Link2 className="h-4 w-4" />
+                  Assign Block Code
+                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -290,7 +337,7 @@ const BlacklistNid = () => {
       />
       </div>
 
-      {/* Add Modal */}
+      {/* Add / Re-Blacklist Modal */}
       <Dialog open={showAddModal} onOpenChange={(open) => !open && setShowAddModal(false)}>
         <DialogContent className="max-w-[500px]">
           <DialogHeader>
@@ -312,6 +359,25 @@ const BlacklistNid = () => {
                 value={formData.reason}
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Block Code</Label>
+              <Select
+                value={formData.blockCodeId || "none"}
+                onValueChange={(val) => setFormData({ ...formData, blockCodeId: val === "none" ? "" : val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select block code (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {blockCodes.map((bc: any) => (
+                    <SelectItem key={bc.id} value={String(bc.id)}>
+                      {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter>
@@ -344,6 +410,60 @@ const BlacklistNid = () => {
             </Button>
             <Button variant="destructive" onClick={confirmRemove} disabled={isRemoving}>
               {isRemoving ? "Removing..." : "Remove"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Block Code Modal */}
+      <Dialog open={!!assignNidTarget} onOpenChange={(open) => !open && setAssignNidTarget(null)}>
+        <DialogContent className="max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Assign Block Code</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1">
+            <Label className="font-semibold">Block Code</Label>
+            <Select
+              value={selectedNidBlockCodeId || ""}
+              onValueChange={(val) => setSelectedNidBlockCodeId(val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a block code" />
+              </SelectTrigger>
+              <SelectContent>
+                {blockCodes.map((bc: any) => (
+                  <SelectItem key={bc.id} value={String(bc.id)}>
+                    {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignNidTarget(null)} disabled={isAssigningNid}>
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!assignNidTarget || !selectedNidBlockCodeId) return;
+                const nid = typeof assignNidTarget.nationalId === "object"
+                  ? assignNidTarget.nationalId.value
+                  : assignNidTarget.nationalId;
+                try {
+                  setIsAssigningNid(true);
+                  await assignBlockCodeToNid(nid, selectedNidBlockCodeId);
+                  toast.success("Block code assigned");
+                  setAssignNidTarget(null);
+                  fetchData();
+                } catch (error: any) {
+                  toast.error(error?.response?.data?.message || "Failed to assign block code");
+                } finally {
+                  setIsAssigningNid(false);
+                }
+              }}
+              disabled={isAssigningNid || !selectedNidBlockCodeId}
+            >
+              {isAssigningNid ? "Assigning..." : "Assign"}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -5,7 +5,11 @@ import {
   getAllBlacklistMobile,
   createBlacklistMobile,
   removeBlacklistMobile,
+  getRiskBlockCodes,
+  assignBlockCodeToMobile,
 } from "../../../redux/apis/apisRiskManagement";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
+import { Link2 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
@@ -29,15 +33,29 @@ const BlacklistMobile = () => {
 
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false);
-  const [formData, setFormData] = useState({ mobileNumber: "", reason: "" });
+  const [formData, setFormData] = useState({ mobileNumber: "", reason: "", blockCodeId: "" });
   const [isSaving, setIsSaving] = useState(false);
 
   // Remove modal
   const [removeTarget, setRemoveTarget] = useState<any>(null);
   const [isRemoving, setIsRemoving] = useState(false);
 
+  const [blockCodes, setBlockCodes] = useState<any[]>([]);
+  const [assignMobileTarget, setAssignMobileTarget] = useState<any>(null);
+  const [selectedMobileBlockCodeId, setSelectedMobileBlockCodeId] = useState("");
+  const [isAssigningMobile, setIsAssigningMobile] = useState(false);
+
   useEffect(() => {
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    getRiskBlockCodes()
+      .then((res) => {
+        const list = Array.isArray(res?.data?.data) ? res.data.data : Array.isArray(res?.data) ? res.data : [];
+        setBlockCodes(list.filter((bc: any) => bc.active !== false));
+      })
+      .catch(() => {});
   }, []);
 
   const fetchData = async () => {
@@ -54,7 +72,7 @@ const BlacklistMobile = () => {
   };
 
   const handleAdd = () => {
-    setFormData({ mobileNumber: "", reason: "" });
+    setFormData({ mobileNumber: "", reason: "", blockCodeId: "" });
     setShowAddModal(true);
   };
 
@@ -73,6 +91,7 @@ const BlacklistMobile = () => {
       await createBlacklistMobile({
         mobileNumber: formData.mobileNumber.trim(),
         reason: formData.reason.trim(),
+        ...(formData.blockCodeId ? { blockCodeId: formData.blockCodeId } : {}),
       });
       toast.success("Mobile added to blacklist successfully");
       setShowAddModal(false);
@@ -110,6 +129,9 @@ const BlacklistMobile = () => {
     );
   });
 
+  const blockCodeMap: Record<string, string> = {};
+  blockCodes.forEach((bc: any) => { blockCodeMap[bc.id] = bc.code; });
+
   const headers = [
     {
       name: "Mobile Number",
@@ -143,6 +165,20 @@ const BlacklistMobile = () => {
       width: "140px",
     },
     {
+      name: "Block Code",
+      cell: (row: any) => {
+        const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCodeId) : null;
+        return code ? (
+          <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
+            {code}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        );
+      },
+      width: "140px",
+    },
+    {
       name: "Action",
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
@@ -165,27 +201,51 @@ const BlacklistMobile = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
                 {status === "REMOVED" ? (
-                  <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "" });
-                      setShowAddModal(true);
-                    }}
-                  >
-                    <ShieldCheck className="h-4 w-4" />
-                    Re-Blacklist
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "", blockCodeId: "" });
+                        setShowAddModal(true);
+                      }}
+                    >
+                      <ShieldCheck className="h-4 w-4" />
+                      Re-Blacklist
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setAssignMobileTarget(row);
+                        setSelectedMobileBlockCodeId(row.blockCodeId || "");
+                      }}
+                    >
+                      <Link2 className="h-4 w-4" />
+                      Assign Block Code
+                    </DropdownMenuItem>
+                  </>
                 ) : (
-                  <DropdownMenuItem
-                    variant="destructive"
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      setRemoveTarget(row);
-                    }}
-                  >
-                    <ShieldOff className="h-4 w-4" />
-                    Remove from Blacklist
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setRemoveTarget(row);
+                      }}
+                    >
+                      <ShieldOff className="h-4 w-4" />
+                      Remove from Blacklist
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setAssignMobileTarget(row);
+                        setSelectedMobileBlockCodeId(row.blockCodeId || "");
+                      }}
+                    >
+                      <Link2 className="h-4 w-4" />
+                      Assign Block Code
+                    </DropdownMenuItem>
+                  </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
@@ -258,6 +318,25 @@ const BlacklistMobile = () => {
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               />
             </div>
+            <div className="space-y-2">
+              <Label>Block Code</Label>
+              <Select
+                value={formData.blockCodeId || "none"}
+                onValueChange={(val) => setFormData({ ...formData, blockCodeId: val === "none" ? "" : val })}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select block code (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {blockCodes.map((bc: any) => (
+                    <SelectItem key={bc.id} value={String(bc.id)}>
+                      {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddModal(false)} disabled={isSaving}>
@@ -289,6 +368,58 @@ const BlacklistMobile = () => {
             </Button>
             <Button variant="destructive" onClick={confirmRemove} disabled={isRemoving}>
               {isRemoving ? "Removing..." : "Remove"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Assign Block Code Modal */}
+      <Dialog open={!!assignMobileTarget} onOpenChange={(open) => !open && setAssignMobileTarget(null)}>
+        <DialogContent className="max-w-[420px]">
+          <DialogHeader>
+            <DialogTitle>Assign Block Code</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-1">
+            <Label className="font-semibold">Block Code</Label>
+            <Select
+              value={selectedMobileBlockCodeId || ""}
+              onValueChange={(val) => setSelectedMobileBlockCodeId(val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select a block code" />
+              </SelectTrigger>
+              <SelectContent>
+                {blockCodes.map((bc: any) => (
+                  <SelectItem key={bc.id} value={String(bc.id)}>
+                    {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setAssignMobileTarget(null)} disabled={isAssigningMobile}>
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                if (!assignMobileTarget || !selectedMobileBlockCodeId) return;
+                const mobile = assignMobileTarget.mobileNumber || assignMobileTarget.mobile;
+                try {
+                  setIsAssigningMobile(true);
+                  await assignBlockCodeToMobile(mobile, selectedMobileBlockCodeId);
+                  toast.success("Block code assigned");
+                  setAssignMobileTarget(null);
+                  fetchData();
+                } catch (error: any) {
+                  toast.error(error?.response?.data?.message || "Failed to assign block code");
+                } finally {
+                  setIsAssigningMobile(false);
+                }
+              }}
+              disabled={isAssigningMobile || !selectedMobileBlockCodeId}
+            >
+              {isAssigningMobile ? "Assigning..." : "Assign"}
             </Button>
           </DialogFooter>
         </DialogContent>

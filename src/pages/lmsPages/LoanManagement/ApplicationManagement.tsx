@@ -449,7 +449,7 @@ const ApplicationManagement = () => {
             </Menu.Item>
           </>
         )}
-        {row.laonStatus == "APPROVED" && (
+        {row.laonStatus == "DISBURSED" && (
           <>
             {/* <Menu.Item key="view" icon={<EyeOutlined />}>
               View
