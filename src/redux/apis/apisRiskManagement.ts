@@ -64,12 +64,16 @@ export function getBlacklistNidStatus(nid: string) {
   return axiosRiskService.get(`/api/v1/risk/blacklist/nid/${nid}/status`);
 }
 
-export function createBlacklistNid(body: { nationalId: string; reason: string }) {
+export function createBlacklistNid(body: { nationalId: string; reason: string; blockCodeId?: string | null }) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/nid`, body);
 }
 
 export function removeBlacklistNid(nid: string) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/nid/${nid}/remove`);
+}
+
+export function assignBlockCodeToNid(nationalId: string, blockCodeId: string) {
+  return axiosRiskService.put(`/api/v1/risk/blacklist/nid/${nationalId}/block-code`, { blockCodeId });
 }
 
 // ============================================================
@@ -84,12 +88,16 @@ export function getBlacklistMobileStatus(mobile: string) {
   return axiosRiskService.get(`/api/v1/risk/blacklist/mobile/${mobile}/status`);
 }
 
-export function createBlacklistMobile(body: { mobileNumber: string; reason: string }) {
+export function createBlacklistMobile(body: { mobileNumber: string; reason: string; blockCodeId?: string | null }) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/mobile`, body);
 }
 
 export function removeBlacklistMobile(mobile: string) {
   return axiosRiskService.post(`/api/v1/risk/blacklist/mobile/${mobile}/remove`);
+}
+
+export function assignBlockCodeToMobile(mobileNumber: string, blockCodeId: string) {
+  return axiosRiskService.put(`/api/v1/risk/blacklist/mobile/${mobileNumber}/block-code`, { blockCodeId });
 }
 
 // ============================================================
@@ -178,6 +186,6 @@ export function getInternalChecksConfigs() {
   return axiosRiskService.get(`/api/v1/admin/risk/internal-checks/configs`, { headers: TENANT_HEADER });
 }
 
-export function updateInternalCheckConfig(id: string | number, data: { enabled?: boolean; blockCodeId?: string | null }) {
+export function updateInternalCheckConfig(id: string | number, data: { active?: boolean; blockCodeId?: string | null }) {
   return axiosRiskService.put(`/api/v1/admin/risk/internal-checks/configs/${id}`, data, { headers: TENANT_HEADER });
 }

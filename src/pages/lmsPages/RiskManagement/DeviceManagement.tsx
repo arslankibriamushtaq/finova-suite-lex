@@ -7,7 +7,10 @@ import {
   blockDevice,
   unblockDevice,
   deleteDevice,
+  getRiskBlockCodes,
 } from "../../../redux/apis/apisRiskManagement";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../../components/ui/select";
+import { Label } from "../../../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import { Badge } from "../../../components/ui/badge";
 import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus } from "lucide-react";
@@ -64,6 +67,10 @@ const DeviceManagement = () => {
   const [isAddingDevice, setIsAddingDevice] = useState(false);
   const [addDeviceErrors, setAddDeviceErrors] = useState<Record<string, string>>({});
 
+  const [blockCodes, setBlockCodes] = useState<any[]>([]);
+  const [addDeviceBlockCodeId, setAddDeviceBlockCodeId] = useState("");
+  const [blockModalBlockCodeId, setBlockModalBlockCodeId] = useState("");
+
   // Delete Device Modal State
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedDeviceForDelete, setSelectedDeviceForDelete] = useState<any>(null);
@@ -81,6 +88,15 @@ const DeviceManagement = () => {
   useEffect(() => {
     fetchDevicesData();
   }, [activeTab, page, pageSize, debouncedSearch]);
+
+  useEffect(() => {
+    getRiskBlockCodes()
+      .then((res) => {
+        const list = Array.isArray(res?.data?.data) ? res.data.data : Array.isArray(res?.data) ? res.data : [];
+        setBlockCodes(list.filter((bc: any) => bc.active !== false));
+      })
+      .catch(() => {});
+  }, []);
 
   const fetchDevicesData = async () => {
     try {
@@ -117,12 +133,17 @@ const DeviceManagement = () => {
     if (Object.keys(errors).length) { setAddDeviceErrors(errors); return; }
     try {
       setIsAddingDevice(true);
-      const response = await blockDevice({ deviceId: addDeviceId.trim(), reason: addDeviceReason.trim() });
+      const response = await blockDevice({
+        deviceId: addDeviceId.trim(),
+        reason: addDeviceReason.trim(),
+        ...(addDeviceBlockCodeId ? { blockCodeId: addDeviceBlockCodeId } : {}),
+      });
       if (response?.data?.success || response?.status === 200 || response?.status === 201) {
         toast.success(response?.data?.message || "Device blocked successfully");
         setIsAddDeviceModalOpen(false);
         setAddDeviceId("");
         setAddDeviceReason("");
+        setAddDeviceBlockCodeId("");
         setAddDeviceErrors({});
         fetchDevicesData();
       } else {
@@ -159,6 +180,7 @@ const DeviceManagement = () => {
   const openBlockModal = (device: any) => {
     setSelectedDeviceForBlock(device);
     setBlockReason("");
+    setBlockModalBlockCodeId("");
     setIsBlockModalOpen(true);
   };
 
@@ -167,6 +189,7 @@ const DeviceManagement = () => {
     setIsBlockModalOpen(false);
     setSelectedDeviceForBlock(null);
     setBlockReason("");
+    setBlockModalBlockCodeId("");
     setIsBlockingDevice(false);
   };
 
@@ -187,6 +210,7 @@ const DeviceManagement = () => {
       const response = await blockDevice({
         deviceId: selectedDeviceForBlock.deviceId,
         reason: blockReason.trim(),
+        ...(blockModalBlockCodeId ? { blockCodeId: blockModalBlockCodeId } : {}),
       });
 
       if (response?.data?.success || response?.status === 200) {
@@ -291,6 +315,9 @@ const DeviceManagement = () => {
     }
   };
 
+  const blockCodeMap: Record<string, string> = {};
+  blockCodes.forEach((bc: any) => { blockCodeMap[bc.id] = bc.code; });
+
   const allDevicesHeaders = [
     {
       name: "Device ID",
@@ -333,6 +360,20 @@ const DeviceManagement = () => {
       cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
       sortable: true,
       width: "160px",
+    },
+    {
+      name: "Block Code",
+      cell: (row: any) => {
+        const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCode || null) : (row.blockCode || null);
+        return code ? (
+          <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
+            {code}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        );
+      },
+      width: "130px",
     },
     {
       name: "Actions",
@@ -449,6 +490,20 @@ const DeviceManagement = () => {
       name: "Last Seen",
       cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
       width: "160px",
+    },
+    {
+      name: "Block Code",
+      cell: (row: any) => {
+        const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCode || null) : (row.blockCode || null);
+        return code ? (
+          <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
+            {code}
+          </span>
+        ) : (
+          <span className="text-muted-foreground text-xs">—</span>
+        );
+      },
+      width: "130px",
     },
     {
       name: "Actions",
@@ -666,6 +721,26 @@ const DeviceManagement = () => {
               disabled={isBlockingDevice}
             />
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{blockReason.length}/500</p>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Block Code (optional)</label>
+              <Select
+                value={blockModalBlockCodeId || "none"}
+                onValueChange={(val) => setBlockModalBlockCodeId(val === "none" ? "" : val)}
+                disabled={isBlockingDevice}
+              >
+                <SelectTrigger style={{ background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}>
+                  <SelectValue placeholder="Select block code (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {blockCodes.map((bc: any) => (
+                    <SelectItem key={bc.id} value={String(bc.id)}>
+                      {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
           </div>
           <DialogFooter className="gap-2 mt-2">
             <Button variant="outline" onClick={closeBlockModal} disabled={isBlockingDevice}>
@@ -748,6 +823,26 @@ const DeviceManagement = () => {
                 disabled={isAddingDevice}
               />
               {addDeviceErrors.reason && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.reason}</p>}
+            </div>
+            <div className="space-y-1">
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Block Code (optional)</label>
+              <Select
+                value={addDeviceBlockCodeId || "none"}
+                onValueChange={(val) => setAddDeviceBlockCodeId(val === "none" ? "" : val)}
+                disabled={isAddingDevice}
+              >
+                <SelectTrigger style={{ background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}>
+                  <SelectValue placeholder="Select block code (optional)" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None</SelectItem>
+                  {blockCodes.map((bc: any) => (
+                    <SelectItem key={bc.id} value={String(bc.id)}>
+                      {bc.code}{bc.description ? ` — ${bc.description}` : ""}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           <DialogFooter className="gap-2 mt-2">

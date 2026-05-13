@@ -55,7 +55,7 @@ const InternalChecksConfig = () => {
   const handleToggle = async (config: any) => {
     setUpdatingId(config.id);
     try {
-      await updateInternalCheckConfig(config.id, { enabled: !config.active });
+      await updateInternalCheckConfig(config.id, { active: !config.active });
       setConfigs((prev) =>
         prev.map((c) => (c.id === config.id ? { ...c, active: !c.active } : c))
       );

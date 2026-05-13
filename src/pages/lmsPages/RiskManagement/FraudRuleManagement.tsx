@@ -243,6 +243,9 @@ const FraudRuleManagement = () => {
     setParamsList(updated);
   };
 
+  const blockCodeMap: Record<string, string> = {};
+  blockCodes.forEach((bc: any) => { blockCodeMap[bc.id] = bc.code; });
+
   const headers = [
     {
       name: "Rule ID",
@@ -276,7 +279,7 @@ const FraudRuleManagement = () => {
     {
       name: "Assigned Block Code",
       cell: (row: any) => {
-        const code = row.blockCode?.code ?? row.blockCodeCode ?? null;
+        const code = (row.blockCodeId ? blockCodeMap[row.blockCodeId] : null) ?? row.blockCode?.code ?? null;
         return code ? (
           <span className="inline-flex items-center rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
             {code}
