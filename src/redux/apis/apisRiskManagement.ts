@@ -179,7 +179,7 @@ export function updateRiskBlockCode(id: string | number, data: { description: st
 }
 
 export function assignBlockCodeToFraudRule(ruleId: string, blockCodeId: string) {
-  return axiosRiskService.put(`/api/v1/admin/risk/block-codes/${blockCodeId}`, { ruleId }, { headers: TENANT_HEADER });
+  return axiosRiskService.put(`/api/v1/risk/fraud/rules/${ruleId}/block-code`, { blockCodeId }, { headers: TENANT_HEADER });
 }
 
 export function getInternalChecksConfigs() {

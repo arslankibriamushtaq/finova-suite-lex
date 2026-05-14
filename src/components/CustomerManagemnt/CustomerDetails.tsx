@@ -6,7 +6,9 @@ import { getCustomer360 } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 import TableView from "../TableView/TableView";
-import { Eye } from "lucide-react";
+import { Eye, ShieldOff } from "lucide-react";
+import ManageCustomerBlocksModal from "./ManageCustomerBlocksModal";
+import { Button } from "../ui/button";
 
 interface Field {
   label: string;
@@ -45,6 +47,7 @@ const CustomerDetail = () => {
   const [selectTab, setSelectedTab] = useState<string>("Overview");
   const [overviewChildTab, setOverviewChildTab] = useState<string>("Customer Information");
   const [loading, setLoading] = useState(false);
+  const [showBlockModal, setShowBlockModal] = useState(false);
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
@@ -1017,6 +1020,33 @@ const CustomerDetail = () => {
         </Row>
       </Card>
 
+      {/* Block Status */}
+      <Card bordered={false} style={{ ...styles.card, marginBottom: 16 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+          <h5 style={{ fontWeight: 700, fontSize: 16, color: "var(--foreground)", margin: 0 }}>Block Status</h5>
+          <Button size="sm" variant="outline" className="gap-1" onClick={() => setShowBlockModal(true)}>
+            <ShieldOff size={14} />
+            Manage Blocks
+          </Button>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", flexWrap: "wrap", gap: 8 }}>
+          {customer?.isBlocked ? (
+            <span style={{ padding: "4px 12px", borderRadius: 9999, fontSize: 12, fontWeight: 600, background: "var(--color-error)", color: "white" }}>
+              BLOCKED
+            </span>
+          ) : (
+            <span style={{ padding: "4px 12px", borderRadius: 9999, fontSize: 12, fontWeight: 600, background: "var(--color-success)", color: "white" }}>
+              CLEAR
+            </span>
+          )}
+          {Array.isArray(customer?.blockCodes) && customer.blockCodes.map((code: string, i: number) => (
+            <span key={i} style={{ padding: "3px 10px", borderRadius: 9999, fontSize: 12, fontWeight: 500, background: "var(--muted)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+              {code}
+            </span>
+          ))}
+        </div>
+      </Card>
+
       {/* KYC Information */}
       {renderKycInformation()}
 
@@ -1065,6 +1095,13 @@ const CustomerDetail = () => {
           </Tab>
         </Tabs>
       </Card>
+      {id && (
+        <ManageCustomerBlocksModal
+          open={showBlockModal}
+          customerId={id}
+          onClose={() => setShowBlockModal(false)}
+        />
+      )}
     </>
   );
 };

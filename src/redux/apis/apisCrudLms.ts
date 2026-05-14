@@ -1457,3 +1457,20 @@ export function deleteDefaultPayment(id: any) {
 export function executeWriteOff(body: any) {
   return axios.post(`/collections-service/api/v1/admin/write-offs/execute`, body);
 }
+
+export function getCustomerServiceList(page: number, size: number) {
+  return axios.get(`/customer-service/api/v1/customers?page=${page}&size=${size}`);
+}
+
+// ─── Customer Block Code Management ───────────────────────────────────────────
+export function getCustomerBlocks(customerId: string | number) {
+  return axios.get(`/customer-service/api/v1/customers/${customerId}/blocks`);
+}
+export function assignBlockToCustomer(customerId: string | number, blockCodeIds: string | string[], reason?: string) {
+  const ids = Array.isArray(blockCodeIds) ? blockCodeIds : [blockCodeIds];
+  return axios.post(`/customer-service/api/v1/customers/${customerId}/blocks`, { blockCodeIds: ids, ...(reason ? { reason } : {}) });
+}
+export function removeBlockFromCustomer(customerId: string | number, blockCodeId: string | string[]) {
+  const ids = Array.isArray(blockCodeId) ? blockCodeId.join(",") : blockCodeId;
+  return axios.delete(`/customer-service/api/v1/customers/${customerId}/blocks/${ids}`);
+}

@@ -323,7 +323,7 @@ const DeviceManagement = () => {
       name: "Device ID",
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
-      width: "160px",
+      width: "200px",
     },
     {
       name: "Fingerprint",
@@ -432,7 +432,7 @@ const DeviceManagement = () => {
       name: "Device ID",
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
-      width: "160px",
+      width: "200px",
     },
     {
       name: "Block Source",
@@ -470,7 +470,7 @@ const DeviceManagement = () => {
     {
       name: "Total Attempts",
       cell: (row: any) => <Badge variant="outline">{row.totalAttempts ?? 0}</Badge>,
-      width: "120px",
+      width: "200px",
     },
     {
       name: "Block Reason",

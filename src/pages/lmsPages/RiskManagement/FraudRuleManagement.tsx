@@ -221,7 +221,7 @@ const FraudRuleManagement = () => {
 
   const handleSaveAssign = async () => {
     if (!assignTarget || !selectedBlockCodeId) return;
-    const ruleId = assignTarget.ruleId || assignTarget.id;
+    const ruleId = assignTarget.id || assignTarget.id;
     try {
       setIsAssigning(true);
       await assignBlockCodeToFraudRule(ruleId, selectedBlockCodeId);
@@ -277,6 +277,12 @@ const FraudRuleManagement = () => {
       width: "120px",
     },
     {
+      name: "Detection Logic",
+      selector: (row: any) => row.detectionLogic || "-",
+      sortable: true,
+      wrap: true,
+    },
+    {
       name: "Assigned Block Code",
       cell: (row: any) => {
         const code = (row.blockCodeId ? blockCodeMap[row.blockCodeId] : null) ?? row.blockCode?.code ?? null;
@@ -288,7 +294,7 @@ const FraudRuleManagement = () => {
           <span className="text-muted-foreground text-xs">—</span>
         );
       },
-      width: "170px",
+      width: "200px",
     },
     {
       name: "Status",
