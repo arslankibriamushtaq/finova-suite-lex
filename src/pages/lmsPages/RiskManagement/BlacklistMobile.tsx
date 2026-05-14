@@ -24,6 +24,16 @@ import { ChevronDown, Plus, ShieldOff, ShieldCheck } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
+const PHONE_CODES = ["+966","+971","+965","+973","+968","+974","+962","+961","+20","+92","+91","+1","+44"];
+
+const splitPhoneCode = (full: string): { phoneCode: string; local: string } => {
+  const sorted = [...PHONE_CODES].sort((a, b) => b.length - a.length);
+  for (const code of sorted) {
+    if (full.startsWith(code)) return { phoneCode: code, local: full.slice(code.length) };
+  }
+  return { phoneCode: "+966", local: full };
+};
+
 const BlacklistMobile = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -33,7 +43,7 @@ const BlacklistMobile = () => {
 
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false);
-  const [formData, setFormData] = useState({ mobileNumber: "", reason: "", blockCodeId: "" });
+  const [formData, setFormData] = useState({ phoneCode: "+966", mobileNumber: "", reason: "", blockCodeId: "" });
   const [isSaving, setIsSaving] = useState(false);
 
   // Remove modal
@@ -72,24 +82,29 @@ const BlacklistMobile = () => {
   };
 
   const handleAdd = () => {
-    setFormData({ mobileNumber: "", reason: "", blockCodeId: "" });
+    setFormData({ phoneCode: "+966", mobileNumber: "", reason: "", blockCodeId: "" });
     setShowAddModal(true);
   };
 
   const handleSave = async () => {
-    if (!formData.mobileNumber.trim()) {
+    const localNumber = formData.mobileNumber.trim();
+    if (!localNumber) {
       toast.error("Mobile number is required");
+      return;
+    }
+    if (!/^\d+$/.test(localNumber)) {
+      toast.error("Mobile number must contain digits only");
       return;
     }
     if (!formData.reason.trim()) {
       toast.error("Reason is required");
       return;
     }
-
+    const fullNumber = formData.phoneCode + localNumber;
     try {
       setIsSaving(true);
       await createBlacklistMobile({
-        mobileNumber: formData.mobileNumber.trim(),
+        mobileNumber: fullNumber,
         reason: formData.reason.trim(),
         ...(formData.blockCodeId ? { blockCodeId: formData.blockCodeId } : {}),
       });
@@ -205,7 +220,8 @@ const BlacklistMobile = () => {
                     <DropdownMenuItem
                       onSelect={(e) => {
                         e.preventDefault();
-                        setFormData({ mobileNumber: row.mobileNumber || row.mobile || "", reason: row.reason || "", blockCodeId: "" });
+                        const { phoneCode, local } = splitPhoneCode(row.mobileNumber || row.mobile || "");
+                        setFormData({ phoneCode, mobileNumber: local, reason: row.reason || "", blockCodeId: "" });
                         setShowAddModal(true);
                       }}
                     >
@@ -304,11 +320,27 @@ const BlacklistMobile = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Mobile Number *</Label>
-              <Input
-                placeholder="e.g. +966501234567"
-                value={formData.mobileNumber}
-                onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value })}
-              />
+              <div className="flex gap-2">
+                <Select
+                  value={formData.phoneCode}
+                  onValueChange={(val) => setFormData({ ...formData, phoneCode: val })}
+                >
+                  <SelectTrigger className="w-[100px] shrink-0">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PHONE_CODES.map((code) => (
+                      <SelectItem key={code} value={code}>{code}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <Input
+                  placeholder="501234567"
+                  value={formData.mobileNumber}
+                  onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, "") })}
+                  className="flex-1"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <Label>Reason *</Label>

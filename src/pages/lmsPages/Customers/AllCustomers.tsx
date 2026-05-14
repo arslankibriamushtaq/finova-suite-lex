@@ -19,8 +19,7 @@ import {
   createAdress,
   createEmployement,
   createIndividualsEmployee,
-  getAllBusinessAndIndividualCustomer,
-
+  getCustomerServiceList,
 } from "../../../redux/apis/apisCrudLms";
 import {
   ClockCircleOutlined,
@@ -281,31 +280,27 @@ const AllCustomers = () => {
   const getAllCustomers = async () => {
     try {
       setSkelitonLoading(true);
-      const response = await getAllBusinessAndIndividualCustomer(
-        page,
-        pageSize
-      );
+      const response = await getCustomerServiceList(page - 1, pageSize);
       if (response) {
-        const values = response?.data?.data?.filter((item: any) => item.type === "Individual");
-        setBuinsessCustomers(values || []);
-        const currentPage = response?.data?.pageInfo?.page || 1;
-        const currentPageSize = response?.data?.pageInfo?.pageSize || 10;
-        const totalItems = response?.data?.pageInfo?.totalItems || 0;
-        
+        const values = Array.isArray(response?.data?.data) ? response.data.data : [];
+        setBuinsessCustomers(values);
+        const pagination = response?.data?.pagination;
+        const totalItems = pagination?.totalElements || 0;
+        const currentPage = (pagination?.page ?? 0) + 1;
+        const currentPageSize = pagination?.size || pageSize;
+
         setPage(currentPage);
         setPageSize(currentPageSize);
-        
-        // Calculate from and to based on page, pageSize, and totalItems
+
         const calculatedFrom = (currentPage - 1) * currentPageSize + 1;
         const calculatedTo = Math.min(currentPage * currentPageSize, totalItems);
-        
+
         setFrom(calculatedFrom);
         setTo(calculatedTo);
         setTotalRows(totalItems);
       }
     } catch (error: any) {
       toast.error(error?.message);
-      // setIndividualModal(false);
     } finally {
       setSkelitonLoading(false);
     }
@@ -327,17 +322,21 @@ const AllCustomers = () => {
     buisnessCustomers &&
     buisnessCustomers.map((item: any) => {
       return {
+        id: item.id,
         accountNumber: item.accountNumber,
-        CustomerID: item.customerId || "-",
-        NationalId: item.nationalId || "-",
-        Name: item.name || "-",
-        Type: item.type || "-",
-        PhoneNo: item.phoneNo || "-",
-        Email: item.email.toLowerCase() !== 'string' && item.email || "-",
+        CustomerID: item.cifNumber || item.customerId || "-",
+        NationalId: item.nationalId || item.nid || "-",
+        Name: item.fullName || item.name || "-",
+        Type: item.customerType || item.type || "-",
+        PhoneNo: item.mobileNumber || item.phoneNo || "-",
+        Email: item.email && item.email.toLowerCase() !== 'string' ? item.email : "-",
         PartnerName: item.channel || "-",
         status: item.status || "-",
-        date: item.date || "-",
-        cif:item.cif || "-"
+        date: item.createdAt || item.date || "-",
+        cif: item.cifNumber || item.cif || "-",
+        isBlocked: item.isBlocked || item.is_blocked || false,
+        blockCode: Array.isArray(item.blockCodes) && item.blockCodes.length > 0 ? item.blockCodes[0] : null,
+        blockCodes: item.blockCodes || [],
       };
     });
   useEffect(() => {
@@ -889,6 +888,22 @@ const AllCustomers = () => {
           {row.status ? "Active" : "Inactive"}
         </div>
       ),
+    },
+    {
+      name: "Blocked",
+      cell: (row: any) => (
+        row.isBlocked
+          ? <span style={{ padding: "0.22rem 0.75rem", borderRadius: "12px", backgroundColor: "var(--color-status-red, #fee2e2)", color: "#dc2626", fontSize: "0.75rem", fontWeight: 600 }}>Blocked</span>
+          : <span style={{ padding: "0.22rem 0.75rem", borderRadius: "12px", backgroundColor: "var(--color-status-green)", color: "var(--primary-foreground)", fontSize: "0.75rem", fontWeight: 600 }}>Clear</span>
+      ),
+      width: "110px",
+    },
+    {
+      name: "Block Code",
+      cell: (row: any) => row.blockCode
+        ? <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "9999px", background: "var(--muted)", padding: "0.125rem 0.625rem", fontSize: "0.75rem", fontWeight: 500 }}>{row.blockCode}</span>
+        : <span style={{ color: "var(--muted-foreground)", fontSize: "0.75rem" }}>—</span>,
+      width: "140px",
     },
     {
       name: "Actions",

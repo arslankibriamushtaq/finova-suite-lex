@@ -36,6 +36,7 @@ const BlacklistNid = () => {
   // Add modal
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({ nationalId: "", reason: "", blockCodeId: "" });
+  const [nidError, setNidError] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
   // Remove modal
@@ -129,12 +130,22 @@ const BlacklistNid = () => {
 
   const handleAdd = () => {
     setFormData({ nationalId: "", reason: "", blockCodeId: "" });
+    setNidError("");
     setShowAddModal(true);
   };
 
   const handleSave = async () => {
-    if (!formData.nationalId.trim()) {
+    const nid = formData.nationalId.trim();
+    if (!nid) {
       toast.error("National ID is required");
+      return;
+    }
+    if (!/^\d{10}$/.test(nid)) {
+      toast.error("National ID must be exactly 10 digits");
+      return;
+    }
+    if (nid[0] !== "1" && nid[0] !== "2") {
+      toast.error("National ID must start with 1 or 2");
       return;
     }
     if (!formData.reason.trim()) {
@@ -145,7 +156,7 @@ const BlacklistNid = () => {
     try {
       setIsSaving(true);
       await createBlacklistNid({
-        nationalId: formData.nationalId.trim(),
+        nationalId: nid,
         reason: formData.reason.trim(),
         ...(formData.blockCodeId ? { blockCodeId: formData.blockCodeId } : {}),
       });
@@ -259,6 +270,7 @@ const BlacklistNid = () => {
                     onSelect={(e) => {
                       e.preventDefault();
                       setFormData({ nationalId: getNidValue(row), reason: row.reason || "", blockCodeId: row.blockCodeId || "" });
+                      setNidError("");
                       setShowAddModal(true);
                     }}
                   >
@@ -349,8 +361,23 @@ const BlacklistNid = () => {
               <Input
                 placeholder="e.g. 1234567890"
                 value={formData.nationalId}
-                onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
+                maxLength={10}
+                onChange={(e) => {
+                  const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  setFormData({ ...formData, nationalId: val });
+                  if (!val) {
+                    setNidError("National ID is required");
+                  } else if (val.length < 10) {
+                    setNidError("National ID must be exactly 10 digits");
+                  } else if (val[0] !== "1" && val[0] !== "2") {
+                    setNidError("National ID must start with 1 or 2");
+                  } else {
+                    setNidError("");
+                  }
+                }}
+                className={nidError ? "border-red-500 focus-visible:ring-red-500" : ""}
               />
+              {nidError && <p className="text-xs text-red-500">{nidError}</p>}
             </div>
             <div className="space-y-2">
               <Label>Reason *</Label>
