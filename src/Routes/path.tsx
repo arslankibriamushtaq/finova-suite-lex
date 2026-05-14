@@ -25,6 +25,7 @@ import ClientRequestTest from "../pages/ThirdPartyDashboard/ClientRequestTest";
 import ClientRequestTestDetail from "../pages/ThirdPartyDashboard/ClientRequestTestDetail";
 import RequestDetail from "../pages/ThirdPartyDashboard/RequestDetail";
 import RequestService from "../pages/ThirdPartyDashboard/RequestService";
+import OnboardingDashboard from "../pages/UniversalOnboarding/OnboardingDashboard";
 import ProvidersList from "../pages/ThirdPartyDashboard/ProvidersList";
 import AllProviderApis from "../pages/ThirdPartyDashboard/AllProviderApis";
 import ProviderApiEnvConfig from "../pages/ThirdPartyDashboard/ProviderApiEnvConfig";
@@ -502,6 +503,7 @@ export const router = createBrowserRouter([
         children: [
           { path: "", element: <RoutetoDash /> },
           { path: "/LOS/Dashboard", element: <LandingDashboardPage /> },
+          { path: "/LOS/UniversalOnboarding", element: <OnboardingDashboard /> },
          
           // { path: "/LOS/ApplicationBoard", element: <ApplicationBoard /> },
           { path: "/LOS/ProductManagement", element: <ProductManagement /> },

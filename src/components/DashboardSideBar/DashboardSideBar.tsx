@@ -125,14 +125,22 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.ApiManagementIconDark,
       active: pathname.split("/").includes("/LOS"),
       menu: [
-      hasAccess("Dashboard") && {
-         label: "Dashboard",
-         LinkLable: "LOS",
-         Link: "Dashboard",
-         img: Images.dashboardIcon,
-         imgActive: Images.dashboardIconActive,
-         active: pathname.includes("/LOS/Dashboard"),
-       },
+       {
+          label: "Dashboard",
+          LinkLable: "LOS",
+          Link: "Dashboard",
+          img: Images.dashboardIcon,
+          imgActive: Images.dashboardIconActive,
+          active: pathname.includes("/LOS/Dashboard"),
+        },
+        {
+          label: "Universal Onboarding",
+          LinkLable: "LOS",
+          Link: "UniversalOnboarding",
+          img: Images.ApiManagementIcon, // Using an appropriate icon
+          imgActive: Images.ApiManagementIconDark,
+          active: pathname.includes("/LOS/UniversalOnboarding"),
+        },
     // {
     //   label: "Application Board",
     //   Link: "ApplicationBoard",
