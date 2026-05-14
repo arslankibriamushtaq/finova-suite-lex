@@ -272,136 +272,514 @@ const OnboardingDashboard: React.FC = () => {
     }
   };
 
+  const pageStyles = `
+    .universal-onboarding-page .uo-btn-black,
+    .universal-onboarding-page .uo-btn-black.ant-btn-primary,
+    .universal-onboarding-page .uo-btn-black.ant-btn-default {
+      background-color: #000000 !important;
+      border-color: #000000 !important;
+      color: #ffffff !important;
+    }
+    .universal-onboarding-page .uo-btn-black:hover:not(:disabled),
+    .universal-onboarding-page .uo-btn-black.ant-btn-primary:hover:not(:disabled),
+    .universal-onboarding-page .uo-btn-black.ant-btn-default:hover:not(:disabled) {
+      background-color: #1a1a1a !important;
+      border-color: #1a1a1a !important;
+      color: #ffffff !important;
+    }
+    .universal-onboarding-page .uo-btn-black .anticon,
+    .universal-onboarding-page .uo-btn-black svg {
+      color: #ffffff !important;
+    }
+    .universal-onboarding-page .country-grid {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+    .universal-onboarding-page .country-card {
+      background-color: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+      cursor: pointer;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+      position: relative;
+    }
+    .universal-onboarding-page .country-card:hover {
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    }
+    .universal-onboarding-page .country-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background-color: var(--muted);
+      color: var(--primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .universal-onboarding-page .status-pill {
+      padding: 5px 10px;
+      border-radius: 32px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+    .universal-onboarding-page .country-card-cta {
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 0.15s ease;
+    }
+    .universal-onboarding-page .country-card:hover .country-card-cta {
+      opacity: 1;
+    }
+    .universal-onboarding-page .step-empty {
+      text-align: center;
+      padding: 60px 16px;
+      background: #fff;
+      border-radius: 12px;
+      border: 1px dashed var(--border);
+    }
+    .universal-onboarding-page .step-card {
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+    .universal-onboarding-page .step-card-header {
+      padding: 16px;
+      background: #eb0d0d;
+      border-bottom: 1px solid #c00a0a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .universal-onboarding-page .step-card-header h6,
+    .universal-onboarding-page .step-card-header .step-endpoint-label,
+    .universal-onboarding-page .step-card-header .step-endpoint-code {
+      color: #ffffff !important;
+    }
+    .universal-onboarding-page .step-card-header .step-endpoint-code {
+      background: rgba(255, 255, 255, 0.15);
+      border-color: rgba(255, 255, 255, 0.3);
+    }
+    .universal-onboarding-page .step-card-header .step-divider {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    .universal-onboarding-page .step-card-body {
+      padding: 16px;
+      background: #fff;
+    }
+    .universal-onboarding-page .step-index-badge {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--foreground);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .universal-onboarding-page .step-endpoint-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+    .universal-onboarding-page .step-endpoint-code {
+      font-size: 11px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 2px 6px;
+      color: var(--foreground);
+    }
+    .universal-onboarding-page .step-icon-btn {
+      height: 32px !important;
+      width: 32px !important;
+      border-radius: 6px !important;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .universal-onboarding-page .step-divider {
+      width: 1px;
+      height: 24px;
+      background: var(--border);
+      margin: 0 4px;
+    }
+    .universal-onboarding-page .step-add-field {
+      height: 32px !important;
+      border-radius: 6px !important;
+      padding: 0 12px !important;
+    }
+    .universal-onboarding-page .field-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      transition: background-color 0.15s ease;
+    }
+    .universal-onboarding-page .field-row:hover {
+      background: var(--muted);
+    }
+    .universal-onboarding-page .field-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--muted);
+      color: var(--foreground);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .universal-onboarding-page .field-tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      line-height: 1.2;
+      border: 1px solid transparent;
+    }
+    .universal-onboarding-page .field-tag-type {
+      color: #475569;
+      background: #f1f5f9;
+      border-color: #e2e8f0;
+    }
+    .universal-onboarding-page .field-tag-pii {
+      color: #047857;
+      background: #ecfdf5;
+      border-color: #a7f3d0;
+    }
+    .universal-onboarding-page .field-tag-action {
+      color: #1d4ed8;
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+    .universal-onboarding-page .field-tag-regex {
+      color: #b45309;
+      background: #fffbeb;
+      border-color: #fde68a;
+    }
+    @media (max-width: 575.98px) {
+      .universal-onboarding-page .step-card-header { flex-direction: column; align-items: stretch; }
+    }
+    /* Themed modals (Step / Field / Submission) */
+    .uo-modal .modal-content {
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+      overflow: hidden;
+    }
+    .uo-modal .modal-header {
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+      background: #fff;
+    }
+    .uo-modal .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--foreground);
+    }
+    .uo-modal .modal-body {
+      padding: 20px 22px;
+      background: #fff;
+    }
+    .uo-modal .modal-footer {
+      padding: 14px 22px 18px;
+      border-top: 1px solid var(--border);
+      gap: 8px;
+    }
+    .uo-modal .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--foreground);
+      margin-bottom: 6px;
+    }
+    .uo-modal .uo-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--muted-foreground);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      margin-bottom: 8px;
+    }
+    .uo-modal .form-control,
+    .uo-modal .form-select {
+      height: 42px;
+      border-radius: 8px !important;
+      border: 1px solid var(--border) !important;
+      font-size: 14px;
+      padding: 8px 12px;
+      background: #fff;
+      color: var(--foreground);
+    }
+    .uo-modal textarea.form-control {
+      height: auto;
+      min-height: 80px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+    }
+    .uo-modal .form-control:focus,
+    .uo-modal .form-select:focus {
+      border-color: var(--primary) !important;
+      box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06) !important;
+      outline: none;
+    }
+    .uo-modal .uo-validation-box {
+      background: var(--muted);
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      padding: 14px;
+    }
+    .uo-modal .form-switch .form-check-input:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+    .uo-modal .uo-btn-cancel,
+    .uo-modal .uo-btn-cancel.ant-btn {
+      height: 40px !important;
+      padding: 0 18px !important;
+      border-radius: 8px !important;
+      border: 1px solid var(--border) !important;
+      background-color: #fff !important;
+      color: var(--foreground) !important;
+      font-weight: 500;
+    }
+    .uo-modal .uo-btn-cancel:hover:not(:disabled),
+    .uo-modal .uo-btn-cancel.ant-btn:hover:not(:disabled) {
+      background-color: var(--muted) !important;
+      color: var(--foreground) !important;
+    }
+    .uo-modal .uo-btn-submit,
+    .uo-modal .uo-btn-submit.ant-btn,
+    .uo-modal .uo-btn-submit.ant-btn-primary {
+      height: 40px !important;
+      padding: 0 22px !important;
+      border-radius: 8px !important;
+      background-color: #000000 !important;
+      border-color: #000000 !important;
+      color: #ffffff !important;
+      font-weight: 600;
+      min-width: 140px;
+    }
+    .uo-modal .uo-btn-submit:hover:not(:disabled),
+    .uo-modal .uo-btn-submit.ant-btn:hover:not(:disabled),
+    .uo-modal .uo-btn-submit.ant-btn-primary:hover:not(:disabled) {
+      background-color: #1a1a1a !important;
+      border-color: #1a1a1a !important;
+      color: #ffffff !important;
+    }
+    .uo-modal .uo-btn-submit .anticon,
+    .uo-modal .uo-btn-submit svg {
+      color: #ffffff !important;
+    }
+    .uo-modal .uo-json-viewer {
+      background: #0f172a;
+      color: #34d399;
+      padding: 16px;
+      border-radius: 10px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 12px;
+      overflow: auto;
+      max-height: 500px;
+    }
+  `;
+
   if (view === 'REGIONS') {
     return (
-      <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-        <div className="max-w-7xl mx-auto">
-          <div className="d-flex justify-content-between align-items-center mb-6 border-bottom pb-4 bg-white p-6 rounded-xl shadow-sm">
-            <div>
-              <h3 className="mb-0 fw-bold text-dark flex items-center gap-2">
-                <GlobalOutlined className="text-blue-600" />
-                Universal Onboarding Workflow
-              </h3>
-              <p className="text-muted small mb-0 mt-1">Manage country-specific journey flows and dynamic field configurations.</p>
-            </div>
-            <Button 
-              type="primary" 
-              icon={<PlusOutlined />} 
+      <div className="service universal-onboarding-page">
+        <style>{pageStyles}</style>
+        <div className="mb-3 pb-2 border-bottom">
+          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+            {/* <GlobalOutlined style={{ color: "var(--primary)" }} /> */}
+            Universal Onboarding Workflow
+          </h3>
+          <p className="text-muted small mb-0 mt-1">
+            Manage country-specific journey flows and dynamic field configurations.
+          </p>
+        </div>
+
+        {/* Filters card */}
+        <div
+          className="bg-white p-3 mb-3"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+            <Input
+              allowClear
+              placeholder="Search workflows..."
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={searchCountry}
+              onChange={(e) => setSearchCountry(e.target.value)}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            />
+            <Input
+              placeholder="Session ID..."
+              prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+              value={submissionId}
+              onChange={(e) => setSubmissionId(e.target.value)}
+              style={{ flex: "1 1 220px", minWidth: 180, borderRadius: 8, height: 40 }}
+            />
+            <Button
+              onClick={fetchSubmission}
+              className="uo-btn-black"
+              style={{ height: 40, borderRadius: 8, whiteSpace: "nowrap", flexShrink: 0 }}
+            >
+              Track
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
               onClick={() => setIsModalOpen(true)}
-              className="gradient-btn h-10 px-6 rounded-lg"
+              className="uo-btn-black"
+              style={{ height: 40, borderRadius: 8, whiteSpace: "nowrap", flexShrink: 0 }}
             >
               Add New Country
             </Button>
           </div>
+        </div>
 
-          <Card className="border-0 shadow-sm rounded-xl overflow-hidden">
-            <div className="p-4 border-bottom bg-white d-flex gap-3">
-              <Input
-                allowClear
-                placeholder="Search workflows..."
-                prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-                value={searchCountry}
-                onChange={(e) => setSearchCountry(e.target.value)}
-                style={{ borderRadius: 8, height: 42 }}
-              />
-              <div className="d-flex gap-2 align-items-center bg-slate-50 border rounded-lg px-2">
-                 <Input 
-                   placeholder="Session ID..." 
-                   className="border-0 bg-transparent" 
-                   value={submissionId}
-                   onChange={(e) => setSubmissionId(e.target.value)}
-                 />
-                 <Button type="text" icon={<SearchOutlined />} onClick={fetchSubmission}>Track</Button>
-              </div>
+        {/* Country cards */}
+        <div
+          className="bg-white p-3"
+          style={{
+            borderRadius: 12,
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+            border: "1px solid var(--border)",
+          }}
+        >
+          {isLoading ? (
+            <div className="text-center py-5 text-muted">
+              <div className="spinner-border spinner-border-sm me-2" />
+              Loading workflows...
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-               {isLoading ? (
-                 <div className="col-span-3 text-center py-16 text-muted">
-                   <div className="spinner-border spinner-border-sm me-2" />
-                   Loading workflows...
-                 </div>
-               ) : countries.length === 0 ? (
-                 <div className="col-span-3 text-center py-16">
-                   <ExclamationCircleOutlined style={{ fontSize: 40, color: '#d1d5db' }} />
-                   <p className="text-muted mt-3">No country workflows found. Add your first one!</p>
-                 </div>
-               ) : (
-                 countries
-                   .filter(c =>
-                     (c.workflowName || c.countryName || '')
-                       .toLowerCase()
-                       .includes(searchCountry.toLowerCase()) ||
-                     (c.countryCode || '')
-                       .toLowerCase()
-                       .includes(searchCountry.toLowerCase())
-                   )
-                   .map((country) => (
-                     <div
+          ) : countries.length === 0 ? (
+            <div className="text-center py-5">
+              <ExclamationCircleOutlined style={{ fontSize: 40, color: "var(--muted-foreground)" }} />
+              <p className="text-muted mt-3 mb-0">No country workflows found. Add your first one!</p>
+            </div>
+          ) : (
+            <div className="country-grid">
+              {countries
+                .filter(c =>
+                  (c.workflowName || c.countryName || '')
+                    .toLowerCase()
+                    .includes(searchCountry.toLowerCase()) ||
+                  (c.countryCode || '')
+                    .toLowerCase()
+                    .includes(searchCountry.toLowerCase())
+                )
+                .map((country) => {
+                  const active = country.isActive !== false;
+                  return (
+                    <div
                       key={country.countryCode}
                       onClick={() => handleCountrySelect(country)}
-                      className="bg-white border rounded-xl p-6 hover:border-blue-400 hover:shadow-md transition-all cursor-pointer group relative"
-                     >
-                        <div className="d-flex justify-content-between align-items-start mb-4">
-                           <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center text-blue-600">
-                              <GlobalOutlined style={{ fontSize: 24 }} />
-                           </div>
-                           <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                             country.isActive !== false ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'
-                           }`}>
-                              {country.isActive !== false ? 'Active' : 'Inactive'}
-                           </span>
+                      className="country-card"
+                    >
+                      <div className="d-flex justify-content-between align-items-start mb-3">
+                        <div className="country-icon">
+                          <GlobalOutlined style={{ fontSize: 22 }} />
                         </div>
-                        <h4 className="fw-bold mb-1">{country.workflowName || country.countryName}</h4>
-                        <p className="text-muted small mb-0 uppercase tracking-wider">{country.countryCode} Region</p>
-                        <div className="mt-4 pt-4 border-top d-flex justify-content-between align-items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                           <span className="text-blue-600 font-bold text-xs">Configure Workflow</span>
-                           <ArrowLeftOutlined className="rotate-180" />
-                        </div>
-                     </div>
-                   ))
-               )}
+                        <span
+                          className="status-pill"
+                          style={{
+                            backgroundColor: active ? "var(--color-success)" : "var(--color-warning)",
+                            color: "var(--primary-foreground)",
+                          }}
+                        >
+                          {active ? "Active" : "Inactive"}
+                        </span>
+                      </div>
+                      <h5 className="fw-bold mb-1 text-dark">
+                        {country.workflowName || country.countryName}
+                      </h5>
+                      <p className="text-muted small mb-0" style={{ letterSpacing: 0.4 }}>
+                        {country.countryCode} REGION
+                      </p>
+                      <div className="country-card-cta">
+                        <span style={{ color: "var(--primary)", fontWeight: 600, fontSize: 12 }}>
+                          Configure Workflow
+                        </span>
+                        <ArrowLeftOutlined style={{ transform: "rotate(180deg)", color: "var(--primary)" }} />
+                      </div>
+                    </div>
+                  );
+                })}
             </div>
-          </Card>
+          )}
         </div>
+
         <NewCountryModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSuccess={fetchCountries} />
       </div>
     );
   }
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
-       <div className="max-w-6xl mx-auto">
-          {/* Orchestrator Header */}
-          <div className="d-flex justify-content-between align-items-center mb-6 border-bottom pb-4 bg-white p-6 rounded-xl shadow-sm">
-             <div className="d-flex align-items-center gap-4">
-                <Button 
-                  icon={<ArrowLeftOutlined />} 
-                  onClick={() => setView('REGIONS')}
-                  className="rounded-lg h-10 w-10 flex items-center justify-center"
-                />
-                <div>
-                   <h4 className="mb-0 fw-bold">{selectedCountry?.workflowName || selectedCountry?.countryName} ({selectedCountry?.countryCode})</h4>
-                   <p className="text-muted small mb-0">Add, configure, and manage onboarding steps and fields.</p>
-                </div>
-             </div>
-             <div className="d-flex gap-3">
-                <Button 
-                  icon={<PlusOutlined />} 
-                  onClick={() => openStepModal()}
-                  className="h-10 px-4 rounded-lg"
-                >
-                  Add Step
-                </Button>
-                <Button 
-                  type="primary" 
-                  className="gradient-btn h-10 px-6 rounded-lg"
-                  onClick={handlePublish}
-                  loading={isLoading}
-                >
-                  Publish Changes
-                </Button>
+    <div className="service universal-onboarding-page">
+       <style>{pageStyles}</style>
+       <div className="mb-3 pb-2 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+          <div className="d-flex align-items-center gap-3">
+             <Button
+               icon={<ArrowLeftOutlined />}
+               onClick={() => setView('REGIONS')}
+               style={{ height: 40, width: 40, borderRadius: 8, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+             />
+             <div>
+                <h4 className="mb-0 fw-bold">{selectedCountry?.workflowName || selectedCountry?.countryName} ({selectedCountry?.countryCode})</h4>
+                <p className="text-muted small mb-0">Add, configure, and manage onboarding steps and fields.</p>
              </div>
           </div>
+          <div className="d-flex gap-2 flex-wrap">
+             <Button
+               icon={<PlusOutlined />}
+               onClick={() => openStepModal()}
+               className="uo-btn-black"
+               style={{ height: 40, borderRadius: 8 }}
+             >
+               Add Step
+             </Button>
+             <Button
+               type="primary"
+               className="uo-btn-black"
+               style={{ height: 40, borderRadius: 8 }}
+               onClick={handlePublish}
+               loading={isLoading}
+             >
+               Publish Changes
+             </Button>
+          </div>
+       </div>
 
           {/* Orchestrator Content */}
           <Row>
@@ -409,72 +787,77 @@ const OnboardingDashboard: React.FC = () => {
               {/* Steps List */}
               <div className="space-y-6">
              {steps.length === 0 ? (
-               <div className="text-center py-20 bg-white rounded-xl border border-dashed">
-                  <ExclamationCircleOutlined style={{ fontSize: 40, color: '#d1d5db' }} className="mb-4" />
-                  <p className="text-muted font-medium">No steps found for this country.</p>
+               <div className="step-empty">
+                  <ExclamationCircleOutlined style={{ fontSize: 40, color: "var(--muted-foreground)" }} />
+                  <p className="text-muted mt-3 mb-2">No steps found for this country.</p>
                   <Button type="link" onClick={() => openStepModal()}>Create your first step</Button>
                </div>
              ) : (
                steps.map((step, index) => (
-                 <Card key={step.id} className="border-0 shadow-sm rounded-xl overflow-hidden mb-4">
-                    <div className="p-4 border-bottom bg-slate-50/50 d-flex justify-between align-items-center">
-                       <div className="d-flex align-items-center gap-4">
-                          <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center font-bold text-blue-600 border shadow-sm">
-                             {index + 1}
-                          </div>
+                 <div key={step.id} className="step-card">
+                    <div className="step-card-header">
+                       <div className="d-flex align-items-center gap-3">
+                          <div className="step-index-badge">{index + 1}</div>
                           <div>
                              <h6 className="mb-0 fw-bold text-dark">{step.stepName}</h6>
-                             <div className="d-flex align-items-center gap-2 mt-1">
-                                <span className="text-[10px] font-bold text-muted uppercase tracking-tight">Endpoint:</span>
-                                <code className="text-[10px] bg-white px-1.5 py-0.5 rounded border">{step.apiMethod} {step.apiUrl}</code>
+                             <div className="d-flex align-items-center gap-2 mt-1 flex-wrap">
+                                <span className="step-endpoint-label">Endpoint:</span>
+                                <code className="step-endpoint-code">{step.apiMethod} {step.apiUrl}</code>
                              </div>
                           </div>
                        </div>
-                       <div className="d-flex gap-2">
+                       <div className="d-flex gap-2 align-items-center flex-shrink-0">
                           <Tooltip title="Edit Step">
-                            <Button 
-                              size="small" 
-                              icon={<EditOutlined />} 
+                            <Button
+                              size="small"
+                              icon={<EditOutlined />}
                               onClick={() => openStepModal(step)}
-                              className="flex items-center justify-center h-8 w-8"
+                              className="step-icon-btn"
                             />
                           </Tooltip>
                           <Tooltip title="Delete Step">
-                            <Button 
-                              size="small" 
-                              danger 
-                              icon={<DeleteOutlined />} 
+                            <Button
+                              size="small"
+                              danger
+                              icon={<DeleteOutlined />}
                               onClick={() => deleteStepLocal(step.id)}
-                              className="flex items-center justify-center h-8 w-8"
+                              className="step-icon-btn"
                             />
                           </Tooltip>
-                          <div className="w-px h-8 bg-gray-200 mx-1" />
-                          <Button size="small" type="primary" icon={<PlusOutlined />} onClick={() => openFieldModal(step.id)} className="h-8 px-4 rounded-lg">Add Field</Button>
+                          <div className="step-divider" />
+                          <Button
+                            size="small"
+                            type="primary"
+                            icon={<PlusOutlined />}
+                            onClick={() => openFieldModal(step.id)}
+                            className="uo-btn-black step-add-field"
+                          >
+                            Add Field
+                          </Button>
                        </div>
                     </div>
 
-                    <div className="p-0 bg-white">
-                       <div className="p-6">
-                          {(step.fields || []).length === 0 ? (
-                            <p className="text-center text-muted small py-4 mb-0">No fields configured in this step.</p>
-                          ) : (
-                            <div className="space-y-3">
-                               {step.fields.map((field: any, fIdx: number) => (
-                                 <div key={fIdx} className="d-flex justify-between items-center p-4 border rounded-lg bg-gray-50/50 hover:bg-white transition-all group">
-                                    <div className="d-flex align-items-center gap-4">
-                                       <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center text-blue-600">
-                                          {field.fieldType === 'BUTTON' ? <GlobalOutlined style={{ fontSize: 14 }} /> : <SettingOutlined style={{ fontSize: 14 }} />}
-                                       </div>
-                                       <div>
-                                          <p className="mb-0 font-bold text-sm text-slate-900">{field.fieldLabel || field.label}</p>
-                                          <div className="d-flex align-items-center gap-2 flex-wrap mt-1">
-                                            <span className="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded uppercase">{field.fieldType}</span>
-                                            {field.isPii && <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded tracking-wider uppercase">PII VAULT</span>}
-                                            {field.actionApiUrl && <span className="text-[9px] font-bold text-purple-600 bg-purple-50 px-1.5 py-0.5 rounded tracking-wider uppercase">API ACTION</span>}
-                                            {field.validationRegex && <span className="text-[9px] font-bold text-orange-600 bg-orange-50 px-1.5 py-0.5 rounded tracking-wider uppercase">REGEX</span>}
-                                          </div>
-                                       </div>
-                                    </div>
+                    <div className="step-card-body">
+                       {(step.fields || []).length === 0 ? (
+                         <p className="text-center text-muted small py-4 mb-0">No fields configured in this step.</p>
+                       ) : (
+                         <div className="d-flex flex-column gap-2">
+                           {step.fields.map((field: any, fIdx: number) => (
+                             <div key={fIdx} className="field-row">
+                                <div className="d-flex align-items-center gap-3">
+                                   <div className="field-icon">
+                                      {field.fieldType === 'BUTTON' ? <GlobalOutlined style={{ fontSize: 14 }} /> : <SettingOutlined style={{ fontSize: 14 }} />}
+                                   </div>
+                                   <div>
+                                      <p className="mb-0 fw-bold" style={{ fontSize: 14, color: "var(--foreground)" }}>{field.fieldLabel || field.label}</p>
+                                      <div className="d-flex align-items-center gap-1 flex-wrap mt-1">
+                                        <span className="field-tag field-tag-type">{field.fieldType}</span>
+                                        {field.isPii && <span className="field-tag field-tag-pii">PII VAULT</span>}
+                                        {field.actionApiUrl && <span className="field-tag field-tag-action">API ACTION</span>}
+                                        {field.validationRegex && <span className="field-tag field-tag-regex">REGEX</span>}
+                                      </div>
+                                   </div>
+                                </div>
                                     <div className="d-flex gap-2">
                                        <Button 
                                           type="text" 
@@ -489,9 +872,8 @@ const OnboardingDashboard: React.FC = () => {
                                ))}
                             </div>
                           )}
-                       </div>
                     </div>
-                 </Card>
+                 </div>
                ))
              )}
               </div>
@@ -542,33 +924,30 @@ const OnboardingDashboard: React.FC = () => {
                </div>
             </Col>
           </Row>
-       </div>
 
        {/* Step Edit/Add Modal */}
-       <Modal show={showStepModal} onHide={() => setShowStepModal(false)} centered>
+       <Modal show={showStepModal} onHide={() => setShowStepModal(false)} centered className="uo-modal">
           <Modal.Header closeButton>
              <Modal.Title>{editingStep ? 'Edit Step Configuration' : 'Add New Step'}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-             <Form className="space-y-4">
-                <Form.Group>
-                   <Form.Label className="small fw-bold">Step Name</Form.Label>
-                   <Form.Control 
-                    type="text" 
+             <Form>
+                <Form.Group className="mb-3">
+                   <Form.Label>Step Name</Form.Label>
+                   <Form.Control
+                    type="text"
                     value={stepPayload.stepName}
                     onChange={(e) => setStepPayload({ ...stepPayload, stepName: e.target.value })}
                     placeholder="e.g. Identity Scan"
-                    className="h-11 rounded-lg"
                    />
                 </Form.Group>
-                <Row>
+                <Row className="mb-3">
                    <Col md={4}>
                       <Form.Group>
-                        <Form.Label className="small fw-bold">Method</Form.Label>
-                        <Form.Select 
+                        <Form.Label>Method</Form.Label>
+                        <Form.Select
                           value={stepPayload.apiMethod}
                           onChange={(e) => setStepPayload({ ...stepPayload, apiMethod: e.target.value })}
-                          className="h-11 rounded-lg"
                         >
                            <option value="POST">POST</option>
                            <option value="GET">GET</option>
@@ -578,102 +957,91 @@ const OnboardingDashboard: React.FC = () => {
                    </Col>
                    <Col md={8}>
                       <Form.Group>
-                        <Form.Label className="small fw-bold">API Endpoint</Form.Label>
-                        <Form.Control 
-                          type="text" 
+                        <Form.Label>API Endpoint</Form.Label>
+                        <Form.Control
+                          type="text"
                           value={stepPayload.apiUrl}
                           onChange={(e) => setStepPayload({ ...stepPayload, apiUrl: e.target.value })}
                           placeholder="/api/v1/..."
-                          className="h-11 rounded-lg"
                         />
                       </Form.Group>
                    </Col>
                 </Row>
-                <Row>
-                   <Col md={12}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="small fw-bold">Custom Headers (JSON)</Form.Label>
-                        <Form.Control 
-                          as="textarea"
-                          rows={3}
-                          value={stepPayload.apiHeaders}
-                          onChange={(e) => setStepPayload({ ...stepPayload, apiHeaders: e.target.value })}
-                          placeholder='{"Authorization": "Bearer ..."}'
-                          className="font-mono text-xs rounded-lg"
-                        />
-                      </Form.Group>
-                   </Col>
-                </Row>
-                <Row>
+                <Form.Group className="mb-3">
+                   <Form.Label>Custom Headers (JSON)</Form.Label>
+                   <Form.Control
+                     as="textarea"
+                     rows={3}
+                     value={stepPayload.apiHeaders}
+                     onChange={(e) => setStepPayload({ ...stepPayload, apiHeaders: e.target.value })}
+                     placeholder='{"Authorization": "Bearer ..."}'
+                   />
+                </Form.Group>
+                <Row className="mb-3">
                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="small fw-bold">Params Mapping (JSON)</Form.Label>
-                        <Form.Control 
+                      <Form.Group>
+                        <Form.Label>Params Mapping (JSON)</Form.Label>
+                        <Form.Control
                           as="textarea"
                           rows={3}
                           value={stepPayload.apiParamsMapping}
                           onChange={(e) => setStepPayload({ ...stepPayload, apiParamsMapping: e.target.value })}
                           placeholder='{"third_party_id": "cnic"}'
-                          className="font-mono text-xs rounded-lg"
                         />
                       </Form.Group>
                    </Col>
                    <Col md={6}>
-                      <Form.Group className="mb-3">
-                        <Form.Label className="small fw-bold">Body Mapping (JSON)</Form.Label>
-                        <Form.Control 
+                      <Form.Group>
+                        <Form.Label>Body Mapping (JSON)</Form.Label>
+                        <Form.Control
                           as="textarea"
                           rows={3}
                           value={stepPayload.apiBodyMapping}
                           onChange={(e) => setStepPayload({ ...stepPayload, apiBodyMapping: e.target.value })}
                           placeholder='{"customer_name": "full_name"}'
-                          className="font-mono text-xs rounded-lg"
                         />
                       </Form.Group>
                    </Col>
                 </Row>
                 <Form.Group>
-                   <Form.Label className="small fw-bold">Order Index</Form.Label>
-                   <Form.Control 
-                    type="number" 
+                   <Form.Label>Order Index</Form.Label>
+                   <Form.Control
+                    type="number"
                     value={stepPayload.orderIndex}
                     onChange={(e) => setStepPayload({ ...stepPayload, orderIndex: parseInt(e.target.value) })}
-                    className="h-11 rounded-lg"
                    />
                 </Form.Group>
              </Form>
           </Modal.Body>
           <Modal.Footer>
-             <Button onClick={() => setShowStepModal(false)}>Cancel</Button>
-             <Button type="primary" className="gradient-btn h-10 px-6 rounded-lg" onClick={saveStep}>Save Step</Button>
+             <Button onClick={() => setShowStepModal(false)} className="uo-btn-cancel">Cancel</Button>
+             <Button type="primary" onClick={saveStep} className="uo-btn-submit">Save Step</Button>
           </Modal.Footer>
        </Modal>
 
        {/* Field Edit/Add Modal */}
-       <Modal show={showFieldModal} onHide={() => setShowFieldModal(false)} centered>
+       <Modal show={showFieldModal} onHide={() => setShowFieldModal(false)} centered className="uo-modal">
           <Modal.Header closeButton>
              <Modal.Title>Add Field to Step</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-             <Form className="space-y-4">
-                 <Form.Group>
-                   <Form.Label className="small fw-bold">Field Label</Form.Label>
-                   <Form.Control 
-                    type="text" 
+             <Form>
+                <Form.Group className="mb-3">
+                   <Form.Label>Field Label</Form.Label>
+                   <Form.Control
+                    type="text"
                     value={fieldPayload.fieldLabel}
                     onChange={(e) => setFieldPayload({ ...fieldPayload, fieldLabel: e.target.value })}
                     placeholder="e.g. Full Name"
-                    className="h-11 rounded-lg"
                    />
                 </Form.Group>
-                <Row>
+                <Row className="mb-3">
                    <Col md={6}>
                       <Form.Group>
-                        <Form.Label className="small fw-bold">Field Type</Form.Label>
-                        <Form.Select 
+                        <Form.Label>Field Type</Form.Label>
+                        <Form.Select
                           value={fieldPayload.fieldType}
                           onChange={(e) => setFieldPayload({ ...fieldPayload, fieldType: e.target.value })}
-                          className="h-11 rounded-lg"
                         >
                            <option value="STRING">STRING</option>
                            <option value="TEXT">TEXT</option>
@@ -686,41 +1054,40 @@ const OnboardingDashboard: React.FC = () => {
                    </Col>
                    <Col md={6}>
                       <Form.Group>
-                         <Form.Label className="small fw-bold">Order Index</Form.Label>
-                         <Form.Control 
-                          type="number" 
+                         <Form.Label>Order Index</Form.Label>
+                         <Form.Control
+                          type="number"
                           value={fieldPayload.orderIndex}
                           onChange={(e) => setFieldPayload({ ...fieldPayload, orderIndex: parseInt(e.target.value) || 0 })}
-                          className="h-11 rounded-lg"
                          />
                       </Form.Group>
                    </Col>
                 </Row>
-                
-                <div className="bg-slate-50 p-3 rounded-lg border border-dashed space-y-3">
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Field Validation</p>
+
+                <div className="uo-validation-box mb-3">
+                   <div className="uo-section-label">Field Validation</div>
                    <Form.Group>
-                      <Form.Label className="text-[11px] fw-bold">Validation Regex</Form.Label>
-                      <Form.Control 
-                        type="text" 
-                        size="sm"
+                      <Form.Label>Validation Regex</Form.Label>
+                      <Form.Control
+                        type="text"
                         value={fieldPayload.validationRegex || ''}
                         onChange={(e) => setFieldPayload({ ...fieldPayload, validationRegex: e.target.value || null })}
                         placeholder="^[0-9]+$"
-                        className="rounded-md"
                       />
                    </Form.Group>
                 </div>
-                <div className="d-flex gap-4 pt-2">
-                   <Form.Check 
-                    type="switch" 
-                    label="Is PII? (Vault Encryption)" 
+                <div className="d-flex gap-4 pt-1">
+                   <Form.Check
+                    type="switch"
+                    id="uo-field-pii"
+                    label="Is PII? (Vault Encryption)"
                     checked={fieldPayload.isPii}
                     onChange={(e) => setFieldPayload({ ...fieldPayload, isPii: e.target.checked })}
                    />
-                   <Form.Check 
-                    type="switch" 
-                    label="Mandatory?" 
+                   <Form.Check
+                    type="switch"
+                    id="uo-field-mandatory"
+                    label="Mandatory?"
                     checked={fieldPayload.isMandatory}
                     onChange={(e) => setFieldPayload({ ...fieldPayload, isMandatory: e.target.checked })}
                    />
@@ -728,23 +1095,23 @@ const OnboardingDashboard: React.FC = () => {
              </Form>
           </Modal.Body>
           <Modal.Footer>
-             <Button onClick={() => setShowFieldModal(false)}>Cancel</Button>
-             <Button type="primary" className="gradient-btn h-10 px-6 rounded-lg" onClick={saveField}>Add Field</Button>
+             <Button onClick={() => setShowFieldModal(false)} className="uo-btn-cancel">Cancel</Button>
+             <Button type="primary" onClick={saveField} className="uo-btn-submit">Add Field</Button>
           </Modal.Footer>
        </Modal>
 
        {/* Submission Modal */}
-       <Modal show={showSubmissionModal} onHide={() => setShowSubmissionModal(false)} size="lg" centered>
+       <Modal show={showSubmissionModal} onHide={() => setShowSubmissionModal(false)} size="lg" centered className="uo-modal">
           <Modal.Header closeButton>
              <Modal.Title>Submission Inspection</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-             <div className="bg-dark text-emerald-400 p-4 rounded-xl font-mono text-xs overflow-auto max-h-[500px]">
-                <pre>{JSON.stringify(submissionData, null, 2)}</pre>
+             <div className="uo-json-viewer">
+                <pre style={{ margin: 0, color: "inherit", background: "transparent" }}>{JSON.stringify(submissionData, null, 2)}</pre>
              </div>
           </Modal.Body>
           <Modal.Footer>
-             <Button onClick={() => setShowSubmissionModal(false)}>Close Inspector</Button>
+             <Button onClick={() => setShowSubmissionModal(false)} className="uo-btn-cancel">Close Inspector</Button>
           </Modal.Footer>
        </Modal>
     </div>
