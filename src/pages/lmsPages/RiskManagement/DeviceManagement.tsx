@@ -596,7 +596,57 @@ const DeviceManagement = () => {
         </div>
       </div>
 
-        {/* Tabs - Improved Design */}
+        <style>{`
+          .device-tabs-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 16px;
+            flex-wrap: nowrap;
+            border-bottom: 1px solid var(--border);
+          }
+          .device-tabs-list {
+            background: transparent !important;
+            padding: 0;
+            border-radius: 0;
+            height: auto;
+            gap: 0;
+            justify-content: flex-start;
+            flex: 0 1 auto;
+            width: auto;
+          }
+          .device-tabs-trigger {
+            background: transparent !important;
+            border: none !important;
+            border-radius: 0 !important;
+            color: var(--muted-foreground) !important;
+            padding: 10px 16px !important;
+            font-weight: 500;
+            font-size: 14px;
+            box-shadow: none !important;
+            position: relative;
+            transition: color 0.15s ease;
+          }
+          .device-tabs-trigger:hover {
+            color: var(--foreground) !important;
+          }
+          .device-tabs-trigger[data-state="active"] {
+            background: transparent !important;
+            color: var(--primary) !important;
+            box-shadow: none !important;
+          }
+          .device-tabs-trigger[data-state="active"]::after {
+            content: "";
+            position: absolute;
+            left: 12px;
+            right: 12px;
+            bottom: -1px;
+            height: 2px;
+            background-color: var(--primary);
+          }
+        `}</style>
+
         <Tabs
           value={activeTab}
           onValueChange={(val) => {
@@ -604,35 +654,19 @@ const DeviceManagement = () => {
             setPage(1);
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16, gap: 12 }}>
-            <TabsList style={{ display: "inline-flex", width: "auto", flexShrink: 0 }} className="bg-[var(--theme-inactive-tab)] p-1 h-auto gap-2 rounded-lg">
-              <TabsTrigger
-                value="all"
-                className="rounded-md border-0 px-6 py-2.5 font-medium text-base transition-all duration-200 data-[state=active]:bg-[var(--theme-secondary)] data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-muted/50"
-              >
-                <span className="flex items-center gap-2">
-                  All Devices
-                  {/* <Badge variant={activeTab === "all" ? "secondary" : "outline"} className="ml-2">
-                    {allDevicesData.length}
-                  </Badge> */}
-                </span>
+          <div className="device-tabs-row">
+            <TabsList className="device-tabs-list">
+              <TabsTrigger value="all" className="device-tabs-trigger">
+                All Devices
               </TabsTrigger>
-              <TabsTrigger
-                value="blocked"
-                className="rounded-md border-0 px-6 py-2.5 font-medium text-base transition-all duration-200 data-[state=active]:bg-[var(--theme-secondary)] data-[state=active]:text-white data-[state=active]:shadow-sm hover:bg-muted/50"
-              >
-                <span className="flex items-center gap-2">
-                  Blocked Devices
-                  {/* <Badge variant={activeTab === "blocked" ? "secondary" : "outline"} className="ml-2">
-                    {blockedDevicesData.length}
-                  </Badge> */}
-                </span>
+              <TabsTrigger value="blocked" className="device-tabs-trigger">
+                Blocked Devices
               </TabsTrigger>
             </TabsList>
             <Button
               className="gap-2"
               onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
-              style={{ flexShrink: 0 }}
+              style={{ flexShrink: 0, height: 40, alignSelf: "center", marginBottom: 8 }}
             >
               <Plus className="w-4 h-4" />
               Block Device
