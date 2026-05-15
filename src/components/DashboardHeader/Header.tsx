@@ -145,7 +145,7 @@ const DashboardHeader = () => {
               }
               style={{ alignItems: "center" }}
             >
-              <div className="d-flex align-items-center" onClick={toggleMenu}>
+              <div className="d-flex align-items-center">
                 <a
                   style={{ justifySelf: "left", marginRight: "4px" }}
                   href={`/flow/dashboard`}
@@ -153,7 +153,7 @@ const DashboardHeader = () => {
                   {/* <img src={Images.notification} alt="Notifications" /> */}
                 </a>
                 <NotificationInbox />
-                <div className="user-profile-trigger d-flex align-items-center">
+                <div className="user-profile-trigger d-flex align-items-center" onClick={toggleMenu} style={{ cursor: "pointer" }}>
                   <img
                     src={Images.userIcon}
                     alt="User Icon"
