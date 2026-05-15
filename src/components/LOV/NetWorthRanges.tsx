@@ -43,6 +43,7 @@ const NetWorthRanges = () => {
     description_ar: "",
     is_active: true,
     display_order: 0,
+    score: 0,
   });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -88,6 +89,7 @@ const NetWorthRanges = () => {
       description_ar: "",
       is_active: true,
       display_order: 0,
+      score: 0,
     });
     setShowFormModal(true);
   };
@@ -103,6 +105,7 @@ const NetWorthRanges = () => {
       description_ar: row.descriptionAr || row.description_ar || "",
       is_active: row.isActive ?? row.is_active ?? true,
       display_order: row.displayOrder ?? row.display_order ?? 0,
+      score: row.score ?? 0,
     });
     setShowFormModal(true);
   };
@@ -127,6 +130,7 @@ const NetWorthRanges = () => {
         descriptionAr: formData.description_ar.trim(),
         isActive: formData.is_active,
         displayOrder: Number(formData.display_order) || 0,
+        score: Number(formData.score) || 0,
       };
 
       if (modalMode === "edit" && currentItemId) {
@@ -188,6 +192,12 @@ const NetWorthRanges = () => {
       selector: (row: any) => row.displayOrder ?? row.display_order ?? "-",
       sortable: true,
       width: "130px",
+    },
+    {
+      name: "Score",
+      selector: (row: any) => row.score ?? "-",
+      sortable: true,
+      width: "90px",
     },
     {
       name: "Status",
@@ -346,6 +356,15 @@ const NetWorthRanges = () => {
                   placeholder="Arabic description"
                   value={formData.description_ar}
                   onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Score</Label>
+                <Input
+                  type="number"
+                  placeholder="0"
+                  value={formData.score}
+                  onChange={(e) => setFormData({ ...formData, score: Number(e.target.value) })}
                 />
               </div>
             </div>
