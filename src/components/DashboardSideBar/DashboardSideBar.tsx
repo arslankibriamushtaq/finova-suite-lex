@@ -141,6 +141,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           imgActive: Images.ApiManagementIconDark,
           active: pathname.includes("/LOS/UniversalOnboarding"),
         },
+        {
+          label: "Notification Orchestrator",
+          LinkLable: "LOS",
+          Link: "NotificationOrchestrator",
+          img: Images.ApiManagementIcon, // Reusing icon for consistency
+          imgActive: Images.ApiManagementIconDark,
+          active: pathname.includes("/LOS/NotificationOrchestrator"),
+        },
     // {
     //   label: "Application Board",
     //   Link: "ApplicationBoard",

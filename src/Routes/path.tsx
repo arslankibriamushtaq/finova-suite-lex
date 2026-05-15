@@ -292,6 +292,7 @@ import Templates from "../components/LMS/NotificationSystem/Templates";
 import UsersNotification from "../components/LMS/NotificationSystem/Users";
 import UserPreferences from "../components/LMS/NotificationSystem/UserPreferences";
 import SystemPreferences from "../components/LMS/NotificationSystem/SystemPreferences";
+import NotificationOrchestrator from "../pages/lmsPages/NotificationOrchestrator/NotificationOrchestrator";
 
 import TemplateChannels from "../components/LMS/NotificationSystem/TemplateChannels";
 import CalculatorSettings from "../components/WebpageManagement/CalculatorSettings";
@@ -518,6 +519,7 @@ export const router = createBrowserRouter([
           { path: "/LOS/ProductManagement/ProductSubCategory", element: <ProductSubCategory /> },
           { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },
           { path: "/LOS/Notification", element: <Notification /> },
+          { path: "/LOS/NotificationOrchestrator", element: <NotificationOrchestrator /> },
 {
             path: "/LOS/UserBlock/Compliance",
             element: <ComplianceBlock />,

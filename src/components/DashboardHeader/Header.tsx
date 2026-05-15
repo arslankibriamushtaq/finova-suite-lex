@@ -11,6 +11,7 @@ import { RiArrowDropDownFill } from "react-icons/ri";
 import toast from "react-hot-toast";
 import { logOutApi } from "../../redux/apis/apisCrud";
 import { store } from "../../redux/store";
+import NotificationInbox from "../NotificationInbox";
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -151,6 +152,7 @@ const DashboardHeader = () => {
                 >
                   {/* <img src={Images.notification} alt="Notifications" /> */}
                 </a>
+                <NotificationInbox />
                 <div className="user-profile-trigger d-flex align-items-center">
                   <img
                     src={Images.userIcon}

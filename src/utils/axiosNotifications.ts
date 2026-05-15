@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import Axios from "axios";
 
 const axios = Axios.create({
-  baseURL: import.meta.env.VITE_REACT_APP_API_NOTIFICATION_URL,
+  baseURL: import.meta.env.VITE_REACT_APP_API_NOTIFICATION_URL || import.meta.env.VITE_API_BASE_URL,
 });
 
 axios.interceptors.request.use((reqConfig) => {

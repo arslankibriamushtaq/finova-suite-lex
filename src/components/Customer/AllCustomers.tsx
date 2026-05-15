@@ -693,13 +693,13 @@ const AllCustomers = () => {
             placeholder="Search..."
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e: any) => setSearch(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
           />
           <DatePicker
             placeholder="From"
             value={fromDate}
-            onChange={(date) => {
+            onChange={(date: any) => {
               setFromDate(date);
               dispatch(
                 authSlice.actions.setFromFilter({
@@ -719,7 +719,7 @@ const AllCustomers = () => {
           <DatePicker
             placeholder="To"
             value={toDate}
-            onChange={(date) => {
+            onChange={(date: any) => {
               setToDate(date);
               dispatch(
                 authSlice.actions.setToFilter({
@@ -855,7 +855,7 @@ const AllCustomers = () => {
                   <thead style={{ backgroundColor: "var(--muted)", position: "sticky", top: 0, zIndex: 1 }}>
                     <tr>
                       <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", width: "50px" }}>
-                        <Checkbox checked={selectedBlockCodes.length === blockCodes.length && blockCodes.length > 0} indeterminate={selectedBlockCodes.length > 0 && selectedBlockCodes.length < blockCodes.length} onChange={(e) => e.target.checked ? handleSelectAll() : handleDeselectAll()} />
+                        <Checkbox checked={selectedBlockCodes.length === blockCodes.length && blockCodes.length > 0} indeterminate={selectedBlockCodes.length > 0 && selectedBlockCodes.length < blockCodes.length} onChange={(e: any) => e.target.checked ? handleSelectAll() : handleDeselectAll()} />
                       </th>
                       <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>Block Code</th>
                       <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>Type</th>
@@ -933,7 +933,7 @@ const AllCustomers = () => {
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newStatus}
-                  onChange={(value) => setNewStatus(value)}
+                  onChange={(value: any) => setNewStatus(value)}
                   placeholder="Select Status"
                 >
                   <Select.Option value="active">Active</Select.Option>
@@ -1019,7 +1019,7 @@ const AllCustomers = () => {
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newRisk}
-                  onChange={(value) => setNewRisk(value)}
+                  onChange={(value: any) => setNewRisk(value)}
                   placeholder="Select Risk Level"
                 >
                   <Select.Option value="high">High</Select.Option>
