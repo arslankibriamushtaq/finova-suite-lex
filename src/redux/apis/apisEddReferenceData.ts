@@ -137,6 +137,46 @@ export function deleteSourceOfIncome(id: string) {
 }
 
 // ============================================================
+// Occupation
+// ============================================================
+
+export function getAllOccupations(page?: any, size?: any, search?: string) {
+  const params: Record<string, any> = {};
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  return axiosCustomerService.get(`/api/v1/reference-data/occupation${buildQueryString(params)}`);
+}
+
+export function getActiveOccupations() {
+  return axiosCustomerService.get(`/api/v1/reference-data/occupation/active`);
+}
+
+export function getOccupationById(id: string) {
+  return axiosCustomerService.get(`/api/v1/reference-data/occupation/${id}`);
+}
+
+export function createOccupation(body: any) {
+  return axiosCustomerService.post(`/api/v1/reference-data/occupation`, body);
+}
+
+export function updateOccupation(id: string, body: any) {
+  return axiosCustomerService.put(`/api/v1/reference-data/occupation/${id}`, body);
+}
+
+export function deleteOccupation(id: string) {
+  return axiosCustomerService.delete(`/api/v1/reference-data/occupation/${id}`);
+}
+
+export function activateOccupation(id: string) {
+  return axiosCustomerService.post(`/api/v1/reference-data/occupation/${id}/activate`);
+}
+
+export function deactivateOccupation(id: string) {
+  return axiosCustomerService.post(`/api/v1/reference-data/occupation/${id}/deactivate`);
+}
+
+// ============================================================
 // Customers
 // ============================================================
 

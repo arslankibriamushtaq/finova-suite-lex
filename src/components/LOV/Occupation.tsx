@@ -1,16 +1,17 @@
-﻿import { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import {
-  getAllSourceOfWealth,
-  createSourceOfWealth,
-  updateSourceOfWealth,
-  deleteSourceOfWealth,
+  getAllOccupations,
+  createOccupation,
+  updateOccupation,
+  deleteOccupation,
+  activateOccupation,
+  deactivateOccupation,
 } from "../../redux/apis/apisEddReferenceData";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Checkbox } from "../ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
 import {
   DropdownMenu,
@@ -18,11 +19,11 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { ChevronDown, Pencil, Trash2, Plus } from "lucide-react";
+import { ChevronDown, Pencil, Trash2, Plus, CheckCircle2, Ban } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
-const SourceOfWealth = () => {
+const Occupation = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -59,7 +60,7 @@ const SourceOfWealth = () => {
     try {
       setIsLoading(true);
       // Backend uses 0-based indexing for page
-      const response = await getAllSourceOfWealth(page - 1, pageSize, searchTerm);
+      const response = await getAllOccupations(page - 1, pageSize, searchTerm);
       const list = response?.data?.data || [];
       setData(Array.isArray(list) ? list : []);
 
@@ -72,7 +73,7 @@ const SourceOfWealth = () => {
         setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch source of wealth data");
+      toast.error(error?.response?.data?.message || "Failed to fetch occupations");
     } finally {
       setIsLoading(false);
     }
@@ -122,22 +123,29 @@ const SourceOfWealth = () => {
 
     try {
       setIsSaving(true);
-      const body = {
-        code: formData.code.trim(),
-        nameEn: formData.name_en.trim(),
-        nameAr: formData.name_ar.trim(),
-        descriptionEn: formData.description_en.trim(),
-        descriptionAr: formData.description_ar.trim(),
-        isActive: formData.is_active,
-        displayOrder: Number(formData.display_order) || 0,
-        score: Number(formData.score) || 0,
-      };
 
       if (modalMode === "edit" && currentItemId) {
-        await updateSourceOfWealth(currentItemId, body);
+        const editBody = {
+          nameEn: formData.name_en.trim(),
+          nameAr: formData.name_ar.trim(),
+          descriptionEn: formData.description_en.trim(),
+          descriptionAr: formData.description_ar.trim(),
+          displayOrder: Number(formData.display_order) || 0,
+          score: Number(formData.score) || 0,
+        };
+        await updateOccupation(currentItemId, editBody);
         toast.success("Updated successfully");
       } else {
-        await createSourceOfWealth(body);
+        const createBody = {
+          code: formData.code.trim(),
+          nameEn: formData.name_en.trim(),
+          nameAr: formData.name_ar.trim(),
+          descriptionEn: formData.description_en.trim(),
+          descriptionAr: formData.description_ar.trim(),
+          displayOrder: Number(formData.display_order) || 0,
+          score: Number(formData.score) || 0,
+        };
+        await createOccupation(createBody);
         toast.success("Created successfully");
       }
 
@@ -150,11 +158,29 @@ const SourceOfWealth = () => {
     }
   };
 
+  const toggleActive = async (row: any) => {
+    const id = row?.id;
+    if (!id) return;
+    const isActive = row.isActive ?? row.is_active;
+    try {
+      if (isActive) {
+        await deactivateOccupation(id);
+        toast.success("Deactivated successfully");
+      } else {
+        await activateOccupation(id);
+        toast.success("Activated successfully");
+      }
+      fetchData();
+    } catch (error: any) {
+      toast.error(error?.response?.data?.message || `Failed to ${isActive ? "deactivate" : "activate"}`);
+    }
+  };
+
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     try {
       setIsDeleting(true);
-      await deleteSourceOfWealth(deleteTarget.id);
+      await deleteOccupation(deleteTarget.id);
       toast.success("Deleted successfully");
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
@@ -164,7 +190,6 @@ const SourceOfWealth = () => {
       setIsDeleting(false);
     }
   };
-
 
   const headers = [
     {
@@ -240,6 +265,27 @@ const SourceOfWealth = () => {
                 <Pencil className="h-4 w-4" />
                 Edit
               </DropdownMenuItem>
+              {(row.isActive ?? row.is_active) ? (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    toggleActive(row);
+                  }}
+                >
+                  <Ban className="h-4 w-4" />
+                  Deactivate
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    toggleActive(row);
+                  }}
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  Activate
+                </DropdownMenuItem>
+              )}
               <DropdownMenuItem
                 variant="destructive"
                 onSelect={(e) => {
@@ -261,57 +307,57 @@ const SourceOfWealth = () => {
   return (
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Source of Wealth</h3>
+        <h3 className="mb-0 fw-bold text-dark">Occupation</h3>
       </div>
 
       <div className="bg-white p-3 mb-3" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-        <AntInput
-          allowClear
-          placeholder="Search by code or name"
-          prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-          value={searchTerm}
-          onChange={(e) => {
-            setSearchTerm(e.target.value);
-            setPage(1);
-          }}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
-        />
-        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
-          <Plus className="h-4 w-4" />
-          Add New Record
-        </Button>
+          <AntInput
+            allowClear
+            placeholder="Search by code or name"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchTerm}
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+          <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
+            <Plus className="h-4 w-4" />
+            Add New Record
+          </Button>
         </div>
       </div>
 
       <div className="bg-white" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
         <TableView
-        header={headers}
-        data={data}
-        totalRows={totalRows}
-        isLoading={isLoading}
-        from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={Math.min(page * pageSize, totalRows)}
-      />
+          header={headers}
+          data={data}
+          totalRows={totalRows}
+          isLoading={isLoading}
+          from={(page - 1) * pageSize + (totalRows > 0 ? 1 : 0)}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={Math.min(page * pageSize, totalRows)}
+        />
       </div>
 
       {/* Add/Edit Modal */}
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
-        <DialogContent className="max-w-[600px]">
+        <DialogContent className="sm:max-w-[640px]">
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Record" : "Add New Record"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? "Edit Occupation" : "Add Occupation"}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label>Code *</Label>
                 <Input
-                  placeholder="e.g. SALARY"
+                  placeholder="e.g. EMPLOYED_PRIVATE"
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   disabled={modalMode === "edit"}
@@ -368,13 +414,6 @@ const SourceOfWealth = () => {
                 />
               </div>
             </div>
-            <label className="flex items-center gap-2 cursor-pointer">
-              <Checkbox
-                checked={formData.is_active}
-                onCheckedChange={(checked) => setFormData({ ...formData, is_active: !!checked })}
-              />
-              <span className="text-sm">Active</span>
-            </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
@@ -389,9 +428,9 @@ const SourceOfWealth = () => {
 
       {/* Delete Confirmation Modal */}
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
-        <DialogContent className="max-w-[420px]">
+        <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Record</DialogTitle>
+            <DialogTitle>Delete Occupation</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
             Are you sure you want to delete{" "}
@@ -414,4 +453,4 @@ const SourceOfWealth = () => {
   );
 };
 
-export default SourceOfWealth;
+export default Occupation;

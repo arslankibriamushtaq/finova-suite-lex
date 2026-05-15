@@ -360,6 +360,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                LinkLable: "/LOS/LOV",
                active: pathname == "/LOS/LOV/SourceOfIncome",
             },
+            {
+              label: "Occupation",
+              Link: "Occupation",
+              LinkLable: "/LOS/LOV",
+              active: pathname == "/LOS/LOV/Occupation",
+            },
             hasAccess("Source Of Wealth") && {
               label: "Source Of Wealth",
               Link: "SourceOfWealth",

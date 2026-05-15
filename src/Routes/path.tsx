@@ -171,6 +171,7 @@ import LandingPageManage from "../components/LandinPageManagement/LandingPageMan
 import PurposeOfFinancing from "../components/LOV/PurposeOfFinancing";
 import EmploymentSector from "../components/LOV/EmploymentSector";
 import SourceOfIncome from "../components/LOV/SourceOfIncome";
+import Occupation from "../components/LOV/Occupation";
 import SourceOfWealth from "../components/LOV/SourceOfWealth";
 import SourceOfFunds from "../components/LOV/SourceOfFunds";
 import TemplateTypes from "../components/LOV/TemplateTypes";
@@ -807,6 +808,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/LOV/SourceOfIncome",
             element: <SourceOfIncome />,
+          },
+          {
+            path: "/LOS/LOV/Occupation",
+            element: <Occupation />,
           },
           {
             path: "/LOS/LOV/SourceOfWealth",
