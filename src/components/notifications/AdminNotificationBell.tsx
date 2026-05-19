@@ -1,5 +1,4 @@
 import { NovuProvider, Inbox } from '@novu/react';
-import { useNavigate } from 'react-router-dom';
 import { Skeleton } from '../ui/skeleton';
 import { useAdminSubscriberSetup } from '../../hooks/useAdminNotifications';
 
@@ -31,30 +30,12 @@ function BellSkeleton() {
 // (useAdminNotifications, useCounts, etc.) if needed by child components.
 // ---------------------------------------------------------------------------
 function InnerBell() {
-  const navigate = useNavigate();
-
-  const handleRouterPush = (path: string) => {
-    try {
-      // External URL → open in new tab; in-app path → React Router navigation
-      const url = new URL(path, window.location.origin);
-      if (url.origin !== window.location.origin) {
-        window.open(path, '_blank', 'noopener,noreferrer');
-      } else {
-        navigate(url.pathname + url.search + url.hash);
-      }
-    } catch {
-      navigate(path);
-    }
-  };
-
   return (
     <div
       className="flex items-center justify-center"
       style={{ minWidth: 40, minHeight: 40 }}
     >
       <Inbox
-        // applicationIdentifier and subscriberId are inherited from NovuProvider
-        routerPush={handleRouterPush}
         appearance={{
           variables: {
             colorPrimary: 'var(--primary)',

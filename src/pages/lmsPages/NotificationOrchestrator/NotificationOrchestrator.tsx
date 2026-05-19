@@ -19,6 +19,7 @@ import {
   Radio,
   Spin,
   Tooltip,
+  Pagination,
 } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { toast } from "react-hot-toast";
@@ -76,6 +77,8 @@ const NotificationOrchestrator: React.FC = () => {
   const [routingRules, setRoutingRules] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [channelFilter, setChannelFilter] = useState<string>("ALL");
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 10;
 
   // Modal
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
@@ -230,6 +233,11 @@ const NotificationOrchestrator: React.FC = () => {
     return matchesSearch && matchesChannel;
   });
 
+  const pagedRules = filteredRules.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
   const channelIcon = (channel: string) => {
     if (channel === "SMS") return <MessageSquare className="h-4 w-4" />;
     if (channel === "WHATSAPP") return <Smartphone className="h-4 w-4" />;
@@ -289,12 +297,12 @@ const NotificationOrchestrator: React.FC = () => {
                 placeholder="Filter orchestration rules..."
                 prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
                 value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
                 style={{ flex: "1 1 auto", minWidth: 0, borderRadius: 8, height: 40 }}
               />
               <AntSelect
                 value={channelFilter}
-                onChange={(v) => setChannelFilter(v)}
+                onChange={(v) => { setChannelFilter(v); setCurrentPage(1); }}
                 popupClassName="no-select-popup"
                 style={{ width: 180, height: 40, flexShrink: 0 }}
                 options={[
@@ -341,14 +349,14 @@ const NotificationOrchestrator: React.FC = () => {
                       <Spin />
                     </td>
                   </tr>
-                ) : filteredRules.length === 0 ? (
+                ) : pagedRules.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center text-muted" style={{ padding: 36 }}>
                       No rules found. Create one to begin orchestration.
                     </td>
                   </tr>
                 ) : (
-                  filteredRules.map((rule) => (
+                  pagedRules.map((rule) => (
                     <tr key={rule.id}>
                       <td>
                         <div className="fw-semibold" style={{ color: "var(--foreground)" }}>
@@ -405,6 +413,24 @@ const NotificationOrchestrator: React.FC = () => {
                 )}
               </tbody>
             </table>
+
+            {filteredRules.length > PAGE_SIZE && (
+              <div className="no-pagination-row">
+                <span className="no-pagination-info">
+                  Showing {(currentPage - 1) * PAGE_SIZE + 1}–
+                  {Math.min(currentPage * PAGE_SIZE, filteredRules.length)} of{" "}
+                  {filteredRules.length} rules
+                </span>
+                <Pagination
+                  current={currentPage}
+                  pageSize={PAGE_SIZE}
+                  total={filteredRules.length}
+                  onChange={(page) => setCurrentPage(page)}
+                  showSizeChanger={false}
+                  size="small"
+                />
+              </div>
+            )}
           </div>
         </TabsContent>
 
@@ -584,7 +610,10 @@ const NotificationOrchestrator: React.FC = () => {
                     filterOption={(input, option) =>
                       (option?.label ?? "").toString().toLowerCase().includes(input.toLowerCase())
                     }
-                    options={(Array.isArray(templates) ? templates : []).map((t) => ({ value: t.id, label: t.name }))}
+                    options={(Array.isArray(templates) ? templates : []).map((t) => ({
+                      value: t._id ?? t.id ?? t.identifier,
+                      label: t.name ?? t.identifier ?? t._id ?? t.id,
+                    }))}
                   />
                 </Form.Group>
               </Col>
@@ -1013,6 +1042,27 @@ const NotificationOrchestrator: React.FC = () => {
           background-color: #fff !important;
           color: var(--foreground) !important;
           border: 1px solid var(--border) !important;
+        }
+
+        /* Pagination row */
+        .notification-orchestrator-page .no-pagination-row {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 12px 16px;
+          border-top: 1px solid var(--border);
+          background: #fff;
+        }
+        .notification-orchestrator-page .no-pagination-info {
+          font-size: 13px;
+          color: var(--muted-foreground);
+        }
+        .notification-orchestrator-page .no-pagination-row .ant-pagination-item-active {
+          background: #000 !important;
+          border-color: #000 !important;
+        }
+        .notification-orchestrator-page .no-pagination-row .ant-pagination-item-active a {
+          color: #fff !important;
         }
       `}</style>
     </div>

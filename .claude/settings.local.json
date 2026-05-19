@@ -14,7 +14,8 @@
       "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductCategory')",
       "Bash(mkdir -p 'c:\\\\laragon\\\\www\\\\react-dashboard\\\\src\\\\pages\\\\lmsPages\\\\ProductSubCategory')",
       "Bash(xargs grep:*)",
-      "Bash(grep -i \"\\\\\\\\.tsx\")"
+      "Bash(grep -i \"\\\\\\\\.tsx\")",
+      "Bash(npx tsc *)"
     ]
   }
 }
