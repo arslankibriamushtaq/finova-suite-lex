@@ -214,7 +214,7 @@ const Invoices = () => {
     {
       name: "Installment Amount",
       selector: (row: any) => row.installmentAmount,
-      cell: (row: any) => <NumberFormatter value={row?.installmentAmount} />,
+      cell: (row: any) => row?.installmentAmount,
       width: "160px",
     },
     {
@@ -222,7 +222,7 @@ const Invoices = () => {
       selector: (row: any) => row.feeAmount,
       cell: (row: any) =>
         row.feeAmount != null ? (
-          <NumberFormatter value={row.feeAmount} />
+        row.feeAmount
         ) : (
           <span style={{ color: "var(--muted-foreground)" }}>-</span>
         ),
@@ -233,7 +233,7 @@ const Invoices = () => {
       selector: (row: any) => row.profit,
       cell: (row: any) =>
         row.profit != null ? (
-          <NumberFormatter value={row.profit} />
+         row.profit
         ) : (
           <span style={{ color: "var(--muted-foreground)" }}>-</span>
         ),
@@ -276,7 +276,7 @@ const Invoices = () => {
     {
       name: "Late Penalty",
       selector: (row: any) => row.latePenaltyAmount,
-      cell: (row: any) => <NumberFormatter value={row?.latePenaltyAmount ?? 0} />,
+      cell: (row: any) => row?.latePenaltyAmount ,
       width: "130px",
     },
     {
@@ -284,7 +284,7 @@ const Invoices = () => {
       selector: (row: any) => row.waivedPenaltyAmount,
       cell: (row: any) =>
         row.waivedPenaltyAmount != null ? (
-          <NumberFormatter value={row.waivedPenaltyAmount} />
+         row.waivedPenaltyAmount
         ) : (
           <span style={{ color: "var(--muted-foreground)" }}>-</span>
         ),
@@ -296,7 +296,7 @@ const Invoices = () => {
       selector: (row: any) => row.remainingPenaltyAmount,
       cell: (row: any) =>
         row.remainingPenaltyAmount != null ? (
-          <NumberFormatter value={row.remainingPenaltyAmount} />
+         row.remainingPenaltyAmount
         ) : (
           <span style={{ color: "var(--muted-foreground)" }}>-</span>
         ),
@@ -306,7 +306,7 @@ const Invoices = () => {
     {
       name: "Total Amount",
       selector: (row: any) => row.outstandingBalance,
-      cell: (row: any) => <NumberFormatter value={row?.outstandingBalance ?? 0} />,
+      cell: (row: any) => row?.outstandingBalance ,
       width: "170px",
     },
     { name: "Paid Date", selector: (row: any) => row.paidDate ? new Date(row.paidDate).toLocaleDateString() : "-", width: "120px" },
