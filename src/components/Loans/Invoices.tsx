@@ -228,6 +228,17 @@ const Invoices = () => {
         ),
       width: "130px",
     },
+      {
+      name: "Profit Amount",
+      selector: (row: any) => row.profit,
+      cell: (row: any) =>
+        row.profit != null ? (
+          <NumberFormatter value={row.profit} />
+        ) : (
+          <span style={{ color: "var(--muted-foreground)" }}>-</span>
+        ),
+      width: "130px",
+    },
     // {
     //   name: "Principal",
     //   selector: (row: any) => row.principalComponent,
@@ -551,14 +562,15 @@ const Invoices = () => {
     installmentAmount: item?.installmentAmount ?? 0,
     principalComponent: item?.principalComponent ?? 0,
     profitComponent: item?.profitComponent ?? 0,
-    outstandingBalance: item?.delinquency?.outstandingAmount || item?.installmentAmount || 0,
+    outstandingBalance: item?.payableAmount ,
     paymentStatus: item?.paymentStatus || "PENDING",
     paidDate: item?.paidDate,
     paidAmount: item?.paidAmount,
     receiptAvailable: item?.receiptAvailable ?? false,
     accountId: item?.accountId,
     id: item?.invoiceId,
-    feeAmount: item?.delinquency?.feeAmount ?? null,
+    feeAmount: item?.feeComponent ?? 0,
+profit:item?.profitComponent ?? 0,
     // delinquency fields
     delinquencyStatus: item?.delinquency?.status ?? "-",
     dpd: item?.delinquency?.dpd ?? 0,
