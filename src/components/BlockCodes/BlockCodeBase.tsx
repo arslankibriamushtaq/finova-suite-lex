@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button, Modal, Form, Input, Switch, Dropdown, Menu, Select } from "antd";
-import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { FaFilter } from "react-icons/fa";
+import { EditOutlined, DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { Plus } from "lucide-react";
 import TableView from "../TableView/TableView";
-import { Images } from "../Config/Images";
+import { Button as UIButton } from "../ui/button";
 import arrowDown from "../../assets/images/arrow-down.png";
 import {
   getRiskBlockCodes,
@@ -258,77 +258,91 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
 
   return (
     <div className="service">
-      <div className="d-flex justify-content-between align-items-center mb-3">
-        <h4 className="mb-0">{title}</h4>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">{title}</h3>
       </div>
 
-      <div className="d-flex justify-content-end col-12 filter-select">
-        {defaultType === "" && (
-          <Select
-            style={{ width: "150px", marginRight: "8px" }}
-            placeholder="Type"
+      <div
+        className="bg-white p-3 mb-3"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--surface-border)",
+        }}
+      >
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <Input
             allowClear
-            value={type || undefined}
-            onChange={(value) => setType(value || '')}
+            placeholder="Search by code or description"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          />
+
+          {defaultType === "" && (
+            <Select
+              placeholder="Type"
+              allowClear
+              value={type || undefined}
+              onChange={(value) => setType(value || "")}
+              style={{ width: 160, height: 40 }}
+            >
+              <Select.Option value="COMPLIANCE">Compliance</Select.Option>
+              <Select.Option value="AML">AML</Select.Option>
+              <Select.Option value="ANTI_FRAUD">Anti-Fraud</Select.Option>
+              <Select.Option value="SANCTION">Sanction</Select.Option>
+            </Select>
+          )}
+
+          <Select
+            placeholder="Status"
+            allowClear
+            value={status || undefined}
+            onChange={(value) => setStatus(value || "")}
+            style={{ width: 140, height: 40 }}
           >
-            <Select.Option value="COMPLIANCE">Compliance</Select.Option>
-            <Select.Option value="AML">AML</Select.Option>
-            <Select.Option value="ANTI_FRAUD">Anti-Fraud</Select.Option>
-            <Select.Option value="SANCTION">Sanction</Select.Option>
+            <Select.Option value="1">Active</Select.Option>
+            <Select.Option value="0">Inactive</Select.Option>
           </Select>
-        )}
 
-        <Select
-          style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Status"
-          allowClear
-          value={status || undefined}
-          onChange={(value) => setStatus(value || '')}
-          suffixIcon={<FaFilter />}
-        >
-          <Select.Option value="1">Active</Select.Option>
-          <Select.Option value="0">Inactive</Select.Option>
-        </Select>
-
-        <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
-          <div className="d-flex align-items-center gap-1 border px-2 ps-3 search-box">
-            <img src={Images.searchIconGray} alt="" />
-            <input
-              type="text"
-              style={{
-                border: "none",
-                outline: "none",
-                background: "transparent",
-              }}
-              className="p-2"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <button
+          <UIButton
             onClick={handleAdd}
-            className="theme-btn"
-            style={{ minWidth: "120px" }}
+            className="gap-2"
+            style={{ flexShrink: 0, height: 40 }}
           >
-            + Add New
-          </button>
+            <Plus className="h-4 w-4" />
+            Add New
+          </UIButton>
         </div>
       </div>
 
-      <TableView
-        header={columns}
-        data={data}
-        totalRows={totalRows}
-        isLoading={loading}
-        from={from}
-        page={page}
-        totalPage={totalPage}
-        setPage={setPage}
-        pageSize={pageSize}
-        setPageSize={setPageSize}
-        to={to}
-      />
+      <div
+        className="bg-white"
+        style={{
+          borderRadius: 12,
+          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+          border: "1px solid var(--surface-border)",
+          overflow: "hidden",
+        }}
+      >
+        <TableView
+          header={columns}
+          data={data}
+          totalRows={totalRows}
+          isLoading={loading}
+          from={from}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+          to={to}
+        />
+      </div>
 
       <Modal
         title={editMode ? "Edit Block Code" : "Add New Block Code"}
@@ -337,8 +351,29 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
           setIsModalVisible(false);
           form.resetFields();
         }}
-        footer={null}
-        width={600}
+        className="custom-mod"
+        style={{ maxWidth: "600px" }}
+        centered
+        destroyOnClose
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              setIsModalVisible(false);
+              form.resetFields();
+            }}
+          >
+            Cancel
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={loading}
+            onClick={() => form.submit()}
+          >
+            {editMode ? "Update" : "Create"}
+          </Button>,
+        ]}
       >
         <Form
           form={form}
@@ -351,23 +386,18 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
             name="code"
             rules={[
               { required: true, message: "Please enter block code" },
-              { 
-                pattern: /^[A-Z0-9_]+$/, 
-                message: "Code must contain only uppercase letters, numbers, and underscores" 
-              }
+              {
+                pattern: /^[A-Z0-9_]+$/,
+                message:
+                  "Code must contain only uppercase letters, numbers, and underscores",
+              },
             ]}
           >
             <Input placeholder={getCodePlaceholder()} />
           </Form.Item>
 
-          <Form.Item
-            label="Description"
-            name="description"
-          >
-            <TextArea
-              rows={4}
-              placeholder="Enter description (optional)"
-            />
+          <Form.Item label="Description" name="description">
+            <TextArea rows={4} placeholder="Enter description (optional)" />
           </Form.Item>
 
           <Form.Item
@@ -384,32 +414,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
           </Form.Item>
 
           <Form.Item label="Status" name="status" valuePropName="checked">
-            <Switch 
-              style={{ backgroundColor: "#000" }} 
-              checkedChildren="Active" 
-              unCheckedChildren="Inactive" 
-            />
-          </Form.Item>
-
-          <Form.Item>
-            <div className="d-flex justify-content-end gap-2">
-              <Button
-                onClick={() => {
-                  setIsModalVisible(false);
-                  form.resetFields();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="primary"
-                htmlType="submit"
-                loading={loading}
-                className="gradient-btn"
-              >
-                {editMode ? "Update" : "Create"}
-              </Button>
-            </div>
+            <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
           </Form.Item>
         </Form>
       </Modal>

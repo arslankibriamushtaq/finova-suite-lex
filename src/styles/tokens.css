@@ -182,33 +182,1260 @@
 
   /* Very light border (faint separator) */
   --color-border-faint: #eeeeee;
+
+  /* ===== Semantic surface tokens (use these everywhere instead of #fff/#000) ===== */
+  --surface-page:        #f5f6fa;   /* subtle gray page background */
+  --surface-card:        #ffffff;   /* card / panel background */
+  --surface-card-alt:    #f8fafc;   /* slightly tinted card header / striped row */
+  --surface-card-hover:  #f1f5f9;   /* card hover */
+  --surface-border:      #e5e7eb;   /* card / panel border */
+  --surface-border-strong: #d1d5db; /* stronger border (focused) */
+  --surface-elevation-1: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --surface-elevation-2: 0 4px 12px rgba(15, 23, 42, 0.08);
+  --surface-elevation-3: 0 16px 40px rgba(15, 23, 42, 0.14);
+
+  /* Modal */
+  --modal-overlay:   rgba(15, 23, 42, 0.45);
+  --modal-bg:        #ffffff;
+  --modal-border:    #e5e7eb;
+
+  /* Input */
+  --input-bg:        #ffffff;
+  --input-border:    #e5e7eb;
+  --input-text:      #0f172a;
+  --input-placeholder: #94a3b8;
+  --input-focus-ring: rgba(15, 23, 42, 0.10);
+
+  /* Pure black/white anchors — only use when the design demands true black/white */
+  --pure-black: #000000;
+  --pure-white: #ffffff;
 }
 
+html.dark,
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.145 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.145 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.985 0 0);
-  --primary-foreground: oklch(0.145 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.396 0.141 25.723);
-  --destructive-foreground: oklch(0.637 0.237 25.331);
-  --border: oklch(0.269 0 0);
-  --input: oklch(0.269 0 0);
-  --ring: oklch(0.439 0 0);
+  --background: #0d1117;
+  --foreground: #e6eaf2;
+  --card: #161821;
+  --card-foreground: #e6eaf2;
+  --popover: #161821;
+  --popover-foreground: #e6eaf2;
+  --primary: #ffffff;
+  --primary-foreground: #0d1117;
+  --secondary: #22252f;
+  --secondary-foreground: #e6eaf2;
+  --muted: #22252f;
+  --muted-foreground: #9ba1ad;
+  --accent: #22252f;
+  --accent-foreground: #e6eaf2;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
+  --border: #262a36;
+  --input: #1c1f2a;
+  --ring: #3a4050;
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
+
+  /* App surface / status — dark variants */
+  --color-success: #22c55e;
+  --color-success-bg: rgba(34, 197, 94, 0.12);
+  --color-success-border: rgba(34, 197, 94, 0.35);
+  --color-success-text: #86efac;
+
+  --color-error: #ef4444;
+  --color-error-bg: rgba(239, 68, 68, 0.12);
+  --color-error-border: rgba(239, 68, 68, 0.35);
+  --color-error-text: #fca5a5;
+
+  --color-warning: #f59e0b;
+  --color-info: #38bdf8;
+  --color-info-bg: rgba(56, 189, 248, 0.12);
+
+  /* Theme tokens (page chrome) — dark variants */
+  --theme-app-background: #0d1117;
+  --theme-primary: #161821;
+  --theme-text-color: #e6eaf2;
+  --theme-secondary: #eb0d0d;
+  --theme-tertiary: #ffffff;
+  --theme-active-color: #93c5fd;
+  --theme-active-tab: transparent;
+  --theme-inactive-tab: #1c1f2a;
+  --theme-breadcrumb-active-text-color: #ef4444;
+  --theme-gradient-background-color: #ffffff;
+  --theme-sidebar-menu-background-color: #0d1117;
+  --theme-sidebar-text-color: #e6eaf2;
+  --theme-revert-action-color: #475569;
+  --theme-other-actions-color: transparent;
+  --theme-header-background-color: #161821;
+  --theme-header-sub-header-bg-color: #0d1117;
+  --theme-dashboard-subheader-bg-color: #0d1117;
+  --theme-dashboard-header-bg-color: #161821;
+  --theme-subheader-text-color: #e6eaf2;
+  --theme-heading-text-color: #f1f5f9;
+  --theme-cards-background-color: #161821;
+  --theme-cards-text-color: #e6eaf2;
+  --theme-table-background-color: #1a1d2a;
+  --theme-table-heading-color: #ffffff;
+  --theme-table-body-text-color: #e6eaf2;
+  --theme-table-row-alt: #20232e;
+  --theme-table-row-hover: #2a2d39;
+  --theme-flow-sidebar-logo-bg: #0a0a0a;
+  --theme-flow-dashboard-sidebar-bg: #0a0a0a;
+  --theme-flow-submenu-sidebar-bg: transparent;
+  --theme-flow-active-color-bg: rgba(235, 13, 13, 0.12);
+  --theme-flow-inactive-color-bg: transparent;
+  --theme-flow-active-text-color: #f87171;
+  --theme-flow-inactive-text-color: #e2e8f0;
+  --theme-dashboard-sidebar-active-color-bg: #ef4444;
+  --theme-dashboard-sidebar-active-text-color: #f87171;
+  --theme-dashboard-sidebar-inactive-color-bg: #ef4444;
+  --theme-dashboard-sidebar-inactive-text-color: #f87171;
+
+  /* Semantic surface tokens — dark (neutral charcoal palette) */
+  --surface-page:        #0d1117;
+  --surface-card:        #161821;
+  --surface-card-alt:    #1c1f2a;
+  --surface-card-hover:  #22253033;
+  --surface-border:      #262a36;
+  --surface-border-strong: #3a4050;
+  --surface-elevation-1: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --surface-elevation-2: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --surface-elevation-3: 0 16px 40px rgba(0, 0, 0, 0.55);
+
+  /* Fixed-hex tokens migrated to dark-mode-aware values
+     (these were previously hardcoded for light mode only and used by various pages) */
+  --color-surface-snow:    #161821;   /* was #f8f9fa */
+  --color-surface-cloud:   #1c1f2a;   /* was #f9f9f9 */
+  --color-surface-ice:     #161821;   /* was #fafafa */
+  --color-surface-smoke:   #1c1f2a;   /* was #f1f1f1 */
+  --color-surface-subtle:  #161821;   /* was #f5f5f5 */
+  --color-surface-muted:   #1c1f2a;   /* was #f0f0f0 */
+  --color-surface-alt:     #1c1f2a;   /* was #f6f6f6 */
+  --color-surface-page:    #0d1117;   /* was #f4f4f4 */
+  --color-surface-pressed: #232631;   /* was #e8e8e8 */
+  --color-near-white:      #1c1f2a;   /* was #fcfcfc */
+
+  --color-border-light:    #262a36;   /* was #dddddd */
+  --color-border-subtle:   #262a36;   /* was #e0e0e0 */
+  --color-border-muted:    #3a4050;   /* was #cccccc */
+  --color-border-disabled: #262a36;   /* was #e6e6e6 */
+  --color-border-base:     #262a36;   /* was #e3e3e3 */
+  --color-border-faint:    #1c1f2a;   /* was #eeeeee */
+
+  --color-text-dark:    #e6eaf2;      /* was #333 */
+  --color-text-muted:   #9ba1ad;      /* was #666 */
+  --color-text-subtle:  #6b7280;      /* was #999 */
+  --color-text-charcoal: #e6eaf2;     /* was #292929 */
+  --color-text-near-black: #e6eaf2;   /* was #111827 */
+  --color-text-slate:   #9ba1ad;      /* was #6c727f */
+  --color-text-silver:  #9ba1ad;      /* was #7f8c8d */
+  --color-text-mid:     #9ba1ad;      /* was #888 */
+  --color-text-gray:    #9ba1ad;      /* was #6b7280 */
+  --color-text-silver-light: #cbd5e1; /* was #aeaeae */
+
+  /* Modal — dark */
+  --modal-overlay:   rgba(0, 0, 0, 0.6);
+  --modal-bg:        #161821;
+  --modal-border:    #262a36;
+
+  /* Input — dark */
+  --input-bg:        #1c1f2a;
+  --input-border:    #262a36;
+  --input-text:      #e6eaf2;
+  --input-placeholder: #6b7280;
+  --input-focus-ring: rgba(255, 255, 255, 0.08);
+}
+
+/* Global dark-mode surface defaults */
+html.dark body {
+  background-color: #0d1117;
+  color: #e6eaf2;
+}
+
+/* Force every Layout's main content area to use the dark surface in dark mode.
+   The Layout components apply an inline backgroundColor from the Redux theme,
+   which would otherwise win specificity. */
+html.dark .page-content-area,
+html.dark .page-content,
+html.dark .colTwo,
+html.dark [class*="page-content"] {
+  background-color: var(--surface-page) !important;
+  color: var(--foreground) !important;
+}
+html.dark .bg-white {
+  background-color: #161821 !important;
+  color: #e6eaf2 !important;
+}
+html.dark .text-dark,
+html.dark .fw-bold.text-dark {
+  color: var(--foreground) !important;
+}
+html.dark .text-muted,
+html.dark .text-muted-foreground {
+  color: var(--muted-foreground) !important;
+}
+
+/* Ant Design Typography in dark mode — was rendering dim because Ant's
+   default text color is dark slate which is unreadable on dark surfaces */
+html.dark .ant-typography,
+html.dark .ant-typography > *,
+html.dark .ant-typography h1,
+html.dark .ant-typography h2,
+html.dark .ant-typography h3,
+html.dark .ant-typography h4,
+html.dark .ant-typography h5,
+html.dark .ant-typography h6,
+html.dark .ant-typography p,
+html.dark .ant-form-item-label > label,
+html.dark .ant-form-item .ant-form-item-label > label {
+  color: var(--foreground) !important;
+}
+html.dark .ant-typography.ant-typography-secondary,
+html.dark span.ant-typography-secondary {
+  color: var(--muted-foreground) !important;
+}
+html.dark .ant-typography-disabled {
+  color: var(--muted-foreground) !important;
+  opacity: 0.6;
+}
+html.dark .border-bottom {
+  border-bottom-color: var(--surface-border) !important;
+}
+html.dark .card,
+html.dark .modal-content {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .modal-header,
+html.dark .modal-footer {
+  background-color: var(--surface-card) !important;
+  border-color: var(--surface-border) !important;
+}
+/* Modal close (×) button — white in dark mode (Bootstrap modals + custom) */
+html.dark .modal-header .btn-close,
+html.dark .modal .btn-close,
+html.dark .modal-header .close {
+  filter: invert(1) brightness(2) !important;
+  opacity: 0.9;
+}
+html.dark .modal-header .btn-close:hover {
+  opacity: 1;
+}
+/* shadcn / Radix Dialog close icon */
+html.dark [data-slot="dialog-content"] svg,
+html.dark [data-slot="dialog-close"] svg {
+  color: #ffffff !important;
+}
+
+/* =============================================================
+   UNIFIED MODAL THEME — same look in dark mode across the project
+   Covers: shadcn Dialog, Bootstrap Modal, Ant Modal, and the
+   custom .no-modal class. All four render with identical visuals.
+   ============================================================= */
+
+/* Frame (light mode base — keep consistent radius + shadow) */
+.modal-content,
+.ant-modal-content,
+[data-slot="dialog-content"] {
+  border-radius: 14px !important;
+  overflow: hidden;
+}
+
+/* === Light mode base values (so all modal types start identical) === */
+.ant-modal-content,
+.ant-modal {
+  border: 1px solid var(--surface-border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+}
+.ant-modal-header,
+.ant-modal-footer {
+  background-color: #ffffff;
+}
+.ant-modal-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--surface-border);
+}
+.ant-modal-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+.ant-modal-body {
+  padding: 28px 24px 20px;
+  background-color: #ffffff;
+  color: var(--foreground);
+}
+.ant-modal-footer {
+  padding: 14px 24px 18px;
+  border-top: 1px solid var(--surface-border);
+  gap: 8px;
+}
+
+/* === DARK MODE — unified across all four modal types === */
+
+/* Frame */
+html.dark .modal-content,
+html.dark .ant-modal-content,
+html.dark .ant-modal,
+html.dark [data-slot="dialog-content"] {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+  overflow: hidden;
+}
+
+/* Header */
+html.dark .modal-header,
+html.dark .ant-modal-header,
+html.dark [data-slot="dialog-content"] > [data-slot="dialog-header"],
+html.dark [data-slot="dialog-content"] > div:first-child {
+  background-color: var(--surface-card) !important;
+  border-bottom: 1px solid var(--surface-border) !important;
+  padding: 20px 24px !important;
+}
+
+/* Title */
+html.dark .modal-title,
+html.dark .ant-modal-title,
+html.dark [data-slot="dialog-title"] {
+  font-size: 17px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+
+/* Body */
+html.dark .modal-body,
+html.dark .ant-modal-body {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  padding: 28px 24px 20px !important;
+}
+
+/* Footer */
+html.dark .modal-footer,
+html.dark .ant-modal-footer {
+  background-color: var(--surface-card) !important;
+  border-top: 1px solid var(--surface-border) !important;
+  padding: 14px 24px 18px !important;
+  gap: 8px;
+}
+
+/* Close (×) icon — white in dark mode (all modal types) */
+html.dark .modal-header .btn-close,
+html.dark .modal .btn-close,
+html.dark .modal-header .close,
+html.dark .ant-modal-close,
+html.dark .ant-modal-close-x,
+html.dark .ant-modal-close-icon,
+html.dark .ant-modal-close .anticon,
+html.dark .ant-modal-close-x .anticon,
+html.dark [data-slot="dialog-content"] svg,
+html.dark [data-slot="dialog-close"] svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+html.dark .modal-header .btn-close {
+  filter: invert(1) brightness(2) !important;
+  opacity: 0.9;
+}
+html.dark .modal-header .btn-close:hover,
+html.dark .ant-modal-close:hover {
+  opacity: 1;
+}
+
+/* Form labels inside any modal */
+html.dark .modal-body .form-label,
+html.dark .modal-body label,
+html.dark .ant-modal-body .ant-form-item-label > label,
+html.dark .ant-modal-body label,
+html.dark [data-slot="dialog-content"] label {
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+/* Form inputs inside any modal */
+html.dark .modal-body .form-control,
+html.dark .modal-body .form-select,
+html.dark .modal-body input,
+html.dark .modal-body textarea,
+html.dark .modal-body select,
+html.dark .ant-modal-body .ant-input,
+html.dark .ant-modal-body .ant-input-affix-wrapper,
+html.dark .ant-modal-body textarea.ant-input,
+html.dark .ant-modal-body .ant-select-selector,
+html.dark [data-slot="dialog-content"] input,
+html.dark [data-slot="dialog-content"] textarea {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+html.dark .modal-body input::placeholder,
+html.dark .modal-body textarea::placeholder,
+html.dark .ant-modal-body .ant-input::placeholder,
+html.dark .ant-modal-body textarea.ant-input::placeholder,
+html.dark [data-slot="dialog-content"] input::placeholder,
+html.dark [data-slot="dialog-content"] textarea::placeholder {
+  color: var(--input-placeholder) !important;
+}
+
+/* Footer buttons — uniform "dark pill with white text" for ALL modal types */
+html.dark .modal-footer .btn,
+html.dark .modal-footer button,
+html.dark .ant-modal-footer .ant-btn,
+html.dark .ant-modal-footer .ant-btn-default,
+html.dark .ant-modal-footer .ant-btn-primary,
+html.dark [data-slot="dialog-content"] [data-slot="button"] {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  border: 1px solid var(--surface-border-strong) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  height: 40px !important;
+  padding: 0 22px !important;
+  font-weight: 500 !important;
+}
+html.dark .modal-footer .btn:hover,
+html.dark .modal-footer button:hover,
+html.dark .ant-modal-footer .ant-btn:hover,
+html.dark .ant-modal-footer .ant-btn-default:hover,
+html.dark .ant-modal-footer .ant-btn-primary:hover,
+html.dark [data-slot="dialog-content"] [data-slot="button"]:hover {
+  background-color: var(--surface-card-hover) !important;
+  background: var(--surface-card-hover) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+
+/* Submit (primary) buttons — same dark surface, bold weight */
+html.dark .modal-footer .btn-primary,
+html.dark .ant-modal-footer .ant-btn-primary,
+html.dark [data-slot="dialog-content"] [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]) {
+  font-weight: 600 !important;
+  min-width: 120px;
+}
+html.dark .modal-footer .ant-btn-default,
+html.dark .ant-modal-footer .ant-btn-default,
+html.dark [data-slot="dialog-content"] [data-slot="button"][class*="outline"] {
+  background-color: transparent !important;
+  background: transparent !important;
+}
+html.dark .modal-footer .ant-btn-default:hover,
+html.dark .ant-modal-footer .ant-btn-default:hover,
+html.dark [data-slot="dialog-content"] [data-slot="button"][class*="outline"]:hover {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+}
+
+/* Disabled state — still visible but clearly inactive */
+html.dark .modal-footer .ant-btn[disabled],
+html.dark .modal-footer button[disabled],
+html.dark .modal-footer .btn[disabled],
+html.dark .modal-footer .btn:disabled,
+html.dark .ant-modal-footer .ant-btn[disabled],
+html.dark .ant-modal-footer .ant-btn:disabled,
+html.dark .ant-modal-footer .ant-btn-disabled,
+html.dark .ant-modal-footer .ant-btn.ant-btn-disabled,
+html.dark .ant-modal-footer .ant-btn-primary[disabled],
+html.dark .ant-modal-footer .ant-btn-primary:disabled,
+html.dark .ant-modal-footer .ant-btn-primary.ant-btn-disabled,
+html.dark [data-slot="dialog-content"] [data-slot="button"][disabled],
+html.dark [data-slot="dialog-content"] [data-slot="button"]:disabled {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid var(--surface-border-strong) !important;
+  opacity: 0.85 !important;
+  cursor: not-allowed;
+  text-shadow: none !important;
+  box-shadow: none !important;
+}
+
+/* Primary / submit button — dark surface with white text (same family as Cancel) */
+html.dark .modal-footer .btn-primary:not(:disabled),
+html.dark .ant-modal-footer .ant-btn-primary:not(:disabled),
+html.dark [data-slot="dialog-content"] [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]):not(:disabled) {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--surface-border-strong) !important;
+}
+html.dark .modal-footer .btn-primary:not(:disabled):hover,
+html.dark .ant-modal-footer .ant-btn-primary:not(:disabled):hover,
+html.dark [data-slot="dialog-content"] [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]):not(:disabled):hover {
+  background-color: var(--surface-card-hover) !important;
+  background: var(--surface-card-hover) !important;
+  color: #ffffff !important;
+  border-color: #3a4050 !important;
+}
+
+/* Modal mask (backdrop) — same deep dim for all modal types */
+html.dark .modal-backdrop,
+html.dark .ant-modal-mask,
+html.dark .ant-modal-wrap {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+}
+
+/* ===== Global dark-mode override for .theme-btn / .theme-btn-next =====
+   These classes hardcode `background: var(--theme-text-color)` which is
+   white in light mode and near-white (#e6eaf2) in dark mode — making the
+   button render white-on-white-text in dark mode. Force the unified
+   "dark pill with white text" treatment in dark mode everywhere. */
+html.dark .theme-btn,
+html.dark .theme-btn-next,
+html.dark .theme-btn-prev,
+html.dark .theme-btn-back {
+  background: var(--surface-card-alt) !important;
+  background-color: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--surface-border-strong) !important;
+}
+html.dark .theme-btn:hover,
+html.dark .theme-btn-next:hover,
+html.dark .theme-btn-prev:hover,
+html.dark .theme-btn-back:hover {
+  background: var(--surface-card-hover) !important;
+  background-color: var(--surface-card-hover) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+
+/* ===== Native HTML <select> and <input type="date"> in dark mode =====
+   Bootstrap pages still use raw form-control inputs in many places.
+   Browser defaults render a white background and white dropdown popup
+   that looks broken on dark surfaces. The `color-scheme: dark` hint
+   below tells the engine to use the dark-variant of every native widget
+   (including the select dropdown popup, scrollbars, form controls). */
+html.dark {
+  color-scheme: dark;
+}
+
+/* Strip the native select arrow in BOTH modes and replace with a clean
+   custom chevron — this kills the misplaced/clipped native arrow
+   that some Chromium versions render below the field. */
+select.form-control {
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 14px 14px !important;
+  padding-right: 36px !important;
+}
+/* Remove the default IE/Edge legacy arrow */
+select.form-control::-ms-expand {
+  display: none !important;
+}
+
+html.dark select.form-control,
+html.dark input[type="date"].form-control,
+html.dark input[type="datetime-local"].form-control,
+html.dark input[type="time"].form-control,
+html.dark input[type="month"].form-control,
+html.dark input[type="week"].form-control {
+  background-color: var(--surface-card-alt) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--surface-border) !important;
+  color-scheme: dark !important;
+}
+html.dark select.form-control {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23cbd5e1' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'><polyline points='6 9 12 15 18 9'/></svg>") !important;
+}
+html.dark select.form-control:focus,
+html.dark input[type="date"].form-control:focus,
+html.dark input[type="datetime-local"].form-control:focus,
+html.dark input[type="time"].form-control:focus {
+  background-color: var(--surface-card-alt) !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border-strong) !important;
+  box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.15) !important;
+}
+
+/* Native <select> options panel — browsers can't be deeply restyled
+   but background/color is honored on most engines. */
+html.dark select.form-control option,
+html.dark select option {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+}
+
+/* Calendar picker indicator for date/time inputs — invert to white */
+html.dark input[type="date"].form-control::-webkit-calendar-picker-indicator,
+html.dark input[type="datetime-local"].form-control::-webkit-calendar-picker-indicator,
+html.dark input[type="time"].form-control::-webkit-calendar-picker-indicator {
+  filter: invert(1) brightness(1.4);
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+/* Placeholder text inside form-control inputs/selects should be readable */
+html.dark .form-control::placeholder,
+html.dark select.form-control:invalid {
+  color: var(--muted-foreground) !important;
+}
+
+/* ===== Ant Design Modal — dark mode (legacy section, retained) ===== */
+html.dark .ant-modal-content,
+html.dark .ant-modal {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--surface-border) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
+}
+html.dark .ant-modal-header {
+  background-color: var(--surface-card) !important;
+  border-bottom: 1px solid var(--surface-border) !important;
+  padding: 18px 24px !important;
+}
+html.dark .ant-modal-title {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+}
+html.dark .ant-modal-body {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  padding: 24px !important;
+}
+html.dark .ant-modal-footer {
+  background-color: var(--surface-card) !important;
+  border-top: 1px solid var(--surface-border) !important;
+  padding: 14px 24px !important;
+}
+
+/* Close (×) icon — white in dark mode */
+html.dark .ant-modal-close,
+html.dark .ant-modal-close-x,
+html.dark .ant-modal-close-icon {
+  color: #ffffff !important;
+}
+html.dark .ant-modal-close .anticon,
+html.dark .ant-modal-close-x .anticon {
+  color: #ffffff !important;
+}
+
+/* Footer buttons inside Ant Modal */
+html.dark .ant-modal-footer .ant-btn-default {
+  background-color: var(--surface-card-alt) !important;
+  border: 1px solid var(--surface-border-strong) !important;
+  color: #ffffff !important;
+}
+html.dark .ant-modal-footer .ant-btn-default:hover {
+  background-color: var(--surface-card-hover) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+html.dark .ant-modal-footer .ant-btn-primary {
+  background-color: var(--surface-card-alt) !important;
+  border: 1px solid var(--surface-border-strong) !important;
+  color: #ffffff !important;
+}
+html.dark .ant-modal-footer .ant-btn-primary:hover,
+html.dark .ant-modal-footer .ant-btn-primary:not(:disabled):hover {
+  background-color: var(--surface-card-hover) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+html.dark .ant-modal-footer .ant-btn[disabled] {
+  background-color: var(--surface-card-alt) !important;
+  color: var(--muted-foreground) !important;
+  opacity: 0.6;
+}
+
+/* Form labels inside Ant Modal */
+html.dark .ant-modal-body .ant-form-item-label > label,
+html.dark .ant-modal-body label {
+  color: var(--foreground) !important;
+}
+/* Form inputs inside Ant Modal */
+html.dark .ant-modal-body .ant-input,
+html.dark .ant-modal-body .ant-input-affix-wrapper,
+html.dark .ant-modal-body textarea.ant-input,
+html.dark .ant-modal-body .ant-select-selector {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+html.dark .ant-modal-body .ant-input::placeholder,
+html.dark .ant-modal-body textarea.ant-input::placeholder {
+  color: var(--input-placeholder) !important;
+}
+
+/* Modal mask (backdrop) */
+html.dark .ant-modal-mask,
+html.dark .ant-modal-wrap {
+  background-color: rgba(0, 0, 0, 0.65) !important;
+}
+
+/* shadcn Button — dark mode default variant (Create / Save / Add) */
+html.dark [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]):not([class*="secondary"]) {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--surface-border-strong) !important;
+}
+html.dark [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]):not([class*="secondary"]):hover {
+  background-color: var(--surface-card-hover) !important;
+  background: var(--surface-card-hover) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+html.dark [data-slot="button"][class*="bg-foreground"] {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+}
+
+/* shadcn outline Button in dark mode */
+html.dark [data-slot="button"][class*="outline"],
+html.dark button[class*="border"][class*="bg-background"] {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  border: 1px solid var(--surface-border-strong) !important;
+}
+html.dark [data-slot="button"][class*="outline"]:hover {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+}
+
+/* ===== CKEditor (CKE5) — dark mode ===== */
+html.dark .ck.ck-editor,
+html.dark .ck.ck-editor__main,
+html.dark .ck.ck-editor__top,
+html.dark .ck.ck-toolbar,
+html.dark .ck.ck-editor__editable,
+html.dark .ck.ck-editor__editable_inline,
+html.dark .ck.ck-content {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .ck.ck-toolbar {
+  background-color: var(--surface-card-alt) !important;
+  border-bottom: 1px solid var(--surface-border) !important;
+}
+html.dark .ck.ck-toolbar > .ck-toolbar__items {
+  background-color: transparent !important;
+}
+html.dark .ck.ck-button,
+html.dark .ck.ck-button.ck-on,
+html.dark .ck.ck-dropdown__button {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+  border-color: transparent !important;
+}
+html.dark .ck.ck-button:hover:not(.ck-disabled),
+html.dark .ck.ck-button.ck-on:hover:not(.ck-disabled) {
+  background-color: var(--surface-card-hover) !important;
+  color: #ffffff !important;
+}
+html.dark .ck.ck-button .ck-button__label,
+html.dark .ck.ck-button .ck-icon {
+  color: var(--foreground) !important;
+}
+html.dark .ck.ck-button .ck-icon * {
+  fill: currentColor !important;
+}
+html.dark .ck.ck-dropdown__panel,
+html.dark .ck.ck-list,
+html.dark .ck.ck-tooltip {
+  background-color: var(--surface-card) !important;
+  border-color: var(--surface-border) !important;
+  color: var(--foreground) !important;
+}
+html.dark .ck.ck-list__item .ck-button {
+  color: var(--foreground) !important;
+}
+html.dark .ck.ck-list__item .ck-button:hover {
+  background-color: var(--surface-card-hover) !important;
+}
+/* Content area placeholder / typing area */
+html.dark .ck-content {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+}
+html.dark .ck-content p,
+html.dark .ck-content h1,
+html.dark .ck-content h2,
+html.dark .ck-content h3,
+html.dark .ck-content h4,
+html.dark .ck-content h5,
+html.dark .ck-content h6,
+html.dark .ck-content ul,
+html.dark .ck-content ol,
+html.dark .ck-content li {
+  color: var(--foreground) !important;
+}
+html.dark .ck-content blockquote {
+  border-left-color: var(--surface-border-strong) !important;
+  color: var(--muted-foreground) !important;
+}
+html.dark .ck-content a {
+  color: #93c5fd !important;
+}
+/* CKEditor placeholder */
+html.dark .ck.ck-placeholder::before,
+html.dark .ck .ck-placeholder::before {
+  color: var(--muted-foreground) !important;
+}
+/* Toolbar separator */
+html.dark .ck.ck-toolbar__separator {
+  background-color: var(--surface-border) !important;
+}
+html.dark .form-control,
+html.dark .form-select {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-border) !important;
+}
+html.dark .form-control::placeholder { color: var(--input-placeholder) !important; }
+html.dark .ant-input,
+html.dark .ant-input-affix-wrapper {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+html.dark .ant-input-affix-wrapper .ant-input { background-color: transparent !important; }
+html.dark .ant-input::placeholder { color: var(--input-placeholder) !important; }
+
+/* Ant InputNumber — same theming as .ant-input */
+html.dark .ant-input-number,
+html.dark .ant-input-number-input,
+html.dark .ant-input-number-affix-wrapper,
+html.dark .ant-input-number-group-addon {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+html.dark .ant-input-number-focused,
+html.dark .ant-input-number:hover,
+html.dark .ant-input-number-affix-wrapper:hover {
+  border-color: var(--surface-border-strong) !important;
+}
+html.dark .ant-input-number-input::placeholder { color: var(--input-placeholder) !important; }
+html.dark .ant-input-number-handler-wrap {
+  background: var(--input-bg) !important;
+  border-left: 1px solid var(--input-border) !important;
+}
+html.dark .ant-input-number-handler {
+  border-color: var(--input-border) !important;
+}
+html.dark .ant-input-number-handler-up-inner,
+html.dark .ant-input-number-handler-down-inner {
+  color: var(--muted-foreground) !important;
+}
+html.dark .ant-input-number-handler:hover .ant-input-number-handler-up-inner,
+html.dark .ant-input-number-handler:hover .ant-input-number-handler-down-inner {
+  color: var(--foreground) !important;
+}
+
+html.dark .ant-select-selector {
+  background-color: var(--input-bg) !important;
+  border-color: var(--input-border) !important;
+  color: var(--input-text) !important;
+}
+html.dark .ant-select-selection-item,
+html.dark .ant-select-selection-search-input { color: var(--input-text) !important; }
+html.dark .ant-select-selection-placeholder { color: var(--input-placeholder) !important; }
+
+/* Ant Select dropdown caret (arrow) — white in dark mode */
+html.dark .ant-select-arrow,
+html.dark .ant-select-arrow .anticon,
+html.dark .ant-select-arrow svg,
+html.dark .ant-select-clear,
+html.dark .ant-select-clear .anticon,
+html.dark .ant-select-clear svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+/* Suffix icon in any input (search) in dark mode */
+html.dark .ant-input-suffix .anticon,
+html.dark .ant-input-affix-wrapper .ant-input-suffix svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+/* Generic select / dropdown chevron in shadcn / custom selects */
+html.dark select,
+html.dark .form-select {
+  background-image: linear-gradient(45deg, transparent 50%, #ffffff 50%),
+                    linear-gradient(135deg, #ffffff 50%, transparent 50%) !important;
+}
+html.dark .ant-select-dropdown {
+  background-color: var(--surface-card) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .ant-select-item { color: var(--foreground) !important; }
+html.dark .ant-select-item-option-active { background-color: var(--surface-card-alt) !important; }
+html.dark .ant-select-item-option-selected {
+  background-color: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+}
+html.dark .rdt_Table {
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .rdt_TableHead,
+html.dark .rdt_TableHeadRow,
+html.dark header.rdt_TableHeadRow,
+html.dark .rdt_TableHead > .rdt_TableHeadRow {
+  background-color: var(--theme-table-background-color) !important;
+  background: var(--theme-table-background-color) !important;
+  border-bottom: none !important;
+}
+html.dark .rdt_TableCol,
+html.dark .rdt_TableCol_Sortable,
+html.dark .rdt_TableHeadRow .rdt_TableCol {
+  background-color: transparent !important;
+  color: #ffffff !important;
+}
+html.dark .rdt_TableCell {
+  background-color: transparent !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .rdt_Pagination {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .rdt_TableBody .rdt_TableRow {
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .rdt_TableBody .rdt_TableRow:nth-of-type(odd),
+html.dark .rdt_TableBody .rdt_TableRow:nth-child(odd) {
+  background-color: var(--surface-card) !important;
+}
+html.dark .rdt_TableBody .rdt_TableRow:nth-of-type(even),
+html.dark .rdt_TableBody .rdt_TableRow:nth-child(even) {
+  background-color: var(--theme-table-row-alt) !important;
+}
+html.dark .rdt_TableBody .rdt_TableRow:hover { background-color: var(--theme-table-row-hover) !important; }
+
+/* ===== Buttons & badges inside table cells — dark mode =====
+   Many pages render inline `style={{ backgroundColor: ... }}` on cell pills
+   or dropdown triggers (Select / theme-btn / gradient-btn). In dark mode the
+   white/light fills become unreadable. Force them to the dark charcoal palette. */
+html.dark .rdt_TableCell .ant-btn,
+html.dark .rdt_TableCell .btn,
+html.dark .rdt_TableCell .theme-btn,
+html.dark .rdt_TableCell .theme-btn-next,
+html.dark .rdt_TableCell .gradient-btn,
+html.dark .rdt_TableCell button.dropdown-toggle,
+html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([class*="ant-switch"]) {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 6px !important;
+}
+html.dark .rdt_TableCell .ant-btn:hover,
+html.dark .rdt_TableCell .btn:hover,
+html.dark .rdt_TableCell .theme-btn:hover,
+html.dark .rdt_TableCell .theme-btn-next:hover,
+html.dark .rdt_TableCell .gradient-btn:hover,
+html.dark .rdt_TableCell button.dropdown-toggle:hover,
+html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([class*="ant-switch"]):hover {
+  background-color: var(--surface-card-hover) !important;
+  background: var(--surface-card-hover) !important;
+  border-color: var(--surface-border-strong) !important;
+  color: var(--foreground) !important;
+}
+
+/* Badges/pills using inline coloured backgrounds — keep their colour but ensure text reads white */
+html.dark .rdt_TableCell span[style*="background"],
+html.dark .rdt_TableCell div[style*="background"] {
+  color: #ffffff !important;
+}
+
+/* Coloured pills using color: var(--primary-foreground) in their inline style.
+   In dark mode that token resolves to a dark hex, which makes white-bg pills
+   illegible. Force the text to white whenever the pill has any inline bg. */
+html.dark span[style*="primary-foreground"],
+html.dark div[style*="primary-foreground"] {
+  color: #ffffff !important;
+}
+
+/* Status text inside tables — brighten in dark mode so green/red reads well */
+html.dark .rdt_TableCell .text-green-600,
+html.dark .rdt_TableCell .text-green-700,
+html.dark .rdt_TableCell .text-green-500,
+html.dark .no-table .text-green-600,
+html.dark .no-table .text-green-700,
+html.dark .no-table .text-green-500 {
+  color: #4ade80 !important;
+}
+html.dark .rdt_TableCell .text-red-500,
+html.dark .rdt_TableCell .text-red-600,
+html.dark .rdt_TableCell .text-red-700,
+html.dark .no-table .text-red-500,
+html.dark .no-table .text-red-600,
+html.dark .no-table .text-red-700 {
+  color: #fb7185 !important;
+}
+html.dark .rdt_TableCell .text-yellow-500,
+html.dark .rdt_TableCell .text-yellow-600,
+html.dark .rdt_TableCell .text-amber-500,
+html.dark .rdt_TableCell .text-amber-600 {
+  color: #fbbf24 !important;
+}
+
+/* ===== Unified "Select" dropdown trigger for every table row action =====
+   Applies to every Action column in every table — shadcn, Ant Dropdown,
+   custom buttons — so the look matches across the project. */
+.rdt_TableCell .gradient-btn,
+.rdt_TableCell .theme-btn-next,
+.rdt_TableCell button.dropdown-toggle,
+.rdt_TableCell .ant-btn,
+.rdt_TableCell button[class*="bg-foreground"],
+.no-table tbody td .gradient-btn,
+.no-table tbody td .theme-btn-next,
+.no-table tbody td button.dropdown-toggle,
+.no-table tbody td .ant-btn,
+.no-table tbody td button[class*="bg-foreground"] {
+  background-color: #0f172a !important;
+  background: #0f172a !important;
+  background-image: none !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  height: 30px !important;
+  min-width: 0 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease !important;
+}
+.rdt_TableCell .gradient-btn:hover,
+.rdt_TableCell .theme-btn-next:hover,
+.rdt_TableCell button.dropdown-toggle:hover,
+.rdt_TableCell .ant-btn:hover,
+.rdt_TableCell button[class*="bg-foreground"]:hover,
+.no-table tbody td .gradient-btn:hover,
+.no-table tbody td .theme-btn-next:hover,
+.no-table tbody td button.dropdown-toggle:hover,
+.no-table tbody td .ant-btn:hover,
+.no-table tbody td button[class*="bg-foreground"]:hover {
+  background-color: #1e293b !important;
+  background: #1e293b !important;
+  border-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Caret / chevron / arrow icon inside the trigger — always white */
+.rdt_TableCell .gradient-btn img,
+.rdt_TableCell .theme-btn-next img,
+.rdt_TableCell .ant-btn img,
+.no-table tbody td .gradient-btn img,
+.no-table tbody td .theme-btn-next img,
+.no-table tbody td .ant-btn img {
+  filter: brightness(0) invert(1) !important;
+}
+.rdt_TableCell .gradient-btn svg,
+.rdt_TableCell .theme-btn-next svg,
+.rdt_TableCell .ant-btn svg,
+.rdt_TableCell button[class*="bg-foreground"] svg,
+.no-table tbody td .gradient-btn svg,
+.no-table tbody td .theme-btn-next svg,
+.no-table tbody td .ant-btn svg,
+.no-table tbody td button[class*="bg-foreground"] svg {
+  color: #ffffff !important;
+  fill: currentColor;
+}
+
+/* Dark mode — base rule already gives dark bg/white text; bump hover for visibility */
+html.dark .rdt_TableCell .gradient-btn,
+html.dark .rdt_TableCell .theme-btn-next,
+html.dark .rdt_TableCell .ant-btn,
+html.dark .rdt_TableCell button[class*="bg-foreground"],
+html.dark .rdt_TableCell button.dropdown-toggle,
+html.dark .no-table tbody td .gradient-btn,
+html.dark .no-table tbody td .theme-btn-next,
+html.dark .no-table tbody td .ant-btn,
+html.dark .no-table tbody td button[class*="bg-foreground"],
+html.dark .no-table tbody td button.dropdown-toggle {
+  background-color: #1e293b !important;
+  background: #1e293b !important;
+  border: 1px solid #334155 !important;
+  color: #ffffff !important;
+}
+html.dark .rdt_TableCell .gradient-btn:hover,
+html.dark .rdt_TableCell .theme-btn-next:hover,
+html.dark .rdt_TableCell .ant-btn:hover,
+html.dark .rdt_TableCell button[class*="bg-foreground"]:hover,
+html.dark .rdt_TableCell button.dropdown-toggle:hover,
+html.dark .no-table tbody td .gradient-btn:hover,
+html.dark .no-table tbody td .theme-btn-next:hover,
+html.dark .no-table tbody td .ant-btn:hover,
+html.dark .no-table tbody td button[class*="bg-foreground"]:hover,
+html.dark .no-table tbody td button.dropdown-toggle:hover {
+  background-color: #334155 !important;
+  background: #334155 !important;
+  border-color: #475569 !important;
+  color: #ffffff !important;
+}
+
+/* Lifecycle / risk / status pills with very light inline backgrounds — readability fix */
+html.dark .rdt_TableCell span[style*="background-color: white"],
+html.dark .rdt_TableCell span[style*="background-color: #fff"],
+html.dark .rdt_TableCell span[style*="background-color:#fff"],
+html.dark .rdt_TableCell span[style*="background-color:white"] {
+  background-color: var(--surface-card-alt) !important;
+  color: var(--foreground) !important;
+  border: 1px solid var(--surface-border) !important;
+}
+html.dark .ant-dropdown-menu {
+  background-color: var(--surface-card) !important;
+  border: 1px solid var(--surface-border);
+}
+html.dark .ant-dropdown-menu-item { color: var(--foreground) !important; }
+html.dark .ant-dropdown-menu-item:hover { background-color: var(--surface-card-alt) !important; }
+html.dark .ant-picker,
+html.dark .ant-picker-input > input {
+  background-color: var(--input-bg) !important;
+  color: var(--input-text) !important;
+  border-color: var(--input-border) !important;
+}
+html.dark .ant-picker-input > input::placeholder { color: var(--input-placeholder) !important; }
+
+/* ===== Filter-row action buttons in dark mode =====
+   The "+ Add New Record / Template / Country" button next to the search field
+   uses a mix of classes (.theme-btn-next, .gradient-btn, etc.) — these were
+   washing out against the dark surface. Force a readable charcoal pill with
+   white text + icon. */
+html.dark .service .theme-btn-next,
+html.dark .service .gradient-btn,
+html.dark .service .application-btn,
+html.dark .service button.theme-btn-next,
+html.dark .service button.gradient-btn,
+html.dark .filter-select .theme-btn-next,
+html.dark .filter-select .gradient-btn {
+  background: linear-gradient(135deg, #22252f 0%, #161821 100%) !important;
+  background-color: #22252f !important;
+  border: 1px solid var(--surface-border-strong) !important;
+  color: #ffffff !important;
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4) !important;
+}
+html.dark .service .theme-btn-next:hover,
+html.dark .service .gradient-btn:hover,
+html.dark .service .application-btn:hover,
+html.dark .service button.theme-btn-next:hover,
+html.dark .service button.gradient-btn:hover,
+html.dark .filter-select .theme-btn-next:hover,
+html.dark .filter-select .gradient-btn:hover {
+  background: linear-gradient(135deg, #2c3140 0%, #1c1f2a 100%) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+
+html.dark .service .theme-btn-next svg,
+html.dark .service .theme-btn-next .anticon,
+html.dark .service .gradient-btn svg,
+html.dark .service .gradient-btn .anticon {
+  color: #ffffff !important;
+  fill: currentColor;
+}
+
+/* shadcn primary button inside a filter card — dark surface with white text/icon */
+html.dark .service .bg-white > .d-flex button[class*="bg-foreground"],
+html.dark .bg-white > .d-flex button:not(.ant-btn):not(.btn) {
+  background-color: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+  border: 1px solid var(--surface-border-strong) !important;
+}
+html.dark .service .bg-white > .d-flex button[class*="bg-foreground"]:hover,
+html.dark .bg-white > .d-flex button:not(.ant-btn):not(.btn):hover {
+  background-color: var(--surface-card-hover) !important;
+  border-color: #3a4050 !important;
+  color: #ffffff !important;
+}
+html.dark .service .bg-white > .d-flex button[class*="bg-foreground"] svg,
+html.dark .bg-white > .d-flex button:not(.ant-btn):not(.btn) svg {
+  color: #ffffff !important;
+}
+
+/* Date picker icons in dark mode — white calendar / clear icon */
+html.dark .ant-picker .ant-picker-suffix,
+html.dark .ant-picker .ant-picker-suffix .anticon,
+html.dark .ant-picker .ant-picker-suffix svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Active sidebar item — glowing blue ring with dark bg in dark mode */
+html.dark .css-1654oxy > .ps-menu-button,
+html.dark div.menu-items a.ps-menu-button.ps-active,
+html.dark .active .css-1tqrhto > .ps-menu-button,
+html.dark li.ps-menuitem-root.ps-active > .ps-menu-button {
+  background: rgba(59, 130, 246, 0.06) !important;
+  border: 1.5px solid rgba(59, 130, 246, 0.85) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.20),
+    0 0 16px rgba(59, 130, 246, 0.35),
+    inset 0 0 12px rgba(59, 130, 246, 0.12) !important;
+  border-radius: 10px !important;
+}
+html.dark span.ps-menu-label.ps-active.css-12w9als,
+html.dark div.menu-items a.ps-menu-button.ps-active span,
+html.dark div.menu-items a.ps-menu-button.ps-active .ps-menu-label {
+  color: #ffffff !important;
+}
+html.dark div.menu-items a.ps-menu-button.ps-active img {
+  filter: brightness(0) invert(1) !important;
+}
+html.dark .ant-picker .ant-picker-clear,
+html.dark .ant-picker .ant-picker-clear .anticon {
+  color: #cbd5e1 !important;
+  background-color: transparent !important;
+}
+html.dark .ant-picker .ant-picker-separator {
+  color: #94a3b8 !important;
+}
+
+/* Generic Search prefix icon in dark mode — white as well */
+html.dark .ant-input-prefix .anticon,
+html.dark .ant-input-affix-wrapper .ant-input-prefix svg {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+}
+
+/* Ant Card (used as a wrapper around charts on the dashboard) — dark mode */
+html.dark .ant-card,
+html.dark .ant-card-body,
+html.dark .ant-card-head {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border) !important;
+}
+html.dark .ant-card-head-title { color: var(--foreground) !important; }
+html.dark .ant-card-bordered { border: 1px solid var(--surface-border) !important; }
+
+/* Recharts axis & grid lines — dark mode */
+html.dark .recharts-cartesian-axis-tick text { fill: #94a3b8 !important; }
+html.dark .recharts-cartesian-grid-horizontal line,
+html.dark .recharts-cartesian-grid-vertical line { stroke: #1f2a44 !important; }
+html.dark .recharts-text { fill: #94a3b8 !important; }
+
+/* Chart / Finance Statistics container (any direct child of a service page holding recharts) */
+html.dark .service .recharts-wrapper,
+html.dark .service [class*="recharts"] {
+  color: #e2e8f0;
+}
+html.dark .bg-white .recharts-wrapper {
+  background-color: transparent !important;
 }
 
 /* ==========================================================================
@@ -239,9 +1466,11 @@
   --theme-heading-text-color: #090909;
   --theme-cards-background-color: transparent;
   --theme-cards-text-color: transparent;
-  --theme-table-background-color: #eb0d0d;
+  --theme-table-background-color: #0f172a;
   --theme-table-heading-color: #ffffff;
-  --theme-table-body-text-color: #000000;
+  --theme-table-body-text-color: #0f172a;
+  --theme-table-row-alt: #d9dde4;
+  --theme-table-row-hover: #e7ebf1;
   --theme-flow-sidebar-logo-bg: rgb(252, 252, 252);
   --theme-flow-dashboard-sidebar-bg: rgb(252, 252, 252);
   --theme-flow-submenu-sidebar-bg: transparent;
@@ -315,27 +1544,10 @@
 }
 
 span.ps-menu-label.ps-active.css-12w9als {
-  color: var(--theme-flow-active-text-color) !important;
+  color: #ffffff !important;
 }
 
-li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button,
-.menu-items > a:hover .ps-menu-button {
-  background-color: var(--theme-flow-active-color-bg) !important;
-  color: var(--theme-flow-active-text-color) !important;
-  margin-left: 20px;
-  width: -webkit-fill-available;
-  border-radius: 0;
-}
-
-li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button:first-child:before {
-  content: "";
-  position: absolute;
-  left: 20px;
-  background: #1963b9;
-  width: 4px;
-  height: 100%;
-  top: 0;
-}
+/* Active sidebar item styling lives in custom.scss to avoid duplication */
 
 .css-12w9als {
   color: var(--theme-flow-inactive-text-color) !important;
@@ -417,6 +1629,6 @@ nav.ps-menu-root.css-vj11vy .ps-submenu-content ul a.ps-menu-button {
 }
 
 li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
-  background-color: var(--theme-flow-active-color-bg) !important;
-  color: var(--theme-flow-active-text-color) !important;
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
 }

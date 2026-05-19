@@ -308,12 +308,7 @@ const AccountMapping = () => {
                 <hr className="my-4" />
                 <div className="d-flex justify-content-end">
                   <Button
-                    className="application-btn"
-                    style={{
-                      backgroundColor: "#EB0D0D",
-                      color: "#FCFCFC",
-                      border: "none",
-                    }}
+                    className="theme-btn-next"
                     onClick={saveSelectedAccounts}
                     disabled={!formValues.productID}
                   >
@@ -369,12 +364,7 @@ const AccountMapping = () => {
                 <hr className="my-4" />
                 <div className="d-flex justify-content-end">
                   <Button
-                    className="application-btn"
-                    style={{
-                      backgroundColor: "#EB0D0D",
-                      color: "#FCFCFC",
-                      border: "none",
-                    }}
+                    className="theme-btn-next"
                     onClick={mapAccounts}
                     disabled={Object.keys(changedFields).length === 0 || !formValues.productID}
                   >

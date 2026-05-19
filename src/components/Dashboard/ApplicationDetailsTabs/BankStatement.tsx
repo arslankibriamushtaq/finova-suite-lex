@@ -112,18 +112,18 @@ function BankStatement({ financialData }: any) {
   const isTransactionsEmpty = !transactions || transactions.length === 0;
 
   return (
-    <div style={{ padding: "20px", background: "#F4F4F4", minHeight: "100vh", fontFamily: "inherit", fontSize: "14px" }}>
+    <div style={{ padding: "20px", background: "var(--surface-page)", minHeight: "100vh", fontFamily: "inherit", fontSize: "14px" }}>
       {/* Top Section - Account Information */}
-      <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+      <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "8px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
         {isAccountDataEmpty ? (
-          <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
             No response found
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
             {/* Account Holder Name */}
             <div>
-              <label style={{ display: "block", fontSize: "14px", color: "#000", marginBottom: "8px", fontWeight: 500 }}>
+              <label style={{ display: "block", fontSize: "14px", color: "var(--foreground)", marginBottom: "8px", fontWeight: 500 }}>
                 Account Holder Name
               </label>
               <input
@@ -134,9 +134,9 @@ function BankStatement({ financialData }: any) {
                   width: "100%",
                   padding: "10px 12px",
                   fontSize: "14px",
-                  color: "#000",
-                  background: "#F5F5F5",
-                  border: "1px solid #E0E0E0",
+                  color: "var(--foreground)",
+                  background: "var(--surface-card-alt)",
+                  border: "1px solid var(--surface-border)",
                   borderRadius: "4px",
                   outline: "none",
                 }}
@@ -145,7 +145,7 @@ function BankStatement({ financialData }: any) {
 
             {/* Bank Name */}
             <div>
-              <label style={{ display: "block", fontSize: "14px", color: "#000", marginBottom: "8px", fontWeight: 500 }}>
+              <label style={{ display: "block", fontSize: "14px", color: "var(--foreground)", marginBottom: "8px", fontWeight: 500 }}>
                 Bank Name
               </label>
               <input
@@ -156,9 +156,9 @@ function BankStatement({ financialData }: any) {
                   width: "100%",
                   padding: "10px 12px",
                   fontSize: "14px",
-                  color: "#000",
-                  background: "#F5F5F5",
-                  border: "1px solid #E0E0E0",
+                  color: "var(--foreground)",
+                  background: "var(--surface-card-alt)",
+                  border: "1px solid var(--surface-border)",
                   borderRadius: "4px",
                   outline: "none",
                 }}
@@ -167,7 +167,7 @@ function BankStatement({ financialData }: any) {
 
             {/* IBAN */}
             <div>
-              <label style={{ display: "block", fontSize: "14px", color: "#000", marginBottom: "8px", fontWeight: 500 }}>
+              <label style={{ display: "block", fontSize: "14px", color: "var(--foreground)", marginBottom: "8px", fontWeight: 500 }}>
                 IBAN
               </label>
               <input
@@ -178,9 +178,9 @@ function BankStatement({ financialData }: any) {
                   width: "100%",
                   padding: "10px 12px",
                   fontSize: "14px",
-                  color: "#000",
-                  background: "#F5F5F5",
-                  border: "1px solid #E0E0E0",
+                  color: "var(--foreground)",
+                  background: "var(--surface-card-alt)",
+                  border: "1px solid var(--surface-border)",
                   borderRadius: "4px",
                   outline: "none",
                 }}
@@ -191,26 +191,26 @@ function BankStatement({ financialData }: any) {
       </div>
 
       {disbursementAccount && (
-        <div style={{ background: "#fff", padding: "20px", borderRadius: "8px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-          <div style={{ fontSize: "18px", fontWeight: 600, color: "#000", marginBottom: "12px" }}>
+        <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "8px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+          <div style={{ fontSize: "18px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
             Disbursement Account
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
             <div>
-              <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>Account Holder</div>
-              <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>Account Holder</div>
+              <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                 {disbursementAccount.account_holder_name || disbursementAccount.holder_name || disbursementAccount.name || "-"}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>Bank Name</div>
-              <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>Bank Name</div>
+              <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                 {disbursementAccount.bank?.name || disbursementAccount.bank || disbursementAccount.provider_id || "-"}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>IBAN</div>
-              <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>IBAN</div>
+              <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                 {disbursementAccount.iban || disbursementAccount.IBAN || "-"}
               </div>
             </div>
@@ -219,7 +219,7 @@ function BankStatement({ financialData }: any) {
       )}
       {/* Bottom Section - Transaction Details */}
       {isTransactionsEmpty ? (
-        <div style={{ background: "#fff", padding: "40px", borderRadius: "8px", textAlign: "center", color: "#000", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+        <div style={{ background: "var(--surface-card)", padding: "40px", borderRadius: "8px", textAlign: "center", color: "var(--foreground)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
           No response found
         </div>
       ) : (
@@ -229,55 +229,55 @@ function BankStatement({ financialData }: any) {
               <div
                 key={transaction.transaction_id || index}
                 style={{
-                  background: "#fff",
+                  background: "var(--surface-card)",
                   padding: "20px",
                   borderRadius: "8px",
                   boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                 }}
               >
                 {/* Transaction ID Header */}
-                <div style={{ fontSize: "16px", fontWeight: 700, color: "#000", marginBottom: "16px" }}>
+                <div style={{ fontSize: "16px", fontWeight: 700, color: "var(--foreground)", marginBottom: "16px" }}>
                   {transaction.transaction_id || "-"}
                 </div>
 
                 {/* Transaction Details */}
                 <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
                   {/* Account ID */}
-                  <div style={{ padding: "12px 0", borderBottom: "1px solid #E5E7EB", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "#000" }}>Account ID:</div>
-                    <div style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>
+                  <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Account ID:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {transaction.account_id || "-"}
                     </div>
                   </div>
 
                   {/* Provider ID */}
-                  <div style={{ padding: "12px 0", borderBottom: "1px solid #E5E7EB", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "#000" }}>Provider ID:</div>
-                    <div style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>
+                  <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Provider ID:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {transaction.provider_id || "-"}
                     </div>
                   </div>
 
                   {/* Credit/Debit Indicator */}
-                  <div style={{ padding: "12px 0", borderBottom: "1px solid #E5E7EB", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "#000" }}>Credit/Debit Indicator:</div>
-                    <div style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>
+                  <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Credit/Debit Indicator:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {transaction.credit_debit_indicator || transaction.indicator || "-"}
                     </div>
                   </div>
 
                   {/* Amount */}
-                  <div style={{ padding: "12px 0", borderBottom: "1px solid #E5E7EB", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "#000" }}>Amount:</div>
-                    <div style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>
+                  <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Amount:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {formatCurrency(transaction.amount, transaction.currency)}
                     </div>
                   </div>
 
                   {/* Booking Date Time */}
                   <div style={{ padding: "12px 0", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "#000" }}>Booking Date Time:</div>
-                    <div style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Booking Date Time:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {formatDateTime(transaction.booking_date_time || transaction.booking_date || transaction.date)}
                     </div>
                   </div>

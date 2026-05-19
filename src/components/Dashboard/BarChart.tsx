@@ -1,7 +1,8 @@
 import { useEffect, useState, useRef } from "react";
 import {
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
+  CartesianGrid,
   XAxis,
   YAxis,
   Tooltip,
@@ -284,65 +285,116 @@ const CustomBarChart = () => {
             </div>
           )}
           <ResponsiveContainer width="100%" height={350}>
-            <BarChart
+            <AreaChart
               ref={chartRef}
               data={data}
-              margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+              margin={{ top: 10, right: 30, left: 0, bottom: 5 }}
             >
+              <defs>
+                <linearGradient id="gradApplied" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.applied} stopOpacity={0.5} />
+                  <stop offset="100%" stopColor={CHART_COLORS.applied} stopOpacity={0.05} />
+                </linearGradient>
+                <linearGradient id="gradApproved" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.approved} stopOpacity={0.5} />
+                  <stop offset="100%" stopColor={CHART_COLORS.approved} stopOpacity={0.05} />
+                </linearGradient>
+                <linearGradient id="gradRejected" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.rejected} stopOpacity={0.45} />
+                  <stop offset="100%" stopColor={CHART_COLORS.rejected} stopOpacity={0.05} />
+                </linearGradient>
+                <linearGradient id="gradDisbursed" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor={CHART_COLORS.disbursed} stopOpacity={0.45} />
+                  <stop offset="100%" stopColor={CHART_COLORS.disbursed} stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="var(--surface-border)" vertical={false} />
               <XAxis
                 dataKey="date"
-                angle={-45}
-                textAnchor="end"
-                height={80}
-                tick={{ fontSize: 11 }}
+                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
                 tickFormatter={(value) => {
                   if (!value) return "";
                   const date = dayjs(value);
                   if (date.isValid()) {
-                    return date.format("MMM DD");
+                    return date.format("MMM D");
                   }
                   return value;
                 }}
+                axisLine={{ stroke: "var(--surface-border)" }}
+                tickLine={false}
               />
               <YAxis
-                tick={{ fontSize: 12 }}
-                label={{ value: 'Amount', angle: -90, position: 'insideLeft' }}
+                tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+                label={{ value: "Amount", angle: -90, position: "insideLeft", style: { fill: "var(--muted-foreground)", fontSize: 11 } }}
+                axisLine={false}
+                tickLine={false}
               />
               <Tooltip
-                cursor={false}
-                contentStyle={{ backgroundColor: 'var(--background)', border: '1px solid var(--border)', borderRadius: 8 }}
-                formatter={(value: any) => new Intl.NumberFormat('en-US').format(value)}
+                cursor={{ stroke: CHART_COLORS.applied, strokeWidth: 2, strokeDasharray: "0" }}
+                content={(props: any) => {
+                  if (!props.active || !props.payload?.length) return null;
+                  const label = props.label ? dayjs(props.label).format("MMM D, YYYY") : "";
+                  const get = (key: string) =>
+                    props.payload.find((p: any) => p.dataKey === key)?.value ?? 0;
+                  return (
+                    <div
+                      style={{
+                        backgroundColor: "var(--surface-card)",
+                        border: "1px solid var(--surface-border)",
+                        borderRadius: 8,
+                        padding: "10px 14px",
+                        boxShadow: "var(--surface-elevation-2)",
+                        fontSize: 12,
+                        minWidth: 140,
+                      }}
+                    >
+                      <div style={{ color: "var(--foreground)", fontWeight: 600, marginBottom: 6 }}>{label}</div>
+                      <div style={{ color: CHART_COLORS.applied, marginBottom: 2 }}>Applied: {get("applied")}</div>
+                      <div style={{ color: CHART_COLORS.approved, marginBottom: 2 }}>Approved: {get("approved")}</div>
+                      <div style={{ color: CHART_COLORS.rejected, marginBottom: 2 }}>Rejected: {get("rejected")}</div>
+                      <div style={{ color: CHART_COLORS.disbursed }}>Disbursed: {get("disbursed")}</div>
+                    </div>
+                  );
+                }}
               />
 
-              <Bar
-                radius={[8, 8, 0, 0]}
+              <Area
+                type="monotone"
                 dataKey="applied"
                 name="Applied"
-                barSize={15}
-                fill={CHART_COLORS.applied}
+                stroke={CHART_COLORS.applied}
+                strokeWidth={2}
+                fill="url(#gradApplied)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--surface-card)" }}
               />
-              <Bar
-                radius={[8, 8, 0, 0]}
+              <Area
+                type="monotone"
                 dataKey="approved"
                 name="Approved"
-                barSize={15}
-                fill={CHART_COLORS.approved}
+                stroke={CHART_COLORS.approved}
+                strokeWidth={2}
+                fill="url(#gradApproved)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--surface-card)" }}
               />
-              <Bar
-                radius={[8, 8, 0, 0]}
+              <Area
+                type="monotone"
                 dataKey="rejected"
                 name="Rejected"
-                barSize={15}
-                fill={CHART_COLORS.rejected}
+                stroke={CHART_COLORS.rejected}
+                strokeWidth={2}
+                fill="url(#gradRejected)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--surface-card)" }}
               />
-              <Bar
-                radius={[8, 8, 0, 0]}
+              <Area
+                type="monotone"
                 dataKey="disbursed"
                 name="Disbursed"
-                barSize={15}
-                fill={CHART_COLORS.disbursed}
+                stroke={CHART_COLORS.disbursed}
+                strokeWidth={2}
+                fill="url(#gradDisbursed)"
+                activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--surface-card)" }}
               />
-            </BarChart>
+            </AreaChart>
           </ResponsiveContainer>
           <CustomLegend />
         </div>

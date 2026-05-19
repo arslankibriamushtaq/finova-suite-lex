@@ -297,7 +297,7 @@ const OnboardingDashboard: React.FC = () => {
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     }
     .universal-onboarding-page .country-card {
-      background-color: #fff;
+      background-color: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: 12px;
       padding: 18px;
@@ -344,12 +344,12 @@ const OnboardingDashboard: React.FC = () => {
     .universal-onboarding-page .step-empty {
       text-align: center;
       padding: 60px 16px;
-      background: #fff;
+      background: var(--surface-card);
       border-radius: 12px;
       border: 1px dashed var(--border);
     }
     .universal-onboarding-page .step-card {
-      background: #fff;
+      background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: 12px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
@@ -358,8 +358,8 @@ const OnboardingDashboard: React.FC = () => {
     }
     .universal-onboarding-page .step-card-header {
       padding: 16px;
-      background: #eb0d0d;
-      border-bottom: 1px solid #c00a0a;
+      background: var(--theme-table-background-color);
+      border-bottom: 1px solid var(--surface-border);
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -380,13 +380,13 @@ const OnboardingDashboard: React.FC = () => {
     }
     .universal-onboarding-page .step-card-body {
       padding: 16px;
-      background: #fff;
+      background: var(--surface-card);
     }
     .universal-onboarding-page .step-index-badge {
       width: 36px;
       height: 36px;
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface-card);
       border: 1px solid var(--border);
       color: var(--foreground);
       display: inline-flex;
@@ -405,7 +405,7 @@ const OnboardingDashboard: React.FC = () => {
     }
     .universal-onboarding-page .step-endpoint-code {
       font-size: 11px;
-      background: #fff;
+      background: var(--surface-card);
       border: 1px solid var(--border);
       border-radius: 4px;
       padding: 2px 6px;
@@ -437,7 +437,7 @@ const OnboardingDashboard: React.FC = () => {
       padding: 12px 14px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface-card);
       transition: background-color 0.15s ease;
     }
     .universal-onboarding-page .field-row:hover {
@@ -499,7 +499,7 @@ const OnboardingDashboard: React.FC = () => {
     .uo-modal .modal-header {
       padding: 18px 22px;
       border-bottom: 1px solid var(--border);
-      background: #fff;
+      background: var(--surface-card);
     }
     .uo-modal .modal-title {
       font-size: 17px;
@@ -508,7 +508,7 @@ const OnboardingDashboard: React.FC = () => {
     }
     .uo-modal .modal-body {
       padding: 20px 22px;
-      background: #fff;
+      background: var(--surface-card);
     }
     .uo-modal .modal-footer {
       padding: 14px 22px 18px;
@@ -536,7 +536,7 @@ const OnboardingDashboard: React.FC = () => {
       border: 1px solid var(--border) !important;
       font-size: 14px;
       padding: 8px 12px;
-      background: #fff;
+      background: var(--surface-card);
       color: var(--foreground);
     }
     .uo-modal textarea.form-control {
@@ -567,7 +567,7 @@ const OnboardingDashboard: React.FC = () => {
       padding: 0 18px !important;
       border-radius: 8px !important;
       border: 1px solid var(--border) !important;
-      background-color: #fff !important;
+      background-color: var(--surface-card) !important;
       color: var(--foreground) !important;
       font-weight: 500;
     }

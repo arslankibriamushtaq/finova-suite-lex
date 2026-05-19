@@ -96,7 +96,13 @@ const Leads = () => {
     const stageLower = stage.toLowerCase();
     switch (stageLower) {
       case "lead":
-        return "var(--color-primary)";
+        return "var(--color-info)";
+      case "qualified":
+        return "var(--color-success)";
+      case "customer":
+        return "var(--color-success)";
+      case "lost":
+        return "var(--color-error)";
       default:
         return "var(--color-disabled)";
     }

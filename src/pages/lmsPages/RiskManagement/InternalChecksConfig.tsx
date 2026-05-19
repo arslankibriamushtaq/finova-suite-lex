@@ -107,25 +107,19 @@ const InternalChecksConfig = () => {
       cell: (row: any) => {
         const isBusy = updatingId === row.id;
         return (
-          <div className="flex items-center gap-2">
+          <div className="status-cell">
             <Switch
               checked={row.active}
               onCheckedChange={() => handleToggle(row)}
               disabled={isBusy}
             />
-            <span
-              className={
-                row.active
-                  ? "text-green-600 text-sm font-medium"
-                  : "text-red-500 text-sm font-medium"
-              }
-            >
+            <span className={`status-pill ${row.active ? "active" : "inactive"}`}>
               {row.active ? "Enabled" : "Disabled"}
             </span>
           </div>
         );
       },
-      width: "160px",
+      width: "180px",
     },
     {
       name: "Block Code on Fail",

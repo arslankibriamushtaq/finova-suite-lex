@@ -202,17 +202,17 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
       <div className="profile-sec mt-3 mb-3">
         <div className="row g-3 align-items-center account-card">
           <div className="col-12">
-            <div className="p-4" style={{ background: "white", borderRadius: "8px", fontFamily: 'inherit', fontSize: '14px' }}>
+            <div className="p-4" style={{ background: "var(--surface-card)", borderRadius: "8px", fontFamily: 'inherit', fontSize: '14px' }}>
               {hasComplianceHistory && (
-                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "8px", background: "#F8FAFC", border: "1px solid #E5E7EB" }}>
-                  <h4 style={{ fontSize: "16px", fontWeight: 600, color: "#000", marginBottom: "12px" }}>
+                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "8px", background: "var(--surface-card-alt)", border: "1px solid var(--surface-border)" }}>
+                  <h4 style={{ fontSize: "16px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
                     KYC / Compliance Summary
                   </h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
                     {complianceHistoryEntries.map(([key, value]) => (
-                      <div key={String(key)} style={{ padding: "12px", background: "#fff", borderRadius: "6px", border: "1px solid #E5E7EB" }}>
-                        <div style={{ fontSize: "13px", color: "#666", marginBottom: "6px" }}>{String(key)}</div>
-                        <div style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                      <div key={String(key)} style={{ padding: "12px", background: "var(--surface-card)", borderRadius: "6px", border: "1px solid var(--surface-border)" }}>
+                        <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>{String(key)}</div>
+                        <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                           {typeof value === "object" ? JSON.stringify(value) : String(value ?? "-")}
                         </div>
                       </div>
@@ -222,7 +222,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
               )}
               {/* Compliance Questions in Two Columns */}
               {answers.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
+                <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
                   No response found
                 </div>
               ) : (
@@ -234,7 +234,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                         {/* Category Heading */}
                         <h5 
                           style={{ 
-                            color: "#0B0B0B", 
+                            color: "var(--foreground)", 
                             fontSize: "16px", 
                             fontWeight: "600",
                             marginBottom: "15px",
@@ -255,15 +255,15 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                             <div 
                               key={answer.id || index}
                               className="d-flex justify-content-between align-items-center mt-2 mb-3 pb-2"
-                              style={{ borderBottom: "1px solid #CFCFCF" }}
+                              style={{ borderBottom: "1px solid var(--surface-border)" }}
                             >
-                              <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>
+                              <p style={{ color: "var(--foreground)", fontSize: "14px", margin: 0 }}>
                                 {questionObj.en || questionObj.question || "-"}
                               </p>
                               <span 
                                 style={{ 
                                   fontWeight: "600", 
-                                  color: isYes ? "#28a745" : "#0B0B0B", 
+                                  color: isYes ? "#28a745" : "var(--foreground)", 
                                   fontSize: "14px",
                                   minWidth: "40px",
                                   textAlign: "right"
@@ -285,7 +285,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                         {/* Category Heading */}
                         <h5 
                           style={{ 
-                            color: "#0B0B0B", 
+                            color: "var(--foreground)", 
                             fontSize: "16px", 
                             fontWeight: "600",
                             marginBottom: "15px",
@@ -306,15 +306,15 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
                             <div 
                               key={answer.id || index}
                               className="d-flex justify-content-between align-items-center mt-2 mb-3 pb-2"
-                              style={{ borderBottom: "1px solid #CFCFCF" }}
+                              style={{ borderBottom: "1px solid var(--surface-border)" }}
                             >
-                              <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>
+                              <p style={{ color: "var(--foreground)", fontSize: "14px", margin: 0 }}>
                                 {questionObj.ar || questionObj.question || "-"}
                               </p>
                               <span 
                                 style={{ 
                                   fontWeight: "600", 
-                                  color: isYes ? "#28a745" : "#0B0B0B", 
+                                  color: isYes ? "#28a745" : "var(--foreground)", 
                                   fontSize: "14px",
                                   minWidth: "40px",
                                   textAlign: "left"

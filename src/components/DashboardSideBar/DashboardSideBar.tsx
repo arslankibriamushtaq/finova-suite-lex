@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
+import "./DashboardSideBar.css";
 import { Images } from "../Config/Images";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -13,6 +14,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
+  const [sidebarTab, setSidebarTab] = useState<"financing" | "wallet">("financing");
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const toggled = useSelector((state: RootState) => state.block.toggled);
@@ -2123,26 +2125,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                   (nestedItem: any, nestedIndex: any) => (
                     <Link
                       to={`${nestedItem.LinkLable || nestedItem.linkLable}/${nestedItem.Link || nestedItem.link}`}
-                      style={{
-                        textDecoration: "none",
-                        color: nestedItem.active
-                          ? themeStyle?.dashboardSibeBarFlow.activeTextColor
-                          : themeStyle?.dashboardSibeBarFlow.inActiveTextColor,
-                        backgroundColor: nestedItem.active
-                          ? themeStyle?.dashboardSibeBarFlow.activeColorBg
-                          : themeStyle?.dashboardSibeBarFlow.subMenuSideBarBg,
-                        fontSize: "14px",
-                      }}
+                      className={`sidebar-link ${nestedItem.active ? "is-active" : ""}`}
                       key={nestedIndex}
                       onClick={(e) => e.stopPropagation()}
                     >
                       <MenuItem
                         active={nestedItem.active}
-                        style={{
-                          fontSize: "11px",
-                          fontWeight: "400",
-                          textDecoration: "none",
-                        }}
                         className={nestedItem.active ? "active" : ""}
                       >
                         {nestedItem.label}
@@ -2156,16 +2144,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             return (
               <Link
                 to={`${submenuItem.LinkLable}/${submenuItem.Link}`}
-                style={{
-                  textDecoration: "none",
-                  color: submenuItem.active
-                    ? themeStyle?.dashboardSibeBarFlow.activeTextColor
-                    : themeStyle?.dashboardSibeBarFlow.inActiveTextColor,
-                  backgroundColor: submenuItem.active
-                    ? themeStyle?.dashboardSibeBarFlow.activeColorBg
-                    : themeStyle?.dashboardSibeBarFlow.subMenuSideBarBg,
-                  fontSize: "14px",
-                }}
+                className={`sidebar-link ${submenuItem.active ? "is-active" : ""}`}
                 key={subIndex}
                 onClick={(e) => e.stopPropagation()}
               >
@@ -2227,9 +2206,22 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             paddingBottom: "8px",
           }}
         >
-          <img 
-            src={Images.FactoringLogo} 
-            alt="logo" 
+          <img
+            src={Images.FactoringLogo}
+            alt="logo"
+            className="sidebar-logo sidebar-logo--light"
+            onClick={() => navigate("/LOS/Dashboard")}
+            style={{
+              width: isCollapsed ? "40px" : "150px",
+              height: "auto",
+              cursor: "pointer",
+              transition: "width 0.3s ease"
+            }}
+          />
+          <img
+            src={Images.FactoringLogoDark}
+            alt="logo"
+            className="sidebar-logo sidebar-logo--dark"
             onClick={() => navigate("/LOS/Dashboard")}
             style={{
               width: isCollapsed ? "40px" : "150px",
@@ -2248,41 +2240,68 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             </button>
           )}
         </div>
+        {!isCollapsed && (
+          <div className="sidebar-tab-row">
+            <button
+              type="button"
+              className={`sidebar-tab ${sidebarTab === "wallet" ? "active" : ""}`}
+              onClick={() => setSidebarTab("wallet")}
+            >
+              Wallet
+            </button>
+            <button
+              type="button"
+              className={`sidebar-tab ${sidebarTab === "financing" ? "active" : ""}`}
+              onClick={() => setSidebarTab("financing")}
+            >
+              Financing
+            </button>
+          </div>
+        )}
         <Menu>
-          {sidebarItems.map((item, index) => (
-            <React.Fragment key={index}>
-              {item.menu ? (
-                renderSubmenu(item, index)
-              ) : (
-                <div className="menu-items css-12w9als">
-                  <Link
-                    to={`${item.Link}`}
-                    style={{
-                      fontSize: "14px",
-                    }}
-                  >
-                    <MenuItem
-                      active={item.active}
-                      onMouseEnter={() => setHoveredItem(index)}
-                      onMouseLeave={() => setHoveredItem(null)}
-                      prefix={
-                        item.img ? (
-                          <img
-                            src={item.img}
-                            style={{
-                              filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
-                            }}
-                          />
-                        ) : null
-                      }
+          {sidebarTab === "financing" ? (
+            sidebarItems.map((item, index) => (
+              <React.Fragment key={index}>
+                {item.menu ? (
+                  renderSubmenu(item, index)
+                ) : (
+                  <div className="menu-items css-12w9als">
+                    <Link
+                      to={`${item.Link}`}
+                      style={{
+                        fontSize: "14px",
+                      }}
                     >
-                      {item.label}
-                    </MenuItem>
-                  </Link>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
+                      <MenuItem
+                        active={item.active}
+                        onMouseEnter={() => setHoveredItem(index)}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        prefix={
+                          item.img ? (
+                            <img
+                              src={item.img}
+                              style={{
+                                filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
+                              }}
+                            />
+                          ) : null
+                        }
+                      >
+                        {item.label}
+                      </MenuItem>
+                    </Link>
+                  </div>
+                )}
+              </React.Fragment>
+            ))
+          ) : (
+            !isCollapsed && (
+              <div className="sidebar-empty-state">
+                <div className="sidebar-empty-title">Wallet</div>
+                <div className="sidebar-empty-sub">No modules yet. Coming soon.</div>
+              </div>
+            )
+          )}
         </Menu>
       </Sidebar>
       <style>

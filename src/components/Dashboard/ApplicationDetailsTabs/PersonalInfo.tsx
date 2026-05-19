@@ -406,26 +406,26 @@ function PersonalInformation({ fullDetail }: any) {
   }
 
   return (
-    <div style={{ padding: "20px", background: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "var(--surface-card)", minHeight: "100vh" }}>
       {/* Language Headers */}
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "30px" }}>
-        <span style={{ color: "#000", fontWeight: 600, fontSize: "16px" }}>English</span>
-        <span style={{ color: "#000", fontWeight: 600, fontSize: "16px" }}>العربية</span>
+        <span style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px" }}>English</span>
+        <span style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px" }}>العربية</span>
       </div>
 
       {/* Personal Information Section */}
       <div style={{ marginBottom: "40px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-          <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0 }}>
+          <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0 }}>
             Personal Information
           </h2>
-          <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0 }}>
+          <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0 }}>
             معلومات شخصية
           </h2>
         </div>
 
         {isPersonalDataEmpty ? (
-          <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
             No response found
           </div>
         ) : (
@@ -440,19 +440,19 @@ function PersonalInformation({ fullDetail }: any) {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "12px 0",
-                    borderBottom: index < personalFields.length - 1 ? "1px solid #E5E7EB" : "none",
+                    borderBottom: index < personalFields.length - 1 ? "1px solid var(--surface-border)" : "none",
                   }}
                 >
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>
                     {field.enLabel}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "left" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}>
                     {values.en}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {values.ar}
                   </div>
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {field.arLabel}
                   </div>
                 </div>
@@ -465,16 +465,16 @@ function PersonalInformation({ fullDetail }: any) {
       {/* Address Information Section */}
       <div>
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "20px" }}>
-          <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0 }}>
+          <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0 }}>
             Address Information
           </h2>
-          <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0 }}>
+          <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0 }}>
             معلومات العنوان
           </h2>
         </div>
 
         {isAddressDataEmpty ? (
-          <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
             No response found
           </div>
         ) : (
@@ -489,19 +489,19 @@ function PersonalInformation({ fullDetail }: any) {
                     justifyContent: "space-between",
                     alignItems: "center",
                     padding: "12px 0",
-                    borderBottom: index < addressFields.length - 1 ? "1px solid #E5E7EB" : "none",
+                    borderBottom: index < addressFields.length - 1 ? "1px solid var(--surface-border)" : "none",
                   }}
                 >
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)" }}>
                     {field.enLabel}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "left" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "left" }}>
                     {values.en}
                   </div>
-                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 25%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {values.ar}
                   </div>
-                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "#000", textAlign: "right", direction: "rtl" }}>
+                  <div style={{ flex: "0 0 20%", fontSize: "14px", color: "var(--foreground)", textAlign: "right", direction: "rtl" }}>
                     {field.arLabel}
                   </div>
                 </div>

@@ -14,7 +14,7 @@ const getDocumentStatusColor = (status: string): { backgroundColor: string; colo
     "uploaded": { backgroundColor: "#17a2b8", color: "white" }, // Blue
     "approved": { backgroundColor: "#28a745", color: "white" }, // Green
     "rejected": { backgroundColor: " #1963b9", color: "white" }, // Red
-    "pending": { backgroundColor: "#ffc107", color: "#000" }, // Yellow
+    "pending": { backgroundColor: "#ffc107", color: "var(--foreground)" }, // Yellow
     "under_review": { backgroundColor: "#fd7e14", color: "white" }, // Orange
     "in_progress": { backgroundColor: "#fd7e14", color: "white" }, // Orange
   };

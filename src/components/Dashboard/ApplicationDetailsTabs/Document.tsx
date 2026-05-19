@@ -125,25 +125,25 @@ function Document({ fullDetail }: any) {
   }
 
   return (
-    <div style={{ padding: "20px", background: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "var(--surface-card)", minHeight: "100vh" }}>
       {/* Header Section */}
       <div style={{ marginBottom: "20px" }}>
-        <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "10px", textAlign: "left" }}>
+        <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "10px", textAlign: "left" }}>
           Documents
         </h2>
-        <div style={{ borderBottom: "1px solid #E5E7EB", marginBottom: "20px" }}></div>
+        <div style={{ borderBottom: "1px solid var(--surface-border)", marginBottom: "20px" }}></div>
       </div>
 
       {isDataEmpty ? (
-        <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
           No response found
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
           {/* NAFITH Document */}
           {documents?.NAFITH && (
-            <div style={{ border: "1px solid #E5E7EB", borderRadius: "8px", padding: "20px" }}>
-              <h3 style={{ color: "#000", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
+            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", padding: "20px" }}>
+              <h3 style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
                 {getDocumentTitle("NAFITH")}
               </h3>
               {getDocumentUrl(documents.NAFITH, "NAFITH") ? (
@@ -152,7 +152,7 @@ function Document({ fullDetail }: any) {
                   style={{
                     width: "100%",
                     height: "600px",
-                    border: "1px solid #E5E7EB",
+                    border: "1px solid var(--surface-border)",
                     borderRadius: "4px",
                   }}
                   title="NAFITH Document"
@@ -167,8 +167,8 @@ function Document({ fullDetail }: any) {
 
           {/* Emdha Financing Contract */}
           {documents?.EmdhaFinancingContract && (
-            <div style={{ border: "1px solid #E5E7EB", borderRadius: "8px", padding: "20px" }}>
-              <h3 style={{ color: "#000", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
+            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", padding: "20px" }}>
+              <h3 style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
                 {getDocumentTitle("EmdhaFinancingContract")}
               </h3>
               {getDocumentUrl(documents.EmdhaFinancingContract, "EmdhaFinancingContract") ? (
@@ -177,7 +177,7 @@ function Document({ fullDetail }: any) {
                   style={{
                     width: "100%",
                     height: "600px",
-                    border: "1px solid #E5E7EB",
+                    border: "1px solid var(--surface-border)",
                     borderRadius: "4px",
                   }}
                   title="Emdha Financing Contract"
@@ -192,8 +192,8 @@ function Document({ fullDetail }: any) {
 
           {/* Emdha Authorization Letter */}
           {documents?.EmdhaAuthorizationLetter && (
-            <div style={{ border: "1px solid #E5E7EB", borderRadius: "8px", padding: "20px" }}>
-              <h3 style={{ color: "#000", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
+            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", padding: "20px" }}>
+              <h3 style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
                 {getDocumentTitle("EmdhaAuthorizationLetter")}
               </h3>
               {getDocumentUrl(documents.EmdhaAuthorizationLetter, "EmdhaAuthorizationLetter") ? (
@@ -202,7 +202,7 @@ function Document({ fullDetail }: any) {
                   style={{
                     width: "100%",
                     height: "600px",
-                    border: "1px solid #E5E7EB",
+                    border: "1px solid var(--surface-border)",
                     borderRadius: "4px",
                   }}
                   title="Emdha Authorization Letter"

@@ -9,6 +9,10 @@ function NotificationInbox() {
 
   const subscriberId = useSelector((state: RootState) => state.block.userId) || "6a06f2c638dc4a625be7b616";
 
+  // Reactively pick variables based on the current theme so the inbox popover
+  // (which renders inside Novu's own component tree) stays in sync.
+  const isDark = typeof document !== "undefined" && document.documentElement.classList.contains("dark");
+
   if (!applicationIdentifier) {
     console.error('Novu Application Identifier is missing');
     return null;
@@ -21,13 +25,13 @@ function NotificationInbox() {
         subscriberId={subscriberId}
         appearance={{
           variables: {
-            colorPrimary: 'var(--primary, #0f172a)',
+            colorPrimary: isDark ? '#262a36' : '#0f172a',
             colorPrimaryForeground: '#ffffff',
-            colorSecondary: 'var(--muted, #f1f5f9)',
-            colorSecondaryForeground: 'var(--foreground, #0f172a)',
-            colorBackground: '#ffffff',
-            colorForeground: 'var(--foreground, #0f172a)',
-            colorNeutral: 'var(--border, #e2e8f0)',
+            colorSecondary: isDark ? '#1c1f2a' : '#f1f5f9',
+            colorSecondaryForeground: isDark ? '#e6eaf2' : '#0f172a',
+            colorBackground: isDark ? '#161821' : '#ffffff',
+            colorForeground: isDark ? '#e6eaf2' : '#0f172a',
+            colorNeutral: isDark ? '#262a36' : '#e2e8f0',
             fontSize: '14px',
             borderRadius: '10px',
           },
@@ -95,6 +99,98 @@ function NotificationInbox() {
         }
         .novu-inbox-wrapper .nv-bellDot {
           animation: novu-bell-pulse 1.8s ease-in-out infinite;
+        }
+
+        /* Dark-mode bell — charcoal disc, white icon */
+        html.dark .novu-inbox-wrapper .nv-bellContainer {
+          background: linear-gradient(180deg, #22252f 0%, #161821 100%) !important;
+          border: 1px solid #2c3140 !important;
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+        }
+        html.dark .novu-inbox-wrapper .nv-bellContainer:hover {
+          background: linear-gradient(180deg, #2c3140 0%, #22252f 100%) !important;
+          border-color: #3a4050 !important;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+        }
+        html.dark .novu-inbox-wrapper .nv-bellIcon {
+          color: #ffffff !important;
+        }
+        html.dark .novu-inbox-wrapper .nv-bellContainer:hover .nv-bellIcon {
+          color: #ffffff !important;
+        }
+        html.dark .novu-inbox-wrapper .nv-bellDot {
+          border-color: #060c1a !important;
+        }
+        html.dark .novu-inbox-wrapper .nv-popoverContent {
+          background: #060c1a !important;
+          border: 1px solid #142037 !important;
+          color: #e2e8f0 !important;
+        }
+
+        /* Dark-mode notification dropdown — global (popover is portaled to body) */
+        html.dark [data-novu-component="Popover"],
+        html.dark [class*="nv-popover"],
+        html.dark .nv-popoverContent,
+        html.dark .nv-inbox,
+        html.dark [class*="nv-inbox"] {
+          background-color: #060c1a !important;
+          color: #e2e8f0 !important;
+          border-color: #142037 !important;
+        }
+
+        /* Notification list rows */
+        html.dark .nv-notificationListNewNotificationsNotice,
+        html.dark [class*="nv-notification"] {
+          color: #e2e8f0 !important;
+          background-color: transparent !important;
+        }
+        html.dark [class*="nv-notification"]:hover {
+          background-color: #0a1224 !important;
+        }
+
+        /* Section headers / dividers */
+        html.dark [class*="nv-tabs"],
+        html.dark [class*="nv-header"],
+        html.dark [class*="nv-footer"] {
+          background-color: #060c1a !important;
+          border-color: #142037 !important;
+          color: #e2e8f0 !important;
+        }
+
+        /* Primary action buttons — dark themed (was rendering pure white) */
+        html.dark [class*="nv-button"],
+        html.dark [class*="nv-action"],
+        html.dark [class*="nv-primaryAction"],
+        html.dark [class*="nv-secondaryAction"] {
+          background-color: #1a2238 !important;
+          color: #ffffff !important;
+          border: 1px solid #233354 !important;
+          border-radius: 8px !important;
+          padding: 6px 14px !important;
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          transition: background-color 0.15s ease, border-color 0.15s ease !important;
+        }
+        html.dark [class*="nv-button"]:hover,
+        html.dark [class*="nv-action"]:hover,
+        html.dark [class*="nv-primaryAction"]:hover,
+        html.dark [class*="nv-secondaryAction"]:hover {
+          background-color: #233354 !important;
+          border-color: #344768 !important;
+        }
+
+        /* Icons (settings / ellipsis / dropdown caret) inside the inbox header */
+        html.dark [class*="nv-popoverContent"] svg,
+        html.dark .nv-popoverContent svg {
+          color: #cbd5e1 !important;
+          fill: currentColor;
+        }
+
+        /* "Development mode" footer band */
+        html.dark [class*="nv-footer"],
+        html.dark [class*="nv-developmentBanner"] {
+          background: linear-gradient(180deg, transparent 0%, #142037 100%) !important;
+          color: #94a3b8 !important;
         }
       `}</style>
     </div>

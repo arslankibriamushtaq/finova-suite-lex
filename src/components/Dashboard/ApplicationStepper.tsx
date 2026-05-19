@@ -149,8 +149,11 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
               className={className.trim()}
               title={
                 <span
+                  className="app-stepper-title"
                   style={{
-                    color: isCompleted || isActive ? "#000" : "#8C8C8C",
+                    color: isCompleted || isActive
+                      ? "var(--foreground)"
+                      : "var(--muted-foreground)",
                     fontWeight: isActive ? 600 : 500,
                     cursor: "default",
                     transition: "all 0.2s ease",
@@ -165,9 +168,9 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
                     ...styles.stepCircle,
                     background:
                       isCompleted || isActive
-                        ? " #1963b9"
-                        : "#8C8C8C",
-                    color: isCompleted || isActive ? "#000" : "#fff",
+                        ? "var(--theme-flow-active-color-bg, #1f2940)"
+                        : "var(--surface-border-strong)",
+                    color: "#ffffff",
                     cursor: "default",
                     transition: "all 0.2s ease",
                   }}
@@ -188,51 +191,43 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
           }
           .ant-steps-item-finish .ant-steps-item-tail::after,
           .ant-steps-item-process .ant-steps-item-tail::after {
-            background-color:  #1963b9 !important;
+            background-color: var(--theme-flow-active-color-bg, #1f2940) !important;
           }
           .ant-steps-item-finish .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-flow-active-color-bg, #1f2940) !important;
           }
           .ant-steps-item-process .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+            border-color: var(--theme-flow-active-color-bg, #1f2940) !important;
           }
           .ant-steps-item-wait .ant-steps-item-icon {
-            border-color: #8C8C8C !important;
+            border-color: var(--surface-border-strong) !important;
           }
           .ant-steps .ant-steps-item-active .ant-steps-item-title::after {
-            background-color:  #1963b9 !important;
+            background-color: var(--theme-flow-active-color-bg, #1f2940) !important;
           }
-          .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
-            color: #000 !important;
-          }
+          .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon,
           .ant-steps-item-process .ant-steps-item-icon .ant-steps-icon {
-            color: #000 !important;
+            color: #ffffff !important;
           }
-          .previoustab .ant-steps-item-tail::after {
-            background-color:  #1963b9 !important;
+          .previoustab .ant-steps-item-tail::after,
+          .previoustab .ant-steps-item-icon,
+          .laststep .ant-steps-item-icon,
+          .secondlaststep .ant-steps-item-icon,
+          .secondlaststep .ant-steps-item-tail::after,
+          .ant-steps-item.ant-steps-item-finish.previoustab.ant-steps-item-custom .ant-steps-item-title:after {
+            background-color: var(--theme-flow-active-color-bg, #1f2940) !important;
           }
-          .previoustab .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
-          }
-          .laststep .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
+          .previoustab .ant-steps-item-icon,
+          .laststep .ant-steps-item-icon,
+          .secondlaststep .ant-steps-item-icon {
+            background-color: transparent !important;
+            border-color: var(--theme-flow-active-color-bg, #1f2940) !important;
           }
           .laststep .ant-steps-item-tail::after {
             background-color: transparent !important;
           }
-          .secondlaststep .ant-steps-item-icon {
-            border-color:  #1963b9 !important;
-          }
-          .secondlaststep .ant-steps-item-tail::after {
-            background-color:  #1963b9 !important;
-          }
-          .ant-steps-item.ant-steps-item-finish.previoustab.ant-steps-item-custom .ant-steps-item-title:after {
-            background-color:  #1963b9 !important;
-          }
           .ant-steps .ant-steps-item-title::after {
             left: 27px;
-          }
-          .ant-steps .ant-steps-item-title::after {
             width: 262px;
           }
           .ant-steps-item.ant-steps-item-process.secondlaststep.ant-steps-item-custom.ant-steps-item-active .ant-steps-item-title:after {
@@ -253,11 +248,14 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
 const styles: { [key: string]: React.CSSProperties } = {
   container: {
     margin: "0 auto",
-    padding: "24px 0",
-    background: "#F5F7F9",
+    padding: "20px 16px",
+    background: "var(--surface-card)",
+    border: "1px solid var(--surface-border)",
+    borderRadius: 12,
+    boxShadow: "var(--surface-elevation-1)",
   },
   steps: {
-    marginBottom: 24,
+    marginBottom: 0,
   },
   stepCircle: {
     width: 28,
@@ -266,7 +264,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    color: "#000",
+    color: "#ffffff",
     fontWeight: 600,
     fontSize: 13,
   },

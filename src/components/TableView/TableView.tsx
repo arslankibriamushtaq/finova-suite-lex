@@ -47,10 +47,76 @@ const TableView = ({
       style: {
         minHeight: "52px",
         padding: "0px 10px",
-        borderBottom: "1px solid var(--border)",
+        borderBottom: "1px solid var(--surface-border)",
+        backgroundColor: "var(--surface-card)",
+        color: "var(--foreground)",
         "&:last-of-type": {
           borderBottom: "none",
         },
+        "&:hover": {
+          backgroundColor: "var(--theme-table-row-hover)",
+        },
+      },
+      stripedStyle: {
+        backgroundColor: "var(--theme-table-row-alt)",
+        color: "var(--foreground)",
+      },
+    },
+    table: {
+      style: {
+        backgroundColor: "var(--surface-card)",
+        background: "var(--surface-card)",
+        color: "var(--foreground)",
+      },
+    },
+    tableWrapper: {
+      style: {
+        backgroundColor: "var(--surface-card)",
+        background: "var(--surface-card)",
+      },
+    },
+    head: {
+      style: {
+        backgroundColor: "var(--theme-table-background-color)",
+        background: "var(--theme-table-background-color)",
+        minHeight: "44px",
+        zIndex: 1,
+      },
+    },
+    headRow: {
+      style: {
+        backgroundColor: "var(--theme-table-background-color)",
+        background: "var(--theme-table-background-color)",
+        border: "none",
+        minHeight: "44px",
+      },
+    },
+    pagination: {
+      style: {
+        backgroundColor: "var(--surface-card)",
+        color: "var(--foreground)",
+        borderTop: "1px solid var(--surface-border)",
+      },
+    },
+    noData: {
+      style: {
+        backgroundColor: "var(--surface-card)",
+        background: "var(--surface-card)",
+        color: "var(--muted-foreground)",
+        padding: "32px 16px",
+        textAlign: "center",
+      },
+    },
+    progress: {
+      style: {
+        backgroundColor: "var(--surface-card)",
+        color: "var(--foreground)",
+      },
+    },
+    subHeader: {
+      style: {
+        backgroundColor: "var(--surface-card)",
+        color: "var(--foreground)",
       },
     },
     headCells: {
@@ -330,6 +396,7 @@ const TableView = ({
               paginationServer
               columns={header}
               data={data}
+              striped
               paginationTotalRows={totalRows}
               customStyles={customStyles}
               paginationRowsPerPageOptions={paginationRowsPerPageOptions}
