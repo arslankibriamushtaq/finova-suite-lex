@@ -13,6 +13,7 @@ import { logOutApi } from "../../redux/apis/apisCrud";
 import { store } from "../../redux/store";
 import NotificationInbox from "../NotificationInbox";
 import ThemeToggle from "../ThemeToggle";
+import { AdminNotificationBell } from "../notifications/AdminNotificationBell";
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -154,7 +155,7 @@ const DashboardHeader = () => {
                   {/* <img src={Images.notification} alt="Notifications" /> */}
                 </a>
                 <ThemeToggle />
-                <NotificationInbox />
+                <AdminNotificationBell />
                 <div className="user-profile-trigger d-flex align-items-center" onClick={toggleMenu} style={{ cursor: "pointer" }}>
                   <img
                     src={Images.userIcon}
