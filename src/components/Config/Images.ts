@@ -56,6 +56,7 @@ import template2 from "../../assets/images/template3.png";
 import template3 from "../../assets/images/template4.png";
 import template4 from "../../assets/images/template5.png";
 import FactoringLogo from "../../assets/images/FinovaLogo.png";
+import FactoringLogoDark from "../../assets/images/dark-logo.png";
 // import FactoringLogo from "../../assets/images/MYTM-logo.png";
 import awnLogoWhite from "../../assets/images/awn-logo-white.svg";
 import crossIcon from "../../assets/images/crossIcon.svg";
@@ -162,6 +163,7 @@ export const Images = {
   template3,
   template4,
   FactoringLogo,
+  FactoringLogoDark,
   crossIcon,
   closeBtn,
   awnLogoWhite

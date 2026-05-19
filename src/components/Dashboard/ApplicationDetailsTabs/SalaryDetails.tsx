@@ -158,25 +158,25 @@ function SalaryDetails({ fullDetail }: any) {
   }
 
   return (
-    <div style={{ padding: "20px", background: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "var(--surface-card)", minHeight: "100vh" }}>
       {/* Header Section */}
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
         <div>
-          <h2 style={{ color: "#000", fontWeight: 700, fontSize: "24px", margin: 0, marginBottom: "5px" ,textAlign:'left'}}>
+          <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "24px", margin: 0, marginBottom: "5px" ,textAlign:'left'}}>
             Employment History
           </h2>
-          <p style={{ color: "#666", fontSize: "14px", margin: 0 }}>
+          <p style={{ color: "var(--muted-foreground)", fontSize: "14px", margin: 0 }}>
             View all employment records and details
           </p>
         </div>
         {!isDataEmpty && (
           <div style={{ 
             padding: "8px 16px", 
-            background: "#F5F5F5", 
+            background: "var(--surface-card-alt)", 
             borderRadius: "8px",
             fontSize: "14px",
             fontWeight: 600,
-            color: "#000"
+            color: "var(--foreground)"
           }}>
             {employmentStatusInfo.length} {employmentStatusInfo.length === 1 ? "Record" : "Records"}
           </div>
@@ -184,7 +184,7 @@ function SalaryDetails({ fullDetail }: any) {
       </div>
 
       {isDataEmpty ? (
-        <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
           No employment details available
         </div>
       ) : (
@@ -204,9 +204,9 @@ function SalaryDetails({ fullDetail }: any) {
                 <div
                   key={index}
                   style={{
-                    border: "1px solid #E5E7EB",
+                    border: "1px solid var(--surface-border)",
                     borderRadius: "8px",
-                    background: "#fff",
+                    background: "var(--surface-card)",
                     overflow: "hidden",
                   }}
                 >
@@ -220,13 +220,13 @@ function SalaryDetails({ fullDetail }: any) {
                       justifyContent: "space-between",
                       alignItems: "center",
                       background: isExpanded ? "#F9F9F9" : "#fff",
-                      borderBottom: isExpanded ? "1px solid #E5E7EB" : "none",
+                      borderBottom: isExpanded ? "1px solid var(--surface-border)" : "none",
                     }}
                   >
                     <div style={{ display: "flex", alignItems: "center", gap: "16px", flex: 1 }}>
                       <div style={{ flex: 1 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "4px" }}>
-                          <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                          <h3 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                             {title}
                           </h3>
                           <span
@@ -243,14 +243,14 @@ function SalaryDetails({ fullDetail }: any) {
                             {status}
                           </span>
                         </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "14px", color: "#666" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "14px", color: "var(--muted-foreground)" }}>
                           <span>{employerName}</span>
                           <span>•</span>
                           <span>Joined: {joiningDate}</span>
                           {amount > 0 && (
                             <>
                               <span>•</span>
-                              <span style={{ fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(amount)}
                               </span>
                             </>
@@ -258,7 +258,7 @@ function SalaryDetails({ fullDetail }: any) {
                         </div>
                       </div>
                     </div>
-                    <div style={{ fontSize: "16px", color: "#666" }}>
+                    <div style={{ fontSize: "16px", color: "var(--muted-foreground)" }}>
                       {isExpanded ? <UpOutlined /> : <DownOutlined />}
                     </div>
                   </div>
@@ -271,20 +271,20 @@ function SalaryDetails({ fullDetail }: any) {
                         <Col xs={24} md={12}>
                           <div style={{ marginBottom: "24px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                              <UserOutlined style={{ fontSize: "18px", color: "#666" }} />
-                              <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                              <UserOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
+                              <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                                 Personal Information
                               </h4>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>FULL NAME</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>FULL NAME</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {employment.fullName || employment.full_name || "--"}
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>EMPLOYMENT TYPE</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EMPLOYMENT TYPE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {employment.employmentType || employment.employment_type || "--"}
                               </span>
                             </div>
@@ -295,18 +295,18 @@ function SalaryDetails({ fullDetail }: any) {
                         <Col xs={24} md={12}>
                           <div style={{ marginBottom: "24px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                              <BankOutlined style={{ fontSize: "18px", color: "#666" }} />
-                              <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                              <BankOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
+                              <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                                 Employment Details
                               </h4>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>EMPLOYER NAME</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>{employerName}</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EMPLOYER NAME</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>{employerName}</span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>EMPLOYMENT STATUS</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EMPLOYMENT STATUS</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 <span
                                   style={{
                                     padding: "4px 10px",
@@ -322,12 +322,12 @@ function SalaryDetails({ fullDetail }: any) {
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>JOINING DATE</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>{joiningDate}</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>JOINING DATE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>{joiningDate}</span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>WORKING MONTHS</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>WORKING MONTHS</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {employment.workingMonths || employment.working_months || 0} months
                               </span>
                             </div>
@@ -339,31 +339,31 @@ function SalaryDetails({ fullDetail }: any) {
                           <Col xs={24} md={12}>
                             <div style={{ marginBottom: "24px" }}>
                               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                                <ClockCircleOutlined style={{ fontSize: "18px", color: "#666" }} />
-                                <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                                <ClockCircleOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
+                                <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                                   Occupation Details
                                 </h4>
                               </div>
                               {employment.occupationCode && (
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>OCCUPATION CODE</span>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>OCCUPATION CODE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.occupationCode || employment.occupation_code || "--"}
                                   </span>
                                 </div>
                               )}
                               {employment.occupationTitle && (
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>OCCUPATION TITLE</span>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>OCCUPATION TITLE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.occupationTitle || employment.occupation_title || "--"}
                                   </span>
                                 </div>
                               )}
                               {employment.occupationCode_meaning && (
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>DESCRIPTION</span>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>DESCRIPTION</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.occupationCode_meaning || "--"}
                                   </span>
                                 </div>
@@ -376,46 +376,46 @@ function SalaryDetails({ fullDetail }: any) {
                         <Col xs={24} md={12}>
                           <div style={{ marginBottom: "24px" }}>
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                              <DollarOutlined style={{ fontSize: "18px", color: "#666" }} />
-                              <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                              <DollarOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
+                              <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                                 Compensation Details
                               </h4>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>BASIC WAGE</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>BASIC WAGE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {formatAmount(employment.basicWage || employment.basic_wage)}
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>HOUSING ALLOWANCE</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>HOUSING ALLOWANCE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {formatAmount(employment.housingAllowance || employment.housing_allowance)}
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>OTHER ALLOWANCE</span>
-                              <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>OTHER ALLOWANCE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {formatAmount(employment.otherAllowance || employment.other_allowance)}
                               </span>
                             </div>
                             {employment.isEmployeePensioned && (
                               <>
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>PENSION AMOUNT</span>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>PENSION AMOUNT</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {formatAmount(employment.pensionAmount || employment.pension_amount)}
                                   </span>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>PENSION TYPE</span>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>PENSION TYPE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.pensionType || employment.pension_type || "--"}
                                   </span>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>PENSION START DATE</span>
-                                  <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>PENSION START DATE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.pensionStartDate || employment.pension_start_date || "--"}
                                   </span>
                                 </div>
@@ -452,35 +452,35 @@ function SalaryDetails({ fullDetail }: any) {
             <div style={{ marginTop: "30px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                 <div>
-                  <h2 style={{ color: "#000", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "5px" }}>
+                  <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "5px" }}>
                     Monthly Expenses Summary
                   </h2>
-                  <p style={{ color: "#666", fontSize: "14px", margin: 0 }}>
+                  <p style={{ color: "var(--muted-foreground)", fontSize: "14px", margin: 0 }}>
                     Breakdown of monthly income and expenses
                   </p>
                 </div>
               </div>
 
-              <div style={{ border: "1px solid #E5E7EB", borderRadius: "8px", background: "#fff", padding: "20px" }}>
+              <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", background: "var(--surface-card)", padding: "20px" }}>
                 <Row gutter={[24, 24]}>
                   {/* Income Section */}
                   <Col xs={24} md={12}>
                     <div style={{ marginBottom: "24px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                        <DollarOutlined style={{ fontSize: "18px", color: "#666" }} />
-                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                        <DollarOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
+                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                           Monthly Income
                         </h4>
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>MONTHLY INCOME</span>
-                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>MONTHLY INCOME</span>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                           {formatAmount(salaryData.monthlyExpenses.monthlyIncome)}
                         </span>
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 400 }}>EXISTING LIABILITIES</span>
-                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EXISTING LIABILITIES</span>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                           {formatAmount(salaryData.monthlyExpenses.existingLiabilities)}
                         </span>
                       </div>
@@ -491,14 +491,14 @@ function SalaryDetails({ fullDetail }: any) {
                   <Col xs={24} md={12}>
                     <div style={{ marginBottom: "24px" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
-                        <ClockCircleOutlined style={{ fontSize: "18px", color: "#666" }} />
-                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000" }}>
+                        <ClockCircleOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
+                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
                           Total Monthly Expenses
                         </h4>
                       </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", background: "#F5F5F5", borderRadius: "4px", paddingLeft: "12px", paddingRight: "12px" }}>
-                        <span style={{ fontSize: "14px", color: "#000", fontWeight: 600 }}>TOTAL EXPENSES</span>
-                        <span style={{ fontSize: "16px", color: "#000", fontWeight: 700 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", background: "var(--surface-card-alt)", borderRadius: "4px", paddingLeft: "12px", paddingRight: "12px" }}>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>TOTAL EXPENSES</span>
+                        <span style={{ fontSize: "16px", color: "var(--foreground)", fontWeight: 700 }}>
                           {formatAmount(salaryData.monthlyExpenses.totalExpenses)}
                         </span>
                       </div>
@@ -516,78 +516,78 @@ function SalaryDetails({ fullDetail }: any) {
                     salaryData.monthlyExpenses.transportation) && (
                     <Col xs={24}>
                       <div style={{ marginBottom: "24px" }}>
-                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "#000", marginBottom: "16px" }}>
+                        <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)", marginBottom: "16px" }}>
                           Expense Breakdown
                         </h4>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
                           {salaryData.monthlyExpenses.foodGroceries && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Food & Groceries</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Food & Groceries</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.foodGroceries)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.utilities && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Utilities</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Utilities</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.utilities)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.healthcare && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Healthcare</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Healthcare</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.healthcare)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.communication && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Communication</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Communication</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.communication)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.housingRent && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Housing Rent</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Housing Rent</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.housingRent)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.clothingEssentials && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Clothing & Essentials</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Clothing & Essentials</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.clothingEssentials)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.education && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Education</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Education</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.education)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.transportation && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Transportation</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Transportation</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.transportation)}
                               </div>
                             </div>
                           )}
                           {salaryData.monthlyExpenses.dependents && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "#666" }}>Dependents</span>
-                              <div style={{ fontSize: "14px", fontWeight: 600, color: "#000" }}>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Dependents</span>
+                              <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {salaryData.monthlyExpenses.dependents}
                               </div>
                             </div>

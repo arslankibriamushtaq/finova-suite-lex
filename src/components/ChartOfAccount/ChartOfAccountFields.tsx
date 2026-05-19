@@ -307,7 +307,10 @@ return (
       onCancel={() => setModalVisible(false)}
       onOk={() => form.submit()}
       confirmLoading={loading}
-      width={600}
+      className="custom-mod"
+      style={{ maxWidth: "640px" }}
+      centered
+      destroyOnClose
     >
       <Form
         form={form}

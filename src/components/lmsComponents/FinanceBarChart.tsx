@@ -57,10 +57,25 @@ const FinanceBarChart = ({ dashboardData }: { dashboardData: any }) => {
     <>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart data={chartData} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
-          <XAxis dataKey="name" />
-          <YAxis />
-          <Tooltip cursor={false} />
-          <Legend />
+          <XAxis
+            dataKey="name"
+            stroke="var(--muted-foreground)"
+            tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+          />
+          <YAxis
+            stroke="var(--muted-foreground)"
+            tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
+          />
+          <Tooltip
+            cursor={false}
+            contentStyle={{
+              background: "var(--surface-card)",
+              border: "1px solid var(--surface-border)",
+              borderRadius: 8,
+              color: "var(--foreground)",
+            }}
+          />
+          <Legend wrapperStyle={{ color: "var(--foreground)" }} />
           <Bar dataKey="Receivable" fill="#FFB1B1" />
           <Bar dataKey="Received" fill="#6871BF" />
           <Bar dataKey="EarlySettlement" fill="#73C0A0" />

@@ -36,7 +36,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
 
   if (!simahData) {
     return (
-      <div style={{ padding: "20px", textAlign: "center", color: "#000" }}>
+      <div style={{ padding: "20px", textAlign: "center", color: "var(--foreground)" }}>
         No SIMAH data available
       </div>
     );
@@ -64,60 +64,60 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
   const providedDemographicsInfo = simahData.providedDemographicsInfo || {};
 
   return (
-    <div style={{ padding: "20px", background: "#fff", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "var(--surface-card)", minHeight: "100vh" }}>
       {/* Score Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Score")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            borderBottom: expandedSections.Score ? "1px solid #E5E7EB" : "none",
+            borderBottom: expandedSections.Score ? "1px solid var(--surface-border)" : "none",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>Score</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Score</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Score ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.Score && (
           <div>
             {scoreData ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Error</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Score</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>ScoreCardCode</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>ScoreCardDescAr</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>ScoreCardDesc</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Score Index</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Error</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Score</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>ScoreCardCode</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>ScoreCardDescAr</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>ScoreCardDesc</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Score Index</th>
                       </tr>
                     </thead>
                     <tbody>
                       <tr>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {scoreData.error === null ? "--" : scoreData.error}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {scoreData.score || "--"}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {scoreData.scoreCard?.scoreCardCode || "--"}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {scoreData.scoreCard?.scoreCardDescAr || "--"}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {scoreData.scoreCard?.scoreCardDescEn || "--"}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {scoreData?.scoreIndex || "--"}
                         </td>
                       </tr>
@@ -126,52 +126,52 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No score data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No score data available</div>
             )}
           </div>
         )}
       </div>
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ReasonCodes")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>Reason Codes</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Reason Codes</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ReasonCodes ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.ReasonCodes && (
           <div>
             {scoreData?.reasonCodes?.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Name</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Description AR</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Description EN</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Name</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Description AR</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Description EN</th>
 
                       </tr>
                     </thead>
                     <tbody>
                       {scoreData?.reasonCodes?.map((reasonCode: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {reasonCode?.scoreReasonCodeName || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {reasonCode?.scoreReasonCodeDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {reasonCode?.scoreReasonCodeDescEn || "--"}
                           </td>
                           
@@ -182,64 +182,64 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No contacts data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No contacts data available</div>
             )}
           </div>
         )}
       </div>
       {/* Contacts Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Contacts")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>Contacts</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Contacts</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Contacts ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.Contacts && (
           <div>
             {contacts.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Country</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Area Code</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Phone Number</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Extension</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Type Description EN</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Type Description AR</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Country</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Area Code</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Phone Number</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Extension</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Type Description EN</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Type Description AR</th>
                       </tr>
                     </thead>
                     <tbody>
                       {contacts.map((contact: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {contact.conCode || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {contact.conAreaCode || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {contact.conPhoneNumber || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {contact.conExtension || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {contact.conNumberTypes?.contactNumberTypeDescriptionEn || contact.conNumberTypes?.contactNumberTypeDescriptionAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {contact.conNumberTypes?.contactNumberTypeDescriptionAr || "--"}
                           </td>
                         </tr>
@@ -249,65 +249,65 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No contacts data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No contacts data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* Addresses Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Addresses")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>Addresses</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Addresses</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Addresses ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.Addresses && (
           <div>
             {addresses.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Type</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>City</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Postal Code</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>PO Box</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Address Line 1</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Date Loaded</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Type</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>City</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Postal Code</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>PO Box</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Address Line 1</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Date Loaded</th>
                       </tr>
                     </thead>
                     <tbody>
                       {addresses.map((address: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {address.adrsAddressTypes?.addressNameEN || address.adrsAddressTypes?.addressNameAR || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {address.adrsCityDescEn || address.adrsCityDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {address.adrsPostalCode || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {address.adrsPOBox || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {address.adrsAddressLineFirstDescEn || address.adrsAddressLineFirstDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {address.adrsDateLoaded || "--"}
                           </td>
                         </tr>
@@ -317,65 +317,65 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No addresses data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No addresses data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* Employers Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Employers")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>Employers</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Employers</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Employers ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.Employers && (
           <div>
             {employers.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Employer Name</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Occupation</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Status</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Income</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Total Income</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Date Loaded</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Employer Name</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Occupation</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Status</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Income</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Total Income</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Date Loaded</th>
                       </tr>
                     </thead>
                     <tbody>
                       {employers.map((employer: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {employer.empEmployerNameDescEn || employer.empEmployerNameDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {employer.empOccupationDescEn || employer.empOccupationDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {employer.empStatusType?.employerStatusTypeDescEn || employer.empStatusType?.employerStatusTypeDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {employer.empIncome || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {employer.empTotalIncome || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {employer.empDateLoaded || "--"}
                           </td>
                         </tr>
@@ -385,45 +385,45 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No employers data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No employers data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* Judgements Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Judgements")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>Judgements</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Judgements</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Judgements ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.Judgements && (
           <div>
             {judgements.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Judgement Data</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Judgement Data</th>
                       </tr>
                     </thead>
                     <tbody>
                       {judgements.map((judgement: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {JSON.stringify(judgement)}
                           </td>
                         </tr>
@@ -433,61 +433,61 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No judgements data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No judgements data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* ReportDate Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ReportDate")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>ReportDate</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>ReportDate</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ReportDate ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.ReportDate && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
-              <div style={{ fontSize: "12px", color: "#000" }}>{reportDate}</div>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
+              <div style={{ fontSize: "12px", color: "var(--foreground)" }}>{reportDate}</div>
             </div>
           </div>
         )}
       </div>
 
       {/* DisclerText Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("DisclerText")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>DisclerText</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>DisclerText</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.DisclerText ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.DisclerText && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
-              <div style={{ fontSize: "12px", color: "#000", lineHeight: "1.6", whiteSpace: "pre-wrap" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
+              <div style={{ fontSize: "12px", color: "var(--foreground)", lineHeight: "1.6", whiteSpace: "pre-wrap" }}>
                 <div style={{ marginBottom: "12px" }}>
                   <strong>English:</strong>
                   <div style={{ marginTop: "4px" }}>{disclerText.discTextDescEn || "--"}</div>
@@ -503,35 +503,35 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* SummaryInfo Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("SummaryInfo")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>SummaryInfo</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>SummaryInfo</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.SummaryInfo ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.SummaryInfo && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <tbody>
                     {Object.entries(summaryInfo).map(([key, value]: [string, any]) => (
-                      <tr key={key} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 600, color: "#000", width: "40%" }}>
+                      <tr key={key} style={{ borderBottom: "1px solid var(--surface-border)" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 600, color: "var(--foreground)", width: "40%" }}>
                           {key}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {value !== null && value !== undefined ? String(value) : "--"}
                         </td>
                       </tr>
@@ -545,58 +545,58 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* PrevEnquiries Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PrevEnquiries")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>PrevEnquiries</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PrevEnquiries</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PrevEnquiries ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.PrevEnquiries && (
           <div>
             {prevEnquiries.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Date</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Enquirer</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Member Ref</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Amount</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Product Type</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Enquiry Type</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Date</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Enquirer</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Member Ref</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Amount</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Product Type</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Enquiry Type</th>
                       </tr>
                     </thead>
                     <tbody>
                       {prevEnquiries.map((enquiry: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {enquiry.prevEnqDate || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {enquiry.prevEnqEnquirer?.memberNameEN || enquiry.prevEnqEnquirer?.memberNameAR || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {enquiry.prevEnqMemberRef || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {enquiry.prevEnqAmount || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {enquiry.prevEnqProductTypeDesc?.textEn || enquiry.prevEnqProductTypeDesc?.textAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {enquiry.preEnqType?.enqTypeDescriptionEn || enquiry.preEnqType?.enqTypeDescriptionAr || "--"}
                           </td>
                         </tr>
@@ -606,45 +606,45 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No previous enquiries data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No previous enquiries data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* PublicNotices Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PublicNotices")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>PublicNotices</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PublicNotices</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PublicNotices ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.PublicNotices && (
           <div>
             {publicNotices.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Public Notice Data</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Public Notice Data</th>
                       </tr>
                     </thead>
                     <tbody>
                       {publicNotices.map((notice: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {JSON.stringify(notice)}
                           </td>
                         </tr>
@@ -654,42 +654,42 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No public notices data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No public notices data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* ReportDetails Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ReportDetails")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>ReportDetails</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>ReportDetails</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ReportDetails ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.ReportDetails && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <tbody>
                     {Object.entries(reportDetails).map(([key, value]: [string, any]) => (
-                      <tr key={key} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 600, color: "#000", width: "40%" }}>
+                      <tr key={key} style={{ borderBottom: "1px solid var(--surface-border)" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 600, color: "var(--foreground)", width: "40%" }}>
                           {key}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {value !== null && value !== undefined ? (typeof value === 'object' ? JSON.stringify(value) : String(value)) : "--"}
                         </td>
                       </tr>
@@ -703,38 +703,38 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* BouncedCheques Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("BouncedCheques")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>BouncedCheques</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>BouncedCheques</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.BouncedCheques ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.BouncedCheques && (
           <div>
             {bouncedCheques.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Bounced Cheque Data</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Bounced Cheque Data</th>
                       </tr>
                     </thead>
                     <tbody>
                       {bouncedCheques.map((cheque: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {JSON.stringify(cheque)}
                           </td>
                         </tr>
@@ -744,69 +744,69 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No bounced cheques data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No bounced cheques data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* PrimaryDefaults Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PrimaryDefaults")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>PrimaryDefaults</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PrimaryDefaults</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PrimaryDefaults ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.PrimaryDefaults && (
           <div>
             {primaryDefaults.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Creditor</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Account No</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Date Loaded</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Settled Date</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Status</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Original Amount</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Outstanding Balance</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Creditor</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Account No</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Date Loaded</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Settled Date</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Status</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Original Amount</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Outstanding Balance</th>
                       </tr>
                     </thead>
                     <tbody>
                       {primaryDefaults.map((defaultItem: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefCreditor?.memberNameEN || defaultItem.pDefCreditor?.memberNameAR || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefAccountNo || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefDateLoaded || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefSetteledDate || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefaultStatuses?.defaultStatusDescEn || defaultItem.pDefaultStatuses?.defaultStatusDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefOriginalAmount || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {defaultItem.pDefOutstandingBalance || "--"}
                           </td>
                         </tr>
@@ -816,34 +816,34 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No primary defaults data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No primary defaults data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* MemberNarratives Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("MemberNarratives")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>MemberNarratives</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>MemberNarratives</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.MemberNarratives ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.MemberNarratives && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
-              <div style={{ fontSize: "12px", color: "#000" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
+              <div style={{ fontSize: "12px", color: "var(--foreground)" }}>
                 {memberNarratives !== null && memberNarratives !== undefined ? JSON.stringify(memberNarratives) : "No member narratives data available"}
               </div>
             </div>
@@ -852,27 +852,27 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* GuarantorDefaults Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("GuarantorDefaults")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>GuarantorDefaults</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>GuarantorDefaults</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.GuarantorDefaults ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.GuarantorDefaults && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
-              <div style={{ fontSize: "12px", color: "#000" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
+              <div style={{ fontSize: "12px", color: "var(--foreground)" }}>
                 {guarantorDefaults !== null && guarantorDefaults !== undefined ? JSON.stringify(guarantorDefaults) : "No guarantor defaults data available"}
               </div>
             </div>
@@ -881,27 +881,27 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* PersonalNarratives Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PersonalNarratives")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>PersonalNarratives</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PersonalNarratives</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PersonalNarratives ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.PersonalNarratives && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
-              <div style={{ fontSize: "12px", color: "#000" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
+              <div style={{ fontSize: "12px", color: "var(--foreground)" }}>
                 {personalNarratives !== null && personalNarratives !== undefined ? JSON.stringify(personalNarratives) : "No personal narratives data available"}
               </div>
             </div>
@@ -910,62 +910,62 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* CreditInstrumentDetails Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("CreditInstrumentDetails")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>CreditInstrumentDetails</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>CreditInstrumentDetails</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.CreditInstrumentDetails ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.CreditInstrumentDetails && (
           <div>
             {creditInstrumentDetails.length > 0 ? (
-              <div style={{ padding: "16px", background: "#F9FAFB" }}>
+              <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
                 <div style={{ overflowX: "auto" }}>
                   <table style={{ width: "100%", borderCollapse: "collapse" }}>
                     <thead>
-                      <tr style={{ background: "#fff", borderBottom: "1px solid #E5E7EB" }}>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Creditor</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Account Number</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Product Type</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Status</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Limit</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Outstanding Balance</th>
-                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "#000" }}>Issued Date</th>
+                      <tr style={{ background: "var(--surface-card)", borderBottom: "1px solid var(--surface-border)" }}>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Creditor</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Account Number</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Product Type</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Status</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Limit</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Outstanding Balance</th>
+                        <th style={{ padding: "8px 12px", textAlign: "left", fontSize: "12px", fontWeight: 600, color: "var(--foreground)" }}>Issued Date</th>
                       </tr>
                     </thead>
                     <tbody>
                       {creditInstrumentDetails.map((ci: any, index: number) => (
                         <tr key={index}>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciCreditor?.memberNameEN || ci.ciCreditor?.memberNameAR || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciAccountNumber || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciProductTypeDesc?.textEn || ci.ciProductTypeDesc?.textAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciStatus?.creditInstrumentStatusDescEn || ci.ciStatus?.creditInstrumentStatusDescAr || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciLimit || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciOutstandingBalance || "--"}
                           </td>
-                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                          <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                             {ci.ciIssuedDate || "--"}
                           </td>
                         </tr>
@@ -975,42 +975,42 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "#666" }}>No credit instrument details data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No credit instrument details data available</div>
             )}
           </div>
         )}
       </div>
 
       {/* ProvidedDemographicsInfo Section */}
-      <div style={{ border: "1px solid #E5E7EB", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ProvidedDemographicsInfo")}
           style={{
             padding: "12px 16px",
-            background: "#fff",
+            background: "var(--surface-card)",
             cursor: "pointer",
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "#000", fontSize: "14px" }}>ProvidedDemographicsInfo</span>
-          <span style={{ color: "#666", fontSize: "14px" }}>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>ProvidedDemographicsInfo</span>
+          <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ProvidedDemographicsInfo ? "▲" : "▼"}
           </span>
         </div>
         {expandedSections.ProvidedDemographicsInfo && (
           <div>
-            <div style={{ padding: "16px", background: "#F9FAFB" }}>
+            <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
               <div style={{ overflowX: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <tbody>
                     {Object.entries(providedDemographicsInfo).map(([key, value]: [string, any]) => (
-                      <tr key={key} style={{ borderBottom: "1px solid #E5E7EB" }}>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 600, color: "#000", width: "40%" }}>
+                      <tr key={key} style={{ borderBottom: "1px solid var(--surface-border)" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", fontWeight: 600, color: "var(--foreground)", width: "40%" }}>
                           {key}
                         </td>
-                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "#000" }}>
+                        <td style={{ padding: "8px 12px", fontSize: "12px", color: "var(--foreground)" }}>
                           {value !== null && value !== undefined ? (typeof value === 'object' ? JSON.stringify(value) : String(value)) : "--"}
                         </td>
                       </tr>

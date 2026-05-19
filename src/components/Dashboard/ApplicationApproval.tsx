@@ -251,7 +251,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
   return (
     <div style={{ padding: "20px", fontFamily: 'inherit', fontSize: '14px' }}>
       <div style={{ 
-        background: "white", 
+        background: "var(--surface-card)", 
         borderRadius: "8px",
         overflow: "hidden",
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
@@ -263,35 +263,35 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           {/* Header Row */}
           <div style={{
             padding: "12px 16px",
-            background: " #1963b9",
+            background: "var(--theme-flow-active-color-bg, #1f2940)",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Checks</div>
           <div style={{
             padding: "12px 16px",
-            background: " #1963b9",
+            background: "var(--theme-flow-active-color-bg, #1f2940)",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Status</div>
           <div style={{
             padding: "12px 16px",
-            background: " #1963b9",
+            background: "var(--theme-flow-active-color-bg, #1f2940)",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Processed Date</div>
           <div style={{
             padding: "12px 16px",
-            background: " #1963b9",
+            background: "var(--theme-flow-active-color-bg, #1f2940)",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Processed By</div>
           <div style={{
             padding: "12px 16px",
-            background: " #1963b9",
+            background: "var(--theme-flow-active-color-bg, #1f2940)",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
@@ -302,34 +302,34 @@ const ApplicationApproval = ({ fullDetail }: any) => {
             <React.Fragment key={`${r.checks}-${idx}`}>
               <div style={{
                 padding: "12px 16px",
-                borderTop: idx === 0 ? "none" : "1px solid #E5E7EB",
+                borderTop: idx === 0 ? "none" : "1px solid var(--surface-border)",
                 fontWeight: "600",
                 fontSize: "14px",
-                color: "#000"
+                color: "var(--foreground)"
               }}>{r.checks}</div>
               <div style={{
                 padding: "12px 16px",
-                borderTop: idx === 0 ? "none" : "1px solid #E5E7EB",
+                borderTop: idx === 0 ? "none" : "1px solid var(--surface-border)",
                 fontSize: "14px",
-                color: "#000"
+                color: "var(--foreground)"
               }}>{r.status || <EmptyCell />}</div>
               <div style={{
                 padding: "12px 16px",
-                borderTop: idx === 0 ? "none" : "1px solid #E5E7EB",
+                borderTop: idx === 0 ? "none" : "1px solid var(--surface-border)",
                 fontSize: "14px",
-                color: "#000"
+                color: "var(--foreground)"
               }}>{r.processedDate || <EmptyCell />}</div>
               <div style={{
                 padding: "12px 16px",
-                borderTop: idx === 0 ? "none" : "1px solid #E5E7EB",
+                borderTop: idx === 0 ? "none" : "1px solid var(--surface-border)",
                 fontSize: "14px",
-                color: "#000"
+                color: "var(--foreground)"
               }}>{r.processedBy || <EmptyCell />}</div>
               <div style={{
                 padding: "12px 16px",
-                borderTop: idx === 0 ? "none" : "1px solid #E5E7EB",
+                borderTop: idx === 0 ? "none" : "1px solid var(--surface-border)",
                 fontSize: "14px",
-                color: "#000"
+                color: "var(--foreground)"
               }}>{r.comment || <EmptyCell />}</div>
             </React.Fragment>
           ))}

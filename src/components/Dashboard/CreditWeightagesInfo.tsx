@@ -178,10 +178,10 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
   // };
 
   return (
-    <div style={{ padding: "20px", background: "#F4F4F4", minHeight: "100vh" }}>
+    <div style={{ padding: "20px", background: "var(--surface-page)", minHeight: "100vh" }}>
       {/* Header Section */}
       <div style={{ 
-        background: "#fff", 
+        background: "var(--surface-card)", 
         padding: "24px", 
         borderRadius: "8px", 
         marginBottom: "24px",
@@ -216,7 +216,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           <h2 style={{ 
             fontSize: "24px", 
             fontWeight: "600", 
-            color: "#000", 
+            color: "var(--foreground)", 
             margin: 0,
             marginBottom: "4px"
           }}>
@@ -224,7 +224,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           </h2>
           <p style={{ 
             fontSize: "14px", 
-            color: "#666", 
+            color: "var(--muted-foreground)", 
             margin: 0 
           }}>
             Current Application Weightage Assessment
@@ -253,18 +253,18 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
       </div>
 
       {/* Credit Factor Grid */}
-      <div style={{ background: "#fff", padding: "24px", borderRadius: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+      <div style={{ background: "var(--surface-card)", padding: "24px", borderRadius: "8px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
         <h3 style={{ 
           fontSize: "18px", 
           fontWeight: "600", 
-          color: "#000", 
+          color: "var(--foreground)", 
           marginBottom: "20px" 
         }}>
           Credit Factor Breakdown
         </h3>
         
         {grid.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "40px", color: "#000" }}>
+          <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
             No credit factors available
           </div>
         ) : (
@@ -284,9 +284,9 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   key={defId}
                   style={{
                     padding: "16px",
-                    border: "1px solid #E5E7EB",
+                    border: "1px solid var(--surface-border)",
                     borderRadius: "8px",
-                    background: "#fff",
+                    background: "var(--surface-card)",
                     transition: "box-shadow 0.2s",
                   }}
                   onMouseEnter={(e) => {
@@ -306,7 +306,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                       <div style={{ 
                         fontSize: "14px", 
                         fontWeight: "600", 
-                        color: "#000",
+                        color: "var(--foreground)",
                         marginBottom: "8px",
                         lineHeight: "1.4"
                       }}>
@@ -329,7 +329,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   
                   <div style={{ 
                     fontSize: "13px", 
-                    color: "#666",
+                    color: "var(--muted-foreground)",
                     marginTop: "8px"
                   }}>
                     {currentValue}
@@ -383,7 +383,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
 
       {/* Score Calculation Breakdown */}
       <div style={{ 
-        background: "#fff", 
+        background: "var(--surface-card)", 
         padding: "0",
         borderRadius: "8px", 
         marginTop: "24px",
@@ -399,14 +399,14 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             display: "flex", 
             justifyContent: "space-between", 
             alignItems: "center",
-            borderBottom: breakdownExpanded ? "1px solid #E5E7EB" : "none"
+            borderBottom: breakdownExpanded ? "1px solid var(--surface-border)" : "none"
           }}
         >
           <div>
             <h3 style={{ 
               fontSize: "18px", 
               fontWeight: "600", 
-              color: "#000", 
+              color: "var(--foreground)", 
               margin: 0,
               marginBottom: "4px"
             }}>
@@ -414,13 +414,13 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             </h3>
             <p style={{ 
               fontSize: "13px", 
-              color: "#666", 
+              color: "var(--muted-foreground)", 
               margin: 0 
             }}>
               View detailed formula and parameter contributions
             </p>
           </div>
-          <div style={{ color: "#666", fontSize: "14px" }}>
+          <div style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {breakdownExpanded ? <UpOutlined /> : <DownOutlined />}
           </div>
         </div>
@@ -436,9 +436,9 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             <div
               style={{
                 padding: "16px",
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--surface-border)",
                 borderRadius: "6px",
-                background: "#fff"
+                background: "var(--surface-card)"
               }}
             >
               <div style={{ 
@@ -449,12 +449,12 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 <span style={{ 
                   fontSize: "16px", 
                   marginRight: "8px",
-                  color: "#000"
+                  color: "var(--foreground)"
                 }}>★</span>
                 <h4 style={{ 
                   fontSize: "15px", 
                   fontWeight: "600", 
-                  color: "#000", 
+                  color: "var(--foreground)", 
                   margin: 0 
                 }}>
                   Scoring Formula
@@ -462,31 +462,31 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#666", 
+                color: "var(--muted-foreground)", 
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "#000", fontWeight: "400" }}>Income = Basic Wage + Other Allowance + Housing Allowance</span>
+                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>Income = Basic Wage + Other Allowance + Housing Allowance</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "#000", fontWeight: "500" }}>
+                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   21450 + 3300 + 8250 = 33000
                 </span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "500",
                 marginTop: "8px",
                 paddingTop: "8px",
-                borderTop: "1px solid #E5E7EB"
+                borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "#000", fontWeight: "600" }}>33000</span>
+                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>33000</span>
               </div>
             </div>
 
@@ -494,9 +494,9 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             <div
               style={{
                 padding: "16px",
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--surface-border)",
                 borderRadius: "6px",
-                background: "#fff"
+                background: "var(--surface-card)"
               }}
             >
               <div style={{ 
@@ -507,12 +507,12 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 <span style={{ 
                   fontSize: "16px", 
                   marginRight: "8px",
-                  color: "#000"
+                  color: "var(--foreground)"
                 }}>★</span>
                 <h4 style={{ 
                   fontSize: "15px", 
                   fontWeight: "600", 
-                  color: "#000", 
+                  color: "var(--foreground)", 
                   margin: 0 
                 }}>
                   DBR System Percentage
@@ -520,31 +520,31 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#666", 
+                color: "var(--muted-foreground)", 
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "#000", fontWeight: "400" }}>( DBR Percentage / income ) * 100</span>
+                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>( DBR Percentage / income ) * 100</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "#000", fontWeight: "500" }}>
+                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   (10.00 / 33000) * 100 = 0.03030303030303
                 </span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "500",
                 marginTop: "8px",
                 paddingTop: "8px",
-                borderTop: "1px solid #E5E7EB"
+                borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "#000", fontWeight: "600" }}>0.03030303030303</span>
+                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>0.03030303030303</span>
               </div>
             </div>
 
@@ -552,9 +552,9 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             <div
               style={{
                 padding: "16px",
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--surface-border)",
                 borderRadius: "6px",
-                background: "#fff"
+                background: "var(--surface-card)"
               }}
             >
               <div style={{ 
@@ -565,12 +565,12 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 <span style={{ 
                   fontSize: "16px", 
                   marginRight: "8px",
-                  color: "#000"
+                  color: "var(--foreground)"
                 }}>★</span>
                 <h4 style={{ 
                   fontSize: "15px", 
                   fontWeight: "600", 
-                  color: "#000", 
+                  color: "var(--foreground)", 
                   margin: 0 
                 }}>
                   Simmah Amount
@@ -578,31 +578,31 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#666", 
+                color: "var(--muted-foreground)", 
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "#000", fontWeight: "400" }}>Simmah Amount = 16.666666666667</span>
+                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>Simmah Amount = 16.666666666667</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "#000", fontWeight: "500" }}>
+                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   16.666666666667
                 </span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "500",
                 marginTop: "8px",
                 paddingTop: "8px",
-                borderTop: "1px solid #E5E7EB"
+                borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "#000", fontWeight: "600" }}>16.666666666667</span>
+                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>16.666666666667</span>
               </div>
             </div>
 
@@ -610,9 +610,9 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             <div
               style={{
                 padding: "16px",
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--surface-border)",
                 borderRadius: "6px",
-                background: "#fff"
+                background: "var(--surface-card)"
               }}
             >
               <div style={{ 
@@ -623,12 +623,12 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 <span style={{ 
                   fontSize: "16px", 
                   marginRight: "8px",
-                  color: "#000"
+                  color: "var(--foreground)"
                 }}>★</span>
                 <h4 style={{ 
                   fontSize: "15px", 
                   fontWeight: "600", 
-                  color: "#000", 
+                  color: "var(--foreground)", 
                   margin: 0 
                 }}>
                   Credit Lite Percentage
@@ -636,31 +636,31 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#666", 
+                color: "var(--muted-foreground)", 
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "#000", fontWeight: "400" }}>( Credit Lite Percentage / income ) * 100</span>
+                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>( Credit Lite Percentage / income ) * 100</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "#000", fontWeight: "500" }}>
+                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   (10.00 / 33000) * 100 = 0.03030303030303
                 </span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "500",
                 marginTop: "8px",
                 paddingTop: "8px",
-                borderTop: "1px solid #E5E7EB"
+                borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "#000", fontWeight: "600" }}>0.03030303030303</span>
+                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>0.03030303030303</span>
               </div>
             </div>
 
@@ -668,9 +668,9 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             <div
               style={{
                 padding: "16px",
-                border: "1px solid #E5E7EB",
+                border: "1px solid var(--surface-border)",
                 borderRadius: "6px",
-                background: "#fff",
+                background: "var(--surface-card)",
                 marginTop: "4px"
               }}
             >
@@ -682,12 +682,12 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 <span style={{ 
                   fontSize: "16px", 
                   marginRight: "8px",
-                  color: "#000"
+                  color: "var(--foreground)"
                 }}>★</span>
                 <h4 style={{ 
                   fontSize: "15px", 
                   fontWeight: "600", 
-                  color: "#000", 
+                  color: "var(--foreground)", 
                   margin: 0 
                 }}>
                   Final Score
@@ -695,33 +695,33 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#666", 
+                color: "var(--muted-foreground)", 
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "#000", fontWeight: "400" }}>
+                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>
                   income * System Define Percentage - Simmah Amount + Credit Lite Percentage
                 </span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "#000", fontWeight: "500" }}>
+                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   33000 * 0.03030303030303 - 16.666666666667 + 0.03030303030303 = 983.36363636364
                 </span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
-                color: "#000", 
+                color: "var(--foreground)", 
                 fontWeight: "600",
                 marginTop: "8px",
                 paddingTop: "8px",
-                borderTop: "1px solid #E5E7EB"
+                borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "#000", fontSize: "15px" }}>983.36363636364</span>
+                Total: <span style={{ color: "var(--foreground)", fontSize: "15px" }}>983.36363636364</span>
               </div>
             </div>
           </div>

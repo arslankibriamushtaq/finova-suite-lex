@@ -633,8 +633,9 @@ const DeviceManagement = () => {
           }
           .device-tabs-trigger[data-state="active"] {
             background: transparent !important;
-            color: var(--primary) !important;
+            color: var(--foreground) !important;
             box-shadow: none !important;
+            font-weight: 600;
           }
           .device-tabs-trigger[data-state="active"]::after {
             content: "";
@@ -643,7 +644,13 @@ const DeviceManagement = () => {
             right: 12px;
             bottom: -1px;
             height: 2px;
-            background-color: var(--primary);
+            background-color: var(--foreground);
+          }
+          html.dark .device-tabs-trigger[data-state="active"] {
+            color: #ffffff !important;
+          }
+          html.dark .device-tabs-trigger[data-state="active"]::after {
+            background-color: #ffffff;
           }
         `}</style>
 
