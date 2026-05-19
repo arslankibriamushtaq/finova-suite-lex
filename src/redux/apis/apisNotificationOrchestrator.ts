@@ -59,3 +59,16 @@ export function getCustomerPreferences(customerId: string) {
 export function updateCustomerPreferences(data: any) {
   return axiosLms.put(`${BASE_PATH}/preferences`, data, { headers: getHeaders() });
 }
+
+// 8. Provider & Service Account Settings
+export function getProviderSettings() {
+  return axiosLms.get(`${BASE_PATH}/settings/provider`, { headers: getHeaders() });
+}
+
+export function updateProviderSettings(data: {
+  serviceAccountJson: string;
+  apiKey: string;
+  environment: string;
+}) {
+  return axiosLms.put(`${BASE_PATH}/settings/provider`, data, { headers: getHeaders() });
+}
