@@ -1,28 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Bell, 
-  Settings, 
-  Activity, 
-  Plus, 
-  Search, 
-  Trash2, 
-  Edit, 
+import React, { useEffect, useState } from "react";
+import {
+  Bell,
+  Plus,
+  Trash2,
+  Pencil,
   Smartphone,
   Mail,
   MessageSquare,
   AlertTriangle,
-  Zap,
-  Cpu,
-  Key,
-  Database,
-  Cloud
-} from 'lucide-react';
-import { Modal, Form, Row, Col, Card } from 'react-bootstrap';
-import { Button, Badge, Space, Input, Select, Tabs, Empty, Switch, Radio } from 'antd';
-import { toast } from 'react-hot-toast';
-import { cn } from '../../../lib/utils';
+  Settings,
+  Activity,
+} from "lucide-react";
+import { Modal, Form, Row, Col } from "react-bootstrap";
+import {
+  Input as AntInput,
+  Select as AntSelect,
+  Switch,
+  Radio,
+  Spin,
+  Tooltip,
+} from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { toast } from "react-hot-toast";
 
-// API Services
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
+import { Button } from "../../../components/ui/button";
+
 import {
   getEventTypes,
   getNovuTemplates,
@@ -32,95 +35,141 @@ import {
   deleteNotificationRule,
   getCustomerPreferences,
   updateCustomerPreferences,
-  getProviderSettings,
-  updateProviderSettings
-} from '../../../redux/apis/apisNotificationOrchestrator';
+} from "../../../redux/apis/apisNotificationOrchestrator";
 
-const { TabPane } = Tabs;
-const { TextArea } = Input;
 const TENANT_ID = "550e8400-e29b-41d4-a716-446655440000";
 
+const PRIORITY_OPTIONS = [
+  { value: "LOW", label: "Low" },
+  { value: "NORMAL", label: "Normal" },
+  { value: "HIGH", label: "High" },
+  { value: "CRITICAL", label: "Critical" },
+];
+
+const CHANNEL_OPTIONS = [
+  { value: "SMS", label: "SMS Gateway" },
+  { value: "PUSH", label: "Push Notification" },
+  { value: "WHATSAPP", label: "WhatsApp" },
+  { value: "EMAIL", label: "Email Service" },
+];
+
+const priorityColor = (p: string) => {
+  switch ((p || "").toUpperCase()) {
+    case "CRITICAL":
+      return "var(--color-error)";
+    case "HIGH":
+      return "var(--color-warning)";
+    case "LOW":
+      return "var(--muted)";
+    default:
+      return "var(--color-info)";
+  }
+};
+
 const NotificationOrchestrator: React.FC = () => {
-  const [activeKey, setActiveKey] = useState('1');
+  const [activeTab, setActiveTab] = useState<"rules" | "preferences">("rules");
   const [isLoading, setIsLoading] = useState(false);
-  
-  // Dynamic Data
+
+  // Data
   const [eventTypes, setEventTypes] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
   const [routingRules, setRoutingRules] = useState<any[]>([]);
+  const [search, setSearch] = useState("");
+  const [channelFilter, setChannelFilter] = useState<string>("ALL");
 
-  // Provider Settings State
-  const [providerSettings, setProviderSettings] = useState({
-    serviceAccountJson: '',
-    apiKey: '',
-    environment: 'development'
-  });
-
-  // Modal & Form State
+  // Modal
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
   const [editingRule, setEditingRule] = useState<any>(null);
   const [rulePayload, setRulePayload] = useState({
-    ruleCode: '',
-    ruleName: '',
-    eventType: '',
-    channel: 'SMS',
-    novuTemplateId: '',
-    priority: 'NORMAL',
-    active: true
+    ruleCode: "",
+    ruleName: "",
+    eventType: "",
+    channel: "SMS",
+    novuTemplateId: "",
+    priority: "NORMAL",
+    active: true,
   });
 
-  // State for Preferences
-  const [customerId, setCustomerId] = useState('');
+  // Preferences
+  const [customerId, setCustomerId] = useState("");
   const [preferences, setPreferences] = useState<any>(null);
 
-  useEffect(() => {
-    fetchInitialData();
-  }, [activeKey]);
+  // Delete confirmation
+  const [deleteTarget, setDeleteTarget] = useState<any>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  // Smart Rule Code Generator
+  useEffect(() => {
+    if (activeTab === "rules") fetchRulesData();
+  }, [activeTab]);
+
   useEffect(() => {
     if (rulePayload.eventType && rulePayload.channel && !editingRule) {
-      const generatedCode = `RULE_${rulePayload.eventType.toUpperCase()}_${rulePayload.channel.toUpperCase()}`;
-      setRulePayload(prev => ({ ...prev, ruleCode: generatedCode }));
+      const code = `RULE_${rulePayload.eventType.toUpperCase()}_${rulePayload.channel.toUpperCase()}`;
+      setRulePayload((prev) => ({ ...prev, ruleCode: code }));
     }
   }, [rulePayload.eventType, rulePayload.channel, editingRule]);
 
-  const fetchInitialData = async () => {
+  const toArray = (raw: any): any[] => {
+    if (Array.isArray(raw)) return raw;
+    if (Array.isArray(raw?.data)) return raw.data;
+    if (Array.isArray(raw?.content)) return raw.content;
+    if (Array.isArray(raw?.items)) return raw.items;
+    return [];
+  };
+
+  const fetchRulesData = async () => {
     setIsLoading(true);
     try {
-      if (activeKey === '1') {
-        const [rulesRes, eventTypesRes, templatesRes] = await Promise.all([
-          getNotificationRules(),
-          getEventTypes(),
-          getNovuTemplates()
-        ]);
-        setRoutingRules(rulesRes.data?.data || []);
-        setEventTypes(eventTypesRes.data?.data || []);
-        setTemplates(templatesRes.data?.data || []);
-      } else if (activeKey === '3') {
-        const res = await getProviderSettings();
-        setProviderSettings(res.data?.data || {
-          serviceAccountJson: '',
-          apiKey: '',
-          environment: 'development'
-        });
-      }
-    } catch (error) {
-      console.error("Fetch Error:", error);
-      if (activeKey === '1') {
-        setRoutingRules(mockRoutingRules);
-        setEventTypes(mockEventTypesStrings);
-        setTemplates(mockTemplates);
-      }
+      const [rulesRes, eventTypesRes, templatesRes] = await Promise.all([
+        getNotificationRules(),
+        getEventTypes(),
+        getNovuTemplates(),
+      ]);
+      setRoutingRules(toArray(rulesRes?.data?.data ?? rulesRes?.data));
+      setEventTypes(toArray(eventTypesRes?.data?.data ?? eventTypesRes?.data));
+      setTemplates(toArray(templatesRes?.data?.data ?? templatesRes?.data));
+    } catch {
+      // graceful fallback
+      setRoutingRules([]);
+      setEventTypes([]);
+      setTemplates([]);
     } finally {
       setIsLoading(false);
     }
   };
 
+  const openAddModal = () => {
+    setEditingRule(null);
+    setRulePayload({
+      ruleCode: "",
+      ruleName: "",
+      eventType: "",
+      channel: "SMS",
+      novuTemplateId: "",
+      priority: "NORMAL",
+      active: true,
+    });
+    setIsRuleModalOpen(true);
+  };
+
+  const openEditModal = (rule: any) => {
+    setEditingRule(rule);
+    setRulePayload({
+      ruleCode: rule.ruleCode || "",
+      ruleName: rule.ruleName || "",
+      eventType: rule.eventType || "",
+      channel: rule.channel || "SMS",
+      novuTemplateId: rule.novuTemplateId || "",
+      priority: rule.priority || "NORMAL",
+      active: rule.active ?? true,
+    });
+    setIsRuleModalOpen(true);
+  };
+
   const handleSaveRule = async () => {
     const { ruleName, ruleCode, eventType, channel, novuTemplateId } = rulePayload;
     if (!ruleName || !ruleCode || !eventType || !channel || !novuTemplateId) {
-      return toast.error("Please fill all mandatory fields");
+      return toast.error("Please fill all required fields");
     }
 
     try {
@@ -128,310 +177,844 @@ const NotificationOrchestrator: React.FC = () => {
       const payload = { ...rulePayload, tenantId: TENANT_ID };
       if (editingRule) {
         await updateNotificationRule(editingRule.id, payload);
-        toast.success("Policy Updated");
+        toast.success("Rule updated");
       } else {
         await createNotificationRule(payload);
-        toast.success("Orchestration Rule Synchronized!");
+        toast.success("Rule created");
       }
       setIsRuleModalOpen(false);
-      fetchInitialData();
+      fetchRulesData();
     } catch (error: any) {
-      toast.error("Internal Routing Error");
+      toast.error(error?.response?.data?.message || "Failed to save rule");
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSaveProviderSettings = async () => {
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
     try {
-      setIsLoading(true);
-      if (providerSettings.serviceAccountJson) {
-        try { JSON.parse(providerSettings.serviceAccountJson); } 
-        catch (e) { return toast.error("Invalid Service Account JSON format"); }
-      }
-      await updateProviderSettings(providerSettings);
-      toast.success("Provider Configuration Deployed 🌐");
-    } catch (error) {
-      toast.error("Failed to update provider settings");
+      setIsDeleting(true);
+      await deleteNotificationRule(deleteTarget.id);
+      toast.success("Rule deleted");
+      setDeleteTarget(null);
+      fetchRulesData();
+    } catch {
+      toast.error("Failed to delete rule");
     } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteRule = async (id: string) => {
-    if (!window.confirm("Confirm deletion?")) return;
-    try {
-      setIsLoading(true);
-      await deleteNotificationRule(id);
-      toast.success("Policy Removed");
-      fetchInitialData();
-    } catch (error: any) {
-      toast.error("Deletion failed");
-    } finally {
-      setIsLoading(false);
+      setIsDeleting(false);
     }
   };
 
   const fetchPreferences = async () => {
-    if (!customerId) return toast.error("Valid ID required");
+    if (!customerId.trim()) return toast.error("Please enter a customer ID");
     try {
       setIsLoading(true);
-      const res = await getCustomerPreferences(customerId);
-      setPreferences(res.data?.data);
-    } catch (error) {
-      toast.error("Record not found");
+      const res = await getCustomerPreferences(customerId.trim());
+      setPreferences(res.data?.data || null);
+    } catch {
+      toast.error("No preferences found for this customer");
       setPreferences(null);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Mock Data
-  const mockEventTypesStrings = ["AUTH_OTP", "PAYMENT_COMPLETED", "LOAN_APPROVED"];
-  const mockTemplates = [
-    { id: '64f12345abcde', name: 'Standard OTP Template' },
-  ];
-  const mockRoutingRules = [
-    { id: '1', ruleCode: 'RULE_AUTH_OTP_SMS', ruleName: 'Auth OTP via SMS', eventType: 'AUTH_OTP', channel: 'SMS', priority: 'HIGH', active: true },
-  ];
+  const filteredRules = (Array.isArray(routingRules) ? routingRules : []).filter((r) => {
+    const matchesSearch = !search
+      ? true
+      : (r.ruleName || "").toLowerCase().includes(search.toLowerCase()) ||
+        (r.ruleCode || "").toLowerCase().includes(search.toLowerCase()) ||
+        (r.eventType || "").toLowerCase().includes(search.toLowerCase());
+    const matchesChannel = channelFilter === "ALL" || r.channel === channelFilter;
+    return matchesSearch && matchesChannel;
+  });
+
+  const channelIcon = (channel: string) => {
+    if (channel === "SMS") return <MessageSquare className="h-4 w-4" />;
+    if (channel === "WHATSAPP") return <Smartphone className="h-4 w-4" />;
+    if (channel === "EMAIL") return <Mail className="h-4 w-4" />;
+    return <Bell className="h-4 w-4" />;
+  };
 
   return (
-    <div className="p-4 sm:p-6 lg:p-8 bg-[#0a0a0a] min-h-screen text-gray-200 font-outfit">
-      <div className="max-w-7xl mx-auto">
-        
-        {/* Header Section */}
-        <div className="relative mb-8 p-10 rounded-[2.5rem] overflow-hidden border border-white/10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-2xl">
-          <div className="absolute top-[-20px] right-[-20px] p-12 opacity-5 animate-pulse">
-            <Zap size={200} />
-          </div>
-          <div className="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
-            <div>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2.5 bg-blue-500/20 rounded-xl text-blue-400 ring-1 ring-blue-500/30">
-                  <Activity size={24} />
-                </div>
-                <Badge status="processing" text="SYSTEM LIVE" className="text-blue-300 font-bold text-xs" />
-              </div>
-              <h1 className="text-5xl font-black bg-gradient-to-r from-white to-gray-500 bg-clip-text text-transparent text-shadow">Notification Orchestrator</h1>
-            </div>
-          </div>
+    <div className="service notification-orchestrator-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          {/* <Activity className="h-5 w-5" style={{ color: "var(--primary)" }} /> */}
+          Notification Rules
+        </h3>
+        <p className="text-muted small mb-0 mt-1">
+          Configure smart routing logic, map event triggers to Novu templates, and manage multi-channel delivery priorities.
+        </p>
+      </div>
+
+      <div className="stat-row mb-3">
+        <div className="stat-tile">
+          <div className="stat-label">Total Rules</div>
+          <div className="stat-value">{routingRules.length}</div>
+        </div>
+        <div className="stat-tile">
+          <div className="stat-label">System Health</div>
+          <div className="stat-value" style={{ color: "var(--color-success)" }}>99%</div>
+        </div>
+      </div>
+
+      <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as any)}>
+        <div className="no-tabs-row">
+          <TabsList className="no-tabs-list">
+            <TabsTrigger value="rules" className="no-tabs-trigger">
+              <Settings className="h-4 w-4" /> Routing Engine
+            </TabsTrigger>
+            <TabsTrigger value="preferences" className="no-tabs-trigger">
+              <Smartphone className="h-4 w-4" /> User Preference Sync
+            </TabsTrigger>
+          </TabsList>
         </div>
 
-        {/* Tab System */}
-        <Tabs activeKey={activeKey} onChange={setActiveKey} className="custom-tabs-refined" type="card">
-          {/* Tab 1: Rules Engine */}
-          <TabPane tab={<span className="flex items-center gap-3 px-4 py-1"><Settings size={18} /> Routing Rules</span>} key="1">
-             <Card className="bg-white/5 border-white/10 rounded-[2rem] overflow-hidden backdrop-blur-xl border-t-white/20">
-              <div className="p-8 border-b border-white/10 flex justify-between items-center">
-                <div className="flex gap-4">
-                  <Input prefix={<Search size={18} className="text-gray-500" />} placeholder="Filter rules..." className="bg-black/40 border-white/10 text-white rounded-2xl h-14 w-80" />
-                </div>
-                <Button type="primary" icon={<Plus size={20} />} onClick={() => { setEditingRule(null); setIsRuleModalOpen(true); }} className="bg-blue-600 border-none h-14 px-10 rounded-2xl font-bold">
-                  Create New Rule
-                </Button>
-              </div>
-              <div className="p-0 overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead className="bg-white/5 text-gray-500 text-[10px] font-black uppercase tracking-[0.2em]">
-                    <tr>
-                      <th className="px-8 py-6">Orchestration Rule</th>
-                      <th className="px-8 py-6">Channel</th>
-                      <th className="px-8 py-6">Priority</th>
-                      <th className="px-8 py-6 text-center">Status</th>
-                      <th className="px-8 py-6 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-white/10">
-                    {Array.isArray(routingRules) && routingRules.map((rule) => (
-                      <tr key={rule.id} className="hover:bg-white/[0.03] transition-all">
-                        <td className="px-8 py-6">
-                          <p className="font-bold text-white mb-1">{rule.ruleName}</p>
-                          <p className="font-mono text-blue-400 text-[11px]">{rule.ruleCode}</p>
-                        </td>
-                        <td className="px-8 py-6">
-                           <div className="flex items-center gap-3 text-white">
-                              <div className={cn(
-                                "p-2 rounded-lg ring-1 ring-inset",
-                                rule.channel === 'SMS' ? "bg-yellow-500/10 ring-yellow-500/20 text-yellow-500" :
-                                rule.channel === 'WHATSAPP' ? "bg-green-500/10 ring-green-500/20 text-green-500" :
-                                "bg-blue-500/10 ring-blue-500/20 text-blue-500"
-                              )}>
-                                {rule.channel === 'SMS' ? <MessageSquare size={16} /> :
-                                 rule.channel === 'WHATSAPP' ? <Smartphone size={16} /> :
-                                 rule.channel === 'EMAIL' ? <Mail size={16} /> :
-                                 <Bell size={16} />}
-                              </div>
-                              <span className="text-xs font-bold">{rule.channel}</span>
-                           </div>
-                        </td>
-                        <td className="px-8 py-6">
-                          <Badge 
-                            count={rule.priority} 
-                            style={{ 
-                              backgroundColor: rule.priority === 'CRITICAL' ? '#ef4444' : 
-                                             rule.priority === 'HIGH' ? '#f97316' : '#3b82f6',
-                              fontSize: '10px',
-                              fontWeight: '900'
-                            }} 
-                          />
-                        </td>
-                        <td className="px-8 py-6 text-center">
-                           <Switch checked={rule.active} size="small" />
-                        </td>
-                        <td className="px-8 py-6 text-right">
-                          <Space size="large">
-                            <button className="text-gray-500 hover:text-white" onClick={() => { setEditingRule(rule); setRulePayload({ ...rule }); setIsRuleModalOpen(true); }}><Edit size={18} /></button>
-                            <button className="text-gray-500 hover:text-red-400" onClick={() => handleDeleteRule(rule.id)}><Trash2 size={18} /></button>
-                          </Space>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </Card>
-          </TabPane>
-
-          {/* Tab 2: User Preferences */}
-          <TabPane tab={<span className="flex items-center gap-3 px-4 py-1"><Smartphone size={18} /> User Sync</span>} key="2">
-            <div className="max-w-3xl mx-auto py-16">
-               <div className="flex gap-4 mb-16">
-                <Input size="large" placeholder="Enter Customer UUID" value={customerId} onChange={(e) => setCustomerId(e.target.value)} className="bg-white/5 border-white/10 text-white h-16 rounded-[1.25rem] px-6 text-lg" />
-                <Button type="primary" size="large" onClick={fetchPreferences} className="h-16 px-12 rounded-[1.25rem] bg-blue-600 border-none font-black text-lg">Lookup</Button>
-              </div>
-              {preferences && (
-                <Card className="bg-white/5 border-white/10 rounded-[2.5rem] p-10 backdrop-blur-xl">
-                   <p className="text-white font-bold text-lg mb-4">Channel Preferences for {preferences.customerId}</p>
-                   <div className="space-y-4">
-                      {['smsEnabled', 'emailEnabled', 'pushEnabled'].map(k => (
-                        <div key={k} className="flex justify-between p-6 bg-white/[0.03] rounded-3xl border border-white/5">
-                          <span className="text-white font-bold uppercase">{k.replace('Enabled', '')}</span>
-                          <Switch checked={preferences[k]} />
-                        </div>
-                      ))}
-                   </div>
-                </Card>
-              )}
+        {/* Routing Engine */}
+        <TabsContent value="rules" className="mt-3">
+          {/* Filter card */}
+          <div
+            className="bg-white p-3 mb-3"
+            style={{
+              borderRadius: 12,
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <div className="d-flex flex-nowrap align-items-center gap-2 w-100" style={{ overflow: "visible" }}>
+              <AntInput
+                allowClear
+                placeholder="Filter orchestration rules..."
+                prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                style={{ flex: "1 1 auto", minWidth: 0, borderRadius: 8, height: 40 }}
+              />
+              <AntSelect
+                value={channelFilter}
+                onChange={(v) => setChannelFilter(v)}
+                popupClassName="no-select-popup"
+                style={{ width: 180, height: 40, flexShrink: 0 }}
+                options={[
+                  { value: "ALL", label: "All Channels" },
+                  ...CHANNEL_OPTIONS,
+                ]}
+              />
+              <Button
+                className="gap-2 uo-btn-black"
+                onClick={openAddModal}
+                style={{ height: 40, borderRadius: 8, flexShrink: 0, whiteSpace: "nowrap" }}
+              >
+                <Plus className="h-4 w-4" />
+                Create New Rule
+              </Button>
             </div>
-          </TabPane>
-
-          {/* Tab 3: Provider Configuration */}
-          <TabPane tab={<span className="flex items-center gap-3 px-4 py-1"><Cpu size={18} /> Provider Config</span>} key="3">
-            <div className="max-w-5xl mx-auto py-12">
-              <div className="mb-10 text-center">
-                <div className="inline-flex p-4 bg-purple-500/10 rounded-full text-purple-400 mb-4 ring-1 ring-purple-500/20"><Cloud size={32} /></div>
-                <h2 className="text-3xl font-black text-white mb-2">Cloud Provider Integration</h2>
-                <p className="text-gray-400">Configure FCM Service Accounts and Novu Secret Keys.</p>
-              </div>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                  <Card className="bg-white/5 border-white/10 rounded-[2rem] p-8 backdrop-blur-xl border-t-white/20">
-                    <div className="flex items-center gap-3 mb-6"><Database className="text-blue-400" size={20} /><h3 className="text-lg font-bold text-white">Service Account (JSON)</h3></div>
-                    <TextArea rows={12} value={providerSettings.serviceAccountJson} onChange={(e) => setProviderSettings({...providerSettings, serviceAccountJson: e.target.value})} className="bg-black/60 border-white/10 text-blue-300 font-mono text-xs rounded-2xl p-6" />
-                    <div className="mt-8 flex justify-end">
-                      <Button type="primary" loading={isLoading} onClick={handleSaveProviderSettings} className="bg-blue-600 border-none h-14 px-12 rounded-2xl font-black">Deploy Configuration</Button>
-                    </div>
-                  </Card>
-                </div>
-                <div className="space-y-6">
-                  <Card className="bg-white/5 border-white/10 rounded-[2rem] p-8 backdrop-blur-xl border-t-white/20">
-                    <div className="flex items-center gap-3 mb-6"><Key className="text-purple-400" size={20} /><h3 className="text-lg font-bold text-white">Novu Credentials</h3></div>
-                    <Form layout="vertical">
-                      <Form.Item label={<span className="text-gray-500 text-[10px] font-black uppercase">Secret API Key</span>}>
-                        <Input.Password value={providerSettings.apiKey} onChange={(e) => setProviderSettings({...providerSettings, apiKey: e.target.value})} className="bg-black/40 border-white/10 text-white h-12 rounded-xl" />
-                      </Form.Item>
-                    </Form>
-                  </Card>
-                </div>
-              </div>
-            </div>
-          </TabPane>
-        </Tabs>
-
-        {/* Create/Edit Rule Modal */}
-        <Modal show={isRuleModalOpen} onHide={() => setIsRuleModalOpen(false)} centered className="dark-modal-refined" size="lg">
-          <div className="bg-[#121212] border border-white/10 rounded-[2.5rem] overflow-hidden">
-            <Modal.Header className="px-10 py-8 bg-white/[0.02] border-b border-white/10">
-              <Modal.Title className="text-white font-black text-2xl flex items-center gap-4"><Plus size={24} /> {editingRule ? 'Update Policy' : 'New Routing Rule'}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body className="px-10 py-10">
-              <Form className="space-y-8">
-                <Row gutter={[32, 32]}>
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label className="text-gray-500 text-[10px] font-black uppercase mb-3 block tracking-widest">Rule Context Name</Form.Label>
-                      <Form.Control type="text" value={rulePayload.ruleName} onChange={(e) => setRulePayload({ ...rulePayload, ruleName: e.target.value })} className="bg-black/40 border-white/10 text-white h-14 rounded-2xl" placeholder="e.g. Auth OTP Service" />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label className="text-gray-500 text-[10px] font-black uppercase mb-3 block tracking-widest">Event Type</Form.Label>
-                      <Select showSearch value={rulePayload.eventType || undefined} onChange={(val) => setRulePayload({ ...rulePayload, eventType: val })} className="w-full h-14 custom-select-refined-form" options={(Array.isArray(eventTypes) ? eventTypes : []).map(e => ({ value: typeof e === 'string' ? e : e.code, label: typeof e === 'string' ? e.replace(/_/g, ' ') : e.name }))} />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label className="text-gray-500 text-[10px] font-black uppercase mb-3 block tracking-widest">Delivery Channel</Form.Label>
-                      <Select value={rulePayload.channel} onChange={(val) => setRulePayload({ ...rulePayload, channel: val })} className="w-full h-14 custom-select-refined-form" options={[{ value: 'SMS', label: 'SMS Gateway' }, { value: 'PUSH', label: 'Push Notification' }, { value: 'WHATSAPP', label: 'WhatsApp' }, { value: 'EMAIL', label: 'Email Service' }]} />
-                    </Form.Group>
-                  </Col>
-                  <Col md={6}>
-                    <Form.Group>
-                      <Form.Label className="text-gray-500 text-[10px] font-black uppercase mb-3 block tracking-widest">Rule Code</Form.Label>
-                      <Form.Control type="text" value={rulePayload.ruleCode} readOnly className="bg-white/5 border-white/5 text-blue-400 h-14 rounded-2xl font-mono text-xs" />
-                    </Form.Group>
-                  </Col>
-                  <Col md={12}>
-                    <Form.Group>
-                      <Form.Label className="text-gray-500 text-[10px] font-black uppercase mb-3 block tracking-widest">Novu Template Mapping</Form.Label>
-                      <Select showSearch value={rulePayload.novuTemplateId || undefined} onChange={(val) => setRulePayload({ ...rulePayload, novuTemplateId: val })} className="w-full h-14 custom-select-refined-form" options={(Array.isArray(templates) ? templates : []).map(t => ({ value: t.id, label: t.name }))} />
-                    </Form.Group>
-                  </Col>
-                  <Col md={12}>
-                    <Form.Group>
-                      <Form.Label className="text-gray-500 text-[10px] font-black uppercase mb-3 block tracking-widest">Delivery Priority</Form.Label>
-                      <Radio.Group block value={rulePayload.priority} onChange={(e) => setRulePayload({ ...rulePayload, priority: e.target.value })} className="custom-priority-group">
-                        <Radio.Button value="LOW" className="flex-1 text-center">Low</Radio.Button>
-                        <Radio.Button value="NORMAL" className="flex-1 text-center">Normal</Radio.Button>
-                        <Radio.Button value="HIGH" className="flex-1 text-center">High</Radio.Button>
-                        <Radio.Button value="CRITICAL" className="flex-1 text-center critical">Critical</Radio.Button>
-                      </Radio.Group>
-                    </Form.Group>
-                  </Col>
-                </Row>
-                <div className="p-6 bg-yellow-500/10 border border-yellow-500/20 rounded-3xl flex items-start gap-4">
-                   <AlertTriangle className="text-yellow-500 mt-1" size={20} />
-                   <p className="text-xs text-yellow-500/70">New rules are deployed to the Kong API Gateway immediately upon saving.</p>
-                </div>
-              </Form>
-            </Modal.Body>
-            <Modal.Footer className="px-10 py-8 bg-white/[0.01] border-t border-white/10">
-              <Button onClick={() => setIsRuleModalOpen(false)} className="bg-transparent border-white/10 text-gray-400 h-14 px-10 rounded-2xl">Discard</Button>
-              <Button type="primary" loading={isLoading} onClick={handleSaveRule} className="bg-blue-600 border-none h-14 px-16 rounded-2xl font-black">Authorize & Deploy</Button>
-            </Modal.Footer>
           </div>
-        </Modal>
 
-        {/* Styles */}
-        <style dangerouslySetInnerHTML={{ __html: `
-          @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap');
-          .font-outfit { font-family: 'Outfit', sans-serif !important; }
-          .custom-tabs-refined .ant-tabs-nav::before { display: none !important; }
-          .custom-tabs-refined .ant-tabs-tab { background: rgba(255,255,255,0.02) !important; border: 1px solid rgba(255,255,255,0.05) !important; color: #666 !important; border-radius: 16px !important; margin-right: 12px !important; }
-          .custom-tabs-refined .ant-tabs-tab-active { background: rgba(59,130,246,0.1) !important; border: 1px solid rgba(59,130,246,0.3) !important; }
-          .custom-tabs-refined .ant-tabs-tab-active .ant-tabs-tab-btn { color: white !important; font-weight: 900 !important; }
-          .custom-select-refined-form .ant-select-selector { height: 56px !important; display: flex !important; align-items: center !important; background-color: rgba(0,0,0,0.4) !important; border-color: rgba(255,255,255,0.1) !important; color: white !important; border-radius: 16px !important; }
-          .dark-modal-refined .modal-content { background: transparent !important; border: none !important; }
-          .ant-input-password { background: rgba(0,0,0,0.4) !important; border: 1px solid rgba(255,255,255,0.1) !important; color: white !important; }
-          .ant-input-password input { background: transparent !important; color: white !important; }
-          .ant-form-item-label label { color: #666 !important; font-weight: 900 !important; font-size: 10px !important; text-transform: uppercase !important; }
-          .custom-priority-group { display: flex !important; gap: 8px !important; }
-          .custom-priority-group .ant-radio-button-wrapper { background: rgba(255,255,255,0.05) !important; border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 16px !important; color: #666 !important; height: 56px !important; line-height: 54px !important; flex: 1 !important; text-align: center !important; font-weight: 600 !important; }
-          .custom-priority-group .ant-radio-button-wrapper-checked { background: rgba(59,130,246,0.2) !important; border-color: #3b82f6 !important; color: white !important; }
-          .custom-priority-group .ant-radio-button-wrapper-checked.critical { background: rgba(239,68,68,0.2) !important; border-color: #ef4444 !important; }
-          .text-shadow { text-shadow: 0 0 20px rgba(255,255,255,0.1); }
-        `}} />
-      </div>
+          {/* Rules table card */}
+          <div
+            className="bg-white"
+            style={{
+              borderRadius: 12,
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+              border: "1px solid var(--border)",
+              overflow: "hidden",
+            }}
+          >
+            <table className="no-table">
+              <thead>
+                <tr>
+                  <th>Orchestration Rule</th>
+                  <th>Event Context</th>
+                  <th>Channel Path</th>
+                  <th>Priority</th>
+                  <th className="text-center">Active</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="text-center" style={{ padding: 32 }}>
+                      <Spin />
+                    </td>
+                  </tr>
+                ) : filteredRules.length === 0 ? (
+                  <tr>
+                    <td colSpan={6} className="text-center text-muted" style={{ padding: 36 }}>
+                      No rules found. Create one to begin orchestration.
+                    </td>
+                  </tr>
+                ) : (
+                  filteredRules.map((rule) => (
+                    <tr key={rule.id}>
+                      <td>
+                        <div className="fw-semibold" style={{ color: "var(--foreground)" }}>
+                          {rule.ruleName}
+                        </div>
+                        <div className="font-monospace" style={{ fontSize: 11, color: "var(--muted-foreground)" }}>
+                          {rule.ruleCode}
+                        </div>
+                      </td>
+                      <td>
+                        <span className="no-context-chip">{rule.eventType || "-"}</span>
+                      </td>
+                      <td>
+                        <div className="d-flex align-items-center gap-2">
+                          <span className="no-channel-icon">{channelIcon(rule.channel)}</span>
+                          <span className="fw-medium" style={{ fontSize: 13 }}>{rule.channel}</span>
+                        </div>
+                      </td>
+                      <td>
+                        <span
+                          className="no-priority-pill"
+                          style={{ backgroundColor: priorityColor(rule.priority), color: "var(--primary-foreground)" }}
+                        >
+                          {rule.priority || "NORMAL"}
+                        </span>
+                      </td>
+                      <td className="text-center">
+                        <Switch checked={!!rule.active} size="small" />
+                      </td>
+                      <td className="text-right">
+                        <div className="d-inline-flex gap-2">
+                          <Tooltip title="Edit">
+                            <button
+                              className="no-icon-btn"
+                              onClick={() => openEditModal(rule)}
+                              type="button"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                          </Tooltip>
+                          <Tooltip title="Delete">
+                            <button
+                              className="no-icon-btn no-icon-btn-danger"
+                              onClick={() => setDeleteTarget(rule)}
+                              type="button"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </Tooltip>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </TabsContent>
+
+        {/* User Preference Sync */}
+        <TabsContent value="preferences" className="mt-3">
+          <div
+            className="bg-white p-3 mb-3"
+            style={{
+              borderRadius: 12,
+              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+              border: "1px solid var(--border)",
+            }}
+          >
+            <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+              <AntInput
+                allowClear
+                placeholder="Enter customer ID..."
+                prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+                value={customerId}
+                onChange={(e) => setCustomerId(e.target.value)}
+                style={{ flex: "1 1 280px", minWidth: 220, borderRadius: 8, height: 40 }}
+              />
+              <Button
+                className="uo-btn-black"
+                onClick={fetchPreferences}
+                style={{ height: 40, borderRadius: 8 }}
+              >
+                Lookup
+              </Button>
+            </div>
+          </div>
+
+          {isLoading ? (
+            <div className="bg-white p-5 text-center" style={{ borderRadius: 12, border: "1px solid var(--border)" }}>
+              <Spin />
+            </div>
+          ) : preferences ? (
+            <div
+              className="bg-white p-3"
+              style={{
+                borderRadius: 12,
+                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
+                border: "1px solid var(--border)",
+              }}
+            >
+              <div className="d-flex align-items-center gap-3 pb-3 mb-3" style={{ borderBottom: "1px solid var(--border)" }}>
+                <div className="no-avatar">
+                  {preferences.customerId?.charAt(0).toUpperCase() || "C"}
+                </div>
+                <div>
+                  <div className="text-muted small" style={{ letterSpacing: 0.4, textTransform: "uppercase" }}>Customer ID</div>
+                  <div className="font-monospace" style={{ fontSize: 13, color: "var(--foreground)" }}>
+                    {preferences.customerId}
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex flex-column gap-2">
+                {[
+                  { label: "SMS Gateway", icon: MessageSquare, key: "smsEnabled" },
+                  { label: "Email Server", icon: Mail, key: "emailEnabled" },
+                  { label: "Push Notifications", icon: Bell, key: "pushEnabled" },
+                ].map((channel) => (
+                  <div key={channel.key} className="no-pref-row">
+                    <div className="d-flex align-items-center gap-3">
+                      <span className="no-channel-icon">
+                        <channel.icon className="h-4 w-4" />
+                      </span>
+                      <span className="fw-semibold" style={{ color: "var(--foreground)" }}>{channel.label}</span>
+                    </div>
+                    <Switch
+                      checked={!!preferences[channel.key]}
+                      onChange={(checked) => {
+                        const newPrefs = { ...preferences, [channel.key]: checked };
+                        setPreferences(newPrefs);
+                        updateCustomerPreferences({ customerId, ...newPrefs });
+                        toast.success(`${channel.label} preference updated`);
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-white p-5 text-center text-muted" style={{ borderRadius: 12, border: "1px solid var(--border)" }}>
+              Enter a customer ID and click <strong>Lookup</strong> to view their preferences.
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Rule Modal */}
+      <Modal
+        show={isRuleModalOpen}
+        onHide={() => setIsRuleModalOpen(false)}
+        centered
+        size="lg"
+        className="no-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>{editingRule ? "Update Routing Rule" : "Create New Routing Rule"}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Rule Name *</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={rulePayload.ruleName}
+                    onChange={(e) => setRulePayload({ ...rulePayload, ruleName: e.target.value })}
+                    placeholder="e.g. Auth OTP via SMS"
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Event Type *</Form.Label>
+                  <AntSelect
+                    showSearch
+                    value={rulePayload.eventType || undefined}
+                    placeholder="Select trigger event"
+                    onChange={(v) => setRulePayload({ ...rulePayload, eventType: v })}
+                    className="no-form-select"
+                    popupClassName="no-select-popup"
+                    style={{ width: "100%" }}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "").toString().toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={(Array.isArray(eventTypes) ? eventTypes : []).map((e) => {
+                      if (typeof e === "string") return { value: e, label: e };
+                      return { value: e.code ?? e.value, label: e.name ?? e.label ?? e.code ?? e.value };
+                    })}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Delivery Channel *</Form.Label>
+                  <AntSelect
+                    value={rulePayload.channel}
+                    onChange={(v) => setRulePayload({ ...rulePayload, channel: v })}
+                    className="no-form-select"
+                    popupClassName="no-select-popup"
+                    style={{ width: "100%" }}
+                    options={CHANNEL_OPTIONS}
+                  />
+                </Form.Group>
+              </Col>
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label>Rule Code (auto)</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={rulePayload.ruleCode}
+                    readOnly
+                    placeholder="Generated from event + channel"
+                    className="font-monospace"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label>Novu Template *</Form.Label>
+                  <AntSelect
+                    showSearch
+                    value={rulePayload.novuTemplateId || undefined}
+                    placeholder="Search Novu templates..."
+                    onChange={(v) => setRulePayload({ ...rulePayload, novuTemplateId: v })}
+                    className="no-form-select"
+                    popupClassName="no-select-popup"
+                    style={{ width: "100%" }}
+                    filterOption={(input, option) =>
+                      (option?.label ?? "").toString().toLowerCase().includes(input.toLowerCase())
+                    }
+                    options={(Array.isArray(templates) ? templates : []).map((t) => ({ value: t.id, label: t.name }))}
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+            <Row className="mb-3">
+              <Col md={12}>
+                <Form.Group>
+                  <Form.Label>Priority</Form.Label>
+                  <Radio.Group
+                    value={rulePayload.priority}
+                    onChange={(e) => setRulePayload({ ...rulePayload, priority: e.target.value })}
+                    optionType="button"
+                    buttonStyle="solid"
+                    options={PRIORITY_OPTIONS}
+                    className="no-priority-group"
+                  />
+                </Form.Group>
+              </Col>
+            </Row>
+
+            <div className="no-warning-box">
+              <AlertTriangle className="no-warning-icon" />
+              <div className="no-warning-text">
+                <div className="no-warning-title">Heads up</div>
+                <div className="no-warning-body">
+                  Saved rules go live on the gateway immediately. Double-check the channel and template — wrong mappings can drop critical notifications.
+                </div>
+              </div>
+            </div>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="outline"
+            onClick={() => setIsRuleModalOpen(false)}
+            className="no-btn-cancel"
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleSaveRule} disabled={isLoading} className="uo-btn-black">
+            {isLoading ? "Saving..." : editingRule ? "Update Rule" : "Create Rule"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Delete confirmation */}
+      <Modal
+        show={!!deleteTarget}
+        onHide={() => setDeleteTarget(null)}
+        centered
+        className="no-modal"
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Delete Routing Rule</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          Are you sure you want to delete{" "}
+          <strong>{deleteTarget?.ruleName || deleteTarget?.ruleCode}</strong>? This action cannot be undone.
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="outline" onClick={() => setDeleteTarget(null)} className="no-btn-cancel" disabled={isDeleting}>
+            Cancel
+          </Button>
+          <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+            {isDeleting ? "Deleting..." : "Delete"}
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
+      <style>{`
+        .notification-orchestrator-page .stat-row {
+          display: grid;
+          gap: 12px;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        @media (max-width: 575.98px) {
+          .notification-orchestrator-page .stat-row {
+            grid-template-columns: 1fr;
+          }
+        }
+        .notification-orchestrator-page .stat-tile {
+          background: #fff;
+          border: 1px solid var(--border);
+          border-radius: 12px;
+          padding: 14px 18px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+          text-align: left;
+        }
+        .notification-orchestrator-page .stat-label {
+          font-size: 10px;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          color: var(--muted-foreground);
+        }
+        .notification-orchestrator-page .stat-value {
+          font-size: 22px;
+          font-weight: 700;
+          color: var(--foreground);
+          margin-top: 2px;
+        }
+        .notification-orchestrator-page .no-tabs-row {
+          border-bottom: 1px solid var(--border);
+          margin-bottom: 4px;
+        }
+        .notification-orchestrator-page .no-tabs-list {
+          background: transparent !important;
+          padding: 0;
+          border-radius: 0;
+          height: auto;
+          gap: 0;
+          justify-content: flex-start;
+          width: auto;
+        }
+        .notification-orchestrator-page .no-tabs-trigger {
+          background: transparent !important;
+          border: none !important;
+          border-radius: 0 !important;
+          color: var(--muted-foreground) !important;
+          padding: 10px 16px !important;
+          font-weight: 500;
+          font-size: 14px;
+          box-shadow: none !important;
+          position: relative;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+        }
+        .notification-orchestrator-page .no-tabs-trigger:hover {
+          color: var(--foreground) !important;
+        }
+        .notification-orchestrator-page .no-tabs-trigger[data-state="active"] {
+          background: transparent !important;
+          color: var(--primary) !important;
+        }
+        .notification-orchestrator-page .no-tabs-trigger[data-state="active"]::after {
+          content: "";
+          position: absolute;
+          left: 12px;
+          right: 12px;
+          bottom: -1px;
+          height: 2px;
+          background-color: var(--primary);
+        }
+
+        .notification-orchestrator-page .no-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0;
+        }
+        .notification-orchestrator-page .no-table thead tr {
+          background-color: var(--theme-table-background-color);
+        }
+        .notification-orchestrator-page .no-table thead th {
+          color: #ffffff !important;
+          font-weight: 600;
+          font-size: 13px;
+          padding: 12px 14px;
+          text-align: left;
+        }
+        .notification-orchestrator-page .no-table thead th.text-center { text-align: center; }
+        .notification-orchestrator-page .no-table thead th.text-right { text-align: right; }
+        .notification-orchestrator-page .no-table tbody tr {
+          background: #fff;
+          transition: background-color 0.15s ease;
+        }
+        .notification-orchestrator-page .no-table tbody tr:nth-child(even) {
+          background: var(--muted, #f7f7f8);
+        }
+        .notification-orchestrator-page .no-table tbody tr:hover {
+          background: rgba(0, 0, 0, 0.04);
+        }
+        .notification-orchestrator-page .no-table tbody td {
+          padding: 12px 14px;
+          border-bottom: 1px solid var(--border);
+          font-size: 13px;
+          color: var(--foreground);
+        }
+        .notification-orchestrator-page .no-table tbody tr:last-child td { border-bottom: none; }
+        .notification-orchestrator-page .no-table .text-center { text-align: center; }
+        .notification-orchestrator-page .no-table .text-right { text-align: right; }
+
+        .notification-orchestrator-page .no-context-chip {
+          display: inline-block;
+          padding: 3px 8px;
+          background: var(--muted);
+          border: 1px solid var(--border);
+          border-radius: 6px;
+          font-size: 11px;
+          font-weight: 600;
+          letter-spacing: 0.3px;
+          color: var(--foreground);
+        }
+        .notification-orchestrator-page .no-channel-icon {
+          width: 30px;
+          height: 30px;
+          border-radius: 8px;
+          background: var(--muted);
+          color: var(--foreground);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+        .notification-orchestrator-page .no-priority-pill {
+          display: inline-block;
+          padding: 3px 10px;
+          border-radius: 32px;
+          font-size: 11px;
+          font-weight: 700;
+          letter-spacing: 0.4px;
+        }
+        .notification-orchestrator-page .no-icon-btn {
+          width: 32px;
+          height: 32px;
+          border-radius: 6px;
+          border: 1px solid var(--border);
+          background: #fff;
+          color: var(--foreground);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.15s ease;
+        }
+        .notification-orchestrator-page .no-icon-btn:hover {
+          background: var(--muted);
+        }
+        .notification-orchestrator-page .no-icon-btn-danger:hover {
+          color: var(--color-error);
+          border-color: var(--color-error);
+          background: #fff;
+        }
+
+        .notification-orchestrator-page .no-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 10px;
+          background: var(--muted);
+          color: var(--foreground);
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          font-weight: 700;
+          font-size: 18px;
+        }
+        .notification-orchestrator-page .no-pref-row {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 12px 14px;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          background: #fff;
+          transition: background 0.15s ease;
+        }
+        .notification-orchestrator-page .no-pref-row:hover {
+          background: var(--muted);
+        }
+
+        .notification-orchestrator-page .uo-btn-black,
+        .notification-orchestrator-page .uo-btn-black:hover {
+          background-color: #000 !important;
+          border-color: #000 !important;
+          color: #fff !important;
+        }
+        .notification-orchestrator-page .uo-btn-black svg { color: #fff; }
+
+        /* Modal styling (shared) */
+        .no-modal .modal-content {
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+          overflow: hidden;
+        }
+        .no-modal .modal-header {
+          padding: 18px 22px;
+          border-bottom: 1px solid var(--border);
+          background: #fff;
+        }
+        .no-modal .modal-title {
+          font-size: 17px;
+          font-weight: 700;
+          color: var(--foreground);
+        }
+        .no-modal .modal-body {
+          padding: 20px 22px;
+          background: #fff;
+        }
+        .no-modal .modal-footer {
+          padding: 14px 22px 18px;
+          border-top: 1px solid var(--border);
+          gap: 8px;
+        }
+        .no-modal .form-label {
+          font-size: 13px;
+          font-weight: 600;
+          color: var(--foreground);
+          margin-bottom: 6px;
+        }
+        .no-modal .form-control {
+          height: 42px;
+          border-radius: 8px !important;
+          border: 1px solid var(--border) !important;
+          font-size: 14px;
+          padding: 8px 12px;
+          background: #fff;
+        }
+        .no-modal .form-control:focus {
+          border-color: var(--primary) !important;
+          box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.06) !important;
+        }
+        .no-modal .no-form-select .ant-select-selector {
+          height: 42px !important;
+          border-radius: 8px !important;
+          padding: 4px 12px !important;
+          border: 1px solid var(--border) !important;
+          background-color: #ffffff !important;
+        }
+        .no-modal .no-form-select .ant-select-selection-item {
+          line-height: 32px !important;
+          color: var(--foreground, #0f172a) !important;
+          font-size: 14px;
+        }
+        .no-modal .no-form-select .ant-select-selection-search-input {
+          height: 32px !important;
+          color: var(--foreground, #0f172a) !important;
+        }
+        .no-modal .no-form-select .ant-select-selection-placeholder {
+          color: var(--muted-foreground, #64748b) !important;
+          line-height: 32px !important;
+        }
+        .no-modal .no-warning-box {
+          display: flex;
+          gap: 12px;
+          align-items: flex-start;
+          padding: 14px 16px;
+          background: #fffbeb;
+          border: 1px solid #fde68a;
+          border-left: 4px solid #f59e0b;
+          border-radius: 10px;
+        }
+        .no-modal .no-warning-icon {
+          width: 18px;
+          height: 18px;
+          color: #b45309;
+          flex-shrink: 0;
+          margin-top: 2px;
+        }
+        .no-modal .no-warning-text { line-height: 1.45; }
+        .no-modal .no-warning-title {
+          font-size: 13px;
+          font-weight: 700;
+          color: #b45309;
+          margin-bottom: 2px;
+          letter-spacing: 0.2px;
+        }
+        .no-modal .no-warning-body {
+          font-size: 13px;
+          color: #92400e;
+        }
+
+        /* Portaled select dropdown (rendered to document.body — must be global) */
+        .no-select-popup.ant-select-dropdown {
+          background-color: #ffffff !important;
+          border: 1px solid var(--border, #e2e8f0) !important;
+          border-radius: 10px !important;
+          padding: 6px !important;
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.10) !important;
+          z-index: 1200 !important;
+        }
+        .no-select-popup .ant-select-item {
+          color: var(--foreground, #0f172a) !important;
+          font-size: 14px !important;
+          padding: 8px 12px !important;
+          border-radius: 6px !important;
+          line-height: 1.4 !important;
+        }
+        .no-select-popup .ant-select-item-option-active {
+          background-color: var(--muted, #f1f5f9) !important;
+          color: var(--foreground, #0f172a) !important;
+        }
+        .no-select-popup .ant-select-item-option-selected {
+          background-color: #000000 !important;
+          color: #ffffff !important;
+          font-weight: 600 !important;
+        }
+        .no-select-popup .ant-select-item-empty {
+          color: var(--muted-foreground, #64748b) !important;
+        }
+
+        /* Priority radio group — black active state */
+        .no-modal .no-priority-group {
+          display: flex !important;
+          flex-wrap: wrap;
+          gap: 8px;
+        }
+        .no-modal .no-priority-group .ant-radio-button-wrapper {
+          height: 38px;
+          line-height: 36px;
+          padding: 0 18px;
+          border-radius: 8px !important;
+          border: 1px solid var(--border) !important;
+          background: #ffffff !important;
+          color: var(--foreground) !important;
+          font-weight: 500;
+          font-size: 13px;
+        }
+        .no-modal .no-priority-group .ant-radio-button-wrapper::before {
+          display: none;
+        }
+        .no-modal .no-priority-group .ant-radio-button-wrapper:hover {
+          background: var(--muted) !important;
+          color: var(--foreground) !important;
+        }
+        .no-modal .no-priority-group .ant-radio-button-wrapper-checked,
+        .no-modal .no-priority-group .ant-radio-button-wrapper-checked:hover {
+          background: #000000 !important;
+          border-color: #000000 !important;
+          color: #ffffff !important;
+          box-shadow: none !important;
+        }
+        .no-modal .no-btn-cancel,
+        .no-modal .no-btn-cancel:hover {
+          background-color: #fff !important;
+          color: var(--foreground) !important;
+          border: 1px solid var(--border) !important;
+        }
+      `}</style>
     </div>
   );
 };
