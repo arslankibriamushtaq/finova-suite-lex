@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { logOutApi } from "../../redux/apis/apisCrud";
 import { store } from "../../redux/store";
 import NotificationInbox from "../NotificationInbox";
+import ThemeToggle from "../ThemeToggle";
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -152,6 +153,7 @@ const DashboardHeader = () => {
                 >
                   {/* <img src={Images.notification} alt="Notifications" /> */}
                 </a>
+                <ThemeToggle />
                 <NotificationInbox />
                 <div className="user-profile-trigger d-flex align-items-center" onClick={toggleMenu} style={{ cursor: "pointer" }}>
                   <img

@@ -2291,8 +2291,8 @@ span.ps-submenu-expand-icon.css-1cuxlhl {
 }
 
 .css-1654oxy>.ps-menu-button {
-  background-color:  var(--theme-secondary) !important;
-  color: var(--theme-primary) !important;
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
 }
 
 // .ps-menu-button:hover {
@@ -3109,11 +3109,12 @@ a {
 }
 
 .border-bottom {
-  border-bottom: 1px solid  var(--theme-secondary);
+  border-bottom: 1px solid var(--surface-border);
 }
 
 .active .css-1tqrhto>.ps-menu-button {
-  background:  var(--theme-secondary) !important;
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
 }
 
 .bGOnmG {
@@ -4167,9 +4168,8 @@ h2 {
 }
 
 .css-14xmt93 {
-  color: var(--theme-primary) !important;
-  background:  var(--theme-secondary);
-  border-radius: 0px 0px 0px 0px;
+  background: transparent !important;
+  border-radius: 8px;
 }
 
 .form-label {
@@ -4299,7 +4299,7 @@ span.custom-date-green.vertical-timeline-element-date:before {
 }
 
 span.ps-menu-label.ps-active.css-12w9als {
-  color: var(--theme-flow-active-text-color) !important;
+  color: #ffffff !important;
 }
 
 .commom-color.d-flex.col-md-12 {
@@ -6061,13 +6061,12 @@ button.invoice-btn.mid-button {
   background: var(--theme-primary) !important;
 }
 
-.ant-modal.custom-mod .ant-modal-footer button:last-child {
-  background: var(--theme-text-color) !important;
-}
+/* Removed: was forcing background: var(--theme-text-color) which broke dark mode */
 
 .ant-modal.custom-mod .ant-modal-footer button {
   height: 40px;
-  width: 71px;
+  min-width: 90px;
+  padding: 0 18px;
   border-radius: 8px;
 }
 
@@ -6510,8 +6509,7 @@ div.menu-items:first-of-type a.ps-menu-button {
 }
 
 div.menu-items a {
-  border-bottom: 1px solid #554F51;
-  //border-radius: 0 8px 8px 0;
+  border-bottom: none;
 }
 
 div.menu-items a.ps-menu-button>span {
@@ -7177,12 +7175,21 @@ div.menu-items a.ps-menu-button>span img {
   font-weight: 600;
 }
 
-.sidebar-tab.active {
-  color: var(--theme-text-color);
+.sidebar-tab.active,
+button.sidebar-tab.active {
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background-color: #0f172a !important;
+  border: 1px solid #0f172a !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
 }
 
 .sidebar-tab.inactive {
-  color: var(--theme-primary);
+  color: var(--muted-foreground);
+  background: var(--surface-card-alt);
+  border: 1px solid var(--surface-border);
 }
 
 .sidebar-close {
@@ -7356,13 +7363,23 @@ div.menu-items a.ps-menu-button>span img {
   margin-top: 8px;
 }
 
-.ps-submenu-root>.ps-menu-button:hover,
-.ps-menuitem-root>.ps-menu-button:hover {
-  background-color:  var(--theme-secondary) !important;
+.ps-submenu-root>.ps-menu-button:hover:not(.ps-active),
+.ps-menuitem-root>.ps-menu-button:hover:not(.ps-active),
+.menu-items a.ps-menu-button:hover:not(.ps-active),
+.menu-items a:hover .ps-menu-button:not(.ps-active) {
+  background: var(--muted) !important;
+  background-color: var(--muted) !important;
 }
 
 div.menu-items a.ps-menu-button.ps-active {
-  background-color:  var(--theme-inactive-tab) !important;
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+  margin: 4px 10px !important;
+  width: auto !important;
+}
+div.menu-items a.ps-menu-button.ps-active img {
+  filter: brightness(0) invert(1) !important;
 }
 
 div::-webkit-scrollbar {
@@ -9751,11 +9768,7 @@ p.txt-bold {
   color: var(--theme-primary) !important;
 }
 div.menu-items a.ps-menu-button.ps-active::before{
-  content: "";
-  position: absolute;
-  border-left: 8px solid var(--theme-secondary);
-  height: 100%;
-  left: -5px;
+  display: none !important;
 }
 
 /* ===== Global tabs (underline style) — applied across the project ===== */
@@ -9873,39 +9886,511 @@ select:focus,
 .service .cs-table,
 .service > .filter-select + div,
 .service > .filter-select ~ div:has(> .rdt_Table),
-.service > div:has(> .rdt_Table) {
-  background: #fff;
-  border: 1px solid var(--border);
+.service > div:has(> .rdt_Table),
+div:has(> .rdt_Table) {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--surface-elevation-1);
   overflow: hidden;
 }
 
-/* Table header text always white (red header background) */
+/* Standalone data-table wrapper (e.g. on Dashboard page where there's no .service) */
+.rdt_Table {
+  background-color: var(--surface-card) !important;
+}
+
+/* Whole data-table surface — ensure no parent paints white */
+.rdt_Table,
+[role="table"].rdt_Table,
+div[role="table"] {
+  background-color: var(--surface-card) !important;
+  background: var(--surface-card) !important;
+}
+
+/* Catch styled-component wrappers inside .rdt_Table that hardcode white,
+   WITHOUT touching the actual row striping. We target only direct div
+   children that are NOT a TableHead/TableBody/TableRow. */
+.rdt_Table > div:not(.rdt_TableHead):not(.rdt_TableBody):not(.rdt_TableRow):not(.rdt_TableHeadRow),
+.thisTable > div:not(.rdt_Table):not(.rdt_TableHead):not(.rdt_TableBody):not(.rdt_TableRow):not(.rdt_TableHeadRow) {
+  background-color: transparent !important;
+}
+/* noData / progress / subheader wrappers */
+.no-data-message,
+div[role="alert"],
+.rdt_Table + div,
+.thisTable > div.no-data-message {
+  background-color: var(--surface-card) !important;
+  color: var(--muted-foreground) !important;
+}
+
+/* Table header — dark navy background, white text */
+.rdt_TableHead,
+.rdt_TableHeadRow,
+header.rdt_TableHeadRow,
+.rdt_TableHead > .rdt_TableHeadRow {
+  background-color: var(--theme-table-background-color) !important;
+  background: var(--theme-table-background-color) !important;
+  border-bottom: none !important;
+  min-height: 44px !important;
+}
+
+/* Column headers (only the ones inside the actual head, never body rows) */
+.rdt_TableHead [role="columnheader"],
+.rdt_TableHeadRow [role="columnheader"],
+.rdt_TableHeadRow .rdt_TableCol {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: #ffffff !important;
+}
 .rdt_TableCol,
+.rdt_TableCol_Sortable,
+.rdt_TableHeadRow .rdt_TableCol,
 .rdt_TableCol *,
 .rdt_TableCol > div,
 .rdt_TableHeadRow {
+  background-color: transparent !important;
   color: #ffffff !important;
-  font-size: 13.5px !important;
+  font-size: 13px !important;
   font-weight: 600 !important;
   letter-spacing: 0.2px;
 }
 
-/* Professional table cell text */
+/* Body rows — base styling, no bg override so striped (inline) can paint */
+.rdt_TableBody .rdt_TableRow {
+  border-bottom: 1px solid var(--surface-border) !important;
+  transition: background-color 0.15s ease;
+  min-height: 48px !important;
+}
+/* Force striping for every other row via CSS (works whether or not the
+   library's `striped` prop is set) */
+.rdt_TableBody .rdt_TableRow:nth-of-type(odd),
+.rdt_TableBody .rdt_TableRow:nth-child(odd) {
+  background-color: var(--surface-card);
+}
+.rdt_TableBody .rdt_TableRow:nth-of-type(even),
+.rdt_TableBody .rdt_TableRow:nth-child(even) {
+  background-color: var(--theme-table-row-alt);
+}
+.rdt_TableBody .rdt_TableRow:hover {
+  background-color: var(--theme-table-row-hover) !important;
+}
+.rdt_TableBody .rdt_TableRow:last-child {
+  border-bottom: none !important;
+}
+
+/* Cells — readable typography */
 .rdt_TableCell {
   font-size: 13.5px !important;
-  color: var(--foreground) !important;
+  color: var(--theme-table-body-text-color) !important;
   font-weight: 500 !important;
   letter-spacing: 0.1px;
-  padding-top: 14px !important;
-  padding-bottom: 14px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
 }
-.rdt_TableRow {
-  border-bottom: 1px solid var(--border) !important;
+
+/* Pagination footer */
+.rdt_Pagination {
+  background-color: var(--surface-card) !important;
+  color: var(--foreground) !important;
+  border-top: 1px solid var(--surface-border) !important;
 }
-.rdt_TableRow:last-child {
+
+/* ===== Status pills inside tables — works in both modes ===== */
+.rdt_TableCell .status-pill,
+.rdt_TableCell .badge-status,
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 32px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  line-height: 1.4;
+}
+.rdt_TableCell .status-pill.active,
+.rdt_TableCell .badge-status.active,
+.status-pill.active {
+  background: rgba(34, 197, 94, 0.12);
+  color: #15803d;
+  border: 1px solid rgba(34, 197, 94, 0.30);
+}
+.rdt_TableCell .status-pill.inactive,
+.rdt_TableCell .badge-status.inactive,
+.status-pill.inactive {
+  background: rgba(239, 68, 68, 0.12);
+  color: #b91c1c;
+  border: 1px solid rgba(239, 68, 68, 0.30);
+}
+html.dark .rdt_TableCell .status-pill.active,
+html.dark .rdt_TableCell .badge-status.active,
+html.dark .status-pill.active {
+  background: rgba(74, 222, 128, 0.14);
+  color: #4ade80;
+  border-color: rgba(74, 222, 128, 0.40);
+}
+html.dark .rdt_TableCell .status-pill.inactive,
+html.dark .rdt_TableCell .badge-status.inactive,
+html.dark .status-pill.inactive {
+  background: rgba(251, 113, 133, 0.14);
+  color: #fb7185;
+  border-color: rgba(251, 113, 133, 0.40);
+}
+
+/* Switch + status pill cluster (e.g. InternalChecksConfig) */
+.status-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* shadcn Switch — explicit on/off colors so it reads in both modes */
+[data-slot="switch"] {
+  background-color: #cbd5e1 !important;
+  border: 1.5px solid #cbd5e1 !important;
+}
+[data-slot="switch"][data-state="checked"] {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+html.dark [data-slot="switch"] {
+  background-color: #475569 !important;
+  border: 1.5px solid #ffffff !important;
+}
+html.dark [data-slot="switch"][data-state="checked"] {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+[data-slot="switch-thumb"] {
+  background-color: #ffffff !important;
+}
+
+/* Ant Design Switch — same treatment (white border in dark mode) */
+.ant-switch {
+  background-color: #cbd5e1 !important;
+}
+.ant-switch.ant-switch-checked {
+  background-color: #22c55e !important;
+}
+html.dark .ant-switch {
+  background-color: #475569 !important;
+  border: 1.5px solid #ffffff !important;
+}
+html.dark .ant-switch.ant-switch-checked {
+  background-color: #22c55e !important;
+  border-color: #22c55e !important;
+}
+
+/* Ant Radio buttons — white border + dark fill in dark mode */
+html.dark .ant-radio-inner,
+html.dark .ant-radio-wrapper .ant-radio-inner {
+  background-color: var(--surface-card-alt) !important;
+  border: 1.5px solid #ffffff !important;
+}
+html.dark .ant-radio-checked .ant-radio-inner {
+  background-color: var(--surface-card-alt) !important;
+  border-color: #ffffff !important;
+}
+html.dark .ant-radio-checked .ant-radio-inner::after {
+  background-color: #ffffff !important;
+}
+
+/* Ant Checkbox — same white border + dark fill in dark mode */
+html.dark .ant-checkbox-inner {
+  background-color: var(--surface-card-alt) !important;
+  border: 1.5px solid #ffffff !important;
+}
+html.dark .ant-checkbox-checked .ant-checkbox-inner {
+  background-color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+html.dark .ant-checkbox-checked .ant-checkbox-inner::after {
+  border-color: #0d1117 !important;
+}
+
+/* shadcn Checkbox / Radio (Radix-based) */
+html.dark [data-slot="checkbox"],
+html.dark [data-slot="radio-group-item"] {
+  background-color: var(--surface-card-alt) !important;
+  border: 1.5px solid #ffffff !important;
+}
+
+/* ===== Action button cluster ===== */
+.rdt_TableCell .row-action-icon {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-card);
+  color: var(--foreground);
+  cursor: pointer;
+  margin-right: 4px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.rdt_TableCell .row-action-icon:hover {
+  background: var(--muted);
+}
+.rdt_TableCell .row-action-icon.danger { color: var(--color-error); }
+.rdt_TableCell .row-action-icon.danger:hover {
+  border-color: var(--color-error);
+  background: rgba(239, 68, 68, 0.08);
+}
+
+/* "Select" dropdown trigger inside action column */
+.rdt_TableCell .row-action-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--surface-border);
+  background: var(--surface-card);
+  color: var(--foreground);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.rdt_TableCell .row-action-select:hover {
+  background: var(--muted);
+}
+
+/* ===== Global zebra striping for ALL table types in the project =====
+   Applies dark striped rows in light + dark mode. */
+
+/* 1. Plain HTML tables */
+table.no-table tbody tr,
+table.cost-table tbody tr,
+table.styled-table tbody tr,
+.app-table tbody tr {
+  background-color: var(--surface-card) !important;
+}
+table.no-table tbody tr:nth-of-type(even),
+table.cost-table tbody tr:nth-of-type(even),
+table.styled-table tbody tr:nth-of-type(even),
+.app-table tbody tr:nth-of-type(even) {
+  background-color: var(--theme-table-row-alt) !important;
+}
+table.no-table tbody tr:hover,
+table.cost-table tbody tr:hover,
+table.styled-table tbody tr:hover,
+.app-table tbody tr:hover {
+  background-color: var(--theme-table-row-hover) !important;
+}
+
+/* 2. Bootstrap .table */
+.table > tbody > tr {
+  background-color: var(--surface-card);
+}
+.table-striped > tbody > tr:nth-of-type(odd) > *,
+.table > tbody > tr:nth-of-type(even) {
+  background-color: var(--theme-table-row-alt) !important;
+}
+.table > tbody > tr:hover {
+  background-color: var(--theme-table-row-hover) !important;
+}
+
+/* 3. Ant Design tables (.ant-table-tbody rows) */
+.ant-table-tbody > tr.ant-table-row {
+  background-color: var(--surface-card) !important;
+}
+.ant-table-tbody > tr.ant-table-row:nth-of-type(even),
+.ant-table-tbody > tr.ant-table-row:nth-of-type(even) > .ant-table-cell {
+  background-color: var(--theme-table-row-alt) !important;
+}
+.ant-table-tbody > tr.ant-table-row:hover > .ant-table-cell,
+.ant-table-tbody > tr.ant-table-row.ant-table-row-selected > .ant-table-cell {
+  background-color: var(--theme-table-row-hover) !important;
+}
+.ant-table-thead > tr > th {
+  background-color: var(--theme-table-background-color) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
   border-bottom: none !important;
+}
+
+/* 4. Custom `data-table` class (some pages use a plain div-row structure) */
+.data-table-row { background-color: var(--surface-card); }
+.data-table-row:nth-of-type(even) { background-color: var(--theme-table-row-alt); }
+.data-table-row:hover { background-color: var(--theme-table-row-hover); }
+
+/* ===== Table-cell internals — match the reference look across all tables =====
+   Any button / badge / dropdown rendered inside a data-table cell gets the
+   themed light-mode look automatically. */
+
+.rdt_TableCell,
+.no-table tbody td,
+.ant-table-tbody > tr > td {
+  color: var(--foreground);
+  font-size: 13px;
+}
+
+/* Status pills — minimal soft-tinted style */
+.rdt_TableCell [class*="status"],
+.rdt_TableCell [class*="badge"],
+.no-table tbody td [class*="status"],
+.no-table tbody td [class*="badge"],
+.ant-table-tbody > tr > td [class*="status"],
+.ant-table-tbody > tr > td [class*="badge"] {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px;
+  border-radius: 32px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* Antd / Bootstrap buttons inside table cells — themed neutral look */
+.rdt_TableCell .btn,
+.rdt_TableCell .ant-btn,
+.no-table tbody td .btn,
+.no-table tbody td .ant-btn,
+.ant-table-tbody > tr > td .ant-btn {
+  border-radius: 6px;
+  font-size: 12px;
+  height: 30px;
+  padding: 0 12px;
+  line-height: 1;
+}
+
+/* Outline / default buttons in cells — themed surface */
+.rdt_TableCell .ant-btn-default,
+.no-table tbody td .ant-btn-default {
+  background-color: var(--surface-card);
+  border-color: var(--surface-border);
+  color: var(--foreground);
+}
+.rdt_TableCell .ant-btn-default:hover,
+.no-table tbody td .ant-btn-default:hover {
+  background-color: var(--muted);
+  border-color: var(--surface-border-strong);
+  color: var(--foreground);
+}
+
+/* Primary "Select" / action dropdown trigger inside cells */
+.rdt_TableCell button.dropdown-toggle,
+.rdt_TableCell .gradient-btn,
+.no-table tbody td button.dropdown-toggle,
+.no-table tbody td .gradient-btn {
+  background-color: var(--surface-card);
+  color: var(--foreground);
+  border: 1px solid var(--surface-border);
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 6px 12px;
+  font-weight: 500;
+}
+.rdt_TableCell button.dropdown-toggle:hover,
+.rdt_TableCell .gradient-btn:hover,
+.no-table tbody td button.dropdown-toggle:hover,
+.no-table tbody td .gradient-btn:hover {
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+/* Edit / delete icon links inside cells */
+.rdt_TableCell .anticon-edit,
+.rdt_TableCell .anticon-delete,
+.no-table tbody td .anticon-edit,
+.no-table tbody td .anticon-delete {
+  font-size: 14px;
+  padding: 4px;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+}
+.rdt_TableCell .anticon-delete,
+.no-table tbody td .anticon-delete {
+  color: var(--color-error);
+}
+.rdt_TableCell .anticon-edit:hover,
+.no-table tbody td .anticon-edit:hover {
+  background: var(--muted);
+}
+.rdt_TableCell .anticon-delete:hover,
+.no-table tbody td .anticon-delete:hover {
+  background: rgba(239, 68, 68, 0.10);
+}
+
+/* Plain text inside cells follows the table body color token */
+.rdt_TableCell a,
+.no-table tbody td a {
+  color: var(--theme-table-body-text-color);
+  text-decoration: none;
+}
+.rdt_TableCell a:hover,
+.no-table tbody td a:hover {
+  color: var(--primary);
+}
+
+/* ===== Filter card (search + date pickers) — global polish =====
+   Targets the standard filter card pattern used across list pages:
+     <div class="bg-white p-3 mb-3" ...> with AntInput / AntDatePicker children.
+   Makes the inputs feel more refined and consistent. */
+
+.service .ant-input-affix-wrapper,
+.service .ant-picker {
+  border: 1px solid var(--surface-border) !important;
+  background-color: var(--surface-card) !important;
+  border-radius: 8px !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background-color 0.15s ease !important;
+  padding: 6px 12px !important;
+}
+.service .ant-input-affix-wrapper:hover,
+.service .ant-picker:hover {
+  border-color: var(--surface-border-strong) !important;
+  background-color: var(--surface-card-alt) !important;
+}
+.service .ant-input-affix-wrapper-focused,
+.service .ant-picker-focused,
+.service .ant-input-affix-wrapper:focus-within,
+.service .ant-picker.ant-picker-focused {
+  border-color: var(--primary) !important;
+  background-color: var(--surface-card) !important;
+  box-shadow: 0 0 0 3px var(--input-focus-ring) !important;
+}
+
+.service .ant-input,
+.service .ant-picker-input > input {
+  background-color: transparent !important;
+  color: var(--input-text) !important;
+  font-size: 14px !important;
+}
+.service .ant-input::placeholder,
+.service .ant-picker-input > input::placeholder {
+  color: var(--input-placeholder) !important;
+  opacity: 1 !important;
+}
+
+/* Prefix icon (search magnifier) */
+.service .ant-input-prefix .anticon,
+.service .ant-input-affix-wrapper .ant-input-prefix svg {
+  color: var(--muted-foreground) !important;
+  font-size: 14px;
+  margin-right: 4px;
+}
+
+/* Date picker calendar icon (suffix) */
+.service .ant-picker .ant-picker-suffix,
+.service .ant-picker .ant-picker-suffix .anticon {
+  color: var(--muted-foreground) !important;
+}
+
+/* Clear (×) icon for searchable inputs */
+.service .ant-input-clear-icon,
+.service .ant-picker-clear {
+  color: var(--muted-foreground) !important;
+}
+.service .ant-input-clear-icon:hover,
+.service .ant-picker-clear:hover {
+  color: var(--foreground) !important;
 }
 
 /* Make date pickers inside filter rows match the white search input */
@@ -9941,4 +10426,51 @@ select:focus,
     width: 100% !important;
     min-width: 0 !important;
   }
+}
+
+/* ===== Sidebar hover — final override =====
+   Forces every React Pro Sidebar hover state to a soft muted gray.
+   Must stay last in the file so it wins specificity races. */
+/* Hover only on NON-active items */
+.ps-sidebar-root .ps-menu-button:hover:not(.ps-active),
+.ps-sidebar-root .ps-submenu-content .ps-menu-button:hover:not(.ps-active),
+.ps-sidebar-root [class^="css-"] .ps-menu-button:hover:not(.ps-active),
+.ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
+.ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
+  background: var(--muted) !important;
+  background-color: var(--muted) !important;
+  color: var(--foreground) !important;
+}
+.ps-sidebar-root .ps-menu-button:hover:not(.ps-active) span,
+.ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) span {
+  color: var(--foreground) !important;
+}
+
+/* Active item: NO hover change — keep light-mode dark-navy bg */
+html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active,
+html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover,
+html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
+html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Active item: glowing blue ring with dark bg in dark mode */
+html.dark .ps-sidebar-root .ps-menu-button.ps-active,
+html.dark .ps-sidebar-root .ps-menu-button.ps-active:hover,
+html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
+html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
+  background: rgba(59, 130, 246, 0.06) !important;
+  border: 1.5px solid rgba(59, 130, 246, 0.85) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 1px rgba(59, 130, 246, 0.20),
+    0 0 16px rgba(59, 130, 246, 0.35),
+    inset 0 0 12px rgba(59, 130, 246, 0.12) !important;
+  border-radius: 10px !important;
+}
+
+.ps-sidebar-root .ps-menu-button.ps-active span,
+.ps-sidebar-root .ps-menu-button.ps-active:hover span {
+  color: #ffffff !important;
 }

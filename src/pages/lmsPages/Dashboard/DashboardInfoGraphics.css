@@ -1,0 +1,310 @@
+/* LMS Dashboard — visual language matched to LOS DashboardOverview.
+   Reuses the dashboard-stats / total-loan card pattern (dark navy
+   header strip + body + floating icon) plus a few LMS-specific
+   variants for multi-value cards and the small "loans" grid. */
+
+.lms-dashboard {
+  background: var(--surface-page);
+  min-height: 100%;
+}
+
+/* ===== Overview bar (period selector) ===== */
+.lms-dashboard .overview-bar {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 14px 20px;
+  margin: 16px;
+  box-shadow: var(--surface-elevation-1);
+}
+
+.lms-dashboard .overview-bar .overview-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  letter-spacing: 0.2px;
+  text-align: left;
+}
+
+/* Radio + date picker styling within the bar */
+.lms-dashboard .overview-bar .ant-radio-wrapper {
+  color: var(--foreground);
+  font-weight: 500;
+}
+.lms-dashboard .overview-bar .ant-radio-wrapper .ant-radio-inner {
+  border-color: var(--surface-border-strong);
+  background: transparent;
+}
+.lms-dashboard .overview-bar .ant-radio-wrapper-checked .ant-radio-inner {
+  border-color: var(--theme-flow-active-color-bg, #1f2940);
+  background: var(--theme-flow-active-color-bg, #1f2940);
+}
+.lms-dashboard .overview-bar .ant-radio-wrapper-checked .ant-radio-inner::after {
+  background: #ffffff;
+}
+
+.lms-dashboard .overview-bar .ant-picker {
+  background: var(--surface-card-alt) !important;
+  border: 1px solid var(--surface-border) !important;
+  border-radius: 8px !important;
+  height: 38px !important;
+  min-width: 150px;
+}
+.lms-dashboard .overview-bar .ant-picker input {
+  color: var(--foreground) !important;
+}
+.lms-dashboard .overview-bar .ant-picker input::placeholder {
+  color: var(--muted-foreground) !important;
+}
+.lms-dashboard .overview-bar .ant-picker-suffix,
+.lms-dashboard .overview-bar .ant-picker-clear {
+  color: var(--muted-foreground) !important;
+}
+
+/* ===== Card grid ===== */
+.lms-dashboard .lms-stats {
+  margin: 0 16px;
+}
+
+/* Base KPI card — mirrors .dashboard-stats .total-loan */
+.lms-dashboard .kpi-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--surface-elevation-1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.lms-dashboard .kpi-card:hover {
+  box-shadow: var(--surface-elevation-2);
+  transform: translateY(-1px);
+  border-color: var(--surface-border-strong);
+}
+
+.lms-dashboard .kpi-card .kpi-header {
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
+  color: #ffffff;
+  padding: 8px 14px;
+  padding-right: 56px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  color: #cbd5e1;
+  line-height: 1.2;
+}
+
+.lms-dashboard .kpi-card .kpi-body {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 14px;
+  padding-right: 56px;
+  flex: 1;
+  background: var(--surface-card);
+}
+
+.lms-dashboard .kpi-card .kpi-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lms-dashboard .kpi-card .kpi-value .kpi-unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-right: 4px;
+}
+
+.lms-dashboard .kpi-card .kpi-icon {
+  position: absolute;
+  top: 30%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--surface-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+  z-index: 2;
+}
+
+.lms-dashboard .kpi-card .kpi-icon img,
+.lms-dashboard .kpi-card .kpi-icon svg {
+  height: 18px;
+  width: 18px;
+  object-fit: contain;
+  filter: brightness(0);
+  opacity: 0.75;
+}
+
+/* Variant: tall card with two metrics (All Customers + Individuals) */
+.lms-dashboard .kpi-card.tall .kpi-body {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 14px 16px;
+  padding-right: 56px;
+}
+
+.lms-dashboard .kpi-card.tall .kpi-sub {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  width: 100%;
+  padding-top: 8px;
+  margin-top: 6px;
+  border-top: 1px dashed var(--surface-border);
+}
+.lms-dashboard .kpi-card.tall .kpi-sub .kpi-sub-label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  letter-spacing: 0.2px;
+}
+.lms-dashboard .kpi-card.tall .kpi-sub .kpi-sub-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+/* Variant: trend card (Total Applications) */
+.lms-dashboard .kpi-card.trend .kpi-body {
+  flex-direction: column;
+  align-items: stretch;
+  padding: 6px 12px 8px;
+  padding-right: 12px;
+  gap: 0;
+}
+.lms-dashboard .kpi-card.trend .kpi-trend-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 2px 0;
+}
+.lms-dashboard .kpi-card.trend .kpi-trend-pct {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--color-success, #22c55e);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ===== Loans grid card (3 columns x 2 rows of mini-stats) ===== */
+.lms-dashboard .loans-grid-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  padding: 20px 22px;
+  box-shadow: var(--surface-elevation-1);
+  height: 100%;
+}
+
+.lms-dashboard .loans-grid-card .loans-grid-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 16px;
+  letter-spacing: 0.2px;
+}
+
+.lms-dashboard .loans-grid-card .loan-stat-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  letter-spacing: 0.2px;
+  margin-bottom: 4px;
+}
+
+.lms-dashboard .loans-grid-card .loan-stat-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 14px;
+}
+.lms-dashboard .loans-grid-card .loan-stat-value .loan-stat-unit {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  margin-right: 3px;
+}
+
+.lms-dashboard .loans-grid-card .loan-stat-arrow {
+  width: 14px;
+  height: 14px;
+  opacity: 0.7;
+}
+
+/* ===== Generic themed chart/table card ===== */
+.lms-dashboard .chart-card {
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  box-shadow: var(--surface-elevation-1);
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.lms-dashboard .chart-card .chart-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin-bottom: 14px;
+  letter-spacing: 0.2px;
+}
+
+/* ===== Dark mode polish — kill the gradient strip (it already has dark surface) ===== */
+html.dark .lms-dashboard .kpi-card {
+  background: linear-gradient(135deg, #1c1f2a 0%, #161821 100%);
+  border: 1px solid #262a36;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+html.dark .lms-dashboard .kpi-card:hover {
+  border-color: #3a4050;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+}
+html.dark .lms-dashboard .kpi-card .kpi-header {
+  background: transparent;
+  color: #94a3b8;
+}
+html.dark .lms-dashboard .kpi-card .kpi-body {
+  background: transparent;
+}
+html.dark .lms-dashboard .kpi-card .kpi-value {
+  color: #ffffff;
+}
+html.dark .lms-dashboard .kpi-card.tall .kpi-sub {
+  border-top-color: #2a2d39;
+}
+html.dark .lms-dashboard .kpi-card.tall .kpi-sub-value {
+  color: #ffffff;
+}
+html.dark .lms-dashboard .kpi-card .kpi-icon {
+  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+html.dark .lms-dashboard .kpi-card .kpi-icon img,
+html.dark .lms-dashboard .kpi-card .kpi-icon svg {
+  filter: brightness(0);
+  opacity: 0.85;
+}

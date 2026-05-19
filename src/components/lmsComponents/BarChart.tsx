@@ -55,29 +55,27 @@ const CustomBarChart = ({ dashboardData }: { dashboardData: any }) => {
   }, [dashboardData]);
 
   const CustomLegend = () => (
-    <div style={{ display: "flex", justifyContent: "center", marginTop: 10 }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        marginTop: 10,
+        color: "var(--foreground)",
+        fontSize: 13,
+      }}
+    >
       <div style={{ display: "flex", alignItems: "center", marginRight: 20 }}>
         <div
           style={{
             width: 14,
             height: 14,
-            backgroundColor: "#000",
-            marginRight: 5,
+            backgroundColor: "var(--theme-flow-active-color-bg, #1f2940)",
+            marginRight: 6,
+            borderRadius: 3,
           }}
         />
         <span>Customer</span>
       </div>
-      {/* <div style={{ display: "flex", alignItems: "center" }}>
-        <div
-          style={{
-            width: 14,
-            height: 14,
-            backgroundColor: " #1963b9",
-            marginRight: 5,
-          }}
-        />
-        <span>Business</span>
-      </div> */}
     </div>
   );
 
@@ -88,17 +86,33 @@ const CustomBarChart = ({ dashboardData }: { dashboardData: any }) => {
           data={data}
           margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
         >
-          <XAxis dataKey="name" stroke="#666" interval={0} />
+          <XAxis
+            dataKey="name"
+            stroke="var(--muted-foreground)"
+            interval={0}
+            tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
+          />
           <YAxis
-            stroke="#666"
+            stroke="var(--muted-foreground)"
             allowDecimals={false}
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
             tickLine={true}
             axisLine={true}
           />
-          <Tooltip />
-          <Bar radius={[5, 5, 0, 0]} dataKey="Individual" fill="#000" />
-          {/* <Bar radius={[5, 5, 0, 0]} dataKey="Business" fill="#EB0D0D" /> */}
+          <Tooltip
+            contentStyle={{
+              background: "var(--surface-card)",
+              border: "1px solid var(--surface-border)",
+              borderRadius: 8,
+              color: "var(--foreground)",
+            }}
+            cursor={{ fill: "var(--surface-card-hover)" }}
+          />
+          <Bar
+            radius={[5, 5, 0, 0]}
+            dataKey="Individual"
+            fill="var(--theme-flow-active-color-bg, #1f2940)"
+          />
         </BarChart>
       </ResponsiveContainer>
       <CustomLegend />

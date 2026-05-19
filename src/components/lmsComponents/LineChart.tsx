@@ -2,13 +2,8 @@ import { useEffect, useState } from "react";
 import {
   LineChart,
   Line,
-  Legend,
   ResponsiveContainer,
-//   Tooltip,
-//   XAxis,
-//   YAxis,
 } from "recharts";
-import { Images } from "../../components/Config/Images";
 import moment from "moment";
 
 const CustomLineChart = ({ dashboardData }: { dashboardData: any }) => {
@@ -21,54 +16,31 @@ const CustomLineChart = ({ dashboardData }: { dashboardData: any }) => {
         name: moment(item.date).format("MMM DD"),
         value: item.applications,
       }));
-      setData(formatted || 0);
+      setData(formatted);
+    } else {
+      // Placeholder gentle wave so the trend card never renders empty
+      setData([
+        { name: "1", value: 4 },
+        { name: "2", value: 6 },
+        { name: "3", value: 5 },
+        { name: "4", value: 8 },
+        { name: "5", value: 7 },
+        { name: "6", value: 9 },
+      ]);
     }
   }, [application]);
 
   return (
-    <div
-      style={{
-        background: "#a6c8ed",
-        borderRadius: "1.5rem",
-        padding: "13px",
-        color: "#000",
-        height: "11rem",
-      }}
-    >
-      {/* Title displayed above the chart */}
-      <div className="d-flex">
-        <h6
-          className="col-8"
-          style={{
-            textAlign: "start",
-            fontSize: "16px",
-            fontWeight: 600,
-            paddingLeft: "1rem",
-            paddingTop: "0.5rem",
-          }}
-        >
-          Total Applications
-        </h6>
-        <span className="col-4 d-flex align-items-center justify-content-end">
-          <span
-            style={{ color: "#000", fontSize: "16px", fontWeight: "600" }}
-          >
-            12%
-          </span>
-          <img src={Images.upArrowDashbaord} alt="" />
-        </span>
-      </div>
-
-      <ResponsiveContainer width="100%" height={150}>
-        <LineChart data={data} margin={{ top: 10, right: 15, left: 15, bottom: 10 }}>
-          <Legend values="false" />
+    <div style={{ width: "100%", height: 56 }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <LineChart data={data} margin={{ top: 6, right: 4, left: 4, bottom: 0 }}>
           <Line
             type="monotone"
             dataKey="value"
-            stroke="white"
-            strokeWidth={1}
-            activeDot={{ r: 5, fill: "#66BF5E" }}
-            dot={{ r: 5, fill: "#66BF5E" }}
+            stroke="var(--color-success, #22c55e)"
+            strokeWidth={2}
+            dot={false}
+            activeDot={{ r: 4, fill: "var(--color-success, #22c55e)" }}
           />
         </LineChart>
       </ResponsiveContainer>

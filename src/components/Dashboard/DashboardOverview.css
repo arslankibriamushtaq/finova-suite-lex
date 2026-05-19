@@ -1,0 +1,130 @@
+/* Dashboard stat cards
+   - dark navy header strip on top with the metric label
+   - white body with the value + icon
+*/
+
+.dashboard-stats .total-loan {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 96px;
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: var(--surface-elevation-1);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  cursor: default;
+}
+.dashboard-stats .total-loan.has-link {
+  cursor: pointer;
+}
+
+.dashboard-stats .total-loan:hover {
+  box-shadow: var(--surface-elevation-2);
+  transform: translateY(-1px);
+  border-color: var(--surface-border-strong);
+}
+
+.dashboard-stats .total-loan .card-header-strip {
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
+  color: #ffffff;
+  padding: 8px 14px;
+  padding-right: 56px; /* leave room for the floating icon */
+}
+
+.dashboard-stats .total-loan .label-theme {
+  font-size: 12px;
+  font-weight: 500;
+  color: #cbd5e1;
+  line-height: 1.2;
+  letter-spacing: 0.2px;
+  margin: 0;
+  display: block;
+}
+
+.dashboard-stats .total-loan .card-body-strip {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 12px 14px;
+  padding-right: 56px; /* leave room for the floating icon */
+  flex: 1;
+  background: var(--surface-card);
+}
+
+.dashboard-stats .total-loan .cards-text {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Floating icon circle — straddles the header / body divide on the right side */
+.dashboard-stats .total-loan .icon-circle {
+  position: absolute;
+  top: 30%;
+  right: 12px;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1px solid var(--surface-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
+  z-index: 2;
+}
+
+.dashboard-stats .total-loan .icon-circle img {
+  height: 16px;
+  width: 16px;
+  object-fit: contain;
+  filter: brightness(0);
+  opacity: 0.75;
+}
+
+/* ===== Dark mode polish ===== */
+html.dark .dashboard-stats .total-loan {
+  background: linear-gradient(135deg, #1c1f2a 0%, #161821 100%);
+  border: 1px solid #262a36;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+}
+
+html.dark .dashboard-stats .total-loan:hover {
+  border-color: #3a4050;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+}
+
+html.dark .dashboard-stats .total-loan .card-header-strip {
+  background: transparent;
+}
+
+html.dark .dashboard-stats .total-loan .card-body-strip {
+  background: transparent;
+}
+
+html.dark .dashboard-stats .total-loan .label-theme {
+  color: #94a3b8;
+}
+
+html.dark .dashboard-stats .total-loan .cards-text {
+  color: #ffffff;
+}
+
+html.dark .dashboard-stats .total-loan .icon-circle {
+  background: #ffffff;
+  border-color: rgba(255, 255, 255, 0.12);
+}
+html.dark .dashboard-stats .total-loan .icon-circle img {
+  filter: brightness(0);
+  opacity: 0.85;
+}
