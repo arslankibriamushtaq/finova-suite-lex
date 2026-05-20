@@ -871,18 +871,42 @@ html.dark .ant-modal-wrap {
   background-color: rgba(0, 0, 0, 0.65) !important;
 }
 
-/* shadcn Button — dark mode default variant (Create / Save / Add) */
-html.dark [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]):not([class*="secondary"]) {
+/* shadcn Button — dark mode default variant (Create / Save / Add).
+   White pill with dark text so the action always stands out against
+   any card surface.
+   We match by `bg-primary` because every other variant uses a
+   different bg utility (bg-destructive, bg-background, bg-secondary,
+   none, etc.), and the previous `:not([class*="outline"])` chain
+   was incorrectly matching `outline-none` in the base Button class. */
+html.dark [data-slot="button"][class*="bg-primary"],
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"],
+html.dark [data-slot="dialog-trigger"] [data-slot="button"][class*="bg-primary"],
+html.dark button[class*="bg-primary"][class*="text-primary-foreground"] {
   background-color: var(--surface-card-alt) !important;
   background: var(--surface-card-alt) !important;
   color: #ffffff !important;
   border: 1px solid var(--surface-border-strong) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4) !important;
+  font-weight: 600 !important;
 }
-html.dark [data-slot="button"]:not([class*="outline"]):not([class*="ghost"]):not([class*="link"]):not([class*="destructive"]):not([class*="secondary"]):hover {
+html.dark [data-slot="button"][class*="bg-primary"]:hover,
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"]:hover,
+html.dark [data-slot="dialog-trigger"] [data-slot="button"][class*="bg-primary"]:hover,
+html.dark button[class*="bg-primary"][class*="text-primary-foreground"]:hover {
   background-color: var(--surface-card-hover) !important;
   background: var(--surface-card-hover) !important;
   border-color: #3a4050 !important;
   color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5) !important;
+}
+html.dark [data-slot="button"][class*="bg-primary"] svg,
+html.dark [data-slot="button"][class*="bg-primary"] svg path,
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"] svg,
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"] svg path,
+html.dark button[class*="bg-primary"][class*="text-primary-foreground"] svg,
+html.dark button[class*="bg-primary"][class*="text-primary-foreground"] svg path {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 html.dark [data-slot="button"][class*="bg-foreground"] {
   background-color: var(--surface-card-alt) !important;
@@ -1146,6 +1170,45 @@ html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([cl
   background: var(--surface-card-hover) !important;
   border-color: var(--surface-border-strong) !important;
   color: var(--foreground) !important;
+}
+
+/* shadcn Badge — dark mode. The default variant uses bg-primary which in
+   dark mode resolves to white; some pages still show it as dark-on-dark
+   (low contrast) when the badge sits on a card surface. Force a visible
+   palette per variant. */
+html.dark [data-slot="badge"] {
+  border: 1px solid var(--surface-border-strong) !important;
+}
+/* default variant — uses bg-primary; make it a clearly visible solid pill.
+   Match by bg-primary because the base Badge utilities include
+   `aria-invalid:ring-destructive/...` which would falsely match a
+   `:not([class*="destructive"])` chain. */
+html.dark [data-slot="badge"][class*="bg-primary"] {
+  background-color: #ffffff !important;
+  background: #ffffff !important;
+  color: #0d1117 !important;
+  border-color: #ffffff !important;
+}
+/* secondary variant */
+html.dark [data-slot="badge"][class*="bg-secondary"],
+html.dark [data-slot="badge"][class*="secondary"] {
+  background-color: var(--surface-card-alt) !important;
+  background: var(--surface-card-alt) !important;
+  color: #ffffff !important;
+  border-color: var(--surface-border-strong) !important;
+}
+/* destructive variant — keep the red */
+html.dark [data-slot="badge"][class*="destructive"] {
+  background-color: var(--color-error, #ef4444) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+}
+/* outline variant — transparent bg, white text */
+html.dark [data-slot="badge"][class*="outline"] {
+  background-color: transparent !important;
+  background: transparent !important;
+  color: var(--foreground) !important;
+  border-color: var(--surface-border-strong) !important;
 }
 
 /* Badges/pills using inline coloured backgrounds — keep their colour but ensure text reads white */

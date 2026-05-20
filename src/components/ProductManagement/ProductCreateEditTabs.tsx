@@ -39,31 +39,65 @@ export default function ProductCreateEditTabs({
 
   return (
     <div
-      className={cn("border-b border-border bg-muted/30", className)}
+      className={cn(
+        "product-tabs-bar",
+        className
+      )}
       role="tablist"
+      style={{
+        background: "var(--surface-card)",
+        border: "1px solid var(--surface-border)",
+        borderRadius: 12,
+        padding: 6,
+        boxShadow: "var(--surface-elevation-1)",
+        display: "flex",
+        gap: 4,
+        overflowX: "auto",
+      }}
     >
-      <div className="flex gap-0 overflow-x-auto">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              role="tab"
-              aria-selected={isActive}
-              onClick={() => router.push(buildPath(tab.path))}
-              className={cn(
-                "px-5 py-3 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px",
-                isActive
-                  ? "border-[var(--theme-secondary)] bg-[var(--theme-secondary)] text-primary-foreground"
-                  : "border-transparent bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              )}
-            >
-              {tab.label}
-            </button>
-          )
-        })}
-      </div>
+      <style>{`
+        .product-tabs-bar .product-tab-inactive:hover {
+          background: var(--surface-card-hover) !important;
+          color: var(--foreground) !important;
+          border-color: var(--surface-border) !important;
+        }
+      `}</style>
+      {TABS.map((tab) => {
+        const isActive = activeTab === tab.id
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            role="tab"
+            aria-selected={isActive}
+            onClick={() => router.push(buildPath(tab.path))}
+            className={cn(
+              "px-5 py-2 text-sm font-semibold whitespace-nowrap transition-all rounded-lg",
+              isActive
+                ? "product-tab-active"
+                : "product-tab-inactive"
+            )}
+            style={
+              isActive
+                ? {
+                    background:
+                      "linear-gradient(135deg, #1f2940 0%, #0f172a 100%)",
+                    color: "#ffffff",
+                    boxShadow:
+                      "0 4px 12px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
+                    border: "1px solid #0f172a",
+                  }
+                : {
+                    background: "transparent",
+                    color: "var(--muted-foreground)",
+                    border: "1px solid transparent",
+                  }
+            }
+          >
+            {tab.label}
+          </button>
+        )
+      })}
     </div>
   )
 }
