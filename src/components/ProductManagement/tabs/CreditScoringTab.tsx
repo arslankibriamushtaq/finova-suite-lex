@@ -63,9 +63,27 @@ export default function CreditScoringTab({
   const loadFieldDefinitions = async () => {
     try {
       setIsLoadingDefinitions(true)
-      const response = await getCreditScoringFieldDefinitions()
-      const definitions = response?.data?.data || response?.data || []
-      setFieldDefinitions(Array.isArray(definitions) ? definitions : [])
+      // Pull the first page with a large size to get every field in one round-trip.
+      // If the backend reports more pages, walk the rest and concatenate.
+      const PAGE_SIZE = 200
+      const first = await getCreditScoringFieldDefinitions(0, PAGE_SIZE)
+      const firstPage = first?.data?.data || first?.data || []
+      let definitions: any[] = Array.isArray(firstPage) ? firstPage : []
+
+      const totalPages = first?.data?.pagination?.totalPages
+      if (typeof totalPages === "number" && totalPages > 1) {
+        const restRequests = []
+        for (let p = 1; p < totalPages; p++) {
+          restRequests.push(getCreditScoringFieldDefinitions(p, PAGE_SIZE))
+        }
+        const restResponses = await Promise.all(restRequests)
+        restResponses.forEach((res) => {
+          const rows = res?.data?.data || res?.data || []
+          if (Array.isArray(rows)) definitions = definitions.concat(rows)
+        })
+      }
+
+      setFieldDefinitions(definitions)
     } catch (error: any) {
       console.error("Failed to load field definitions:", error)
       toast.error("Failed to load credit scoring field definitions")
