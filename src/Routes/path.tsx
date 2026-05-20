@@ -217,6 +217,7 @@ import CreateInvoice from "../components/Loans/CreateInvoice";
 import DeliquencyManagement from "../components/Products/Deliquency/DeliquencyManagement";
 import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleConfigManagement";
 import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyManagement";
+import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScoring";
 import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
@@ -1367,6 +1368,10 @@ export const router = createBrowserRouter([
           element: <DunningPolicyManagement />,
         },
         {
+          path: "Lms/Setting/GeneralCreditScoring",
+          element: <GeneralCreditScoring />,
+        },
+        {
           path: "Lms/Collections/WaiverRequests",
           element: <WaiverRequestsManagement />,
         },
@@ -1984,6 +1989,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/Setting/Rescheduling",
           element: <RescheduleConfigManagement />,
+        },
+        {
+          path: "Lms/Setting/GeneralCreditScoring",
+          element: <GeneralCreditScoring />,
         },
         {
           path: "Lms/accountingFinancing/daybook",

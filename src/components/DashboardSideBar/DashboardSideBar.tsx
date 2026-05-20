@@ -1364,6 +1364,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               LinkLable: "/Lms/Setting",
               active: pathname.includes("/Lms/Setting/DunningPolicy"),
             },
+            {
+              label: "General Setting",
+              Link: "GeneralCreditScoring",
+              LinkLable: "/Lms/Setting",
+              active: pathname.includes("/Lms/Setting/GeneralCreditScoring"),
+            },
             // hasAccess("workflow_mapping_module") &&
             // {
             //   label: "Work Flow Mapping",

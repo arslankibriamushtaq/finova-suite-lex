@@ -49,6 +49,25 @@ export function deleteProductCreditScoringCriteria(productId: string) {
 }
 
 // ============================================================
+// General (tenant-wide) Credit Scoring Criteria
+// Same shape as product criteria but with productId = null —
+// used as the default scoring rules when no product-level
+// configuration exists.
+// ============================================================
+
+export function getGeneralCreditScoringCriteria() {
+  return axiosRiskService.get(`/api/v1/risk/credit-scoring/general/criteria`);
+}
+
+export function saveGeneralCreditScoringCriteria(body: any) {
+  return axiosRiskService.put(`/api/v1/risk/credit-scoring/general/criteria`, body);
+}
+
+export function deleteGeneralCreditScoringCriteria() {
+  return axiosRiskService.delete(`/api/v1/risk/credit-scoring/general/criteria`);
+}
+
+// ============================================================
 // Blacklist NID
 // ============================================================
 
