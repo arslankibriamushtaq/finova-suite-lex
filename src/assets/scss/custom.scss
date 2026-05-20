@@ -4999,6 +4999,77 @@ label {
   /* Light grayish-blue */
 }
 
+/* ===== Profile dropdown — dark mode polish =====
+   The default styling uses var(--theme-secondary) (brand red) for the
+   action pill, var(--theme-primary) (#161821 in dark mode) for the
+   card surface, and inherits text color from the parent — making the
+   close icon, Welcome heading, and button labels read poorly. */
+html.dark .profile-dropdown {
+  background: var(--surface-card) !important;
+  border: 1px solid var(--surface-border) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55) !important;
+  color: var(--foreground);
+}
+
+html.dark .profile-dropdown .close-btn {
+  color: var(--foreground) !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  padding: 0;
+}
+html.dark .profile-dropdown .close-btn:hover {
+  background: var(--surface-card-hover) !important;
+  border-color: var(--surface-border-strong) !important;
+}
+
+html.dark .profile-dropdown .profile-picture img {
+  border: 2px solid var(--surface-border-strong);
+  background: var(--surface-card-alt);
+}
+
+html.dark .profile-dropdown .profile-name {
+  color: var(--foreground) !important;
+  font-weight: 600;
+}
+
+html.dark .profile-dropdown .profile-actions {
+  background: var(--surface-card-alt) !important;
+  border: 1px solid var(--surface-border-strong) !important;
+  border-radius: 10px;
+  padding: 4px;
+  width: 100%;
+}
+
+html.dark .profile-dropdown .profile-btn,
+html.dark .profile-dropdown .profile-btn.left,
+html.dark .profile-dropdown .profile-btn.right {
+  color: #ffffff !important;
+  font-weight: 500;
+  padding: 10px 18px;
+  transition: background 0.15s ease, color 0.15s ease;
+  border-radius: 8px;
+}
+
+html.dark .profile-dropdown .profile-btn:hover {
+  background: var(--surface-card-hover) !important;
+  color: #ffffff !important;
+}
+
+html.dark .profile-dropdown .profile-btn .icon {
+  color: #ffffff;
+}
+
+html.dark .profile-dropdown .divider {
+  background: var(--surface-border-strong) !important;
+  height: 24px;
+}
+
 .selectable-card {
   border-radius: 20px;
   text-align: center;
