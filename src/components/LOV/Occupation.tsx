@@ -218,12 +218,14 @@ const Occupation = () => {
       sortable: true,
       width: "130px",
     },
+    /* Commented out: score column hidden per product request
     {
       name: "Score",
       selector: (row: any) => row.score ?? "-",
       sortable: true,
       width: "90px",
     },
+    */
     {
       name: "Status",
       cell: (row: any) => {
@@ -404,6 +406,7 @@ const Occupation = () => {
                   onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
                 />
               </div>
+              {/* Commented out: score field hidden per product request
               <div className="space-y-2">
                 <Label>Score</Label>
                 <Input
@@ -413,6 +416,7 @@ const Occupation = () => {
                   onChange={(e) => setFormData({ ...formData, score: Number(e.target.value) })}
                 />
               </div>
+              */}
             </div>
           </div>
           <DialogFooter>

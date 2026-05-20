@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import {
   Bell,
   Plus,
-  Trash2,
-  Pencil,
   Smartphone,
   Mail,
   MessageSquare,
@@ -18,14 +16,17 @@ import {
   Switch,
   Radio,
   Spin,
-  Tooltip,
-  Pagination,
+  Dropdown,
+  Menu,
+  Button as AntButton,
 } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { EditOutlined, DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { toast } from "react-hot-toast";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import { Button } from "../../../components/ui/button";
+import TableView from "../../../components/TableView/TableView";
+import arrowDown from "../../../assets/images/arrow-down.png";
 import "./NotificationOrchestrator.css";
 
 import {
@@ -79,7 +80,7 @@ const NotificationOrchestrator: React.FC = () => {
   const [search, setSearch] = useState("");
   const [channelFilter, setChannelFilter] = useState<string>("ALL");
   const [currentPage, setCurrentPage] = useState(1);
-  const PAGE_SIZE = 10;
+  const [pageSize, setPageSize] = useState(10);
 
   // Modal
   const [isRuleModalOpen, setIsRuleModalOpen] = useState(false);
@@ -235,8 +236,8 @@ const NotificationOrchestrator: React.FC = () => {
   });
 
   const pagedRules = filteredRules.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
+    (currentPage - 1) * pageSize,
+    currentPage * pageSize
   );
 
   const channelIcon = (channel: string) => {
@@ -245,6 +246,103 @@ const NotificationOrchestrator: React.FC = () => {
     if (channel === "EMAIL") return <Mail className="h-4 w-4" />;
     return <Bell className="h-4 w-4" />;
   };
+
+  const ruleActionMenu = (rule: any) => (
+    <Menu>
+      <Menu.Item
+        key="edit"
+        icon={<EditOutlined />}
+        onClick={() => openEditModal(rule)}
+      >
+        Edit
+      </Menu.Item>
+      <Menu.Item
+        key="delete"
+        icon={<DeleteOutlined />}
+        onClick={() => setDeleteTarget(rule)}
+      >
+        Delete
+      </Menu.Item>
+    </Menu>
+  );
+
+  const ruleColumns = [
+    {
+      name: "Orchestration Rule",
+      selector: (row: any) => row.ruleName,
+      cell: (row: any) => (
+        <div>
+          <div className="fw-semibold" style={{ color: "var(--foreground)" }}>
+            {row.ruleName}
+          </div>
+          <div
+            className="font-monospace"
+            style={{ fontSize: 11, color: "var(--muted-foreground)" }}
+          >
+            {row.ruleCode}
+          </div>
+        </div>
+      ),
+      sortable: true,
+      wrap: true,
+    },
+    {
+      name: "Event Context",
+      cell: (row: any) => (
+        <span className="no-context-chip">{row.eventType || "-"}</span>
+      ),
+    },
+    {
+      name: "Channel Path",
+      cell: (row: any) => (
+        <div className="d-flex align-items-center gap-2">
+          <span className="no-channel-icon">{channelIcon(row.channel)}</span>
+          <span className="fw-medium" style={{ fontSize: 13 }}>
+            {row.channel}
+          </span>
+        </div>
+      ),
+    },
+    {
+      name: "Priority",
+      cell: (row: any) => (
+        <span
+          className="no-priority-pill"
+          style={{
+            backgroundColor: priorityColor(row.priority),
+            color: "var(--primary-foreground)",
+          }}
+        >
+          {row.priority || "NORMAL"}
+        </span>
+      ),
+    },
+    {
+      name: "Active",
+      center: true,
+      cell: (row: any) => <Switch checked={!!row.active} size="small" />,
+    },
+    {
+      name: "Actions",
+      cell: (row: any) => (
+        <Dropdown overlay={ruleActionMenu(row)} trigger={["click"]}>
+          <AntButton
+            className="gradient-btn"
+            type="primary"
+            style={{
+              borderRadius: "8px",
+              padding: "6px 16px",
+              display: "flex",
+              alignItems: "center",
+              gap: 6,
+            }}
+          >
+            Select <img src={arrowDown} alt="" />
+          </AntButton>
+        </Dropdown>
+      ),
+    },
+  ];
 
   return (
     <div className="service notification-orchestrator-page">
@@ -332,106 +430,23 @@ const NotificationOrchestrator: React.FC = () => {
               overflow: "hidden",
             }}
           >
-            <table className="no-table">
-              <thead>
-                <tr>
-                  <th>Orchestration Rule</th>
-                  <th>Event Context</th>
-                  <th>Channel Path</th>
-                  <th>Priority</th>
-                  <th className="text-center">Active</th>
-                  <th className="text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td colSpan={6} className="text-center" style={{ padding: 32 }}>
-                      <Spin />
-                    </td>
-                  </tr>
-                ) : pagedRules.length === 0 ? (
-                  <tr>
-                    <td colSpan={6} className="text-center text-muted" style={{ padding: 36 }}>
-                      No rules found. Create one to begin orchestration.
-                    </td>
-                  </tr>
-                ) : (
-                  pagedRules.map((rule) => (
-                    <tr key={rule.id}>
-                      <td>
-                        <div className="fw-semibold" style={{ color: "var(--foreground)" }}>
-                          {rule.ruleName}
-                        </div>
-                        <div className="font-monospace" style={{ fontSize: 11, color: "var(--muted-foreground)" }}>
-                          {rule.ruleCode}
-                        </div>
-                      </td>
-                      <td>
-                        <span className="no-context-chip">{rule.eventType || "-"}</span>
-                      </td>
-                      <td>
-                        <div className="d-flex align-items-center gap-2">
-                          <span className="no-channel-icon">{channelIcon(rule.channel)}</span>
-                          <span className="fw-medium" style={{ fontSize: 13 }}>{rule.channel}</span>
-                        </div>
-                      </td>
-                      <td>
-                        <span
-                          className="no-priority-pill"
-                          style={{ backgroundColor: priorityColor(rule.priority), color: "var(--primary-foreground)" }}
-                        >
-                          {rule.priority || "NORMAL"}
-                        </span>
-                      </td>
-                      <td className="text-center">
-                        <Switch checked={!!rule.active} size="small" />
-                      </td>
-                      <td className="text-right">
-                        <div className="d-inline-flex gap-2">
-                          <Tooltip title="Edit">
-                            <button
-                              className="no-icon-btn"
-                              onClick={() => openEditModal(rule)}
-                              type="button"
-                            >
-                              <Pencil className="h-4 w-4" />
-                            </button>
-                          </Tooltip>
-                          <Tooltip title="Delete">
-                            <button
-                              className="no-icon-btn no-icon-btn-danger"
-                              onClick={() => setDeleteTarget(rule)}
-                              type="button"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </Tooltip>
-                        </div>
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-
-            {filteredRules.length > PAGE_SIZE && (
-              <div className="no-pagination-row">
-                <span className="no-pagination-info">
-                  Showing {(currentPage - 1) * PAGE_SIZE + 1}–
-                  {Math.min(currentPage * PAGE_SIZE, filteredRules.length)} of{" "}
-                  {filteredRules.length} rules
-                </span>
-                <Pagination
-                  current={currentPage}
-                  pageSize={PAGE_SIZE}
-                  total={filteredRules.length}
-                  onChange={(page) => setCurrentPage(page)}
-                  showSizeChanger={false}
-                  size="small"
-                />
-              </div>
-            )}
+            <TableView
+              header={ruleColumns}
+              data={pagedRules}
+              isLoading={isLoading}
+              totalRows={filteredRules.length}
+              page={currentPage}
+              setPage={setCurrentPage}
+              pageSize={pageSize}
+              setPageSize={(size: number) => {
+                setPageSize(size);
+                setCurrentPage(1);
+              }}
+              totalPage={Math.max(1, Math.ceil(filteredRules.length / pageSize))}
+              from={filteredRules.length > 0 ? (currentPage - 1) * pageSize + 1 : 0}
+              to={Math.min(currentPage * pageSize, filteredRules.length)}
+              paginationShow={filteredRules.length > 0}
+            />
           </div>
         </TabsContent>
 

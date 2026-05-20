@@ -33,8 +33,8 @@ interface CustomerData {
 const CustomBarChart = () => {
   const [data, setData] = useState<CustomerData[]>([]);
   const [loading, setLoading] = useState(false);
-  const [fromDate, setFromDate] = useState<any>(dayjs());
-  const [toDate, setToDate] = useState<any>(dayjs());
+  const [fromDate, setFromDate] = useState<any>(dayjs().startOf("month"));
+  const [toDate, setToDate] = useState<any>(dayjs().endOf("month"));
   const chartRef = useRef<any>(null);
 
   useEffect(() => {
@@ -245,19 +245,19 @@ const CustomBarChart = () => {
         <div style={{ display: "flex", justifyContent: "end", alignItems: "center", marginBottom: 20 }}>
         
           <div className="d-flex gap-3 justify-content-end">
-             <DatePicker 
-               placeholder="From Date" 
-               defaultValue={dayjs()}
+             <DatePicker
+               placeholder="From Date"
+               defaultValue={dayjs().startOf("month")}
                value={fromDate ? dayjs(fromDate) : null}
-               onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"))} 
-               style={{width:"150px"}} 
+               onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : dayjs().startOf("month").format("YYYY-MM-DD"))}
+               style={{ width: "150px" }}
              />
-          <DatePicker 
-            placeholder="To Date" 
-            defaultValue={dayjs()}
+          <DatePicker
+            placeholder="To Date"
+            defaultValue={dayjs().endOf("month")}
             value={toDate ? dayjs(toDate) : null}
-            onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD"))} 
-            style={{width:"150px"}}
+            onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : dayjs().endOf("month").format("YYYY-MM-DD"))}
+            style={{ width: "150px" }}
           />
           </div>
           {/* <Dropdown overlay={menu} trigger={["click"]}>
