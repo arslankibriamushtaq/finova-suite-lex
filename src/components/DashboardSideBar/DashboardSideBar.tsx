@@ -2244,17 +2244,17 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           <div className="sidebar-tab-row">
             <button
               type="button"
-              className={`sidebar-tab ${sidebarTab === "wallet" ? "active" : ""}`}
-              onClick={() => setSidebarTab("wallet")}
-            >
-              Wallet
-            </button>
-            <button
-              type="button"
               className={`sidebar-tab ${sidebarTab === "financing" ? "active" : ""}`}
               onClick={() => setSidebarTab("financing")}
             >
               Financing
+            </button>
+            <button
+              type="button"
+              className={`sidebar-tab ${sidebarTab === "wallet" ? "active" : ""}`}
+              onClick={() => setSidebarTab("wallet")}
+            >
+              Wallet
             </button>
           </div>
         )}
