@@ -285,6 +285,13 @@ html.dark,
   --theme-flow-dashboard-sidebar-bg: #0a0a0a;
   --theme-flow-submenu-sidebar-bg: transparent;
   --theme-flow-active-color-bg: rgba(235, 13, 13, 0.12);
+  /* Stepper accent — matches the active sidebar tab (dark navy gradient).
+     Dark mode adds a white border so the dark gradient stays visible
+     against the page surface. */
+  --stepper-accent: #1f2940;
+  --stepper-accent-bg: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
+  --stepper-accent-border: #ffffff;
+  --stepper-accent-ring: rgba(255, 255, 255, 0.18);
   --theme-flow-inactive-color-bg: transparent;
   --theme-flow-active-text-color: #f87171;
   --theme-flow-inactive-text-color: #e2e8f0;
@@ -1538,6 +1545,12 @@ html.dark .bg-white .recharts-wrapper {
   --theme-flow-dashboard-sidebar-bg: rgb(252, 252, 252);
   --theme-flow-submenu-sidebar-bg: transparent;
   --theme-flow-active-color-bg: transparent;
+  /* Stepper accent — matches the active sidebar tab (dark navy gradient).
+     Light mode uses the gradient end color as the border (no extra outline). */
+  --stepper-accent: #1f2940;
+  --stepper-accent-bg: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
+  --stepper-accent-border: #0f172a;
+  --stepper-accent-ring: rgba(15, 23, 42, 0.18);
   --theme-flow-inactive-color-bg: transparent;
   --theme-flow-active-text-color: #eb0d0d;
   --theme-flow-inactive-text-color: #000000;

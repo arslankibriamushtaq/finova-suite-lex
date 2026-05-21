@@ -161,7 +161,7 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
                   <span
                     onClick={() => setCurrent(i)}
                     style={{
-                      color: isCompleted || isActive ? "var(--foreground)" : "#8C8C8C",
+                      color: isCompleted || isActive ? "var(--foreground)" : "var(--muted-foreground)",
                       fontWeight: isActive ? 600 : 500,
                       cursor: "pointer",
                       transition: "all 0.2s ease",
@@ -175,11 +175,13 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
                     onClick={() => setCurrent(i)}
                     style={{
                       ...styles.stepCircle,
-                      background:
-                        isCompleted || isActive
-                          ? "var(--theme-secondary)"
-                          : "#8C8C8C",
-                      color: isCompleted || isActive ? "var(--foreground)" : "var(--primary-foreground)",
+                      background: isCompleted || isActive
+                        ? "var(--stepper-accent)"
+                        : "var(--surface-border-strong)",
+                      boxShadow: isCompleted || isActive
+                        ? "0 0 0 3px var(--stepper-accent-ring)"
+                        : "none",
+                      color: "#ffffff",
                       cursor: "pointer",
                       transition: "all 0.2s ease",
                     }}
@@ -228,67 +230,65 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
         </div>
       </Card>
 
-      {/* Connector color override */}
+      {/* Connector colour override — defines a stepper-specific accent
+          variable so the same blue works in both light and dark mode. */}
       <style>
         {`
+          :root {
+            --stepper-accent: #2563eb;            /* bright blue — visible on white cards */
+            --stepper-accent-ring: rgba(37, 99, 235, 0.18);
+          }
+          html.dark {
+            --stepper-accent: #60a5fa;            /* lighter blue for dark surfaces */
+            --stepper-accent-ring: rgba(96, 165, 250, 0.2);
+          }
+
           .ant-steps-item-tail::after {
             height: 2px !important;
           }
           .ant-steps-item-finish .ant-steps-item-tail::after,
           .ant-steps-item-process .ant-steps-item-tail::after {
-            background-color: var(--theme-secondary) !important;
+            background-color: var(--stepper-accent) !important;
           }
-          .ant-steps-item-finish .ant-steps-item-icon {
-            border-color: var(--theme-secondary) !important;
-          }
+          .ant-steps-item-finish .ant-steps-item-icon,
           .ant-steps-item-process .ant-steps-item-icon {
-            border-color: var(--theme-secondary) !important;
+            border-color: var(--stepper-accent) !important;
           }
           .ant-steps-item-wait .ant-steps-item-icon {
-            border-color: #8C8C8C !important;
+            border-color: var(--surface-border-strong) !important;
           }
           .ant-steps .ant-steps-item-active .ant-steps-item-title::after {
-            background-color: var(--theme-secondary) !important;
+            background-color: var(--stepper-accent) !important;
           }
-          .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon {
-            color: var(--foreground) !important;
-          }
+          .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon,
           .ant-steps-item-process .ant-steps-item-icon .ant-steps-icon {
-            color: var(--foreground) !important;
+            color: #ffffff !important;
           }
-          .previoustab .ant-steps-item-tail::after {
-            background-color: var(--theme-secondary) !important;
+          .previoustab .ant-steps-item-tail::after,
+          .secondlaststep .ant-steps-item-tail::after,
+          .ant-steps-item.ant-steps-item-finish.previoustab.ant-steps-item-custom .ant-steps-item-title:after {
+            background-color: var(--stepper-accent) !important;
           }
-          .previoustab .ant-steps-item-icon {
-            border-color: var(--theme-secondary) !important;
-          }
-          .laststep .ant-steps-item-icon {
-            border-color: var(--theme-secondary) !important;
+          .previoustab .ant-steps-item-icon,
+          .laststep .ant-steps-item-icon,
+          .secondlaststep .ant-steps-item-icon {
+            border-color: var(--stepper-accent) !important;
           }
           .laststep .ant-steps-item-tail::after {
             background-color: transparent !important;
           }
-          .secondlaststep .ant-steps-item-icon {
-            border-color: var(--theme-secondary) !important;
+          .ant-steps .ant-steps-item-title::after {
+            left: 27px;
+            width: 262px;
           }
-          .secondlaststep .ant-steps-item-tail::after {
-            background-color: var(--theme-secondary) !important;
+          .ant-steps-item.ant-steps-item-process.secondlaststep.ant-steps-item-custom.ant-steps-item-active .ant-steps-item-title:after {
+            left: 30px !important;
+            width: 222px;
           }
-            .ant-steps-item.ant-steps-item-finish.previoustab.ant-steps-item-custom .ant-steps-item-title:after{
-                        background-color: var(--theme-secondary) !important;
- 
-            }
-                        .ant-steps .ant-steps-item-title::after {  left: 27px;}
-                        .ant-steps .ant-steps-item-title::after { width: 262px;}
-                        .ant-steps-item.ant-steps-item-process.secondlaststep.ant-steps-item-custom.ant-steps-item-active .ant-steps-item-title:after {
-    left: 30px !important;
-    width: 222px;
-}
-    .ant-steps-item.ant-steps-item-finish.previoustab.secondlaststep.ant-steps-item-custom .ant-steps-item-title:after {
-    left: 0px !important;
-        width: 250px;
-
-}
+          .ant-steps-item.ant-steps-item-finish.previoustab.secondlaststep.ant-steps-item-custom .ant-steps-item-title:after {
+            left: 0px !important;
+            width: 250px;
+          }
         `}
       </style>
     </div>
@@ -300,13 +300,14 @@ const styles: { [key: string]: React.CSSProperties } = {
   container: {
     margin: "0 auto",
     padding: "24px 0",
-    background: "var(--color-surface-snow)",
+    background: "transparent",
   },
   wrapperCard: {
-    borderRadius: 10,
-    background: "var(--background)",
-    padding: "20px 0px",
-    boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+    borderRadius: 12,
+    background: "var(--surface-card)",
+    border: "1px solid var(--surface-border)",
+    padding: "24px 16px",
+    boxShadow: "var(--surface-elevation-1)",
   },
   steps: {
     marginBottom: 24,
@@ -318,14 +319,14 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    color: "var(--foreground)",
+    color: "#ffffff",
     fontWeight: 600,
     fontSize: 13,
   },
   formCard: {
-    background: "var(--background)",
-    border: "1px solid var(--color-border-faint)",
-    borderRadius: 6,
+    background: "var(--surface-card-alt)",
+    border: "1px solid var(--surface-border)",
+    borderRadius: 8,
     padding: "16px 20px",
   },
   formTitle: {
@@ -338,7 +339,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    borderBottom: "1px solid var(--color-border-faint)",
+    borderBottom: "1px solid var(--surface-border)",
     paddingBottom: 4,
   },
   label: {
@@ -356,9 +357,9 @@ const styles: { [key: string]: React.CSSProperties } = {
     justifyContent: "flex-end",
   },
   nextButton: {
-    background: "var(--theme-secondary)",
-    borderColor: "var(--theme-secondary)",
-    color: "var(--foreground)",
+    background: "var(--stepper-accent)",
+    borderColor: "var(--stepper-accent)",
+    color: "#ffffff",
     fontWeight: 600,
   },
 };
