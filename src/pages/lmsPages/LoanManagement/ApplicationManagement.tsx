@@ -506,6 +506,63 @@ const ApplicationManagement = () => {
         })}`
       : "-";
 
+  /**
+   * Map any status / step label to a context-appropriate pill colour.
+   * Positive (done / cleared) → green, negative (rejected / failed) → coral,
+   * in-flight (pending / waiting) → amber, terminal-but-neutral (disbursed
+   * pre-payment / blocked-non-error) → blue. Anything unknown falls back
+   * to slate so the cell never matches "another" status by accident.
+   */
+  const getStatusPill = (raw?: string | null) => {
+    if (raw == null || raw === "" || raw === "-") {
+      return { bg: "var(--color-status-amber)", text: "-" };
+    }
+    const t = String(raw).trim();
+    const lc = t.toLowerCase();
+
+    // Positive / completed states
+    if (/(complete|approved|clear|funds transferred|success|active|disbursed|paid|verified)/i.test(lc)) {
+      return { bg: "var(--color-status-green)", text: t };
+    }
+    // Negative / failure states
+    if (/(reject|fail|block|error|denied|cancel)/i.test(lc)) {
+      return { bg: "var(--color-status-coral)", text: t };
+    }
+    // In-flight / waiting states
+    if (/(pending|progress|process|wait|review|submitted|initiated)/i.test(lc)) {
+      return { bg: "var(--color-status-amber)", text: t };
+    }
+    // Early onboarding / informational steps
+    if (/(basic information|add bank|otp|nafath|simah|kyc|sign|terms|consent|application)/i.test(lc)) {
+      return { bg: "var(--color-status-blue)", text: t };
+    }
+    return { bg: "var(--color-status-slate, #64748b)", text: t };
+  };
+
+  const Pill: React.FC<{ value?: string | null; width?: number }> = ({ value, width }) => {
+    const { bg, text } = getStatusPill(value);
+    return (
+      <span
+        style={{
+          display: "inline-block",
+          maxWidth: width || "100%",
+          padding: "6px 12px",
+          borderRadius: "32px",
+          fontSize: "12px",
+          fontWeight: 500,
+          backgroundColor: bg,
+          color: "var(--primary-foreground)",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          textTransform: text === text.toUpperCase() ? "none" : "capitalize",
+        }}
+      >
+        {text}
+      </span>
+    );
+  };
+
   const Account_Documents_List_Header = [
     {
       name: "Application No",
@@ -618,20 +675,7 @@ const ApplicationManagement = () => {
     },
     {
       name: "Current Step",
-      cell: (row: any) => (
-        <div
-          style={{
-            whiteSpace: "nowrap",
-            padding: "0.4rem 1rem",
-            borderRadius: "12px",
-            backgroundColor: "var(--color-status-blue)",
-            color: "var(--primary-foreground)",
-            fontSize: "12px",
-          }}
-        >
-          {row.stepperLabel || "-"}
-        </div>
-      ),
+      cell: (row: any) => <Pill value={row.stepperLabel} />,
       width: "180px",
     },
     {
@@ -709,26 +753,7 @@ const ApplicationManagement = () => {
       name: "Status",
       width: "180px",
       cell: (row: any) => (
-        <div
-          style={{
-            whiteSpace: "nowrap",
-            padding: "0.4rem 1rem",
-            borderRadius: "12px",
-            backgroundColor:
-              row.status?.includes("COMPLETED") || row.status?.includes("APPROVED")
-                ? "var(--color-status-green)"
-                : row.status?.includes("PENDING")
-                  ? "var(--color-status-amber)"
-                  : row.status?.includes("REJECTED")
-                    ? "var(--color-status-coral)"
-                    : "var(--color-status-blue)",
-            color: "var(--primary-foreground)",
-            fontSize: "12px",
-            textTransform: "capitalize",
-          }}
-        >
-          {(row.status || "-").replace(/_/g, " ").toLowerCase()}
-        </div>
+        <Pill value={(row.status || "-").replace(/_/g, " ")} />
       ),
     },
     // {
@@ -754,23 +779,7 @@ const ApplicationManagement = () => {
     // },
     {
       name: "Disbursement",
-      cell: (row: any) => (
-        <span
-          style={{
-            padding: "6px 12px",
-            borderRadius: "32px",
-            fontSize: "12px",
-            fontWeight: "500",
-            backgroundColor:
-              row.disbursementStatus === "Disbursed"
-                ? "var(--color-status-green)"
-                : "var(--color-status-amber)",
-            color: "var(--primary-foreground)",
-          }}
-        >
-          {row.disbursementStatus}
-        </span>
-      ),
+      cell: (row: any) => <Pill value={row.disbursementStatus} />,
       width: "140px",
     },
     {

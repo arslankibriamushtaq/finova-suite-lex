@@ -711,6 +711,93 @@ html.dark .theme-btn-back:hover {
   color: #ffffff !important;
 }
 
+/* ============================================================
+   UNIVERSAL PRIMARY BUTTON — LIGHT MODE
+   ============================================================
+   Every primary-action button in the project (shadcn Button default
+   variant, Ant Button[type="primary"], Bootstrap .btn-primary, the
+   legacy .theme-btn family) renders with the same dark-navy gradient
+   as the active sidebar "Financing" pill — so the entire app has one
+   visual language for "this is the primary action".
+
+   Dark mode is handled by the rules above this block, which paint the
+   same buttons as a dark pill with a visible border. */
+html:not(.dark) [data-slot="button"][class*="bg-primary"],
+html:not(.dark) button[data-slot="dialog-trigger"][class*="bg-primary"],
+html:not(.dark) button[class*="bg-primary"][class*="text-primary-foreground"],
+html:not(.dark) .ant-btn-primary:not(:disabled),
+html:not(.dark) .ant-modal-footer .ant-btn-primary:not(:disabled),
+html:not(.dark) .btn-primary:not(:disabled),
+html:not(.dark) .theme-btn:not(:disabled),
+html:not(.dark) .theme-btn-next:not(:disabled),
+html:not(.dark) .theme-btn-prev:not(:disabled),
+html:not(.dark) .theme-btn-back:not(:disabled) {
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background-color: #1f2940 !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+  box-shadow:
+    0 2px 6px rgba(15, 23, 42, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  font-weight: 600 !important;
+}
+
+html:not(.dark) [data-slot="button"][class*="bg-primary"]:hover,
+html:not(.dark) button[data-slot="dialog-trigger"][class*="bg-primary"]:hover,
+html:not(.dark) button[class*="bg-primary"][class*="text-primary-foreground"]:hover,
+html:not(.dark) .ant-btn-primary:not(:disabled):hover,
+html:not(.dark) .ant-modal-footer .ant-btn-primary:not(:disabled):hover,
+html:not(.dark) .btn-primary:not(:disabled):hover,
+html:not(.dark) .theme-btn:not(:disabled):hover,
+html:not(.dark) .theme-btn-next:not(:disabled):hover,
+html:not(.dark) .theme-btn-prev:not(:disabled):hover,
+html:not(.dark) .theme-btn-back:not(:disabled):hover {
+  background: linear-gradient(135deg, #283354 0%, #131c30 100%) !important;
+  background-color: #283354 !important;
+  border-color: #131c30 !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 4px 10px rgba(15, 23, 42, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+}
+
+/* Lucide / Ant / Bootstrap icons inside the primary pill — force white */
+html:not(.dark) [data-slot="button"][class*="bg-primary"] svg,
+html:not(.dark) [data-slot="button"][class*="bg-primary"] svg path,
+html:not(.dark) button[data-slot="dialog-trigger"][class*="bg-primary"] svg,
+html:not(.dark) button[data-slot="dialog-trigger"][class*="bg-primary"] svg path,
+html:not(.dark) button[class*="bg-primary"][class*="text-primary-foreground"] svg,
+html:not(.dark) .ant-btn-primary svg,
+html:not(.dark) .ant-btn-primary .anticon,
+html:not(.dark) .btn-primary svg,
+html:not(.dark) .theme-btn svg,
+html:not(.dark) .theme-btn-next svg,
+html:not(.dark) .theme-btn-prev svg,
+html:not(.dark) .theme-btn-back svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Disabled state — desaturated gradient with muted text so it stays
+   recognisable but clearly inactive. */
+html:not(.dark) [data-slot="button"][class*="bg-primary"]:disabled,
+html:not(.dark) button[data-slot="dialog-trigger"][class*="bg-primary"]:disabled,
+html:not(.dark) .ant-btn-primary:disabled,
+html:not(.dark) .ant-btn-primary.ant-btn-disabled,
+html:not(.dark) .btn-primary:disabled,
+html:not(.dark) .theme-btn:disabled,
+html:not(.dark) .theme-btn-next:disabled,
+html:not(.dark) .theme-btn-prev:disabled,
+html:not(.dark) .theme-btn-back:disabled {
+  background: #475569 !important;
+  background-color: #475569 !important;
+  border-color: #475569 !important;
+  color: #cbd5e1 !important;
+  box-shadow: none !important;
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 /* ===== Native HTML <select> and <input type="date"> in dark mode =====
    Bootstrap pages still use raw form-control inputs in many places.
    Browser defaults render a white background and white dropdown popup
@@ -1707,4 +1794,137 @@ nav.ps-menu-root.css-vj11vy .ps-submenu-content ul a.ps-menu-button {
 li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
   background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
   color: #ffffff !important;
+}
+
+/* ==========================================================================
+   UNIVERSAL PRIMARY BUTTON LOOK — dark navy gradient (matches the active
+   Financing sidebar tab). Applied to every primary-action button across
+   shadcn, Ant, Bootstrap, and the legacy .theme-btn* family so the whole
+   project has one consistent CTA appearance.
+
+   Dark mode keeps the same gradient but adds a white border so the dark
+   pill stays visible against the dark page surface.
+   ========================================================================== */
+
+/* Shared base — both modes */
+[data-slot="button"][class*="bg-primary"],
+button[data-slot="dialog-trigger"][class*="bg-primary"],
+button[class*="bg-primary"][class*="text-primary-foreground"],
+.ant-btn-primary,
+.btn-primary,
+.theme-btn,
+.theme-btn-next,
+.theme-btn-prev,
+.theme-btn-back {
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background-color: #1f2940 !important;
+  color: #ffffff !important;
+  border: 1px solid #0f172a !important;
+  box-shadow:
+    0 2px 6px rgba(15, 23, 42, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  font-weight: 600 !important;
+}
+
+/* Hover — slightly brighter gradient */
+[data-slot="button"][class*="bg-primary"]:not(:disabled):hover,
+button[data-slot="dialog-trigger"][class*="bg-primary"]:not(:disabled):hover,
+button[class*="bg-primary"][class*="text-primary-foreground"]:not(:disabled):hover,
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover,
+.btn-primary:not(:disabled):hover,
+.theme-btn:not(:disabled):hover,
+.theme-btn-next:not(:disabled):hover,
+.theme-btn-prev:not(:disabled):hover,
+.theme-btn-back:not(:disabled):hover {
+  background: linear-gradient(135deg, #283354 0%, #131c30 100%) !important;
+  background-color: #283354 !important;
+  border-color: #131c30 !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 4px 12px rgba(15, 23, 42, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+/* Icons inside primary buttons — force white so lucide / antd icons stay visible */
+[data-slot="button"][class*="bg-primary"] svg,
+[data-slot="button"][class*="bg-primary"] svg path,
+button[data-slot="dialog-trigger"][class*="bg-primary"] svg,
+button[data-slot="dialog-trigger"][class*="bg-primary"] svg path,
+.ant-btn-primary svg,
+.ant-btn-primary svg path,
+.ant-btn-primary .anticon,
+.btn-primary svg,
+.btn-primary svg path,
+.theme-btn svg,
+.theme-btn-next svg,
+.theme-btn-prev svg,
+.theme-btn-back svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
+}
+
+/* Dark mode — keep the same gradient but add a white border for separation */
+html.dark [data-slot="button"][class*="bg-primary"],
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"],
+html.dark button[class*="bg-primary"][class*="text-primary-foreground"],
+html.dark .ant-btn-primary,
+html.dark .btn-primary,
+html.dark .theme-btn,
+html.dark .theme-btn-next,
+html.dark .theme-btn-prev,
+html.dark .theme-btn-back {
+  border: 1px solid #ffffff !important;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+}
+html.dark [data-slot="button"][class*="bg-primary"]:not(:disabled):hover,
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"]:not(:disabled):hover,
+html.dark button[class*="bg-primary"][class*="text-primary-foreground"]:not(:disabled):hover,
+html.dark .ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover,
+html.dark .btn-primary:not(:disabled):hover,
+html.dark .theme-btn:not(:disabled):hover,
+html.dark .theme-btn-next:not(:disabled):hover,
+html.dark .theme-btn-prev:not(:disabled):hover,
+html.dark .theme-btn-back:not(:disabled):hover {
+  border-color: #ffffff !important;
+  box-shadow:
+    0 4px 14px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Disabled state — keep visible but clearly inactive (no gradient flash) */
+[data-slot="button"][class*="bg-primary"]:disabled,
+button[data-slot="dialog-trigger"][class*="bg-primary"]:disabled,
+.ant-btn-primary[disabled],
+.ant-btn-primary.ant-btn-disabled,
+.btn-primary:disabled,
+.btn-primary.disabled,
+.theme-btn:disabled,
+.theme-btn-next:disabled,
+.theme-btn-prev:disabled,
+.theme-btn-back:disabled {
+  background: var(--surface-card-alt) !important;
+  background-color: var(--surface-card-alt) !important;
+  color: var(--muted-foreground) !important;
+  border: 1px solid var(--surface-border) !important;
+  box-shadow: none !important;
+  opacity: 0.7 !important;
+  cursor: not-allowed !important;
+  text-shadow: none !important;
+}
+html.dark [data-slot="button"][class*="bg-primary"]:disabled,
+html.dark button[data-slot="dialog-trigger"][class*="bg-primary"]:disabled,
+html.dark .ant-btn-primary[disabled],
+html.dark .ant-btn-primary.ant-btn-disabled,
+html.dark .btn-primary:disabled,
+html.dark .btn-primary.disabled,
+html.dark .theme-btn:disabled,
+html.dark .theme-btn-next:disabled,
+html.dark .theme-btn-prev:disabled,
+html.dark .theme-btn-back:disabled {
+  background: var(--surface-card-alt) !important;
+  background-color: var(--surface-card-alt) !important;
+  color: #cbd5e1 !important;
+  border: 1px solid var(--surface-border-strong) !important;
 }
