@@ -1009,6 +1009,9 @@ html, body {
   -webkit-backdrop-filter: blur(3px);
   z-index: 1;
 }
+html.dark .loader-overlay {
+  background: rgba(13, 17, 23, 0.55);
+}
 
 .loader-content {
   position: relative;
