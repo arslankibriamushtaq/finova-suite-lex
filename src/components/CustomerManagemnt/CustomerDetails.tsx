@@ -179,10 +179,21 @@ const CustomerDetail = () => {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      backgroundColor: isCompleted || isActive ? "var(--theme-secondary)" : "#8C8C8C",
-                      color: "white",
+                      background: isCompleted || isActive
+                        ? "var(--stepper-accent-bg, linear-gradient(135deg, #1f2940 0%, #0f172a 100%))"
+                        : "var(--surface-card-alt, #e2e8f0)",
+                      border: isCompleted || isActive
+                        ? "2px solid var(--stepper-accent-border, #0f172a)"
+                        : "2px solid var(--surface-border-strong, #94a3b8)",
+                      boxShadow: isActive
+                        ? "0 0 0 4px var(--stepper-accent-ring, rgba(15, 23, 42, 0.18)), inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                        : isCompleted
+                          ? "inset 0 1px 0 rgba(255, 255, 255, 0.12)"
+                          : "none",
+                      color: isCompleted || isActive ? "#ffffff" : "var(--muted-foreground, #64748b)",
                       fontWeight: 600,
                       fontSize: 13,
+                      transition: "all 0.2s ease",
                     }}
                   >
                     {index + 1}
@@ -190,9 +201,11 @@ const CustomerDetail = () => {
                   <span
                     style={{
                       fontSize: 12,
-                      marginTop: 6,
-                      color: isCompleted || isActive ? "var(--foreground)" : "#8C8C8C",
-                      fontWeight: isActive ? 600 : 400,
+                      marginTop: 8,
+                      color: isCompleted || isActive
+                        ? "var(--foreground)"
+                        : "var(--muted-foreground)",
+                      fontWeight: isActive ? 600 : 500,
                       textAlign: "center",
                       maxWidth: 100,
                     }}
@@ -204,9 +217,12 @@ const CustomerDetail = () => {
                   <div
                     style={{
                       flex: 1,
-                      height: 2,
-                      backgroundColor: isCompleted ? "var(--theme-secondary)" : "#E5E7EB",
-                      marginTop: -16,
+                      height: 3,
+                      backgroundColor: isCompleted
+                        ? "var(--stepper-accent, #2563eb)"
+                        : "var(--surface-border-strong, #94a3b8)",
+                      marginTop: -20,
+                      borderRadius: 2,
                     }}
                   />
                 )}
@@ -239,8 +255,8 @@ const CustomerDetail = () => {
           <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 16 }}>
             <button
               style={{
-                background: "var(--theme-secondary)",
-                color: "var(--foreground)",
+                background: "var(--stepper-accent, #2563eb)",
+                color: "#ffffff",
                 border: "none",
                 borderRadius: 8,
                 padding: "8px 24px",
