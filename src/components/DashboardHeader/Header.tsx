@@ -168,7 +168,7 @@ const DashboardHeader = () => {
                         style={{
                           fontSize: "16px",
                           fontWeight: "600",
-                          color: "#090909",
+                          color: "var(--foreground)",
                         }}
                       >
                         {user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName}
