@@ -15,12 +15,19 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Switch } from "../../../components/ui/switch";
 import { Skeleton } from "../../../components/ui/skeleton";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "../../../components/ui/tabs";
 
 import {
   getGeneralCreditScoringCriteria,
   saveGeneralCreditScoringCriteria,
   getCreditScoringFieldDefinitions,
 } from "../../../redux/apis/apisRiskManagement";
+import AccountsLimitSetting from "./AccountsLimitSetting";
 
 const OPERATORS = [
   { value: "EQ", label: "Equal (=)" },
@@ -222,18 +229,92 @@ const GeneralCreditScoring = () => {
 
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          {/* <Settings className="h-5 w-5" /> */}
-          General Credit Scoring
-        </h3>
-        <Button variant="outline" onClick={addCriteria} className="gap-2">
-          <Plus className="h-4 w-4" />
-          Add Criteria
-        </Button>
-      </div>
+      <style>{`
+        .gcs-tabs-list {
+          background: transparent !important;
+          padding: 0;
+          border-radius: 0;
+          height: auto;
+          gap: 0;
+          justify-content: flex-start;
+          width: fit-content;
+          align-self: flex-start;
+          margin-bottom: 16px;
+        }
+        .gcs-tabs-trigger {
+          flex: 0 0 auto !important;
+          background: transparent !important;
+          border: none !important;
+          border-radius: 0 !important;
+          color: var(--muted-foreground) !important;
+          padding: 10px 16px !important;
+          font-weight: 500;
+          font-size: 14px;
+          box-shadow: none !important;
+          outline: none !important;
+          position: relative;
+          transition: color 0.15s ease;
+        }
+        .gcs-tabs-trigger:hover,
+        .gcs-tabs-trigger:active,
+        .gcs-tabs-trigger:focus,
+        .gcs-tabs-trigger:focus-visible,
+        .gcs-tabs-trigger[data-state="active"] {
+          outline: 0 !important;
+          box-shadow: none !important;
+          border: 0 !important;
+          --tw-ring-shadow: 0 0 #0000 !important;
+          --tw-ring-offset-shadow: 0 0 #0000 !important;
+        }
+        .gcs-tabs-trigger:hover {
+          color: var(--foreground) !important;
+        }
+        .gcs-tabs-trigger[data-state="active"] {
+          background: transparent !important;
+          color: var(--foreground) !important;
+          box-shadow: none !important;
+          font-weight: 600;
+        }
+        .gcs-tabs-trigger[data-state="active"]::after {
+          content: "";
+          position: absolute;
+          left: 12px;
+          right: 12px;
+          bottom: -1px;
+          height: 2px;
+          background-color: var(--foreground);
+        }
+        html.dark .gcs-tabs-trigger[data-state="active"] {
+          color: #ffffff !important;
+        }
+        html.dark .gcs-tabs-trigger[data-state="active"]::after {
+          background-color: #ffffff;
+        }
+      `}</style>
 
-      {isLoading ? (
+      <Tabs defaultValue="general-credit-scoring" className="w-full">
+        <TabsList className="gcs-tabs-list">
+          <TabsTrigger value="general-credit-scoring" className="gcs-tabs-trigger">
+            General Credit Scoring
+          </TabsTrigger>
+          <TabsTrigger value="accounts-limit-setting" className="gcs-tabs-trigger">
+            Accounts Limit Setting
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="general-credit-scoring">
+          <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
+            <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+              {/* <Settings className="h-5 w-5" /> */}
+              General Credit Scoring
+            </h3>
+            <Button variant="outline" onClick={addCriteria} className="gap-2">
+              <Plus className="h-4 w-4" />
+              Add Criteria
+            </Button>
+          </div>
+
+          {isLoading ? (
         <div className="space-y-3">
           {[0, 1, 2].map((i) => (
             <Skeleton key={i} className="h-48 w-full rounded-lg" />
@@ -439,7 +520,13 @@ const GeneralCreditScoring = () => {
             </Button>
           </div>
         </div>
-      )}
+          )}
+        </TabsContent>
+
+        <TabsContent value="accounts-limit-setting">
+          <AccountsLimitSetting />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

@@ -1010,7 +1010,7 @@ html.dark [data-slot="button"][class*="bg-foreground"] {
 
 /* shadcn outline Button in dark mode */
 html.dark [data-slot="button"][class*="outline"],
-html.dark button[class*="border"][class*="bg-background"] {
+html.dark button[class*="border"][class*="bg-background"]:not([data-slot="tabs-trigger"]) {
   background-color: transparent !important;
   background: transparent !important;
   color: #ffffff !important;

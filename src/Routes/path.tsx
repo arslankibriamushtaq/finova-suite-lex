@@ -218,6 +218,7 @@ import DeliquencyManagement from "../components/Products/Deliquency/DeliquencyMa
 import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleConfigManagement";
 import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyManagement";
 import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScoring";
+import WalletTransactionLimits from "../pages/lmsPages/CustomerManagement/WalletTransactionLimits";
 import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
@@ -784,6 +785,10 @@ export const router = createBrowserRouter([
             element: <OnboardingCostByCustomer />,
           },
           { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
+          {
+            path: "/LOS/CustomerManagement/WalletTransactionLimits",
+            element: <WalletTransactionLimits />,
+          },
           { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
           { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },
           { path: "/LOS/CustomerManagement/AllCustomerStatus", element: <AllCustomerStatus /> },

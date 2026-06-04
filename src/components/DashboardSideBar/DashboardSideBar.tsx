@@ -225,7 +225,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails") || pathname.includes("/CostByCustomer") || pathname.includes("/OnboardingCostByCustomer"),
         },
-   
+        {
+          label: "Wallet Transactions Limits",
+          Link: "WalletTransactionLimits",
+          LinkLable: "/LOS/CustomerManagement",
+          active: pathname.includes("/WalletTransactionLimits"),
+        },
+
       ].filter(Boolean),
     },
   //  {
