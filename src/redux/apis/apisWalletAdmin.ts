@@ -5,12 +5,15 @@ import axiosWalletService from "../../utils/axiosWalletService";
 // ============================================================
 
 export interface WalletLimitBounds {
+  minSingleLimit: number;
+  maxSingleLimit: number;
   minDailyLimit: number;
   maxDailyLimit: number;
   minMonthlyLimit: number;
   maxMonthlyLimit: number;
   minYearlyLimit: number;
   maxYearlyLimit: number;
+  defaultSingleLimit: number;
   defaultDailyLimit: number;
   defaultMonthlyLimit: number;
   defaultYearlyLimit: number;
