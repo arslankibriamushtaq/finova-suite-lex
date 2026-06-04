@@ -17,6 +17,9 @@ import {
 type FormState = Record<keyof WalletLimitBounds, string>;
 
 const FIELD_KEYS: (keyof WalletLimitBounds)[] = [
+  "minSingleLimit",
+  "maxSingleLimit",
+  "defaultSingleLimit",
   "minDailyLimit",
   "maxDailyLimit",
   "defaultDailyLimit",
@@ -34,6 +37,7 @@ const PERIODS: {
   max: keyof WalletLimitBounds;
   def: keyof WalletLimitBounds;
 }[] = [
+  { label: "Single Transaction", min: "minSingleLimit", max: "maxSingleLimit", def: "defaultSingleLimit" },
   { label: "Daily", min: "minDailyLimit", max: "maxDailyLimit", def: "defaultDailyLimit" },
   { label: "Monthly", min: "minMonthlyLimit", max: "maxMonthlyLimit", def: "defaultMonthlyLimit" },
   { label: "Yearly", min: "minYearlyLimit", max: "maxYearlyLimit", def: "defaultYearlyLimit" },
