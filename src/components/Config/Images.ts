@@ -57,8 +57,6 @@ import template3 from "../../assets/images/template4.png";
 import template4 from "../../assets/images/template5.png";
 import FactoringLogo from "../../assets/images/FinovaLogo.png";
 import FactoringLogoDark from "../../assets/images/dark-logo.png";
-import DashboardLogo from "../../assets/images/Default.png";
-import DashboardLogoWhite from "../../assets/images/White.png";
 // import FactoringLogo from "../../assets/images/MYTM-logo.png";
 import awnLogoWhite from "../../assets/images/awn-logo-white.svg";
 import crossIcon from "../../assets/images/crossIcon.svg";
@@ -166,8 +164,6 @@ export const Images = {
   template4,
   FactoringLogo,
   FactoringLogoDark,
-  DashboardLogo,
-  DashboardLogoWhite,
   crossIcon,
   closeBtn,
   awnLogoWhite
