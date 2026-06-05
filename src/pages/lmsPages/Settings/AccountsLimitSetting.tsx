@@ -23,6 +23,9 @@ const FIELD_KEYS: (keyof WalletLimitBounds)[] = [
   "minDailyLimit",
   "maxDailyLimit",
   "defaultDailyLimit",
+  "minWeeklyLimit",
+  "maxWeeklyLimit",
+  "defaultWeeklyLimit",
   "minMonthlyLimit",
   "maxMonthlyLimit",
   "defaultMonthlyLimit",
@@ -39,6 +42,7 @@ const PERIODS: {
 }[] = [
   { label: "Single Transaction", min: "minSingleLimit", max: "maxSingleLimit", def: "defaultSingleLimit" },
   { label: "Daily", min: "minDailyLimit", max: "maxDailyLimit", def: "defaultDailyLimit" },
+  { label: "Weekly", min: "minWeeklyLimit", max: "maxWeeklyLimit", def: "defaultWeeklyLimit" },
   { label: "Monthly", min: "minMonthlyLimit", max: "maxMonthlyLimit", def: "defaultMonthlyLimit" },
   { label: "Yearly", min: "minYearlyLimit", max: "maxYearlyLimit", def: "defaultYearlyLimit" },
 ];

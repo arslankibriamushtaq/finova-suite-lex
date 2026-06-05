@@ -9,12 +9,15 @@ export interface WalletLimitBounds {
   maxSingleLimit: number;
   minDailyLimit: number;
   maxDailyLimit: number;
+  minWeeklyLimit: number;
+  maxWeeklyLimit: number;
   minMonthlyLimit: number;
   maxMonthlyLimit: number;
   minYearlyLimit: number;
   maxYearlyLimit: number;
   defaultSingleLimit: number;
   defaultDailyLimit: number;
+  defaultWeeklyLimit: number;
   defaultMonthlyLimit: number;
   defaultYearlyLimit: number;
 }
