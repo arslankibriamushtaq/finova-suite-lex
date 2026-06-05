@@ -14,7 +14,15 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
-  const [sidebarTab, setSidebarTab] = useState<"financing" | "wallet">("financing");
+  const [sidebarTab, setSidebarTab] = useState<"financing" | "wallet">(() => {
+    if (typeof window !== "undefined") {
+      // Pages that only exist under the Wallet tab should always open it.
+      if (window.location.pathname.includes("/WalletTransactionLimits")) return "wallet";
+      const saved = localStorage.getItem("sidebarTab");
+      if (saved === "wallet" || saved === "financing") return saved;
+    }
+    return "financing";
+  });
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const toggled = useSelector((state: RootState) => state.block.toggled);
@@ -28,17 +36,37 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     dispatch(authSlice.actions.setToggled(false));
   }, [dispatch]);
 
-  // Auto-open menu based on current route
+  // Persist the active tab so a refresh restores it (covers pages shared
+  // between Financing and Wallet, e.g. Customers / General Setting).
   useEffect(() => {
-    const matchIndex = sidebarItems.findIndex((item) => {
-      const link = item.Link || "";
-      const topSegment = link.split("/").filter(Boolean)[0];
-      if (!topSegment) return false;
-      return pathname.includes(`/${topSegment}`);
-    });
+    localStorage.setItem("sidebarTab", sidebarTab);
+  }, [sidebarTab]);
+
+  // Auto-open menu based on current route — scoped to the active tab's list.
+  useEffect(() => {
+    const items = sidebarTab === "wallet" ? walletItems : sidebarItems;
+    // Prefer the group that owns an active leaf (most specific); fall back to
+    // matching the group's own top URL segment.
+    const hasActiveLeaf = (item: any) =>
+      Array.isArray(item?.menu) &&
+      item.menu.some((sub: any) => {
+        if (!sub) return false;
+        if (sub.active) return true;
+        const nested = sub.submenu || sub.menu;
+        return Array.isArray(nested) && nested.some((c: any) => c?.active);
+      });
+    let matchIndex = items.findIndex(hasActiveLeaf);
+    if (matchIndex === -1) {
+      matchIndex = items.findIndex((item: any) => {
+        const link = item.Link || "";
+        const topSegment = link.split("/").filter(Boolean)[0];
+        if (!topSegment) return false;
+        return pathname.includes(`/${topSegment}`);
+      });
+    }
     if (matchIndex !== -1) {
       setOpenSubmenuIndex(matchIndex);
-      const parentItem = sidebarItems[matchIndex];
+      const parentItem = items[matchIndex];
       if (parentItem && Array.isArray(parentItem.menu)) {
         const nestedStates: Record<string, boolean> = {};
         parentItem.menu.forEach((submenuItem: any, subIndex: any) => {
@@ -59,7 +87,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         setOpenNestedSubmenus(nestedStates);
       }
     }
-  }, [pathname]);
+  }, [pathname, sidebarTab]);
 
   // Force hide sidebar on mobile/zoom threshold
   useEffect(() => {
@@ -2050,6 +2078,25 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
 
   const walletItems = [
     {
+      label: "Customer Management",
+      Link: "/CustomerManagement/CustomerList",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.split("/").includes("CustomerManagement"),
+      menu: [
+        {
+          label: "Customers",
+          Link: "CustomerList",
+          LinkLable: "/LOS/CustomerManagement",
+          active:
+            pathname.includes("/CustomerList") ||
+            pathname.includes("/CustomerDetails") ||
+            pathname.includes("/CostByCustomer") ||
+            pathname.includes("/OnboardingCostByCustomer"),
+        },
+      ].filter(Boolean),
+    },
+    {
       label: "Wallet Management",
       Link: "/LOS/CustomerManagement/WalletTransactionLimits",
       img: Images.CustomerManagementIcon,
@@ -2334,40 +2381,42 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               </React.Fragment>
             ))
           ) : (
-            walletItems.map((item, index) => (
-              <React.Fragment key={index}>
-                {item.menu ? (
-                  renderSubmenu(item, index)
-                ) : (
-                  <div className="menu-items css-12w9als">
-                    <Link
-                      to={`${item.Link}`}
-                      style={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      <MenuItem
-                        active={item.active}
-                        onMouseEnter={() => setHoveredItem(index)}
-                        onMouseLeave={() => setHoveredItem(null)}
-                        prefix={
-                          item.img ? (
-                            <img
-                              src={item.img}
-                              style={{
-                                filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
-                              }}
-                            />
-                          ) : null
-                        }
+            <div className="wallet-menu-scope">
+              {walletItems.map((item, index) => (
+                <React.Fragment key={index}>
+                  {item.menu ? (
+                    renderSubmenu(item, index)
+                  ) : (
+                    <div className="menu-items css-12w9als">
+                      <Link
+                        to={`${item.Link}`}
+                        style={{
+                          fontSize: "14px",
+                        }}
                       >
-                        {item.label}
-                      </MenuItem>
-                    </Link>
-                  </div>
-                )}
-              </React.Fragment>
-            ))
+                        <MenuItem
+                          active={item.active}
+                          onMouseEnter={() => setHoveredItem(index)}
+                          onMouseLeave={() => setHoveredItem(null)}
+                          prefix={
+                            item.img ? (
+                              <img
+                                src={item.img}
+                                style={{
+                                  filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
+                                }}
+                              />
+                            ) : null
+                          }
+                        >
+                          {item.label}
+                        </MenuItem>
+                      </Link>
+                    </div>
+                  )}
+                </React.Fragment>
+              ))}
+            </div>
           )}
         </Menu>
       </Sidebar>
@@ -2379,6 +2428,16 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }
           .ps-sidebar-root {
             border-right: none !important;
+          }
+          /* Wallet tab: its groups are top-level (level 0) whereas the
+             Financing groups are nested one level deeper. Shift the Wallet
+             group headers and their children right by one level so the
+             parent → child indentation matches the Financing tab. */
+          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .ps-submenu-root > .ps-menu-button {
+            padding-left: 12px !important;
+          }
+          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .sidebar-link .ps-menu-button {
+            padding-left: 30px !important;
           }
           /* Aggressively hide text labels when collapsed */
           .is-collapsed .sidebar-label-text,
