@@ -167,13 +167,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
           submenu: [
        
-        // hasAccess("lead_module") && 
-        {
-          label: "Leads",
-          Link: "Leads",
-          LinkLable: "/LOS/CustomerManagement",
-          active: pathname.includes("/Leads")||pathname.includes("/LeadDetails"),
-        },
+        // hasAccess("lead_module") &&
+        // {
+        //   label: "Leads",
+        //   Link: "Leads",
+        //   LinkLable: "/LOS/CustomerManagement",
+        //   active: pathname.includes("/Leads")||pathname.includes("/LeadDetails"),
+        // },
         // {
         //   label: "PEP Customers",
         //   Link: "PepCustomers",
@@ -224,12 +224,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "CustomerList",
               LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails") || pathname.includes("/CostByCustomer") || pathname.includes("/OnboardingCostByCustomer"),
-        },
-        {
-          label: "Wallet Transactions Limits",
-          Link: "WalletTransactionLimits",
-          LinkLable: "/LOS/CustomerManagement",
-          active: pathname.includes("/WalletTransactionLimits"),
         },
 
       ].filter(Boolean),
@@ -2049,11 +2043,44 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //       img: Images.DepartmentManagementIcon,
     //       active: pathname == "/InvestorDashboard/AdminUsers",
     //     },
-     
+
     //   ],
     // },
   ];
-  
+
+  const walletItems = [
+    {
+      label: "Wallet Management",
+      Link: "/LOS/CustomerManagement/WalletTransactionLimits",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/WalletTransactionLimits"),
+      menu: [
+        {
+          label: "Wallet Transactions Limits",
+          Link: "WalletTransactionLimits",
+          LinkLable: "/LOS/CustomerManagement",
+          active: pathname.includes("/WalletTransactionLimits"),
+        },
+      ].filter(Boolean),
+    },
+    {
+      label: "Setting",
+      Link: "notification",
+      img: Images.SettingsIcon,
+      imgActive: Images.SettingsIconDark,
+      active: pathname.split("/").includes("Setting"),
+      menu: [
+        {
+          label: "General Setting",
+          Link: "GeneralCreditScoring",
+          LinkLable: "/Lms/Setting",
+          active: pathname.includes("/Lms/Setting/GeneralCreditScoring"),
+        },
+      ].filter(Boolean),
+    },
+  ];
+
   const renderSubmenu = (
     item: {
       label: any;
@@ -2307,12 +2334,40 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               </React.Fragment>
             ))
           ) : (
-            !isCollapsed && (
-              <div className="sidebar-empty-state">
-                <div className="sidebar-empty-title">Wallet</div>
-                <div className="sidebar-empty-sub">No modules yet. Coming soon.</div>
-              </div>
-            )
+            walletItems.map((item, index) => (
+              <React.Fragment key={index}>
+                {item.menu ? (
+                  renderSubmenu(item, index)
+                ) : (
+                  <div className="menu-items css-12w9als">
+                    <Link
+                      to={`${item.Link}`}
+                      style={{
+                        fontSize: "14px",
+                      }}
+                    >
+                      <MenuItem
+                        active={item.active}
+                        onMouseEnter={() => setHoveredItem(index)}
+                        onMouseLeave={() => setHoveredItem(null)}
+                        prefix={
+                          item.img ? (
+                            <img
+                              src={item.img}
+                              style={{
+                                filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
+                              }}
+                            />
+                          ) : null
+                        }
+                      >
+                        {item.label}
+                      </MenuItem>
+                    </Link>
+                  </div>
+                )}
+              </React.Fragment>
+            ))
           )}
         </Menu>
       </Sidebar>
