@@ -2219,7 +2219,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }}
         >
           <img
-            src={Images.FactoringLogo}
+            src={Images.DashboardLogo}
             alt="logo"
             className="sidebar-logo sidebar-logo--light"
             onClick={() => navigate("/LOS/Dashboard")}
@@ -2231,7 +2231,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             }}
           />
           <img
-            src={Images.FactoringLogoDark}
+            src={Images.DashboardLogoWhite}
             alt="logo"
             className="sidebar-logo sidebar-logo--dark"
             onClick={() => navigate("/LOS/Dashboard")}
