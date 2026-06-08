@@ -14,6 +14,16 @@ import { store } from "../../redux/store";
 import NotificationInbox from "../NotificationInbox";
 import ThemeToggle from "../ThemeToggle";
 import { AdminNotificationBell } from "../notifications/AdminNotificationBell";
+
+// Defined outside the component so styled-components doesn't recreate it on
+// every render (avoids the "created dynamically" warning). The dynamic theme
+// colour is passed in as a prop instead.
+const HeaderGlobalStyle = createGlobalStyle<{ $bg?: string }>`
+  .header_layout {
+    background: ${(props) => props.$bg} !important;
+  }
+`;
+
 const DashboardHeader = () => {
   const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
@@ -28,11 +38,6 @@ const DashboardHeader = () => {
   const view = parts[1];
   const storedUserData = localStorage.getItem("userData");
   const user = storedUserData ? JSON.parse(storedUserData) : null;
-  const GlobalStyle = createGlobalStyle`
-    .header_layout {
-      background: ${themeBuilder?.sideBarmenuBackgroundColor} !important;
-    }
-  `;
 
   const backgroundColorClass = "header-background-color";
   const toggleMenu = () => {
@@ -237,7 +242,7 @@ const DashboardHeader = () => {
           </div>
         </div>
       </div>
-      <GlobalStyle />
+      <HeaderGlobalStyle $bg={themeBuilder?.sideBarmenuBackgroundColor} />
     </>
   );
 };
