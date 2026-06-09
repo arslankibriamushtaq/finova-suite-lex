@@ -82,7 +82,11 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       const parentItem = items[matchIndex];
       if (parentItem && Array.isArray(parentItem.menu)) {
         const nestedStates: Record<string, boolean> = {};
-        parentItem.menu.forEach((submenuItem: any, subIndex: any) => {
+        // Filter Boolean to match renderSubmenu's `item.menu.filter(Boolean)`.
+        // Without this, hasAccess-gated (falsy) entries shift the indices here
+        // vs. at render time, so the wrong nested submenu (e.g. Access Control
+        // Management instead of Risk Management) gets opened.
+        parentItem.menu.filter(Boolean).forEach((submenuItem: any, subIndex: any) => {
           if (submenuItem) {
             const hasNestedSubmenu =
               (Array.isArray(submenuItem.submenu) && submenuItem.submenu.length > 0) ||
@@ -791,7 +795,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "LOS",
       img: Images.SettingsIcon,
       imgActive: Images.SettingsIconDark,
-      active: pathname.split("/").includes("Setting"),
+      // Scope to its own /LOS/Setting/* routes — the bare "Setting" segment also
+      // appears in /Lms/Setting/* (the LMS Setting group), which made this group
+      // falsely activate/expand on those pages.
+      active: pathname.includes("/LOS/Setting"),
           submenu: [
             // {
             //   label: "Departments",
@@ -1378,7 +1385,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           label: "Setting",
           Link: "notification",
           img: Images.SettingsIcon,
-          active: pathname.split("/").includes("Setting"),
+          // Scope to /Lms/Setting/* so it doesn't also match /LOS/Setting/*
+          // (the Access Control Management group).
+          active: pathname.includes("/Lms/Setting"),
           submenu: [
             // {
             //   label: "Product Management",
@@ -2135,7 +2144,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       Link: "notification",
       img: Images.SettingsIcon,
       imgActive: Images.SettingsIconDark,
-      active: pathname.split("/").includes("Setting"),
+      active: pathname.includes("/Lms/Setting"),
       menu: [
         {
           label: "General Setting",

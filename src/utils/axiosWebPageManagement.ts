@@ -1,8 +1,8 @@
 // src/utils/axios.js
 import Axios from "axios";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
+import { handleUnauthorized } from "./handleAuthError";
 
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_WEBPAGES_URL,
@@ -45,17 +45,9 @@ axios.interceptors.response.use(
 
 
     if (status === 401) {
-      console.warn("Unauthorized, redirecting to login...");
-      toast.error("Session expired, please login again.");
-      
-      // Clear authentication data from localStorage
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      
-      // Clear token from Redux store
-      store.dispatch(setToken({ token: "" }));
-      
-      window.location.href = "/login";
+      if (handleUnauthorized()) {
+        toast.error("Session expired, please login again.");
+      }
     }
   
     if (status === 422) {

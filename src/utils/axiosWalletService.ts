@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { handleUnauthorized } from "./handleAuthError";
 import toast from "react-hot-toast";
 
 const axiosWalletService = Axios.create({
@@ -26,10 +26,7 @@ axiosWalletService.interceptors.response.use(
     const data = error?.response?.data;
 
     if (status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      store.dispatch(setToken({ token: "" }));
-      window.location.href = "/login";
+      handleUnauthorized();
     }
 
     if (status === 500) {

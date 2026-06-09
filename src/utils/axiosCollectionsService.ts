@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
+import { handleUnauthorized } from "./handleAuthError";
 
 const axiosCollectionsService = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/collections-service`,
@@ -20,10 +20,7 @@ axiosCollectionsService.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error?.response?.status === 401) {
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-      store.dispatch(setToken({ token: "" }));
-      window.location.href = "/login";
+      handleUnauthorized();
     }
     return Promise.reject(error);
   }

@@ -23,6 +23,20 @@ html.dark .sidebar-logo--dark { display: inline-block; }
   text-decoration: none;
 }
 
+/* Remove the blue focus outline/ring that appears on a menu item after it's
+   clicked (Tailwind preflight is off, so anchors keep the default focus ring). */
+.ps-menu-button:focus,
+.ps-menu-button:focus-visible,
+.ps-menu-button:active,
+.sidebar-link:focus,
+.sidebar-link:focus-visible,
+.sidebar-link:focus-within,
+.sidebar-link:active {
+  outline: none !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+
 /* ===== Sidebar top tabs (Wallet / Financing) — modern look ===== */
 .sidebar-tab-row {
   display: flex;

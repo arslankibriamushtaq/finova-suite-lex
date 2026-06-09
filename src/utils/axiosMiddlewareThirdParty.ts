@@ -1,7 +1,7 @@
 import Axios from "axios";
 import { store } from "../redux/store";
-import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
+import { handleUnauthorized } from "./handleAuthError";
 
 const axiosMiddlewareThirdParty = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}/middleware-third-party`,
@@ -26,15 +26,9 @@ axiosMiddlewareThirdParty.interceptors.response.use(
     const data = error?.response?.data;
 
     if (status === 401) {
-      console.warn("Unauthorized, redirecting to login...");
-      toast.error("Session expired, please login again.");
-
-      localStorage.removeItem("token");
-      localStorage.removeItem("userData");
-
-      store.dispatch(setToken({ token: "" }));
-
-      window.location.href = "/login";
+      if (handleUnauthorized()) {
+        toast.error("Session expired, please login again.");
+      }
     }
 
     if (status === 422 && data?.errors) {
