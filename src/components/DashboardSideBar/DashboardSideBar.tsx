@@ -14,15 +14,34 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
+  // Pages that live under BOTH tabs (Customers, General Setting). For these we
+  // can't tell the tab from the URL, so we keep whichever tab the user last used.
+  const isSharedPage = (p: string) =>
+    p.includes("/CustomerList") ||
+    p.includes("/CustomerDetails") ||
+    p.includes("/CostByCustomer") ||
+    p.includes("/OnboardingCostByCustomer") ||
+    p.includes("/Lms/Setting/GeneralCreditScoring");
+
   const [sidebarTab, setSidebarTab] = useState<"financing" | "wallet">(() => {
-    if (typeof window !== "undefined") {
-      // Pages that only exist under the Wallet tab should always open it.
-      if (window.location.pathname.includes("/WalletTransactionLimits")) return "wallet";
+    if (typeof window === "undefined") return "financing";
+    const p = window.location.pathname;
+    // Wallet-exclusive page → always Wallet.
+    if (p.includes("/WalletTransactionLimits")) return "wallet";
+    // Shared page → fall back to the last tab the user was on.
+    if (isSharedPage(p)) {
       const saved = localStorage.getItem("sidebarTab");
-      if (saved === "wallet" || saved === "financing") return saved;
+      return saved === "wallet" ? "wallet" : "financing";
     }
+    // Everything else (incl. the LOS dashboard) → Financing.
     return "financing";
   });
+
+  // Remember the last tab so shared pages can restore it after a refresh /
+  // layout remount. Tab-exclusive pages override this in the initializer above.
+  useEffect(() => {
+    localStorage.setItem("sidebarTab", sidebarTab);
+  }, [sidebarTab]);
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const toggled = useSelector((state: RootState) => state.block.toggled);
@@ -35,12 +54,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   useEffect(() => {
     dispatch(authSlice.actions.setToggled(false));
   }, [dispatch]);
-
-  // Persist the active tab so a refresh restores it (covers pages shared
-  // between Financing and Wallet, e.g. Customers / General Setting).
-  useEffect(() => {
-    localStorage.setItem("sidebarTab", sidebarTab);
-  }, [sidebarTab]);
 
   // Auto-open menu based on current route — scoped to the active tab's list.
   useEffect(() => {
@@ -86,6 +99,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         });
         setOpenNestedSubmenus(nestedStates);
       }
+    } else {
+      // No group owns the current route (e.g. just switched to the Wallet tab
+      // on a Financing page) — collapse everything so a stale index from the
+      // other tab doesn't leave an unrelated submenu looking open.
+      setOpenSubmenuIndex(null);
+      setOpenNestedSubmenus({});
     }
   }, [pathname, sidebarTab]);
 
@@ -2098,7 +2117,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     },
     {
       label: "Wallet Management",
-      Link: "/LOS/CustomerManagement/WalletTransactionLimits",
+      Link: "/WalletTransactionLimits",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
