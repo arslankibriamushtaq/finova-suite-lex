@@ -79,7 +79,7 @@ const ManagementForm = () => {
           <div className="container">
               <div className="d-flex align-items-center justify-content-between py-1 flex-column flex-md-row">
                 <img
-                  src={Images.FactoringLogo}
+                  src={Images.DashboardLogo}
                   alt="Factoring Valley Logo"
                   style={{height: 48, objectFit: "contain"}}
                  

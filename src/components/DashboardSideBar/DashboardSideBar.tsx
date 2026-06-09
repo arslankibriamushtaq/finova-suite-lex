@@ -186,14 +186,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           imgActive: Images.dashboardIconActive,
           active: pathname.includes("/LOS/Dashboard"),
         },
-        {
-          label: "Universal Onboarding",
-          LinkLable: "LOS",
-          Link: "UniversalOnboarding",
-          img: Images.ApiManagementIcon, // Using an appropriate icon
-          imgActive: Images.ApiManagementIconDark,
-          active: pathname.includes("/LOS/UniversalOnboarding"),
-        },
+        // {
+        //   label: "Universal Onboarding",
+        //   LinkLable: "LOS",
+        //   Link: "UniversalOnboarding",
+        //   img: Images.ApiManagementIcon, // Using an appropriate icon
+        //   imgActive: Images.ApiManagementIconDark,
+        //   active: pathname.includes("/LOS/UniversalOnboarding"),
+        // },
         {
           label: "Notification Orchestrator",
           LinkLable: "LOS",

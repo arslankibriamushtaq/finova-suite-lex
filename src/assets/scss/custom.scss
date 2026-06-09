@@ -4955,8 +4955,8 @@ label {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:  var(--theme-secondary);
-  /* Light blue background */
+  /* Dark navy to match the sidebar active (tab) colour instead of red */
+  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
   border-radius: 8px;
   /* Rounded edges */
   padding: 5px;
@@ -4981,13 +4981,13 @@ label {
 .profile-btn.left {
   border-top-left-radius: 30px;
   border-bottom-left-radius: 30px;
-  color: var(--theme-primary) !important;
+  color: #ffffff !important;
 }
 
 .profile-btn.right {
   border-top-right-radius: 30px;
   border-bottom-right-radius: 30px;
-  color: var(--theme-primary) !important;
+  color: #ffffff !important;
 }
 
 .profile-btn .icon {
