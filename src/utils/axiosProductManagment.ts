@@ -1,6 +1,6 @@
 import Axios from "axios";
 import { store } from "../redux/store";
-import { handleUnauthorized } from "./handleAuthError";
+import { setToken } from "../redux/apis/apisSlice";
  
  
 const axiosProductManagement = Axios.create({
@@ -28,7 +28,15 @@ axiosProductManagement.interceptors.response.use(
  
   async function (error) {
     if (error?.response?.status === 401) {
-      handleUnauthorized();
+      // Clear authentication data from localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+      
+      // Clear token from Redux store
+      store.dispatch(setToken({ token: "" }));
+      
+      // Redirect to login page
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   },

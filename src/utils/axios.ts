@@ -1,8 +1,8 @@
 // src/utils/axios.js
 import Axios from "axios";
 import { store } from "../redux/store";
+import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
-import { handleUnauthorized } from "./handleAuthError";
 
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
@@ -29,11 +29,20 @@ axios.interceptors.response.use(
 
 
     if (status === 401) {
-      // Only log out when genuinely unauthenticated; a single endpoint's 401
-      // shouldn't nuke the session and hard-redirect to login.
-      if (handleUnauthorized()) {
-        toast.error("Session expired, please login again.");
-      }
+      console.warn("Unauthorized, redirecting to login...");
+      toast.error("Session expired, please login again.");
+
+      // Clear authentication data from localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+
+      // Clear redux-persist persisted state so PublicRoute won't redirect back
+      localStorage.removeItem("persist:root");
+
+      // Clear token from Redux store
+      store.dispatch(setToken({ token: "" }));
+
+      window.location.href = "/login";
     }
     // }
     if (status === 422) {

@@ -7,11 +7,7 @@ import axios from "../../utils/axiosNotifications";
  */
 
 const BASE_PATH = "/notification-service/api/v1/notifications";
-// Must match the tenant of the logged-in token (same value the rest of the app
-// uses, e.g. apisRiskManagement / apisCrudLms). A mismatched/placeholder tenant
-// makes the service reject the request with 401, which the axios interceptor
-// turns into a forced logout + redirect to /login.
-const DEFAULT_TENANT_ID = "00000000-0000-0000-0000-000000000001";
+const DEFAULT_TENANT_ID = "550e8400-e29b-41d4-a716-446655440000";
 
 const getHeaders = () => ({
   "X-Tenant-Id": DEFAULT_TENANT_ID,

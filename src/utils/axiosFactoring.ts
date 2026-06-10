@@ -1,8 +1,8 @@
 import Axios from "axios";
 import { store } from "../redux/store";
+import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
 import toast from "react-hot-toast";
-import { handleUnauthorized } from "./handleAuthError";
 const axiosFactoring = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}`,
 });
@@ -18,7 +18,7 @@ axiosFactoring.interceptors.request.use((reqConfig) => {
     // if (accessToken && accessToken !== "undefined") {
      config.headers["Authorization"] = `Bearer ${token}`;
      config.headers["Content-Type"] = "application/json";
-     config.headers["X-Tenant-Id"] = "00000000-0000-0000-0000-000000000001";
+     config.headers["X-Tenant-Id"] = "550e8400-e29b-41d4-a716-446655440000";
       // Let axios set Content-Type for FormData (multipart/form-data with boundary)
       if (!(config.data instanceof FormData)) {
         config.headers["Content-Type"] = "application/json";
@@ -45,8 +45,17 @@ axiosFactoring.interceptors.response.use(
   async function (error) {
     // console.log(error)
     if (error?.response?.status === 401) {
-      if (handleUnauthorized()) {
+      // Clear authentication data from localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+
+      // Clear token from Redux store
+      store.dispatch(setToken({ token: "" }));
+      
+      // Redirect to login page
+      if(window.location.pathname !== "/login"){
         toast.error("Session expired, redirecting to login...");
+        window.location.href = "/login";
       }
     }
     

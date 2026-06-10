@@ -1,5 +1,6 @@
 import Axios from "axios";
-import { handleUnauthorized } from "./handleAuthError";
+import { store } from "../redux/store";
+import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
  
 const axiosWalletLms = Axios.create({
@@ -41,7 +42,15 @@ axiosWalletLms.interceptors.response.use(
   async function (error) {
     // console.log(error)
     if (error?.response?.status === 401) {
-      handleUnauthorized();
+      // Clear authentication data from localStorage
+      localStorage.removeItem("token");
+      localStorage.removeItem("userData");
+      
+      // Clear token from Redux store
+      store.dispatch(setToken({ token: "" }));
+      
+      // Redirect to login page
+      window.location.href = "/login";
     }
     return Promise.reject(error);
   },
