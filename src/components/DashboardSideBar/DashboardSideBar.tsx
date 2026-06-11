@@ -27,7 +27,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     if (typeof window === "undefined") return "financing";
     const p = window.location.pathname;
     // Wallet-exclusive page → always Wallet.
-    if (p.includes("/WalletTransactionLimits")) return "wallet";
+    if (p.includes("/WalletTransactionLimits") || p.includes("/Wallet/")) return "wallet";
     // Shared page → fall back to the last tab the user was on.
     if (isSharedPage(p)) {
       const saved = localStorage.getItem("sidebarTab");
@@ -2126,16 +2126,47 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     },
     {
       label: "Wallet Management",
-      Link: "/WalletTransactionLimits",
+      Link: "/Wallet/Dashboard",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
-      active: pathname.includes("/WalletTransactionLimits"),
+      active:
+        pathname.includes("/Wallet/Dashboard") ||
+        pathname.includes("/WalletTransactionLimits"),
       menu: [
+        {
+          label: "Wallets",
+          Link: "Dashboard",
+          LinkLable: "/LOS/Wallet",
+          active: pathname.includes("/Wallet/Dashboard"),
+        },
         {
           label: "Wallet Transactions Limits",
           Link: "WalletTransactionLimits",
           LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/WalletTransactionLimits"),
+        },
+      ].filter(Boolean),
+    },
+    {
+      label: "Transfers",
+      Link: "/Wallet/SendMoney",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active:
+        pathname.includes("/Wallet/SendMoney") ||
+        pathname.includes("/Wallet/InternalTransfer"),
+      menu: [
+        {
+          label: "Send Money",
+          Link: "SendMoney",
+          LinkLable: "/LOS/Wallet",
+          active: pathname.includes("/Wallet/SendMoney"),
+        },
+        {
+          label: "Internal Transfer",
+          Link: "InternalTransfer",
+          LinkLable: "/LOS/Wallet",
+          active: pathname.includes("/Wallet/InternalTransfer"),
         },
       ].filter(Boolean),
     },

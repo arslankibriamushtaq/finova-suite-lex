@@ -219,6 +219,9 @@ import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleCon
 import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyManagement";
 import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScoring";
 import WalletTransactionLimits from "../pages/lmsPages/CustomerManagement/WalletTransactionLimits";
+import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
+import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
+import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
 import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
@@ -788,6 +791,18 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/CustomerManagement/WalletTransactionLimits",
             element: <WalletTransactionLimits />,
+          },
+          {
+            path: "/LOS/Wallet/Dashboard",
+            element: <WalletDashboard />,
+          },
+          {
+            path: "/LOS/Wallet/SendMoney",
+            element: <SendMoney />,
+          },
+          {
+            path: "/LOS/Wallet/InternalTransfer",
+            element: <InternalTransfer />,
           },
           { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
           { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },

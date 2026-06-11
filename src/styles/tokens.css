@@ -1928,3 +1928,94 @@ html.dark .theme-btn-back:disabled {
   color: #cbd5e1 !important;
   border: 1px solid var(--surface-border-strong) !important;
 }
+
+/* ============================================================
+   Wallet module — theme-aware brand buttons / badges / cards
+   Light: dark navy (matches sidebar tab). Dark: light slate so it
+   stays visible on the dark surface.
+   ============================================================ */
+.wallet-brand-btn {
+  background-color: #1e293b !important;
+  border-color: #1e293b !important;
+  color: #ffffff !important;
+  border-radius: 8px !important;
+}
+.wallet-brand-btn:hover {
+  filter: brightness(0.92);
+}
+.wallet-brand-bg {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+.wallet-brand-card {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  color: #ffffff !important;
+}
+
+html.dark .wallet-brand-btn,
+.dark .wallet-brand-btn {
+  background-color: #e2e8f0 !important;
+  border-color: #e2e8f0 !important;
+  color: #0f172a !important;
+}
+html.dark .wallet-brand-bg,
+.dark .wallet-brand-bg {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+html.dark .wallet-brand-card,
+.dark .wallet-brand-card {
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%) !important;
+  color: #ffffff !important;
+}
+
+/* Wallet rail tabs — underline style (matches the Settings tabs). */
+.wallet-tabs {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  height: auto !important;
+  gap: 0 !important;
+  justify-content: flex-start;
+  width: fit-content;
+}
+.wallet-tabs .wallet-tab-trigger {
+  flex: 0 0 auto !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--muted-foreground) !important;
+  padding: 10px 16px !important;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: none !important;
+  outline: none !important;
+  position: relative;
+  transition: color 0.15s ease;
+}
+.wallet-tabs .wallet-tab-trigger:hover {
+  color: var(--foreground) !important;
+}
+.wallet-tabs .wallet-tab-trigger[data-state="active"] {
+  background: transparent !important;
+  color: var(--foreground) !important;
+  box-shadow: none !important;
+  font-weight: 600;
+}
+.wallet-tabs .wallet-tab-trigger[data-state="active"]::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: -1px;
+  height: 2px;
+  background-color: var(--foreground);
+}
+html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"],
+.dark .wallet-tabs .wallet-tab-trigger[data-state="active"] {
+  color: #ffffff !important;
+}
+html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
+.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after {
+  background-color: #ffffff;
+}

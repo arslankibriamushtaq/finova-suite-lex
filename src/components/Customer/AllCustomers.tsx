@@ -9,7 +9,8 @@ import { getCustomers } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined, SyncOutlined } from "@ant-design/icons";
-import { SaudiRiyal, UserPlus, ShieldOff } from "lucide-react";
+import { SaudiRiyal, UserPlus, ShieldOff, Users } from "lucide-react";
+import BeneficiariesDialog from "../../pages/lmsPages/Wallet/BeneficiariesDialog";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
@@ -50,6 +51,9 @@ const AllCustomers = () => {
   const [selectedUserForStatusChange, setSelectedUserForStatusChange] = useState<any>(null);
   const [newStatus, setNewStatus] = useState<string>("");
   const [isChangingStatus, setIsChangingStatus] = useState(false);
+
+  // Beneficiaries dialog state
+  const [beneficiaryCustomerId, setBeneficiaryCustomerId] = useState<string | null>(null);
 
   // Change risk modal state
   const [isChangeRiskModalVisible, setIsChangeRiskModalVisible] = useState(false);
@@ -281,6 +285,13 @@ const AllCustomers = () => {
       >
         Onboarding Cost By Customer
       </Menu.Item>
+      <Menu.Item
+        key="checkBeneficiaries"
+        icon={<Users size={14} />}
+        onClick={() => handleMenuClick("checkBeneficiaries", row)}
+      >
+        Check Beneficiary List
+      </Menu.Item>
       {/* <Menu.Item
         key="manageBlockCodes"
         icon={<ShieldOff size={14} />}
@@ -321,6 +332,9 @@ const AllCustomers = () => {
         break;
       case "onboardingCostByCustomer":
         navigate(`/LOS/CustomerManagement/OnboardingCostByCustomer/${data.id}`);
+        break;
+      case "checkBeneficiaries":
+        setBeneficiaryCustomerId(data.id);
         break;
       case "logout":
         // Handle force logout action
@@ -1058,6 +1072,12 @@ const AllCustomers = () => {
           )}
         </div>
       </Modal>
+
+      {/* Customer Beneficiaries (IBAN + IBFT) */}
+      <BeneficiariesDialog
+        customerId={beneficiaryCustomerId}
+        onClose={() => setBeneficiaryCustomerId(null)}
+      />
 
     </div>
   );
