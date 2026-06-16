@@ -166,8 +166,8 @@ const FinancialStatements = () => {
               <span style={{
                 padding: '4px 8px',
                 borderRadius: '4px',
-                backgroundColor: row.status ? '#d4edda' : '#f8d7da',
-                color: row.status ? '#155724' : '#721c24',
+                backgroundColor: row.status ? 'var(--color-success)' : 'var(--color-error)',
+                color: 'white',
                 fontSize: '12px',
                 fontWeight: '500'
               }}>

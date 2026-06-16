@@ -154,7 +154,7 @@ const DayBook = () => {
             padding: "4px 10px",
             borderRadius: "12px",
             fontSize: "12px",
-            backgroundColor: row.status === "POSTED" ? "#92BC83" : "#959595",
+            backgroundColor: row.status === "POSTED" ? "var(--color-success)" : "#959595",
             color: "white",
             whiteSpace: "nowrap",
           }}

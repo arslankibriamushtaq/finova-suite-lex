@@ -108,7 +108,7 @@ const RoleList = () => {
             padding: "8px 10px",
             fontSize: "12px",
             borderRadius: "32px",
-            backgroundColor: row.IsSystem ? "var(--color-primary, #1890ff)" : "#8c8c8c",
+            backgroundColor: row.IsSystem ? "var(--color-info-blue)" : "#8c8c8c",
             color: "white",
           }}
         >

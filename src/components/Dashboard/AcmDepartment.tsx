@@ -65,7 +65,7 @@ const Departments = () => {
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.Status ? "#92BC83" : "#373435",
+            backgroundColor: row.Status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
           }}
         >

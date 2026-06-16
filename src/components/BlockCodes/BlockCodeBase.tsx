@@ -110,7 +110,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
           style={{
             padding: "5px 10px",
             borderRadius: "20px",
-            backgroundColor: row.status ? "#52c41a" : "#ff4d4f",
+            backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
           }}

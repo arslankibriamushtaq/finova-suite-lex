@@ -207,7 +207,7 @@ const ChartOfAccountFields = () => {
               borderRadius: "32px",
               fontSize: "11px",
               fontWeight: "600",
-              backgroundColor: isActive ? "#28a745" : "#dc3545",
+              backgroundColor: isActive ? "var(--color-success)" : "var(--color-error)",
               color: "white",
               textAlign: "center",
               width: "80px",

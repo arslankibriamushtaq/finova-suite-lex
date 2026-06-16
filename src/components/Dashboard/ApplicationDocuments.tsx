@@ -144,7 +144,7 @@ function ApplicationDocuments() {
           style={{
             padding: "0.22rem 1rem",
             borderRadius: "12px",
-            backgroundColor: row.status ? "rgba(63, 195, 128, 0.9)" : "#F84D4D",
+            backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
           }}
         >

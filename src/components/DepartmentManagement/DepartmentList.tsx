@@ -40,7 +40,7 @@ const DepartmentList = () => {
             padding: "6px 14px",
             fontSize: "12px",
             borderRadius: "32px",
-            backgroundColor: row.by_default ? "rgba(63, 195, 128, 0.9)" : "#FF6161",
+            backgroundColor: row.by_default ? "var(--color-success)" : "var(--color-error)",
             color: "white",
           }}
         >
@@ -56,7 +56,7 @@ const DepartmentList = () => {
             padding: "6px 14px",
             fontSize: "12px",
             borderRadius: "32px",
-            backgroundColor: row.status ? "rgba(63, 195, 128, 0.9)" : "#FF6161",
+            backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
           }}
         >

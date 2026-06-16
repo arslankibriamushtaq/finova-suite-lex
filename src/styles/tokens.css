@@ -1246,7 +1246,7 @@ html.dark .rdt_TableCell .theme-btn,
 html.dark .rdt_TableCell .theme-btn-next,
 html.dark .rdt_TableCell .gradient-btn,
 html.dark .rdt_TableCell button.dropdown-toggle,
-html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([class*="ant-switch"]) {
+html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([class*="ant-switch"]):not([data-slot="switch"]) {
   background-color: var(--surface-card-alt) !important;
   background: var(--surface-card-alt) !important;
   color: var(--foreground) !important;
@@ -1259,11 +1259,24 @@ html.dark .rdt_TableCell .theme-btn:hover,
 html.dark .rdt_TableCell .theme-btn-next:hover,
 html.dark .rdt_TableCell .gradient-btn:hover,
 html.dark .rdt_TableCell button.dropdown-toggle:hover,
-html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([class*="ant-switch"]):hover {
+html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([class*="ant-switch"]):not([data-slot="switch"]):hover {
   background-color: var(--surface-card-hover) !important;
   background: var(--surface-card-hover) !important;
   border-color: var(--surface-border-strong) !important;
   color: var(--foreground) !important;
+}
+
+/* shadcn Switch — dark mode. The Radix switch renders a <button type="button">
+   (excluded from the table-cell override above). Without explicit colors the
+   checked state uses bg-primary, which in dark mode resolves to white — giving
+   a white track with a white (invisible) thumb. Use a muted brand blue for the
+   "on" state and a neutral track for "off", with the white thumb for contrast,
+   so toggles read correctly and professionally on dark surfaces. */
+html.dark [data-slot="switch"][data-state="checked"] {
+  background-color: var(--color-info-blue) !important;
+}
+html.dark [data-slot="switch"][data-state="unchecked"] {
+  background-color: var(--surface-border-strong) !important;
 }
 
 /* shadcn Badge — dark mode. The default variant uses bg-primary which in
@@ -1291,17 +1304,37 @@ html.dark [data-slot="badge"][class*="secondary"] {
   color: #ffffff !important;
   border-color: var(--surface-border-strong) !important;
 }
-/* destructive variant — keep the red */
-html.dark [data-slot="badge"][class*="destructive"] {
+/* destructive variant — keep the red. Match by `bg-destructive` (only the
+   destructive variant emits it); matching the bare `destructive` substring
+   would falsely hit EVERY badge, because the base Badge utilities include
+   `aria-invalid:ring-destructive/*` and `aria-invalid:border-destructive`. */
+html.dark [data-slot="badge"][class*="bg-destructive"] {
   background-color: var(--color-error, #ef4444) !important;
   color: #ffffff !important;
   border-color: transparent !important;
 }
-/* outline variant — transparent bg, white text */
-html.dark [data-slot="badge"][class*="outline"] {
-  background-color: transparent !important;
-  background: transparent !important;
-  color: var(--foreground) !important;
+
+/* Pastel status badges (e.g. `bg-green-100 text-green-700`) are tuned for light
+   mode and wash out / read poorly on dark surfaces. Remap the common combos to
+   the semantic dark status tokens so Active/Blocked/etc. stay legible. */
+html.dark [data-slot="badge"][class*="bg-green-100"] {
+  background-color: var(--color-success-bg) !important;
+  color: var(--color-success-text) !important;
+  border-color: var(--color-success-border) !important;
+}
+html.dark [data-slot="badge"][class*="bg-red-100"] {
+  background-color: var(--color-error-bg) !important;
+  color: var(--color-error-text) !important;
+  border-color: var(--color-error-border) !important;
+}
+html.dark [data-slot="badge"][class*="bg-orange-100"] {
+  background-color: rgba(245, 158, 11, 0.14) !important;
+  color: #fcd34d !important;
+  border-color: rgba(245, 158, 11, 0.35) !important;
+}
+html.dark [data-slot="badge"][class*="bg-gray-100"] {
+  background-color: var(--surface-card-alt) !important;
+  color: var(--muted-foreground) !important;
   border-color: var(--surface-border-strong) !important;
 }
 
@@ -1309,6 +1342,49 @@ html.dark [data-slot="badge"][class*="outline"] {
 html.dark .rdt_TableCell span[style*="background"],
 html.dark .rdt_TableCell div[style*="background"] {
   color: #ffffff !important;
+}
+
+/* ===== Unified status pills (dark theme) =====
+   Many tables render status as an inline-styled <div>/<span> with a SOLID
+   status colour + white text (e.g. backgroundColor: var(--color-success)).
+   In dark mode that reads as a heavy, inconsistent block next to the softer
+   shadcn Badge pills. Remap every status-coloured inline pill to the same
+   translucent tint + matching text + subtle border so Active/Inactive/Pending
+   look identical across the whole app. Inline styles only yield to !important. */
+html.dark .rdt_TableCell span[style*="--color-success"],
+html.dark .rdt_TableCell div[style*="--color-success"],
+html.dark .rdt_TableCell span[style*="--color-status-green"],
+html.dark .rdt_TableCell div[style*="--color-status-green"],
+html.dark .no-table td span[style*="--color-success"],
+html.dark .no-table td div[style*="--color-success"] {
+  background-color: var(--color-success-bg) !important;
+  background: var(--color-success-bg) !important;
+  color: #4ade80 !important;
+  border: 1px solid var(--color-success-border) !important;
+}
+html.dark .rdt_TableCell span[style*="--color-error"],
+html.dark .rdt_TableCell div[style*="--color-error"],
+html.dark .rdt_TableCell span[style*="--color-status-red-soft"],
+html.dark .rdt_TableCell div[style*="--color-status-red-soft"],
+html.dark .rdt_TableCell span[style*="--destructive"],
+html.dark .rdt_TableCell div[style*="--destructive"],
+html.dark .no-table td span[style*="--color-error"],
+html.dark .no-table td div[style*="--color-error"] {
+  background-color: var(--color-error-bg) !important;
+  background: var(--color-error-bg) !important;
+  color: #fb7185 !important;
+  border: 1px solid var(--color-error-border) !important;
+}
+html.dark .rdt_TableCell span[style*="--color-warning"],
+html.dark .rdt_TableCell div[style*="--color-warning"],
+html.dark .rdt_TableCell span[style*="--color-status-amber"],
+html.dark .rdt_TableCell div[style*="--color-status-amber"],
+html.dark .no-table td span[style*="--color-warning"],
+html.dark .no-table td div[style*="--color-warning"] {
+  background-color: rgba(245, 158, 11, 0.14) !important;
+  background: rgba(245, 158, 11, 0.14) !important;
+  color: #fcd34d !important;
+  border: 1px solid rgba(245, 158, 11, 0.35) !important;
 }
 
 /* Coloured pills using color: var(--primary-foreground) in their inline style.
