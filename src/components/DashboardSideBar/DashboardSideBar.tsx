@@ -11,7 +11,6 @@ import SubHeaderFlowLms from "../DashboardHeader/SubHeaderFlowLms";
 import { FaMobileAlt, FaTimes } from "react-icons/fa";
 
 const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolean }) => {
-  const [hoveredItem, setHoveredItem] = useState<any>(null);
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
   // Pages that live under BOTH tabs (Customers, General Setting). For these we
@@ -2201,18 +2200,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     <div className="menu-items css-12w9als" key={item.label}>
       <SubMenu
         label={<span className="sidebar-label-text">{item.label}</span>}
-        icon={
-          item.img ? (
-            <img
-              style={{
-                filter: hoveredItem === index ? "brightness(0) contrast(100%)" : "none",
-              }}
-              src={item.img}
-            />
-          ) : (
-            ""
-          )
-        }
+        icon={item.img ? <img src={item.img} /> : ""}
         // defaultOpen={item.active}
         open={openSubmenuIndex === index}
         onClick={() => {
@@ -2221,8 +2209,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             prevIndex === index ? null : index
           );
         }}
-        onMouseEnter={() => setHoveredItem(index)}
-        onMouseLeave={() => setHoveredItem(null)}
       >
         {item.menu.filter(Boolean).map((submenuItem: any, subIndex: any) => {
           // Check for both 'submenu' and 'menu' properties for nested items
@@ -2328,7 +2314,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   return (
     <>
       <Sidebar
-        transitionDuration={1000}
+        transitionDuration={0}
         onBackdropClick={() => dispatch(authSlice.actions.toggleSidebar())}
         toggled={toggled}
         collapsed={isCollapsed}
@@ -2403,7 +2389,11 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             </button>
           </div>
         )}
-        <Menu>
+        {/* transitionDuration=0: the open/close submenu HEIGHT animation is
+            driven by <Menu> (react-pro-sidebar reads it from the Menu context,
+            not the Sidebar). At 0 the height snaps instantly, so re-measuring an
+            open submenu can't slide the items below it = no jerking. */}
+        <Menu transitionDuration={0}>
           {sidebarTab === "financing" ? (
             sidebarItems.map((item, index) => (
               <React.Fragment key={index}>
@@ -2419,14 +2409,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                     >
                       <MenuItem
                         active={item.active}
-                        onMouseEnter={() => setHoveredItem(index)}
-                        onMouseLeave={() => setHoveredItem(null)}
                         prefix={
                           item.img ? (
                             <img
                               src={item.img}
                               style={{
-                                filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
+                                filter: item.active ? "brightness(0) contrast(100%)" : "none"
                               }}
                             />
                           ) : null
@@ -2455,14 +2443,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                       >
                         <MenuItem
                           active={item.active}
-                          onMouseEnter={() => setHoveredItem(index)}
-                          onMouseLeave={() => setHoveredItem(null)}
                           prefix={
                             item.img ? (
                               <img
                                 src={item.img}
                                 style={{
-                                  filter: (hoveredItem === index || item.active) ? "brightness(0) contrast(100%)" : "none"
+                                  filter: item.active ? "brightness(0) contrast(100%)" : "none"
                                 }}
                               />
                             ) : null
@@ -2487,6 +2473,18 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }
           .ps-sidebar-root {
             border-right: none !important;
+          }
+          /* Hard-stop the open-submenu height animation so a re-measure on
+             hover can never slide the items below an open group (the jerk). */
+          .ps-submenu-content {
+            transition: height 0s !important;
+          }
+          /* Hover icon highlight — moved from JS (setHoveredItem) to CSS so
+             hovering a group no longer re-renders the sidebar (the re-render
+             re-ran react-pro-sidebar's expandContent and slid the rows below an
+             open group). Filter is paint-only, so it never shifts layout. */
+          .ps-menu-button:hover img {
+            filter: brightness(0) contrast(100%) !important;
           }
           /* Wallet tab: its groups are top-level (level 0) whereas the
              Financing groups are nested one level deeper. Shift the Wallet
@@ -2534,4 +2532,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   );
 };
 
-export default DasbhboardSidebar;
+/* Memoized so the sidebar does NOT re-render when the Layout flips its
+   `isHovered` flag on mouse-enter (the prop `effectiveCollapsed` is unchanged
+   while the sidebar is expanded). Re-renders on hover made react-pro-sidebar
+   re-measure the open submenu and replay its height animation — a visible
+   "jerk", most obvious on groups with a single page. It still re-renders for
+   real changes: route, collapse/expand, and tab switches. */
+export default React.memo(DasbhboardSidebar);
