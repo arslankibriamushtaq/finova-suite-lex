@@ -12,6 +12,7 @@ import {
   XCircle,
   X,
   Wallet as WalletIcon,
+  ArrowLeftRight,
 } from "lucide-react";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -42,10 +43,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
+import {
+  Tabs,
+  TabsList,
+  TabsTrigger,
+} from "../../../components/ui/tabs";
 
 import {
   listAdminWallets,
   getAdminWalletDetail,
+  getWalletTransactions,
   changeWalletStatus,
   WalletResponse,
   WalletStatus,
@@ -120,6 +127,35 @@ const formatDate = (dateString: string | null | undefined) => {
   }
 };
 
+// Transaction responses vary in field naming across services — read the first
+// present key so the table is resilient to shape differences.
+const txGet = (t: any, keys: string[], fallback: any = "-") => {
+  for (const k of keys) {
+    const v = t?.[k];
+    if (v !== undefined && v !== null && v !== "") return v;
+  }
+  return fallback;
+};
+
+// Classify a transaction as money IN (received) or OUT (sent).
+const txDirection = (t: any): "in" | "out" | "unknown" => {
+  const dir = String(
+    txGet(t, ["direction", "debitCredit", "drCr", "entryType", "flow"], "")
+  ).toLowerCase();
+  if (dir) {
+    if (/(credit|^cr$|\bin\b|receiv|deposit|incoming)/.test(dir)) return "in";
+    if (/(debit|^dr$|\bout\b|sent|send|withdraw|outgoing)/.test(dir)) return "out";
+  }
+  const type = String(txGet(t, ["type", "transactionType"], "")).toLowerCase();
+  if (/(receiv|deposit|credit|incoming|cash[_-]?in|top[_-]?up|refund)/.test(type))
+    return "in";
+  if (/(send|sent|withdraw|debit|outgoing|cash[_-]?out|payment|transfer)/.test(type))
+    return "out";
+  const amt = Number(txGet(t, ["amount", "transactionAmount"], NaN));
+  if (!Number.isNaN(amt)) return amt >= 0 ? "in" : "out";
+  return "unknown";
+};
+
 const StatusBadge = ({ status }: { status: string }) => (
   <span
     className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
@@ -167,6 +203,53 @@ const WalletDashboard = () => {
   } | null>(null);
   const [actionReason, setActionReason] = useState("");
   const [isActing, setIsActing] = useState(false);
+
+  // Transactions dialog
+  const [txWallet, setTxWallet] = useState<WalletResponse | null>(null);
+  const [transactions, setTransactions] = useState<any[]>([]);
+  const [isTxLoading, setIsTxLoading] = useState(false);
+  const [txPage, setTxPage] = useState(1); // 1-based, client-side page
+  const [txSize, setTxSize] = useState(10); // rows per page (client-side)
+  const [txFilter, setTxFilter] = useState<"ALL" | "IN" | "OUT">("ALL");
+
+  // Load the wallet's transactions once, then filter + paginate on the client so
+  // pagination always matches the active All/Received/Sent tab.
+  useEffect(() => {
+    if (!txWallet) return;
+    loadTransactions(txWallet.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [txWallet]);
+
+  const loadTransactions = async (walletId: string) => {
+    setIsTxLoading(true);
+    try {
+      const res = await getWalletTransactions(walletId, 0, 500);
+      const payload = res?.data || {};
+      const rows = payload?.data || payload?.content || [];
+      setTransactions(Array.isArray(rows) ? rows : []);
+    } catch (error: any) {
+      console.error(error);
+      toast.error(
+        error?.response?.data?.message || "Failed to load wallet transactions"
+      );
+      setTransactions([]);
+    } finally {
+      setIsTxLoading(false);
+    }
+  };
+
+  const openTransactions = (wallet: WalletResponse) => {
+    setTransactions([]);
+    setTxFilter("ALL");
+    setTxPage(1);
+    setTxSize(10);
+    setTxWallet(wallet);
+  };
+
+  const changeTxFilter = (f: "ALL" | "IN" | "OUT") => {
+    setTxFilter(f);
+    setTxPage(1); // reset to first page so pagination matches the new tab
+  };
 
   useEffect(() => {
     loadWallets();
@@ -322,6 +405,13 @@ const WalletDashboard = () => {
                   <span>View Detail</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
+                  onClick={() => openTransactions(row)}
+                  className="cursor-pointer gap-2"
+                >
+                  <ArrowLeftRight className="h-4 w-4" />
+                  <span>Transactions</span>
+                </DropdownMenuItem>
+                <DropdownMenuItem
                   onClick={() => setBeneficiaryCustomerId(row.customerId)}
                   className="cursor-pointer gap-2"
                 >
@@ -354,6 +444,118 @@ const WalletDashboard = () => {
       ignoreRowClick: true,
       allowOverflow: true,
       width: "140px",
+    },
+  ];
+
+  const receivedCount = transactions.filter((t) => txDirection(t) === "in").length;
+  const sentCount = transactions.filter((t) => txDirection(t) === "out").length;
+  const filteredTx = transactions.filter((t) => {
+    if (txFilter === "ALL") return true;
+    const d = txDirection(t);
+    return txFilter === "IN" ? d === "in" : d === "out";
+  });
+  const txTotalRows = filteredTx.length;
+  const txTotalPages = Math.max(1, Math.ceil(txTotalRows / txSize));
+  const txCurrentPage = Math.min(txPage, txTotalPages);
+  const pagedTx = filteredTx.slice(
+    (txCurrentPage - 1) * txSize,
+    txCurrentPage * txSize
+  );
+  const txFilters: { key: "ALL" | "IN" | "OUT"; label: string }[] = [
+    { key: "ALL", label: `All (${transactions.length})` },
+    { key: "IN", label: `Received (${receivedCount})` },
+    { key: "OUT", label: `Sent (${sentCount})` },
+  ];
+
+  const txHeaders = [
+    {
+      name: "#",
+      cell: (_row: any, index: number) => (txCurrentPage - 1) * txSize + index + 1,
+      width: "60px",
+    },
+    {
+      name: "Date",
+      cell: (row: any) => (
+        <span className="text-xs text-muted-foreground">
+          {formatDate(txGet(row, ["createdAt", "transactionDate", "timestamp", "date"], null))}
+        </span>
+      ),
+      width: "170px",
+    },
+    {
+      name: "Type",
+      cell: (row: any) => {
+        const dir = txDirection(row);
+        return (
+          <span className="inline-flex items-center gap-1.5">
+            <span
+              className="inline-block h-2 w-2 rounded-full"
+              style={{
+                background:
+                  dir === "in"
+                    ? "var(--color-success)"
+                    : dir === "out"
+                    ? "var(--color-error)"
+                    : "var(--muted-foreground)",
+              }}
+            />
+            {String(txGet(row, ["type", "transactionType"], "-")).replace(/_/g, " ")}
+          </span>
+        );
+      },
+      width: "180px",
+    },
+    {
+      name: "Reference",
+      cell: (row: any) => (
+        <span className="font-mono text-xs text-muted-foreground break-all">
+          {txGet(row, ["reference", "transactionReference", "referenceNumber", "id"], "-")}
+        </span>
+      ),
+    },
+    {
+      name: "Amount",
+      cell: (row: any) => {
+        const dir = txDirection(row);
+        const amount = txGet(row, ["amount", "transactionAmount"], null);
+        const currency = txGet(row, ["currency"], txWallet?.currency || "");
+        return (
+          <span
+            className="font-medium"
+            style={{
+              color:
+                dir === "in"
+                  ? "var(--color-success)"
+                  : dir === "out"
+                  ? "var(--color-error)"
+                  : "var(--foreground)",
+            }}
+          >
+            {amount === null
+              ? "-"
+              : `${dir === "in" ? "+" : dir === "out" ? "-" : ""}${formatMoney(Math.abs(Number(amount)), currency)}`}
+          </span>
+        );
+      },
+      width: "160px",
+    },
+    {
+      name: "Balance After",
+      cell: (row: any) =>
+        formatMoney(
+          txGet(row, ["balanceAfter", "runningBalance", "balance"], null),
+          txGet(row, ["currency"], txWallet?.currency || "")
+        ),
+      width: "150px",
+    },
+    {
+      name: "Status",
+      cell: (row: any) => (
+        <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
+          {String(txGet(row, ["status", "state"], "-")).replace(/_/g, " ")}
+        </span>
+      ),
+      width: "130px",
     },
   ];
 
@@ -603,6 +805,125 @@ const WalletDashboard = () => {
                 : "Confirm"}
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Transactions Dialog */}
+      <Dialog
+        open={!!txWallet}
+        onOpenChange={(open) => !open && setTxWallet(null)}
+      >
+        <DialogContent
+          className="gap-0"
+          showCloseButton={false}
+          style={{
+            padding: 0,
+            overflow: "hidden",
+            width: "min(96vw, 1000px)",
+            maxWidth: "1000px",
+            maxHeight: "90vh",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <DialogHeader
+            className="relative border-b px-6 pt-5 pb-3 text-left"
+            style={{ borderColor: "var(--border)", flexShrink: 0 }}
+          >
+            <button
+              type="button"
+              onClick={() => setTxWallet(null)}
+              aria-label="Close"
+              className="absolute flex items-center justify-center rounded-full transition-colors"
+              style={{
+                top: 16,
+                right: 16,
+                height: 32,
+                width: 32,
+                border: "none",
+                background: "transparent",
+                color: "var(--muted-foreground)",
+                cursor: "pointer",
+              }}
+            >
+              <X className="h-[18px] w-[18px]" />
+            </button>
+            <DialogTitle
+              className="flex items-center gap-3"
+              style={{ fontSize: "1.125rem", fontWeight: 600 }}
+            >
+              <span className="wallet-brand-bg inline-flex h-9 w-9 items-center justify-center rounded-lg">
+                <ArrowLeftRight className="h-5 w-5" />
+              </span>
+              Wallet Transactions
+              {isTxLoading && (
+                <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
+              )}
+            </DialogTitle>
+            <DialogDescription style={{ marginTop: 2 }}>
+              {txWallet?.walletNumber}
+              {txWallet?.maskedName ? ` — ${txWallet.maskedName}` : ""}
+            </DialogDescription>
+          </DialogHeader>
+
+          {/* Received / Sent filter — uses the wallet module's tab style */}
+          <div
+            className="px-6 pt-4 pb-1"
+            style={{ flexShrink: 0, borderBottom: "1px solid var(--border)" }}
+          >
+            <Tabs value={txFilter} onValueChange={(v) => changeTxFilter(v as any)}>
+              <TabsList className="wallet-tabs">
+                {txFilters.map((f) => (
+                  <TabsTrigger
+                    key={f.key}
+                    value={f.key}
+                    className="wallet-tab-trigger"
+                  >
+                    {f.label}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          </div>
+
+          {/* Vertically scrollable area; the table's own grid handles the
+              horizontal scroll so only the rows scroll (pagination stays put). */}
+          <div
+            style={{
+              flex: 1,
+              minHeight: 0,
+              overflowY: "auto",
+              overflowX: "hidden",
+              padding: "16px 24px",
+            }}
+          >
+            <div
+              className="bg-white"
+              style={{
+                borderRadius: 12,
+                border: "1px solid var(--border)",
+                overflow: "hidden",
+              }}
+            >
+              <TableView
+                header={txHeaders}
+                data={pagedTx}
+                isLoading={isTxLoading}
+                paginationShow={txTotalRows > 0}
+                page={txCurrentPage}
+                setPage={setTxPage}
+                pageSize={txSize}
+                setPageSize={(s: number) => {
+                  setTxSize(s);
+                  setTxPage(1);
+                }}
+                totalRows={txTotalRows}
+                totalPage={txTotalPages}
+                from={txTotalRows === 0 ? 0 : (txCurrentPage - 1) * txSize + 1}
+                to={Math.min(txCurrentPage * txSize, txTotalRows)}
+              />
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 

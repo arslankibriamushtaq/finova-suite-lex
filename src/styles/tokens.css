@@ -1350,37 +1350,40 @@ html.dark .rdt_TableCell div[style*="background"] {
    In dark mode that reads as a heavy, inconsistent block next to the softer
    shadcn Badge pills. Remap every status-coloured inline pill to the same
    translucent tint + matching text + subtle border so Active/Inactive/Pending
-   look identical across the whole app. Inline styles only yield to !important. */
-html.dark .rdt_TableCell span[style*="--color-success"],
-html.dark .rdt_TableCell div[style*="--color-success"],
-html.dark .rdt_TableCell span[style*="--color-status-green"],
-html.dark .rdt_TableCell div[style*="--color-status-green"],
-html.dark .no-table td span[style*="--color-success"],
-html.dark .no-table td div[style*="--color-success"] {
+   look identical across the whole app. Inline styles only yield to !important.
+   NOTE: each selector also requires [style*="background"] so it only matches
+   pills that set a background colour — NOT cells that merely use a status token
+   for TEXT colour (e.g. a plain green "No"), which must stay un-pilled. */
+html.dark .rdt_TableCell span[style*="background"][style*="--color-success"],
+html.dark .rdt_TableCell div[style*="background"][style*="--color-success"],
+html.dark .rdt_TableCell span[style*="background"][style*="--color-status-green"],
+html.dark .rdt_TableCell div[style*="background"][style*="--color-status-green"],
+html.dark .no-table td span[style*="background"][style*="--color-success"],
+html.dark .no-table td div[style*="background"][style*="--color-success"] {
   background-color: var(--color-success-bg) !important;
   background: var(--color-success-bg) !important;
   color: #4ade80 !important;
   border: 1px solid var(--color-success-border) !important;
 }
-html.dark .rdt_TableCell span[style*="--color-error"],
-html.dark .rdt_TableCell div[style*="--color-error"],
-html.dark .rdt_TableCell span[style*="--color-status-red-soft"],
-html.dark .rdt_TableCell div[style*="--color-status-red-soft"],
-html.dark .rdt_TableCell span[style*="--destructive"],
-html.dark .rdt_TableCell div[style*="--destructive"],
-html.dark .no-table td span[style*="--color-error"],
-html.dark .no-table td div[style*="--color-error"] {
+html.dark .rdt_TableCell span[style*="background"][style*="--color-error"],
+html.dark .rdt_TableCell div[style*="background"][style*="--color-error"],
+html.dark .rdt_TableCell span[style*="background"][style*="--color-status-red-soft"],
+html.dark .rdt_TableCell div[style*="background"][style*="--color-status-red-soft"],
+html.dark .rdt_TableCell span[style*="background"][style*="--destructive"],
+html.dark .rdt_TableCell div[style*="background"][style*="--destructive"],
+html.dark .no-table td span[style*="background"][style*="--color-error"],
+html.dark .no-table td div[style*="background"][style*="--color-error"] {
   background-color: var(--color-error-bg) !important;
   background: var(--color-error-bg) !important;
   color: #fb7185 !important;
   border: 1px solid var(--color-error-border) !important;
 }
-html.dark .rdt_TableCell span[style*="--color-warning"],
-html.dark .rdt_TableCell div[style*="--color-warning"],
-html.dark .rdt_TableCell span[style*="--color-status-amber"],
-html.dark .rdt_TableCell div[style*="--color-status-amber"],
-html.dark .no-table td span[style*="--color-warning"],
-html.dark .no-table td div[style*="--color-warning"] {
+html.dark .rdt_TableCell span[style*="background"][style*="--color-warning"],
+html.dark .rdt_TableCell div[style*="background"][style*="--color-warning"],
+html.dark .rdt_TableCell span[style*="background"][style*="--color-status-amber"],
+html.dark .rdt_TableCell div[style*="background"][style*="--color-status-amber"],
+html.dark .no-table td span[style*="background"][style*="--color-warning"],
+html.dark .no-table td div[style*="background"][style*="--color-warning"] {
   background-color: rgba(245, 158, 11, 0.14) !important;
   background: rgba(245, 158, 11, 0.14) !important;
   color: #fcd34d !important;
@@ -1949,6 +1952,11 @@ html.dark .theme-btn,
 html.dark .theme-btn-next,
 html.dark .theme-btn-prev,
 html.dark .theme-btn-back {
+  /* color must be set here (not only in the shared base) so it beats the
+     global `.btn-primary`/`.bg-primary { color: var(--primary-foreground) }`
+     in index.css, which flips to a dark hex in dark mode and would otherwise
+     render dark text on the navy button. */
+  color: #ffffff !important;
   border: 1px solid #ffffff !important;
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.45),

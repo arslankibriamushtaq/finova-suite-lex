@@ -134,6 +134,12 @@ export function getAdminWalletDetail(walletId: string) {
   return axiosWalletService.get(`/api/v1/admin/wallets/${walletId}`);
 }
 
+export function getWalletTransactions(walletId: string, page = 0, size = 20) {
+  return axiosWalletService.get(`/api/v1/admin/wallets/${walletId}/transactions`, {
+    params: { page, size },
+  });
+}
+
 export function changeWalletStatus(
   walletId: string,
   action: WalletLifecycleAction,

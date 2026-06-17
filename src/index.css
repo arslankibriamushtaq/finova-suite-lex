@@ -97,6 +97,18 @@
   z-index: 9999 !important;
 }
 
+/* antd Select / DatePicker / Dropdown menus portal to <body>. Inside a Radix
+   modal Dialog the body is set to pointer-events:none and sits below the
+   dialog's z-index, so these dropdowns render behind the modal and their
+   options can't be clicked (e.g. the table page-size selector inside a dialog).
+   Lift them above the dialog (overlay 1100 / content 1101) and re-enable clicks. */
+.ant-select-dropdown,
+.ant-picker-dropdown,
+.ant-dropdown {
+  z-index: 1300 !important;
+  pointer-events: auto !important;
+}
+
 [data-slot="select-content"] {
   background-color: var(--popover) !important;
   border: 1px solid var(--border) !important;
