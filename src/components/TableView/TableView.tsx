@@ -437,9 +437,9 @@ const TableView = ({
                   <div className="col-6 gap-2 d-flex justify-content-end">
                     {(() => {
                       const btnStyle = (isActive = false) => ({
-                        backgroundColor: isActive ? '#000000' : 'transparent',
+                        backgroundColor: isActive ? '#10b981' : 'transparent',
                         color: isActive ? '#ffffff' : 'var(--theme-table-body-text-color, #000)',
-                        border: '1px solid #dee2e6',
+                        border: isActive ? '1px solid #10b981' : '1px solid #dee2e6',
                         minWidth: '35px',
                         height: '35px',
                         display: 'flex',
@@ -456,9 +456,9 @@ const TableView = ({
                         <>
                           <style>{`
                               .pagination-btn-active {
-                                background-color: #000000 !important;
+                                background-color: #10b981 !important;
                                 color: #ffffff !important;
-                                border-color: #000000 !important;
+                                border-color: #10b981 !important;
                               }
                             `}</style>
                           <button

@@ -36,10 +36,10 @@ const FinanceBarChart: React.FC = () => (
       <YAxis />
       <Tooltip cursor={false} />
       <Legend />
-      <Bar dataKey="RejectedFinance" fill="#D2D2D2" name="Rejected Finance" />
-      <Bar dataKey="DisbursedFinance" fill="#73C0A0" name="Disbursed Finance" />
-      <Bar dataKey="ApprovedFinance" fill="#6871BF" name="Approved Finance" />
-      <Bar dataKey="AppliedFinance" fill="#FFB1B1" name="Applied Finance" />
+      <Bar dataKey="RejectedFinance" fill="#94a3b8" name="Rejected Finance" />
+      <Bar dataKey="DisbursedFinance" fill="#0d9488" name="Disbursed Finance" />
+      <Bar dataKey="ApprovedFinance" fill="#10b981" name="Approved Finance" />
+      <Bar dataKey="AppliedFinance" fill="#6ee7b7" name="Applied Finance" />
     </BarChart>
   </ResponsiveContainer>
 );

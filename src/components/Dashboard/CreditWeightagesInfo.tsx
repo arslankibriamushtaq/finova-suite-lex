@@ -195,7 +195,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           width: "80px",
           height: "80px",
           borderRadius: "50%",
-          background: " #1963b9",
+          background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -235,7 +235,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
         <div style={{
           padding: "12px 24px",
           borderRadius: "6px",
-          background: " #1963b9",
+          background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           color: "#fff",
           display: "flex",
           flexDirection: "column",
@@ -316,7 +316,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                     <div style={{
                       padding: "4px 12px",
                       borderRadius: "12px",
-                      background: " #1963b9",
+                      background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                       color: "#fff",
                       fontSize: "14px",
                       fontWeight: "600",

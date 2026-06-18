@@ -168,7 +168,7 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
                     ...styles.stepCircle,
                     background:
                       isCompleted || isActive
-                        ? "var(--theme-flow-active-color-bg, #1f2940)"
+                        ? "#10b981"
                         : "var(--surface-border-strong)",
                     color: "#ffffff",
                     cursor: "default",
@@ -191,19 +191,19 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
           }
           .ant-steps-item-finish .ant-steps-item-tail::after,
           .ant-steps-item-process .ant-steps-item-tail::after {
-            background-color: var(--theme-flow-active-color-bg, #1f2940) !important;
+            background-color: #10b981 !important;
           }
           .ant-steps-item-finish .ant-steps-item-icon {
-            border-color: var(--theme-flow-active-color-bg, #1f2940) !important;
+            border-color: #10b981 !important;
           }
           .ant-steps-item-process .ant-steps-item-icon {
-            border-color: var(--theme-flow-active-color-bg, #1f2940) !important;
+            border-color: #10b981 !important;
           }
           .ant-steps-item-wait .ant-steps-item-icon {
             border-color: var(--surface-border-strong) !important;
           }
           .ant-steps .ant-steps-item-active .ant-steps-item-title::after {
-            background-color: var(--theme-flow-active-color-bg, #1f2940) !important;
+            background-color: #10b981 !important;
           }
           .ant-steps-item-finish .ant-steps-item-icon .ant-steps-icon,
           .ant-steps-item-process .ant-steps-item-icon .ant-steps-icon {
@@ -215,13 +215,13 @@ const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
           .secondlaststep .ant-steps-item-icon,
           .secondlaststep .ant-steps-item-tail::after,
           .ant-steps-item.ant-steps-item-finish.previoustab.ant-steps-item-custom .ant-steps-item-title:after {
-            background-color: var(--theme-flow-active-color-bg, #1f2940) !important;
+            background-color: #10b981 !important;
           }
           .previoustab .ant-steps-item-icon,
           .laststep .ant-steps-item-icon,
           .secondlaststep .ant-steps-item-icon {
             background-color: transparent !important;
-            border-color: var(--theme-flow-active-color-bg, #1f2940) !important;
+            border-color: #10b981 !important;
           }
           .laststep .ant-steps-item-tail::after {
             background-color: transparent !important;

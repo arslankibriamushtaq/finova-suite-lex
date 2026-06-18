@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PulseLoading from "../../components/Loader/PulseLoader";
 import { Button, Input, Dropdown, Menu, Spin, Tooltip } from 'antd';
 import { 
   PlusOutlined, 
@@ -680,7 +681,7 @@ const OnboardingDashboard: React.FC = () => {
         >
           {isLoading ? (
             <div className="text-center py-5 text-muted">
-              <div className="spinner-border spinner-border-sm me-2" />
+              <PulseLoading size="sm" />
               Loading workflows...
             </div>
           ) : countries.length === 0 ? (

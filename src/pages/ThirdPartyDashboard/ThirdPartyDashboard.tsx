@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 import "./ThirdPartyDashboard.css";
 import { getClients, getDashboardData, getServiceStats, getClientStatsGraph, getClientsList } from "../../redux/apis/apisThirdParty";
 import toast from "react-hot-toast";
-import { PulseLoader } from "react-spinners";
+import PulseLoading from "../../components/Loader/PulseLoader";
 
 ChartJS.register(
   CategoryScale,
@@ -252,7 +252,7 @@ useEffect(() => {
                   color: stat.color === "var(--primary-foreground)" ? "var(--foreground)" : "var(--primary-foreground)",
                 }}
               >
-                {loading ? <PulseLoader/> : stat.value}
+                {loading ? <PulseLoading size="sm" /> : stat.value}
               </div>
             </Card>
           </Col>

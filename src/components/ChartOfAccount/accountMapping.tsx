@@ -218,7 +218,11 @@ const AccountMapping = () => {
   }, [searchValue, activeTab]);
 
   return (
-    <div>
+    <div className="service coa-config-page">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark">Chart of Account Configuration</h3>
+      </div>
+      <div className="coa-card">
       {loading ? (
         <>
           <Row className="mb-3">
@@ -376,6 +380,7 @@ const AccountMapping = () => {
           </Tabs>
         </>
       )}
+      </div>
     </div>
   );
 };

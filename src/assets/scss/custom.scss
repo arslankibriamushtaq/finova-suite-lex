@@ -2294,7 +2294,7 @@ span.ps-submenu-expand-icon.css-1cuxlhl {
 }
 
 .css-1654oxy>.ps-menu-button {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: #ffffff !important;
 }
 
@@ -3116,7 +3116,7 @@ a {
 }
 
 .active .css-1tqrhto>.ps-menu-button {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: #ffffff !important;
 }
 
@@ -4956,7 +4956,7 @@ label {
   align-items: center;
   justify-content: center;
   /* Dark navy to match the sidebar active (tab) colour instead of red */
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border-radius: 8px;
   /* Rounded edges */
   padding: 5px;
@@ -5677,8 +5677,12 @@ span.on-view {
 }
 
 ul.css-ewdv3l .menu-items.css-12w9als a.ps-menu-button {
-  padding-left: 15px;
-  margin-left: 20px;
+  /* Removed the extra padding-left/margin-left: combined with react-pro-sidebar's
+     per-level indent it pushed the level-0 group headers (LOS/LMS/Connector) out
+     of line with the level-1 items. Buttons now fall back to the uniform base
+     rule (div.menu-items a.ps-menu-button), so every row's icon lines up. */
+  /* padding-left: 15px; */
+  /* margin-left: 20px; */
 }
 
 ul.css-ewdv3l .menu-items.css-12w9als a.ps-menu-button.ps-open:before {
@@ -6559,7 +6563,8 @@ span.asc.__rdt_custom_sort_icon__ img {
 }
 
 a.ps-menu-button.ps-open span {
-  color: #7F787B !important;
+  /* Open module — label takes the module's own icon color (--mi-color). */
+  color: var(--mi-color, #10b981) !important;
 }
 
 div.menu-items a.ps-menu-button.ps-open {
@@ -7251,7 +7256,7 @@ div.menu-items a.ps-menu-button>span img {
 
 .sidebar-tab.active,
 button.sidebar-tab.active {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   background-color: #0f172a !important;
   border: 1px solid #0f172a !important;
   color: #ffffff !important;
@@ -7446,7 +7451,7 @@ button.sidebar-tab.active {
 }
 
 div.menu-items a.ps-menu-button.ps-active {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: #ffffff !important;
   border-radius: 8px !important;
   margin: 4px 10px !important;
@@ -9864,15 +9869,15 @@ div.menu-items a.ps-menu-button.ps-active::before{
 }
 .nav-tabs .nav-link:hover {
   background: transparent !important;
-  color: var(--foreground) !important;
-  border-bottom: 2px solid transparent !important;
+  color: #047857 !important;
+  border-bottom: 2px solid color-mix(in srgb, #10b981 40%, transparent) !important;
 }
 .nav-tabs .nav-item.show .nav-link,
 .nav-tabs .nav-link.active {
   background: transparent !important;
-  color: var(--foreground) !important;
+  color: #059669 !important;
   border: none !important;
-  border-bottom: 2px solid var(--foreground) !important;
+  border-bottom: 2px solid #10b981 !important;
   font-weight: 700 !important;
 }
 
@@ -9887,11 +9892,11 @@ div.menu-items a.ps-menu-button.ps-active::before{
   padding: 10px 16px !important;
 }
 .ant-tabs .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
-  color: var(--foreground) !important;
+  color: #059669 !important;
   font-weight: 700 !important;
 }
 .ant-tabs .ant-tabs-ink-bar {
-  background: var(--foreground) !important;
+  background: #10b981 !important;
 }
 
 /* ===== Remove blue focus shadow on all input fields globally ===== */
@@ -9944,14 +9949,44 @@ select:focus,
 }
 
 /* ===== Global filter + table card layout ===== */
-/* Filter row appears in its own rounded white card on every page that uses `.filter-select` */
+/* Filter row appears in its own rounded card on every page that uses `.filter-select` */
 .service > .filter-select {
-  background: #fff;
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #10b981 18%, var(--border));
   border-radius: 12px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
   padding: 12px 16px;
   margin-bottom: 12px;
+}
+html.dark .service > .filter-select {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    var(--surface-card) 55%
+  );
+  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border));
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+}
+
+/* Search/filter cards that use Bootstrap `.bg-white` (not `.filter-select`).
+   Matched by :has() — the card holds a search input and/or date pickers, while
+   the table card below does not, so only the filter card gets the gradient. */
+.service > .bg-white:has(.ant-picker),
+.service > .bg-white.mb-3:has(input),
+.service > .bg-white.mb-3:has(.ant-input) {
+  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%) !important;
+  border: 1px solid color-mix(in srgb, #10b981 18%, var(--border)) !important;
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent) !important;
+}
+html.dark .service > .bg-white:has(.ant-picker),
+html.dark .service > .bg-white.mb-3:has(input),
+html.dark .service > .bg-white.mb-3:has(.ant-input) {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    var(--surface-card) 55%
+  ) !important;
+  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border)) !important;
 }
 
 /* Table appears in its own rounded white card on every page that uses `.cs-table` */
@@ -9962,11 +9997,50 @@ select:focus,
 .service > .filter-select ~ div:has(> .rdt_Table),
 .service > div:has(> .rdt_Table),
 div:has(> .rdt_Table) {
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
+  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
+  border: 1px solid color-mix(in srgb, #10b981 18%, var(--surface-border));
   border-radius: 12px;
-  box-shadow: var(--surface-elevation-1);
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent);
   overflow: hidden;
+}
+html.dark .service > .cs-table,
+html.dark .service .cs-table.p-2,
+html.dark .service .cs-table,
+html.dark .service > .filter-select + div,
+html.dark .service > .filter-select ~ div:has(> .rdt_Table),
+html.dark .service > div:has(> .rdt_Table),
+html.dark div:has(> .rdt_Table) {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    var(--surface-card) 55%
+  );
+  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border));
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+}
+
+/* Report summary cards (.card-product, used across 15 report pages) —
+   themed emerald surface so they match the rest of the cards. The value text
+   inside (debit/credit etc.) keeps its own inline color. */
+.card-product {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 14%, var(--card)) 0%,
+    var(--card) 60%
+  ) !important;
+  border: 1px solid color-mix(in srgb, #10b981 20%, var(--border)) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent) !important;
+  color: var(--foreground) !important;
+}
+html.dark .card-product {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    var(--surface-card) 60%
+  ) !important;
+  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border)) !important;
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7) !important;
 }
 
 /* Standalone data-table wrapper (e.g. on Dashboard page where there's no .service) */
@@ -10068,6 +10142,27 @@ header.rdt_TableHeadRow,
   background-color: var(--surface-card) !important;
   color: var(--foreground) !important;
   border-top: 1px solid var(--surface-border) !important;
+}
+
+/* Pagination active page → brand emerald (Bootstrap + custom .pagination-div) */
+.pagination .page-item.active .page-link,
+.page-item.active .page-link,
+.pagination-div .page-item.active .page-link {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+.pagination .page-link,
+.pagination-div .page-link {
+  color: #059669 !important;
+}
+.pagination .page-link:hover,
+.pagination-div .page-link:hover {
+  background-color: color-mix(in srgb, #10b981 12%, transparent) !important;
+  color: #047857 !important;
+}
+.pagination .page-link:focus {
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #10b981 30%, transparent) !important;
 }
 
 /* ===== Status pills inside tables — works in both modes ===== */
@@ -10511,40 +10606,67 @@ table.styled-table tbody tr:hover,
 .ps-sidebar-root [class^="css-"] .ps-menu-button:hover:not(.ps-active),
 .ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
 .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
-  background: var(--muted) !important;
-  background-color: var(--muted) !important;
+  /* Soft wash of the item's own color (--mi-color) on hover. */
+  background: color-mix(in srgb, var(--mi-color, #10b981) 10%, transparent) !important;
+  background-color: color-mix(in srgb, var(--mi-color, #10b981) 10%, transparent) !important;
   color: var(--foreground) !important;
+}
+html.dark .ps-sidebar-root .ps-menu-button:hover:not(.ps-active),
+html.dark .ps-sidebar-root .ps-submenu-content .ps-menu-button:hover:not(.ps-active),
+html.dark .ps-sidebar-root [class^="css-"] .ps-menu-button:hover:not(.ps-active),
+html.dark .ps-sidebar-root [class*=" css-"] .ps-menu-button:hover:not(.ps-active),
+html.dark .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) {
+  background: color-mix(in srgb, var(--mi-color, #10b981) 16%, transparent) !important;
+  background-color: color-mix(in srgb, var(--mi-color, #10b981) 16%, transparent) !important;
+  color: #ffffff !important;
 }
 .ps-sidebar-root .ps-menu-button:hover:not(.ps-active) span,
 .ps-sidebar-root a:hover .ps-menu-button:not(.ps-active) span {
   color: var(--foreground) !important;
 }
 
-/* Active item: NO hover change — keep light-mode dark-navy bg */
+/* Active item — soft pill tinted with the item's OWN color (--mi-color, set
+   per item in the sidebar component). Same mechanism as the dashboard stat
+   cards, but each row carries its own brand color, with a colored left bar. */
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active,
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
-  color: #ffffff !important;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mi-color, #10b981) 16%, #ffffff) 0%,
+    color-mix(in srgb, var(--mi-color, #10b981) 5%, #ffffff) 100%
+  ) !important;
+  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
 }
 
-/* Active item: glowing blue ring with dark bg in dark mode */
+/* Active item (dark): deep tinted-glass + colored glow, per item color. */
 html.dark .ps-sidebar-root .ps-menu-button.ps-active,
 html.dark .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: rgba(59, 130, 246, 0.06) !important;
-  border: 1.5px solid rgba(59, 130, 246, 0.85) !important;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mi-color, #10b981) 24%, #0e1018) 0%,
+    color-mix(in srgb, var(--mi-color, #10b981) 8%, #0e1018) 100%
+  ) !important;
   color: #ffffff !important;
-  box-shadow:
-    0 0 0 1px rgba(59, 130, 246, 0.20),
-    0 0 16px rgba(59, 130, 246, 0.35),
-    inset 0 0 12px rgba(59, 130, 246, 0.12) !important;
   border-radius: 10px !important;
+  box-shadow:
+    inset 3px 0 0 var(--mi-color, #10b981),
+    0 0 14px color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
 }
 
-.ps-sidebar-root .ps-menu-button.ps-active span,
-.ps-sidebar-root .ps-menu-button.ps-active:hover span {
+/* Active label text — dark tinted in light, white in dark; bold either way. */
+html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active span,
+html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover span {
+  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
+  font-weight: 600 !important;
+}
+html.dark .ps-sidebar-root .ps-menu-button.ps-active span,
+html.dark .ps-sidebar-root .ps-menu-button.ps-active:hover span {
   color: #ffffff !important;
+  font-weight: 600 !important;
 }

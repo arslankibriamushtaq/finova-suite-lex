@@ -58,6 +58,9 @@ function PaginationLink({
           variant: isActive ? "outline" : "ghost",
           size,
         }),
+        // Active page uses the brand (emerald) color
+        isActive &&
+          "border-primary bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground",
         className
       )}
       {...props}

@@ -1,35 +1,28 @@
-import { useEffect, useState } from "react";
-import { PropagateLoader } from "react-spinners";
+import "./Loader.css";
+import favicon from "../../assets/images/sullis-favicon.svg";
 
+/**
+ * Branded full-screen loader.
+ *
+ * Renders the Sullis favicon at rest inside a rotating brand-coloured ring with
+ * a soft pulsing halo over a translucent, blurred backdrop. All styling lives in
+ * Loader.css (no inline styles); ring colours come from the theme tokens.
+ */
 const Loader = () => {
-  // Track the active theme so PropagateLoader gets a concrete colour value
-  // (react-spinners forwards `color` into inline SVG fills, which don't
-  // resolve CSS variables on all engines).
-  const isDark = () =>
-    typeof document !== "undefined" &&
-    document.documentElement.classList.contains("dark");
-
-  const [color, setColor] = useState<string>(isDark() ? "#ffffff" : "#0f172a");
-
-  useEffect(() => {
-    const obs = new MutationObserver(() => {
-      setColor(isDark() ? "#ffffff" : "#0f172a");
-    });
-    obs.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-    return () => obs.disconnect();
-  }, []);
-
   return (
     <div className="loader">
-      <div className="loader-overlay"></div>
-      <div
-        className="loader-dots"
-        style={{ position: "relative", zIndex: 2 }}
-      >
-        <PropagateLoader color={color} />
+      <div className="loader-overlay brand-loader-overlay"></div>
+
+      <div className="brand-loader-content">
+        <div className="brand-loader">
+          <div className="brand-loader__halo" />
+          <div className="brand-loader__ring" />
+          <div className="brand-loader__ring brand-loader__ring--inner" />
+          <div className="brand-loader__logo">
+            <img src={favicon} alt="Loading" draggable={false} />
+          </div>
+        </div>
+        <div className="brand-loader__text">Sullis Digital</div>
       </div>
     </div>
   );

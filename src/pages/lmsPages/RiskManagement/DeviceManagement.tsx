@@ -106,16 +106,33 @@ const DeviceManagement = () => {
 
       // Backend uses 0-based indexing for page
       const response = await apiCall(page - 1, pageSize, search);
-      const list = response?.data?.data || response?.data || [];
-      setData(Array.isArray(list) ? list : []);
 
-      const pagination = response?.data?.pagination;
-      if (pagination) {
-        setTotalRows(pagination.totalElements || 0);
-        setTotalPage(pagination.totalPages || 1);
+      // The devices endpoint may return the rows as response.data.data,
+      // response.data.content (Spring Page), or response.data itself.
+      const payload = response?.data ?? {};
+      const list = Array.isArray(payload?.data)
+        ? payload.data
+        : Array.isArray(payload?.content)
+          ? payload.content
+          : Array.isArray(payload)
+            ? payload
+            : [];
+      setData(list);
+
+      // Pagination metadata can live under .pagination / .pageInfo, or at the
+      // top level (Spring Page). Read whichever is present so navigation works.
+      const meta = payload?.pagination ?? payload?.pageInfo ?? payload ?? {};
+      const totalElements =
+        meta?.totalElements ?? meta?.totalCount ?? meta?.total;
+      if (totalElements != null) {
+        setTotalRows(totalElements);
+        setTotalPage(
+          meta?.totalPages ?? Math.max(1, Math.ceil(totalElements / pageSize))
+        );
       } else {
-        setTotalRows(Array.isArray(list) ? list.length : 0);
-        setTotalPage(Math.ceil((Array.isArray(list) ? list.length : 0) / pageSize) || 1);
+        // No total available — fall back to the current page's length.
+        setTotalRows(list.length);
+        setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
       toast.error(

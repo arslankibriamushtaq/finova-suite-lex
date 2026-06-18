@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PulseLoading from "../Loader/PulseLoader";
 import { Button, DatePicker, Dropdown, Menu, Select, Modal, Checkbox } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
@@ -806,13 +807,7 @@ const PepBlockCodes = () => {
               minHeight: "300px",
               gap: "20px"
             }}>
-              <div className="spinner-border text-primary" role="status" style={{
-                width: "3rem",
-                height: "3rem",
-                borderWidth: "0.3em"
-              }}>
-                <span className="visually-hidden">Loading...</span>
-              </div>
+              <PulseLoading size="lg" />
               <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
             </div>
           ) : (

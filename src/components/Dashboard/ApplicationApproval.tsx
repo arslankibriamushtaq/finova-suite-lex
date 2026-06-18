@@ -263,35 +263,35 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           {/* Header Row */}
           <div style={{
             padding: "12px 16px",
-            background: "var(--theme-flow-active-color-bg, #1f2940)",
+            background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Checks</div>
           <div style={{
             padding: "12px 16px",
-            background: "var(--theme-flow-active-color-bg, #1f2940)",
+            background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Status</div>
           <div style={{
             padding: "12px 16px",
-            background: "var(--theme-flow-active-color-bg, #1f2940)",
+            background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Processed Date</div>
           <div style={{
             padding: "12px 16px",
-            background: "var(--theme-flow-active-color-bg, #1f2940)",
+            background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
           }}>Processed By</div>
           <div style={{
             padding: "12px 16px",
-            background: "var(--theme-flow-active-color-bg, #1f2940)",
+            background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"

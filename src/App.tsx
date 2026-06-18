@@ -1,4 +1,5 @@
 import { RouterProvider } from "react-router-dom";
+import { ConfigProvider } from "antd";
 
 import { router } from "./Routes/path";
 import toast, { Toaster } from "react-hot-toast";
@@ -96,11 +97,33 @@ const getStates = async () => {
     <>
       <Toaster position="top-center" reverseOrder={false} />
       <I18nextProvider i18n={i18n}>
-        {/* <Provider store={store}> */}
-        {/* <PersistGate persistor={persistor}> */}
-        <RouterProvider router={router} />
-        {/* </PersistGate> */}
-        {/* </Provider> */}
+        {/* Brand emerald (Sullis) for all antd controls — datepicker, select,
+            switch, checkbox, radio, tabs, etc. */}
+        <ConfigProvider
+          theme={{
+            token: {
+              colorPrimary: "#10b981",
+              colorInfo: "#10b981",
+              colorLink: "#059669",
+              colorLinkHover: "#10b981",
+              borderRadius: 8,
+            },
+            components: {
+              Select: {
+                // Dropdown option states — emerald-tinted hover/selected
+                optionActiveBg: "#ecfdf5",
+                optionSelectedBg: "#d1fae5",
+                optionSelectedColor: "#065f46",
+              },
+            },
+          }}
+        >
+          {/* <Provider store={store}> */}
+          {/* <PersistGate persistor={persistor}> */}
+          <RouterProvider router={router} />
+          {/* </PersistGate> */}
+          {/* </Provider> */}
+        </ConfigProvider>
       </I18nextProvider>
     </>
   );

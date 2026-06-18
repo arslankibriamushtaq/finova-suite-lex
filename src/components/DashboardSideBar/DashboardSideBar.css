@@ -3,6 +3,60 @@
 html.dark .sidebar-logo--light { display: none; }
 html.dark .sidebar-logo--dark { display: inline-block; }
 
+/* ===== Open module — label takes its own icon color (--mi-color), so the
+   open module's text matches its icon (Connector = pink, Environment Settings
+   = sky, etc.). Each module now has a distinct color, so this no longer clashes. */
+.ps-sidebar-root .ps-menu-button.ps-open .ps-menu-label,
+.ps-sidebar-root .ps-menu-button.ps-open .sidebar-label-text,
+.ps-sidebar-root .ps-submenu-root > .ps-menu-button.ps-open,
+.ps-sidebar-root .ps-submenu-root > .ps-menu-button.ps-open .ps-menu-label {
+  color: var(--mi-color, #10b981) !important;
+  font-weight: 600 !important;
+}
+
+/* Pin EVERY leaf item to one indent so active and inactive rows always line up.
+   react-pro-sidebar's generated per-item classes give some leaves (often the
+   active one) an extra padding, which pushed e.g. an active "Waiver Requests" /
+   "All Provider APIs" right of its siblings. */
+.ps-sidebar-root .sidebar-link .ps-menu-button {
+  padding-left: 27px !important;
+}
+
+/* Chevron — takes the module's own color too, matching the icon + label.
+   Works for border- or bar-drawn chevrons. */
+.ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon,
+.ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon span {
+  color: var(--mi-color, #10b981) !important;
+  border-color: var(--mi-color, #10b981) !important;
+}
+.ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon span::after,
+.ps-sidebar-root .ps-menu-button.ps-open .ps-submenu-expand-icon span::before {
+  background-color: var(--mi-color, #10b981) !important;
+}
+
+/* ===== Menu item icons — fixed column so every label lines up ===== */
+.ps-sidebar-root .ps-menu-icon {
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 24px !important;
+  margin-right: 12px !important;
+  display: flex !important;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.ps-sidebar-root .ps-menu-icon svg {
+  width: 18px !important;
+  height: 18px !important;
+  display: block;
+}
+/* Keep labels vertically centered against the icon */
+.ps-sidebar-root .ps-menu-label {
+  display: flex;
+  align-items: center;
+  line-height: 1.2;
+}
+
 /* Sidebar link styles — token-aware (light + dark) */
 .sidebar-link {
   text-decoration: none;
@@ -36,6 +90,9 @@ html.dark .sidebar-logo--dark { display: inline-block; }
   box-shadow: none !important;
   border-color: transparent !important;
 }
+
+/* Active-item & hover styling (per-module --mi-color) lives in the authoritative
+   "final override" block in assets/scss/custom.scss so it wins specificity. */
 
 /* ===== Sidebar top tabs (Wallet / Financing) — modern look ===== */
 .sidebar-tab-row {
@@ -93,14 +150,31 @@ html.dark .sidebar-logo--dark { display: inline-block; }
   transform: translateY(0);
 }
 
-.sidebar-tab.active {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
-  border-color: #0f172a;
-  color: #ffffff;
+/* Higher specificity + !important so it beats the legacy navy
+   `button.sidebar-tab.active` rule in custom.scss/custom.css. */
+.sidebar-tab-row button.sidebar-tab.active {
+  /* Sullis-emerald brand gradient — follows the logo color */
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border: 1px solid #059669 !important;
+  color: #ffffff !important;
   box-shadow:
-    0 4px 12px rgba(15, 23, 42, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+    0 4px 12px color-mix(in srgb, #10b981 35%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
   transform: translateY(-1px);
+}
+
+html.dark .sidebar-tab-row button.sidebar-tab.active {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 30%, #0e1018) 0%,
+    color-mix(in srgb, #10b981 12%, #0e1018) 100%
+  ) !important;
+  border: 1px solid color-mix(in srgb, #10b981 60%, transparent) !important;
+  color: #ffffff !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #10b981 25%, transparent),
+    0 0 16px color-mix(in srgb, #10b981 35%, transparent),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
 /* Subtle glow stripe across the top of the active pill */

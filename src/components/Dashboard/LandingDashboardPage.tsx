@@ -87,7 +87,7 @@ const LandingDashboardPage = () => {
           <div className="d-flex mt-3 col-12 gap-3">
             <div style={{ flex: 8.8 }}>
               <Col>
-                <Card>
+                <Card className="dashboard-graph-card">
                   <BarChart />
                 </Card>
               </Col>

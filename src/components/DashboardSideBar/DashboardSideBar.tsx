@@ -9,6 +9,76 @@ import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
 import SubHeaderFlowLms from "../DashboardHeader/SubHeaderFlowLms";
 import { FaMobileAlt, FaTimes } from "react-icons/fa";
+import {
+  LayoutDashboard,
+  Bell,
+  Users,
+  Package,
+  ListChecks,
+  ShieldAlert,
+  ShieldCheck,
+  Ban,
+  Landmark,
+  Banknote,
+  FileBarChart2,
+  BarChart3,
+  HandCoins,
+  Settings as SettingsIcon,
+  Plug,
+  Wallet,
+  ArrowLeftRight,
+  SlidersHorizontal,
+  Contact,
+  ScrollText,
+  type LucideIcon,
+} from "lucide-react";
+
+/* Per-module color + icon registry. Each sidebar module gets its own brand
+   color (the same color-mix card mechanism, applied per row): the color drives
+   the lucide icon and the active/hover pill via the inherited --mi-color var. */
+const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
+  los: { Icon: LayoutDashboard, color: "#3b82f6" },
+  dashboard: { Icon: LayoutDashboard, color: "#3b82f6" },
+  "notification orchestrator": { Icon: Bell, color: "#8b5cf6" },
+  "customer management": { Icon: Users, color: "#8b5cf6" },
+  "product management": { Icon: Package, color: "#f59e0b" },
+  lov: { Icon: ListChecks, color: "#14b8a6" },
+  "risk management": { Icon: ShieldAlert, color: "#f43f5e" },
+  "access control management": { Icon: ShieldCheck, color: "#6366f1" },
+  "block codes": { Icon: Ban, color: "#06b6d4" },
+  lms: { Icon: Landmark, color: "#10b981" },
+  "loan management": { Icon: Banknote, color: "#3b82f6" },
+  reports: { Icon: FileBarChart2, color: "#0ea5e9" },
+  "chart of account": { Icon: BarChart3, color: "#14b8a6" },
+  collections: { Icon: HandCoins, color: "#22c55e" },
+  setting: { Icon: SettingsIcon, color: "#64748b" },
+  "connector management": { Icon: Plug, color: "#ec4899" },
+  "environment settings": { Icon: SlidersHorizontal, color: "#0ea5e9" },
+  "clients management": { Icon: Contact, color: "#8b5cf6" },
+  "system logs": { Icon: ScrollText, color: "#f59e0b" },
+  "wallet management": { Icon: Wallet, color: "#10b981" },
+  transfers: { Icon: ArrowLeftRight, color: "#6366f1" },
+};
+
+const DEFAULT_MI_COLOR = "#10b981";
+const getModuleTheme = (label?: string) =>
+  label ? MODULE_THEME[label.trim().toLowerCase()] : undefined;
+
+/* Renders a colored lucide icon when the label is a known module; otherwise
+   falls back to the legacy PNG icon (or nothing). */
+const ModuleIcon: React.FC<{ label?: string; fallback?: string; size?: number }> = ({
+  label,
+  fallback,
+  size = 18,
+}) => {
+  const theme = getModuleTheme(label);
+  if (theme) {
+    const Icon = theme.Icon;
+    return <Icon size={size} style={{ color: theme.color }} strokeWidth={2} />;
+  }
+  if (fallback) return <img src={fallback} width={16} height={16} />;
+  return null;
+};
 
 const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolean }) => {
   const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
@@ -2103,7 +2173,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // },
   ];
 
-  const walletItems = [
+  const walletItems: any[] = [
+    {
+      label: "Dashboard",
+      Link: "/LOS/Wallet/Home",
+      active: pathname.includes("/LOS/Wallet/Home"),
+    },
     {
       label: "Customer Management",
       Link: "/CustomerManagement/CustomerList",
@@ -2197,10 +2272,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     },
     index: any
   ) => (
-    <div className="menu-items css-12w9als" key={item.label}>
+    <div
+      className="menu-items css-12w9als"
+      key={item.label}
+      style={{ ["--mi-color" as any]: getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR }}
+    >
       <SubMenu
         label={<span className="sidebar-label-text">{item.label}</span>}
-        icon={item.img ? <img src={item.img} /> : ""}
+        icon={<ModuleIcon label={item.label} fallback={item.img} />}
         // defaultOpen={item.active}
         open={openSubmenuIndex === index}
         onClick={() => {
@@ -2229,6 +2308,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                 label={<span className="sidebar-label-text">{submenuItem.label}</span>}
                 open={isNestedOpen}
                 className="nested-submenu"
+                rootStyles={{
+                  ["--mi-color" as any]: getModuleTheme(submenuItem.label)?.color,
+                }}
                 onClick={(e) => {
                   // Prevent parent menu from closing when clicking nested submenu
                   e.stopPropagation();
@@ -2237,20 +2319,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                     [nestedKey]: !isNestedOpen,
                   }));
                 }}
-                prefix={
-                  submenuItem.img ? (
-                  <img
-                      src={submenuItem.img}
-                    style={{
-                      background: "none",
-                      color: themeStyle?.dashboardSibeBarFlow.flowSideBarLogoBg,
-                        display: "block",
-                    }}
-                    width={16}
-                    height={16}
-                  />
-                  ) : null
-                }
+                icon={<ModuleIcon label={submenuItem.label} fallback={submenuItem.img} />}
               >
                 {nestedItems.map(
                   (nestedItem: any, nestedIndex: any) => (
@@ -2259,6 +2328,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                       className={`sidebar-link ${nestedItem.active ? "is-active" : ""}`}
                       key={nestedIndex}
                       onClick={(e) => e.stopPropagation()}
+                      style={{ ["--mi-color" as any]: getModuleTheme(nestedItem.label)?.color }}
                     >
                       <MenuItem
                         active={nestedItem.active}
@@ -2278,6 +2348,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                 className={`sidebar-link ${submenuItem.active ? "is-active" : ""}`}
                 key={subIndex}
                 onClick={(e) => e.stopPropagation()}
+                style={{ ["--mi-color" as any]: getModuleTheme(submenuItem.label)?.color }}
               >
                 <MenuItem
                   active={submenuItem.active}
@@ -2287,18 +2358,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                     textDecoration: "none",
                   }}
                   className={submenuItem.active ? "active" : ""}
-                  prefix={
-                    <img
-                      src={submenuItem.img}
-                      style={{
-                        background: "none",
-                        color:
-                          themeStyle?.dashboardSibeBarFlow.flowSideBarLogoBg,
-                        display: submenuItem.img ? "" : "none",
-                      }}
-                      width={16}
-                      height={16}
-                    />
+                  icon={
+                    getModuleTheme(submenuItem.label) || submenuItem.img ? (
+                      <ModuleIcon
+                        label={submenuItem.label}
+                        fallback={submenuItem.img}
+                      />
+                    ) : null
                   }
                 >
                   <span className="sidebar-label-text">{submenuItem.label}</span>
@@ -2375,17 +2441,17 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           <div className="sidebar-tab-row">
             <button
               type="button"
-              className={`sidebar-tab ${sidebarTab === "financing" ? "active" : ""}`}
-              onClick={() => setSidebarTab("financing")}
-            >
-              Financing
-            </button>
-            <button
-              type="button"
               className={`sidebar-tab ${sidebarTab === "wallet" ? "active" : ""}`}
               onClick={() => setSidebarTab("wallet")}
             >
               Wallet
+            </button>
+            <button
+              type="button"
+              className={`sidebar-tab ${sidebarTab === "financing" ? "active" : ""}`}
+              onClick={() => setSidebarTab("financing")}
+            >
+              Financing
             </button>
           </div>
         )}
@@ -2400,7 +2466,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                 {item.menu ? (
                   renderSubmenu(item, index)
                 ) : (
-                  <div className="menu-items css-12w9als">
+                  <div
+                    className="menu-items css-12w9als"
+                    style={{ ["--mi-color" as any]: getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR }}
+                  >
                     <Link
                       to={`${item.Link}`}
                       style={{
@@ -2409,16 +2478,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                     >
                       <MenuItem
                         active={item.active}
-                        prefix={
-                          item.img ? (
-                            <img
-                              src={item.img}
-                              style={{
-                                filter: item.active ? "brightness(0) contrast(100%)" : "none"
-                              }}
-                            />
-                          ) : null
-                        }
+                        icon={<ModuleIcon label={item.label} fallback={item.img} />}
                       >
                         {item.label}
                       </MenuItem>
@@ -2434,7 +2494,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                   {item.menu ? (
                     renderSubmenu(item, index)
                   ) : (
-                    <div className="menu-items css-12w9als">
+                    <div
+                      className="menu-items css-12w9als"
+                      style={{ ["--mi-color" as any]: getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR }}
+                    >
                       <Link
                         to={`${item.Link}`}
                         style={{
@@ -2443,16 +2506,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                       >
                         <MenuItem
                           active={item.active}
-                          prefix={
-                            item.img ? (
-                              <img
-                                src={item.img}
-                                style={{
-                                  filter: item.active ? "brightness(0) contrast(100%)" : "none"
-                                }}
-                              />
-                            ) : null
-                          }
+                          icon={<ModuleIcon label={item.label} fallback={item.img} />}
                         >
                           {item.label}
                         </MenuItem>
@@ -2472,7 +2526,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             overflow-x: hidden !important;
           }
           .ps-sidebar-root {
-            border-right: none !important;
+            border-right: 1px solid var(--surface-border) !important;
           }
           /* Hard-stop the open-submenu height animation so a re-measure on
              hover can never slide the items below an open group (the jerk). */
@@ -2490,8 +2544,15 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
              Financing groups are nested one level deeper. Shift the Wallet
              group headers and their children right by one level so the
              parent → child indentation matches the Financing tab. */
-          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .ps-submenu-root > .ps-menu-button {
-            padding-left: 12px !important;
+          /* Top-level wallet items — submenu headers AND the direct "Dashboard"
+             link share ONE indent in every state (active included) so they
+             always line up. Pin both margin + padding so the <a> wrapper /
+             active class can't shift the Dashboard row. */
+          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .menu-items > .ps-submenu-root > .ps-menu-button,
+          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .menu-items > a .ps-menu-button,
+          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .menu-items > a .ps-menu-button.ps-active {
+            padding-left: 10px !important;
+            margin-left: 20px !important;
           }
           .css-12w9als:not(.is-collapsed) .wallet-menu-scope .sidebar-link .ps-menu-button {
             padding-left: 30px !important;

@@ -211,7 +211,7 @@ const VerifyOtp: React.FC = () => {
         } else if (roleValue === "customer") {
           navigate("/customer");
         } else {
-          navigate("/LOS/Dashboard");
+          navigate("/LOS/Wallet/Home");
         }
       }
     } catch (error: any) {

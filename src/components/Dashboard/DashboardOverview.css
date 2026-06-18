@@ -1,130 +1,160 @@
-/* Dashboard stat cards
-   - dark navy header strip on top with the metric label
-   - white body with the value + icon
-*/
+/* ===== Finance Statistics graph card — themed to match the stat cards ===== */
+.dashboard-graph-card.ant-card {
+  border: 1px solid color-mix(in srgb, #10b981 18%, #e5e7eb);
+  border-radius: 16px;
+  background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
+  box-shadow: 0 8px 22px -14px color-mix(in srgb, #10b981 45%, transparent);
+}
+html.dark .dashboard-graph-card.ant-card {
+  border-color: color-mix(in srgb, #10b981 30%, #262a36);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 12%, #161821) 0%,
+    #161821 55%
+  );
+  box-shadow: 0 10px 24px -16px rgba(0, 0, 0, 0.7);
+}
+.dashboard-graph-card.ant-card .ant-card-body {
+  background: transparent;
+}
 
-.dashboard-stats .total-loan {
+/* Dashboard stat cards
+   Soft pastel-gradient cards (light mode) / deep tinted-glass cards (dark mode).
+   Each card derives its whole look from a single brand color: --c
+   Palette anchored on the Sullis Digital emerald / teal / green logo,
+   with semantic accents (amber = in-progress, rose = rejected). */
+
+/* Make sure the row/columns never clip a card's border or glow (the top row
+   sits flush against a parent's edge, which was cutting the first card). */
+.dashboard-stats,
+.dashboard-stats > [class*="col"] {
+  overflow: visible !important;
+}
+.dashboard-stats {
+  padding-top: 4px;
+}
+
+.dashboard-stats .stat-card {
+  --surface-light: #ffffff;
+  --surface-dark: #0e1018;
+
   position: relative;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
   width: 100%;
-  height: 100%;
-  min-height: 96px;
-  background: var(--surface-card);
-  border: 1px solid var(--surface-border);
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: var(--surface-elevation-1);
-  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+  min-height: 118px;
+  padding: 18px 18px 16px;
+  border-radius: 16px;
+  border: 1px solid color-mix(in srgb, var(--c) 24%, var(--surface-light));
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--c) 16%, var(--surface-light)) 0%,
+    color-mix(in srgb, var(--c) 4%, var(--surface-light)) 100%
+  );
+  box-shadow: 0 6px 18px -10px color-mix(in srgb, var(--c) 55%, transparent);
+  transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
   cursor: default;
 }
-.dashboard-stats .total-loan.has-link {
+
+.dashboard-stats .stat-card.has-link {
   cursor: pointer;
 }
 
-.dashboard-stats .total-loan:hover {
-  box-shadow: var(--surface-elevation-2);
-  transform: translateY(-1px);
-  border-color: var(--surface-border-strong);
+/* No upward translate on hover — a parent clips the lift and cuts the card's
+   top. Keep the feedback via border + a stronger (downward) glow, all within
+   the card's box so nothing gets clipped. */
+.dashboard-stats .stat-card:hover {
+  border-color: color-mix(in srgb, var(--c) 55%, var(--surface-light));
+  /* Even glow on all sides (no downward offset) so the top never looks cut. */
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 28%, transparent),
+    0 6px 22px -10px color-mix(in srgb, var(--c) 55%, transparent);
 }
 
-.dashboard-stats .total-loan .card-header-strip {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
-  color: #ffffff;
-  padding: 8px 14px;
-  padding-right: 56px; /* leave room for the floating icon */
-}
-
-.dashboard-stats .total-loan .label-theme {
-  font-size: 12px;
-  font-weight: 500;
-  color: #cbd5e1;
-  line-height: 1.2;
-  letter-spacing: 0.2px;
-  margin: 0;
-  display: block;
-}
-
-.dashboard-stats .total-loan .card-body-strip {
+.dashboard-stats .stat-card__row {
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 12px 14px;
-  padding-right: 56px; /* leave room for the floating icon */
-  flex: 1;
-  background: var(--surface-card);
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
 }
 
-.dashboard-stats .total-loan .cards-text {
-  font-size: 22px;
-  font-weight: 700;
-  color: var(--foreground);
+.dashboard-stats .stat-card__title {
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: 0.1px;
+  color: color-mix(in srgb, var(--c) 45%, #334155);
+}
+
+/* Rounded-square colored icon badge, top-right */
+.dashboard-stats .stat-card__icon {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--c) 22%, var(--surface-light));
+  color: color-mix(in srgb, var(--c) 78%, #000);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 20%, transparent);
+}
+
+.dashboard-stats .stat-card__icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.dashboard-stats .stat-card__value {
   margin: 0;
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #0f172a;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
-/* Floating icon circle — straddles the header / body divide on the right side */
-.dashboard-stats .total-loan .icon-circle {
-  position: absolute;
-  top: 30%;
-  right: 12px;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #ffffff;
-  border: 1px solid var(--surface-border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.12);
-  z-index: 2;
+/* ===== Per-card brand colors ===== */
+.dashboard-stats .stat-card--emerald { --c: #10b981; }
+.dashboard-stats .stat-card--teal    { --c: #14b8a6; }
+.dashboard-stats .stat-card--amber   { --c: #f59e0b; }
+.dashboard-stats .stat-card--green   { --c: #22c55e; }
+.dashboard-stats .stat-card--rose    { --c: #f43f5e; }
+.dashboard-stats .stat-card--cyan    { --c: #06b6d4; }
+.dashboard-stats .stat-card--violet  { --c: #8b5cf6; }
+.dashboard-stats .stat-card--indigo  { --c: #6366f1; }
+
+/* ===== Dark mode — deep tinted glass with glowing icon ===== */
+html.dark .dashboard-stats .stat-card {
+  border-color: color-mix(in srgb, var(--c) 32%, #1a1d28);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--c) 22%, var(--surface-dark)) 0%,
+    color-mix(in srgb, var(--c) 6%, var(--surface-dark)) 100%
+  );
+  box-shadow: 0 10px 24px -14px rgba(0, 0, 0, 0.8);
 }
 
-.dashboard-stats .total-loan .icon-circle img {
-  height: 16px;
-  width: 16px;
-  object-fit: contain;
-  filter: brightness(0);
-  opacity: 0.75;
+html.dark .dashboard-stats .stat-card:hover {
+  border-color: color-mix(in srgb, var(--c) 50%, #1a1d28);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c) 35%, transparent),
+    0 6px 24px -10px color-mix(in srgb, var(--c) 45%, #000);
 }
 
-/* ===== Dark mode polish ===== */
-html.dark .dashboard-stats .total-loan {
-  background: linear-gradient(135deg, #1c1f2a 0%, #161821 100%);
-  border: 1px solid #262a36;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+html.dark .dashboard-stats .stat-card__title {
+  color: color-mix(in srgb, var(--c) 28%, #cbd5e1);
 }
 
-html.dark .dashboard-stats .total-loan:hover {
-  border-color: #3a4050;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
+html.dark .dashboard-stats .stat-card__icon {
+  background: color-mix(in srgb, var(--c) 26%, var(--surface-dark));
+  color: color-mix(in srgb, var(--c) 62%, #ffffff);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) 35%, transparent),
+    0 0 14px -2px color-mix(in srgb, var(--c) 55%, transparent);
 }
 
-html.dark .dashboard-stats .total-loan .card-header-strip {
-  background: transparent;
-}
-
-html.dark .dashboard-stats .total-loan .card-body-strip {
-  background: transparent;
-}
-
-html.dark .dashboard-stats .total-loan .label-theme {
-  color: #94a3b8;
-}
-
-html.dark .dashboard-stats .total-loan .cards-text {
-  color: #ffffff;
-}
-
-html.dark .dashboard-stats .total-loan .icon-circle {
-  background: #ffffff;
-  border-color: rgba(255, 255, 255, 0.12);
-}
-html.dark .dashboard-stats .total-loan .icon-circle img {
-  filter: brightness(0);
-  opacity: 0.85;
+html.dark .dashboard-stats .stat-card__value {
+  color: #f8fafc;
 }

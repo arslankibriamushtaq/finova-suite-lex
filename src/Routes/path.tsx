@@ -220,6 +220,7 @@ import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyMan
 import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScoring";
 import WalletTransactionLimits from "../pages/lmsPages/CustomerManagement/WalletTransactionLimits";
 import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
+import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
 import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
 import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
@@ -795,6 +796,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/Wallet/Dashboard",
             element: <WalletDashboard />,
+          },
+          {
+            path: "/LOS/Wallet/Home",
+            element: <WalletHome />,
           },
           {
             path: "/LOS/Wallet/SendMoney",

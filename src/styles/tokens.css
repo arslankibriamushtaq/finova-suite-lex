@@ -14,24 +14,24 @@
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0 0 0); /* Black */
-  --primary-foreground: oklch(0.985 0 0); /* White */
+  --primary: #10b981; /* Brand emerald (Sullis) */
+  --primary-foreground: #ffffff;
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.145 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.145 0 0);
+  --accent: #ecfdf5; /* Soft emerald highlight (dropdowns/select/menus) */
+  --accent-foreground: #065f46;
   --destructive: oklch(0.577 0.245 27.325);
   --destructive-foreground: oklch(0.985 0 0);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0 0 0); /* Black ring */
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
+  --ring: #10b981; /* Brand emerald focus ring */
+  --chart-1: #10b981;
+  --chart-2: #14b8a6;
+  --chart-3: #06b6d4;
+  --chart-4: #34d399;
+  --chart-5: #0d9488;
   --radius: 0.5rem;
 
   /* Status colors */
@@ -77,7 +77,7 @@
   /* Surface / background colors */
   --color-surface-subtle: #f5f5f5;
   --color-surface-muted: #f0f0f0;
-  --color-surface-page: #f4f4f4;
+  --color-surface-page: #edf2f0; /* soft sage-gray page bg — makes cards/table pop */
 
   /* Border colors */
   --color-border-light: #dddddd;
@@ -184,7 +184,7 @@
   --color-border-faint: #eeeeee;
 
   /* ===== Semantic surface tokens (use these everywhere instead of #fff/#000) ===== */
-  --surface-page:        #f5f6fa;   /* subtle gray page background */
+  --surface-page:        #edf2f0;   /* soft sage-gray page bg — makes cards/table pop */
   --surface-card:        #ffffff;   /* card / panel background */
   --surface-card-alt:    #f8fafc;   /* slightly tinted card header / striped row */
   --surface-card-hover:  #f1f5f9;   /* card hover */
@@ -219,24 +219,24 @@ html.dark,
   --card-foreground: #e6eaf2;
   --popover: #161821;
   --popover-foreground: #e6eaf2;
-  --primary: #ffffff;
-  --primary-foreground: #0d1117;
+  --primary: #10b981; /* Brand emerald (Sullis) */
+  --primary-foreground: #ffffff;
   --secondary: #22252f;
   --secondary-foreground: #e6eaf2;
   --muted: #22252f;
   --muted-foreground: #9ba1ad;
-  --accent: #22252f;
-  --accent-foreground: #e6eaf2;
+  --accent: color-mix(in srgb, #10b981 22%, #22252f); /* Emerald-tinted highlight */
+  --accent-foreground: #d1fae5;
   --destructive: #ef4444;
   --destructive-foreground: #ffffff;
   --border: #262a36;
   --input: #1c1f2a;
-  --ring: #3a4050;
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
+  --ring: #10b981; /* Brand emerald focus ring */
+  --chart-1: #10b981;
+  --chart-2: #14b8a6;
+  --chart-3: #06b6d4;
+  --chart-4: #34d399;
+  --chart-5: #0d9488;
 
   /* App surface / status — dark variants */
   --color-success: #22c55e;
@@ -268,32 +268,34 @@ html.dark,
   --theme-sidebar-text-color: #e6eaf2;
   --theme-revert-action-color: #475569;
   --theme-other-actions-color: transparent;
-  --theme-header-background-color: #161821;
+  /* Header surface — emerald-tinted to match the sidebar (follows the logo) */
+  --theme-header-background-color: #0c1512;
   --theme-header-sub-header-bg-color: #0d1117;
   --theme-dashboard-subheader-bg-color: #0d1117;
-  --theme-dashboard-header-bg-color: #161821;
+  --theme-dashboard-header-bg-color: #0c1512;
   --theme-subheader-text-color: #e6eaf2;
   --theme-heading-text-color: #f1f5f9;
   --theme-cards-background-color: #161821;
   --theme-cards-text-color: #e6eaf2;
-  --theme-table-background-color: #1a1d2a;
+  --theme-table-background-color: #064e3b;
   --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #e6eaf2;
-  --theme-table-row-alt: #20232e;
-  --theme-table-row-hover: #2a2d39;
-  --theme-flow-sidebar-logo-bg: #0a0a0a;
-  --theme-flow-dashboard-sidebar-bg: #0a0a0a;
+  --theme-table-row-alt: #16241e;   /* emerald-tinted stripe (dark) */
+  --theme-table-row-hover: #1e3329;
+  /* Subtle emerald-tinted sidebar surface — follows the Sullis logo color */
+  --theme-flow-sidebar-logo-bg: #0b1411;
+  --theme-flow-dashboard-sidebar-bg: #0c1512;
   --theme-flow-submenu-sidebar-bg: transparent;
-  --theme-flow-active-color-bg: rgba(235, 13, 13, 0.12);
+  --theme-flow-active-color-bg: color-mix(in srgb, #10b981 14%, transparent);
   /* Stepper accent — matches the active sidebar tab (dark navy gradient).
      Dark mode adds a white border so the dark gradient stays visible
      against the page surface. */
-  --stepper-accent: #1f2940;
-  --stepper-accent-bg: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
+  --stepper-accent: #10b981;
+  --stepper-accent-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
   --stepper-accent-border: #ffffff;
   --stepper-accent-ring: rgba(255, 255, 255, 0.18);
   --theme-flow-inactive-color-bg: transparent;
-  --theme-flow-active-text-color: #f87171;
+  --theme-flow-active-text-color: #34d399;
   --theme-flow-inactive-text-color: #e2e8f0;
   --theme-dashboard-sidebar-active-color-bg: #ef4444;
   --theme-dashboard-sidebar-active-text-color: #f87171;
@@ -732,10 +734,10 @@ html:not(.dark) .theme-btn:not(:disabled),
 html:not(.dark) .theme-btn-next:not(:disabled),
 html:not(.dark) .theme-btn-prev:not(:disabled),
 html:not(.dark) .theme-btn-back:not(:disabled) {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
-  background-color: #1f2940 !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background-color: #10b981 !important;
   color: #ffffff !important;
-  border: 1px solid #0f172a !important;
+  border: 1px solid #059669 !important;
   box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
@@ -752,9 +754,9 @@ html:not(.dark) .theme-btn:not(:disabled):hover,
 html:not(.dark) .theme-btn-next:not(:disabled):hover,
 html:not(.dark) .theme-btn-prev:not(:disabled):hover,
 html:not(.dark) .theme-btn-back:not(:disabled):hover {
-  background: linear-gradient(135deg, #283354 0%, #131c30 100%) !important;
-  background-color: #283354 !important;
-  border-color: #131c30 !important;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+  background-color: #34d399 !important;
+  border-color: #059669 !important;
   color: #ffffff !important;
   box-shadow:
     0 4px 10px rgba(15, 23, 42, 0.35),
@@ -1189,9 +1191,11 @@ html.dark .ant-select-dropdown {
   border-color: var(--surface-border) !important;
 }
 html.dark .ant-select-item { color: var(--foreground) !important; }
-html.dark .ant-select-item-option-active { background-color: var(--surface-card-alt) !important; }
+html.dark .ant-select-item-option-active:not(.ant-select-item-option-selected) {
+  background-color: color-mix(in srgb, #10b981 22%, var(--surface-card-alt)) !important;
+}
 html.dark .ant-select-item-option-selected {
-  background-color: var(--surface-card-alt) !important;
+  background-color: color-mix(in srgb, #10b981 32%, var(--surface-card-alt)) !important;
   color: #ffffff !important;
 }
 html.dark .rdt_Table {
@@ -1435,11 +1439,11 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td button.dropdown-toggle,
 .no-table tbody td .ant-btn,
 .no-table tbody td button[class*="bg-foreground"] {
-  background-color: #0f172a !important;
-  background: #0f172a !important;
+  background-color: #059669 !important;
+  background: #059669 !important;
   background-image: none !important;
   color: #ffffff !important;
-  border: 1px solid #0f172a !important;
+  border: 1px solid #059669 !important;
   border-radius: 6px !important;
   padding: 6px 14px !important;
   font-size: 12px !important;
@@ -1463,9 +1467,29 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td button.dropdown-toggle:hover,
 .no-table tbody td .ant-btn:hover,
 .no-table tbody td button[class*="bg-foreground"]:hover {
-  background-color: #1e293b !important;
-  background: #1e293b !important;
-  border-color: #1e293b !important;
+  background-color: #047857 !important;
+  background: #047857 !important;
+  border-color: #047857 !important;
+  color: #ffffff !important;
+}
+
+/* Shadcn dropdown-trigger "Select" buttons inside tables (variant=outline) →
+   emerald, to match the .dropdown-toggle / .wallet-brand-btn select buttons
+   used on other pages. Scoped via aria-haspopup so only menu triggers match. */
+.rdt_TableCell button[aria-haspopup="menu"],
+.no-table tbody td button[aria-haspopup="menu"] {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border: 1px solid #059669 !important;
+  color: #ffffff !important;
+}
+.rdt_TableCell button[aria-haspopup="menu"]:hover,
+.no-table tbody td button[aria-haspopup="menu"]:hover {
+  background: #047857 !important;
+  border-color: #047857 !important;
+  color: #ffffff !important;
+}
+.rdt_TableCell button[aria-haspopup="menu"] svg,
+.no-table tbody td button[aria-haspopup="menu"] svg {
   color: #ffffff !important;
 }
 
@@ -1501,9 +1525,9 @@ html.dark .no-table tbody td .theme-btn-next,
 html.dark .no-table tbody td .ant-btn,
 html.dark .no-table tbody td button[class*="bg-foreground"],
 html.dark .no-table tbody td button.dropdown-toggle {
-  background-color: #1e293b !important;
-  background: #1e293b !important;
-  border: 1px solid #334155 !important;
+  background-color: #059669 !important;
+  background: #059669 !important;
+  border: 1px solid #34d399 !important;
   color: #ffffff !important;
 }
 html.dark .rdt_TableCell .gradient-btn:hover,
@@ -1516,9 +1540,9 @@ html.dark .no-table tbody td .theme-btn-next:hover,
 html.dark .no-table tbody td .ant-btn:hover,
 html.dark .no-table tbody td button[class*="bg-foreground"]:hover,
 html.dark .no-table tbody td button.dropdown-toggle:hover {
-  background-color: #334155 !important;
-  background: #334155 !important;
-  border-color: #475569 !important;
+  background-color: #047857 !important;
+  background: #047857 !important;
+  border-color: #34d399 !important;
   color: #ffffff !important;
 }
 
@@ -1615,13 +1639,17 @@ html.dark .css-1654oxy > .ps-menu-button,
 html.dark div.menu-items a.ps-menu-button.ps-active,
 html.dark .active .css-1tqrhto > .ps-menu-button,
 html.dark li.ps-menuitem-root.ps-active > .ps-menu-button {
-  background: rgba(59, 130, 246, 0.06) !important;
-  border: 1.5px solid rgba(59, 130, 246, 0.85) !important;
+  /* Per-module color (--mi-color): deep tinted-glass + colored glow, same
+     mechanism as the dashboard cards in dark mode. */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mi-color, #10b981) 24%, #0e1018) 0%,
+    color-mix(in srgb, var(--mi-color, #10b981) 8%, #0e1018) 100%
+  ) !important;
   color: #ffffff !important;
   box-shadow:
-    0 0 0 1px rgba(59, 130, 246, 0.20),
-    0 0 16px rgba(59, 130, 246, 0.35),
-    inset 0 0 12px rgba(59, 130, 246, 0.12) !important;
+    inset 3px 0 0 var(--mi-color, #10b981),
+    0 0 14px color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
   border-radius: 10px !important;
 }
 html.dark span.ps-menu-label.ps-active.css-12w9als,
@@ -1694,31 +1722,33 @@ html.dark .bg-white .recharts-wrapper {
   --theme-sidebar-text-color: #000000;
   --theme-revert-action-color: #a0a0a0;
   --theme-other-actions-color: transparent;
-  --theme-header-background-color: #ffffff;
+  /* Header surface — emerald-tinted to match the sidebar (follows the logo) */
+  --theme-header-background-color: #f3f9f6;
   --theme-header-sub-header-bg-color: #000000;
   --theme-dashboard-subheader-bg-color: #f4f4f4;
-  --theme-dashboard-header-bg-color: #ffffff;
+  --theme-dashboard-header-bg-color: #f3f9f6;
   --theme-subheader-text-color: #000000;
   --theme-heading-text-color: #090909;
   --theme-cards-background-color: transparent;
   --theme-cards-text-color: transparent;
-  --theme-table-background-color: #0f172a;
+  --theme-table-background-color: #059669;
   --theme-table-heading-color: #ffffff;
   --theme-table-body-text-color: #0f172a;
-  --theme-table-row-alt: #d9dde4;
-  --theme-table-row-hover: #e7ebf1;
-  --theme-flow-sidebar-logo-bg: rgb(252, 252, 252);
-  --theme-flow-dashboard-sidebar-bg: rgb(252, 252, 252);
+  --theme-table-row-alt: #eaf7f1;   /* light emerald stripe — matches theme */
+  --theme-table-row-hover: #d8f0e6;
+  /* Subtle emerald-tinted sidebar surface — follows the Sullis logo color */
+  --theme-flow-sidebar-logo-bg: #eef6f1;
+  --theme-flow-dashboard-sidebar-bg: #f3f9f6;
   --theme-flow-submenu-sidebar-bg: transparent;
   --theme-flow-active-color-bg: transparent;
   /* Stepper accent — matches the active sidebar tab (dark navy gradient).
      Light mode uses the gradient end color as the border (no extra outline). */
-  --stepper-accent: #1f2940;
-  --stepper-accent-bg: linear-gradient(135deg, #1f2940 0%, #0f172a 100%);
-  --stepper-accent-border: #0f172a;
+  --stepper-accent: #10b981;
+  --stepper-accent-bg: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  --stepper-accent-border: #059669;
   --stepper-accent-ring: rgba(15, 23, 42, 0.18);
   --theme-flow-inactive-color-bg: transparent;
-  --theme-flow-active-text-color: #eb0d0d;
+  --theme-flow-active-text-color: #059669;
   --theme-flow-inactive-text-color: #000000;
   --theme-dashboard-sidebar-active-color-bg: #eb0d0d;
   --theme-dashboard-sidebar-active-text-color: #eb0d0d;
@@ -1766,6 +1796,7 @@ html.dark .bg-white .recharts-wrapper {
 
 .header_layout {
   background: var(--theme-dashboard-header-bg-color) !important;
+  border-radius: 0 !important;
 }
 
 .dashboard-subheader-layout {
@@ -1774,6 +1805,196 @@ html.dark .bg-white .recharts-wrapper {
 
 .header-background-color {
   background: var(--theme-header-background-color) !important;
+}
+
+/* Antd date/select/input fields — subtle emerald-tinted border so they match
+   the brand (focus/active highlight is handled by the antd ConfigProvider). */
+.ant-picker,
+.ant-input-affix-wrapper,
+.ant-select:not(.ant-select-disabled) .ant-select-selector {
+  border-radius: 8px !important;
+  border-color: color-mix(in srgb, #10b981 22%, #d9d9d9) !important;
+}
+.ant-picker:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select:not(.ant-select-disabled):hover .ant-select-selector {
+  border-color: #10b981 !important;
+}
+html.dark .ant-picker,
+html.dark .ant-input-affix-wrapper,
+html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
+  border-color: color-mix(in srgb, #10b981 28%, #3a4050) !important;
+}
+
+/* ==========================================================================
+   THEMED MODALS — emerald touch for every modal (shadcn Dialog, antd Modal,
+   Bootstrap Modal): tinted surface, professional header/footer dividers,
+   themed close (×), inputs/textarea, and action buttons.
+   ========================================================================== */
+
+/* --- Surface (light) --- */
+[data-slot="dialog-content"],
+.ant-modal .ant-modal-content,
+.modal-content {
+  background: linear-gradient(160deg, #f3faf7 0%, #ffffff 22%) !important;
+  border: 1px solid color-mix(in srgb, #10b981 20%, var(--border)) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 24px 60px -22px color-mix(in srgb, #10b981 38%, rgba(0, 0, 0, 0.45)) !important;
+}
+html.dark [data-slot="dialog-content"],
+html.dark .ant-modal .ant-modal-content,
+html.dark .modal-content {
+  background: linear-gradient(
+    160deg,
+    color-mix(in srgb, #10b981 12%, var(--surface-card)) 0%,
+    var(--surface-card) 24%
+  ) !important;
+  border-color: color-mix(in srgb, #10b981 28%, var(--surface-border)) !important;
+}
+
+/* --- Title --- */
+[data-slot="dialog-title"],
+.ant-modal-title,
+.modal-title {
+  color: var(--foreground) !important;
+  font-size: 20px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.2px !important;
+}
+
+/* --- Header / footer dividers (shadcn + bootstrap) --- */
+[data-slot="dialog-header"] {
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+}
+[data-slot="dialog-footer"] {
+  padding-top: 14px !important;
+  border-top: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+}
+.modal-header,
+.ant-modal-header {
+  border-bottom: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+  background: transparent !important;
+}
+.modal-footer {
+  border-top: 1px solid color-mix(in srgb, #10b981 14%, var(--border)) !important;
+}
+
+/* --- Close (×) button --- */
+[data-slot="dialog-close"],
+.ant-modal-close,
+.modal-header .btn-close,
+.modal-header .close {
+  width: 32px !important;
+  height: 32px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 8px !important;
+  color: var(--muted-foreground) !important;
+  opacity: 1 !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+[data-slot="dialog-close"]:hover,
+.ant-modal-close:hover,
+.modal-header .btn-close:hover,
+.modal-header .close:hover {
+  background-color: color-mix(in srgb, #10b981 14%, transparent) !important;
+  color: #059669 !important;
+}
+
+/* --- Inputs / textarea inside modals --- */
+[data-slot="dialog-content"] input:not([type="checkbox"]):not([type="radio"]),
+[data-slot="dialog-content"] textarea,
+[data-slot="dialog-content"] [data-slot="input"],
+[data-slot="dialog-content"] [data-slot="textarea"],
+.ant-modal .ant-input,
+.ant-modal textarea.ant-input,
+.modal-content input.form-control,
+.modal-content textarea.form-control {
+  border: 1px solid color-mix(in srgb, #10b981 18%, var(--border)) !important;
+  border-radius: 8px !important;
+}
+[data-slot="dialog-content"] input:not([type="checkbox"]):not([type="radio"]):focus,
+[data-slot="dialog-content"] textarea:focus,
+[data-slot="dialog-content"] [data-slot="input"]:focus,
+.ant-modal .ant-input:focus,
+.modal-content input.form-control:focus,
+.modal-content textarea.form-control:focus {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #10b981 22%, transparent) !important;
+}
+
+/* --- Secondary / Cancel action button (footer, non-primary) --- */
+[data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]),
+.ant-modal-footer .ant-btn:not(.ant-btn-primary),
+.modal-footer .btn:not(.btn-primary):not(.btn-danger) {
+  border: 1px solid color-mix(in srgb, #10b981 30%, var(--border)) !important;
+  color: var(--foreground) !important;
+}
+[data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):hover,
+.ant-modal-footer .ant-btn:not(.ant-btn-primary):hover,
+.modal-footer .btn:not(.btn-primary):not(.btn-danger):hover {
+  border-color: #10b981 !important;
+  color: #059669 !important;
+  background-color: color-mix(in srgb, #10b981 10%, transparent) !important;
+}
+
+/* ===== Bootstrap checkboxes / radios — brand emerald when checked ===== */
+.form-check-input:checked {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+}
+.form-check-input:focus {
+  border-color: color-mix(in srgb, #10b981 50%, var(--border)) !important;
+  box-shadow: 0 0 0 0.2rem color-mix(in srgb, #10b981 22%, transparent) !important;
+}
+
+/* ===== COA Configuration page — professional card + selectable cells ===== */
+.coa-config-page .coa-card {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #10b981 14%, var(--card)) 0%,
+    color-mix(in srgb, #10b981 4%, var(--card)) 60%
+  );
+  border: 1px solid color-mix(in srgb, #10b981 22%, var(--border));
+  border-radius: 16px;
+  box-shadow: 0 10px 26px -16px color-mix(in srgb, #10b981 45%, transparent);
+  padding: 22px 24px;
+}
+/* Each account checkbox becomes an emerald-tinted selectable cell */
+.coa-config-page .ps-tab-content .form-check,
+.coa-config-page form .form-check,
+.coa-config-page .form-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0;
+  min-height: 46px;
+  padding: 10px 12px;
+  border: 1px solid color-mix(in srgb, #10b981 22%, var(--border));
+  border-radius: 10px;
+  background: color-mix(in srgb, #10b981 6%, var(--card));
+  transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+}
+.coa-config-page .form-check:hover {
+  border-color: color-mix(in srgb, #10b981 45%, var(--border));
+  background: color-mix(in srgb, #10b981 12%, var(--card));
+}
+.coa-config-page .form-check:has(.form-check-input:checked) {
+  border-color: #10b981;
+  background: color-mix(in srgb, #10b981 16%, var(--card));
+  box-shadow: 0 4px 12px -6px color-mix(in srgb, #10b981 45%, transparent);
+}
+.coa-config-page .form-check .form-check-input {
+  margin: 0 !important;
+  float: none !important;
+  flex-shrink: 0;
+  cursor: pointer;
+}
+.coa-config-page .form-check .form-check-label {
+  cursor: pointer;
+  line-height: 1.2;
 }
 
 .css-vj11vy.ps-menu-root {
@@ -1786,7 +2007,7 @@ html.dark .bg-white .recharts-wrapper {
 }
 
 span.ps-menu-label.ps-active.css-12w9als {
-  color: #ffffff !important;
+  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
 }
 
 /* Active sidebar item styling lives in custom.scss to avoid duplication */
@@ -1871,8 +2092,16 @@ nav.ps-menu-root.css-vj11vy .ps-submenu-content ul a.ps-menu-button {
 }
 
 li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
-  color: #ffffff !important;
+  /* Per-module color (--mi-color): soft gradient pill with a colored left bar,
+     same mechanism as the dashboard stat cards. */
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--mi-color, #10b981) 16%, #ffffff) 0%,
+    color-mix(in srgb, var(--mi-color, #10b981) 5%, #ffffff) 100%
+  ) !important;
+  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
+  border-radius: 10px !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
 }
 
 /* ==========================================================================
@@ -1895,10 +2124,10 @@ button[class*="bg-primary"][class*="text-primary-foreground"],
 .theme-btn-next,
 .theme-btn-prev,
 .theme-btn-back {
-  background: linear-gradient(135deg, #1f2940 0%, #0f172a 100%) !important;
-  background-color: #1f2940 !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background-color: #10b981 !important;
   color: #ffffff !important;
-  border: 1px solid #0f172a !important;
+  border: 1px solid #059669 !important;
   box-shadow:
     0 2px 6px rgba(15, 23, 42, 0.25),
     inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
@@ -1915,9 +2144,9 @@ button[class*="bg-primary"][class*="text-primary-foreground"]:not(:disabled):hov
 .theme-btn-next:not(:disabled):hover,
 .theme-btn-prev:not(:disabled):hover,
 .theme-btn-back:not(:disabled):hover {
-  background: linear-gradient(135deg, #283354 0%, #131c30 100%) !important;
-  background-color: #283354 !important;
-  border-color: #131c30 !important;
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+  background-color: #34d399 !important;
+  border-color: #059669 !important;
   color: #ffffff !important;
   box-shadow:
     0 4px 12px rgba(15, 23, 42, 0.35),
@@ -2019,8 +2248,9 @@ html.dark .theme-btn-back:disabled {
    stays visible on the dark surface.
    ============================================================ */
 .wallet-brand-btn {
-  background-color: #1e293b !important;
-  border-color: #1e293b !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background-color: #10b981 !important;
+  border-color: #059669 !important;
   color: #ffffff !important;
   border-radius: 8px !important;
 }
@@ -2028,19 +2258,20 @@ html.dark .theme-btn-back:disabled {
   filter: brightness(0.92);
 }
 .wallet-brand-bg {
-  background-color: #1e293b !important;
+  background-color: #059669 !important;
   color: #ffffff !important;
 }
 .wallet-brand-card {
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
   color: #ffffff !important;
 }
 
 html.dark .wallet-brand-btn,
 .dark .wallet-brand-btn {
-  background-color: #e2e8f0 !important;
-  border-color: #e2e8f0 !important;
-  color: #0f172a !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background-color: #10b981 !important;
+  border-color: #34d399 !important;
+  color: #ffffff !important;
 }
 html.dark .wallet-brand-bg,
 .dark .wallet-brand-bg {

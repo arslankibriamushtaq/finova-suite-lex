@@ -105,7 +105,7 @@ const SSOCallback: React.FC = () => {
         sessionStorage.removeItem("sso_state");
 
         toast.success("Login Successful");
-        navigate("/LOS/Dashboard", { replace: true });
+        navigate("/LOS/Wallet/Home", { replace: true });
       } catch (err: any) {
         const message =
           err?.response?.data?.message || "SSO authentication failed.";

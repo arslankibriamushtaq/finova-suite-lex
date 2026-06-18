@@ -1,4 +1,5 @@
 import { useEffect, useState, useRef } from "react";
+import PulseLoading from "../Loader/PulseLoader";
 import TableView from "../TableView/TableView";
 import { getOpportunitiesCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, exportOpportunities } from "../../redux/apis/apisCrud";
 import { Button, Dropdown, Menu, Modal, Checkbox, DatePicker, Select } from "antd";
@@ -667,13 +668,7 @@ const Opportunity = () => {
               minHeight: "300px",
               gap: "20px"
             }}>
-              <div className="spinner-border text-primary" role="status" style={{
-                width: "3rem",
-                height: "3rem",
-                borderWidth: "0.3em"
-              }}>
-                <span className="visually-hidden">Loading...</span>
-              </div>
+              <PulseLoading size="lg" />
               <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
             </div>
           ) : (

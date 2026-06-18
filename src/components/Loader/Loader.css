@@ -1,0 +1,144 @@
+/* Branded loader styles (Loader.tsx). Kept out of the component as external
+   CSS — no inline styles. Ring colours come from the theme tokens
+   (emerald --primary / teal --color-action). */
+
+/* Thin, translucent backdrop so the project content stays visible during load. */
+.brand-loader-overlay {
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+html.dark .brand-loader-overlay {
+  background: rgba(13, 17, 23, 0.25) !important;
+}
+
+.brand-loader-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+}
+
+.brand-loader {
+  --ring: var(--primary, #10b981);
+  --ring-2: var(--color-action, #0b8085);
+  position: relative;
+  width: 132px;
+  height: 132px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.brand-loader__halo {
+  position: absolute;
+  width: 132px;
+  height: 132px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--ring) 22%, transparent) 0%,
+    transparent 68%
+  );
+  animation: brand-loader-pulse 1.8s ease-in-out infinite;
+}
+
+.brand-loader__ring {
+  position: absolute;
+  width: 116px;
+  height: 116px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  border-top-color: var(--ring);
+  border-right-color: var(--ring);
+  animation: brand-loader-spin 1s linear infinite;
+}
+
+.brand-loader__ring--inner {
+  width: 94px;
+  height: 94px;
+  border-top-color: transparent;
+  border-right-color: transparent;
+  border-bottom-color: var(--ring-2);
+  border-left-color: var(--ring-2);
+  opacity: 0.85;
+  animation: brand-loader-spin 1.4s linear infinite reverse;
+}
+
+.brand-loader__logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--card, #ffffff);
+  box-shadow: 0 6px 20px color-mix(in srgb, var(--ring) 28%, transparent);
+  animation: brand-loader-breathe 1.8s ease-in-out infinite;
+}
+html.dark .brand-loader__logo {
+  background: var(--card, #0d1117);
+}
+.brand-loader__logo img {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  user-select: none;
+}
+
+.brand-loader__text {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: var(--color-action, #0b8085);
+}
+
+/* Compact inline spinner — same branded ring, scaled for stat cards / modals /
+   buttons. Use class brand-spinner (default), brand-spinner--lg, or
+   brand-spinner--sm. Colours come from the theme tokens. */
+.brand-spinner {
+  display: inline-block;
+  width: 22px;
+  height: 22px;
+  border: 2.5px solid color-mix(in srgb, var(--primary, #10b981) 22%, transparent);
+  border-top-color: var(--primary, #10b981);
+  border-right-color: var(--primary, #10b981);
+  border-radius: 50%;
+  vertical-align: middle;
+  animation: brand-loader-spin 0.8s linear infinite;
+}
+.brand-spinner--sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+.brand-spinner--lg {
+  width: 48px;
+  height: 48px;
+  border-width: 4px;
+}
+
+@keyframes brand-loader-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes brand-loader-pulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.55; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+@keyframes brand-loader-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand-loader__ring,
+  .brand-loader__ring--inner,
+  .brand-loader__halo,
+  .brand-loader__logo {
+    animation-duration: 2.4s;
+  }
+}

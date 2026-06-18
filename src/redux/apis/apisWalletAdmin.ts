@@ -138,6 +138,55 @@ export function getAdminWalletDetail(walletId: string) {
   return axiosWalletService.get(`/api/v1/admin/wallets/${walletId}`);
 }
 
+export interface WalletDashboardSummary {
+  totalWallets: number;
+  activeWallets: number;
+  pendingActivation: number;
+  frozenWallets: number;
+  suspendedWallets: number;
+  closedWallets: number;
+  totalCustomers: number;
+  walletAccounts: number;
+  totalBalance: number;
+  currency: string;
+}
+
+export interface WalletsCreatedPoint {
+  date: string;
+  count: number;
+}
+
+export interface RecentWallet {
+  id: string;
+  walletNumber: string;
+  accountNumber: string;
+  name?: string | null;
+  balance: number;
+  currency: string;
+  status: WalletStatus | string;
+  createdAt?: string | null;
+}
+
+export interface WalletDashboardData {
+  summary: WalletDashboardSummary;
+  walletsCreated: WalletsCreatedPoint[];
+  recentWallets: RecentWallet[];
+}
+
+export function getAdminWalletDashboard(params: {
+  from?: string;
+  to?: string;
+  recentLimit?: number;
+}) {
+  return axiosWalletService.get(`/api/v1/admin/wallets/dashboard`, {
+    params: {
+      from: params.from || undefined,
+      to: params.to || undefined,
+      recentLimit: params.recentLimit ?? 8,
+    },
+  });
+}
+
 export function getWalletTransactions(walletId: string, page = 0, size = 20) {
   return axiosWalletService.get(`/api/v1/admin/wallets/${walletId}/transactions`, {
     params: { page, size },

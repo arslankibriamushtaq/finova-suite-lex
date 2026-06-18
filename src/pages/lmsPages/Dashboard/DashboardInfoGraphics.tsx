@@ -1,6 +1,17 @@
 import { useEffect, useState } from "react";
 import { Col, Row } from "antd";
 import { UserOutlined } from "@ant-design/icons";
+import {
+  Users,
+  Store,
+  Banknote,
+  HandCoins,
+  Wallet,
+  BadgeCheck,
+  AlertTriangle,
+  Clock,
+  CalendarX,
+} from "lucide-react";
 import BarChart from "../../../components/lmsComponents/BarChart";
 import LineChart from "../../../components/lmsComponents/LineChart";
 import TableView from "../../../components/TableView/TableView";
@@ -252,12 +263,12 @@ const Dashboard = () => {
   };
 
   const loans = [
-    { title: "Received Loans", value: dashboardData?.receivedAmount ?? 0 },
-    { title: "Receivable Loan", value: dashboardData?.receivableAmount ?? 0 },
-    { title: "Early Settlements", value: dashboardData?.earlySettlementAmount ?? 0 },
-    { title: "Non Performing Loans", value: dashboardData?.nonPerformingAmount ?? 0 },
-    { title: "Due Loans", value: dashboardData?.dueAmount ?? 0 },
-    { title: "Over Due Loans", value: dashboardData?.overDueAmount ?? 0 },
+    { title: "Received Loans", value: dashboardData?.receivedAmount ?? 0, color: "#10b981", Icon: HandCoins },
+    { title: "Receivable Loan", value: dashboardData?.receivableAmount ?? 0, color: "#14b8a6", Icon: Wallet },
+    { title: "Early Settlements", value: dashboardData?.earlySettlementAmount ?? 0, color: "#06b6d4", Icon: BadgeCheck },
+    { title: "Non Performing Loans", value: dashboardData?.nonPerformingAmount ?? 0, color: "#f43f5e", Icon: AlertTriangle },
+    { title: "Due Loans", value: dashboardData?.dueAmount ?? 0, color: "#f59e0b", Icon: Clock },
+    { title: "Over Due Loans", value: dashboardData?.overDueAmount ?? 0, color: "#ef4444", Icon: CalendarX },
   ];
   return (
     <div className="lms-dashboard">
@@ -313,7 +324,7 @@ const Dashboard = () => {
       {/* ===== KPI cards ===== */}
       <Row gutter={[16, 16]} className="lms-stats mt-2">
         <Col xs={24} sm={12} lg={6}>
-          <div className="kpi-card tall">
+          <div className="kpi-card tall" style={{ ["--c" as any]: "#6366f1" }}>
             <div className="kpi-header">{allCustomers.title}</div>
             <div className="kpi-body">
               <p className="kpi-value">
@@ -327,13 +338,13 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="kpi-icon">
-              <UserOutlined />
+              <Users strokeWidth={2} />
             </div>
           </div>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <div className="kpi-card">
+          <div className="kpi-card" style={{ ["--c" as any]: "#8b5cf6" }}>
             <div className="kpi-header">{totalVendors.title}</div>
             <div className="kpi-body">
               <p className="kpi-value">
@@ -341,13 +352,13 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="kpi-icon">
-              <img src={Images.iconUser} alt="" />
+              <Store strokeWidth={2} />
             </div>
           </div>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <div className="kpi-card">
+          <div className="kpi-card" style={{ ["--c" as any]: "#10b981" }}>
             <div className="kpi-header">{disbursedAmount.title}</div>
             <div className="kpi-body">
               <p className="kpi-value">
@@ -356,13 +367,13 @@ const Dashboard = () => {
               </p>
             </div>
             <div className="kpi-icon">
-              <img src={Images.disburedIcon} alt="" />
+              <Banknote strokeWidth={2} />
             </div>
           </div>
         </Col>
 
         <Col xs={24} sm={12} lg={6}>
-          <div className="kpi-card trend">
+          <div className="kpi-card trend" style={{ ["--c" as any]: "#0ea5e9" }}>
             <div className="kpi-header">Total Applications</div>
             <div className="kpi-body">
               <div className="kpi-trend-row">
@@ -380,32 +391,31 @@ const Dashboard = () => {
         </Col>
       </Row>
 
-      {/* ===== Loans grid ===== */}
-      <Row gutter={[16, 16]} className="lms-stats mt-3">
-        <Col xs={24}>
-          <div className="loans-grid-card">
-            <h6 className="loans-grid-title">Loan Overview</h6>
-            <Row gutter={[16, 16]}>
-              {loans.map((card, index) => (
-                <Col xs={12} sm={8} lg={4} key={index}>
-                  <div className="loan-stat-label">
-                    {card.title}
-                    <img
-                      src={Images.downArrow}
-                      alt=""
-                      className="loan-stat-arrow"
-                    />
+      {/* ===== Loan Overview — individual cards ===== */}
+      <div className="lms-section mt-3">
+        <h6 className="lms-section-title">Loan Overview</h6>
+        <Row gutter={[16, 16]} className="lms-stats">
+          {loans.map((card, index) => {
+            const Icon = card.Icon;
+            return (
+              <Col xs={12} sm={8} lg={4} key={index}>
+                <div className="kpi-card loan-kpi" style={{ ["--c" as any]: card.color }}>
+                  <div className="kpi-header">{card.title}</div>
+                  <div className="kpi-body">
+                    <p className="kpi-value">
+                      <span className="kpi-unit">SAR</span>
+                      {loader ? <PulseLoading /> : card.value}
+                    </p>
                   </div>
-                  <div className="loan-stat-value">
-                    <span className="loan-stat-unit">SAR</span>
-                    {loader ? <PulseLoading /> : card.value}
+                  <div className="kpi-icon">
+                    <Icon strokeWidth={2} />
                   </div>
-                </Col>
-              ))}
-            </Row>
-          </div>
-        </Col>
-      </Row>
+                </div>
+              </Col>
+            );
+          })}
+        </Row>
+      </div>
 
       {/* ===== Charts ===== */}
       <Row gutter={[16, 16]} className="lms-stats mt-3">

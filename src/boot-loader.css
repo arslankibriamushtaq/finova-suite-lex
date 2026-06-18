@@ -1,0 +1,75 @@
+/* Boot splash — shown on first paint / page load, before React mounts.
+   Lives in #root; React replaces #root's children on render, so it auto-removes.
+   Kept as an external stylesheet (linked from index.html) — no inline CSS. */
+#boot-loader {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  background: transparent;
+  z-index: 99999;
+}
+#boot-loader .boot-ring {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#boot-loader .boot-ring::before,
+#boot-loader .boot-ring::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  border: 3px solid transparent;
+}
+#boot-loader .boot-ring::before {
+  width: 116px;
+  height: 116px;
+  border-top-color: #10b981;
+  border-right-color: #10b981;
+  animation: boot-spin 1s linear infinite;
+}
+#boot-loader .boot-ring::after {
+  width: 94px;
+  height: 94px;
+  border-bottom-color: #0b8085;
+  border-left-color: #0b8085;
+  opacity: 0.85;
+  animation: boot-spin 1.4s linear infinite reverse;
+}
+#boot-loader .boot-dot {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35);
+  animation: boot-breathe 1.8s ease-in-out infinite;
+}
+#boot-loader .boot-dot img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  user-select: none;
+}
+#boot-loader .boot-text {
+  font-family: "Inter", system-ui, sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  color: #0b8085;
+}
+@keyframes boot-spin {
+  to { transform: rotate(360deg); }
+}
+@keyframes boot-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}

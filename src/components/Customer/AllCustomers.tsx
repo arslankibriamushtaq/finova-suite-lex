@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import PulseLoading from "../Loader/PulseLoader";
 import { Button, DatePicker, Dropdown, Input, Menu, Select, Modal, Checkbox } from "antd";
 import TableView from "../TableView/TableView";
 import { getLeadCustomers, changeUserStatus, updateKycRisk } from "../../redux/apis/apisCrud";
@@ -125,32 +126,32 @@ const AllCustomers = () => {
       sortable: true,
       width: "120px",
     },
-    {
-      name: "KYC Status",
-      cell: (row: any) => {
-        const status = row.kycStatus || "-";
-        const color = status === "VERIFIED" ? "var(--color-success)" : status === "PENDING" ? "var(--color-warning)" : "var(--color-error)";
-        return (
-          <span
-            style={{
-              padding: "6px 12px",
-              borderRadius: "32px",
-              fontSize: "12px",
-              backgroundColor: color,
-              color: "var(--primary-foreground)",
-              display: "inline-block",
-              textTransform: "capitalize",
-              fontWeight: "500",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {status.toLowerCase()}
-          </span>
-        );
-      },
-      sortable: true,
-      width: "140px",
-    },
+    // {
+    //   name: "KYC Status",
+    //   cell: (row: any) => {
+    //     const status = row.kycStatus || "-";
+    //     const color = status === "VERIFIED" ? "var(--color-success)" : status === "PENDING" ? "var(--color-warning)" : "var(--color-error)";
+    //     return (
+    //       <span
+    //         style={{
+    //           padding: "6px 12px",
+    //           borderRadius: "32px",
+    //           fontSize: "12px",
+    //           backgroundColor: color,
+    //           color: "var(--primary-foreground)",
+    //           display: "inline-block",
+    //           textTransform: "capitalize",
+    //           fontWeight: "500",
+    //           whiteSpace: "nowrap"
+    //         }}
+    //       >
+    //         {status.toLowerCase()}
+    //       </span>
+    //     );
+    //   },
+    //   sortable: true,
+    //   width: "140px",
+    // },
     {
       name: "Stage",
       cell: (row: any) => {
@@ -177,43 +178,43 @@ const AllCustomers = () => {
       sortable: true,
       width: "130px",
     },
-    {
-      name: "PEP",
-      cell: (row: any) => (
-        <span style={{ fontWeight: "500", color: row.pep === "Yes" ? "var(--color-error)" : "var(--color-success)" }}>
-          {row.pep}
-        </span>
-      ),
-      sortable: true,
-      width: "80px",
-    },
-    {
-      name: "Risk",
-      cell: (row: any) => {
-        const riskStatus = row.risk || "N/A";
-        const displayRisk = normalizeRiskDisplay(riskStatus);
+    // {
+    //   name: "PEP",
+    //   cell: (row: any) => (
+    //     <span style={{ fontWeight: "500", color: row.pep === "Yes" ? "var(--color-error)" : "var(--color-success)" }}>
+    //       {row.pep}
+    //     </span>
+    //   ),
+    //   sortable: true,
+    //   width: "80px",
+    // },
+    // {
+    //   name: "Risk",
+    //   cell: (row: any) => {
+    //     const riskStatus = row.risk || "N/A";
+    //     const displayRisk = normalizeRiskDisplay(riskStatus);
 
-        return (
-          <span
-            style={{
-              padding: "6px 12px",
-              borderRadius: "32px",
-              fontSize: "12px",
-              backgroundColor: getRiskColor(riskStatus),
-              color: "var(--primary-foreground)",
-              display: "inline-block",
-              textTransform: "capitalize",
-              fontWeight: "500",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {displayRisk}
-          </span>
-        );
-      },
-      sortable: true,
-      width: "100px",
-    },
+    //     return (
+    //       <span
+    //         style={{
+    //           padding: "6px 12px",
+    //           borderRadius: "32px",
+    //           fontSize: "12px",
+    //           backgroundColor: getRiskColor(riskStatus),
+    //           color: "var(--primary-foreground)",
+    //           display: "inline-block",
+    //           textTransform: "capitalize",
+    //           fontWeight: "500",
+    //           whiteSpace: "nowrap"
+    //         }}
+    //       >
+    //         {displayRisk}
+    //       </span>
+    //     );
+    //   },
+    //   sortable: true,
+    //   width: "100px",
+    // },
     {
       name: "Created",
       sortable: true,
@@ -850,9 +851,7 @@ const AllCustomers = () => {
         <div style={{ marginTop: "20px" }}>
           {isLoadingBlockCodes ? (
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "300px", gap: "20px" }}>
-              <div className="spinner-border text-primary" role="status" style={{ width: "3rem", height: "3rem", borderWidth: "0.3em" }}>
-                <span className="visually-hidden">Loading...</span>
-              </div>
+              <PulseLoading size="lg" />
               <p style={{ fontSize: "16px", color: "var(--muted-foreground)", margin: 0 }}>Loading block codes...</p>
             </div>
           ) : (
