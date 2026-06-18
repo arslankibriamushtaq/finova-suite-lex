@@ -514,6 +514,15 @@ const WalletDashboard = () => {
       ),
     },
     {
+      name: "Transfer Number",
+      cell: (row: any) => (
+        <span className="font-mono text-xs text-muted-foreground break-all">
+          {txGet(row, ["transferNumber", "transfer_number"], "-")}
+        </span>
+      ),
+      width: "180px",
+    },
+    {
       name: "Amount",
       cell: (row: any) => {
         const dir = txDirection(row);
@@ -556,6 +565,18 @@ const WalletDashboard = () => {
         </span>
       ),
       width: "130px",
+    },
+    {
+      name: "Purpose Note",
+      cell: (row: any) => {
+        const note = txGet(row, ["purposeNote", "purpose_note", "note", "description"], "-");
+        return (
+          <span className="text-xs text-muted-foreground" title={note === "-" ? undefined : note}>
+            {note}
+          </span>
+        );
+      },
+      width: "260px",
     },
   ];
 
