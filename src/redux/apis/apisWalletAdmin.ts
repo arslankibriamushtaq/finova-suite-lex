@@ -38,10 +38,14 @@ export interface WalletLimitRequest {
   id: string;
   walletId: string;
   customerId: string;
+  requestedSingleLimit: number;
   requestedDailyLimit: number;
+  requestedWeeklyLimit: number;
   requestedMonthlyLimit: number;
   requestedYearlyLimit: number;
+  currentSingleLimit: number;
   currentDailyLimit: number;
+  currentWeeklyLimit: number;
   currentMonthlyLimit: number;
   currentYearlyLimit: number;
   reason: string | null;

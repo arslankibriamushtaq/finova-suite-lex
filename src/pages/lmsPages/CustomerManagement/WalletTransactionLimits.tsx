@@ -176,9 +176,23 @@ const WalletTransactionLimits = () => {
       width: "230px",
     },
     {
+      name: "Single Limit",
+      cell: (row: WalletLimitRequest) => (
+        <LimitCell current={row.currentSingleLimit} requested={row.requestedSingleLimit} />
+      ),
+      width: "150px",
+    },
+    {
       name: "Daily Limit",
       cell: (row: WalletLimitRequest) => (
         <LimitCell current={row.currentDailyLimit} requested={row.requestedDailyLimit} />
+      ),
+      width: "150px",
+    },
+    {
+      name: "Weekly Limit",
+      cell: (row: WalletLimitRequest) => (
+        <LimitCell current={row.currentWeeklyLimit} requested={row.requestedWeeklyLimit} />
       ),
       width: "150px",
     },
