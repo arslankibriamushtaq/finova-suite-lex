@@ -210,6 +210,7 @@ import OtherInvoices from "../components/OtherInvoices/OtherInvoices";
 import Invoices from "../components/Loans/Invoices";
 import RetryTransaction from "../pages/lmsPages/LoanManagement/RetryTransaction";
 import ApplicationManagement from "../pages/lmsPages/LoanManagement/ApplicationManagement";
+import Onboarding360 from "../pages/lmsPages/Customers/Onboarding360";
 import BrokenPromises from "../pages/lmsPages/LoanManagement/BrokenPromises";
 import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistory";
 import WaiveOffDetails from "../pages/lmsPages/LoanManagement/WaiveOffDetails";
@@ -363,7 +364,6 @@ import AllocationAudit from "../pages/InvestorPages/admin/allocation/AllocationA
 import RiskProfiles from "../pages/InvestorPages/admin/allocation/RiskProfiles";
 import TicketDetails from "../pages/cmsPages/Tickets/TicketDetails";
 import LeadDetails from "../components/CustomerManagemnt/LeadDetails";
-import CustomerDetails from "../components/CustomerManagemnt/CustomerDetails";
 import MerchantList from "../components/Merchant Management/MerchantList";
 import CreateCategories from "../components/ProductManagement/createCategories";
 import CreateWizerd from "../components/ProductManagement/createWizerd";
@@ -937,7 +937,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/LOS/CustomerManagement/CustomerDetails/:id",
-            element: <CustomerDetails/>,
+            element: <Onboarding360 />,
           },
           {
             path: "/LOS/CustomerManagement/HighRiskUsers/:id",
