@@ -115,7 +115,13 @@ export function getOnboarding360(customerId: number | string) {
   return axios.get(`/customer-service/api/v1/customers/${customerId}/onboarding-360`);
 }
 export function getOnboardingDocumentImage(imagePath: string) {
-  return axios.get(imagePath);
+  let path = imagePath || "";
+  // Backend returns the path without the Kong service prefix (e.g. "/api/v1/customers/...").
+  // Kong routes these through "customer-service", so prepend it when missing.
+  if (path && !path.includes("customer-service")) {
+    path = `/customer-service${path.startsWith("/") ? "" : "/"}${path}`;
+  }
+  return axios.get(path);
 }
 
 export function getOpportunityDetails(id: number | string) {
