@@ -12,6 +12,10 @@ import {
   Lock,
   RefreshCw,
   CircleDot,
+  FileText,
+  Camera,
+  ZoomIn,
+  X,
 } from "lucide-react";
 import {
   LineChart,
@@ -45,7 +49,7 @@ import {
 } from "../../../components/ui/table";
 import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
-import { getOnboarding360 } from "../../../redux/apis/apisCrud";
+import { getOnboarding360, getOnboardingDocumentImage } from "../../../redux/apis/apisCrud";
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -401,6 +405,66 @@ const RiskGauge = ({ risk }: any) => {
 };
 
 /* ------------------------------------------------------------------ */
+/* Document / selfie image (lazy-loaded via auth'd API client)         */
+/* ------------------------------------------------------------------ */
+
+const DocImage = ({
+  imagePath,
+  label,
+  onEnlarge,
+}: {
+  imagePath?: string;
+  label: string;
+  onEnlarge?: (src: string, label: string) => void;
+}) => {
+  const [src, setSrc] = useState<string | null>(null);
+  const [err, setErr] = useState(false);
+
+  useEffect(() => {
+    if (!imagePath) {
+      setErr(true);
+      return;
+    }
+    let alive = true;
+    setErr(false);
+    setSrc(null);
+    getOnboardingDocumentImage(imagePath)
+      .then((res: any) => {
+        const d = res?.data?.data ?? res?.data;
+        if (alive && d?.base64Image) {
+          setSrc(`data:${d.contentType || "image/jpeg"};base64,${d.base64Image}`);
+        } else if (alive) {
+          setErr(true);
+        }
+      })
+      .catch(() => alive && setErr(true));
+    return () => {
+      alive = false;
+    };
+  }, [imagePath]);
+
+  if (err)
+    return (
+      <div className="flex h-48 items-center justify-center rounded-lg border border-dashed text-center text-sm text-muted-foreground">
+        Failed to load {label}
+      </div>
+    );
+  if (!src) return <Skeleton className="h-48 w-full rounded-lg" />;
+  return (
+    <button
+      type="button"
+      onClick={() => onEnlarge?.(src, label)}
+      className="group relative block w-full overflow-hidden rounded-lg border"
+    >
+      <img src={src} alt={label} loading="lazy" className="h-48 w-full bg-muted object-cover transition-transform duration-200 group-hover:scale-105" />
+      <span className="absolute inset-0 flex items-center justify-center gap-1 bg-black/45 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+        <ZoomIn className="size-4" /> Click to enlarge
+      </span>
+    </button>
+  );
+};
+
+/* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -426,6 +490,7 @@ const Onboarding360 = () => {
   const [data, setData] = useState<any>(null);
   const [reloadKey, setReloadKey] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
+  const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -456,6 +521,8 @@ const Onboarding360 = () => {
   const kyc = data?.kyc;
   const onboarding = data?.onboarding;
   const transactions: any[] = data?.transactions || [];
+  const documents: any[] = data?.documents || [];
+  const selfie = data?.selfie;
   const hasWallet = wallet && wallet.hasWallet !== false;
   const currency = wallet?.currency || "";
   const limits = wallet?.limits || {};
@@ -766,9 +833,70 @@ const Onboarding360 = () => {
                   </div>
                 )}
               </Tab>
+
+              {/* ---------------- Documents ---------------- */}
+              <Tab eventKey="documents" title="Documents">
+                {activeTab === "documents" && (
+                  <div className="flex flex-col gap-4 pt-4">
+                    <Block title="Identity Documents">
+                      {documents.length === 0 ? (
+                        <EmptyState icon={FileText} text="No documents available." />
+                      ) : (
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                          {documents.map((doc, idx) => (
+                            <div key={doc.documentId ?? idx} className="flex flex-col gap-2 rounded-xl border p-3">
+                              <div className="flex items-center justify-between gap-2">
+                                <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
+                                  {doc.kind || "DOCUMENT"}
+                                </Badge>
+                                <span className="text-xs text-muted-foreground">{formatDate(doc.createdAt)}</span>
+                              </div>
+                              <DocImage imagePath={doc.imagePath} label={doc.kind || "Document"} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                              <div className="text-xs text-muted-foreground">
+                                No. <span className="font-medium text-foreground">{doc.documentNumber || "—"}</span>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </Block>
+
+                    <Block title="Selfie">
+                      {selfie ? (
+                        <div className="max-w-xs">
+                          <DocImage imagePath={selfie.imagePath} label="Selfie" onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                        </div>
+                      ) : (
+                        <EmptyState icon={Camera} text="Selfie not captured for this customer" />
+                      )}
+                    </Block>
+                  </div>
+                )}
+              </Tab>
             </Tabs>
           </div>
         </Card>
+      )}
+
+      {/* Lightbox */}
+      {lightbox && (
+        <div
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/75 p-4"
+          onClick={() => setLightbox(null)}
+        >
+          <div className="relative max-h-[90vh] max-w-3xl" onClick={(e) => e.stopPropagation()}>
+            <button
+              type="button"
+              onClick={() => setLightbox(null)}
+              className="absolute -right-3 -top-3 flex size-8 items-center justify-center rounded-full bg-background text-foreground shadow-md ring-1 ring-border"
+              aria-label="Close"
+            >
+              <X className="size-4" />
+            </button>
+            <img src={lightbox.src} alt={lightbox.label} className="max-h-[90vh] max-w-full rounded-lg object-contain" />
+            <div className="mt-2 text-center text-sm font-medium text-white">{lightbox.label}</div>
+          </div>
+        </div>
       )}
     </div>
   );

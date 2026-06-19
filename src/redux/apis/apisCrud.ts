@@ -114,6 +114,9 @@ export function getCustomer360(customerId: number | string) {
 export function getOnboarding360(customerId: number | string) {
   return axios.get(`/customer-service/api/v1/customers/${customerId}/onboarding-360`);
 }
+export function getOnboardingDocumentImage(imagePath: string) {
+  return axios.get(imagePath);
+}
 
 export function getOpportunityDetails(id: number | string) {
   return axios.get(`/crm/opportunity-details/${id}`);
