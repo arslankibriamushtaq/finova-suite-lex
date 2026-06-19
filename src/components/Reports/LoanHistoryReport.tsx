@@ -123,7 +123,7 @@ const LoanHistoryReport = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -133,17 +133,17 @@ const LoanHistoryReport = () => {
             placeholder="Enter Loan UUID — e.g. 550e8400-e29b-41d4-a716-446655440000"
             value={loanId}
             onChange={(e) => setLoanId(e.target.value)}
-            style={{ flex: "1 1 280px", minWidth: 220, height: 40, borderRadius: 8 }}
+            style={{ flex: "1 1 280px", minWidth: 220, height: 40, borderRadius: 6 }}
           />
           <DatePicker
             placeholder="From"
             onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : "")}
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <DatePicker
             placeholder="To"
             onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : "")}
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <Button
             className="theme-btn-next"
@@ -188,7 +188,7 @@ const LoanHistoryReport = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

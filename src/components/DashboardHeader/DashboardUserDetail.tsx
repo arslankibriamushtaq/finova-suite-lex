@@ -191,7 +191,7 @@ const DashboardUserDetail = (props: any) => {
                         zIndex: 1000,
                         maxWidth: "100%",
                         height: "380px",
-                        borderRadius: "16px",
+                        borderRadius: "6px",
                     }}>
                     <label className="label-tag">Gender</label>
                     <ReactECharts
@@ -209,7 +209,7 @@ const DashboardUserDetail = (props: any) => {
                     zIndex: 1000,
                     maxWidth: "100%",
                     height: "380px",
-                    borderRadius: "16px",
+                    borderRadius: "6px",
                 }}
                 >
                 <label className="label-tag">Age Groups</label>

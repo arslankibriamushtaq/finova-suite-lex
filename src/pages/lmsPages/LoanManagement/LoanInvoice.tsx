@@ -264,7 +264,7 @@ const LoanInvoice = () => {
           style={{
             whiteSpace: "nowrap",
             padding: "0.4rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor:
               row.Status === "Active"
                 ? "var(--color-status-green)"
@@ -311,7 +311,7 @@ const LoanInvoice = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -319,28 +319,28 @@ const LoanInvoice = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <DatePicker
             placeholder="From"
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <DatePicker
             placeholder="To"
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <DatePicker
             placeholder="From"
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <DatePicker
             placeholder="To"
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <Button
-            style={{ borderRadius: 8, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            style={{ borderRadius: 6, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="invoice-btn"
           >
             Clear
           </Button>
           <Button
-            style={{ borderRadius: 8, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            style={{ borderRadius: 6, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="invoice-btn"
           >
             Export CSV
@@ -352,7 +352,7 @@ const LoanInvoice = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

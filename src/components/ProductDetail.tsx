@@ -174,7 +174,7 @@ const ProductDetail = () => {
               className="col-8"
               style={{
                 border: "2px solid rgba(226, 36, 46, 1)",
-                borderRadius: "20px",
+                borderRadius: "6px",
               }}
             >
               <div
@@ -184,8 +184,8 @@ const ProductDetail = () => {
                   fontWeight: "600",
                   color: "rgba(255, 255, 255, 1)",
                   backgroundColor: "rgba(226, 36, 46, 1)",
-                  borderTopLeftRadius: "16px",
-                  borderTopRightRadius: "16px",
+                  borderTopLeftRadius: "6px",
+                  borderTopRightRadius: "6px",
                 }}
                 className="d-flex justify-content-center pt-3 pb-3"
               >
@@ -326,8 +326,8 @@ const ProductDetail = () => {
               background: Mbtn === false ? "#D7232C" : "white",
               border: "1px solid #ccc",
               color: Mbtn === false ? "white" : "black",
-              borderTopLeftRadius: "1rem",
-              borderBottomLeftRadius: "1rem",
+              borderTopLeftRadius: "6px",
+              borderBottomLeftRadius: "6px",
               clipPath: "polygon(0 0, 100% 0%, 100% 100%, 0% 100%)",
             }}
             onClick={() => setMbtn(false)}
@@ -340,8 +340,8 @@ const ProductDetail = () => {
               background: Mbtn === true ? "#D7232C" : "white",
               color: Mbtn === true ? "white" : "black",
               border: "1px solid #ccc",
-              borderTopRightRadius: "1rem",
-              borderBottomRightRadius: "1rem",
+              borderTopRightRadius: "6px",
+              borderBottomRightRadius: "6px",
               clipPath: "polygon(0 0, 100% 0%, 100% 100%, 0% 100%)",
             }}
             onClick={() => setMbtn(true)}

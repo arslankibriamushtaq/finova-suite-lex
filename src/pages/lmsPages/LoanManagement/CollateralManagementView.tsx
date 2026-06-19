@@ -594,7 +594,7 @@ const CollateralManagementView = () => {
       </div>
       <div
         className="p-4"
-        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "6px" }}
       >
         <div className="col-12 mt-5">
           <div className="col-8 d-flex justify-content-start mb-5">
@@ -991,7 +991,7 @@ const CollateralManagementView = () => {
                 className="d-flex me-3"
                 style={{
                   border: "1px solid var(--color-surface-frost)",
-                  borderRadius: "5px",
+                  borderRadius: "6px",
                   padding: "4px",
                   background: "var(--color-surface-frost)",
                 }}
@@ -1083,7 +1083,7 @@ const CollateralManagementView = () => {
                 className="d-flex me-3"
                 style={{
                   border: "1px solid var(--color-surface-frost)",
-                  borderRadius: "5px",
+                  borderRadius: "6px",
                   padding: "4px",
                   background: "var(--color-surface-frost)",
                 }}
@@ -1106,7 +1106,7 @@ const CollateralManagementView = () => {
               className="btn btn-danger"
               style={{
                 backgroundColor: "var(--color-danger-action)",
-                borderRadius: "8px",
+                borderRadius: "6px",
                 color: "var(--color-near-white)",
                 border: "none",
               }}
@@ -1146,7 +1146,7 @@ const CollateralManagementView = () => {
                 style={{
                   backgroundColor: "var(--color-danger-action)",
                   color: "var(--color-near-white)",
-                  borderRadius: "8px",
+                  borderRadius: "6px",
                 }}
               >
                 ok

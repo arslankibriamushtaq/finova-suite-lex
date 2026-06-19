@@ -354,7 +354,7 @@ return (
               type="submit"
               style={{
                 backgroundColor: "rgba(226, 36, 46, 1)",
-                borderRadius: "16px",
+                borderRadius: "6px",
                 border: "1px solid rgba(226, 36, 46, 1)",
                 padding: "10px 10px 10px 10px",
                 color: "#fff",

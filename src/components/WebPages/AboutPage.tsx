@@ -450,7 +450,7 @@ const AboutPage = () => {
             }}>
               <div style={{
                 padding: '0px',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 textAlign: 'center',
                 marginBottom: '20px',
                 display: 'flex',
@@ -462,7 +462,7 @@ const AboutPage = () => {
                 <img 
                   src={pageData.images.contentLogo} 
                   alt="Factoring Valley Logo" 
-                  style={{ maxWidth: '100%', maxHeight: '520px', width: 'auto', objectFit: 'contain' , borderRadius: '24px' }}
+                  style={{ maxWidth: '100%', maxHeight: '520px', width: 'auto', objectFit: 'contain' , borderRadius: '6px' }}
                 />
               </div>
             </div>
@@ -483,7 +483,7 @@ const AboutPage = () => {
           <div style={{
             backgroundColor: '#f5f5f5',
             padding: '30px 40px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             border: '1px solid #ddd',
             maxWidth: '800px',
             width: '100%'

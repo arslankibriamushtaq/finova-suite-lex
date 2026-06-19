@@ -205,7 +205,7 @@ const PayInvoice = () => {
                 style={{
                   padding: 10,
                   backgroundColor: "transparent",
-                  borderRadius: 5,
+                  borderRadius: 6,
                 }}
               />
             </div>
@@ -242,7 +242,7 @@ const PayInvoice = () => {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   From
@@ -253,7 +253,7 @@ const PayInvoice = () => {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Billing To
@@ -267,7 +267,7 @@ const PayInvoice = () => {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Payment Term
@@ -278,7 +278,7 @@ const PayInvoice = () => {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2 "
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Ship To
@@ -291,7 +291,7 @@ const PayInvoice = () => {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   PO Number
@@ -302,7 +302,7 @@ const PayInvoice = () => {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Due Date
@@ -317,7 +317,7 @@ const PayInvoice = () => {
             <div className="col-6">
               {/* <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   PO Number
@@ -328,7 +328,7 @@ const PayInvoice = () => {
             <div className="col-6 mb-3">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
               >
                 <label style={{ fontWeight: "bold" }}>Date</label>
                 <span className="ms-5">
@@ -343,7 +343,7 @@ const PayInvoice = () => {
                 className=" mb-2 p-3 col-3"
                 style={{
                   background: "var(--color-error-bg)",
-                  borderTopLeftRadius: "7px",
+                  borderTopLeftRadius: "6px",
                   fontWeight: "700",
                   color: "var(--foreground)",
                 }}
@@ -376,7 +376,7 @@ const PayInvoice = () => {
                 className="mb-2 p-3 col-3"
                 style={{
                   background: "var(--color-error-bg)",
-                  borderTopRightRadius: "7px",
+                  borderTopRightRadius: "6px",
                   fontWeight: "700",
                   color: "var(--foreground)",
                 }}
@@ -487,7 +487,7 @@ const PayInvoice = () => {
               {/* <div className="col-4">
                 <div
                   className="d-flex justify-content-between align-items-center p-3"
-                  style={{ backgroundColor: "var(--muted)", borderRadius: "8px" }}
+                  style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
                     Discount(%)
@@ -543,7 +543,7 @@ const PayInvoice = () => {
             color: "var(--primary-foreground)",
             //height: "32px",
             padding: "9px",
-            borderRadius: "8px",
+            borderRadius: "6px",
             border: "transparent",
           }}
           onClick={() => {
@@ -959,7 +959,7 @@ const PayInvoice = () => {
                           style={{
                             padding: "7px",
                             border: "1px solid #d3d3d3",
-                            borderRadius: "5px",
+                            borderRadius: "6px",
                             cursor: "pointer",
                             width: "220px",
                             textAlign: "center",
@@ -975,7 +975,7 @@ const PayInvoice = () => {
                             display: "inline-flex",
                             alignItems: "center",
                             backgroundColor: "#a3a3a3",
-                            borderRadius: "5px",
+                            borderRadius: "6px",
                             padding: "5px 10px",
                             color: "#fff",
                           }}
@@ -1017,7 +1017,7 @@ const PayInvoice = () => {
                     className="application-btn p-2 border-rounded-lg"
                     style={{
                       border: "1px solid transparent",
-                      borderRadius: "5px",
+                      borderRadius: "6px",
                     }}
                   >
                     Submit

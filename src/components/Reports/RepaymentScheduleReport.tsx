@@ -220,7 +220,7 @@ const RepaymentScheduleReport = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -232,7 +232,7 @@ const RepaymentScheduleReport = () => {
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
         />
         <button
           type="button"
@@ -287,7 +287,7 @@ const RepaymentScheduleReport = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

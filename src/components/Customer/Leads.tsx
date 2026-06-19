@@ -258,7 +258,7 @@ const Leads = () => {
               backgroundColor: "var(--color-action)",
               color: "var(--foreground)",
               borderColor: "var(--primary-foreground)",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >
@@ -710,7 +710,7 @@ const Leads = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           border: "1px solid var(--border)",
         }}
@@ -722,7 +722,7 @@ const Leads = () => {
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
           />
           <DatePicker
             placeholder="From"
@@ -740,7 +740,7 @@ const Leads = () => {
               flex: "1 1 180px",
               minWidth: 160,
               height: 40,
-              borderRadius: 8,
+              borderRadius: 6,
               background: "#fff",
             }}
           />
@@ -762,7 +762,7 @@ const Leads = () => {
               flex: "1 1 180px",
               minWidth: 160,
               height: 40,
-              borderRadius: 8,
+              borderRadius: 6,
               background: "#fff",
             }}
           />
@@ -782,7 +782,7 @@ const Leads = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",
@@ -804,29 +804,8 @@ const Leads = () => {
       </div>
 
       <style>{`
-        .leads-page .rdt_TableCell {
-          font-size: 13.5px;
-          color: var(--foreground);
-          font-weight: 500;
-          letter-spacing: 0.1px;
-          padding-top: 14px !important;
-          padding-bottom: 14px !important;
-        }
-        .leads-page .rdt_TableCol,
-        .leads-page .rdt_TableCol *,
-        .leads-page .rdt_TableCol > div,
-        .leads-page .rdt_TableHeadRow {
-          color: #ffffff !important;
-          font-size: 13.5px !important;
-          font-weight: 600 !important;
-          letter-spacing: 0.2px;
-        }
-        .leads-page .rdt_TableRow {
-          border-bottom: 1px solid var(--border) !important;
-        }
-        .leads-page .rdt_TableRow:last-child {
-          border-bottom: none !important;
-        }
+        /* Table styling is centralized (shared across all pages) — no per-page
+           table CSS here. Only page-specific, non-table tweaks below. */
         /* Date pickers in the filter card: match the search input */
         .leads-page .ant-picker {
           background: #fff !important;
@@ -910,7 +889,7 @@ const Leads = () => {
           {/* Block Codes Table */}
           <div style={{
             border: "1px solid var(--border)",
-            borderRadius: "8px",
+            borderRadius: "6px",
             overflow: "hidden",
             maxHeight: "400px",
             overflowY: "auto"
@@ -990,7 +969,7 @@ const Leads = () => {
                         backgroundColor: "var(--color-info)",
                         color: "var(--primary-foreground)",
                         padding: "4px 12px",
-                        borderRadius: "4px",
+                        borderRadius: "6px",
                         fontSize: "12px",
                         fontWeight: "500"
                       }}>
@@ -1007,7 +986,7 @@ const Leads = () => {
                         color: "var(--primary-foreground)",
                         border: "none",
                         padding: "6px 16px",
-                        borderRadius: "4px",
+                        borderRadius: "6px",
                         fontSize: "12px",
                         fontWeight: "500",
                         cursor: "default",

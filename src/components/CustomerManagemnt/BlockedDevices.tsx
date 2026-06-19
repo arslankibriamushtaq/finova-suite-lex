@@ -253,7 +253,7 @@ const BlockedDevices = () => {
               backgroundColor: "var(--color-action) !important",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

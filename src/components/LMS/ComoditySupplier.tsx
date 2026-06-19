@@ -88,7 +88,7 @@ const CommoditySupplier = () => {
               backgroundColor: "var(--color-action) !important",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >
@@ -299,7 +299,7 @@ const CommoditySupplier = () => {
     <>
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
       >
         <div className="d-flex mb-3 col-12 filter-select">
           <Select

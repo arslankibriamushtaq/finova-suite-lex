@@ -483,7 +483,7 @@ const SendMoney = () => {
               value={historyMobile}
               onChange={(e) => setHistoryMobile(e.target.value)}
               onPressEnter={loadHistory}
-              style={{ width: 300, minWidth: 200, borderRadius: 8, height: 40 }}
+              style={{ width: 300, minWidth: 200, borderRadius: 6, height: 40 }}
             />
           </CardTitle>
         </CardHeader>

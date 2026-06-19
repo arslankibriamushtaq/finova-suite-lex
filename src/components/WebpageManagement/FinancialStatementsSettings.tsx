@@ -281,7 +281,7 @@ const FinancialStatementsSettings = () => {
           style={{
             cursor: 'pointer',
             padding: '4px 8px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             backgroundColor: 'var(--color-surface-muted)',
             border: '1px solid var(--color-border-light)',
             fontSize: '12px',
@@ -323,7 +323,7 @@ const FinancialStatementsSettings = () => {
               width: '100%',
               padding: '4px 8px',
               border: '2px solid var(--color-action-blue)',
-              borderRadius: '4px',
+              borderRadius: '6px',
               fontSize: 'inherit',
               fontFamily: 'inherit'
             }}
@@ -339,7 +339,7 @@ const FinancialStatementsSettings = () => {
             style={{
               cursor: 'pointer',
               padding: '4px 8px',
-              borderRadius: '4px',
+              borderRadius: '6px',
               transition: 'background-color 0.2s',
               minWidth: '100px',
               display: 'inline-block'
@@ -417,7 +417,7 @@ const FinancialStatementsSettings = () => {
               width: '100%',
               padding: '4px 8px',
               border: '2px solid var(--color-action-blue)',
-              borderRadius: '4px',
+              borderRadius: '6px',
               fontSize: 'inherit',
               fontFamily: 'inherit'
             }}
@@ -433,7 +433,7 @@ const FinancialStatementsSettings = () => {
             style={{
               cursor: 'pointer',
               padding: '4px 8px',
-              borderRadius: '4px',
+              borderRadius: '6px',
               transition: 'background-color 0.2s'
             }}
             onMouseEnter={(e) => {
@@ -458,7 +458,7 @@ const FinancialStatementsSettings = () => {
             style={{
               cursor: 'pointer',
             padding: '2px 4px',
-            borderRadius: '3px',
+            borderRadius: '6px',
             display: 'inline-block',
             border: '1px solid transparent',
             color: 'var(--color-text-dark)',
@@ -555,7 +555,7 @@ const FinancialStatementsSettings = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -625,7 +625,7 @@ const FinancialStatementsSettings = () => {
             color: 'var(--primary-foreground)',
             border: 'none',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             fontSize: '12px',
             fontWeight: 'bold',
             cursor: 'pointer',
@@ -682,7 +682,7 @@ const FinancialStatementsSettings = () => {
         {/* Statements Table */}
         <div style={{
           backgroundColor: 'var(--background)',
-          borderRadius: '8px',
+          borderRadius: '6px',
           padding: '30px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
         }}>
@@ -735,7 +735,7 @@ const FinancialStatementsSettings = () => {
           {/* Custom Table */}
           <div style={{
             border: '1px solid var(--color-border-subtle)',
-            borderRadius: '14px',
+            borderRadius: '6px',
             overflow: 'hidden'
           }}>
             {/* Table Header */}
@@ -743,7 +743,7 @@ const FinancialStatementsSettings = () => {
               display: 'flex',
               borderBottom: '2px solid var(--color-border-subtle)',
               background: themeStyle?.table.backgroundColor || '#EDFFFB',
-              borderRadius: '14px 14px 0 0',
+              borderRadius: '6px 6px 0 0',
             }}>
               {financialStatementsHeaders.map((column: any, index: number) => (
                 <div
@@ -838,7 +838,7 @@ const FinancialStatementsSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '90%',
             maxWidth: '800px',
             maxHeight: '90vh',
@@ -847,7 +847,7 @@ const FinancialStatementsSettings = () => {
             <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Content</h3>
             <div style={{
               border: '1px solid var(--color-border-light)',
-              borderRadius: '4px',
+              borderRadius: '6px',
               minHeight: '300px'
           }}>
             <CKEditor
@@ -884,7 +884,7 @@ const FinancialStatementsSettings = () => {
                   backgroundColor: 'var(--color-text-slate)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
                 onClick={() => {
@@ -900,7 +900,7 @@ const FinancialStatementsSettings = () => {
                   backgroundColor: 'var(--color-action-blue)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
                 onClick={() => {
@@ -933,7 +933,7 @@ const FinancialStatementsSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             maxWidth: '400px',
             width: '90%',
             textAlign: 'center',
@@ -977,7 +977,7 @@ const FinancialStatementsSettings = () => {
                   border: '1px solid var(--color-border-muted)',
                   backgroundColor: 'var(--background)',
                   color: 'var(--color-text-muted)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: '500'
@@ -998,7 +998,7 @@ const FinancialStatementsSettings = () => {
                   border: 'none',
                   backgroundColor: 'var(--theme-secondary)',
                   color: 'var(--primary-foreground)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: '500'

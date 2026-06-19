@@ -29,7 +29,7 @@ const LoanDetailView = () => {
   return (
     <>
       <h3>Loan Details</h3>
-      <div style={{ border: "1px solid var(--color-border-light)", borderRadius: "8px" }}>
+      <div style={{ border: "1px solid var(--color-border-light)", borderRadius: "6px" }}>
         <div className="col-12 d-flex pb-2 px-3 mt-2">
           <div className="col-6 d-flex align-items-center">
             <div className="col-6">
@@ -48,7 +48,7 @@ const LoanDetailView = () => {
           <div className="col-6 d-flex justify-content-end">
             <Button
               style={{
-                borderRadius: "8px",
+                borderRadius: "6px",
                 border: "transparent",
               }}
               className="invoice-btn"

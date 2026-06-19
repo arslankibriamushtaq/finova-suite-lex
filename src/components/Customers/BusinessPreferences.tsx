@@ -77,7 +77,7 @@ const BusinessPreferences = () => {
               background: "linear-gradient(100deg, #DEF5FF, #90CAFF)",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

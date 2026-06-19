@@ -284,7 +284,7 @@ const Categories = () => {
               onClick={handleCloseModal}
               style={{
                 padding: "8px 24px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "none",
                 backgroundColor: "var(--color-cms-teal)",
                 color: "white",
@@ -299,7 +299,7 @@ const Categories = () => {
               onClick={handleSave}
               style={{
                 padding: "8px 24px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "none",
                 backgroundColor: "var(--foreground)",
                 color: "white",
@@ -324,8 +324,8 @@ const Categories = () => {
         <div style={{ padding: "20px 0" }}>
           <p>Are you sure you want to delete this Category?</p>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "30px" }}>
-            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "4px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
-            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "4px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
+            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "6px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
+            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "6px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
           </div>
         </div>
       </Modal>

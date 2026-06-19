@@ -63,7 +63,7 @@ const ManagementForm = () => {
   const overlayStyle = {
     backgroundColor: "white",
     padding: "20px",
-    borderRadius: "12px",
+    borderRadius: "6px",
     color: "black",
   };
 

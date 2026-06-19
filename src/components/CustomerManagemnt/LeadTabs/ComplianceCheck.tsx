@@ -5,7 +5,7 @@ const ComplianceCheck: React.FC = () => {
   return (
     <div
       style={{
-        borderRadius: 4,
+        borderRadius: 6,
         overflow: "hidden",
         width: "100%",
       }}

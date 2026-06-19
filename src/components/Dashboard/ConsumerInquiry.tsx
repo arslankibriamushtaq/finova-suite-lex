@@ -66,7 +66,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
   return (
     <div style={{ padding: "20px", background: "var(--surface-card)", minHeight: "100vh" }}>
       {/* Score Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Score")}
           style={{
@@ -131,7 +131,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
           </div>
         )}
       </div>
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ReasonCodes")}
           style={{
@@ -188,7 +188,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
         )}
       </div>
       {/* Contacts Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Contacts")}
           style={{
@@ -256,7 +256,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* Addresses Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Addresses")}
           style={{
@@ -324,7 +324,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* Employers Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Employers")}
           style={{
@@ -392,7 +392,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* Judgements Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("Judgements")}
           style={{
@@ -440,7 +440,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* ReportDate Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ReportDate")}
           style={{
@@ -467,7 +467,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* DisclerText Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("DisclerText")}
           style={{
@@ -503,7 +503,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* SummaryInfo Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("SummaryInfo")}
           style={{
@@ -545,7 +545,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* PrevEnquiries Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PrevEnquiries")}
           style={{
@@ -613,7 +613,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* PublicNotices Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PublicNotices")}
           style={{
@@ -661,7 +661,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* ReportDetails Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ReportDetails")}
           style={{
@@ -703,7 +703,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* BouncedCheques Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("BouncedCheques")}
           style={{
@@ -751,7 +751,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* PrimaryDefaults Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PrimaryDefaults")}
           style={{
@@ -823,7 +823,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* MemberNarratives Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("MemberNarratives")}
           style={{
@@ -852,7 +852,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* GuarantorDefaults Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("GuarantorDefaults")}
           style={{
@@ -881,7 +881,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* PersonalNarratives Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("PersonalNarratives")}
           style={{
@@ -910,7 +910,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* CreditInstrumentDetails Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("CreditInstrumentDetails")}
           style={{
@@ -982,7 +982,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
       </div>
 
       {/* ProvidedDemographicsInfo Section */}
-      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "4px", marginBottom: "10px" }}>
+      <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", marginBottom: "10px" }}>
         <div
           onClick={() => toggleSection("ProvidedDemographicsInfo")}
           style={{

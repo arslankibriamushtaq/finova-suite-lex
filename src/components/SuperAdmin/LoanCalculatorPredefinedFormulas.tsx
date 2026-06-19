@@ -107,7 +107,7 @@ function LoanCalculatorPredefinedFormulas() {
           <div className="divider"></div>
           <div className="col-md-12 d-flex">
             {/* Formula Input Section */}
-            <div className="col-md-7 formula-section border p-4" style={{ borderRadius: "7px" }}>
+            <div className="col-md-7 formula-section border p-4" style={{ borderRadius: "6px" }}>
               <div className="col-12 d-flex">
                 <h5 className="col-6" style={{ fontWeight: "bold", fontSize: 16 }}>Your Formula</h5>
                 <div className="col-6 d-flex justify-content-end">
@@ -126,7 +126,7 @@ function LoanCalculatorPredefinedFormulas() {
             </div>
 
             {/* Calculator Section */}
-            <div className=" col-md-5 calculator-section border p-4" style={{ borderRadius: "7px" }}>
+            <div className=" col-md-5 calculator-section border p-4" style={{ borderRadius: "6px" }}>
               <div className="calculator-grid ">
                 {["7", "8", "9", "/", "(", "4", "5", "6", "*", ")", "1", "2", "3", "-", "=", "0", "00", ".", "+"].map((btn, index) => (
                   <button key={index} className="calc-btn py-3 px-4" onClick={() => handleCalculatorClick(btn)}>

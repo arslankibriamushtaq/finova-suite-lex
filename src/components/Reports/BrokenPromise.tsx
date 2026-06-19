@@ -231,7 +231,7 @@ const BrokenPromise = () => {
         <div
         className="bg-white"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

@@ -170,7 +170,7 @@ const VendorComissionSlab = () => {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >
@@ -509,7 +509,7 @@ const VendorComissionSlab = () => {
               border: "1px solid #ccc",
               color: "black",
               background: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "4px 20px",
               fontWeight: "500",
             }}
@@ -524,7 +524,7 @@ const VendorComissionSlab = () => {
               background: "black",
               color: "white",
               border: "none",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "4px 20px",
               fontWeight: "500",
             }}

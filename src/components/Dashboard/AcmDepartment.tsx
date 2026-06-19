@@ -48,7 +48,7 @@ const Departments = () => {
     //     <div
     //       style={{
     //         padding: "0.22rem 1rem",
-    //         borderRadius: "12px",
+    //         borderRadius: "6px",
     //         backgroundColor: row.ByDefault ? "#92BC83" : "#373435",
     //         color: "white",
     //       }}
@@ -64,7 +64,7 @@ const Departments = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor: row.Status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
           }}

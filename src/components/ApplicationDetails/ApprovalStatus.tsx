@@ -192,7 +192,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
           border: `1px solid ${isApproved ? 'var(--color-success-border)' : 'var(--color-error-border)'}`,
           color: isApproved ? 'var(--color-success-text)' : 'var(--color-error-text)',
           padding: '20px',
-          borderRadius: '4px',
+          borderRadius: '6px',
           marginTop: '20px',
           textAlign: 'center'
         }}>
@@ -246,7 +246,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
             style={{
               padding: '8px 12px',
               border: '1px solid var(--border)',
-              borderRadius: '4px',
+              borderRadius: '6px',
               backgroundColor: 'var(--background)',
               color: 'var(--foreground)',
               fontSize: '14px',
@@ -265,7 +265,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
             style={{
               padding: '9px 14px',
               border: 'none',
-              borderRadius: '4px',
+              borderRadius: '6px',
               backgroundColor: rejecting || !rejectComment.trim() ? 'var(--color-disabled)' : 'var(--primary)',
               color: 'var(--primary-foreground)',
               fontSize: '14px',
@@ -295,7 +295,7 @@ const ApprovalStatus: React.FC<Props> = ({ applicationNo, statusId }) => {
               minHeight: '120px',
               padding: '12px',
               border: '1px solid var(--border)',
-              borderRadius: '4px',
+              borderRadius: '6px',
               fontSize: '14px',
               fontFamily: 'inherit',
               resize: 'vertical'

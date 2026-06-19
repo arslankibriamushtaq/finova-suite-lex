@@ -180,7 +180,7 @@ const AllApplication = () => {
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
               display: "inline-block",
-              borderRadius: "4px",
+              borderRadius: "6px",
               ...statusColor
             }}
             title={statusText}
@@ -213,7 +213,7 @@ const AllApplication = () => {
               fontSize: "10px",
               padding: "4px 8px",
               fontWeight: "500",
-              borderRadius: "4px",
+              borderRadius: "6px",
               ...statusColor,
             }}
           >
@@ -258,7 +258,7 @@ const AllApplication = () => {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

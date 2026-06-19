@@ -64,7 +64,7 @@ const Faq = () => {
              
               style={{
                 padding: "0.22rem 1rem",
-                borderRadius: "12px",
+                borderRadius: "6px",
                 cursor: row.type === "spin" ? "spin" : "reward",
               }}
             >
@@ -80,7 +80,7 @@ const Faq = () => {
              
               style={{
                 padding: "0.22rem 1rem",
-                borderRadius: "12px",
+                borderRadius: "6px",
                 width:"90px",
                 textAlign:"center",
                 backgroundColor:
@@ -109,7 +109,7 @@ const Faq = () => {
                 backgroundColor: "#0B8085 !important",
                 color: "#000000",
                 borderColor: "white",
-                borderRadius: "8px",
+                borderRadius: "6px",
                 padding: "10px 20px",
               }}
             >

@@ -460,7 +460,7 @@ const FactoringInfo = () => {
           <div style={{ 
             backgroundColor: "#f5f5f5", 
             padding: "20px", 
-            borderRadius: "8px",
+            borderRadius: "6px",
             marginTop: "20px",
             position: "relative",
           }}>
@@ -472,7 +472,7 @@ const FactoringInfo = () => {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
-                borderRadius: "8px",
+                borderRadius: "6px",
                 zIndex: 1,
               }}>
                 <Spin />

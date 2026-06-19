@@ -111,7 +111,7 @@ const SubmissionLogs: React.FC = () => {
               <Button 
                 onClick={handleSearch}
                 disabled={loading}
-                className="bg-slate-900 hover:bg-slate-800 text-white rounded-[20px] h-14 px-10 font-black shadow-2xl shadow-slate-200 flex items-center gap-3"
+                className="bg-slate-900 hover:bg-slate-800 text-white rounded-[6px] h-14 px-10 font-black shadow-2xl shadow-slate-200 flex items-center gap-3"
               >
                 {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Search className="w-5 h-5" />}
                 Run Trace

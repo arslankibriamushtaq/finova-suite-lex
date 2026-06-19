@@ -38,7 +38,7 @@ const FinancialStatementsPageManagement: React.FC = () => {
             style={{
               backgroundColor: 'var(--background)',
               padding: '20px 40px',
-              borderRadius: '8px',
+              borderRadius: '6px',
               fontSize: '18px',
               fontWeight: 'bold',
               color: 'var(--color-text-dark)',

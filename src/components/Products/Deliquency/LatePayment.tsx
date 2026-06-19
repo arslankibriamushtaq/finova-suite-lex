@@ -292,7 +292,7 @@ const LatePayment = ({ productId, setSelectedTab }: any) => {
           className="mb-3 p-4"
           style={{
             border: "1px solid var(--color-border-light)",
-            borderRadius: "8px",
+            borderRadius: "6px",
             backgroundColor: "var(--color-surface-ice)",
             position: "relative",
           }}
@@ -351,7 +351,7 @@ const LatePayment = ({ productId, setSelectedTab }: any) => {
           style={{
             padding: "8px 8px",
             border: "none",
-            borderRadius: "7px",
+            borderRadius: "6px",
           }}
           onClick={() => {
             setSelectedTab("EarlySettlement");
@@ -363,7 +363,7 @@ const LatePayment = ({ productId, setSelectedTab }: any) => {
           className="application-btn mb-2"
           /* style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "8px",
+            borderRadius: "6px",
             height: "fit-content",
             width: "fit-content",
           }} */

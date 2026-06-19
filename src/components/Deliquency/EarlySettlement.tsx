@@ -149,7 +149,7 @@ const EarlySettlement = () => {
 
       <div
         className="p-4 mt-4"
-        style={{ border: "1px solid #DADADA", borderRadius: "10px" }}
+        style={{ border: "1px solid #DADADA", borderRadius: "6px" }}
       >
         <div
           className="d-flex align-items-center justify-content-between mt-1 mb-3"
@@ -213,7 +213,7 @@ const EarlySettlement = () => {
           style={{
             background: themeStyle.otherActionsColor,
             border: "1px solid #A0A0A0",
-            borderRadius: "8px",
+            borderRadius: "6px",
             height: "fit-content",
             width: "fit-content",
           }}
@@ -224,7 +224,7 @@ const EarlySettlement = () => {
           className="btn btn-danger mb-4"
           style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "8px",
+            borderRadius: "6px",
             height: "fit-content",
             width: "fit-content",
           }}

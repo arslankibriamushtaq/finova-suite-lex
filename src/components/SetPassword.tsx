@@ -74,7 +74,7 @@ const SetPassword = () => {
             className="col-9"
             style={{
               border: "1px solid rgba(211, 211, 211, 1)",
-              borderRadius: "10px",
+              borderRadius: "6px",
             }}
           >
             <div className="p-4 mt-4">

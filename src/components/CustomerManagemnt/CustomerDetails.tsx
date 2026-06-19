@@ -19,7 +19,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   card: {
     margin: "0 auto",
     background: "var(--background)",
-    borderRadius: 8,
+    borderRadius: 6,
     padding: "20px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
     marginBottom: "20px",
@@ -222,7 +222,7 @@ const CustomerDetail = () => {
                         ? "var(--stepper-accent, #2563eb)"
                         : "var(--surface-border-strong, #94a3b8)",
                       marginTop: -20,
-                      borderRadius: 2,
+                      borderRadius: 6,
                     }}
                   />
                 )}
@@ -232,7 +232,7 @@ const CustomerDetail = () => {
         </div>
 
         {/* Current Step Details */}
-        <Card bordered style={{ borderRadius: 8, borderColor: "var(--border)" }}>
+        <Card bordered style={{ borderRadius: 6, borderColor: "var(--border)" }}>
           <h3 style={{ fontWeight: 600, fontSize: 15, marginBottom: 12, color: "var(--foreground)" }}>
             {kycSteps[activeIndex]?.label}
           </h3>
@@ -258,7 +258,7 @@ const CustomerDetail = () => {
                 background: "var(--stepper-accent, #2563eb)",
                 color: "#ffffff",
                 border: "none",
-                borderRadius: 8,
+                borderRadius: 6,
                 padding: "8px 24px",
                 fontWeight: 600,
                 cursor: "pointer",
@@ -298,7 +298,7 @@ const CustomerDetail = () => {
                   <span
                     style={{
                       padding: "4px 12px",
-                      borderRadius: "16px",
+                      borderRadius: "6px",
                       fontSize: "12px",
                       fontWeight: 500,
                       backgroundColor: getRiskColor(kycInfo.riskLevel),
@@ -326,7 +326,7 @@ const CustomerDetail = () => {
                 <span
                   style={{
                     padding: "4px 12px",
-                    borderRadius: "16px",
+                    borderRadius: "6px",
                     fontSize: "12px",
                     fontWeight: 500,
                     backgroundColor: kycInfo.isPep ? "var(--color-error)" : "var(--color-success)",
@@ -362,7 +362,7 @@ const CustomerDetail = () => {
                   <span
                     style={{
                       padding: "4px 16px",
-                      borderRadius: "16px",
+                      borderRadius: "6px",
                       fontSize: "12px",
                       fontWeight: 500,
                       backgroundColor: isCompleted ? "var(--color-success)" : "var(--color-error)",
@@ -525,7 +525,7 @@ const CustomerDetail = () => {
           return (
             <div
               key={entryIndex}
-              style={{ marginBottom: "30px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
+              style={{ marginBottom: "30px", padding: "20px", background: "var(--muted)", borderRadius: "6px" }}
             >
               <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
                 {entryDate}
@@ -650,7 +650,7 @@ const CustomerDetail = () => {
 
         {/* Current Risk Info */}
         {hasRiskInfo && (
-          <div style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}>
+          <div style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "6px" }}>
             <Row gutter={24}>
               <Col xs={24} md={12}>
                 <div style={styles.fieldRow}>
@@ -708,7 +708,7 @@ const CustomerDetail = () => {
 
         {/* Risk Calculation Details */}
         {hasRiskCalculation && (
-          <div style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}>
+          <div style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "6px" }}>
             <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
               Risk Calculation
             </h6>
@@ -768,7 +768,7 @@ const CustomerDetail = () => {
         {hasRiskHistory && riskHistory.map((assessment: any, index: number) => (
           <div
             key={assessment.assessmentId || index}
-            style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
+            style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "6px" }}
           >
             <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
               Assessment #{index + 1}
@@ -835,7 +835,7 @@ const CustomerDetail = () => {
         {blockHistory.map((block: any, index: number) => (
           <div
             key={block.id || index}
-            style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "8px" }}
+            style={{ marginBottom: "20px", padding: "20px", background: "var(--muted)", borderRadius: "6px" }}
           >
             <Row gutter={24}>
               <Col xs={24} md={12}>
@@ -908,7 +908,7 @@ const CustomerDetail = () => {
             status === "DRAFT" ? "#8C8C8C" :
             "var(--color-warning)";
           return (
-            <span style={{ padding: "4px 10px", borderRadius: "16px", fontSize: "12px", backgroundColor: statusColor, color: "white" }}>
+            <span style={{ padding: "4px 10px", borderRadius: "6px", fontSize: "12px", backgroundColor: statusColor, color: "white" }}>
               {status}
             </span>
           );
@@ -925,7 +925,7 @@ const CustomerDetail = () => {
               backgroundColor: "var(--color-action)",
               color: "var(--foreground)",
               border: "1px solid white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "8px 16px",
               cursor: "pointer",
               display: "flex",
@@ -970,7 +970,7 @@ const CustomerDetail = () => {
         cell: (row: any) => (
           <span style={{
             padding: "4px 10px",
-            borderRadius: "16px",
+            borderRadius: "6px",
             fontSize: "12px",
             backgroundColor: row.status === "VERIFIED" ? "var(--color-success)" : "var(--color-warning)",
             color: "white",

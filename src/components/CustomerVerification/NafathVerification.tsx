@@ -26,7 +26,7 @@ const NafathVerification = () => {
       <div
         style={{
           backgroundColor: "#ffffff",
-          borderRadius: "12px",
+          borderRadius: "6px",
           padding: "40px",
           maxWidth: "600px",
           width: "100%",
@@ -73,7 +73,7 @@ const NafathVerification = () => {
         <div
           style={{
             backgroundColor: "#F5F5F5",
-            borderRadius: "8px",
+            borderRadius: "6px",
             padding: "32px",
             textAlign: "center",
           }}
@@ -189,7 +189,7 @@ const NafathVerification = () => {
               backgroundColor: "#1963b9",
               color: "#ffffff",
               border: "none",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "12px 32px",
               fontSize: "16px",
               fontWeight: "600",

@@ -413,7 +413,7 @@ const CollateralManagementEdit = () => {
       </div>
       <div
         className="p-4"
-        style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
+        style={{ border: "1px solid var(--color-border-light)", borderRadius: "6px" }}
       >
         <div className="col-12 mt-5 border-bottom">
           <div className="col-8 d-flex justify-content-start mb-5">
@@ -641,7 +641,7 @@ const CollateralManagementEdit = () => {
                 className="d-flex me-3"
                 style={{
                   border: "1px solid var(--color-surface-frost)",
-                  borderRadius: "5px",
+                  borderRadius: "6px",
                   padding: "4px",
                   background: "var(--color-surface-frost)",
                 }}
@@ -721,7 +721,7 @@ const CollateralManagementEdit = () => {
                 className="d-flex me-3"
                 style={{
                   border: "1px solid var(--color-surface-frost)",
-                  borderRadius: "5px",
+                  borderRadius: "6px",
                   padding: "4px",
                   background: "var(--color-surface-frost)",
                 }}
@@ -744,7 +744,7 @@ const CollateralManagementEdit = () => {
               className="application-btn"
               style={{
                 //backgroundColor: "#EB0D0D",
-                borderRadius: "8px",
+                borderRadius: "6px",
                 color: "var(--color-near-white)",
                 border: "none",
                 padding: "10px",
@@ -785,7 +785,7 @@ const CollateralManagementEdit = () => {
                 style={{
                   backgroundColor: "var(--color-danger-action)",
                   color: "var(--color-near-white)",
-                  borderRadius: "8px",
+                  borderRadius: "6px",
                 }}
               >
                 ok

@@ -752,7 +752,7 @@ const SettingsApplicationFee = ({
                     }}
                     style={{
                       backgroundColor: "#EB0D0D",
-                      borderRadius: "8px",
+                      borderRadius: "6px",
                       height: "fit-content",
                       width: "fit-content",
                     }}
@@ -853,7 +853,7 @@ const SettingsApplicationFee = ({
                     }}
                     style={{
                       //backgroundColor: "#EB0D0D",
-                      borderRadius: "8px",
+                      borderRadius: "6px",
                       height: "fit-content",
                       width: "fit-content",
                       padding: "8px",

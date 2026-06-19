@@ -631,7 +631,7 @@ const Coa = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -643,7 +643,7 @@ const Coa = () => {
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchValue}
             onChange={(e: any) => setSearchValue(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
           />
           <DatePicker
             placeholder="Filter by date"
@@ -651,7 +651,7 @@ const Coa = () => {
             onChange={(date: any) => setFromDate(date)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <button
             type="button"
@@ -698,7 +698,7 @@ const Coa = () => {
           className="mb-3"
           style={{
             padding: "8px",
-            borderRadius: "10px",
+            borderRadius: "6px",
             border: "1px solid red",
             maxHeight: "224px",
             overflowY: "auto",
@@ -714,7 +714,7 @@ const Coa = () => {
         <div
           className="bg-white"
           style={{
-            borderRadius: 12,
+            borderRadius: 6,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
             overflow: "hidden",

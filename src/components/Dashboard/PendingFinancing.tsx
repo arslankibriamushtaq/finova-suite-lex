@@ -136,7 +136,7 @@ const PendingFinancing = () => {
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
               display: "inline-block",
-              borderRadius: "4px",
+              borderRadius: "6px",
               ...statusColor
             }}
             title={statusText}
@@ -182,7 +182,7 @@ const PendingFinancing = () => {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

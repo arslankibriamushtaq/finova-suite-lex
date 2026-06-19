@@ -136,7 +136,7 @@ const SSOCallback: React.FC = () => {
             backgroundColor: "var(--primary, #1963b9)",
             color: "#fff",
             border: "none",
-            borderRadius: "8px",
+            borderRadius: "6px",
             cursor: "pointer",
             fontSize: "14px",
           }}

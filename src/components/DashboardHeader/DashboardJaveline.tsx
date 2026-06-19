@@ -308,7 +308,7 @@ const DashboardJaveline =(props: any) => {
           zIndex: 1000,
           maxWidth: "630px",
           height: "380px",
-          borderRadius: "16px",
+          borderRadius: "6px",
         }}
       >
         <label className="label-tag" style={{position: 'absolute'}}>Total Onboarding</label>
@@ -317,7 +317,7 @@ const DashboardJaveline =(props: any) => {
             onChange={handleTabChange}
             tabBarStyle={{
               backgroundColor: "#6C727F", // Background color for the tabs
-              borderRadius: "20px", // Border radius for the tabs
+              borderRadius: "6px", // Border radius for the tabs
               padding: "8px", // Add padding for better spacing
               border: "none", // Remove the border
             }}
@@ -326,7 +326,7 @@ const DashboardJaveline =(props: any) => {
               <DefaultTabBar
                 {...props}
                 style={{
-                  borderRadius: "20px", // Ensure the active tab has rounded corners
+                  borderRadius: "6px", // Ensure the active tab has rounded corners
                 }}
               />
             )}
@@ -337,7 +337,7 @@ const DashboardJaveline =(props: any) => {
               style={{
                 display: "inline-block",
                 padding: "8px 16px",
-                borderRadius: "20px",
+                borderRadius: "6px",
                 backgroundColor: "#6C727F", // Default background color
                 color: "#FFFFFF", // Default text color
               }}
@@ -359,7 +359,7 @@ const DashboardJaveline =(props: any) => {
               style={{
                 display: "inline-block",
                 padding: "8px 16px",
-                borderRadius: "20px",
+                borderRadius: "6px",
                 backgroundColor: "#6C727F", // Default background color
                 color: "#FFFFFF", // Default text color
               }}
@@ -530,7 +530,7 @@ const DashboardJaveline =(props: any) => {
               </div>
             </div>
           </div>
-          <div className="user-detail-bg" style={{backgroundColor:"#E1F4FF", borderRadius:"16px" }}>
+          <div className="user-detail-bg" style={{backgroundColor:"#E1F4FF", borderRadius:"6px" }}>
           </div>
         </div>
         <div className="col-md-12">
@@ -543,7 +543,7 @@ const DashboardJaveline =(props: any) => {
 
                   maxWidth: "100%",
                   height: "420px",
-                  borderRadius: "16px",
+                  borderRadius: "6px",
                   }}
                   >
                   <Tabs
@@ -551,7 +551,7 @@ const DashboardJaveline =(props: any) => {
                   onChange={handleTabChange}
                   tabBarStyle={{
                   backgroundColor: "#6C727F", // Background color for the tabs
-                  borderRadius: "20px", // Border radius for the tabs
+                  borderRadius: "6px", // Border radius for the tabs
                   padding: "8px", // Add padding for better spacing
                   border: "none", // Remove the border
                   }}
@@ -560,7 +560,7 @@ const DashboardJaveline =(props: any) => {
                   <DefaultTabBar
                   {...props}
                   style={{
-                  borderRadius: "20px", // Ensure the active tab has rounded corners
+                  borderRadius: "6px", // Ensure the active tab has rounded corners
                   }}
                   />
                   )}
@@ -571,7 +571,7 @@ const DashboardJaveline =(props: any) => {
                   style={{
                   display: "inline-block",
                   padding: "8px 16px",
-                  borderRadius: "20px",
+                  borderRadius: "6px",
                   backgroundColor: "#6C727F", // Default background color
                   color: "#FFFFFF", // Default text color
                   }}
@@ -597,7 +597,7 @@ const DashboardJaveline =(props: any) => {
                   style={{
                   display: "inline-block",
                   padding: "8px 16px",
-                  borderRadius: "20px",
+                  borderRadius: "6px",
                   backgroundColor: "#6C727F", // Default background color
                   color: "#FFFFFF", // Default text color
                   }}
@@ -628,7 +628,7 @@ const DashboardJaveline =(props: any) => {
 
                   maxWidth: "100%",
                   height: "420px",
-                  borderRadius: "16px",
+                  borderRadius: "6px",
                   }}
                   >
                   <Tabs
@@ -636,7 +636,7 @@ const DashboardJaveline =(props: any) => {
                   onChange={handleTabChange}
                   tabBarStyle={{
                   backgroundColor: "#6C727F", // Background color for the tabs
-                  borderRadius: "20px", // Border radius for the tabs
+                  borderRadius: "6px", // Border radius for the tabs
                   padding: "8px", // Add padding for better spacing
                   border: "none", // Remove the border
                   }}
@@ -645,7 +645,7 @@ const DashboardJaveline =(props: any) => {
                   <DefaultTabBar
                   {...props}
                   style={{
-                  borderRadius: "20px", // Ensure the active tab has rounded corners
+                  borderRadius: "6px", // Ensure the active tab has rounded corners
                   }}
                   />
                   )}
@@ -656,7 +656,7 @@ const DashboardJaveline =(props: any) => {
                   style={{
                   display: "inline-block",
                   padding: "8px 16px",
-                  borderRadius: "20px",
+                  borderRadius: "6px",
                   backgroundColor: "#6C727F", // Default background color
                   color: "#FFFFFF", // Default text color
                   }}
@@ -682,7 +682,7 @@ const DashboardJaveline =(props: any) => {
                   style={{
                   display: "inline-block",
                   padding: "8px 16px",
-                  borderRadius: "20px",
+                  borderRadius: "6px",
                   backgroundColor: "#6C727F", // Default background color
                   color: "#FFFFFF", // Default text color
                   }}

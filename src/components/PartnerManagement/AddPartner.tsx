@@ -136,7 +136,7 @@ const AddPartner = () => {
   };
 
   return (
-    <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "10px" }}>
+    <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "6px" }}>
       {/* <h4 style={{ marginBottom: "2rem" }}>Add New Partner</h4> */}
 
       <div className="row">

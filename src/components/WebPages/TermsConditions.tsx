@@ -276,7 +276,7 @@ const TermsConditions: React.FC = () => {
         textAlign: 'center', 
         color: 'red',
         backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
+        borderRadius: '6px',
         margin: '20px',
         border: '1px solid #e0e0e0'
       }}>
@@ -289,7 +289,7 @@ const TermsConditions: React.FC = () => {
             backgroundColor: '#007bff',
             color: 'white',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: '6px',
             cursor: 'pointer',
             marginTop: '10px'
           }}
@@ -306,7 +306,7 @@ const TermsConditions: React.FC = () => {
         padding: '20px', 
         textAlign: 'center',
         backgroundColor: '#f8f9fa',
-        borderRadius: '8px',
+        borderRadius: '6px',
         margin: '20px',
         border: '1px solid #e0e0e0'
       }}>
@@ -402,7 +402,7 @@ const TermsConditions: React.FC = () => {
               color: '#666',
               fontSize: '18px',
               backgroundColor: '#f8f9fa',
-              borderRadius: '8px',
+              borderRadius: '6px',
               border: '1px solid #e0e0e0'
             }}>
               No terms & conditions content available.

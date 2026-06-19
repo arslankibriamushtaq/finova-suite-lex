@@ -73,7 +73,7 @@ const RequiredDoc = ({setSelectedTab}:any) => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor: row.required ? "var(--chart-2)" : "var(--destructive)",
             color: "var(--primary-foreground)",
           }}

@@ -186,7 +186,7 @@ const ClientRequestProd = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -224,14 +224,14 @@ const ClientRequestProd = () => {
             value={fromDate}
             onChange={(date) => setFromDate(date)}
             format="YYYY-MM-DD"
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <DatePicker
             placeholder="To"
             value={toDate}
             onChange={(date) => setToDate(date)}
             format="YYYY-MM-DD"
-            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+            style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
           />
           <button
             type="button"
@@ -256,7 +256,7 @@ const ClientRequestProd = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 12,
+          borderRadius: 6,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",
@@ -268,7 +268,7 @@ const ClientRequestProd = () => {
             display: "flex",
             borderBottom: "2px solid var(--color-border-subtle)",
             background: themeStyle?.table.backgroundColor || "#EDFFFB",
-            borderRadius: "14px 14px 0 0",
+            borderRadius: "6px 6px 0 0",
           }}
         >
           <div style={{ flex: "0 0 120px", padding: "12px 8px", textAlign: "left" }}>
@@ -418,7 +418,7 @@ const ClientRequestProd = () => {
                         padding: "12px",
                         fontSize: "12px",
                         backgroundColor: "var(--background)",
-                        borderRadius: "4px",
+                        borderRadius: "6px",
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
                         maxHeight: "400px",
@@ -446,7 +446,7 @@ const ClientRequestProd = () => {
                         padding: "12px",
                         fontSize: "12px",
                         backgroundColor: "var(--background)",
-                        borderRadius: "4px",
+                        borderRadius: "6px",
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
                         maxHeight: "400px",
@@ -501,7 +501,7 @@ const ClientRequestProd = () => {
                 style={{
                   padding: "4px 12px",
                   border: "1px solid var(--color-border-light)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   backgroundColor: page === 1 ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === 1 ? "not-allowed" : "pointer",
                 }}
@@ -514,7 +514,7 @@ const ClientRequestProd = () => {
                 style={{
                   padding: "4px 12px",
                   border: "1px solid var(--color-border-light)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   backgroundColor: page === 1 ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === 1 ? "not-allowed" : "pointer",
                 }}
@@ -528,7 +528,7 @@ const ClientRequestProd = () => {
                 style={{
                   padding: "4px 12px",
                   border: "1px solid var(--color-border-light)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   backgroundColor: page === totalPage ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === totalPage ? "not-allowed" : "pointer",
                 }}
@@ -541,7 +541,7 @@ const ClientRequestProd = () => {
                 style={{
                   padding: "4px 12px",
                   border: "1px solid var(--color-border-light)",
-                  borderRadius: "4px",
+                  borderRadius: "6px",
                   backgroundColor: page === totalPage ? "var(--color-surface-subtle)" : "var(--background)",
                   cursor: page === totalPage ? "not-allowed" : "pointer",
                 }}

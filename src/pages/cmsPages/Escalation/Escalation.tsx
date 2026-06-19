@@ -314,7 +314,7 @@ const Escalation = () => {
               onClick={handleCloseModal}
               style={{
                 padding: "8px 24px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "none",
                 backgroundColor: "var(--color-cms-teal)",
                 color: "white",
@@ -329,7 +329,7 @@ const Escalation = () => {
               onClick={handleSave}
               style={{
                 padding: "8px 24px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "none",
                 backgroundColor: "var(--foreground)",
                 color: "white",

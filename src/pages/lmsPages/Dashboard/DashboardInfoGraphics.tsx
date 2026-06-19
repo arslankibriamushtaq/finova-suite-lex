@@ -195,7 +195,7 @@ const Dashboard = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor: row.status
               ? "var(--color-status-green)"
               : "var(--color-status-dark)",

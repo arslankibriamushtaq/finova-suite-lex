@@ -18,7 +18,7 @@
 .overview-section {
   background-color: white;
   padding: 20px;
-  border-radius: 8px;
+  border-radius: 6px;
   margin-bottom: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -54,7 +54,7 @@
 }
 
 .stat-card {
-  border-radius: 8px;
+  border-radius: 6px;
   border: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 120px;
@@ -97,7 +97,7 @@
 }
 
 .chart-card {
-  border-radius: 8px;
+  border-radius: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   height: 400px;
 }

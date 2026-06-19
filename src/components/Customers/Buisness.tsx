@@ -286,7 +286,7 @@ const Buisness = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor: row.status
               ? "var(--color-status-green)"
               : "var(--color-status-dark)",
@@ -322,7 +322,7 @@ const Buisness = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

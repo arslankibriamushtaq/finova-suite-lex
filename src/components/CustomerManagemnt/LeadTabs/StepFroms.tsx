@@ -303,7 +303,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     background: "transparent",
   },
   wrapperCard: {
-    borderRadius: 12,
+    borderRadius: 6,
     background: "var(--surface-card)",
     border: "1px solid var(--surface-border)",
     padding: "24px 16px",
@@ -326,7 +326,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   formCard: {
     background: "var(--surface-card-alt)",
     border: "1px solid var(--surface-border)",
-    borderRadius: 8,
+    borderRadius: 6,
     padding: "16px 20px",
   },
   formTitle: {

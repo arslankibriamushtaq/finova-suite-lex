@@ -96,8 +96,8 @@ const ApplicationBoard = () => {
         fontSize: "14px",
         borderBottom: '1px solid var(--theme-header-background-color)',
         display: 'flex',
-        borderTopLeftRadius: "10px",
-        borderTopRightRadius: "10px",
+        borderTopLeftRadius: "6px",
+        borderTopRightRadius: "6px",
         justifyContent: 'space-between',
       }}>
         Application No: <span style={{ fontSize: "12px", fontWeight: 500 }}>{loan_application_number}</span>
@@ -118,7 +118,7 @@ const ApplicationBoard = () => {
         fontWeight: 700,
         fontSize: "14px",
         display: 'flex',
-        borderRadius: '10px',
+        borderRadius: '6px',
         justifyContent: 'space-between',
       }}>
         Amount: <span style={{ fontSize: "13px", fontWeight: 500 }}>{amount}</span>
@@ -442,7 +442,7 @@ const cancelMove = () => {
           {showComments && (
             <div style={{ 
               background: 'var(--muted)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               marginBottom: '12px',
               overflow: 'hidden',
               border: '1px solid var(--border)'
@@ -493,7 +493,7 @@ const cancelMove = () => {
                         <div style={{
                           flex: 1,
                           background: 'var(--card)',
-                          borderRadius: '8px',
+                          borderRadius: '6px',
                           padding: '12px 16px',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                           border: '1px solid var(--border)'
@@ -592,7 +592,7 @@ const cancelMove = () => {
             padding: '12px 16px',
             background: 'var(--background)',
             border: '1px solid var(--border)',
-            borderRadius: '8px'
+            borderRadius: '6px'
           }}>
             <div style={{
               width: '36px',
@@ -689,12 +689,12 @@ const cancelMove = () => {
                     style={{
                       background: getHeaderColor(dept),
                       padding: "16px",
-                      borderRadius: "10px 10px 0 0"
+                      borderRadius: "6px 6px 0 0"
                     }}
                   >
                     <h5 style={{ margin: 0, fontWeight: 600 }}>{dept}</h5>
                   </div>
-                  <div className="column-content" style={{ padding: '16px', background: 'transparent', borderRadius: "0 0 10px 10px" }}>
+                  <div className="column-content" style={{ padding: '16px', background: 'transparent', borderRadius: "0 0 6px 6px" }}>
                     {dataToRender[dept].length > 0 ? (
                       dataToRender[dept].map((app: LoanApplication, index: number) => (
                         <Draggable key={app.id} draggableId={app.id} index={index}>

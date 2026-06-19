@@ -16,7 +16,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   card: {
     margin: "0 auto",
     background: "var(--background)",
-    borderRadius: 8,
+    borderRadius: 6,
     padding: "20px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
     marginBottom: "20px"
@@ -39,7 +39,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   complianceSection: {
     background: "var(--color-surface-cloud)",
     padding: "20px",
-    borderRadius: "8px",
+    borderRadius: "6px",
     marginBottom: "10px",
   },
   questionLabel: {

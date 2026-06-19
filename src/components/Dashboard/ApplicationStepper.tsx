@@ -251,7 +251,7 @@ const styles: { [key: string]: React.CSSProperties } = {
     padding: "20px 16px",
     background: "var(--surface-card)",
     border: "1px solid var(--surface-border)",
-    borderRadius: 12,
+    borderRadius: 6,
     boxShadow: "var(--surface-elevation-1)",
   },
   steps: {

@@ -83,7 +83,7 @@ const DepartmentList = () => {
             className="gradient-btn"
             type="primary"
             size="small"
-            style={{ fontSize: "12px", borderRadius: "4px" }}
+            style={{ fontSize: "12px", borderRadius: "6px" }}
             onClick={() => handleSetDefault(row)}
           >
             Set Default
@@ -204,7 +204,7 @@ const DepartmentList = () => {
   return (
     <div
       className="service"
-      style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+      style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
     >
       <div className="d-flex mb-3 col-12 justify-content-between align-items-center">
         <h5 style={{ fontWeight: 600, margin: 0 }}>Department</h5>

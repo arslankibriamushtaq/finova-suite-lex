@@ -306,7 +306,7 @@ dashboardData?.map((item: any) => {
     control: (provided) => ({
       ...provided,
       width: 200, // Adjust the width of the dropdown
-      borderRadius: 8, // Rounded corners
+      borderRadius: 6, // Rounded corners
       border: "1px solid #ccc", // Border color
       boxShadow: "none", // Remove default box shadow
       "&:hover": {
@@ -323,7 +323,7 @@ dashboardData?.map((item: any) => {
     }),
     menu: (provided) => ({
       ...provided,
-      borderRadius: 8, // Rounded corners for the dropdown menu
+      borderRadius: 6, // Rounded corners for the dropdown menu
       boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Add a subtle shadow
     }),
   };
@@ -383,7 +383,7 @@ dashboardData?.map((item: any) => {
               zIndex: 1000,
               maxWidth: "100%",
               height: "480px",
-              borderRadius: "16px",
+              borderRadius: "6px",
             }}
           >
             <div className="reward-amount">
@@ -419,7 +419,7 @@ dashboardData?.map((item: any) => {
               zIndex: 1000,
               maxWidth: "100%",
               height: "480px",
-              borderRadius: "16px",
+              borderRadius: "6px",
             }}
           >
             <div className="reward-amount">

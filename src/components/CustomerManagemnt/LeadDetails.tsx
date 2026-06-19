@@ -39,7 +39,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   card: {
     margin: "0 auto",
     background: "var(--background)",
-    borderRadius: 8,
+    borderRadius: 6,
     padding: "20px",
     boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
     marginBottom: "20px",
@@ -62,7 +62,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   complianceSection: {
     background: "var(--muted)",
     padding: "20px",
-    borderRadius: "8px",
+    borderRadius: "6px",
     marginBottom: "10px",
     display: "flex",
     justifyContent: "space-between",
@@ -416,7 +416,7 @@ const LeadDetail = () => {
             style={{
               padding: "8px 16px",
               background: "var(--muted)",
-              borderRadius: "8px",
+              borderRadius: "6px",
               fontSize: "14px",
               fontWeight: 600,
               color: "var(--foreground)",
@@ -452,7 +452,7 @@ const LeadDetail = () => {
                 key={index}
                 style={{
                   border: "1px solid var(--border)",
-                  borderRadius: "8px",
+                  borderRadius: "6px",
                   background: "var(--background)",
                   overflow: "hidden",
                 }}
@@ -474,7 +474,7 @@ const LeadDetail = () => {
                     {/* <div style={{ 
                       width: "40px", 
                       height: "40px", 
-                      borderRadius: "8px", 
+                      borderRadius: "6px", 
                       background: "var(--muted)",
                       display: "flex",
                       alignItems: "center",
@@ -498,7 +498,7 @@ const LeadDetail = () => {
                         <span
                           style={{
                             padding: "4px 12px",
-                            borderRadius: "16px",
+                            borderRadius: "6px",
                             fontSize: "12px",
                             fontWeight: 500,
                             backgroundColor: statusColor,
@@ -612,7 +612,7 @@ const LeadDetail = () => {
                               <span
                                 style={{
                                   padding: "4px 10px",
-                                  borderRadius: "16px",
+                                  borderRadius: "6px",
                                   fontSize: "12px",
                                   backgroundColor: statusColor,
                                   color: "var(--primary-foreground)",
@@ -850,7 +850,7 @@ const LeadDetail = () => {
               backgroundColor: "var(--color-action)",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               width: "200px",
               padding: "10px 20px",
             }}
@@ -1262,7 +1262,7 @@ const LeadDetail = () => {
               marginBottom: "30px",
               padding: "20px",
               background: "var(--muted)",
-              borderRadius: "8px",
+              borderRadius: "6px",
             }}
           >
             <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
@@ -1416,7 +1416,7 @@ const LeadDetail = () => {
               marginBottom: "30px",
               padding: "20px",
               background: "var(--muted)",
-              borderRadius: "8px",
+              borderRadius: "6px",
             }}
           >
             <h6 style={{ fontSize: "16px", fontWeight: 600, marginBottom: "15px", color: "var(--foreground)" }}>
@@ -1554,7 +1554,7 @@ const LeadDetail = () => {
                 marginBottom: "20px",
                 padding: "20px",
                 background: "var(--muted)",
-                borderRadius: "8px",
+                borderRadius: "6px",
               }}
             >
               <Row gutter={24}>
@@ -1700,7 +1700,7 @@ const LeadDetail = () => {
               marginBottom: "20px",
               padding: "20px",
               background: "var(--muted)",
-              borderRadius: "8px",
+              borderRadius: "6px",
             }}
           >
             <Row gutter={24}>

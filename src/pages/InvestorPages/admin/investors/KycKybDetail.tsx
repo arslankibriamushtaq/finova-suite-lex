@@ -173,7 +173,7 @@ const KycKybDetail = () => {
           <span
             style={{
               padding: "6px 12px",
-              borderRadius: "4px",
+              borderRadius: "6px",
               backgroundColor: statusColor,
               color: "white",
               fontSize: "12px",

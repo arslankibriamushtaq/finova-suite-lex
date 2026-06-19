@@ -215,7 +215,7 @@ useEffect(() => {
           <div className="d-flex mb-4 justify-content-center">
             <div
               className="col-md-5 formula-section border p-4 me-3"
-              style={{ borderRadius: "10px" }}
+              style={{ borderRadius: "6px" }}
             >
               {/* Formula Input Section */}
 
@@ -265,7 +265,7 @@ useEffect(() => {
 
             <div
               className="col-md-4 calculator-section border p-4 me-3"
-              style={{ borderRadius: "10px" }}
+              style={{ borderRadius: "6px" }}
             >
               {/* Calculator Section */}
 

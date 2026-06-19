@@ -103,7 +103,7 @@ const PartnersCommission = () => {
       {loading ? <Loader /> : (
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
       >
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
@@ -121,7 +121,7 @@ const PartnersCommission = () => {
               style={{
                 background: "var(--color-surface-snow)",
                 padding: "1.5rem",
-                borderRadius: "8px",
+                borderRadius: "6px",
               }}
             >
               <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-slate)" }}>
@@ -139,7 +139,7 @@ const PartnersCommission = () => {
               style={{
                 background: "#5a6268",
                 padding: "1.5rem",
-                borderRadius: "8px",
+                borderRadius: "6px",
                 color: "white",
               }}
             >

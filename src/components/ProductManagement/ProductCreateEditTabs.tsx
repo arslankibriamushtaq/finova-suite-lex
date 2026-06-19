@@ -47,7 +47,7 @@ export default function ProductCreateEditTabs({
       style={{
         background: "var(--surface-card)",
         border: "1px solid var(--surface-border)",
-        borderRadius: 12,
+        borderRadius: 6,
         padding: 6,
         boxShadow: "var(--surface-elevation-1)",
         display: "flex",

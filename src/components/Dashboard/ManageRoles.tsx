@@ -133,7 +133,7 @@ const ManageRoles = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor: row.status
               ? "rgba(146, 188, 131, 1)"
               : "rgba(55, 52, 53, 1)",

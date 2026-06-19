@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import DataTable from "react-data-table-component";
 import { Dropdown } from "react-bootstrap";
 import Skeleton from "react-loading-skeleton";
@@ -41,11 +41,11 @@ const TableView = ({
     "/FinancingApplications/AllApplications/View/"
   );
   const conditionalStyles = isViewPage ? { display: "none" } : {};
-  const borderStyle = isViewPage ? { borderRadius: "8px" } : {};
+  const borderStyle = isViewPage ? { borderRadius: "6px" } : {};
   const customStyles = {
     rows: {
       style: {
-        minHeight: "52px",
+        minHeight: "32px",
         padding: "0px 10px",
         borderBottom: "1px solid var(--surface-border)",
         backgroundColor: "var(--surface-card)",
@@ -79,7 +79,7 @@ const TableView = ({
       style: {
         backgroundColor: "var(--theme-table-background-color)",
         background: "var(--theme-table-background-color)",
-        minHeight: "44px",
+        minHeight: "34px",
         zIndex: 1,
       },
     },
@@ -88,7 +88,7 @@ const TableView = ({
         backgroundColor: "var(--theme-table-background-color)",
         background: "var(--theme-table-background-color)",
         border: "none",
-        minHeight: "44px",
+        minHeight: "34px",
       },
     },
     pagination: {
@@ -123,29 +123,107 @@ const TableView = ({
       style: {
         paddingLeft: "16px",
         paddingRight: "16px",
+        paddingTop: "6px",
+        paddingBottom: "6px",
         justifyContent: "start",
         alignItems: "center",
         background: "var(--theme-table-background-color)",
         color: "#ffffff",
-        fontSize: "13.5px",
+        fontSize: "12px",
         fontWeight: "600",
         letterSpacing: "0.2px",
         textTransform: "none",
+        whiteSpace: "nowrap",
       },
     },
     cells: {
       style: {
         paddingLeft: "16px",
         paddingRight: "16px",
-        fontSize: "13.5px",
+        paddingTop: "6px",
+        paddingBottom: "6px",
+        fontSize: "12px",
         color: "var(--foreground)",
         fontWeight: "500",
         letterSpacing: "0.1px",
         justifyContent: "start",
         alignItems: "center",
+        whiteSpace: "nowrap",
       },
     },
   };
+
+  // Measure rendered text width so each column can show its full content on a
+  // single line (no wrapping, no clipping).
+  const measureCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const measureText = (text: string, weight = 500) => {
+    if (!measureCanvasRef.current && typeof document !== "undefined") {
+      measureCanvasRef.current = document.createElement("canvas");
+    }
+    const ctx = measureCanvasRef.current?.getContext("2d");
+    if (!ctx) return text.length * 8;
+    ctx.font = `${weight} 12px Inter, -apple-system, "Segoe UI", Roboto, sans-serif`;
+    return ctx.measureText(text).width;
+  };
+
+  // Widest rendered line inside a cell value, including JSX (spans/divs). Stacked
+  // children (flex-col like "Cur / Req") are treated as separate lines (max),
+  // so the column is sized to its widest line, not the concatenation.
+  const measureNodeWidth = (node: any, weight = 500): number => {
+    if (node === null || node === undefined || typeof node === "boolean") return 0;
+    if (typeof node === "string" || typeof node === "number") {
+      return measureText(String(node), weight);
+    }
+    if (Array.isArray(node)) {
+      return node.reduce((m, c) => Math.max(m, measureNodeWidth(c, weight)), 0);
+    }
+    if (typeof node === "object" && node.props) {
+      return measureNodeWidth(node.props.children, weight);
+    }
+    return 0;
+  };
+
+  // Make every table responsive: drop the fixed `width` (which, with nowrap
+  // content, caused columns to overlap) and instead size each column to its
+  // widest content so the full value shows on one line; the table grows and
+  // scrolls horizontally when needed. Applies to every page via TableView.
+  const responsiveColumns = (header || []).map((col: any) => {
+    if (!col || typeof col !== "object") return col;
+    // Strip ALL width constraints from the source column — no fixed/min/max width.
+    const { width, minWidth, maxWidth, ...rest } = col;
+    const headerText = typeof rest.name === "string" ? rest.name : "";
+    let contentW = headerText ? measureText(headerText, 600) : 0;
+    let measuredBody = false;
+    (data || []).forEach((row: any) => {
+      let w = 0;
+      try {
+        if (typeof rest.selector === "function") {
+          const sv = rest.selector(row);
+          if (sv !== null && sv !== undefined) w = measureText(String(sv), 500);
+        } else if (typeof rest.cell === "function") {
+          w = measureNodeWidth(rest.cell(row), 500);
+        }
+      } catch {
+        /* unmeasurable cell — falls back to default width below */
+      }
+      if (w > 0) {
+        measuredBody = true;
+        contentW = Math.max(contentW, w);
+      }
+    });
+    // Content-fit MINIMUM width (text + padding + buffer for monospace/icons).
+    // Using minWidth (not a fixed width) + grow lets columns expand to fill the
+    // container — so there's no empty space on the right — while never shrinking
+    // below their content, so nothing overlaps. No max width is set.
+    const colMinWidth = measuredBody
+      ? `${Math.ceil(contentW) + 44}px`
+      : width || "140px";
+    return {
+      ...rest,
+      minWidth: colMinWidth,
+      grow: rest.grow ?? 1,
+    };
+  });
   const noDataComponent =
     !isLoading && (!data || data.length === 0) ? (
       <div style={{ textAlign: "center", padding: "20px", color: "red" }}>
@@ -216,7 +294,7 @@ const TableView = ({
               <div
                 style={{
                   padding: "0.22rem 1rem",
-                  borderRadius: "12px",
+                  borderRadius: "6px",
                   backgroundColor: column.backGround,
                   color: column.color,
                   cursor: row.ByDefault === "Active" ? "pointer" : "default",
@@ -236,7 +314,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: ".25rem 0.5rem",
-                      borderRadius: "4px",
+                      borderRadius: "6px",
                       backgroundColor: "#0dcaf0",
                       color: "white",
                       marginRight: "4px",
@@ -249,7 +327,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: ".25rem 0.5rem",
-                      borderRadius: "4px",
+                      borderRadius: "6px",
                       backgroundColor: "#4253a1",
                       color: "white",
                       marginRight: "4px",
@@ -262,7 +340,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: ".25rem 0.5rem",
-                      borderRadius: "4px",
+                      borderRadius: "6px",
                       backgroundColor: "#000000",
                       color: "white",
                       marginRight: "4px",
@@ -275,7 +353,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: "0.22rem 1rem",
-                      borderRadius: "12px",
+                      borderRadius: "6px",
                       backgroundColor: "var(--theme-table-background-color)",
                       color: "var(--theme-table-heading-color)",
                       cursor: row.Status === "Active" ? "pointer" : "default",
@@ -306,7 +384,7 @@ const TableView = ({
   const TableSkeleton = () => (
     <div
       className="skeleton-table"
-      style={{ border: "1px solid #e0e0e0", borderRadius: "14px" }}
+      style={{ border: "1px solid #e0e0e0", borderRadius: "6px" }}
     >
       <div
         className="skeleton-header"
@@ -314,7 +392,7 @@ const TableView = ({
           display: "flex",
           borderBottom: "2px solid #e0e0e0",
           background: "#f0f0f0",
-          borderRadius: "14px 14px 0 0",
+          borderRadius: "6px 6px 0 0",
         }}
       >
         {header.map((column: any, index: number) => (
@@ -374,7 +452,7 @@ const TableView = ({
         <div className="d-flex justify-content-end mb-2 py-2">
           <div
             className="d-flex align-items-center gap-1 border px-2 ps-3"
-            style={{ borderRadius: "7px" }}
+            style={{ borderRadius: "6px" }}
           >
             <FaSearch />
             <input
@@ -394,7 +472,8 @@ const TableView = ({
             <DataTable
               pagination={false}
               paginationServer
-              columns={header}
+              responsive
+              columns={responsiveColumns}
               data={data}
               striped
               paginationTotalRows={totalRows}
@@ -445,7 +524,7 @@ const TableView = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        borderRadius: '8px',
+                        borderRadius: '6px',
                         fontWeight: isActive ? '600' : '400',
                         padding: '0',
                         cursor: 'pointer',

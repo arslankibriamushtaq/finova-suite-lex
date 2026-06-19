@@ -34,7 +34,7 @@ const PartnerInvoice = () => {
                 ? "#ffc107"
                 : "#6c757d",
             padding: "4px 12px",
-            borderRadius: "5px",
+            borderRadius: "6px",
             color: "#fff",
             fontWeight: 500,
             fontSize: "12px",

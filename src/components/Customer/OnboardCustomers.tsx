@@ -190,7 +190,7 @@ const OnboardCustomers = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor:
               row.accountStatus === "active"
                 ? "var(--color-success)"
@@ -217,7 +217,7 @@ const OnboardCustomers = () => {
               backgroundColor: "var(--color-action) !important",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

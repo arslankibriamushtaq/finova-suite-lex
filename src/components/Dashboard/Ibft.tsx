@@ -191,7 +191,7 @@ const Ibft = (props: any) => {
               zIndex: 1000,
               maxWidth: "100%",
               height: "380px",
-              borderRadius: "16px",
+              borderRadius: "6px",
             }}
           >
             <div className="ticket p-3">
@@ -209,7 +209,7 @@ const Ibft = (props: any) => {
                 }}
                 tabBarGutter={16}
                 renderTabBar={(props, DefaultTabBar) => (
-                  <DefaultTabBar {...props} style={{ borderRadius: "20px" }} />
+                  <DefaultTabBar {...props} style={{ borderRadius: "6px" }} />
                 )}
               >
                 {ticketsTab.map(({ key, label, chartOptions }) => (

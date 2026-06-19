@@ -160,7 +160,7 @@ const FinancingPurpose = () => {
             type="primary"
             style={{
               fontSize: "12px",
-              borderRadius: "4px",
+              borderRadius: "6px",
               padding: "8px",
             }}
           >
@@ -297,7 +297,7 @@ const FinancingPurpose = () => {
     <>
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
       >
         <div className="d-flex mb-3 col-12 filter-select">
           <Select

@@ -350,7 +350,7 @@ const CreateInvoice = () => {
               style={{
                 padding: 10,
                 backgroundColor: "transparent",
-                borderRadius: 5,
+                borderRadius: 6,
               }}
             />
           </div>
@@ -422,7 +422,7 @@ const CreateInvoice = () => {
         <div className="col-12 mt-5 d-flex justify-content-between gap-2">
           <div
             className="col-6 p-3"
-            style={{ backgroundColor: "var(--muted)", borderRadius: "10px" }}
+            style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
           >
             <label>Name <span className="bg-red"> *</span></label>
             <Input
@@ -469,7 +469,7 @@ const CreateInvoice = () => {
           </div>
           <div
             className="col-6 p-3"
-            style={{ backgroundColor: "var(--muted)", borderRadius: "10px" }}
+            style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
           >
             {" "}
             <div className="">
@@ -499,7 +499,7 @@ const CreateInvoice = () => {
         </div>
         <div
           className="col-12 mt-3 d-flex p-3 gap-3"
-          style={{ backgroundColor: "var(--muted)", borderRadius: "10px" }}
+          style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
         >
           <div className="col-6">
             <div className="">
@@ -555,7 +555,7 @@ const CreateInvoice = () => {
             className=" mb-2 p-3 col-6"
             style={{
               background: themeStyle.secondary,
-              borderTopLeftRadius: "7px",
+              borderTopLeftRadius: "6px",
               fontWeight: "600",
               color: "var(--primary-foreground)",
             }}
@@ -566,7 +566,7 @@ const CreateInvoice = () => {
             className="row mb-2 p-3 col-6"
             style={{
               background: themeStyle.secondary,
-              borderTopRightRadius: "7px",
+              borderTopRightRadius: "6px",
               fontWeight: "600",
               color: "var(--primary-foreground)",
             }}
@@ -587,7 +587,7 @@ const CreateInvoice = () => {
                 style={{
                   backgroundColor: "var(--muted)",
                   border: "1px solid var(--border)",
-                  borderRadius: "0.25rem",
+                  borderRadius: "6px",
                 }}
               />
             </div>
@@ -601,7 +601,7 @@ const CreateInvoice = () => {
                 style={{
                   backgroundColor: "var(--muted)",
                   border: "1px solid var(--border)",
-                  borderRadius: "0.25rem",
+                  borderRadius: "6px",
                 }}
               />
             </div>
@@ -727,7 +727,7 @@ const CreateInvoice = () => {
             className="invoice-btn me-2 text-white p-2"
             style={{
               //backgroundColor: "#373435",
-              borderRadius: "10px",
+              borderRadius: "6px",
               fontSize: "14px",
             }}
           >

@@ -28,7 +28,7 @@ const CompleteApplication = () => {
             backgroundColor: "var(--color-status-active)",
             color: "var(--primary-foreground)",
             padding: "6px 16px",
-            borderRadius: "8px",
+            borderRadius: "6px",
             fontSize: "14px",
             fontWeight: "600",
           }}

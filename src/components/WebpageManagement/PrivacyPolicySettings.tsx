@@ -354,7 +354,7 @@ const PrivacyPolicySettings = () => {
           style={{
             cursor: 'pointer',
             padding: '2px 4px',
-            borderRadius: '3px',
+            borderRadius: '6px',
             display: 'inline-block',
             border: '1px solid transparent',
             color: 'var(--color-text-dark)',
@@ -382,7 +382,7 @@ const PrivacyPolicySettings = () => {
             cursor: 'pointer',
             padding: '20px',
             border: '2px dashed var(--color-border-light)',
-            borderRadius: '8px',
+            borderRadius: '6px',
             textAlign: 'center',
             backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
@@ -407,7 +407,7 @@ const PrivacyPolicySettings = () => {
         style={{
           cursor: 'pointer',
           padding: '4px 8px',
-          borderRadius: '4px',
+          borderRadius: '6px',
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
@@ -465,7 +465,7 @@ const PrivacyPolicySettings = () => {
           style={{
             padding: '4px 8px',
             border: '2px solid var(--color-action-blue)',
-            borderRadius: '4px',
+            borderRadius: '6px',
             fontSize: '14px',
             outline: 'none',
             backgroundColor: 'var(--background)',
@@ -483,7 +483,7 @@ const PrivacyPolicySettings = () => {
         style={{
           cursor: 'pointer',
           padding: '4px 8px',
-          borderRadius: '4px',
+          borderRadius: '6px',
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
@@ -551,7 +551,7 @@ const PrivacyPolicySettings = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -605,7 +605,7 @@ const PrivacyPolicySettings = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '8px 16px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   fontSize: '12px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
@@ -665,7 +665,7 @@ const PrivacyPolicySettings = () => {
                       autoFocus
                       style={{
                         border: '2px solid var(--color-action-blue)',
-                        borderRadius: '4px',
+                        borderRadius: '6px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
@@ -732,7 +732,7 @@ const PrivacyPolicySettings = () => {
                       autoFocus
                       style={{
                         border: '2px solid var(--color-action-blue)',
-                        borderRadius: '4px',
+                        borderRadius: '6px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
@@ -796,7 +796,7 @@ const PrivacyPolicySettings = () => {
                       autoFocus
                       style={{
                         border: '2px solid var(--color-action-blue)',
-                        borderRadius: '4px',
+                        borderRadius: '6px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
@@ -871,7 +871,7 @@ const PrivacyPolicySettings = () => {
                     color: 'var(--color-text-muted)',
                     fontSize: '18px',
                     backgroundColor: 'var(--color-surface-snow)',
-                    borderRadius: '8px',
+                    borderRadius: '6px',
                     border: '1px solid var(--color-border-subtle)'
                   }}>
                     No privacy policy content available.
@@ -900,7 +900,7 @@ const PrivacyPolicySettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '20px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '80%',
             maxWidth: '800px',
             maxHeight: '80vh',
@@ -937,7 +937,7 @@ const PrivacyPolicySettings = () => {
                   backgroundColor: 'var(--color-text-slate)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >
@@ -953,7 +953,7 @@ const PrivacyPolicySettings = () => {
                   backgroundColor: 'var(--color-action-blue)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >

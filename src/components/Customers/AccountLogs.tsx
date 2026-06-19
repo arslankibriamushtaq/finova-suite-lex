@@ -132,7 +132,7 @@ const AccountLogs = () => {
                 height: "40px",
                 width: "180px",
                 padding: "0px 12px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "1px solid lightgray",
               }}
             />
@@ -146,7 +146,7 @@ const AccountLogs = () => {
                 height: "40px",
                 width: "180px",
                 padding: "0px 12px",
-                borderRadius: "4px",
+                borderRadius: "6px",
                 border: "1px solid lightgray",
               }}
             />
@@ -192,7 +192,7 @@ const AccountLogs = () => {
               color: "var(--primary-foreground)",
               height: "40px",
               padding: "0px 14px",
-              borderRadius: "4px",
+              borderRadius: "6px",
               border: "transparent",
               marginTop: "22px",
             }}
@@ -209,7 +209,7 @@ const AccountLogs = () => {
               color: "var(--primary-foreground)",
               height: "40px",
               padding: "0px 14px",
-              borderRadius: "4px",
+              borderRadius: "6px",
               border: "transparent",
               marginLeft: "auto",
               marginTop: "22px",

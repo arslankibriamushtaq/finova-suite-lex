@@ -124,7 +124,7 @@ const PartnerApis = () => {
     <>
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
       >
         <TableView
           header={Activity_Loans_Header}

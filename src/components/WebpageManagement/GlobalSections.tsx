@@ -157,7 +157,7 @@ const GlobalSections = () => {
       {headerContent && (
         <div style={{
           backgroundColor: 'var(--background)',
-          borderRadius: '8px',
+          borderRadius: '6px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           overflow: 'hidden',
           marginBottom: '20px',
@@ -181,7 +181,7 @@ const GlobalSections = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: 'bold'
@@ -272,7 +272,7 @@ const GlobalSections = () => {
       {footerContent && (
         <div style={{
           backgroundColor: 'var(--background)',
-          borderRadius: '8px',
+          borderRadius: '6px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           overflow: 'hidden'
         }}>
@@ -300,7 +300,7 @@ const GlobalSections = () => {
                     color: 'var(--primary-foreground)',
                     border: 'none',
                     padding: '10px 20px',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     cursor: 'pointer',
                     fontSize: '14px',
                     fontWeight: 'bold'
@@ -507,7 +507,7 @@ const GlobalSections = () => {
       {!headerContent && !footerContent && !loading && (
         <div style={{
           backgroundColor: 'var(--background)',
-          borderRadius: '8px',
+          borderRadius: '6px',
           padding: '40px',
           textAlign: 'center',
           color: 'var(--color-text-muted)'

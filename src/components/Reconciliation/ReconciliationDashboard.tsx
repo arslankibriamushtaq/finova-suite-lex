@@ -377,7 +377,7 @@ function ReconciliationDashboard() {
     {
       name: "Status",
       cell: (row: { status: any }) => (
-        <Tag color="error" style={{ borderRadius: '12px', fontSize: '11px' }}>
+        <Tag color="error" style={{ borderRadius: '6px', fontSize: '11px' }}>
           {row.status || "Unmatched"}
         </Tag>
       ),
@@ -402,7 +402,7 @@ function ReconciliationDashboard() {
       {/* Account Selector and Reconciliation Button */}
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col span={24}>
-          <Card style={{ borderRadius: '12px' }}>
+          <Card style={{ borderRadius: '6px' }}>
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ flex: '1', minWidth: '250px' }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
@@ -436,7 +436,7 @@ function ReconciliationDashboard() {
                   style={{
                     backgroundColor: ' #1963b9',
                     borderColor: ' #1963b9',
-                    borderRadius: '8px',
+                    borderRadius: '6px',
                     fontWeight: 500,
                   }}
                 >
@@ -458,13 +458,13 @@ function ReconciliationDashboard() {
             style={{ 
               backgroundColor: '#ffffff',
               border: '1px solid #e6e8f0',
-              borderRadius: '12px'
+              borderRadius: '6px'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
                 backgroundColor: '#FFF6CF',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 width: 36,
                 height: 36,
                 display: 'flex',
@@ -489,13 +489,13 @@ function ReconciliationDashboard() {
             style={{ 
               backgroundColor: '#ffffff',
               border: '1px solid #e6e8f0',
-              borderRadius: '12px'
+              borderRadius: '6px'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
                 backgroundColor: '#E9FFF2',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 width: 36,
                 height: 36,
                 display: 'flex',
@@ -520,13 +520,13 @@ function ReconciliationDashboard() {
             style={{ 
               backgroundColor: '#ffffff',
               border: '1px solid #e6e8f0',
-              borderRadius: '12px'
+              borderRadius: '6px'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
                 backgroundColor: '#FFE8EA',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 width: 36,
                 height: 36,
                 display: 'flex',
@@ -551,13 +551,13 @@ function ReconciliationDashboard() {
             style={{ 
               backgroundColor: '#ffffff',
               border: '1px solid #e6e8f0',
-              borderRadius: '12px'
+              borderRadius: '6px'
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
               <div style={{ 
                 backgroundColor: '#FFE7EE',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 width: 36,
                 height: 36,
                 display: 'flex',
@@ -582,7 +582,7 @@ function ReconciliationDashboard() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         {/* Donut Chart */}
         <Col xs={24} lg={12}>
-          <Card title="Reconciliation Status" style={{ borderRadius: '12px', height: '500px' }}>
+          <Card title="Reconciliation Status" style={{ borderRadius: '6px', height: '500px' }}>
             <ReactECharts 
               option={donutChartOption} 
               style={{ height: '400px' }}
@@ -591,7 +591,7 @@ function ReconciliationDashboard() {
             </Card>
           </Col>
         <Col xs={24} lg={12}>
-          <Card title="Account Balance Distribution" style={{ borderRadius: '12px', height: '500px' }}>
+          <Card title="Account Balance Distribution" style={{ borderRadius: '6px', height: '500px' }}>
             <ReactECharts 
               option={accountBalanceChartOption} 
               style={{ height: '400px' }}
@@ -607,12 +607,12 @@ function ReconciliationDashboard() {
           <Card 
             title="Operation Expenses By Service Type" 
             style={{ 
-              borderRadius: '12px', 
+              borderRadius: '6px', 
               backgroundColor: '#e9ecef',
               border: 'none'
             }}
             headStyle={{ backgroundColor: '#e9ecef', border: 'none' }}
-            bodyStyle={{ backgroundColor: 'white', borderRadius: '0 0 12px 12px' }}
+            bodyStyle={{ backgroundColor: 'white', borderRadius: '0 0 6px 6px' }}
           >
             <ReactECharts 
               option={channelChartOption} 
@@ -624,7 +624,7 @@ function ReconciliationDashboard() {
       </Row>
       <Card 
         title="Last 10 unmatched" 
-        style={{ borderRadius: '12px' }}
+        style={{ borderRadius: '6px' }}
         bodyStyle={{ padding: 0 }}
       >
         <div className="cs-table p-2">

@@ -239,7 +239,7 @@ const EditDue: any = ({ productId, setSelectedTab }: any) => {
           /* style={{
             backgroundColor: "#A0A0A0",
             border: "none",
-            borderRadius: "8px",
+            borderRadius: "6px",
           }} */
           onClick={() => {
             setSelectedTab("EarlySettlement");
@@ -251,7 +251,7 @@ const EditDue: any = ({ productId, setSelectedTab }: any) => {
           className="application-btn mb-2"
           /* style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "8px",
+            borderRadius: "6px",
             height: "fit-content",
             width: "fit-content",
           }} */

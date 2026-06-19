@@ -182,7 +182,7 @@ const CampaignList = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor:
               row.status === "active"
                 ? "rgba(63, 195, 128, 0.9)"
@@ -209,7 +209,7 @@ const CampaignList = () => {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >
@@ -736,7 +736,7 @@ const CampaignList = () => {
               border: "1px solid #ccc",
               color: "black",
               background: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "4px 20px",
               fontWeight: "500",
             }}
@@ -751,7 +751,7 @@ const CampaignList = () => {
               background: "black",
               color: "white",
               border: "none",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "4px 20px",
               fontWeight: "500",
             }}

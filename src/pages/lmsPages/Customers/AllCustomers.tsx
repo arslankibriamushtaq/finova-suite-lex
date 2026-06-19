@@ -876,7 +876,7 @@ const AllCustomers = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor:
               row.status
                 ? "var(--color-status-green)"
@@ -893,8 +893,8 @@ const AllCustomers = () => {
       name: "Blocked",
       cell: (row: any) => (
         row.isBlocked
-          ? <span style={{ padding: "0.22rem 0.75rem", borderRadius: "12px", backgroundColor: "var(--color-status-red, #fee2e2)", color: "#dc2626", fontSize: "0.75rem", fontWeight: 600 }}>Blocked</span>
-          : <span style={{ padding: "0.22rem 0.75rem", borderRadius: "12px", backgroundColor: "var(--color-status-green)", color: "var(--primary-foreground)", fontSize: "0.75rem", fontWeight: 600 }}>Clear</span>
+          ? <span style={{ padding: "0.22rem 0.75rem", borderRadius: "6px", backgroundColor: "var(--color-status-red, #fee2e2)", color: "#dc2626", fontSize: "0.75rem", fontWeight: 600 }}>Blocked</span>
+          : <span style={{ padding: "0.22rem 0.75rem", borderRadius: "6px", backgroundColor: "var(--color-status-green)", color: "var(--primary-foreground)", fontSize: "0.75rem", fontWeight: 600 }}>Clear</span>
       ),
       width: "110px",
     },
@@ -915,7 +915,7 @@ const AllCustomers = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

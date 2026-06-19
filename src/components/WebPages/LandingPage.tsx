@@ -1073,7 +1073,7 @@ const LandingPage = () => {
               <img
                 src={pageData.tracker?.image?.url || 'https://via.placeholder.com/400x300'}
                 alt={pageData.tracker?.image?.alt || 'App Screens'}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '18px' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
               />
             </div> */}
 
@@ -1082,7 +1082,7 @@ const LandingPage = () => {
               <img
                 src={pageData.tracker?.image?.url || 'https://via.placeholder.com/400x300'}
                 alt={pageData.tracker?.image?.alt || 'App Screens'}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '18px' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
               />
             </div>
           </div>
@@ -1298,7 +1298,7 @@ const LandingPage = () => {
                 style={{ 
                   maxWidth: '100%', 
                   height: 'auto', 
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
                   display: 'block'
                 }}
@@ -1312,7 +1312,7 @@ const LandingPage = () => {
                 textAlign: 'center', 
                 padding: '20px', 
                 backgroundColor: 'rgba(26, 26, 26, 0.8)',
-                borderRadius: '20px',
+                borderRadius: '6px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

@@ -74,7 +74,7 @@ const Templates = () => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "12px",
+                        borderRadius: "6px",
                         textAlign: "center",
                         backgroundColor: row.active ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
@@ -98,7 +98,7 @@ const Templates = () => {
                             backgroundColor: "var(--color-action) !important",
                             color: "var(--foreground)",
                             borderColor: "white",
-                            borderRadius: "8px",
+                            borderRadius: "6px",
                             padding: "10px 20px",
                         }}
                     >

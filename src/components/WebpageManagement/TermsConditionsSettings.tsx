@@ -168,7 +168,7 @@ const TermsConditionsSettings: React.FC = () => {
               width: '100%',
               padding: '8px',
               border: '1px solid var(--color-border-light)',
-              borderRadius: '4px',
+              borderRadius: '6px',
               fontSize: '14px',
               color: 'var(--color-text-dark)',
               backgroundColor: 'var(--color-surface-subtle)',
@@ -185,7 +185,7 @@ const TermsConditionsSettings: React.FC = () => {
           style={{
             cursor: 'pointer',
             padding: '4px 8px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             display: 'inline-block',
             minHeight: '20px',
             border: '1px solid transparent',
@@ -209,7 +209,7 @@ const TermsConditionsSettings: React.FC = () => {
           style={{
             cursor: 'pointer',
             padding: '4px 8px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             display: 'inline-block',
             minHeight: '20px',
             border: '1px solid transparent',
@@ -233,7 +233,7 @@ const TermsConditionsSettings: React.FC = () => {
           style={{
             cursor: 'pointer',
             padding: '8px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             border: '2px dashed var(--color-border-muted)',
             minHeight: '100px',
             display: 'flex',
@@ -270,7 +270,7 @@ const TermsConditionsSettings: React.FC = () => {
                 marginBottom: '8px',
                 padding: '8px',
                 border: '1px solid var(--color-border-light)',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 backgroundColor: 'var(--color-surface-cloud)'
               }}>
                 <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
@@ -324,7 +324,7 @@ const TermsConditionsSettings: React.FC = () => {
                     backgroundColor: 'var(--color-action-blue)',
                     color: 'var(--primary-foreground)',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     cursor: 'pointer',
                     fontSize: '12px'
                   }}
@@ -345,7 +345,7 @@ const TermsConditionsSettings: React.FC = () => {
         return (
           <div style={{
             border: '1px solid var(--color-border-light)',
-            borderRadius: '4px',
+            borderRadius: '6px',
             padding: '10px',
             backgroundColor: 'var(--color-surface-cloud)',
             display: 'flex',
@@ -383,7 +383,7 @@ const TermsConditionsSettings: React.FC = () => {
         style={{
           cursor: 'pointer',
           padding: '8px',
-          borderRadius: '4px',
+          borderRadius: '6px',
           transition: 'background-color 0.2s',
           minHeight: fieldType === 'textarea' ? '60px' : 'auto'
         }}
@@ -680,7 +680,7 @@ const TermsConditionsSettings: React.FC = () => {
         textAlign: 'center',
         color: 'red',
         backgroundColor: 'var(--color-surface-snow)',
-        borderRadius: '8px',
+        borderRadius: '6px',
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
@@ -693,7 +693,7 @@ const TermsConditionsSettings: React.FC = () => {
             backgroundColor: 'var(--color-action-blue)',
             color: 'var(--primary-foreground)',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: '6px',
             cursor: 'pointer',
             marginTop: '10px'
           }}
@@ -710,7 +710,7 @@ const TermsConditionsSettings: React.FC = () => {
         padding: '20px',
         textAlign: 'center',
         backgroundColor: 'var(--color-surface-snow)',
-        borderRadius: '8px',
+        borderRadius: '6px',
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
@@ -736,7 +736,7 @@ const TermsConditionsSettings: React.FC = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -793,7 +793,7 @@ const TermsConditionsSettings: React.FC = () => {
             transform: 'translate(-50%, -50%)',
             backgroundColor: 'rgba(255, 255, 255, 0.9)',
             padding: '20px 40px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             fontSize: '18px',
             fontWeight: 'bold',
             color: 'var(--color-text-dark)',
@@ -813,7 +813,7 @@ const TermsConditionsSettings: React.FC = () => {
             backgroundColor: 'var(--color-overlay-dark)',
             color: 'var(--primary-foreground)',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             fontSize: '14px',
             cursor: 'pointer'
           }}>
@@ -865,7 +865,7 @@ const TermsConditionsSettings: React.FC = () => {
                 autoFocus
                 style={{
                   border: '2px solid var(--color-action-blue)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
@@ -932,7 +932,7 @@ const TermsConditionsSettings: React.FC = () => {
                 autoFocus
                 style={{
                   border: '2px solid var(--color-action-blue)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
@@ -996,7 +996,7 @@ const TermsConditionsSettings: React.FC = () => {
                 autoFocus
                 style={{
                   border: '2px solid var(--color-action-blue)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
@@ -1083,7 +1083,7 @@ const TermsConditionsSettings: React.FC = () => {
               color: 'var(--color-text-muted)',
               fontSize: '18px',
               backgroundColor: 'var(--color-surface-snow)',
-              borderRadius: '8px',
+              borderRadius: '6px',
               border: '1px solid var(--color-border-subtle)'
             }}>
               No terms & conditions content available.
@@ -1109,7 +1109,7 @@ const TermsConditionsSettings: React.FC = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '20px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '80%',
             maxWidth: '600px',
             maxHeight: '80vh',
@@ -1118,7 +1118,7 @@ const TermsConditionsSettings: React.FC = () => {
             <h3 style={{ marginTop: 0 }}>Edit Repeater Field</h3>
             <div style={{ marginBottom: '20px' }}>
               {editingRepeaterData.map((item, index) => (
-                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}>
+                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '6px' }}>
                   <h4>Item {index + 1}</h4>
                   {Object.entries(item).map(([key, value]) => (
                     <div key={key} style={{ marginBottom: '10px' }}>
@@ -1137,7 +1137,7 @@ const TermsConditionsSettings: React.FC = () => {
                           width: '100%',
                           padding: '8px',
                           border: '1px solid var(--color-border-muted)',
-                          borderRadius: '4px'
+                          borderRadius: '6px'
                         }}
                       />
                     </div>
@@ -1158,7 +1158,7 @@ const TermsConditionsSettings: React.FC = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >
@@ -1175,7 +1175,7 @@ const TermsConditionsSettings: React.FC = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >
@@ -1203,7 +1203,7 @@ const TermsConditionsSettings: React.FC = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '20px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '80%',
             maxWidth: '800px',
             maxHeight: '80vh',
@@ -1241,7 +1241,7 @@ const TermsConditionsSettings: React.FC = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >
@@ -1254,7 +1254,7 @@ const TermsConditionsSettings: React.FC = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >
@@ -1282,7 +1282,7 @@ const TermsConditionsSettings: React.FC = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '20px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '80%',
             maxWidth: '600px',
             maxHeight: '80vh',
@@ -1291,7 +1291,7 @@ const TermsConditionsSettings: React.FC = () => {
             <h3 style={{ marginTop: 0 }}>Edit Repeater Field</h3>
             <div style={{ marginBottom: '20px' }}>
               {editingRepeaterData.map((item, index) => (
-                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '4px' }}>
+                <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '6px' }}>
                   <h4>Item {index + 1}</h4>
                   {Object.entries(item).map(([key, value]) => (
                     <div key={key} style={{ marginBottom: '10px' }}>
@@ -1310,7 +1310,7 @@ const TermsConditionsSettings: React.FC = () => {
                           width: '100%',
                           padding: '8px',
                           border: '1px solid var(--color-border-muted)',
-                          borderRadius: '4px'
+                          borderRadius: '6px'
                         }}
                       />
                     </div>
@@ -1326,7 +1326,7 @@ const TermsConditionsSettings: React.FC = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >
@@ -1339,7 +1339,7 @@ const TermsConditionsSettings: React.FC = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '10px 20px',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer'
                 }}
               >

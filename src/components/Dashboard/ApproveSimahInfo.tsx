@@ -152,7 +152,7 @@ const ApproveSimahInfo = () => {
             className="comment-section p-4 mb-4"
             style={{ 
               background: "white", 
-              borderRadius: "8px",
+              borderRadius: "6px",
               border: "1px solid #e0e0e0"
             }}
           >
@@ -234,7 +234,7 @@ const ApproveSimahInfo = () => {
             className="simah-history-info p-4"
             style={{ 
               background: "white", 
-              borderRadius: "8px",
+              borderRadius: "6px",
               border: "1px solid #e0e0e0"
             }}
           >

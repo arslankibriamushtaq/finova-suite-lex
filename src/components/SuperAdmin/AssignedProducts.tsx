@@ -250,7 +250,7 @@ const AsssignedProducts = () => {
             borderRight: "1px solid #D1D1D1",
             borderBottom: "1px solid #D1D1D1",
             borderTop: "1px solid #D1D1D1",
-            borderRadius: "10px",
+            borderRadius: "6px",
           }}
         >
           <div className="p-4">
@@ -264,7 +264,7 @@ const AsssignedProducts = () => {
                     className="d-flex justify-content-between align-items-center w-100 p-3"
                     style={{
                       backgroundColor: "#f5f5f5",
-                      borderRadius: "8px",
+                      borderRadius: "6px",
                     }}
                   >
                     <label className="fs-14 fw-600">{field.label}</label>

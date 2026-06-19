@@ -495,7 +495,7 @@ const Vouchers = () => {
           style={{
             whiteSpace: "nowrap",
             padding: "0.4rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor:
               row.Status === "POSTED" || row.Status === "Approved"
                 ? "#92BC83"
@@ -565,7 +565,7 @@ const Vouchers = () => {
         <div
           className="bg-white p-3 mb-3"
           style={{
-            borderRadius: 12,
+            borderRadius: 6,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
           }}
@@ -577,7 +577,7 @@ const Vouchers = () => {
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
             />
             <DatePicker
               placeholder="From"
@@ -585,7 +585,7 @@ const Vouchers = () => {
               onChange={(d) => { setFromDate(d); setPage(1); }}
               format="YYYY-MM-DD"
               allowClear
-              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
             />
             <DatePicker
               placeholder="To"
@@ -593,7 +593,7 @@ const Vouchers = () => {
               onChange={(d) => { setToDate(d); setPage(1); }}
               format="YYYY-MM-DD"
               allowClear
-              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 8, background: "#fff" }}
+              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 6, background: "#fff" }}
             />
             <button
               type="button"
@@ -662,7 +662,7 @@ const Vouchers = () => {
         <div
           className="bg-white"
           style={{
-            borderRadius: 12,
+            borderRadius: 6,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
             overflow: "hidden",

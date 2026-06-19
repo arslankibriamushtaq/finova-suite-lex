@@ -106,7 +106,7 @@ const formatDate = (dateString: any) => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "12px",
+                        borderRadius: "6px",
                         textAlign: "center",
                         backgroundColor: row.inAppOptions ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
@@ -123,7 +123,7 @@ const formatDate = (dateString: any) => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "12px",
+                        borderRadius: "6px",
                         textAlign: "center",
                         backgroundColor: row.active ? "var(--color-success)" : "var(--color-error)",
                         color: "white",

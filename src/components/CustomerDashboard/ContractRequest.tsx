@@ -143,7 +143,7 @@ const ContractRequest = () => {
           style={{
             backgroundColor: "var(--theme-secondary)",
             color: "var(--primary-foreground)",
-            borderRadius: "5px",
+            borderRadius: "6px",
             border: "none",
             fontSize: "12px",
             padding: "4px 12px",
@@ -171,7 +171,7 @@ const ContractRequest = () => {
           style={{
             backgroundColor: "var(--color-warning-gold)",
             padding: "4px 12px",
-            borderRadius: "5px",
+            borderRadius: "6px",
             color: "var(--foreground)",
             fontWeight: 500,
             fontSize: "12px",
@@ -191,7 +191,7 @@ const ContractRequest = () => {
           style={{
             backgroundColor: "var(--theme-secondary)",
             color: "var(--primary-foreground)",
-            borderRadius: "5px",
+            borderRadius: "6px",
             border: "none",
             fontSize: "12px",
             padding: "4px 12px",

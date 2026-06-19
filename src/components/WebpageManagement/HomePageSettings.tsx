@@ -233,7 +233,7 @@ const HomepageSettings: React.FC = () => {
             width: '100%',
             padding: '8px',
             border: '1px solid var(--color-border-light)',
-            borderRadius: '4px',
+            borderRadius: '6px',
             fontSize: '14px',
             color: 'var(--color-text-dark)',
             backgroundColor: 'var(--color-surface-subtle)',
@@ -249,7 +249,7 @@ const HomepageSettings: React.FC = () => {
           style={{
             cursor: 'pointer',
             padding: '4px 8px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             display: 'inline-block',
             minHeight: '20px',
             border: '1px solid transparent',
@@ -274,7 +274,7 @@ const HomepageSettings: React.FC = () => {
             cursor: 'pointer',
             padding: '8px',
             border: '1px dashed var(--color-border-muted)',
-            borderRadius: '4px',
+            borderRadius: '6px',
             minHeight: '60px',
             display: 'flex',
             alignItems: 'center',
@@ -393,7 +393,7 @@ const HomepageSettings: React.FC = () => {
             <div key={index} style={{
               backgroundColor: 'var(--color-surface-muted)',
               padding: '8px 16px',
-              borderRadius: '20px',
+              borderRadius: '6px',
               fontSize: '14px',
               fontWeight: '500',
               color: 'var(--color-text-dark)',
@@ -454,7 +454,7 @@ const HomepageSettings: React.FC = () => {
             {Array.isArray(value) && value.map((item: any, index: number) => (
               <div key={index} style={{
                 border: '1px solid var(--color-border-light)',
-                borderRadius: '8px',
+                borderRadius: '6px',
                 padding: '15px',
                 marginBottom: '10px',
                 backgroundColor: 'var(--color-surface-cloud)'
@@ -474,7 +474,7 @@ const HomepageSettings: React.FC = () => {
                         cursor: 'pointer',
                         padding: '8px',
                         border: '1px dashed var(--color-border-muted)',
-                        borderRadius: '4px',
+                        borderRadius: '6px',
                         minHeight: '60px',
                         display: 'flex',
                         alignItems: 'center',
@@ -1293,7 +1293,7 @@ const HomepageSettings: React.FC = () => {
             width: '100%',
             padding: '8px',
             border: '1px solid var(--color-border-light)',
-            borderRadius: '4px',
+            borderRadius: '6px',
             fontSize: '14px',
             color: 'var(--color-text-dark)',
             backgroundColor: 'var(--color-surface-subtle)',
@@ -1312,7 +1312,7 @@ const HomepageSettings: React.FC = () => {
         style={{
           cursor: 'pointer',
           padding: '4px 8px',
-          borderRadius: '4px',
+          borderRadius: '6px',
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
@@ -1342,7 +1342,7 @@ const HomepageSettings: React.FC = () => {
         textAlign: 'center',
         color: 'red',
         backgroundColor: 'var(--color-surface-snow)',
-        borderRadius: '8px',
+        borderRadius: '6px',
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
@@ -1355,7 +1355,7 @@ const HomepageSettings: React.FC = () => {
             backgroundColor: 'var(--color-action-blue)',
             color: 'var(--primary-foreground)',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: '6px',
             cursor: 'pointer',
             marginTop: '10px'
           }}
@@ -1372,7 +1372,7 @@ const HomepageSettings: React.FC = () => {
         padding: '20px',
         textAlign: 'center',
         backgroundColor: 'var(--color-surface-snow)',
-        borderRadius: '8px',
+        borderRadius: '6px',
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
@@ -1398,7 +1398,7 @@ const HomepageSettings: React.FC = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -1450,7 +1450,7 @@ const HomepageSettings: React.FC = () => {
               color: 'var(--primary-foreground)',
               border: 'none',
               padding: '8px 16px',
-              borderRadius: '4px',
+              borderRadius: '6px',
               fontSize: '12px',
               fontWeight: 'bold',
               cursor: 'pointer',
@@ -1768,7 +1768,7 @@ const HomepageSettings: React.FC = () => {
                   width: '250px',
                   height: '500px',
                   border: '2px dashed #0ae3be',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -1782,7 +1782,7 @@ const HomepageSettings: React.FC = () => {
                   <img 
                     src={formValue.tracker?.image.url} 
                     alt={formValue.tracker?.image.alt || 'App Screens'} 
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', borderRadius: '18px' }}
+                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', borderRadius: '6px' }}
               />
             ) : (
       <div style={{ 
@@ -1790,7 +1790,7 @@ const HomepageSettings: React.FC = () => {
                     textAlign: 'center', 
         padding: '20px', 
                     backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                    borderRadius: '10px'
+                    borderRadius: '6px'
                   }}>
                     <div>📱</div>
                     <div style={{ fontSize: '14px', marginTop: '10px' }}>Click to upload background phone</div>
@@ -1806,7 +1806,7 @@ const HomepageSettings: React.FC = () => {
                   width: '500px',
                   height: '700px',
                  // border: '2px dashed #0ae3be',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -1820,7 +1820,7 @@ const HomepageSettings: React.FC = () => {
               <img 
                 src={formValue.tracker?.image.url} 
                     alt={formValue.tracker?.image.alt || 'App Screens'} 
-                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', borderRadius: '18px' }}
+                    style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'cover', borderRadius: '6px' }}
               />
             ) : (
       <div style={{
@@ -1828,7 +1828,7 @@ const HomepageSettings: React.FC = () => {
                     textAlign: 'center',
         padding: '20px',
                     backgroundColor: 'var(--color-overlay-dark)',
-                    borderRadius: '10px'
+                    borderRadius: '6px'
                   }}>
                     <div>📱</div>
                     <div style={{ fontSize: '14px', marginTop: '10px' }}>Click to upload main phone</div>
@@ -2037,7 +2037,7 @@ const HomepageSettings: React.FC = () => {
                   style={{ 
                     maxWidth: '100%', 
                     height: 'auto', 
-                    borderRadius: '20px',
+                    borderRadius: '6px',
                     boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
                     display: 'block'
                   }}
@@ -2051,7 +2051,7 @@ const HomepageSettings: React.FC = () => {
                   textAlign: 'center', 
                   padding: '20px', 
                   backgroundColor: 'rgba(26, 26, 26, 0.8)',
-                  borderRadius: '20px',
+                  borderRadius: '6px',
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'center',
@@ -2126,7 +2126,7 @@ const HomepageSettings: React.FC = () => {
                       cursor: 'pointer',
                       padding: '8px',
                       border: '1px dashed var(--color-border-muted)',
-                      borderRadius: '4px',
+                      borderRadius: '6px',
                       minHeight: '60px',
                       display: 'flex',
                       alignItems: 'center',
@@ -2182,7 +2182,7 @@ const HomepageSettings: React.FC = () => {
       <div style={{
         backgroundColor: 'var(--background)',
             padding: '30px',
-        borderRadius: '8px',
+        borderRadius: '6px',
             width: '90%',
             maxWidth: '800px',
             maxHeight: '90vh',
@@ -2211,7 +2211,7 @@ const HomepageSettings: React.FC = () => {
 
       <div style={{
                   border: '1px solid var(--color-border-light)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
               minHeight: '300px'
             }}>
               <CKEditor
@@ -2278,7 +2278,7 @@ const HomepageSettings: React.FC = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '80%',
             maxWidth: '600px',
             maxHeight: '80vh',
@@ -2287,7 +2287,7 @@ const HomepageSettings: React.FC = () => {
             <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Repeater</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {editingRepeaterData.map((item, index) => (
-                <div key={index} style={{ border: '1px solid var(--color-border-light)', padding: '15px', borderRadius: '4px' }}>
+                <div key={index} style={{ border: '1px solid var(--color-border-light)', padding: '15px', borderRadius: '6px' }}>
                   <h4>Item {index + 1}</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {Object.keys(item).map((key) => (
@@ -2307,7 +2307,7 @@ const HomepageSettings: React.FC = () => {
                   width: '100%',
                   padding: '8px',
                   border: '1px solid var(--color-border-light)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   fontSize: '14px'
                 }}
               />
@@ -2369,7 +2369,7 @@ const HomepageSettings: React.FC = () => {
         }}>
           <div style={{
             backgroundColor: 'var(--background)',
-            borderRadius: '8px',
+            borderRadius: '6px',
             width: '90%',
             maxWidth: '500px',
             maxHeight: '90vh',
@@ -2431,7 +2431,7 @@ const HomepageSettings: React.FC = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid var(--color-border-light)',
-                      borderRadius: '4px',
+                      borderRadius: '6px',
                       fontSize: '14px',
                       boxSizing: 'border-box',
                       backgroundColor: 'var(--background)'
@@ -2453,7 +2453,7 @@ const HomepageSettings: React.FC = () => {
                 </label>
                 <div style={{
                   border: '2px dashed var(--color-border-light)',
-                  borderRadius: '8px',
+                  borderRadius: '6px',
                   padding: '20px',
                   backgroundColor: 'var(--color-surface-ice)',
                   minHeight: '120px',
@@ -2532,7 +2532,7 @@ const HomepageSettings: React.FC = () => {
                     backgroundColor: 'var(--foreground)',
                     color: 'var(--primary-foreground)',
                     border: 'none',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     cursor: 'pointer',

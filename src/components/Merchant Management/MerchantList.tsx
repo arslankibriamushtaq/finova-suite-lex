@@ -171,7 +171,7 @@ const [formData, setFormData] = useState({
             type="primary"
             style={{
               fontSize: "12px",
-              borderRadius: "4px",
+              borderRadius: "6px",
               padding: "8px",
             }}
           >
@@ -296,7 +296,7 @@ const [formData, setFormData] = useState({
     <>
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
       >
         <div className="d-flex mb-3 col-12 filter-select">
           <Select
@@ -379,7 +379,7 @@ const [formData, setFormData] = useState({
             </Button>,
           ]}
         >
-           <div className="service" style={{ background: "white", padding: "0rem", borderRadius: "10px" }}>
+           <div className="service" style={{ background: "white", padding: "0rem", borderRadius: "6px" }}>
       {/* <h4 style={{ marginBottom: "2rem" }}>Add New Partner</h4> */}
 
       <div className="row">

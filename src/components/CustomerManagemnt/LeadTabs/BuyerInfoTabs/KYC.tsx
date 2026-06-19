@@ -57,7 +57,7 @@ function KYC() {
                       minHeight: "100px",
                       padding: "10px",
                       border: "1px solid var(--color-border-light)",
-                      borderRadius: "4px",
+                      borderRadius: "6px",
                       fontSize: "14px",
                       resize: "vertical",
                     }}

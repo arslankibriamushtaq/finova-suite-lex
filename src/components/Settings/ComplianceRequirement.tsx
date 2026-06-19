@@ -140,7 +140,7 @@ const ComplianceRequirement = () => {
         <span
           style={{
             padding: "5px 10px",
-            borderRadius: "20px",
+            borderRadius: "6px",
             backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
@@ -162,7 +162,7 @@ const ComplianceRequirement = () => {
               backgroundColor: "var(--color-action) !important",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

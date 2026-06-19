@@ -142,7 +142,7 @@ function Document({ fullDetail }: any) {
         <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
           {/* NAFITH Document */}
           {documents?.NAFITH && (
-            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", padding: "20px" }}>
+            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", padding: "20px" }}>
               <h3 style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
                 {getDocumentTitle("NAFITH")}
               </h3>
@@ -153,7 +153,7 @@ function Document({ fullDetail }: any) {
                     width: "100%",
                     height: "600px",
                     border: "1px solid var(--surface-border)",
-                    borderRadius: "4px",
+                    borderRadius: "6px",
                   }}
                   title="NAFITH Document"
                 />
@@ -167,7 +167,7 @@ function Document({ fullDetail }: any) {
 
           {/* Emdha Financing Contract */}
           {documents?.EmdhaFinancingContract && (
-            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", padding: "20px" }}>
+            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", padding: "20px" }}>
               <h3 style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
                 {getDocumentTitle("EmdhaFinancingContract")}
               </h3>
@@ -178,7 +178,7 @@ function Document({ fullDetail }: any) {
                     width: "100%",
                     height: "600px",
                     border: "1px solid var(--surface-border)",
-                    borderRadius: "4px",
+                    borderRadius: "6px",
                   }}
                   title="Emdha Financing Contract"
                 />
@@ -192,7 +192,7 @@ function Document({ fullDetail }: any) {
 
           {/* Emdha Authorization Letter */}
           {documents?.EmdhaAuthorizationLetter && (
-            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "8px", padding: "20px" }}>
+            <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", padding: "20px" }}>
               <h3 style={{ color: "var(--foreground)", fontWeight: 600, fontSize: "16px", marginBottom: "15px" }}>
                 {getDocumentTitle("EmdhaAuthorizationLetter")}
               </h3>
@@ -203,7 +203,7 @@ function Document({ fullDetail }: any) {
                     width: "100%",
                     height: "600px",
                     border: "1px solid var(--surface-border)",
-                    borderRadius: "4px",
+                    borderRadius: "6px",
                   }}
                   title="Emdha Authorization Letter"
                 />

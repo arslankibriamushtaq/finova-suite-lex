@@ -819,7 +819,7 @@ const BusinessInfoForm = () => {
         <>
           <div
             className="p-4"
-            style={{ border: "1px solid var(--color-border-light)", borderRadius: "10px" }}
+            style={{ border: "1px solid var(--color-border-light)", borderRadius: "6px" }}
           >
             <Tabs
               defaultActiveKey="BusinessInformation"

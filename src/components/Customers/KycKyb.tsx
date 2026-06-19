@@ -172,7 +172,7 @@ const KycKyb = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

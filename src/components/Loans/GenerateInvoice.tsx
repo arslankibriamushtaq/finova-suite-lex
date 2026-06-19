@@ -139,7 +139,7 @@ function GenerateInvoice() {
             backgroundColor: "var(--card)",
             padding: "50px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            borderRadius: "8px",
+            borderRadius: "6px",
             border: "2px solid var(--border)",
             color: "var(--foreground)",
             fontFamily: "Arial, sans-serif"
@@ -208,7 +208,7 @@ function GenerateInvoice() {
               backgroundColor: "var(--primary)",
               color: "var(--primary-foreground)",
               padding: "10px 16px",
-              borderRadius: "3px 3px 0 0",
+              borderRadius: "6px 6px 0 0",
               fontWeight: 600,
               fontSize: "13px"
             }}>
@@ -228,7 +228,7 @@ function GenerateInvoice() {
                   border: "1px solid var(--border)",
                   borderTop: "none",
                   padding: "10px 16px",
-                  borderRadius: index === invoiceData.lineItems.length - 1 ? "0 0 3px 3px" : "0",
+                  borderRadius: index === invoiceData.lineItems.length - 1 ? "0 0 6px 6px" : "0",
                   fontSize: "13px",
                   color: "var(--foreground)"
                 }}

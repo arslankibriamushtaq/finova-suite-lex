@@ -62,7 +62,7 @@ const BusinessInfoTab: React.FC<BusinessInfoTabProps> = ({ applicationData }) =>
       
       <Card
         style={{
-          borderRadius: "8px",
+          borderRadius: "6px",
           boxShadow: "0 2px 8px rgba(0, 0, 0, 0.1)",
         }}
         bodyStyle={{ padding: 0 }}

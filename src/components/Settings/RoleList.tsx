@@ -137,7 +137,7 @@ const RoleList = () => {
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "4px", padding: "8px" }}>
+          <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "6px", padding: "8px" }}>
             Select
             <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
           </Button>
@@ -300,7 +300,7 @@ const RoleList = () => {
         <div
           className="bg-white p-3 mb-3"
           style={{
-            borderRadius: 12,
+            borderRadius: 6,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
           }}
@@ -312,7 +312,7 @@ const RoleList = () => {
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
-              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
             />
             <button
               className="theme-btn-next"
@@ -332,7 +332,7 @@ const RoleList = () => {
         <div
           className="bg-white"
           style={{
-            borderRadius: 12,
+            borderRadius: 6,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
             overflow: "hidden",

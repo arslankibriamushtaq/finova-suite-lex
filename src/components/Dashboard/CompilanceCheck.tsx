@@ -202,9 +202,9 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
       <div className="profile-sec mt-3 mb-3">
         <div className="row g-3 align-items-center account-card">
           <div className="col-12">
-            <div className="p-4" style={{ background: "var(--surface-card)", borderRadius: "8px", fontFamily: 'inherit', fontSize: '14px' }}>
+            <div className="p-4" style={{ background: "var(--surface-card)", borderRadius: "6px", fontFamily: 'inherit', fontSize: '14px' }}>
               {hasComplianceHistory && (
-                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "8px", background: "var(--surface-card-alt)", border: "1px solid var(--surface-border)" }}>
+                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "6px", background: "var(--surface-card-alt)", border: "1px solid var(--surface-border)" }}>
                   <h4 style={{ fontSize: "16px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
                     KYC / Compliance Summary
                   </h4>

@@ -434,7 +434,7 @@ const CalculatorPage = () => {
           {/* Calculator Content */}
           <div style={{
             backgroundColor: '#f8f9fa',
-            borderRadius: '8px',
+            borderRadius: '6px',
             padding: '30px',
             border: '1px solid #e0e0e0'
           }}>

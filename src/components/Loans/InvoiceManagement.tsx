@@ -148,7 +148,7 @@ const InvoiceManagement = () => {
             type="primary"
             style={{
               borderColor: "var(--background)",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >
@@ -331,7 +331,7 @@ const InvoiceManagement = () => {
                 color: "var(--primary-foreground)",
                 //height: "32px",
                 padding: "9px",
-                borderRadius: "8px",
+                borderRadius: "6px",
                 border: "transparent",
               }}
               onClick={handleSubmitInvoice}
@@ -351,7 +351,7 @@ const InvoiceManagement = () => {
                   height: "42px",
                   width: "242px",
                   padding: "0px 12px",
-                  borderRadius: "7px",
+                  borderRadius: "6px",
                   border: "1px solid lightgray",
                 }}
               />
@@ -365,7 +365,7 @@ const InvoiceManagement = () => {
                   height: "42px",
                   width: "242px",
                   padding: "0px 12px",
-                  borderRadius: "7px",
+                  borderRadius: "6px",
                   border: "1px solid lightgray",
                 }}
               />
@@ -376,7 +376,7 @@ const InvoiceManagement = () => {
                 color: "#ffffff",
                 height: "42px",
                 padding: "0px 14px",
-                borderRadius: "7px",
+                borderRadius: "6px",
                 border: "transparent",
               }}
               onClick={() => {
@@ -417,7 +417,7 @@ const InvoiceManagement = () => {
                 color: "#ffffff",
                 height: "42px",
                 padding: "0px 8px",
-                borderRadius: "7px",
+                borderRadius: "6px",
                 border: "transparent",
               }}
               onClick={handleSubmitInvoice}

@@ -71,7 +71,7 @@ const FinanceBarChart = ({ dashboardData }: { dashboardData: any }) => {
             contentStyle={{
               background: "var(--surface-card)",
               border: "1px solid var(--surface-border)",
-              borderRadius: 8,
+              borderRadius: 6,
               color: "var(--foreground)",
             }}
           />

@@ -165,7 +165,7 @@ const FinancialStatements = () => {
             cell: (row: any) => (
               <span style={{
                 padding: '4px 8px',
-                borderRadius: '4px',
+                borderRadius: '6px',
                 backgroundColor: row.status ? 'var(--color-success)' : 'var(--color-error)',
                 color: 'white',
                 fontSize: '12px',
@@ -397,7 +397,7 @@ const FinancialStatements = () => {
             backgroundColor: '#007bff',
             color: 'white',
             border: 'none',
-            borderRadius: '4px',
+            borderRadius: '6px',
             cursor: 'pointer'
           }}
         >
@@ -489,7 +489,7 @@ const FinancialStatements = () => {
             backgroundColor: '#f8d7da',
             color: '#721c24',
             padding: '15px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             marginBottom: '20px',
             border: '1px solid #f5c6cb'
           }}>
@@ -528,7 +528,7 @@ const FinancialStatements = () => {
 
         <div style={{
           backgroundColor: 'white',
-          borderRadius: '8px',
+          borderRadius: '6px',
           padding: '30px',
           boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
         }}>

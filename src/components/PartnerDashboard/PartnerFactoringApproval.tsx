@@ -18,7 +18,7 @@ function PartnerFactoringApproval({ setActiveTab }: any) {
   return (
     <div
       className="p-3 mt-3 mb-3"
-      style={{ background: "white", borderRadius: "8px" }}
+      style={{ background: "white", borderRadius: "6px" }}
     >
       <div className="row g-3 p-3">
         <h5 className="mt-5 mb-3">Factoring Info:</h5>

@@ -89,7 +89,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
     <div className="profile-sec mt-3 mb-3">
       <div className="row g-3 align-items-center account-card">
         <div className="col-12">
-          <div className="p-4" style={{ background: "white", borderRadius: "8px" }}>
+          <div className="p-4" style={{ background: "white", borderRadius: "6px" }}>
             {/* Check if already approved/rejected */}
             {creditHistory?.application_status &&
             creditHistory?.application_status?.toLowerCase() !== "pending" ? (
@@ -172,7 +172,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                       padding: "12px",
                       fontSize: "14px",
                       border: "1px solid #d0d0d0",
-                      borderRadius: "4px",
+                      borderRadius: "6px",
                       resize: "vertical",
                     }}
                   />

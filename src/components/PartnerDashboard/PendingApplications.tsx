@@ -132,7 +132,7 @@ const PendingApplication = () => {
             style={{
               backgroundColor: "#EB0D0D",
               color: "#ffffff",
-              borderRadius: "5px",
+              borderRadius: "6px",
               padding: "6px 16px",
               fontSize: "12px",
             }}

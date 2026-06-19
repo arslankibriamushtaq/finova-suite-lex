@@ -295,7 +295,7 @@ const FaqPageSettings = () => {
               width: '100%',
               padding: '5px',
               border: '2px solid var(--color-action-blue)',
-              borderRadius: '4px'
+              borderRadius: '6px'
             }}
             autoFocus
           />
@@ -334,7 +334,7 @@ const FaqPageSettings = () => {
             cursor: 'pointer', 
             padding: '20px',
             border: '2px dashed var(--color-border-light)',
-            borderRadius: '8px',
+            borderRadius: '6px',
             textAlign: 'center',
             backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
@@ -527,7 +527,7 @@ const FaqPageSettings = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '4px',
+            borderRadius: '6px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -577,7 +577,7 @@ const FaqPageSettings = () => {
               color: 'var(--primary-foreground)',
               border: 'none',
               padding: '8px 16px',
-              borderRadius: '4px',
+              borderRadius: '6px',
               fontSize: '12px',
               fontWeight: 'bold',
               cursor: 'pointer',
@@ -637,7 +637,7 @@ const FaqPageSettings = () => {
                   autoFocus
                   style={{
                     border: '2px solid var(--color-action-blue)',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     padding: '4px 8px',
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
@@ -704,7 +704,7 @@ const FaqPageSettings = () => {
                   autoFocus
                   style={{
                     border: '2px solid var(--color-action-blue)',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     padding: '4px 8px',
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
@@ -768,7 +768,7 @@ const FaqPageSettings = () => {
                   autoFocus
                   style={{
                     border: '2px solid var(--color-action-blue)',
-                    borderRadius: '4px',
+                    borderRadius: '6px',
                     padding: '4px 8px',
                     fontSize: 'inherit',
                     fontFamily: 'inherit',
@@ -841,7 +841,7 @@ const FaqPageSettings = () => {
                 style={{
                   //backgroundColor: 'white',
                   color: 'black',
-                  borderRadius: '8px',
+                  borderRadius: '6px',
                   padding: '20px',
                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
                   cursor: 'move',
@@ -1011,7 +1011,7 @@ const FaqPageSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '20px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             maxWidth: '800px',
             width: '90%',
             maxHeight: '80vh',
@@ -1063,7 +1063,7 @@ const FaqPageSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '8px',
+            borderRadius: '6px',
             maxWidth: '400px',
             width: '90%',
             textAlign: 'center',
@@ -1107,7 +1107,7 @@ const FaqPageSettings = () => {
                   border: '1px solid var(--color-border-muted)',
                   backgroundColor: 'var(--background)',
                   color: 'var(--color-text-muted)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: '500'
@@ -1132,7 +1132,7 @@ const FaqPageSettings = () => {
                   border: 'none',
                   backgroundColor: 'var(--theme-secondary)',
                   color: 'var(--primary-foreground)',
-                  borderRadius: '4px',
+                  borderRadius: '6px',
                   cursor: 'pointer',
                   fontSize: '14px',
                   fontWeight: '500'

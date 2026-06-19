@@ -1,0 +1,324 @@
+/* ==========================================================================
+   Modern Dashboard Sidebar — scoped to `.finova-sidebar`
+   --------------------------------------------------------------------------
+   Style: "Brand-colored" — a deep navy sidebar with white text, white icons
+   and a clean translucent active highlight + accent bar. The navy is applied
+   in every theme (the sidebar is self-contained), so it looks identical in
+   light and dark app modes.
+
+   Visual layer only — no markup / routing / redux / active-detection changes.
+   Scoped under `.finova-sidebar` so the LMS / CMS / Report sidebars (which
+   share react-pro-sidebar classes) are untouched. `!important` + high
+   specificity are used deliberately to beat the inline background colors and
+   the legacy active styles (navy gradient in light, blue glow-ring in dark).
+   ========================================================================== */
+
+.finova-sidebar {
+  --sb-bg-top: #1c2740;
+  --sb-bg-bottom: #0e1626;
+  --sb-text: #aeb7c8;
+  --sb-text-strong: #ffffff;
+  --sb-icon-op: 0.72;
+  --sb-hover-bg: rgba(255, 255, 255, 0.07);
+  --sb-active-bg: rgba(255, 255, 255, 0.12);
+  --sb-accent: #5b9bff;
+  --sb-marker: rgba(255, 255, 255, 0.32);
+  --sb-divider: rgba(255, 255, 255, 0.09);
+  --sb-scroll-thumb: rgba(255, 255, 255, 0.18);
+}
+
+/* ── Force the navy background across the whole sidebar (beats inline bg) ── */
+.finova-sidebar,
+.finova-sidebar .ps-sidebar-container,
+.finova-sidebar .ps-menu-root,
+.finova-sidebar nav.ps-menu-root {
+  background: linear-gradient(180deg, var(--sb-bg-top) 0%, var(--sb-bg-bottom) 100%) !important;
+  border-right: none !important;
+}
+.finova-sidebar .ps-submenu-content,
+.finova-sidebar .ps-submenu-content > ul,
+.finova-sidebar .sidebar-link {
+  background: transparent !important;
+}
+
+/* ── Scroll area ───────────────────────────────────────────────────────── */
+.finova-sidebar .ps-sidebar-container {
+  padding-bottom: 16px;
+  /* Reserve scrollbar gutter so it can't reflow rows when it appears. */
+  scrollbar-gutter: stable;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--sb-scroll-thumb) transparent;
+}
+.finova-sidebar .ps-sidebar-container::-webkit-scrollbar {
+  width: 7px;
+}
+.finova-sidebar .ps-sidebar-container::-webkit-scrollbar-thumb {
+  background: var(--sb-scroll-thumb);
+  border-radius: 6px;
+}
+.finova-sidebar .ps-sidebar-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ── Logo header ───────────────────────────────────────────────────────── */
+.finova-sidebar .sidebar-logo-container {
+  position: relative;
+  min-height: 64px;
+  padding-top: 16px !important;
+  padding-bottom: 14px !important;
+  margin-bottom: 6px;
+  background: transparent !important;
+}
+.finova-sidebar .sidebar-logo-container::after {
+  content: "";
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  bottom: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--sb-divider) 50%, transparent);
+}
+/* Always show the white logo on the navy background */
+.finova-sidebar .sidebar-logo--light {
+  display: none !important;
+}
+.finova-sidebar .sidebar-logo--dark {
+  display: inline-block !important;
+}
+.finova-sidebar.is-collapsed .sidebar-logo-container {
+  justify-content: center;
+}
+
+/* ── Menu wrapper spacing ──────────────────────────────────────────────── */
+.finova-sidebar .ps-menu-root > ul,
+.finova-sidebar .ps-menu-root {
+  padding: 6px 0 !important;
+}
+.finova-sidebar .menu-items {
+  padding: 1px 0 !important;
+}
+.finova-sidebar div.menu-items a,
+.finova-sidebar div.menu-items a.ps-menu-button {
+  border-bottom: none !important;
+}
+
+/* ── Base menu button (groups + leaves) ────────────────────────────────── */
+.finova-sidebar .ps-menu-button {
+  height: 44px !important;
+  margin: 2px 12px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  color: var(--sb-text) !important;
+  font-size: 13.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.1px;
+  position: relative;
+  overflow: visible;
+  background-color: transparent !important;
+  /* Only paint properties transition — never layout — so hover can't shift a row. */
+  transition: background-color 0.16s ease, color 0.16s ease !important;
+}
+.finova-sidebar .ps-menu-button .ps-menu-label,
+.finova-sidebar .ps-menu-button .sidebar-label-text {
+  color: inherit !important;
+  font-weight: inherit !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Icons — invert the dark PNG icons to white for the navy background */
+.finova-sidebar .ps-menu-icon {
+  min-width: 26px !important;
+  width: 26px !important;
+}
+.finova-sidebar .ps-menu-button img {
+  width: 18px !important;
+  height: 18px !important;
+  filter: brightness(0) invert(1) !important;
+  opacity: var(--sb-icon-op);
+  transition: opacity 0.16s ease;
+}
+
+/* ── Hover (non-active) ────────────────────────────────────────────────── */
+.finova-sidebar .ps-menu-button:not(.ps-active):hover {
+  background-color: var(--sb-hover-bg) !important;
+  color: var(--sb-text-strong) !important;
+}
+.finova-sidebar .ps-menu-button:not(.ps-active):hover .ps-menu-label,
+.finova-sidebar .ps-menu-button:not(.ps-active):hover .sidebar-label-text {
+  color: var(--sb-text-strong) !important;
+}
+.finova-sidebar .ps-menu-button:not(.ps-active):hover img {
+  opacity: 1;
+}
+
+/* ── Open top-level group (expanded, not the active page) ──────────────── */
+.finova-sidebar .ps-submenu-root > .ps-menu-button.ps-open {
+  color: var(--sb-text-strong) !important;
+  font-weight: 600 !important;
+}
+.finova-sidebar .ps-submenu-root > .ps-menu-button.ps-open .ps-menu-label {
+  color: var(--sb-text-strong) !important;
+  font-weight: 600 !important;
+}
+
+/* ── Expand / collapse arrow ───────────────────────────────────────────── */
+.finova-sidebar .ps-submenu-expand-icon {
+  opacity: 0.55;
+  transition: opacity 0.16s ease;
+}
+.finova-sidebar .ps-menu-button:hover .ps-submenu-expand-icon {
+  opacity: 0.9;
+}
+
+/* ── Submenu leaves — clean indent + small marker ──────────────────────── */
+.finova-sidebar .ps-submenu-content > ul {
+  position: relative;
+  margin: 1px 0 6px 0 !important;
+  padding-left: 0 !important;
+}
+.finova-sidebar .ps-submenu-content .ps-menu-button {
+  height: 38px !important;
+  margin: 1px 12px 1px 16px !important;
+  padding-left: 26px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--sb-text) !important;
+}
+.finova-sidebar .ps-submenu-content .ps-menu-button .ps-menu-label,
+.finova-sidebar .ps-submenu-content .ps-menu-button .sidebar-label-text {
+  font-size: 12.5px !important;
+}
+.finova-sidebar .ps-submenu-content .ps-menu-button::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  width: 5px;
+  height: 5px;
+  margin-top: -2.5px;
+  border-radius: 50%;
+  background: var(--sb-marker);
+  transition: background-color 0.16s ease;
+}
+.finova-sidebar .ps-submenu-content .ps-menu-button:hover {
+  background-color: var(--sb-hover-bg) !important;
+  color: var(--sb-text-strong) !important;
+}
+.finova-sidebar .ps-submenu-content .ps-menu-button:hover::before {
+  background: var(--sb-text-strong);
+}
+.finova-sidebar .nested-submenu .ps-submenu-content .ps-menu-button {
+  padding-left: 38px !important;
+}
+.finova-sidebar .nested-submenu .ps-submenu-content .ps-menu-button::before {
+  left: 24px;
+}
+
+/* ====================================================================== */
+/* ACTIVE item — translucent pill + bright left accent bar                 */
+/* High specificity (+ html.dark variants) to beat legacy active styles.   */
+/* ====================================================================== */
+.finova-sidebar div.menu-items a.ps-menu-button.ps-active,
+.finova-sidebar .sidebar-link.is-active a.ps-menu-button,
+.finova-sidebar .ps-submenu-content a.ps-menu-button.ps-active,
+.finova-sidebar li.ps-menuitem-root.ps-active > a.ps-menu-button,
+html.dark .finova-sidebar div.menu-items a.ps-menu-button.ps-active,
+html.dark .finova-sidebar .sidebar-link.is-active a.ps-menu-button,
+html.dark .finova-sidebar .ps-submenu-content a.ps-menu-button.ps-active,
+html.dark .finova-sidebar li.ps-menuitem-root.ps-active > a.ps-menu-button {
+  background: var(--sb-active-bg) !important;
+  background-color: var(--sb-active-bg) !important;
+  color: var(--sb-text-strong) !important;
+  font-weight: 600 !important;
+  border: none !important;
+  box-shadow: none !important;
+}
+.finova-sidebar div.menu-items a.ps-menu-button.ps-active .ps-menu-label,
+.finova-sidebar div.menu-items a.ps-menu-button.ps-active .sidebar-label-text,
+.finova-sidebar .sidebar-link.is-active a.ps-menu-button .ps-menu-label,
+.finova-sidebar .sidebar-link.is-active a.ps-menu-button .sidebar-label-text,
+html.dark .finova-sidebar div.menu-items a.ps-menu-button.ps-active span,
+html.dark .finova-sidebar div.menu-items a.ps-menu-button.ps-active .ps-menu-label {
+  color: var(--sb-text-strong) !important;
+  font-weight: 600 !important;
+}
+
+/* Rounded left accent bar (re-uses ::before; overrides the leaf dot) */
+.finova-sidebar div.menu-items a.ps-menu-button.ps-active::before,
+.finova-sidebar .sidebar-link.is-active a.ps-menu-button::before,
+.finova-sidebar .ps-submenu-content a.ps-menu-button.ps-active::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  left: 4px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 3px !important;
+  height: 20px !important;
+  margin-top: 0 !important;
+  border-radius: 6px !important;
+  background: var(--sb-accent) !important;
+}
+
+/* Active icon — white, full opacity */
+.finova-sidebar div.menu-items a.ps-menu-button.ps-active img,
+.finova-sidebar .sidebar-link.is-active a.ps-menu-button img,
+html.dark .finova-sidebar div.menu-items a.ps-menu-button.ps-active img {
+  filter: brightness(0) invert(1) !important;
+  opacity: 1 !important;
+}
+
+/* ── Tabs (Financing / Wallet) on the navy background ──────────────────── */
+.finova-sidebar .sidebar-tab-row {
+  padding: 12px 12px 12px !important;
+  background: transparent !important;
+}
+.finova-sidebar .sidebar-tab-row::after {
+  background: linear-gradient(to right, transparent, var(--sb-divider) 50%, transparent) !important;
+}
+.finova-sidebar .sidebar-tab {
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid var(--sb-divider) !important;
+  color: var(--sb-text) !important;
+  border-radius: 6px;
+}
+.finova-sidebar .sidebar-tab:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: var(--sb-text-strong) !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+.finova-sidebar .sidebar-tab.active {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #0f172a !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  transform: none !important;
+}
+.finova-sidebar .sidebar-tab.active::before {
+  display: none !important;
+}
+
+/* Mobile close button → white */
+.finova-sidebar .sidebar-logo-container .btn {
+  color: #ffffff !important;
+}
+
+/* ── Collapsed mode tidy-ups (keeps existing collapse behavior) ────────── */
+.finova-sidebar.is-collapsed .ps-menu-button {
+  margin: 3px 12px !important;
+  justify-content: center !important;
+  padding: 0 !important;
+}
+.finova-sidebar.is-collapsed .ps-submenu-content .ps-menu-button::before {
+  display: none !important;
+}
+.finova-sidebar.is-collapsed .ps-menu-icon {
+  width: 100% !important;
+}
+.finova-sidebar.is-collapsed .ps-menu-button img {
+  opacity: 0.95;
+}

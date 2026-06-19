@@ -294,7 +294,7 @@ const handleAssignAllPermissions = (
         <h6 className="col-9 mt-2">Assign permissions</h6>
         <div
           className="col-3 d-flex justify-content-end"
-          style={{ border: "1px solid black", borderRadius: "5px" }}
+          style={{ border: "1px solid black", borderRadius: "6px" }}
         >
           <div className="d-flex justify-content-between align-items-center p-1 mb-2">
             <div className="me-5">Assign all permision</div>
@@ -323,7 +323,7 @@ const handleAssignAllPermissions = (
           mergedResult?.map((item: any, index: any) => (
             <div
               className="col-12 pb-3"
-              style={{ borderRadius: "10px" }}
+              style={{ borderRadius: "6px" }}
               key={index}
             >
               <div
@@ -369,7 +369,7 @@ const handleAssignAllPermissions = (
                       className="col-md-6 p-2 mt-1 mb-1 "
                       style={{
                         backgroundColor: "#FFFFFF",
-                        borderRadius: "8px",
+                        borderRadius: "6px",
                       }}
                       key={subIndex}
                     >
@@ -379,7 +379,7 @@ const handleAssignAllPermissions = (
                       >
                         <div
                           className="col-9 d-flex "
-                          style={{ fontSize: "14px", borderRadius: "5px" }}
+                          style={{ fontSize: "14px", borderRadius: "6px" }}
                         >
                           {subitem.name}
                         </div>

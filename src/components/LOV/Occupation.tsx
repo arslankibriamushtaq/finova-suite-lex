@@ -312,7 +312,7 @@ const Occupation = () => {
         <h3 className="mb-0 fw-bold text-dark">Occupation</h3>
       </div>
 
-      <div className="bg-white p-3 mb-3" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
+      <div className="bg-white p-3 mb-3" style={{ borderRadius: 6, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
@@ -323,7 +323,7 @@ const Occupation = () => {
               setSearchTerm(e.target.value);
               setPage(1);
             }}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
           />
           <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
             <Plus className="h-4 w-4" />
@@ -332,7 +332,7 @@ const Occupation = () => {
         </div>
       </div>
 
-      <div className="bg-white" style={{ borderRadius: 12, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
+      <div className="bg-white" style={{ borderRadius: 6, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)", overflow: "hidden" }}>
         <TableView
           header={headers}
           data={data}

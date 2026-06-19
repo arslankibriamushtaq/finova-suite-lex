@@ -111,7 +111,7 @@ const styles: { [key: string]: React.CSSProperties } = {
   },
   sectionCard: {
     background: "var(--background)",
-    borderRadius: 8,
+    borderRadius: 6,
     padding: "8px 0px 16px 0px",
     marginBottom: 16,
     boxShadow: "0 1px 3px rgba(0, 0, 0, 0.05)",

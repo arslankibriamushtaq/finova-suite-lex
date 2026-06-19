@@ -257,7 +257,7 @@ const AccountInvoices = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "12px",
+            borderRadius: "6px",
             backgroundColor:
               row.Status === "Active"
                 ? "rgba(146, 188, 131, 1)"
@@ -280,7 +280,7 @@ const AccountInvoices = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >

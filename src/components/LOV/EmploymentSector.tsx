@@ -276,7 +276,7 @@ const EmploymentSector = () => {
              className="theme-btn-next"
              style={{
                fontSize: "12px",
-               borderRadius: "4px",
+               borderRadius: "6px",
                padding: "8px",
                display: "flex",
                alignItems: "center",
@@ -311,7 +311,7 @@ const EmploymentSector = () => {
   return (
     <div
       className="service"
-      style={{ background: "white", padding: "1rem", borderRadius: "10px" }}
+      style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
     >
       {/* Top Filters */}
       <div className="d-flex mb-3 col-12 filter-select">

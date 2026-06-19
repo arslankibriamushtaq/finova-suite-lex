@@ -170,7 +170,7 @@ const AllLogs = () => {
               fontSize: "10px",
               background: "#f5f5f5",
               padding: "2px 6px",
-              borderRadius: "4px",
+              borderRadius: "6px",
               display: "block",
               maxWidth: "120px",
               overflow: "hidden",

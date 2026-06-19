@@ -287,7 +287,7 @@ const RescheduleHistory = () => {
             loading={actionLoading === row.rescheduleId}
             style={{
               borderColor: "white",
-              borderRadius: "8px",
+              borderRadius: "6px",
               padding: "10px 20px",
             }}
           >
@@ -346,7 +346,7 @@ const RescheduleHistory = () => {
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 8, height: 40 }}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
         />
       </div>
 
@@ -531,7 +531,7 @@ const RescheduleHistory = () => {
                     style={{
                       padding: 12,
                       background: "var(--muted)",
-                      borderRadius: 8,
+                      borderRadius: 6,
                       fontSize: 13,
                       lineHeight: 1.6,
                       color: "var(--foreground)",

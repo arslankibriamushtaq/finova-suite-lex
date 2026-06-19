@@ -151,7 +151,7 @@ const AssignPermissions: React.FC = () => {
         style={{
           backgroundColor: "var(--color-surface-snow)",
           border: "1px solid var(--color-border-subtle)",
-          borderRadius: "8px",
+          borderRadius: "6px",
           padding: "20px",
           width: "100%",
         }}

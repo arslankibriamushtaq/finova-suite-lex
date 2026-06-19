@@ -109,7 +109,7 @@ const WalletHome = () => {
     background:
       "linear-gradient(135deg, color-mix(in srgb, #10b981 8%, var(--surface-card)) 0%, var(--surface-card) 55%)",
     border: "1px solid color-mix(in srgb, #10b981 18%, var(--surface-border))",
-    borderRadius: 16,
+    borderRadius: 6,
     boxShadow: "0 6px 18px -12px color-mix(in srgb, #10b981 40%, transparent)",
     padding: "18px 20px",
     marginTop: 16,
@@ -207,7 +207,7 @@ const WalletHome = () => {
               contentStyle={{
                 background: "var(--surface-card)",
                 border: "1px solid var(--surface-border)",
-                borderRadius: 8,
+                borderRadius: 6,
                 color: "var(--foreground)",
               }}
             />
