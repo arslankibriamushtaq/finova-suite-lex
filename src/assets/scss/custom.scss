@@ -7451,11 +7451,11 @@ button.sidebar-tab.active {
 }
 
 div.menu-items a.ps-menu-button.ps-active {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
-  color: #ffffff !important;
-  border-radius: 2px !important;
-  margin: 4px 10px !important;
-  width: auto !important;
+  /* Active visuals come from the per-module-colour rules below (full-row tint
+     + inset left bar). Keep the row full-width and flush so every level aligns. */
+  border-radius: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
 }
 div.menu-items a.ps-menu-button.ps-active img {
   filter: brightness(0) invert(1) !important;
@@ -9846,19 +9846,10 @@ p.txt-bold {
 .ps-menu-button:hover .ps-menu-label {
   color: var(--theme-primary) !important;
 }
-/* Active indicator: a straight vertical bar sitting 4px to the LEFT of the
-   item (not an inset/cover), in the item's own colour (--mi-color). */
+/* Active indicator is now a full-row tint + inset left bar (see .ps-active
+   rules below). The old detached ::before bar is disabled. */
 div.menu-items a.ps-menu-button.ps-active::before{
-  content: "" !important;
-  display: block !important;
-  position: absolute;
-  left: -7px;          /* 3px bar + 4px gap to the element */
-  top: 4px;
-  bottom: 4px;
-  width: 3px;
-  background: var(--mi-color, #10b981);
-  border-radius: 0;    /* straight, square ends */
-  box-shadow: none !important;
+  display: none !important;
 }
 
 /* ===== Global tabs (underline style) — applied across the project ===== */
@@ -10751,16 +10742,12 @@ html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active,
 html:not(.dark) .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html:not(.dark) .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--mi-color, #10b981) 16%, #ffffff) 0%,
-    color-mix(in srgb, var(--mi-color, #10b981) 5%, #ffffff) 100%
-  ) !important;
-  color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
-  border-radius: 2px !important;
+  background: color-mix(in srgb, var(--mi-color, #10b981) 12%, transparent) !important;
+  color: color-mix(in srgb, var(--mi-color, #10b981) 60%, #0f172a) !important;
+  border-radius: 0 !important;
   position: relative !important;
-  overflow: visible !important;
-  box-shadow: none !important;
+  overflow: hidden !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
 }
 
 /* Active item (dark): deep tinted-glass + colored glow, per item color. */
@@ -10768,16 +10755,12 @@ html.dark .ps-sidebar-root .ps-menu-button.ps-active,
 html.dark .ps-sidebar-root .ps-menu-button.ps-active:hover,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
 html.dark .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--mi-color, #10b981) 24%, #0e1018) 0%,
-    color-mix(in srgb, var(--mi-color, #10b981) 8%, #0e1018) 100%
-  ) !important;
+  background: color-mix(in srgb, var(--mi-color, #10b981) 22%, transparent) !important;
   color: #ffffff !important;
-  border-radius: 2px !important;
+  border-radius: 0 !important;
   position: relative !important;
-  overflow: visible !important;
-  box-shadow: 0 0 14px color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
+  overflow: hidden !important;
+  box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
 }
 
 /* Active label text — dark tinted in light, white in dark; bold either way. */

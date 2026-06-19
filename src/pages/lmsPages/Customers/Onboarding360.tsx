@@ -178,7 +178,7 @@ const Field = ({ label, value, mono }: { label: string; value: React.ReactNode; 
 
 /* Section title inside a tab */
 const Block = ({ title, right, children, className }: any) => (
-  <div className={cn("rounded-xl border bg-card p-4 md:p-5", className)}>
+  <div className={cn("onb-card rounded-xl border p-4 md:p-5", className)}>
     <div className="mb-3 flex items-center justify-between gap-2">
       <h3 className="m-0 text-sm font-semibold text-foreground">{title}</h3>
       {right}
@@ -233,7 +233,7 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
     <div className="relative overflow-hidden border-b">
       <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
       <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-        <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-xl font-semibold text-muted-foreground ring-2 ring-emerald-500/20 shadow-sm">
+        <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-base font-semibold text-muted-foreground ring-2 ring-emerald-500/20 shadow-sm">
           {customer.profilePicture ? (
             <img src={customer.profilePicture} alt={displayName} className="size-full object-cover" />
           ) : (
@@ -243,10 +243,10 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
 
         <div className="flex flex-1 flex-col gap-2">
           <div className="flex flex-wrap items-center gap-2">
-            <h2 className="m-0 text-start text-lg font-semibold leading-tight text-foreground">
+            <h2 className="m-0 text-start text-base font-semibold leading-tight text-foreground">
               {displayName || "—"}
             </h2>
-            {flag && <span className="text-xl leading-none">{flag}</span>}
+            {flag && <span className="text-base leading-none">{flag}</span>}
             <span className="text-sm text-muted-foreground">{nationality}</span>
           </div>
 
@@ -309,7 +309,7 @@ const Stepper = ({ onboarding, isAr }: any) => {
   const steps: any[] = onboarding?.steps || [];
 
   return (
-    <div className="border-b px-4 py-5 md:px-5">
+    <div className="px-4 py-3 md:px-5">
       {onboarding?.failureReason && (
         <div className={cn("mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm", TONES.red)}>
           <AlertTriangle className="size-4 shrink-0" />
@@ -320,47 +320,79 @@ const Stepper = ({ onboarding, isAr }: any) => {
       {steps.length === 0 ? (
         <p className="text-sm text-muted-foreground">No onboarding steps available.</p>
       ) : (
-        <div className="overflow-x-auto pb-1">
-          <div className="flex min-w-max items-start">
-            {steps.map((step, idx) => {
-              const status = (step.status || "PENDING").toUpperCase();
-              const isLast = idx === steps.length - 1;
-              const done = status === "COMPLETED";
-              const current = status === "CURRENT";
-              const failed = status === "FAILED";
-              const circle = done
-                ? "bg-emerald-500 text-white border-emerald-500"
-                : failed
-                ? "bg-red-500 text-white border-red-500"
-                : current
-                ? "bg-sky-500 text-white border-sky-500 ring-4 ring-sky-500/20 animate-pulse"
-                : "bg-muted text-muted-foreground border-border";
-              return (
-                <div key={step.step ?? idx} className="flex items-start">
-                  <div className="flex w-24 flex-col items-center gap-2 text-center">
-                    <div className={cn("flex size-9 items-center justify-center rounded-full border-2", circle)}>
-                      {done ? (
-                        <Check className="size-4" />
-                      ) : failed ? (
-                        <AlertTriangle className="size-4" />
-                      ) : (
-                        <span className="text-xs font-semibold">{step.step ?? idx + 1}</span>
+        /* First/last circles sit flush at the left/right edges; the connectors
+           stretch between, and labels are positioned so they don't push the
+           circles inward — so the stepper spans edge-to-edge like the card. */
+        <div className="relative flex items-center pb-12">
+          {steps.map((step: any, idx: number) => {
+            const status = (step.status || "PENDING").toUpperCase();
+            const isLast = idx === steps.length - 1;
+            const isFirst = idx === 0;
+            const done = status === "COMPLETED";
+            const current = status === "CURRENT";
+            const failed = status === "FAILED";
+            const circle = done
+              ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
+              : failed
+              ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
+              : current
+              ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
+              : "border-border text-muted-foreground";
+            return (
+              <div key={step.step ?? idx} className="contents">
+                <div className="relative flex flex-col items-center">
+                  <div
+                    className={cn(
+                      "relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
+                      circle
+                    )}
+                  >
+                    {done ? (
+                      <Check className="size-5" strokeWidth={3} />
+                    ) : failed ? (
+                      <AlertTriangle className="size-5" />
+                    ) : (
+                      <span className="text-sm font-semibold">{step.step ?? idx + 1}</span>
+                    )}
+                  </div>
+                  <div
+                    className={cn(
+                      "absolute top-12 w-28 leading-tight",
+                      isFirst
+                        ? "left-0 text-left"
+                        : isLast
+                        ? "right-0 text-right"
+                        : "left-1/2 -translate-x-1/2 text-center"
+                    )}
+                  >
+                    <span
+                      className={cn(
+                        "text-xs",
+                        done || current
+                          ? "font-semibold text-foreground"
+                          : "font-medium text-muted-foreground"
                       )}
-                    </div>
-                    <span className="text-xs font-medium leading-tight text-foreground">
+                    >
                       {isAr ? step.labelAr || step.label : step.label}
                     </span>
                     {step.occurredAt && (
-                      <span className="text-[10px] text-muted-foreground">{formatDate(step.occurredAt)}</span>
+                      <div className="text-[10px] text-muted-foreground">
+                        {formatDate(step.occurredAt)}
+                      </div>
                     )}
                   </div>
-                  {!isLast && (
-                    <div className={cn("mt-[18px] h-0.5 w-8 shrink-0 rounded-full", done ? "bg-emerald-500" : "bg-border")} />
-                  )}
                 </div>
-              );
-            })}
-          </div>
+                {!isLast && (
+                  <div
+                    className={cn(
+                      "mx-2 h-0.5 flex-1 rounded-full transition-colors duration-500",
+                      done ? "bg-emerald-500" : "bg-border"
+                    )}
+                  />
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
@@ -386,7 +418,7 @@ const RiskGauge = ({ risk }: any) => {
           </RadialBarChart>
         </ResponsiveContainer>
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <span className="text-3xl font-bold" style={{ color }}>
+          <span className="text-2xl font-bold" style={{ color }}>
             {risk?.riskScore != null ? score : "—"}
           </span>
           <span className="text-xs text-muted-foreground">Risk Score</span>
@@ -586,18 +618,35 @@ const Onboarding360 = () => {
     : [];
 
   return (
-    <div dir={isRTL ? "rtl" : "ltr"} className="flex flex-col gap-4 p-4 md:p-6">
-      {/* Top bar */}
-      <div className="flex items-center justify-between gap-3">
-        <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
-          <ArrowLeft className={cn("size-4", isRTL && "rotate-180")} />
-        </Button>
-        <Button variant="outline" size="sm" className="gap-2" disabled={loading} onClick={() => setReloadKey((k) => k + 1)}>
-          <RefreshCw className={cn("size-4", loading && "animate-spin")} />
-          <span className="hidden sm:inline">Refresh</span>
-        </Button>
-      </div>
-
+    <div dir={isRTL ? "rtl" : "ltr"} className="onb360-page flex flex-col gap-4 p-4 md:p-6">
+      {/* Match all cards on this page to the project's theme (surface tokens +
+          subtle emerald-tinted border, like the dashboard/table cards). */}
+      <style>{`
+        .onb360-page [data-slot="card"],
+        .onb360-page .onb-card {
+          background-color: var(--surface-card) !important;
+          background-image: none !important;
+          border-color: color-mix(in srgb, #10b981 16%, var(--surface-border)) !important;
+          color: var(--foreground) !important;
+        }
+        .onb360-page [data-slot="card"] {
+          box-shadow: 0 1px 2px rgba(16,185,129,0.05),
+                      0 8px 20px -16px color-mix(in srgb, #10b981 35%, transparent) !important;
+        }
+        /* Stepper card: no background / border / shadow — sits flat on the page */
+        .onb360-page .stepper-card[data-slot="card"] {
+          background-color: transparent !important;
+          background-image: none !important;
+          border-color: transparent !important;
+          box-shadow: none !important;
+        }
+        /* A global heading rule oversizes h2/h3 — force this page's headings to
+           sensible sizes (Tailwind text-base / text-sm get overridden otherwise). */
+        .onb360-page h1 { font-size: 1.125rem !important; line-height: 1.3 !important; margin: 0 !important; }
+        .onb360-page h2 { font-size: 1rem !important;     line-height: 1.3 !important; margin: 0 !important; }
+        .onb360-page h3 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
+        .onb360-page h4 { font-size: 0.8125rem !important; line-height: 1.3 !important; margin: 0 !important; }
+      `}</style>
       {loading ? (
         <LoadingState />
       ) : error ? (
@@ -615,13 +664,17 @@ const Onboarding360 = () => {
           <div className="py-14 text-center text-sm text-muted-foreground">No data available for this customer.</div>
         </Card>
       ) : (
-        /* Single panel with header band + tabs */
-        <Card className="gap-0 overflow-hidden py-0">
-          <Stepper onboarding={onboarding} isAr={isAr} />
+        <>
+          {/* Onboarding progress — its own (transparent) card */}
+          <Card className="stepper-card overflow-hidden py-0">
+            <Stepper onboarding={onboarding} isAr={isAr} />
+          </Card>
 
-          <HeaderBand customer={customer} countryConfig={data.countryConfig} isAr={isAr} />
+          {/* Customer info + tabs — its own card */}
+          <Card className="gap-0 overflow-hidden py-0">
+            <HeaderBand customer={customer} countryConfig={data.countryConfig} isAr={isAr} />
 
-          <div className="flex flex-col gap-4 p-4 md:p-5">
+            <div className="flex flex-col gap-4 p-4 md:p-5">
             {/* Key graphs — always visible, independent of tabs */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               <Block title="Risk Score">
@@ -687,7 +740,7 @@ const Onboarding360 = () => {
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                     <Block title="Balance" right={<StatusBadge status={wallet.status} />}>
                       <span className="text-xs text-muted-foreground">Total Balance</span>
-                      <div className="text-3xl font-semibold tracking-tight text-foreground">
+                      <div className="text-2xl font-semibold tracking-tight text-foreground">
                         {formatMoney(wallet.totalBalance, currency)}
                       </div>
                       <div className="mt-3 grid grid-cols-2 gap-3">
@@ -875,7 +928,8 @@ const Onboarding360 = () => {
               </Tab>
             </Tabs>
           </div>
-        </Card>
+          </Card>
+        </>
       )}
 
       {/* Lightbox */}

@@ -119,15 +119,15 @@ const WalletHome = () => {
   return (
     <div className="dashboard dash-one">
       {/* Header + date filters */}
-      <div className="col-12 py-3 d-flex flex-wrap justify-content-between align-items-end gap-3">
-        <h3 className="mb-0 fw-bold" style={{ color: "var(--foreground)" }}>
-          Wallet Dashboard
+      <div className="col-12 py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <h3 className="mb-0" style={{ color: "var(--foreground)", fontSize: "22px", fontWeight: 600 }}>
+          Dashboard
         </h3>
-        <div className="d-flex align-items-end gap-3 flex-wrap">
+        <div className="d-flex align-items-end gap-1 flex-wrap">
           <div style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, display: "block" }}>
+            {/* <label style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, display: "block" }}>
               From
-            </label>
+            </label> */}
             <DatePicker
               value={fromDate}
               onChange={setFromDate}
@@ -137,9 +137,9 @@ const WalletHome = () => {
             />
           </div>
           <div style={{ minWidth: 160 }}>
-            <label style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, display: "block" }}>
+            {/* <label style={{ fontSize: 13, fontWeight: 500, marginBottom: 6, display: "block" }}>
               To
-            </label>
+            </label> */}
             <DatePicker
               value={toDate}
               onChange={setToDate}

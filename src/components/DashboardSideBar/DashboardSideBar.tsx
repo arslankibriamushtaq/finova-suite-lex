@@ -58,6 +58,8 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "system logs": { Icon: ScrollText, color: "#f59e0b" },
   "wallet management": { Icon: Wallet, color: "#10b981" },
   transfers: { Icon: ArrowLeftRight, color: "#6366f1" },
+  financing: { Icon: Landmark, color: "#0ea5e9" },
+  "general setting": { Icon: SettingsIcon, color: "#0d9488" },
 };
 
 const DEFAULT_MI_COLOR = "#10b981";
@@ -92,11 +94,25 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     p.includes("/OnboardingCostByCustomer") ||
     p.includes("/Lms/Setting/GeneralCreditScoring");
 
-  const [sidebarTab, setSidebarTab] = useState<"financing" | "wallet">(() => {
+  const [sidebarTab] = useState<"financing" | "wallet">(() => {
     if (typeof window === "undefined") return "financing";
     const p = window.location.pathname;
     // Wallet-exclusive page → always Wallet.
-    if (p.includes("/WalletTransactionLimits") || p.includes("/Wallet/")) return "wallet";
+    if (
+      p.includes("/WalletTransactionLimits") ||
+      p.includes("/Wallet/") ||
+      p.includes("/NotificationOrchestrator") ||
+      p.includes("/RiskManagement") ||
+      p.includes("/LOS/Setting") ||
+      p.includes("/BlockCodes") ||
+      p.includes("/Lms/Setting/GeneralCreditScoring") ||
+      p.includes("/LOS/Dashboard") ||
+      p.includes("/ProductManagement") ||
+      p.includes("/LOV") ||
+      p.includes("/Lms/") ||
+      p.includes("/ThirdPartyManagement")
+    )
+      return "wallet";
     // Shared page → fall back to the last tab the user was on.
     if (isSharedPage(p)) {
       const saved = localStorage.getItem("sidebarTab");
@@ -111,6 +127,28 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   useEffect(() => {
     localStorage.setItem("sidebarTab", sidebarTab);
   }, [sidebarTab]);
+
+  // Match the sidebar logo header height to the project's top header so their
+  // bottom borders line up exactly (measured at runtime — robust to padding).
+  const [headerH, setHeaderH] = useState<number | null>(null);
+  useEffect(() => {
+    const measure = () => {
+      const header = document.querySelector(
+        ".header_layout"
+      ) as HTMLElement | null;
+      if (header && header.offsetHeight > 0) setHeaderH(header.offsetHeight);
+    };
+    measure();
+    const t1 = setTimeout(measure, 150);
+    const t2 = setTimeout(measure, 600);
+    window.addEventListener("resize", measure);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
     const toggled = useSelector((state: RootState) => state.block.toggled);
@@ -126,7 +164,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
 
   // Auto-open menu based on current route — scoped to the active tab's list.
   useEffect(() => {
-    const items = sidebarTab === "wallet" ? walletItems : sidebarItems;
+    const items = walletItems;
     // Prefer the group that owns an active leaf (most specific); fall back to
     // matching the group's own top URL segment.
     const hasActiveLeaf = (item: any) =>
@@ -179,7 +217,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       setOpenSubmenuIndex(null);
       setOpenNestedSubmenus({});
     }
-  }, [pathname, sidebarTab]);
+  }, [pathname]);
 
   // Force hide sidebar on mobile/zoom threshold
   useEffect(() => {
@@ -263,14 +301,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   imgActive: Images.ApiManagementIconDark,
         //   active: pathname.includes("/LOS/UniversalOnboarding"),
         // },
-        {
-          label: "Notification Orchestrator",
-          LinkLable: "LOS",
-          Link: "NotificationOrchestrator",
-          img: Images.ApiManagementIcon, // Reusing icon for consistency
-          imgActive: Images.ApiManagementIconDark,
-          active: pathname.includes("/LOS/NotificationOrchestrator"),
-        },
     // {
     //   label: "Application Board",
     //   Link: "ApplicationBoard",
@@ -593,46 +623,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           ].filter(Boolean),
         },
 
-    hasAccess("RISK") && {
-      label: "Risk Management",
-      Link: "RiskManagement/BlacklistNid",
-      LinkLable: "LOS",
-      img: Images.LovIcon,
-      imgActive: Images.LovIconDark,
-      active: pathname.includes("/RiskManagement"),
-      submenu: [
-        {
-          label: "Blacklist NID",
-          Link: "BlacklistNid",
-          LinkLable: "/LOS/RiskManagement",
-          active: pathname == "/LOS/RiskManagement/BlacklistNid",
-        },
-        {
-          label: "Blacklist Mobile",
-          Link: "BlacklistMobile",
-          LinkLable: "/LOS/RiskManagement",
-          active: pathname == "/LOS/RiskManagement/BlacklistMobile",
-        },
-        {
-          label: "Fraud Rule Management",
-          Link: "FraudRuleManagement",
-          LinkLable: "/LOS/RiskManagement",
-          active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
-        },
-        {
-          label: "Internal Checks Config",
-          Link: "InternalChecksConfig",
-          LinkLable: "/LOS/RiskManagement",
-          active: pathname == "/LOS/RiskManagement/InternalChecksConfig",
-        },
-        {
-          label: "Device Management",
-          Link: "DeviceManagement",
-          LinkLable: "/LOS/RiskManagement",
-          active: pathname == "/LOS/RiskManagement/DeviceManagement",
-        },
-      ],
-    },
 
         // {
         //   label: "Notification",
@@ -858,49 +848,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //     }
     //   ].filter(Boolean),
     // },
-    hasAccess(["ROLE", "PERMISSION", "EMPLOYEE"]) && {
-      label: "Access Control Management",
-      Link: "Setting/Employees",
-          LinkLable: "LOS",
-      img: Images.SettingsIcon,
-      imgActive: Images.SettingsIconDark,
-      // Scope to its own /LOS/Setting/* routes — the bare "Setting" segment also
-      // appears in /Lms/Setting/* (the LMS Setting group), which made this group
-      // falsely activate/expand on those pages.
-      active: pathname.includes("/LOS/Setting"),
-          submenu: [
-            // {
-            //   label: "Departments",
-            //   Link: "Departments",
-            //       LinkLable: "/LOS/DepartmentManagement",
-            //       active: pathname.includes("/Departments"),
-            // },
-            // {
-            //   label: "Department Permissions",
-            //   Link: "DepartmentsPermissions",
-            //       LinkLable: "/LOS/DepartmentManagement",
-            //       active: pathname.includes("/LOS/DepartmentManagement/DepartmentsPermissions"),
-            // },
-            hasAccess("EMPLOYEE") && {
-              label: "Employees",
-              Link: "Employees",
-              LinkLable: "/LOS/Setting",
-              active: pathname.includes("/LOS/Setting/Employees"),
-            },
-            hasAccess("ROLE") && {
-              label: "Manage Roles",
-              Link: "RoleList",
-              LinkLable: "/LOS/Setting",
-              active: pathname.includes("/LOS/Setting/RoleList"),
-            },
-            hasAccess("PERMISSION") && {
-              label: "Manage Permissions",
-              Link: "AssignPermissions",
-              LinkLable: "/LOS/Setting",
-              active: pathname.includes("/LOS/Setting/AssignPermissions"),
-            },
-      ].filter(Boolean),
-    },
     // hasAccess("setting_module") &&
     // {
     //   label: "Settings",
@@ -932,47 +879,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //     },
     //   ].filter(Boolean),
     // },
-    hasAccess("block_code_module") &&
-    {
-      label: "Block Codes",
-      Link: "BlockCodes",
-      LinkLable: "/LOS",
-      img: Images.SettingsIcon,
-      imgActive: Images.SettingsIconDark,
-      active: pathname.split("/").includes("BlockCodes"),
-      submenu: [
-        {
-          label: "All Block Codes",
-          Link: "AllBlockCodes",
-          LinkLable: "/LOS/BlockCodes",
-          active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
-        },
-        {
-          label: "Compliance",
-          Link: "Compliance",
-          LinkLable: "/LOS/BlockCodes",
-          active: pathname.includes("/LOS/BlockCodes/Compliance"),
-        },
-        {
-          label: "AML",
-          Link: "AML",
-          LinkLable: "/LOS/BlockCodes",
-          active: pathname.includes("/LOS/BlockCodes/AML"),
-        },
-        {
-          label: "Anti-Fraud",
-          Link: "AntiFraud",
-          LinkLable: "/LOS/BlockCodes",
-          active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
-        },
-        {
-          label: "Sanction",
-          Link: "Sanction",
-          LinkLable: "/LOS/BlockCodes",
-          active: pathname.includes("/LOS/BlockCodes/Sanction"),
-        },
-      ].filter(Boolean),
-    },
     // {
     //   label: "Home Page Management",
     //   Link: "HomePageManagement",
@@ -1175,70 +1081,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               Link: "AccountingFinancing",
               LinkLable: "/Lms/Reports",
               active: pathname.split("/").includes("AccountingFinancing"),
-              menu: [
-                hasAccess("voucher_module") && {
-                  label: "Voucher",
-                  link: "vouchers",
-                  linkLable: "AccountingFinancing",
-                  active: pathname.split("/").includes("vouchers"),
-                },
-                hasAccess("day_book_module") && {
-                  label: "Day Book",
-                  link: "daybook",
-                  linkLable: "AccountingFinancing",
-                  active: pathname.split("/").includes("daybook"),
-                },
-                hasAccess("trial_balance_module") && {
-                  label: "Trial Balance",
-                  link: "trialbalance",
-                  linkLable: "AccountingFinancing",
-                  active: pathname.split("/").includes("trialbalance"),
-                },
-                hasAccess("ledger_module") && {
-                  label: "Ledger",
-                  link: "ledger",
-                  linkLable: "AccountingFinancing",
-                  active: pathname.split("/").includes("ledger"),
-                },
-              ].filter(Boolean),
             },
             {
               label: "Loans Reports",
               Link: "loans",
               LinkLable: "/Lms/Reports",
               active: pathname.split("/").includes("loans"),
-              submenu: [
-                hasAccess("overdue_loan_module") && {
-                  label: "Overdue Loan",
-                  link: "overdue",
-                  linkLable: "loans",
-                  active: pathname.split("/").includes("overdue"),
-                },
-                hasAccess("non_performing_loan_module") && {
-                  label: "Non Performing Loan",
-                  link: "performingLoans",
-                  linkLable: "loans",
-                  active: pathname.split("/").includes("performingLoans"),
-                },
-                hasAccess("due_loan_module") && {
-                  label: "Due Loan",
-                  link: "due",
-                  linkLable: "loans",
-                  active: pathname.split("/").includes("due"),
-                },
-                hasAccess("early_settlement_module") && {
-                  label: "Early Settlement",
-                  link: "earlySettlement",
-                  linkLable: "loans",
-                  active: pathname.split("/").includes("earlySettlement"),
-                },
-                hasAccess("write_off_loan_module") && {
-                  label: "Write Off Loan",
-                  link: "writeOff",
-                  linkLable: "loans",
-                  active: pathname.split("/").includes("writeOff"),
-                },
-              ].filter(Boolean),
             },
           ].filter(Boolean),
         },
@@ -1413,7 +1261,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           submenu: [
             // hasAccess("chart_of_account_module") &&
              {
-              label: "Chart of account",
+              label: "Accounts",
               Link: "ChartOfAccount",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
@@ -1488,12 +1336,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               Link: "DunningPolicy",
               LinkLable: "/Lms/Setting",
               active: pathname.includes("/Lms/Setting/DunningPolicy"),
-            },
-            {
-              label: "General Setting",
-              Link: "GeneralCreditScoring",
-              LinkLable: "/Lms/Setting",
-              active: pathname.includes("/Lms/Setting/GeneralCreditScoring"),
             },
             // hasAccess("workflow_mapping_module") &&
             // {
@@ -1804,7 +1646,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                 label: "Providers",
                 Link: "Providers",
                 LinkLable: "/ThirdPartyManagement",
-                img: Images.PartnerManagementIcon,
                 active: pathname.includes("/ThirdPartyManagement/Providers"),
               },
               {
@@ -2173,11 +2014,25 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // },
   ];
 
+  // Reference existing Financing-tab modules so they can be reused in the Wallet
+  // tab without duplicating their (large) configs.
+  const lmsModule = sidebarItems.find((x: any) => x && x.label === "LMS");
+  const connectorModule = sidebarItems.find(
+    (x: any) => x && x.label === "Connector Management"
+  );
+
   const walletItems: any[] = [
     {
       label: "Dashboard",
       Link: "/LOS/Wallet/Home",
       active: pathname.includes("/LOS/Wallet/Home"),
+    },
+    {
+      label: "Notification Orchestrator",
+      Link: "/LOS/NotificationOrchestrator",
+      img: Images.ApiManagementIcon,
+      imgActive: Images.ApiManagementIconDark,
+      active: pathname.includes("/LOS/NotificationOrchestrator"),
     },
     {
       label: "Customer Management",
@@ -2198,6 +2053,111 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
+    hasAccess("RISK") && {
+      label: "Risk Management",
+      Link: "/LOS/RiskManagement/BlacklistNid",
+      img: Images.LovIcon,
+      imgActive: Images.LovIconDark,
+      active: pathname.includes("/RiskManagement"),
+      menu: [
+        {
+          label: "Blacklist NID",
+          Link: "BlacklistNid",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/BlacklistNid",
+        },
+        {
+          label: "Blacklist Mobile",
+          Link: "BlacklistMobile",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/BlacklistMobile",
+        },
+        {
+          label: "Fraud Rule Management",
+          Link: "FraudRuleManagement",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
+        },
+        {
+          label: "Internal Checks Config",
+          Link: "InternalChecksConfig",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/InternalChecksConfig",
+        },
+        {
+          label: "Device Management",
+          Link: "DeviceManagement",
+          LinkLable: "/LOS/RiskManagement",
+          active: pathname == "/LOS/RiskManagement/DeviceManagement",
+        },
+        hasAccess("block_code_module") && {
+          label: "Block Codes",
+          img: Images.SettingsIcon,
+          imgActive: Images.SettingsIconDark,
+          active: pathname.split("/").includes("BlockCodes"),
+          menu: [
+            {
+              label: "All Block Codes",
+              Link: "AllBlockCodes",
+              LinkLable: "/LOS/BlockCodes",
+              active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
+            },
+            {
+              label: "Compliance",
+              Link: "Compliance",
+              LinkLable: "/LOS/BlockCodes",
+              active: pathname.includes("/LOS/BlockCodes/Compliance"),
+            },
+            {
+              label: "AML",
+              Link: "AML",
+              LinkLable: "/LOS/BlockCodes",
+              active: pathname.includes("/LOS/BlockCodes/AML"),
+            },
+            {
+              label: "Anti-Fraud",
+              Link: "AntiFraud",
+              LinkLable: "/LOS/BlockCodes",
+              active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
+            },
+            {
+              label: "Sanction",
+              Link: "Sanction",
+              LinkLable: "/LOS/BlockCodes",
+              active: pathname.includes("/LOS/BlockCodes/Sanction"),
+            },
+          ].filter(Boolean),
+        },
+      ].filter(Boolean),
+    },
+    hasAccess(["ROLE", "PERMISSION", "EMPLOYEE"]) && {
+      label: "Access Control Management",
+      Link: "/LOS/Setting/Employees",
+      img: Images.SettingsIcon,
+      imgActive: Images.SettingsIconDark,
+      active: pathname.includes("/LOS/Setting"),
+      menu: [
+        hasAccess("EMPLOYEE") && {
+          label: "Employees",
+          Link: "Employees",
+          LinkLable: "/LOS/Setting",
+          active: pathname.includes("/LOS/Setting/Employees"),
+        },
+        hasAccess("ROLE") && {
+          label: "Manage Roles",
+          Link: "RoleList",
+          LinkLable: "/LOS/Setting",
+          active: pathname.includes("/LOS/Setting/RoleList"),
+        },
+        hasAccess("PERMISSION") && {
+          label: "Manage Permissions",
+          Link: "AssignPermissions",
+          LinkLable: "/LOS/Setting",
+          active: pathname.includes("/LOS/Setting/AssignPermissions"),
+        },
+      ].filter(Boolean),
+    },
+    /* Wallet Management — commented out
     {
       label: "Wallet Management",
       Link: "/Wallet/Dashboard",
@@ -2221,6 +2181,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
+    */
     {
       label: "Transfers",
       Link: "/Wallet/SendMoney",
@@ -2245,21 +2206,197 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       ].filter(Boolean),
     },
     {
-      label: "Setting",
-      Link: "notification",
+      label: "General Setting",
+      Link: "/Lms/Setting/GeneralCreditScoring",
       img: Images.SettingsIcon,
       imgActive: Images.SettingsIconDark,
-      active: pathname.includes("/Lms/Setting"),
+      active: pathname.includes("/Lms/Setting/GeneralCreditScoring"),
+    },
+    {
+      label: "Financing",
+      Link: "/LOS/Dashboard",
+      img: Images.ApiManagementIcon,
+      imgActive: Images.ApiManagementIconDark,
+      active:
+        pathname.includes("/LOS/Dashboard") ||
+        pathname.includes("/ProductManagement") ||
+        pathname.includes("/LOV"),
       menu: [
         {
-          label: "General Setting",
-          Link: "GeneralCreditScoring",
-          LinkLable: "/Lms/Setting",
-          active: pathname.includes("/Lms/Setting/GeneralCreditScoring"),
+          label: "LOS",
+          Link: "/LOS/Dashboard",
+          img: Images.ApiManagementIcon,
+          imgActive: Images.ApiManagementIconDark,
+          active:
+            pathname.includes("/LOS/Dashboard") ||
+            pathname.includes("/ProductManagement") ||
+            pathname.includes("/LOV"),
+          menu: [
+            {
+              label: "Dashboard",
+              Link: "Dashboard",
+              LinkLable: "/LOS",
+              img: Images.dashboardIcon,
+              imgActive: Images.dashboardIconActive,
+              active: pathname.includes("/LOS/Dashboard"),
+            },
+            hasAccess("PRODUCT") && {
+              label: "Product Management",
+              img: Images.productManagementIcon,
+              imgActive: Images.productManagementIconActive,
+              active: pathname.includes("/ProductManagement"),
+              menu: [
+                hasAccess("View Products") && {
+                  label: "Products",
+                  Link: "ProductManagement",
+                  LinkLable: "/LOS",
+                  active: pathname === "/LOS/ProductManagement",
+                },
+                hasAccess("Contract Template") && {
+                  label: "Contract Template",
+                  Link: "ContractTemplate",
+                  LinkLable: "/LOS/NotificationTemplate",
+                  active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
+                },
+                hasAccess("Product Category") && {
+                  label: "Product Category",
+                  Link: "ProductCategory",
+                  LinkLable: "/LOS/ProductManagement",
+                  active: pathname == "/LOS/ProductManagement/ProductCategory",
+                },
+                hasAccess("Product Sub Category") && {
+                  label: "Product Sub Category",
+                  Link: "ProductSubCategory",
+                  LinkLable: "/LOS/ProductManagement",
+                  active: pathname == "/LOS/ProductManagement/ProductSubCategory",
+                },
+              ].filter(Boolean),
+            },
+            hasAccess("LOV") && {
+              label: "LOV",
+              img: Images.LovIcon,
+              imgActive: Images.LovIconDark,
+              active: pathname.includes("/LOV"),
+              menu: [
+                hasAccess("Source Of Income") && {
+                  label: "Source Of Income",
+                  Link: "SourceOfIncome",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/SourceOfIncome",
+                },
+                {
+                  label: "Occupation",
+                  Link: "Occupation",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/Occupation",
+                },
+                hasAccess("Source Of Wealth") && {
+                  label: "Source Of Wealth",
+                  Link: "SourceOfWealth",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/SourceOfWealth",
+                },
+                hasAccess("Source Of Funds") && {
+                  label: "Source Of Funds",
+                  Link: "SourceOfFunds",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/SourceOfFunds",
+                },
+                {
+                  label: "Template Types",
+                  Link: "TemplateTypes",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/TemplateTypes",
+                },
+                hasAccess("Net Worth Range") && {
+                  label: "Net Worth Ranges",
+                  Link: "NetWorthRanges",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/NetWorthRanges",
+                },
+                hasAccess("Purpose Of Finance") && {
+                  label: "Purpose of Financing",
+                  Link: "PurposeofFinancing",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname == "/LOS/LOV/PurposeofFinancing",
+                },
+                hasAccess("Credit Scoring Field") && {
+                  label: "Credit Scoring Definitions",
+                  Link: "CreditScoringDefinitions",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname.includes("/CreditScoringDefinitions"),
+                },
+                hasAccess("Approval Condition Field") && {
+                  label: "Approval Conditions",
+                  Link: "ApprovalConditions",
+                  LinkLable: "/LOS/LOV",
+                  active: pathname.includes("/ApprovalConditions"),
+                },
+              ].filter(Boolean),
+            },
+          ].filter(Boolean),
         },
+        lmsModule,
       ].filter(Boolean),
     },
-  ];
+    connectorModule,
+  ].filter(Boolean);
+
+  // Recursively render menu items at any depth: an item with its own
+  // `menu`/`submenu` becomes a (nested) dropdown; otherwise it's a leaf link.
+  const renderMenuItems = (items: any[], keyPrefix: string): any =>
+    (items || []).filter(Boolean).map((it: any, i: number) => {
+      const key = `${keyPrefix}-${i}`;
+      const nested =
+        (Array.isArray(it.submenu) && it.submenu.length > 0 && it.submenu) ||
+        (Array.isArray(it.menu) && it.menu.length > 0 && it.menu) ||
+        null;
+      if (nested) {
+        const isAnyChildActive = nested.some((c: any) => c && c.active);
+        const isOpen =
+          openNestedSubmenus[key] !== undefined
+            ? openNestedSubmenus[key]
+            : it.active || isAnyChildActive;
+        return (
+          <SubMenu
+            key={key}
+            label={<span className="sidebar-label-text">{it.label}</span>}
+            open={isOpen}
+            className="nested-submenu"
+            rootStyles={{ ["--mi-color" as any]: getModuleTheme(it.label)?.color }}
+            onClick={(e: any) => {
+              e.stopPropagation();
+              setOpenNestedSubmenus((prev) => ({ ...prev, [key]: !isOpen }));
+            }}
+            icon={<ModuleIcon label={it.label} fallback={it.img} />}
+          >
+            {renderMenuItems(nested, key)}
+          </SubMenu>
+        );
+      }
+      return (
+        <Link
+          to={`${it.LinkLable || it.linkLable}/${it.Link || it.link}`}
+          className={`sidebar-link ${it.active ? "is-active" : ""}`}
+          key={key}
+          onClick={(e) => e.stopPropagation()}
+          style={{ ["--mi-color" as any]: getModuleTheme(it.label)?.color }}
+        >
+          <MenuItem
+            active={it.active}
+            style={{ fontSize: "12px", fontWeight: "400", textDecoration: "none" }}
+            className={it.active ? "active" : ""}
+            icon={
+              getModuleTheme(it.label) || it.img ? (
+                <ModuleIcon label={it.label} fallback={it.img} />
+              ) : null
+            }
+          >
+            <span className="sidebar-label-text">{it.label}</span>
+          </MenuItem>
+        </Link>
+      );
+    });
 
   const renderSubmenu = (
     item: {
@@ -2289,90 +2426,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           );
         }}
       >
-        {item.menu.filter(Boolean).map((submenuItem: any, subIndex: any) => {
-          // Check for both 'submenu' and 'menu' properties for nested items
-          const hasNestedSubmenu =
-            (Array.isArray(submenuItem.submenu) && submenuItem.submenu.length > 0) ||
-            (Array.isArray(submenuItem.menu) && submenuItem.menu.length > 0);
-
-          if (hasNestedSubmenu) {
-            const nestedItems = submenuItem.submenu || submenuItem.menu;
-            const isAnyChildActive = nestedItems.some((child: any) => child.active);
-            const nestedKey = `${index}-${subIndex}`;
-            const isNestedOpen = openNestedSubmenus[nestedKey] !== undefined
-              ? openNestedSubmenus[nestedKey]
-              : (submenuItem.active || isAnyChildActive);
-            return (
-              <SubMenu
-                key={subIndex}
-                label={<span className="sidebar-label-text">{submenuItem.label}</span>}
-                open={isNestedOpen}
-                className="nested-submenu"
-                rootStyles={{
-                  ["--mi-color" as any]: getModuleTheme(submenuItem.label)?.color,
-                }}
-                onClick={(e) => {
-                  // Prevent parent menu from closing when clicking nested submenu
-                  e.stopPropagation();
-                  setOpenNestedSubmenus((prev) => ({
-                    ...prev,
-                    [nestedKey]: !isNestedOpen,
-                  }));
-                }}
-                icon={<ModuleIcon label={submenuItem.label} fallback={submenuItem.img} />}
-              >
-                {nestedItems.map(
-                  (nestedItem: any, nestedIndex: any) => (
-                    <Link
-                      to={`${nestedItem.LinkLable || nestedItem.linkLable}/${nestedItem.Link || nestedItem.link}`}
-                      className={`sidebar-link ${nestedItem.active ? "is-active" : ""}`}
-                      key={nestedIndex}
-                      onClick={(e) => e.stopPropagation()}
-                      style={{ ["--mi-color" as any]: getModuleTheme(nestedItem.label)?.color }}
-                    >
-                      <MenuItem
-                        active={nestedItem.active}
-                        className={nestedItem.active ? "active" : ""}
-                      >
-                        {nestedItem.label}
-                      </MenuItem>
-                    </Link>
-                  )
-                )}
-              </SubMenu>
-            );
-          } else {
-            return (
-              <Link
-                to={`${submenuItem.LinkLable}/${submenuItem.Link}`}
-                className={`sidebar-link ${submenuItem.active ? "is-active" : ""}`}
-                key={subIndex}
-                onClick={(e) => e.stopPropagation()}
-                style={{ ["--mi-color" as any]: getModuleTheme(submenuItem.label)?.color }}
-              >
-                <MenuItem
-                  active={submenuItem.active}
-                  style={{
-                    fontSize: "12px",
-                    fontWeight: "400",
-                    textDecoration: "none",
-                  }}
-                  className={submenuItem.active ? "active" : ""}
-                  icon={
-                    getModuleTheme(submenuItem.label) || submenuItem.img ? (
-                      <ModuleIcon
-                        label={submenuItem.label}
-                        fallback={submenuItem.img}
-                      />
-                    ) : null
-                  }
-                >
-                  <span className="sidebar-label-text">{submenuItem.label}</span>
-                </MenuItem>
-              </Link>
-            );
-          }
-        })}
+        {renderMenuItems(item.menu, String(index))}
       </SubMenu>
     </div>
   );
@@ -2401,6 +2455,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             backgroundColor: themeStyle?.dashboardSibeBarFlow.flowSideBarLogoBg,
             paddingTop: "15px",
             paddingBottom: "8px",
+            ...(headerH ? ({ ["--logo-h" as any]: `${headerH}px` } as any) : {}),
           }}
         >
           <img
@@ -2437,57 +2492,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             </button>
           )}
         </div>
-        {!isCollapsed && (
-          <div className="sidebar-tab-row">
-            <button
-              type="button"
-              className={`sidebar-tab ${sidebarTab === "wallet" ? "active" : ""}`}
-              onClick={() => setSidebarTab("wallet")}
-            >
-              Wallet
-            </button>
-            <button
-              type="button"
-              className={`sidebar-tab ${sidebarTab === "financing" ? "active" : ""}`}
-              onClick={() => setSidebarTab("financing")}
-            >
-              Financing
-            </button>
-          </div>
-        )}
         {/* transitionDuration=0: the open/close submenu HEIGHT animation is
             driven by <Menu> (react-pro-sidebar reads it from the Menu context,
             not the Sidebar). At 0 the height snaps instantly, so re-measuring an
             open submenu can't slide the items below it = no jerking. */}
         <Menu transitionDuration={0}>
-          {sidebarTab === "financing" ? (
-            sidebarItems.map((item, index) => (
-              <React.Fragment key={index}>
-                {item.menu ? (
-                  renderSubmenu(item, index)
-                ) : (
-                  <div
-                    className="menu-items css-12w9als"
-                    style={{ ["--mi-color" as any]: getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR }}
-                  >
-                    <Link
-                      to={`${item.Link}`}
-                      style={{
-                        fontSize: "14px",
-                      }}
-                    >
-                      <MenuItem
-                        active={item.active}
-                        icon={<ModuleIcon label={item.label} fallback={item.img} />}
-                      >
-                        {item.label}
-                      </MenuItem>
-                    </Link>
-                  </div>
-                )}
-              </React.Fragment>
-            ))
-          ) : (
+          {(
             <div className="wallet-menu-scope">
               {walletItems.map((item, index) => (
                 <React.Fragment key={index}>
@@ -2540,22 +2550,135 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           .ps-menu-button:hover img {
             filter: brightness(0) contrast(100%) !important;
           }
-          /* Wallet tab: its groups are top-level (level 0) whereas the
-             Financing groups are nested one level deeper. Shift the Wallet
-             group headers and their children right by one level so the
-             parent → child indentation matches the Financing tab. */
-          /* Top-level wallet items — submenu headers AND the direct "Dashboard"
-             link share ONE indent in every state (active included) so they
-             always line up. Pin both margin + padding so the <a> wrapper /
-             active class can't shift the Dashboard row. */
-          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .menu-items > .ps-submenu-root > .ps-menu-button,
-          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .menu-items > a .ps-menu-button,
-          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .menu-items > a .ps-menu-button.ps-active {
-            padding-left: 10px !important;
-            margin-left: 20px !important;
+          /* ===== Unified, user-friendly menu styling across ALL levels =====
+             EVERY row shares the same left edge and the same icon column, so all
+             icons line up vertically regardless of nesting depth. Rows without an
+             icon (deep leaf items) indent their text into that same column. */
+          /* Kill EVERY source of per-level indentation (content, its <ul>, and
+             the <li> wrappers) so nesting depth never shifts a row right. */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content,
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content > ul,
+          .css-12w9als:not(.is-collapsed) .ps-menuitem-root,
+          .css-12w9als:not(.is-collapsed) .ps-menuitem-root > ul {
+            padding-left: 0 !important;
+            padding-inline-start: 0 !important;
+            margin-left: 0 !important;
           }
-          .css-12w9als:not(.is-collapsed) .wallet-menu-scope .sidebar-link .ps-menu-button {
-            padding-left: 30px !important;
+          /* Same height, full width, flush left, 12px text */
+          .css-12w9als:not(.is-collapsed) .ps-menu-button {
+            height: 35px !important;
+            min-height: 35px !important;
+            margin: 0 !important;
+            width: 100% !important;
+            font-size: 12px !important;
+          }
+          .css-12w9als:not(.is-collapsed) .ps-menu-button .ps-menu-label,
+          .css-12w9als:not(.is-collapsed) .ps-menu-button .sidebar-label-text,
+          .css-12w9als:not(.is-collapsed) .sidebar-link {
+            font-size: 12px !important;
+          }
+          /* Icon column: locked to EXACTLY 32px (24px icon + 8px gap) so an
+             icon row's label and an icon-less row's text land at the same x. */
+          .css-12w9als:not(.is-collapsed) .ps-menu-icon {
+            min-width: 24px !important;
+            width: 24px !important;
+            max-width: 24px !important;
+            height: 24px !important;
+            margin-right: 8px !important;
+            margin-left: 0 !important;
+          }
+          /* No extra offset on the label itself */
+          .css-12w9als:not(.is-collapsed) .ps-menu-label {
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+          }
+          /* Collapse an EMPTY icon span (rendered for icon-less rows) so it
+             takes no width — otherwise icon-less labels get pushed right and
+             the no-icon padding can't align them with the parent's label. */
+          .css-12w9als:not(.is-collapsed) .ps-menu-icon:not(:has(svg)):not(:has(img)) {
+            display: none !important;
+            width: 0 !important;
+            min-width: 0 !important;
+            margin: 0 !important;
+          }
+          /* Indentation: each nesting level steps in 10px so a child module/row
+             sits a little right of its parent. Icon rows indent by their icon;
+             icon-less leaf rows add the icon column (32px) so their text still
+             lines up with the icon rows at the same level. */
+          /* Level 0 */
+          .css-12w9als:not(.is-collapsed) .ps-menu-button { padding-left: 10px !important; }
+          .css-12w9als:not(.is-collapsed) .ps-menu-button:not(:has(.ps-menu-icon svg)):not(:has(.ps-menu-icon img)) { padding-left: 42px !important; }
+          /* Level 1  (leaf text aligns with its level-0 parent's label) */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-menu-button { padding-left: 20px !important; }
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-menu-button:not(:has(.ps-menu-icon svg)):not(:has(.ps-menu-icon img)) { padding-left: 42px !important; }
+          /* Level 2  (leaf text aligns with its level-1 parent's label) */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-submenu-content .ps-menu-button { padding-left: 30px !important; }
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-submenu-content .ps-menu-button:not(:has(.ps-menu-icon svg)):not(:has(.ps-menu-icon img)) { padding-left: 52px !important; }
+          /* Level 3  (leaf text aligns with its level-2 parent's label) */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-submenu-content .ps-submenu-content .ps-menu-button { padding-left: 40px !important; }
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-submenu-content .ps-submenu-content .ps-menu-button:not(:has(.ps-menu-icon svg)):not(:has(.ps-menu-icon img)) { padding-left: 62px !important; }
+          /* Level 4  (leaf text aligns with its level-3 parent's label) */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-submenu-content .ps-submenu-content .ps-submenu-content .ps-menu-button { padding-left: 50px !important; }
+          .css-12w9als:not(.is-collapsed) .ps-submenu-content .ps-submenu-content .ps-submenu-content .ps-submenu-content .ps-menu-button:not(:has(.ps-menu-icon svg)):not(:has(.ps-menu-icon img)) { padding-left: 72px !important; }
+          /* Labels: single line, not clipped */
+          .css-12w9als:not(.is-collapsed) .ps-menu-button .ps-menu-label,
+          .css-12w9als:not(.is-collapsed) .sidebar-label-text {
+            overflow: visible !important;
+            text-overflow: clip !important;
+            white-space: nowrap !important;
+          }
+          /* Expand chevron pinned to the right at every level */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-expand-icon {
+            right: 14px !important;
+          }
+          /* Each top-level module gets a bottom divider in its OWN icon colour
+             (every module wrapper carries its colour via inline --mi-color;
+             nested rows have no .menu-items wrapper, so they're untouched). */
+          .css-12w9als:not(.is-collapsed) .menu-items[style*="--mi-color"] {
+            border-bottom: 1px solid
+              color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
+          }
+
+          /* ===== Final polish ===== */
+          /* Brand/logo header: same height as the top header (40px avatar +
+             10px×2 padding = 60px content + 1px border) so the two bottom
+             borders line up exactly. */
+          .ps-sidebar-root .sidebar-logo-container {
+            height: var(--logo-h, 61px) !important;
+            min-height: var(--logo-h, 61px) !important;
+            box-sizing: border-box !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
+            align-items: center !important;
+            border-bottom: 1px solid var(--surface-border) !important;
+          }
+          /* A little breathing room around the menu list */
+          .css-12w9als:not(.is-collapsed) .ps-menu-root {
+            padding: 4px 8px !important;
+          }
+          /* Smooth hover/active transitions */
+          .css-12w9als:not(.is-collapsed) .ps-menu-button {
+            transition: background-color 0.15s ease, color 0.15s ease !important;
+          }
+          /* Subtle hover wash in the module's own colour (non-active rows) */
+          .css-12w9als:not(.is-collapsed) .ps-menu-button:not(.ps-active):hover {
+            background: color-mix(in srgb, var(--mi-color, #10b981) 8%, transparent) !important;
+          }
+          /* Group headers read a touch stronger than leaf rows */
+          .css-12w9als:not(.is-collapsed) .ps-submenu-root > .ps-menu-button .ps-menu-label {
+            font-weight: 400 !important;
+          }
+          /* Icons inherit the module colour; crisp sizing */
+          .css-12w9als:not(.is-collapsed) .ps-menu-icon svg {
+            width: 17px !important;
+            height: 17px !important;
+          }
+          /* Tidy, thin scrollbar */
+          .ps-sidebar-container::-webkit-scrollbar { width: 6px !important; }
+          .ps-sidebar-container::-webkit-scrollbar-thumb {
+            background: var(--surface-border) !important;
+            border-radius: 6px !important;
           }
           /* Aggressively hide text labels when collapsed */
           .is-collapsed .sidebar-label-text,

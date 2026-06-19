@@ -107,6 +107,8 @@ const getStates = async () => {
               colorLink: "#059669",
               colorLinkHover: "#10b981",
               borderRadius: 2,
+              fontFamily:
+                '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
             },
             components: {
               Select: {
