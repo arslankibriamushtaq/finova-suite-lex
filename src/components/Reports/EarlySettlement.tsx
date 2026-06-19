@@ -163,7 +163,7 @@ const EarlySettlement = () => {
           <div
             style={{
               padding: "6px 12px",
-              borderRadius: "6px",
+              borderRadius: "2px",
               fontSize: "11px",
               backgroundColor: color,
               color: "white",
@@ -213,7 +213,7 @@ const EarlySettlement = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -225,7 +225,7 @@ const EarlySettlement = () => {
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
         <DatePicker
           placeholder="From"
@@ -233,7 +233,7 @@ const EarlySettlement = () => {
           onChange={(d) => setFromDate(d)}
           format="YYYY-MM-DD"
           allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 6 }}
+          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <DatePicker
           placeholder="To"
@@ -241,7 +241,7 @@ const EarlySettlement = () => {
           onChange={(d) => setToDate(d)}
           format="YYYY-MM-DD"
           allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 6 }}
+          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <button
           type="button"
@@ -287,7 +287,7 @@ const EarlySettlement = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

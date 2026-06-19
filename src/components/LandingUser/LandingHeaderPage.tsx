@@ -268,7 +268,7 @@ const LandingDashboard = () => {
                         className="mt-4 p-3"
                         style={{
                           border: "2px solid #A40000",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                           fontSize: "12px",
                           background: "transparent",
                           color: "#A40000",
@@ -304,8 +304,8 @@ const LandingDashboard = () => {
                     background: Mbtn === false ? "red" : "white",
                     border: "1px solid #ccc",
                     color: Mbtn === false ? "white" : "black",
-                    borderTopLeftRadius: "6px",
-                    borderBottomLeftRadius: "6px",
+                    borderTopLeftRadius: "2px",
+                    borderBottomLeftRadius: "2px",
                     clipPath: "polygon(0 0, 100% 0%, 100% 100%, 0% 100%)",
                   }}
                   onClick={() => setMbtn(false)}
@@ -318,8 +318,8 @@ const LandingDashboard = () => {
                     background: Mbtn === true ? "red" : "white",
                     color: Mbtn === true ? "white" : "black",
                     border: "1px solid #ccc",
-                    borderTopRightRadius: "6px",
-                    borderBottomRightRadius: "6px",
+                    borderTopRightRadius: "2px",
+                    borderBottomRightRadius: "2px",
                     clipPath: "polygon(0 0, 100% 0%, 100% 100%, 0% 100%)",
                   }}
                   onClick={() => setMbtn(true)}
@@ -858,14 +858,14 @@ const LandingDashboard = () => {
                 style={{
                   width: "370px",
                   padding: "7px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                 }}
               />
               <Button
                 style={{
                   background: "red",
                   border: "none",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                 }}
               >
                 Subscribe

@@ -41,7 +41,7 @@ const TableView = ({
     "/FinancingApplications/AllApplications/View/"
   );
   const conditionalStyles = isViewPage ? { display: "none" } : {};
-  const borderStyle = isViewPage ? { borderRadius: "6px" } : {};
+  const borderStyle = isViewPage ? { borderRadius: "2px" } : {};
   const customStyles = {
     rows: {
       style: {
@@ -294,7 +294,7 @@ const TableView = ({
               <div
                 style={{
                   padding: "0.22rem 1rem",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   backgroundColor: column.backGround,
                   color: column.color,
                   cursor: row.ByDefault === "Active" ? "pointer" : "default",
@@ -314,7 +314,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: ".25rem 0.5rem",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       backgroundColor: "#0dcaf0",
                       color: "white",
                       marginRight: "4px",
@@ -327,7 +327,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: ".25rem 0.5rem",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       backgroundColor: "#4253a1",
                       color: "white",
                       marginRight: "4px",
@@ -340,7 +340,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: ".25rem 0.5rem",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       backgroundColor: "#000000",
                       color: "white",
                       marginRight: "4px",
@@ -353,7 +353,7 @@ const TableView = ({
                   <div
                     style={{
                       padding: "0.22rem 1rem",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       backgroundColor: "var(--theme-table-background-color)",
                       color: "var(--theme-table-heading-color)",
                       cursor: row.Status === "Active" ? "pointer" : "default",
@@ -384,7 +384,7 @@ const TableView = ({
   const TableSkeleton = () => (
     <div
       className="skeleton-table"
-      style={{ border: "1px solid #e0e0e0", borderRadius: "6px" }}
+      style={{ border: "1px solid #e0e0e0", borderRadius: "2px" }}
     >
       <div
         className="skeleton-header"
@@ -392,7 +392,7 @@ const TableView = ({
           display: "flex",
           borderBottom: "2px solid #e0e0e0",
           background: "#f0f0f0",
-          borderRadius: "6px 6px 0 0",
+          borderRadius: "2px 2px 0 0",
         }}
       >
         {header.map((column: any, index: number) => (
@@ -452,7 +452,7 @@ const TableView = ({
         <div className="d-flex justify-content-end mb-2 py-2">
           <div
             className="d-flex align-items-center gap-1 border px-2 ps-3"
-            style={{ borderRadius: "6px" }}
+            style={{ borderRadius: "2px" }}
           >
             <FaSearch />
             <input
@@ -524,7 +524,7 @@ const TableView = ({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        borderRadius: '6px',
+                        borderRadius: '2px',
                         fontWeight: isActive ? '600' : '400',
                         padding: '0',
                         cursor: 'pointer',

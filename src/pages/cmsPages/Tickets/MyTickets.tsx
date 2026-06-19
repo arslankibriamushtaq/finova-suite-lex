@@ -250,7 +250,7 @@ const MyTickets = () => {
         <div
           style={{
             padding: "0.22rem 0.8rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: "var(--color-cms-purple)",
             color: "var(--primary-foreground)",
             display: "inline-block",
@@ -270,7 +270,7 @@ const MyTickets = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -532,7 +532,7 @@ const MyTickets = () => {
                 onClick={() => setEditComplaintModal(false)}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: "var(--color-cms-teal)",
                   color: "white",
@@ -548,7 +548,7 @@ const MyTickets = () => {
                 disabled={loadingSave}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: loadingSave ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",
@@ -647,7 +647,7 @@ const MyTickets = () => {
                 }}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: "var(--color-cms-teal)",
                   color: "white",
@@ -663,7 +663,7 @@ const MyTickets = () => {
                 disabled={loadingEscalate}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: loadingEscalate ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",

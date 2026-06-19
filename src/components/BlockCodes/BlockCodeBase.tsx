@@ -109,7 +109,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
         <span
           style={{
             padding: "5px 10px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",
@@ -130,7 +130,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -265,7 +265,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--surface-border)",
         }}
@@ -280,7 +280,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
               setSearch(e.target.value);
               setPage(1);
             }}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
 
           {defaultType === "" && (
@@ -323,7 +323,7 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--surface-border)",
           overflow: "hidden",

@@ -41,7 +41,7 @@ const TermsConditionsPage: React.FC = () => {
             style={{
               backgroundColor: 'var(--background)',
               padding: '20px 40px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
               fontSize: '18px',
               fontWeight: 'bold',

@@ -96,8 +96,8 @@ const ApplicationBoard = () => {
         fontSize: "14px",
         borderBottom: '1px solid var(--theme-header-background-color)',
         display: 'flex',
-        borderTopLeftRadius: "6px",
-        borderTopRightRadius: "6px",
+        borderTopLeftRadius: "2px",
+        borderTopRightRadius: "2px",
         justifyContent: 'space-between',
       }}>
         Application No: <span style={{ fontSize: "12px", fontWeight: 500 }}>{loan_application_number}</span>
@@ -118,7 +118,7 @@ const ApplicationBoard = () => {
         fontWeight: 700,
         fontSize: "14px",
         display: 'flex',
-        borderRadius: '6px',
+        borderRadius: '2px',
         justifyContent: 'space-between',
       }}>
         Amount: <span style={{ fontSize: "13px", fontWeight: 500 }}>{amount}</span>
@@ -385,7 +385,7 @@ const cancelMove = () => {
                           background: 'var(--primary)',
                           color: 'var(--primary-foreground)',
                           border: 'none',
-                          borderRadius: 6,
+                          borderRadius: 2,
                           padding: '6px 10px',
                           fontWeight: 600,
                           cursor: 'pointer',
@@ -442,7 +442,7 @@ const cancelMove = () => {
           {showComments && (
             <div style={{ 
               background: 'var(--muted)',
-              borderRadius: '6px',
+              borderRadius: '2px',
               marginBottom: '12px',
               overflow: 'hidden',
               border: '1px solid var(--border)'
@@ -493,7 +493,7 @@ const cancelMove = () => {
                         <div style={{
                           flex: 1,
                           background: 'var(--card)',
-                          borderRadius: '6px',
+                          borderRadius: '2px',
                           padding: '12px 16px',
                           boxShadow: '0 1px 3px rgba(0,0,0,0.08)',
                           border: '1px solid var(--border)'
@@ -592,7 +592,7 @@ const cancelMove = () => {
             padding: '12px 16px',
             background: 'var(--background)',
             border: '1px solid var(--border)',
-            borderRadius: '6px'
+            borderRadius: '2px'
           }}>
             <div style={{
               width: '36px',
@@ -635,7 +635,7 @@ const cancelMove = () => {
               style={{
                 background: 'var(--destructive)',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '2px',
                 padding: '8px 16px',
                 cursor: sidebarComment?.trim() ? 'pointer' : 'not-allowed',
                 opacity: sidebarComment?.trim() ? 1 : 0.5,
@@ -689,12 +689,12 @@ const cancelMove = () => {
                     style={{
                       background: getHeaderColor(dept),
                       padding: "16px",
-                      borderRadius: "6px 6px 0 0"
+                      borderRadius: "2px 2px 0 0"
                     }}
                   >
                     <h5 style={{ margin: 0, fontWeight: 600 }}>{dept}</h5>
                   </div>
-                  <div className="column-content" style={{ padding: '16px', background: 'transparent', borderRadius: "0 0 6px 6px" }}>
+                  <div className="column-content" style={{ padding: '16px', background: 'transparent', borderRadius: "0 0 2px 2px" }}>
                     {dataToRender[dept].length > 0 ? (
                       dataToRender[dept].map((app: LoanApplication, index: number) => (
                         <Draggable key={app.id} draggableId={app.id} index={index}>
@@ -823,7 +823,7 @@ const cancelMove = () => {
               background: 'var(--destructive)',
               color: 'var(--primary-foreground)',
               border: 'none',
-              borderRadius: '6px',
+              borderRadius: '2px',
               padding: '10px 40px',
               fontSize: '16px',
               fontWeight: 600,

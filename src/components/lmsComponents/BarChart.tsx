@@ -71,7 +71,7 @@ const CustomBarChart = ({ dashboardData }: { dashboardData: any }) => {
             height: 14,
             backgroundColor: "var(--chart-1, #10b981)",
             marginRight: 6,
-            borderRadius: 6,
+            borderRadius: 2,
           }}
         />
         <span>Customer</span>
@@ -103,7 +103,7 @@ const CustomBarChart = ({ dashboardData }: { dashboardData: any }) => {
             contentStyle={{
               background: "var(--surface-card)",
               border: "1px solid var(--surface-border)",
-              borderRadius: 6,
+              borderRadius: 2,
               color: "var(--foreground)",
             }}
             cursor={{ fill: "var(--surface-card-hover)" }}

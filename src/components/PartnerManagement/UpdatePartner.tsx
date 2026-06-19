@@ -196,7 +196,7 @@ const UpdatePartner = () => {
   }
 
   return (
-    <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "6px" }}>
+    <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "2px" }}>
       <div className="row">
         {/* Name */}
         <div className="col-md-6 mb-3">

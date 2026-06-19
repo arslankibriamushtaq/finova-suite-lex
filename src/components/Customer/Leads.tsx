@@ -258,7 +258,7 @@ const Leads = () => {
               backgroundColor: "var(--color-action)",
               color: "var(--foreground)",
               borderColor: "var(--primary-foreground)",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -710,7 +710,7 @@ const Leads = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           border: "1px solid var(--border)",
         }}
@@ -722,7 +722,7 @@ const Leads = () => {
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
             placeholder="From"
@@ -740,7 +740,7 @@ const Leads = () => {
               flex: "1 1 180px",
               minWidth: 160,
               height: 40,
-              borderRadius: 6,
+              borderRadius: 2,
               background: "#fff",
             }}
           />
@@ -762,7 +762,7 @@ const Leads = () => {
               flex: "1 1 180px",
               minWidth: 160,
               height: 40,
-              borderRadius: 6,
+              borderRadius: 2,
               background: "#fff",
             }}
           />
@@ -782,7 +782,7 @@ const Leads = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",
@@ -889,7 +889,7 @@ const Leads = () => {
           {/* Block Codes Table */}
           <div style={{
             border: "1px solid var(--border)",
-            borderRadius: "6px",
+            borderRadius: "2px",
             overflow: "hidden",
             maxHeight: "400px",
             overflowY: "auto"
@@ -969,7 +969,7 @@ const Leads = () => {
                         backgroundColor: "var(--color-info)",
                         color: "var(--primary-foreground)",
                         padding: "4px 12px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         fontSize: "12px",
                         fontWeight: "500"
                       }}>
@@ -986,7 +986,7 @@ const Leads = () => {
                         color: "var(--primary-foreground)",
                         border: "none",
                         padding: "6px 16px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         fontSize: "12px",
                         fontWeight: "500",
                         cursor: "default",

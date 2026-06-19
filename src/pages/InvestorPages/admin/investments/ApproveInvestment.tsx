@@ -166,7 +166,7 @@ const ApproveInvestment = () => {
           <span
             style={{
               padding: "6px 12px",
-              borderRadius: "6px",
+              borderRadius: "2px",
               backgroundColor: statusColor,
               color: "white",
               fontSize: "12px",
@@ -197,7 +197,7 @@ const ApproveInvestment = () => {
                 alignItems: "center",
                 gap: "6px",
                 padding: "6px 12px",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 backgroundColor: "#434948",
                 // border: "1px solid #Ergb(67, 73, 72)
                 color: "var(--primary-foreground)",

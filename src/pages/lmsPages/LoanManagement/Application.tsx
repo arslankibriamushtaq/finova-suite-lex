@@ -849,7 +849,7 @@ const handleSave = async () => {
               style={{
                 //background: themeStyle.revertActionColor,
                 color: "var(--primary-foreground)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 borderColor: "white",
                 padding: "8px 16px",
               }}
@@ -865,7 +865,7 @@ const handleSave = async () => {
                 //background: "#EB0D0D",
                 color: "var(--primary-foreground)",
                 border: "none",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 padding: "12px",
               }}
             >

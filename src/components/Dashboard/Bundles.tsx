@@ -237,7 +237,7 @@ const Bundles = (props: any) => {
               zIndex: 1000,
               maxWidth: "100%",
               height: "380px",
-              borderRadius: "6px",
+              borderRadius: "2px",
             }}
           >
             <div className="ticket p-3">
@@ -255,7 +255,7 @@ const Bundles = (props: any) => {
                 }}
                 tabBarGutter={16}
                 renderTabBar={(props, DefaultTabBar) => (
-                  <DefaultTabBar {...props} style={{ borderRadius: "6px" }} />
+                  <DefaultTabBar {...props} style={{ borderRadius: "2px" }} />
                 )}
               >
                 {ticketsTab.map(({ key, label, chartOptions }) => (

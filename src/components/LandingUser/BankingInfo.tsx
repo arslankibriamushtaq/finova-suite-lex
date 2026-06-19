@@ -151,7 +151,7 @@ const BankingInfo = () => {
         <Card
           title="IBAN Verification Details"
           className="mb-4"
-          style={{ borderRadius: "6px", border: "1px solid #e8e8e8" }}
+          style={{ borderRadius: "2px", border: "1px solid #e8e8e8" }}
           headStyle={{ background: "#f5f7fa", fontWeight: 600, fontSize: "16px" }}
         >
           <Row>

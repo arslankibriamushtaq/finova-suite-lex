@@ -229,7 +229,7 @@ const EditEarlySettlement: any = ({ productId, setSelectedTab }: any) => {
           style={{
             backgroundColor: "#A0A0A0",
             border: "1px solid #A0A0A0",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }}
@@ -240,7 +240,7 @@ const EditEarlySettlement: any = ({ productId, setSelectedTab }: any) => {
           className="application-btn mb-2"
           /* style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }} */

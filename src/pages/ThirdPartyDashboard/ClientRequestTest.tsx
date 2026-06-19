@@ -224,7 +224,7 @@ const ClientRequestTest = () => {
           <span
             style={{
               padding: "4px 10px",
-              borderRadius: 6,
+              borderRadius: 2,
               backgroundColor: color,
               color: textColor,
               fontSize: 12,
@@ -248,7 +248,7 @@ const ClientRequestTest = () => {
           <span
             style={{
               padding: "4px 10px",
-              borderRadius: 6,
+              borderRadius: 2,
               backgroundColor: isSuccess
                 ? "var(--color-status-green)"
                 : isClientError
@@ -278,7 +278,7 @@ const ClientRequestTest = () => {
           <Button
             type="primary"
             className="theme-btn-next"
-            style={{ height: 36, borderRadius: 6 }}
+            style={{ height: 36, borderRadius: 2 }}
           >
             Select <DownOutlined />
           </Button>
@@ -298,7 +298,7 @@ const ClientRequestTest = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -310,7 +310,7 @@ const ClientRequestTest = () => {
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
         </div>
       </div>
@@ -319,7 +319,7 @@ const ClientRequestTest = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

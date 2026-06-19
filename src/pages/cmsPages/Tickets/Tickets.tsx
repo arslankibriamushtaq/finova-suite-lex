@@ -293,7 +293,7 @@ const Tickets = () => {
         <div
           style={{
             padding: "0.22rem 0.8rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: "var(--color-cms-purple)",
             color: "var(--primary-foreground)",
             display: "inline-block",
@@ -313,7 +313,7 @@ const Tickets = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -514,7 +514,7 @@ const Tickets = () => {
                 style={{
                   backgroundColor: "var(--color-teal-bright)",
                   color: "white",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   padding: "10px 30px",
                   height: "auto",
                   border: "none"
@@ -670,7 +670,7 @@ const Tickets = () => {
                 onClick={() => setEditComplaintModal(false)}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: "var(--color-cms-teal)",
                   color: "white",
@@ -686,7 +686,7 @@ const Tickets = () => {
                 disabled={loadingSave}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: loadingSave ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",
@@ -785,7 +785,7 @@ const Tickets = () => {
                 }}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: "var(--color-cms-teal)",
                   color: "white",
@@ -801,7 +801,7 @@ const Tickets = () => {
                 disabled={loadingEscalate}
                 style={{
                   padding: "8px 24px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "none",
                   backgroundColor: loadingEscalate ? "var(--color-text-slate)" : "var(--foreground)",
                   color: "white",

@@ -129,7 +129,7 @@ const BayanDetails: React.FC<Props> = ({ applicationId }) => {
       <button
         onClick={() => setOpen(true)}
         style={{
-          background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', borderRadius: 6,
+          background: 'var(--primary)', color: 'var(--primary-foreground)', border: 'none', borderRadius: 2,
           padding: '6px 10px', fontWeight: 600, cursor: 'pointer'
         }}
       >

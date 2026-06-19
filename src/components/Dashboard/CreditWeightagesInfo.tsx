@@ -183,7 +183,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
       <div style={{ 
         background: "var(--surface-card)", 
         padding: "24px", 
-        borderRadius: "6px", 
+        borderRadius: "2px", 
         marginBottom: "24px",
         display: "flex",
         alignItems: "center",
@@ -234,7 +234,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
         {/* Right: Total Score Badge */}
         <div style={{
           padding: "12px 24px",
-          borderRadius: "6px",
+          borderRadius: "2px",
           background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           color: "#fff",
           display: "flex",
@@ -253,7 +253,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
       </div>
 
       {/* Credit Factor Grid */}
-      <div style={{ background: "var(--surface-card)", padding: "24px", borderRadius: "6px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+      <div style={{ background: "var(--surface-card)", padding: "24px", borderRadius: "2px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
         <h3 style={{ 
           fontSize: "18px", 
           fontWeight: "600", 
@@ -285,7 +285,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   style={{
                     padding: "16px",
                     border: "1px solid var(--surface-border)",
-                    borderRadius: "6px",
+                    borderRadius: "2px",
                     background: "var(--surface-card)",
                     transition: "box-shadow 0.2s",
                   }}
@@ -315,7 +315,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                     </div>
                     <div style={{
                       padding: "4px 12px",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       background: "linear-gradient(135deg, #10b981 0%, #059669 100%)",
                       color: "#fff",
                       fontSize: "14px",
@@ -385,7 +385,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
       <div style={{ 
         background: "var(--surface-card)", 
         padding: "0",
-        borderRadius: "6px", 
+        borderRadius: "2px", 
         marginTop: "24px",
         border: "1px solid #D1FAE5",
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
@@ -437,7 +437,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               style={{
                 padding: "16px",
                 border: "1px solid var(--surface-border)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 background: "var(--surface-card)"
               }}
             >
@@ -495,7 +495,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               style={{
                 padding: "16px",
                 border: "1px solid var(--surface-border)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 background: "var(--surface-card)"
               }}
             >
@@ -553,7 +553,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               style={{
                 padding: "16px",
                 border: "1px solid var(--surface-border)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 background: "var(--surface-card)"
               }}
             >
@@ -611,7 +611,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               style={{
                 padding: "16px",
                 border: "1px solid var(--surface-border)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 background: "var(--surface-card)"
               }}
             >
@@ -669,7 +669,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               style={{
                 padding: "16px",
                 border: "1px solid var(--surface-border)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 background: "var(--surface-card)",
                 marginTop: "4px"
               }}

@@ -97,7 +97,7 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
     //           backgroundColor: "#0B8085 !important",
     //           color: "#000000",
     //           borderColor: "white",
-    //           borderRadius: "6px",
+    //           borderRadius: "2px",
     //           padding: "10px 20px",
     //         }}
     //       >

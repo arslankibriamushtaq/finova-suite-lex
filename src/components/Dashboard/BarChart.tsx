@@ -266,7 +266,7 @@ const CustomBarChart = () => {
                 backgroundColor: "#fff",
                 border: "1px solid #d9d9d9",
                 padding: "5px 15px",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 display: "flex",
                 alignItems: "center",
                 
@@ -280,7 +280,7 @@ const CustomBarChart = () => {
         
         <div style={{ position: "relative", minHeight: 400 }}>
           {loading && (
-            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.6)", zIndex: 10, borderRadius: 6 }}>
+            <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "rgba(255,255,255,0.6)", zIndex: 10, borderRadius: 2 }}>
               <Loader />
             </div>
           )}
@@ -341,7 +341,7 @@ const CustomBarChart = () => {
                       style={{
                         backgroundColor: "var(--surface-card)",
                         border: "1px solid var(--surface-border)",
-                        borderRadius: 6,
+                        borderRadius: 2,
                         padding: "10px 14px",
                         boxShadow: "var(--surface-elevation-2)",
                         fontSize: 12,

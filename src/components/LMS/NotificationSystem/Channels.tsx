@@ -60,7 +60,7 @@ const Channels = () => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         textAlign: "center",
                         backgroundColor: row.supportsReadStatus
                             ? "var(--color-success)"
@@ -90,7 +90,7 @@ const Channels = () => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         textAlign: "center",
                         backgroundColor: row.active ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
@@ -107,7 +107,7 @@ const Channels = () => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         textAlign: "center",
                         backgroundColor: row.allowUserPref
                             ? "var(--color-success)"
@@ -126,7 +126,7 @@ const Channels = () => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         textAlign: "center",
                         backgroundColor: row.systemAllow
                             ? "var(--color-success)"
@@ -152,7 +152,7 @@ const Channels = () => {
                             backgroundColor: "var(--color-action) !important",
                             color: "var(--foreground)",
                             borderColor: "white",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             padding: "10px 20px",
                         }}
                     >

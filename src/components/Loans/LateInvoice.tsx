@@ -155,7 +155,7 @@ function LateInvoice() {
                 style={{
                   padding: 10,
                   backgroundColor: themeStyle.secondary,
-                  borderRadius: 6,
+                  borderRadius: 2,
                 }}
               />
             </div>
@@ -192,7 +192,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   From
@@ -203,7 +203,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Billing To
@@ -217,7 +217,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Payment Term
@@ -228,7 +228,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2 "
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Ship To
@@ -241,7 +241,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   PO Number
@@ -252,7 +252,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Due Date
@@ -267,7 +267,7 @@ function LateInvoice() {
             <div className="col-6">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
                   Penalty Amount
@@ -286,7 +286,7 @@ function LateInvoice() {
             <div className="col-6 mb-3">
               <div
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
-                style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label style={{ fontWeight: "bold" }}>Date</label>
                 <span>
@@ -302,7 +302,7 @@ function LateInvoice() {
                 className=" mb-2 p-3 col-6"
                 style={{
                   background: "var(--color-error-bg)",
-                  borderTopLeftRadius: "6px",
+                  borderTopLeftRadius: "2px",
                   fontWeight: "700",
                 }}
               >
@@ -312,7 +312,7 @@ function LateInvoice() {
                 className="mb-2 p-3 col-6"
                 style={{
                   background: "var(--color-error-bg)",
-                  borderTopRightRadius: "6px",
+                  borderTopRightRadius: "2px",
                   fontWeight: "700",
                 }}
               >
@@ -347,7 +347,7 @@ function LateInvoice() {
                     style={{
                       backgroundColor: "var(--muted)",
                       border: "1px solid var(--border)",
-                      borderBottomRightRadius: "6px",
+                      borderBottomRightRadius: "2px",
                       borderLeftColor: "transparent",
                       borderTopLeftRadius: "0px",
                       borderTopRightRadius: "0px",
@@ -405,7 +405,7 @@ function LateInvoice() {
               <div className="col-4">
                 <div
                   className="d-flex justify-content-between align-items-center p-3"
-                  style={{ backgroundColor: "var(--muted)", borderRadius: "6px" }}
+                  style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
                     Discount(%)

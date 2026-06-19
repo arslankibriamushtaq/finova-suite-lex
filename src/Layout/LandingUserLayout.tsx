@@ -23,8 +23,8 @@ const LandingUserLayout: React.FC = () => {
               style={{
                 backgroundColor: " #1963b9",
                 color: "white",
-                borderTopLeftRadius: "6px",
-                borderTopRightRadius: "6px",
+                borderTopLeftRadius: "2px",
+                borderTopRightRadius: "2px",
               }}
             >
               English
@@ -34,8 +34,8 @@ const LandingUserLayout: React.FC = () => {
               style={{
                 backgroundColor: "#dfdddd",
                 color: "black",
-                // borderTopRightRadius: "6px",
-                // borderBottomRightRadius: "6px",
+                // borderTopRightRadius: "2px",
+                // borderBottomRightRadius: "2px",
               }}
             >
               العربية

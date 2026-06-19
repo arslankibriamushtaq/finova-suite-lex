@@ -233,7 +233,7 @@ const Notifications = () => {
                   style={{
                     border: "1px solid #ddd",
                     padding: "8px",
-                    borderTopLeftRadius: "6px",
+                    borderTopLeftRadius: "2px",
                   }}
                 >
                   Field
@@ -250,7 +250,7 @@ const Notifications = () => {
                   style={{
                     border: "1px solid #ddd",
                     padding: "8px",
-                    borderTopRightRadius: "6px",
+                    borderTopRightRadius: "2px",
                   }}
                 >
                   New Value
@@ -544,7 +544,7 @@ const Notifications = () => {
                   className="px-4 pb-2 pt-2 cursor-pointer"
                   style={{
                     border: "1px solid transparent",
-                    borderRadius: "6px",
+                    borderRadius: "2px",
                     fontSize: "16px",
                     fontWeight: "400",
                     backgroundColor:
@@ -565,7 +565,7 @@ const Notifications = () => {
                 <div
                   className="px-4 pb-2 pt-2 cursor-pointer"
                   style={{
-                    borderRadius: "6px",
+                    borderRadius: "2px",
                     fontSize: "16px",
                     fontWeight: "400",
                     backgroundColor:
@@ -603,7 +603,7 @@ const Notifications = () => {
                           className="alert d-flex justify-content-between align-items-start skeleton-loader"
                           style={{
                             padding: "10px",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             marginBottom: "10px",
                             background: "#f0f0f0",
                             animation: "pulse 1.5s infinite ease-in-out",
@@ -893,7 +893,7 @@ const Notifications = () => {
               style={{
                 border: "1px solid #D1D1D1",
                 background: "#F0F0F0",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 minHeight: "150px",
               }}
               className="mt-1 "
@@ -917,7 +917,7 @@ const Notifications = () => {
                   // style={{
                   //   border: "1px solid #D1D1D1",
                   //   background: "#F0F0F0",
-                  //   borderRadius: "6px",
+                  //   borderRadius: "2px",
                   //   minHeight: "150px",
                   // }}
                   >
@@ -1214,7 +1214,7 @@ const Notifications = () => {
           <div className="mt-3 d-flex gap-3 justify-content-center">
             <button
               className="application-btn cursor-pointer"
-              style={{ border: "1px solid transparent", borderRadius: "6px" }}
+              style={{ border: "1px solid transparent", borderRadius: "2px" }}
               onClick={() => {
                 notificationStatusApproveReject(
                   notificationsDataIndividual?.url,
@@ -1226,7 +1226,7 @@ const Notifications = () => {
             </button>
             <div
               className="invoice-btn cursor-pointer"
-              style={{ borderRadius: "6px" }}
+              style={{ borderRadius: "2px" }}
               onClick={() => {
                 notificationStatusApproveReject(
                   notificationsDataIndividual?.url,

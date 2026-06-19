@@ -75,7 +75,7 @@ const PartnerOnboarding = () => {
                       style={{
                         width: "180px",
                         border: "1px solid #d9d9d9",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                       }}
                     />
                   </div>
@@ -90,7 +90,7 @@ const PartnerOnboarding = () => {
                       style={{
                         width: "180px",
                         border: "1px solid #d9d9d9",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                       }}
                     />
                   </div>

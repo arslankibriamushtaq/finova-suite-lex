@@ -81,7 +81,7 @@ const SystemPreferences = () => {
                                 backgroundColor: "var(--color-action)",
                                 color: "white",
                                 padding: "2px 8px",
-                                borderRadius: "6px",
+                                borderRadius: "2px",
                                 fontSize: "12px",
                                 margin: "2px"
                             }}>
@@ -109,7 +109,7 @@ const SystemPreferences = () => {
                             backgroundColor: "var(--color-action) !important",
                             color: "var(--foreground)",
                             borderColor: "white",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             padding: "10px 20px",
                         }}
                     >

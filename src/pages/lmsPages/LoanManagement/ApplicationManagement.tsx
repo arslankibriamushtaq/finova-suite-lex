@@ -737,7 +737,7 @@ const ApplicationManagement = () => {
     //       style={{
     //         whiteSpace: "nowrap",
     //         padding: "0.4rem 1rem",
-    //         borderRadius: "6px",
+    //         borderRadius: "2px",
     //         backgroundColor: "var(--color-info)",
     //         color: "var(--primary-foreground)",
     //         fontSize: "12px",
@@ -826,7 +826,7 @@ const ApplicationManagement = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -1128,7 +1128,7 @@ const ApplicationManagement = () => {
         <Modal.Footer>
           <Button
             onClick={() => setManualModal(false)}
-            style={{ borderRadius: "6px" }}
+            style={{ borderRadius: "2px" }}
           >
             Cancel
           </Button>
@@ -1136,7 +1136,7 @@ const ApplicationManagement = () => {
             className="gradient-btn"
             type="primary"
             onClick={submitManualAction}
-            style={{ borderRadius: "6px" }}
+            style={{ borderRadius: "2px" }}
           >
             Submit
           </Button>
@@ -1178,7 +1178,7 @@ const ApplicationManagement = () => {
           </span>
           <Button
             style={{
-              borderRadius: "6px",
+              borderRadius: "2px",
               border: "transparent",
             }}
             className="application-btn"
@@ -1194,7 +1194,7 @@ const ApplicationManagement = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -1209,7 +1209,7 @@ const ApplicationManagement = () => {
               setSearchValue(e.target.value);
               setPage(1);
             }}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
         </div>
       </div>
@@ -1238,7 +1238,7 @@ const ApplicationManagement = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",
@@ -1578,7 +1578,7 @@ const ApplicationManagement = () => {
                 }}
                 style={{
                   backgroundColor: "var(--color-danger-action)",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   height: "fit-content",
                   width: "fit-content",
                   border: "none",
@@ -1948,7 +1948,7 @@ const ApplicationManagement = () => {
                 }}
                 style={{
                   backgroundColor: "var(--color-danger-action)",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   height: "fit-content",
                   width: "fit-content",
                 }}

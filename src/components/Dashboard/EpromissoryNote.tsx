@@ -46,7 +46,7 @@ const EpromissoryNote = ({setActiveTab}: any) => {
             src={pdfUrl}
             width="100%"
             height="100%"
-            style={{ border: "none", borderRadius: "6px" }}
+            style={{ border: "none", borderRadius: "2px" }}
             title="ePromissory Note PDF"
             onError={() => {
               console.error("Failed to load PDF in iframe");

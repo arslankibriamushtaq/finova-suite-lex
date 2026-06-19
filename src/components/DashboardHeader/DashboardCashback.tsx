@@ -183,7 +183,7 @@ const DashboardCashback = () => {
               zIndex: 1000,
               maxWidth: "530px",
               height: "380px",
-              borderRadius: "6px",
+              borderRadius: "2px",
             }}
           >
             <label className="label-tag">Barq Lite Cash in/Out</label>

@@ -33,7 +33,7 @@ function NotificationInbox() {
             colorForeground: isDark ? '#e6eaf2' : '#0f172a',
             colorNeutral: isDark ? '#262a36' : '#e2e8f0',
             fontSize: '14px',
-            borderRadius: '6px',
+            borderRadius: '2px',
           },
           elements: {
             bellContainer: {
@@ -68,7 +68,7 @@ function NotificationInbox() {
             popoverContent: {
               border: '1px solid var(--border, #e2e8f0)',
               boxShadow: '0 16px 40px rgba(15, 23, 42, 0.14)',
-              borderRadius: 6,
+              borderRadius: 2,
               overflow: 'hidden',
             },
           },

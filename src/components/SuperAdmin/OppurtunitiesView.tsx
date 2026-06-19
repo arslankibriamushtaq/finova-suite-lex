@@ -190,7 +190,7 @@ const OppurtunitiesView = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -257,7 +257,7 @@ const OppurtunitiesView = () => {
             borderLeft: "1px solid #D1D1D1",
             borderRight: "1px solid #D1D1D1",
             borderBottom: "1px solid #D1D1D1",
-            borderRadius: "6px",
+            borderRadius: "2px",
           }}
         >
           <Tabs
@@ -277,7 +277,7 @@ const OppurtunitiesView = () => {
                         className="d-flex justify-content-between align-items-center w-100 p-3"
                         style={{
                           backgroundColor: "#f5f5f5",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                         }}
                       >
                         <label className="fs-14 fw-600">{field.label}</label>
@@ -294,7 +294,7 @@ const OppurtunitiesView = () => {
                         className="d-flex justify-content-between align-items-center w-100 p-3"
                         style={{
                           backgroundColor: "#f5f5f5",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                         }}
                       >
                         <label className="fs-14 fw-600">{field.label}</label>
@@ -311,7 +311,7 @@ const OppurtunitiesView = () => {
                         className="d-flex justify-content-between align-items-center w-100 p-3"
                         style={{
                           backgroundColor: "#f5f5f5",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                         }}
                       >
                         <label className="fs-14 fw-600">{field.label}</label>
@@ -326,7 +326,7 @@ const OppurtunitiesView = () => {
                         className="d-flex justify-content-between align-items-center w-100 p-3"
                         style={{
                           backgroundColor: "#f5f5f5",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                         }}
                       >
                         <label className="fs-14 fw-600">{field.label}</label>

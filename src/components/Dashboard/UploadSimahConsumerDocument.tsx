@@ -112,7 +112,7 @@ function UploadSimahConsumerDocument() {
           className="upload-area" 
           style={{
             border: "2px dashed #d0d0d0",
-            borderRadius: "6px",
+            borderRadius: "2px",
             padding: "40px 20px",
             textAlign: "center",
             backgroundColor: "#f9f9f9",
@@ -240,7 +240,7 @@ function UploadSimahConsumerDocument() {
           <div
             style={{
               border: "1px solid #ddd",
-              borderRadius: "6px",
+              borderRadius: "2px",
               overflow: "hidden",
               backgroundColor: "#fff",
             }}

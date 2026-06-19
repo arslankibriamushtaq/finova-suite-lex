@@ -183,7 +183,7 @@ const DashboardUserDetail2 = (props: any) => {
                     zIndex: 1000,
                     maxWidth: "100%",
                     height: "380px",
-                    borderRadius: "6px",
+                    borderRadius: "2px",
                 }}
                 >
                 <label className="label-tag">Active and Concurrent Users</label>
@@ -207,7 +207,7 @@ const DashboardUserDetail2 = (props: any) => {
                         zIndex: 1000,
                         maxWidth: "100%",
                         height: "380px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                     }}>
                     <label className="label-tag">Device Type</label>
                     <ReactECharts

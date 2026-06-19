@@ -149,7 +149,7 @@ const IncomeProof = () => {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -444,7 +444,7 @@ const IncomeProof = () => {
               border: "1px solid #ccc",
               color: "black",
               background: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "4px 20px",
               fontWeight: "500",
             }}
@@ -459,7 +459,7 @@ const IncomeProof = () => {
               background: "black",
               color: "white",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "4px 20px",
               fontWeight: "500",
             }}

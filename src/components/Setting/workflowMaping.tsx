@@ -462,7 +462,7 @@ const WorkFlowMapping = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -671,7 +671,7 @@ const WorkFlowMapping = () => {
         <div className="col-6 d-flex justify-content-end">
           <Button
             style={{
-              borderRadius: "6px",
+              borderRadius: "2px",
               border: "transparent",
             }}
             className="application-btn"
@@ -889,7 +889,7 @@ const WorkFlowMapping = () => {
                 }}
                 /* style={{
           backgroundColor: "#EB0D0D",
-          borderRadius: "6px",
+          borderRadius: "2px",
           height: "fit-content",
           width: "fit-content",
           color: "#FCFCFC"
@@ -1084,7 +1084,7 @@ const WorkFlowMapping = () => {
                 }}
                 /* style={{
           backgroundColor: "#EB0D0D",
-          borderRadius: "6px",
+          borderRadius: "2px",
           height: "fit-content",
           width: "fit-content",
           color: "#FCFCFC"

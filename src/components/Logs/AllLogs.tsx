@@ -170,7 +170,7 @@ const AllLogs = () => {
               fontSize: "10px",
               background: "#f5f5f5",
               padding: "2px 6px",
-              borderRadius: "6px",
+              borderRadius: "2px",
               display: "block",
               maxWidth: "120px",
               overflow: "hidden",
@@ -193,7 +193,7 @@ const AllLogs = () => {
             size="small"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "4px 12px",
             }}
           >

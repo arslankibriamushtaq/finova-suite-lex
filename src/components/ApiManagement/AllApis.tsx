@@ -118,7 +118,7 @@ const AllApis = () => {
     <>
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "2px" }}
       >
       {/*   <div className="d-flex mb-3 col-12 filter-select">
           <Select

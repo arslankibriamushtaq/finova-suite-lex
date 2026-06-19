@@ -284,7 +284,7 @@ const Calculator = () => {
       </Row>
       <div
         className="d-flex"
-        style={{ border: "1px solid #DADADA", borderRadius: "6px" }}
+        style={{ border: "1px solid #DADADA", borderRadius: "2px" }}
       >
         <div className="col-7 p-3">
           <div
@@ -389,7 +389,7 @@ const Calculator = () => {
               className="btn btn-danger"
               style={{
                 backgroundColor: "#EB0D0D",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 height: "fit-content",
                 width: "fit-content",
               }}

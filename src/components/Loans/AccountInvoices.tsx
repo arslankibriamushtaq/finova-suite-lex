@@ -226,7 +226,7 @@ const AccountInvoices = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.paymentStatus === 1 ? "var(--color-success)" : "var(--destructive)",
             color: "var(--primary-foreground)",
           }}
@@ -245,7 +245,7 @@ const AccountInvoices = () => {
             type="primary"
             style={{
               borderColor: "var(--background)",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -832,7 +832,7 @@ const AccountInvoices = () => {
                           style={{
                             padding: "7px",
                             border: "1px solid var(--border)",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             cursor: "pointer",
                             width: "220px",
                             textAlign: "center",
@@ -848,7 +848,7 @@ const AccountInvoices = () => {
                             display: "inline-flex",
                             alignItems: "center",
                             backgroundColor: "var(--color-disabled)",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             padding: "5px 10px",
                             color: "var(--primary-foreground)",
                           }}
@@ -890,7 +890,7 @@ const AccountInvoices = () => {
                     className="application-btn p-2 border-rounded-lg"
                     style={{
                       border: "1px solid transparent",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                     }}
                   >
                     Submit
@@ -1024,7 +1024,7 @@ const AccountInvoices = () => {
                     className="application-btn px-2 p-2"
                     style={{
                       border: "1px solid transparent",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                     }}
                   >
                     Submit

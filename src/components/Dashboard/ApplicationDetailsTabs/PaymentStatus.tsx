@@ -106,7 +106,7 @@ function PaymentStatus() {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.paymentStatus === 'Paid' ? "var(--color-status-green)" : "var(--color-status-red-soft)",
             color: "white",
           }}
@@ -130,7 +130,7 @@ function PaymentStatus() {
         </h2>
         <div style={{ 
           background: "var(--background)",
-          borderRadius: "6px",
+          borderRadius: "2px",
           overflow: "hidden",
           //border: "1px solid #E5E7EB"
         }}>

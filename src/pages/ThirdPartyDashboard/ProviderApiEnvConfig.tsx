@@ -187,7 +187,7 @@ const ProviderApiEnvConfig = () => {
           style={{
             ...getEnvColor(row.environment),
             padding: "4px 10px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             fontSize: "12px",
             fontWeight: 600,
           }}

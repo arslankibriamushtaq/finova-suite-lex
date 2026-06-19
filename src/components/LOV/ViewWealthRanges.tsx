@@ -58,7 +58,7 @@ const ViewWealthRanges = () => {
   }
 
   return (
-    <div className="service" style={{ background: "white", padding: "1rem", borderRadius: "6px" }}>
+    <div className="service" style={{ background: "white", padding: "1rem", borderRadius: "2px" }}>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Wealth Range Details</h2>
         <Button onClick={() => navigate(-1)}>Back</Button>
@@ -70,7 +70,7 @@ const ViewWealthRanges = () => {
           margin: "0 auto",
           background: "var(--background)",
           boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
-          borderRadius: 6,
+          borderRadius: 2,
         }}
       >
         <Row gutter={[16, 16]}>

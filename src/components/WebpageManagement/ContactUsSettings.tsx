@@ -390,7 +390,7 @@ const ContactUsSettings = () => {
       <div key={index} style={{
         backgroundColor: 'var(--background)',
         padding: '20px',
-        borderRadius: '6px',
+        borderRadius: '2px',
         boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
         marginBottom: '20px',
         display: 'flex',
@@ -409,7 +409,7 @@ const ContactUsSettings = () => {
             color: 'var(--color-text-dark)',
             cursor: 'pointer',
             padding: '5px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             transition: 'background-color 0.2s ease'
           }}
           onMouseEnter={(e) => {
@@ -439,7 +439,7 @@ const ContactUsSettings = () => {
                 width: '100%',
                 padding: '4px 8px',
                 border: '2px solid var(--color-action-blue)',
-                borderRadius: '6px',
+                borderRadius: '2px',
                 fontSize: 'inherit',
                 fontWeight: 'inherit',
                 fontFamily: 'inherit'
@@ -465,7 +465,7 @@ const ContactUsSettings = () => {
               lineHeight: '1.5',
               cursor: 'pointer',
               padding: '5px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               transition: 'background-color 0.2s ease'
             }}
             onMouseEnter={(e) => {
@@ -484,7 +484,7 @@ const ContactUsSettings = () => {
               fontSize: '24px',
               cursor: 'pointer',
               padding: '5px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               transition: 'background-color 0.2s ease'
             }}
             onMouseEnter={(e) => {
@@ -544,7 +544,7 @@ const ContactUsSettings = () => {
             width: '100%',
             padding: '12px',
             border: '1px solid var(--color-border-light)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             fontSize: '14px',
             boxSizing: 'border-box'
           }}
@@ -718,7 +718,7 @@ const ContactUsSettings = () => {
               width: '100%',
               padding: '4px 8px',
               border: '2px solid var(--color-action-blue)',
-              borderRadius: '6px',
+              borderRadius: '2px',
               fontSize: 'inherit',
               fontFamily: 'inherit'
             }}
@@ -734,7 +734,7 @@ const ContactUsSettings = () => {
             style={{
               cursor: 'pointer',
               padding: '4px 8px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               transition: 'background-color 0.2s'
             }}
             onMouseEnter={(e) => {
@@ -759,7 +759,7 @@ const ContactUsSettings = () => {
           style={{
             cursor: 'pointer',
             padding: '2px 4px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             display: 'inline-block',
             border: '1px solid transparent',
             color: 'var(--color-text-dark)',
@@ -788,7 +788,7 @@ const ContactUsSettings = () => {
             cursor: 'pointer', 
             padding: '20px',
             border: '2px dashed var(--color-border-light)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             textAlign: 'center',
             backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
@@ -895,7 +895,7 @@ const ContactUsSettings = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -944,7 +944,7 @@ const ContactUsSettings = () => {
             color: 'var(--primary-foreground)',
             border: 'none',
             padding: '8px 16px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             fontSize: '12px',
             fontWeight: 'bold',
             cursor: 'pointer',
@@ -1004,7 +1004,7 @@ const ContactUsSettings = () => {
                 autoFocus
                 style={{
                   border: '2px solid var(--color-action-blue)',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
@@ -1071,7 +1071,7 @@ const ContactUsSettings = () => {
                 autoFocus
                 style={{
                   border: '2px solid var(--color-action-blue)',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
@@ -1135,7 +1135,7 @@ const ContactUsSettings = () => {
                 autoFocus
                 style={{
                   border: '2px solid var(--color-action-blue)',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   padding: '4px 8px',
                   fontSize: 'inherit',
                   fontFamily: 'inherit',
@@ -1212,7 +1212,7 @@ const ContactUsSettings = () => {
             <div style={{
               backgroundColor: 'var(--background)',
               padding: '20px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
               display: 'flex',
               alignItems: 'center',
@@ -1279,7 +1279,7 @@ const ContactUsSettings = () => {
             <div style={{
               backgroundColor: 'var(--background)',
               padding: '30px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
             }}>
               <form>
@@ -1296,7 +1296,7 @@ const ContactUsSettings = () => {
                     backgroundColor: 'var(--foreground)',
                     color: 'var(--primary-foreground)',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '16px',
                     fontWeight: 'bold',
                     cursor: 'pointer',
@@ -1340,7 +1340,7 @@ const ContactUsSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             width: '90%',
             maxWidth: '800px',
             maxHeight: '90vh',
@@ -1349,7 +1349,7 @@ const ContactUsSettings = () => {
             <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Content</h3>
             <div style={{
               border: '1px solid var(--color-border-light)',
-              borderRadius: '6px',
+              borderRadius: '2px',
               minHeight: '300px'
             }}>
               <CKEditor
@@ -1386,7 +1386,7 @@ const ContactUsSettings = () => {
                   backgroundColor: 'var(--color-text-slate)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
                 onClick={() => {
@@ -1402,7 +1402,7 @@ const ContactUsSettings = () => {
                   backgroundColor: 'var(--color-action-blue)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
                 onClick={() => {
@@ -1434,7 +1434,7 @@ const ContactUsSettings = () => {
         }}>
           <div style={{
             backgroundColor: 'var(--background)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             width: '90%',
             maxWidth: '500px',
             maxHeight: '90vh',
@@ -1495,7 +1495,7 @@ const ContactUsSettings = () => {
                     width: '100%',
                     padding: '12px',
                     border: '1px solid var(--color-border-light)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '14px',
                     boxSizing: 'border-box',
                     backgroundColor: 'var(--background)'
@@ -1516,7 +1516,7 @@ const ContactUsSettings = () => {
                 </label>
                 <div style={{
                   border: '2px dashed var(--color-border-light)',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   padding: '20px',
                   backgroundColor: 'var(--color-surface-ice)',
                   minHeight: '120px',
@@ -1595,7 +1595,7 @@ const ContactUsSettings = () => {
                     backgroundColor: 'var(--foreground)',
                     color: 'var(--primary-foreground)',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     cursor: 'pointer',
@@ -1633,7 +1633,7 @@ const ContactUsSettings = () => {
         }}>
           <div style={{
             backgroundColor: 'var(--background)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             width: '90%',
             maxWidth: '500px',
             maxHeight: '90vh',
@@ -1694,7 +1694,7 @@ const ContactUsSettings = () => {
                     width: '100%',
                     padding: '12px',
                     border: '1px solid var(--color-border-light)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '14px',
                     boxSizing: 'border-box',
                     backgroundColor: 'var(--background)'
@@ -1722,7 +1722,7 @@ const ContactUsSettings = () => {
                     width: '100%',
                     padding: '12px',
                     border: '1px solid var(--color-border-light)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '14px',
                     boxSizing: 'border-box',
                     backgroundColor: 'var(--background)'
@@ -1741,7 +1741,7 @@ const ContactUsSettings = () => {
                     backgroundColor: 'var(--foreground)',
                     color: 'var(--primary-foreground)',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '14px',
                     fontWeight: 'bold',
                     cursor: 'pointer',
@@ -1783,7 +1783,7 @@ const ContactUsSettings = () => {
             style={{
               backgroundColor: 'var(--background)',
               padding: '30px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               width: '90%',
               maxWidth: '500px',
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
@@ -1818,7 +1818,7 @@ const ContactUsSettings = () => {
                   width: '100%',
                   padding: '12px',
                   border: '1px solid var(--color-border-light)',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   fontSize: '14px',
                   boxSizing: 'border-box',
                   backgroundColor: 'var(--background)'
@@ -1839,7 +1839,7 @@ const ContactUsSettings = () => {
                   backgroundColor: 'var(--color-text-slate)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   fontSize: '14px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
@@ -1861,7 +1861,7 @@ const ContactUsSettings = () => {
                   backgroundColor: 'var(--foreground)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   fontSize: '14px',
                   fontWeight: 'bold',
                   cursor: 'pointer',

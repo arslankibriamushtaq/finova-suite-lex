@@ -766,13 +766,13 @@ const LandingPage = () => {
               ? (pageData as any).header.navigationLinks.map((item: any, idx: number) => {
                   const preservedUrl = preserveLocaleInUrl(item.url || '#');
                   return (
-                    <a key={idx} href={preservedUrl} target={item.target || '_self'} onClick={() => setIsMobileMenuOpen(false)} style={{ color: '#111', textDecoration: 'none', padding: '10px 6px', borderRadius: 6, background: 'rgba(17,24,39,0.03)' }}>{item.label}</a>
+                    <a key={idx} href={preservedUrl} target={item.target || '_self'} onClick={() => setIsMobileMenuOpen(false)} style={{ color: '#111', textDecoration: 'none', padding: '10px 6px', borderRadius: 2, background: 'rgba(17,24,39,0.03)' }}>{item.label}</a>
                   );
                 })
               : (
                 <>
-                  <a href="#about" onClick={() => setIsMobileMenuOpen(false)} style={{ color: '#111', textDecoration: 'none', padding: '10px 6px', borderRadius: 6, background: 'rgba(17,24,39,0.03)' }}>About</a>
-                  <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} style={{ color: '#111', textDecoration: 'none', padding: '10px 6px', borderRadius: 6, background: 'rgba(17,24,39,0.03)' }}>Contact</a>
+                  <a href="#about" onClick={() => setIsMobileMenuOpen(false)} style={{ color: '#111', textDecoration: 'none', padding: '10px 6px', borderRadius: 2, background: 'rgba(17,24,39,0.03)' }}>About</a>
+                  <a href="#contact" onClick={() => setIsMobileMenuOpen(false)} style={{ color: '#111', textDecoration: 'none', padding: '10px 6px', borderRadius: 2, background: 'rgba(17,24,39,0.03)' }}>Contact</a>
                 </>
               )}
           </div>
@@ -1073,7 +1073,7 @@ const LandingPage = () => {
               <img
                 src={pageData.tracker?.image?.url || 'https://via.placeholder.com/400x300'}
                 alt={pageData.tracker?.image?.alt || 'App Screens'}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2px' }}
               />
             </div> */}
 
@@ -1082,7 +1082,7 @@ const LandingPage = () => {
               <img
                 src={pageData.tracker?.image?.url || 'https://via.placeholder.com/400x300'}
                 alt={pageData.tracker?.image?.alt || 'App Screens'}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '6px' }}
+                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '2px' }}
               />
             </div>
           </div>
@@ -1298,7 +1298,7 @@ const LandingPage = () => {
                 style={{ 
                   maxWidth: '100%', 
                   height: 'auto', 
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   boxShadow: '0 20px 40px rgba(0, 0, 0, 0.5)',
                   display: 'block'
                 }}
@@ -1312,7 +1312,7 @@ const LandingPage = () => {
                 textAlign: 'center', 
                 padding: '20px', 
                 backgroundColor: 'rgba(26, 26, 26, 0.8)',
-                borderRadius: '6px',
+                borderRadius: '2px',
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',

@@ -184,7 +184,7 @@ const CreateTicket = () => {
             justifyContent: "center",
             width: "40px",
             height: "40px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             border: "1px solid var(--color-border-light)",
           }}
         />
@@ -198,7 +198,7 @@ const CreateTicket = () => {
           <div
             style={{
               border: "1px solid var(--color-border-subtle)",
-              borderRadius: "6px",
+              borderRadius: "2px",
               backgroundColor: "var(--background)",
               marginBottom: "24px",
             }}
@@ -230,7 +230,7 @@ const CreateTicket = () => {
           <div
             style={{
               border: "1px solid var(--color-border-subtle)",
-              borderRadius: "6px",
+              borderRadius: "2px",
               backgroundColor: "var(--background)",
             }}
           >
@@ -323,7 +323,7 @@ const CreateTicket = () => {
           <div
             style={{
               border: "1px solid var(--color-border-subtle)",
-              borderRadius: "6px",
+              borderRadius: "2px",
               backgroundColor: "var(--background)",
             }}
           >

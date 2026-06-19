@@ -246,7 +246,7 @@ const AllCustomers = () => {
               backgroundColor: "var(--color-action)",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -697,7 +697,7 @@ const AllCustomers = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           border: "1px solid var(--border)",
         }}
@@ -709,7 +709,7 @@ const AllCustomers = () => {
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e: any) => setSearch(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
             placeholder="From"
@@ -727,7 +727,7 @@ const AllCustomers = () => {
               flex: "1 1 180px",
               minWidth: 160,
               height: 40,
-              borderRadius: 6,
+              borderRadius: 2,
               background: "#fff",
             }}
           />
@@ -749,7 +749,7 @@ const AllCustomers = () => {
               flex: "1 1 180px",
               minWidth: 160,
               height: 40,
-              borderRadius: 6,
+              borderRadius: 2,
               background: "#fff",
             }}
           />
@@ -769,7 +769,7 @@ const AllCustomers = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",
@@ -842,7 +842,7 @@ const AllCustomers = () => {
                   <Button style={{ backgroundColor: "var(--color-warning)", borderColor: "var(--color-warning)", color: "var(--primary-foreground)" }} onClick={handleDeselectAll}>⊘ Deselect All</Button>
                 </div>
               </div>
-              <div style={{ border: "1px solid var(--border)", borderRadius: "6px", overflow: "hidden", maxHeight: "400px", overflowY: "auto" }}>
+              <div style={{ border: "1px solid var(--border)", borderRadius: "2px", overflow: "hidden", maxHeight: "400px", overflowY: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
                   <thead style={{ backgroundColor: "var(--muted)", position: "sticky", top: 0, zIndex: 1 }}>
                     <tr>
@@ -862,10 +862,10 @@ const AllCustomers = () => {
                         </td>
                         <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", fontWeight: "500" }}>{code.code}</td>
                         <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
-                          <span style={{ backgroundColor: "var(--color-info)", color: "var(--primary-foreground)", padding: "4px 12px", borderRadius: "6px", fontSize: "12px", fontWeight: "500" }}>{code.type}</span>
+                          <span style={{ backgroundColor: "var(--color-info)", color: "var(--primary-foreground)", padding: "4px 12px", borderRadius: "2px", fontSize: "12px", fontWeight: "500" }}>{code.type}</span>
                         </td>
                         <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", textAlign: "center" }}>
-                          <button style={{ backgroundColor: code.blocked ? "var(--color-error)" : "var(--color-success)", color: "var(--primary-foreground)", border: "none", padding: "6px 16px", borderRadius: "6px", fontSize: "12px", fontWeight: "500", cursor: "default", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                          <button style={{ backgroundColor: code.blocked ? "var(--color-error)" : "var(--color-success)", color: "var(--primary-foreground)", border: "none", padding: "6px 16px", borderRadius: "2px", fontSize: "12px", fontWeight: "500", cursor: "default", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                             {code.blocked ? "⊘ Blocked" : "✓ Active"}
                           </button>
                         </td>

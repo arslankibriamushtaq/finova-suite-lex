@@ -201,7 +201,7 @@ const Invoices = () => {
     };
     const cfg = map[row.paymentStatus] ?? { label: row.paymentStatus || "Unknown", color: "var(--color-disabled)" };
     return (
-      <div style={{ padding: "0.22rem 1rem", borderRadius: "6px", backgroundColor: cfg.color, color: "var(--primary-foreground)", display: "inline-block" }}>
+      <div style={{ padding: "0.22rem 1rem", borderRadius: "2px", backgroundColor: cfg.color, color: "var(--primary-foreground)", display: "inline-block" }}>
         {cfg.label}
       </div>
     );
@@ -320,7 +320,7 @@ const Invoices = () => {
       name: "Actions",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "6px", padding: "10px 20px" }}>
+          <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "2px", padding: "10px 20px" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>
@@ -385,7 +385,7 @@ const Invoices = () => {
       name: "Actions",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "6px", padding: "10px 20px" }}>
+          <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "2px", padding: "10px 20px" }}>
             Select <DownOutlined />
           </Button>
         </Dropdown>
@@ -750,7 +750,7 @@ profit:item?.profitComponent ?? 0,
         }
         return (
           <Dropdown overlay={waiverActionMenu(row)} trigger={["click"]}>
-            <Button className="gradient-btn" type="primary" style={{ borderColor: "white", borderRadius: 6, padding: "10px 20px" }}>
+            <Button className="gradient-btn" type="primary" style={{ borderColor: "white", borderRadius: 2, padding: "10px 20px" }}>
               Select <DownOutlined />
             </Button>
           </Dropdown>
@@ -959,7 +959,7 @@ profit:item?.profitComponent ?? 0,
         <div
           className="bg-white p-3 mb-3"
           style={{
-            borderRadius: 6,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
           }}
@@ -971,7 +971,7 @@ profit:item?.profitComponent ?? 0,
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchValue}
               onChange={(e: any) => setSearchValue(e.target.value)}
-              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
             {selectedInvoices.length > 0 && (
               <Button
@@ -979,7 +979,7 @@ profit:item?.profitComponent ?? 0,
                 style={{
                   color: "var(--primary-foreground)",
                   padding: "9px",
-                  borderRadius: 6,
+                  borderRadius: 2,
                   border: "transparent",
                   height: 40,
                   whiteSpace: "nowrap",
@@ -997,7 +997,7 @@ profit:item?.profitComponent ?? 0,
         <div
           className="bg-white"
           style={{
-            borderRadius: 6,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
             overflow: "hidden",
@@ -1479,7 +1479,7 @@ profit:item?.profitComponent ?? 0,
                           style={{
                             padding: "7px",
                             border: "1px solid var(--border)",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             cursor: "pointer",
                             width: "220px",
                             textAlign: "center",
@@ -1495,7 +1495,7 @@ profit:item?.profitComponent ?? 0,
                             display: "inline-flex",
                             alignItems: "center",
                             backgroundColor: "var(--color-disabled)",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             padding: "5px 10px",
                             color: "var(--primary-foreground)",
                           }}
@@ -1537,7 +1537,7 @@ profit:item?.profitComponent ?? 0,
                     className="application-btn p-2 border-rounded-lg"
                     style={{
                       border: "1px solid transparent",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                     }}
                   >
                     Submit
@@ -1671,7 +1671,7 @@ profit:item?.profitComponent ?? 0,
                     className="application-btn px-2 p-2"
                     style={{
                       border: "1px solid transparent",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                     }}
                   >
                     Submit
@@ -1744,7 +1744,7 @@ profit:item?.profitComponent ?? 0,
             loading={waiverActionLoading}
             onClick={handleWaiverSubmit}
             danger={waiverModalType === "reject"}
-            style={{ borderColor: "white", borderRadius: 6, padding: "10px 20px" }}
+            style={{ borderColor: "white", borderRadius: 2, padding: "10px 20px" }}
           >
             {waiverModalType === "approve" ? "Approve" : "Reject"}
           </Button>

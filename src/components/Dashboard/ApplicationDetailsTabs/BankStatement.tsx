@@ -114,7 +114,7 @@ function BankStatement({ financialData }: any) {
   return (
     <div style={{ padding: "20px", background: "var(--surface-page)", minHeight: "100vh", fontFamily: "inherit", fontSize: "14px" }}>
       {/* Top Section - Account Information */}
-      <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "6px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+      <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "2px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
         {isAccountDataEmpty ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
             No response found
@@ -137,7 +137,7 @@ function BankStatement({ financialData }: any) {
                   color: "var(--foreground)",
                   background: "var(--surface-card-alt)",
                   border: "1px solid var(--surface-border)",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   outline: "none",
                 }}
               />
@@ -159,7 +159,7 @@ function BankStatement({ financialData }: any) {
                   color: "var(--foreground)",
                   background: "var(--surface-card-alt)",
                   border: "1px solid var(--surface-border)",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   outline: "none",
                 }}
               />
@@ -181,7 +181,7 @@ function BankStatement({ financialData }: any) {
                   color: "var(--foreground)",
                   background: "var(--surface-card-alt)",
                   border: "1px solid var(--surface-border)",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   outline: "none",
                 }}
               />
@@ -191,7 +191,7 @@ function BankStatement({ financialData }: any) {
       </div>
 
       {disbursementAccount && (
-        <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "6px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+        <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "2px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
           <div style={{ fontSize: "18px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
             Disbursement Account
           </div>
@@ -219,7 +219,7 @@ function BankStatement({ financialData }: any) {
       )}
       {/* Bottom Section - Transaction Details */}
       {isTransactionsEmpty ? (
-        <div style={{ background: "var(--surface-card)", padding: "40px", borderRadius: "6px", textAlign: "center", color: "var(--foreground)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
+        <div style={{ background: "var(--surface-card)", padding: "40px", borderRadius: "2px", textAlign: "center", color: "var(--foreground)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
           No response found
         </div>
       ) : (
@@ -231,7 +231,7 @@ function BankStatement({ financialData }: any) {
                 style={{
                   background: "var(--surface-card)",
                   padding: "20px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                 }}
               >

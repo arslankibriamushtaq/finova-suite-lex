@@ -107,11 +107,11 @@ const ManageCustomerBlocksModal = ({ open, customerId, onClose }: Props) => {
         {isLoading ? (
           <div style={{ textAlign: "center", padding: "24px", color: "var(--muted-foreground)" }}>Loading...</div>
         ) : activeBlocks.length === 0 ? (
-          <div style={{ textAlign: "center", padding: "20px", color: "var(--muted-foreground)", background: "var(--muted)", borderRadius: 6, fontSize: 14 }}>
+          <div style={{ textAlign: "center", padding: "20px", color: "var(--muted-foreground)", background: "var(--muted)", borderRadius: 2, fontSize: 14 }}>
             No block codes assigned
           </div>
         ) : (
-          <div style={{ border: "1px solid var(--border)", borderRadius: 6, overflow: "hidden" }}>
+          <div style={{ border: "1px solid var(--border)", borderRadius: 2, overflow: "hidden" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead style={{ background: "var(--muted)" }}>
                 <tr>

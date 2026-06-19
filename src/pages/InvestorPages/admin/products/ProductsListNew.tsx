@@ -399,7 +399,7 @@ export default function ProductsList() {
         <button
           onClick={() => setShowCreateModal(true)}
           className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
-          style={{ borderRadius: '6px' }}
+          style={{ borderRadius: '2px' }}
         >
           <Plus className="w-4 h-4 mr-2" />
           Add Product
@@ -608,7 +608,7 @@ export default function ProductsList() {
               <div className="mt-6 flex justify-end space-x-3">
                 <button
                   type="button"
-                  style={{ borderRadius: '6px' }}
+                  style={{ borderRadius: '2px' }}
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
@@ -617,7 +617,7 @@ export default function ProductsList() {
                 <button
                   type="submit"
                   disabled={formLoading}
-                  style={{ borderRadius: '6px' }}
+                  style={{ borderRadius: '2px' }}
                   className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                 >
                   {formLoading ? (

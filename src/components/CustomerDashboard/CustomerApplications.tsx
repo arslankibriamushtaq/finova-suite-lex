@@ -131,7 +131,7 @@ const CustomerApplications = () => {
                     style={{
                         backgroundColor: "var(--color-text-slate)",
                         padding: "4px 12px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         color: "var(--primary-foreground)",
                         fontWeight: 500,
                         fontSize: "12px",
@@ -149,7 +149,7 @@ const CustomerApplications = () => {
                     style={{
                         backgroundColor: "var(--color-text-slate)",
                         padding: "4px 12px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         color: "var(--primary-foreground)",
                         fontWeight: 500,
                         fontSize: "12px",
@@ -171,7 +171,7 @@ const CustomerApplications = () => {
                             backgroundColor: "var(--color-action) !important",
                             color: "var(--foreground)",
                             borderColor: "white",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             padding: "10px 20px",
                         }}
                     >

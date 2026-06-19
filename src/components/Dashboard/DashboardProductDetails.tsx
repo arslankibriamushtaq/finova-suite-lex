@@ -436,7 +436,7 @@ const DashboardProductDetails = () => {
                                   height: 20,
                                   backgroundColor: item.color,
                                   marginRight: 8,
-                                  borderRadius: "6px",
+                                  borderRadius: "2px",
                                 }}
                               ></div>
                               <div className="fw-normal fs-14">

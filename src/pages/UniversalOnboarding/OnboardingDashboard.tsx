@@ -630,7 +630,7 @@ const OnboardingDashboard: React.FC = () => {
         <div
           className="bg-white p-3 mb-3"
           style={{
-            borderRadius: 6,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
           }}
@@ -642,19 +642,19 @@ const OnboardingDashboard: React.FC = () => {
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchCountry}
               onChange={(e) => setSearchCountry(e.target.value)}
-              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+              style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
             <Input
               placeholder="Session ID..."
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={submissionId}
               onChange={(e) => setSubmissionId(e.target.value)}
-              style={{ flex: "1 1 220px", minWidth: 180, borderRadius: 6, height: 40 }}
+              style={{ flex: "1 1 220px", minWidth: 180, borderRadius: 2, height: 40 }}
             />
             <Button
               onClick={fetchSubmission}
               className="uo-btn-black"
-              style={{ height: 40, borderRadius: 6, whiteSpace: "nowrap", flexShrink: 0 }}
+              style={{ height: 40, borderRadius: 2, whiteSpace: "nowrap", flexShrink: 0 }}
             >
               Track
             </Button>
@@ -663,7 +663,7 @@ const OnboardingDashboard: React.FC = () => {
               icon={<PlusOutlined />}
               onClick={() => setIsModalOpen(true)}
               className="uo-btn-black"
-              style={{ height: 40, borderRadius: 6, whiteSpace: "nowrap", flexShrink: 0 }}
+              style={{ height: 40, borderRadius: 2, whiteSpace: "nowrap", flexShrink: 0 }}
             >
               Add New Country
             </Button>
@@ -674,7 +674,7 @@ const OnboardingDashboard: React.FC = () => {
         <div
           className="bg-white p-3"
           style={{
-            borderRadius: 6,
+            borderRadius: 2,
             boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
             border: "1px solid var(--border)",
           }}
@@ -754,7 +754,7 @@ const OnboardingDashboard: React.FC = () => {
              <Button
                icon={<ArrowLeftOutlined />}
                onClick={() => setView('REGIONS')}
-               style={{ height: 40, width: 40, borderRadius: 6, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
+               style={{ height: 40, width: 40, borderRadius: 2, display: "inline-flex", alignItems: "center", justifyContent: "center" }}
              />
              <div>
                 <h4 className="mb-0 fw-bold">{selectedCountry?.workflowName || selectedCountry?.countryName} ({selectedCountry?.countryCode})</h4>
@@ -766,14 +766,14 @@ const OnboardingDashboard: React.FC = () => {
                icon={<PlusOutlined />}
                onClick={() => openStepModal()}
                className="uo-btn-black"
-               style={{ height: 40, borderRadius: 6 }}
+               style={{ height: 40, borderRadius: 2 }}
              >
                Add Step
              </Button>
              <Button
                type="primary"
                className="uo-btn-black"
-               style={{ height: 40, borderRadius: 6 }}
+               style={{ height: 40, borderRadius: 2 }}
                onClick={handlePublish}
                loading={isLoading}
              >

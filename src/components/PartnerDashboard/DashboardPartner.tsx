@@ -94,7 +94,7 @@ const DashboardPartner = () => {
                 ? "#ffc107"
                 : "#ccc",
             padding: "4px 12px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             color: "#000",
             fontWeight: 500,
             fontSize: "12px",
@@ -111,7 +111,7 @@ const DashboardPartner = () => {
           style={{
             backgroundColor: "#6c757d",
             padding: "4px 12px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             color: "#fff",
             fontWeight: 500,
             fontSize: "12px",
@@ -133,7 +133,7 @@ const DashboardPartner = () => {
             style={{
               backgroundColor: "#EB0D0D",
               color: "#ffffff",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "6px 16px",
               fontSize: "12px",
             }}

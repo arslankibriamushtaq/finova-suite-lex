@@ -329,7 +329,7 @@ const WriteOff = ({ productId, setSelectedTab }: any) => {
           className="revert-btn mb-2 me-2"
           style={{
             border: "none",
-            borderRadius: "6px",
+            borderRadius: "2px",
             padding: "8px 8px",
           }}
           onClick={() => {
@@ -342,7 +342,7 @@ const WriteOff = ({ productId, setSelectedTab }: any) => {
           className="application-btn mb-2"
           /* style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }} */

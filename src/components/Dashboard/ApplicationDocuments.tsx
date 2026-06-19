@@ -143,7 +143,7 @@ function ApplicationDocuments() {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.status ? "var(--color-success)" : "var(--color-error)",
             color: "white",
           }}
@@ -204,7 +204,7 @@ function ApplicationDocuments() {
             style={{
               backgroundColor: "#fff",
               padding: "30px",
-              borderRadius: "6px",
+              borderRadius: "2px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
             }}
           >
@@ -286,7 +286,7 @@ function ApplicationDocuments() {
             style={{
               backgroundColor: "#fff",
               padding: "30px",
-              borderRadius: "6px",
+              borderRadius: "2px",
               boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
               minHeight: "400px",
             }}

@@ -354,7 +354,7 @@ return (
               type="submit"
               style={{
                 backgroundColor: "rgba(226, 36, 46, 1)",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 border: "1px solid rgba(226, 36, 46, 1)",
                 padding: "10px 10px 10px 10px",
                 color: "#fff",
@@ -388,7 +388,7 @@ return (
       <div className= "d-flex bg-white p-4 mt-2" 
         style={{
           justifyContent: "center",
-          borderRadius: "6px", 
+          borderRadius: "2px", 
           marginBottom: 50,
           boxShadow: "0 2px 6px rgba(0, 0, 0, 0.08)",
           border: "1px solid #cfe3ee",

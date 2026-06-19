@@ -149,7 +149,7 @@ const Due = () => {
 
       <div
         className="p-4 mt-4"
-        style={{ border: "1px solid #DADADA", borderRadius: "6px" }}
+        style={{ border: "1px solid #DADADA", borderRadius: "2px" }}
       >
         <div
           className="d-flex align-items-center justify-content-between mt-1 mb-3"
@@ -213,7 +213,7 @@ const Due = () => {
           style={{
             background: themeStyle.otherActionsColor,
             border: "transparent",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }}
@@ -225,7 +225,7 @@ const Due = () => {
           style={{
             border: "transparent",
             backgroundColor: "#EB0D0D",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }}

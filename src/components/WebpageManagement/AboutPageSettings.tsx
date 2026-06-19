@@ -557,7 +557,7 @@ const AboutPageSettings = () => {
               style={{
                 padding: '8px',
             border: '1px solid var(--color-border-light)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             fontSize: '14px',
             color: 'var(--color-text-dark)',
             backgroundColor: 'var(--color-surface-subtle)',
@@ -573,7 +573,7 @@ const AboutPageSettings = () => {
           style={{
             cursor: 'pointer',
             padding: '2px 4px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             display: 'inline-block',
             border: '1px solid transparent',
             color: 'var(--color-text-dark)',
@@ -601,7 +601,7 @@ const AboutPageSettings = () => {
             cursor: 'pointer', 
             padding: '20px',
             border: '2px dashed var(--color-border-light)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             textAlign: 'center',
             backgroundColor: 'var(--color-surface-cloud)',
             minHeight: '100px',
@@ -626,7 +626,7 @@ const AboutPageSettings = () => {
         style={{
           cursor: 'pointer',
           padding: '4px 8px',
-          borderRadius: '6px',
+          borderRadius: '2px',
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
@@ -690,7 +690,7 @@ const AboutPageSettings = () => {
             width: '100%',
             padding: '8px',
             border: '1px solid var(--color-border-light)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             fontSize: '14px',
                 color: 'var(--color-text-dark)',
                 backgroundColor: 'var(--color-surface-subtle)',
@@ -709,7 +709,7 @@ const AboutPageSettings = () => {
         style={{
           cursor: 'pointer',
           padding: '4px 8px',
-          borderRadius: '6px',
+          borderRadius: '2px',
           display: 'inline-block',
           minHeight: '20px',
           border: '1px solid transparent',
@@ -777,7 +777,7 @@ const AboutPageSettings = () => {
             alignItems: 'center',
             gap: '8px',
             padding: '8px 16px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             border: '1px solid var(--color-border-light)',
             backgroundColor: 'var(--color-surface-cloud)',
             transition: 'background-color 0.2s ease'
@@ -865,7 +865,7 @@ const AboutPageSettings = () => {
                   color: 'var(--primary-foreground)',
                   border: 'none',
                   padding: '8px 16px',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   fontSize: '12px',
                   fontWeight: 'bold',
                   cursor: 'pointer',
@@ -925,7 +925,7 @@ const AboutPageSettings = () => {
                       autoFocus
                       style={{
                         border: '2px solid var(--color-action-blue)',
-                        borderRadius: '6px',
+                        borderRadius: '2px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
@@ -992,7 +992,7 @@ const AboutPageSettings = () => {
                       autoFocus
                       style={{
                         border: '2px solid var(--color-action-blue)',
-                        borderRadius: '6px',
+                        borderRadius: '2px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
@@ -1056,7 +1056,7 @@ const AboutPageSettings = () => {
                       autoFocus
                       style={{
                         border: '2px solid var(--color-action-blue)',
-                        borderRadius: '6px',
+                        borderRadius: '2px',
                         padding: '4px 8px',
                         fontSize: 'inherit',
                         fontFamily: 'inherit',
@@ -1125,7 +1125,7 @@ const AboutPageSettings = () => {
                       style={{
                         backgroundColor: 'var(--color-surface-subtle)',
                         padding: '30px',
-                        borderRadius: '6px',
+                        borderRadius: '2px',
                         textAlign: 'center',
                         marginBottom: '20px',
                         border: '1px solid var(--color-border-light)',
@@ -1256,7 +1256,7 @@ const AboutPageSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             width: '90%',
             maxWidth: '800px',
             maxHeight: '90vh',
@@ -1289,7 +1289,7 @@ const AboutPageSettings = () => {
             
             <div style={{
               border: '1px solid var(--color-border-light)',
-              borderRadius: '6px',
+              borderRadius: '2px',
               minHeight: '300px'
             }}>
               <CKEditor
@@ -1332,7 +1332,7 @@ const AboutPageSettings = () => {
                   backgroundColor: 'var(--color-text-slate)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
               >
@@ -1350,7 +1350,7 @@ const AboutPageSettings = () => {
                   backgroundColor: 'var(--color-action-blue)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
               >
@@ -1378,7 +1378,7 @@ const AboutPageSettings = () => {
           <div style={{
             backgroundColor: 'var(--background)',
             padding: '30px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             width: '80%',
             maxWidth: '600px',
             maxHeight: '80vh',
@@ -1417,7 +1417,7 @@ const AboutPageSettings = () => {
                   marginBottom: '10px',
                   padding: '10px',
                   backgroundColor: 'var(--color-surface-snow)',
-                  borderRadius: '6px'
+                  borderRadius: '2px'
                 }}>
                   <input
                     type="text"
@@ -1435,7 +1435,7 @@ const AboutPageSettings = () => {
                       flex: 1,
                       padding: '8px',
                       border: '1px solid var(--color-border-light)',
-                      borderRadius: '6px'
+                      borderRadius: '2px'
                     }}
                     placeholder="Label"
                   />
@@ -1449,7 +1449,7 @@ const AboutPageSettings = () => {
                       backgroundColor: 'var(--theme-secondary)',
                       color: 'var(--primary-foreground)',
                       border: 'none',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       cursor: 'pointer'
                     }}
                   >
@@ -1467,7 +1467,7 @@ const AboutPageSettings = () => {
                   backgroundColor: 'var(--color-status-active)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
               >
@@ -1491,7 +1491,7 @@ const AboutPageSettings = () => {
                   backgroundColor: 'var(--color-text-slate)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
               >
@@ -1509,7 +1509,7 @@ const AboutPageSettings = () => {
                   backgroundColor: 'var(--color-action-blue)',
                   color: 'var(--primary-foreground)',
                   border: 'none',
-                  borderRadius: '6px',
+                  borderRadius: '2px',
                   cursor: 'pointer'
                 }}
               >

@@ -178,7 +178,7 @@ const CommodityTypes = () => {
             type="primary"
             style={{
               fontSize: "12px",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "8px",
             }}
           >
@@ -303,7 +303,7 @@ const CommodityTypes = () => {
     <>
       <div
         className="service"
-        style={{ background: "white", padding: "1rem", borderRadius: "6px" }}
+        style={{ background: "white", padding: "1rem", borderRadius: "2px" }}
       >
         <div className="d-flex mb-3 col-12 filter-select">
           <Select

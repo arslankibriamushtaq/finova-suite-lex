@@ -434,7 +434,7 @@ const CalculatorPage = () => {
           {/* Calculator Content */}
           <div style={{
             backgroundColor: '#f8f9fa',
-            borderRadius: '6px',
+            borderRadius: '2px',
             padding: '30px',
             border: '1px solid #e0e0e0'
           }}>
@@ -472,7 +472,7 @@ const CalculatorPage = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       backgroundColor: '#f8f9fa',
                       color: '#333'
@@ -497,7 +497,7 @@ const CalculatorPage = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       backgroundColor: '#f8f9fa',
                       color: '#333'
@@ -523,7 +523,7 @@ const CalculatorPage = () => {
                     width: '100%',
                     padding: '12px',
                     border: '1px solid #ddd',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '14px',
                     backgroundColor: '#f8f9fa',
                     color: '#333'
@@ -565,7 +565,7 @@ const CalculatorPage = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       backgroundColor: '#f8f9fa',
                       color: '#333'
@@ -590,7 +590,7 @@ const CalculatorPage = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       backgroundColor: '#f8f9fa',
                       color: '#333'
@@ -633,7 +633,7 @@ const CalculatorPage = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       backgroundColor: '#f8f9fa',
                       color: '#333'
@@ -658,7 +658,7 @@ const CalculatorPage = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       backgroundColor: '#f8f9fa',
                       color: '#333'

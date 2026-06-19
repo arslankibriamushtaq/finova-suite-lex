@@ -36,8 +36,8 @@ const DashboardHeaderTeanenetFlow = () => {
               style={{
                 backgroundColor: " #1963b9",
                 color: "white",
-                borderTopLeftRadius: "6px",
-                borderBottomLeftRadius: "6px",
+                borderTopLeftRadius: "2px",
+                borderBottomLeftRadius: "2px",
               }}
             >
               EN
@@ -47,8 +47,8 @@ const DashboardHeaderTeanenetFlow = () => {
               style={{
                 backgroundColor: "rgba(236, 236, 236, 1)",
                 color: "black",
-                borderTopRightRadius: "6px",
-                borderBottomRightRadius: "6px",
+                borderTopRightRadius: "2px",
+                borderBottomRightRadius: "2px",
               }}
             >
               AR

@@ -255,7 +255,7 @@ function FactoringApproval({ packageDetails }: any) {
                           borderColor: "#198754",
                           color: "white",
                           fontWeight: "600",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                           minWidth: "200px",
                         }}
                       >
@@ -279,7 +279,7 @@ function FactoringApproval({ packageDetails }: any) {
                           borderColor: "#000000",
                           color: "white",
                           fontWeight: "600",
-                          borderRadius: "6px",
+                          borderRadius: "2px",
                           minWidth: "200px",
                         }}
                       >
@@ -304,7 +304,7 @@ function FactoringApproval({ packageDetails }: any) {
                       className="factoring-history-info p-4"
                       style={{ 
                         background: "white", 
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         border: "1px solid #e0e0e0"
                       }}
                     >

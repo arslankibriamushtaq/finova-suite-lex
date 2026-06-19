@@ -117,7 +117,7 @@ const RelationLov = () => {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -412,7 +412,7 @@ const RelationLov = () => {
               border: "1px solid #ccc",
               color: "black",
               background: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "4px 20px",
               fontWeight: "500",
             }}
@@ -427,7 +427,7 @@ const RelationLov = () => {
               background: "black",
               color: "white",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "4px 20px",
               fontWeight: "500",
             }}

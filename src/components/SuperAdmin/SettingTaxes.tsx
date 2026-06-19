@@ -722,7 +722,7 @@ const SettingTaxes=({ productId, productData, onSuccess, isEditable }) =>{
                     }}
                     style={{
                       backgroundColor: "#EB0D0D",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       height: "fit-content",
                       width: "fit-content",
                     }}
@@ -823,7 +823,7 @@ const SettingTaxes=({ productId, productData, onSuccess, isEditable }) =>{
                     }}
                     style={{
                       //backgroundColor: "#EB0D0D",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       height: "fit-content",
                       width: "fit-content",
                       padding: "8px",

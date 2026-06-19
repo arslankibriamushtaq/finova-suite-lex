@@ -162,7 +162,7 @@ const AccountTimeline = () => {
                       display: "inline-block",
                       padding: "5px 10px",
                       backgroundColor: "var(--theme-active-color)",
-                      borderRadius: "6px",
+                      borderRadius: "2px",
                       color: "var(--color-near-white)",
                       fontWeight: "bold",
                       zIndex: "1",

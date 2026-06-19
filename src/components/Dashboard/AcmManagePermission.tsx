@@ -296,7 +296,7 @@ const AcmManagePermission: React.FC = () => {
           mergedResult?.map((item: any, index: any) => (
             <div
               className="col-12 pb-3"
-              style={{ borderRadius: "6px" }}
+              style={{ borderRadius: "2px" }}
               key={index}
             >
               <div
@@ -342,7 +342,7 @@ const AcmManagePermission: React.FC = () => {
                       className="col-md-6 p-2 mt-1 mb-1 "
                       style={{
                         backgroundColor: "#FFFFFF",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                       }}
                       key={subIndex}
                     >
@@ -352,7 +352,7 @@ const AcmManagePermission: React.FC = () => {
                       >
                         <div
                           className="col-9 d-flex "
-                          style={{ fontSize: "14px", borderRadius: "6px" }}
+                          style={{ fontSize: "14px", borderRadius: "2px" }}
                         >
                           {subitem.name}
                         </div>

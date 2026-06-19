@@ -91,7 +91,7 @@ const UserPreferences = () => {
                 <div
                     style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         textAlign: "center",
                         backgroundColor: row.enabled ? "var(--color-success)" : "var(--color-error)",
                         color: "white",
@@ -123,7 +123,7 @@ const UserPreferences = () => {
                             backgroundColor: "var(--color-action) !important",
                             color: "var(--foreground)",
                             borderColor: "white",
-                            borderRadius: "6px",
+                            borderRadius: "2px",
                             padding: "10px 20px",
                         }}
                     >

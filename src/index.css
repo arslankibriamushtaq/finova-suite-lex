@@ -31,12 +31,12 @@
   --color-chart-3: var(--chart-3);
   --color-chart-4: var(--chart-4);
   --color-chart-5: var(--chart-5);
-  --radius-sm: 6px;
-  --radius-md: 6px;
-  --radius-lg: 6px;
-  --radius-xl: 6px;
-  --radius-2xl: 6px;
-  --radius-3xl: 6px;
+  --radius-sm: 2px;
+  --radius-md: 2px;
+  --radius-lg: 2px;
+  --radius-xl: 2px;
+  --radius-2xl: 2px;
+  --radius-3xl: 2px;
 }
 
 @layer base {
@@ -169,7 +169,7 @@ html.dark .surface-card {
 .surface-card {
   background-color: var(--surface-card);
   border: 1px solid var(--surface-border);
-  border-radius: 6px;
+  border-radius: 2px;
   box-shadow: var(--surface-elevation-1);
 }
 .surface-divider { border-bottom: 1px solid var(--surface-border); }
@@ -179,7 +179,7 @@ code {
     monospace;
 }
 .rounded-md{
-  border-radius: 6px;
+  border-radius: 2px;
 }
 .bg-primary-50{
   background-color: rgba(0, 0, 0, 0.05);

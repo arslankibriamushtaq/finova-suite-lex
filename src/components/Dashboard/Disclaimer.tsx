@@ -36,7 +36,7 @@ function Disclaimer({ setSelectedTab }: any) {
   return (
     <>
       <div className="col-12">
-        <div className="" style={{ borderRadius: "6px", padding: "20px", margin: "20px 0", backgroundColor: "white" }}>
+        <div className="" style={{ borderRadius: "2px", padding: "20px", margin: "20px 0", backgroundColor: "white" }}>
           {/* Header with Toggle */}
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex align-items-center">

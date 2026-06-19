@@ -167,7 +167,7 @@ const Account = ({
             className="gradient-btn"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -296,7 +296,7 @@ const Account = ({
           to={to}
           header={Account_Documents_List_Header}
           data={mappedData}
-          style={{ borderRadius: "6px" }}
+          style={{ borderRadius: "2px" }}
           isLoading={loading}
           paginationShow={true}
         />

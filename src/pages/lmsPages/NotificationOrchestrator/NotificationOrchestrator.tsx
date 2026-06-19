@@ -330,7 +330,7 @@ const NotificationOrchestrator: React.FC = () => {
             className="gradient-btn"
             type="primary"
             style={{
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "6px 16px",
               display: "flex",
               alignItems: "center",
@@ -385,7 +385,7 @@ const NotificationOrchestrator: React.FC = () => {
           <div
             className="bg-white p-3 mb-3"
             style={{
-              borderRadius: 6,
+              borderRadius: 2,
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
               border: "1px solid var(--border)",
             }}
@@ -397,7 +397,7 @@ const NotificationOrchestrator: React.FC = () => {
                 prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-                style={{ flex: "1 1 auto", minWidth: 0, borderRadius: 6, height: 40 }}
+                style={{ flex: "1 1 auto", minWidth: 0, borderRadius: 2, height: 40 }}
               />
               <AntSelect
                 value={channelFilter}
@@ -412,7 +412,7 @@ const NotificationOrchestrator: React.FC = () => {
               <Button
                 className="gap-2 uo-btn-black"
                 onClick={openAddModal}
-                style={{ height: 40, borderRadius: 6, flexShrink: 0, whiteSpace: "nowrap" }}
+                style={{ height: 40, borderRadius: 2, flexShrink: 0, whiteSpace: "nowrap" }}
               >
                 <Plus className="h-4 w-4" />
                 Create New Rule
@@ -424,7 +424,7 @@ const NotificationOrchestrator: React.FC = () => {
           <div
             className="bg-white"
             style={{
-              borderRadius: 6,
+              borderRadius: 2,
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
               border: "1px solid var(--border)",
               overflow: "hidden",
@@ -455,7 +455,7 @@ const NotificationOrchestrator: React.FC = () => {
           <div
             className="bg-white p-3 mb-3"
             style={{
-              borderRadius: 6,
+              borderRadius: 2,
               boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
               border: "1px solid var(--border)",
             }}
@@ -467,12 +467,12 @@ const NotificationOrchestrator: React.FC = () => {
                 prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
-                style={{ flex: "1 1 280px", minWidth: 220, borderRadius: 6, height: 40 }}
+                style={{ flex: "1 1 280px", minWidth: 220, borderRadius: 2, height: 40 }}
               />
               <Button
                 className="uo-btn-black"
                 onClick={fetchPreferences}
-                style={{ height: 40, borderRadius: 6 }}
+                style={{ height: 40, borderRadius: 2 }}
               >
                 Lookup
               </Button>
@@ -480,14 +480,14 @@ const NotificationOrchestrator: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <div className="bg-white p-5 text-center" style={{ borderRadius: 6, border: "1px solid var(--border)" }}>
+            <div className="bg-white p-5 text-center" style={{ borderRadius: 2, border: "1px solid var(--border)" }}>
               <Spin />
             </div>
           ) : preferences ? (
             <div
               className="bg-white p-3"
               style={{
-                borderRadius: 6,
+                borderRadius: 2,
                 boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
                 border: "1px solid var(--border)",
               }}
@@ -530,7 +530,7 @@ const NotificationOrchestrator: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white p-5 text-center text-muted" style={{ borderRadius: 6, border: "1px solid var(--border)" }}>
+            <div className="bg-white p-5 text-center text-muted" style={{ borderRadius: 2, border: "1px solid var(--border)" }}>
               Enter a customer ID and click <strong>Lookup</strong> to view their preferences.
             </div>
           )}

@@ -106,7 +106,7 @@ const getStates = async () => {
               colorInfo: "#10b981",
               colorLink: "#059669",
               colorLinkHover: "#10b981",
-              borderRadius: 6,
+              borderRadius: 2,
             },
             components: {
               Select: {

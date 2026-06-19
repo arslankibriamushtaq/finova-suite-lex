@@ -120,7 +120,7 @@ const ApproveBayaanInfo = () => {
   return (
     <div
       className="p-4 mt-3 mb-3"
-      style={{ background: "white", borderRadius: "6px" }}
+      style={{ background: "white", borderRadius: "2px" }}
     >
       {bayaanHistory ? (
         // Display Bayan History Information
@@ -193,7 +193,7 @@ const ApproveBayaanInfo = () => {
                 padding: "10px 15px",
                 fontSize: "14px",
                 border: "1px solid #d0d0d0",
-                borderRadius: "6px"
+                borderRadius: "2px"
               }}
             />
             <div className="d-flex gap-2">

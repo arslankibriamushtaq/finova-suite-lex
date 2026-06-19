@@ -69,7 +69,7 @@ const CollateralAllocation = () => {
           style={{
             whiteSpace: "nowrap",
             padding: "0.2rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             // fontSize:"12px",
 
             backgroundColor: row.Status ? "var(--color-status-green)" : "var(--color-status-red-soft)",
@@ -96,7 +96,7 @@ const CollateralAllocation = () => {
               background: "linear-gradient(100deg, #DEF5FF, #90CAFF)",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -178,7 +178,7 @@ const CollateralAllocation = () => {
           style={{
             whiteSpace: "nowrap",
             padding: "0.2rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.Status ? "var(--color-status-green)" : "var(--color-status-red-soft)",
             color: "var(--primary-foreground)",
             cursor: row.Status ? "pointer" : "default",
@@ -202,7 +202,7 @@ const CollateralAllocation = () => {
               background: "linear-gradient(100deg, #DEF5FF, #90CAFF)",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -386,7 +386,7 @@ const CollateralAllocation = () => {
           className="d-flex col-12 p-5 justify-content-center"
           style={{
             fontWeight: "700",
-            borderRadius: "6px",
+            borderRadius: "2px",
             border: `1px solid var(--color-border-light)`,
           }}
         >
@@ -462,7 +462,7 @@ const CollateralAllocation = () => {
                             style={{
                               width: "10px",
                               height: "10px",
-                              borderRadius: "6px",
+                              borderRadius: "2px",
                               backgroundColor: item.color,
                             }}
                           ></div>

@@ -81,7 +81,7 @@ const PartnerAllApplication = () => {
             backgroundColor:
               row.parentStatus === "In Progress" ? "#ffc107" : "#adb5bd",
             padding: "4px 12px",
-            borderRadius: 6,
+            borderRadius: 2,
             color: "#000",
             fontWeight: 500,
             fontSize: 12,
@@ -100,7 +100,7 @@ const PartnerAllApplication = () => {
           style={{
             backgroundColor: "#6c757d",
             padding: "4px 12px",
-            borderRadius: 6,
+            borderRadius: 2,
             color: "#fff",
             fontWeight: 500,
             fontSize: 12,

@@ -152,7 +152,7 @@ const ApproveSimahInfo = () => {
             className="comment-section p-4 mb-4"
             style={{ 
               background: "white", 
-              borderRadius: "6px",
+              borderRadius: "2px",
               border: "1px solid #e0e0e0"
             }}
           >
@@ -169,7 +169,7 @@ const ApproveSimahInfo = () => {
                 disabled={submitting}
                 style={{
                   fontSize: "14px",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   border: "1px solid #d0d0d0",
                   padding: "12px",
                   resize: "vertical",
@@ -234,7 +234,7 @@ const ApproveSimahInfo = () => {
             className="simah-history-info p-4"
             style={{ 
               background: "white", 
-              borderRadius: "6px",
+              borderRadius: "2px",
               border: "1px solid #e0e0e0"
             }}
           >

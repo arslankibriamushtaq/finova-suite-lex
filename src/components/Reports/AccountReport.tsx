@@ -178,7 +178,7 @@ const mappedData =
           to={to}
           header={Account_Documents_List_Header}
           data={mappedData}
-          style={{ borderRadius: "6px" }}
+          style={{ borderRadius: "2px" }}
           isLoading={loading}
         />
       </div>

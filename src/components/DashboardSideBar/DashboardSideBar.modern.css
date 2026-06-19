@@ -55,7 +55,7 @@
 }
 .finova-sidebar .ps-sidebar-container::-webkit-scrollbar-thumb {
   background: var(--sb-scroll-thumb);
-  border-radius: 6px;
+  border-radius: 2px;
 }
 .finova-sidebar .ps-sidebar-container::-webkit-scrollbar-track {
   background: transparent;
@@ -108,7 +108,7 @@
   height: 44px !important;
   margin: 2px 12px !important;
   padding: 0 12px !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   color: var(--sb-text) !important;
   font-size: 13.5px !important;
   font-weight: 500 !important;
@@ -259,7 +259,7 @@ html.dark .finova-sidebar div.menu-items a.ps-menu-button.ps-active .ps-menu-lab
   width: 3px !important;
   height: 20px !important;
   margin-top: 0 !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   background: var(--sb-accent) !important;
 }
 
@@ -283,7 +283,7 @@ html.dark .finova-sidebar div.menu-items a.ps-menu-button.ps-active img {
   background: rgba(255, 255, 255, 0.05) !important;
   border: 1px solid var(--sb-divider) !important;
   color: var(--sb-text) !important;
-  border-radius: 6px;
+  border-radius: 2px;
 }
 .finova-sidebar .sidebar-tab:hover {
   background: rgba(255, 255, 255, 0.09) !important;

@@ -141,7 +141,7 @@ const WriteOff = () => {
 
       <div
         className="p-4 mt-4"
-        style={{ border: "1px solid #DADADA", borderRadius: "6px" }}
+        style={{ border: "1px solid #DADADA", borderRadius: "2px" }}
       >
         <div
           className="d-flex align-items-center justify-content-between mt-1 mb-3"
@@ -205,7 +205,7 @@ const WriteOff = () => {
           style={{
             backgroundColor: "#A0A0A0",
             border: "1px solid #A0A0A0",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }}
@@ -216,7 +216,7 @@ const WriteOff = () => {
           className="btn btn-danger mb-4"
           style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }}

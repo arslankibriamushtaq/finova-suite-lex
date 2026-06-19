@@ -24,7 +24,7 @@ const CareerPage = () => {
         }}>
           <div style={{
             backgroundColor: 'var(--background)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             padding: '12px 20px',
             boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
             display: 'inline-block',
@@ -45,7 +45,7 @@ const CareerPage = () => {
         {/* Template Preview */}
         <div style={{
           backgroundColor: 'var(--background)',
-          borderRadius: '6px',
+          borderRadius: '2px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
           position: 'relative'
         }}
@@ -60,7 +60,7 @@ const CareerPage = () => {
             right: 0,
             bottom: 0,
             backgroundColor: 'var(--color-overlay-light)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             zIndex: 1
           }} />
 
@@ -69,7 +69,7 @@ const CareerPage = () => {
             position: 'relative',
             zIndex: 2,
             backgroundColor: 'var(--color-surface-alt)',
-            borderRadius: '6px',
+            borderRadius: '2px',
             padding: '0',
             border: '1px solid var(--color-border-subtle)',
             overflow: 'hidden'
@@ -172,7 +172,7 @@ const CareerPage = () => {
                   {/* Finance Manager */}
                   <div style={{
                     backgroundColor: 'var(--color-surface-pressed)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     padding: '20px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -197,7 +197,7 @@ const CareerPage = () => {
                     <button style={{
                       backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       padding: '8px 16px',
                       color: '#2c3e50',
                       cursor: 'pointer',
@@ -211,7 +211,7 @@ const CareerPage = () => {
                   {/* Senior Sales Manager */}
                   <div style={{
                     backgroundColor: 'var(--color-surface-pressed)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     padding: '20px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -236,7 +236,7 @@ const CareerPage = () => {
                     <button style={{
                       backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       padding: '8px 16px',
                       color: '#2c3e50',
                       cursor: 'pointer',
@@ -250,7 +250,7 @@ const CareerPage = () => {
                   {/* Digital Account Manager */}
                   <div style={{
                     backgroundColor: 'var(--color-surface-pressed)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     padding: '20px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -275,7 +275,7 @@ const CareerPage = () => {
                     <button style={{
                       backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       padding: '8px 16px',
                       color: '#2c3e50',
                       cursor: 'pointer',
@@ -289,7 +289,7 @@ const CareerPage = () => {
                   {/* Business Development Officer */}
                   <div style={{
                     backgroundColor: 'var(--color-surface-pressed)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     padding: '20px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -314,7 +314,7 @@ const CareerPage = () => {
                     <button style={{
                       backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       padding: '8px 16px',
                       color: '#2c3e50',
                       cursor: 'pointer',
@@ -328,7 +328,7 @@ const CareerPage = () => {
                   {/* Additional Senior Sales Manager */}
                   <div style={{
                     backgroundColor: 'var(--color-surface-pressed)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     padding: '20px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -353,7 +353,7 @@ const CareerPage = () => {
                     <button style={{
                       backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       padding: '8px 16px',
                       color: '#2c3e50',
                       cursor: 'pointer',
@@ -367,7 +367,7 @@ const CareerPage = () => {
                   {/* Another Senior Sales Manager */}
                   <div style={{
                     backgroundColor: 'var(--color-surface-pressed)',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     padding: '20px',
                     display: 'flex',
                     justifyContent: 'space-between',
@@ -392,7 +392,7 @@ const CareerPage = () => {
                     <button style={{
                       backgroundColor: 'var(--background)',
                       border: '1px solid #2c3e50',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       padding: '8px 16px',
                       color: '#2c3e50',
                       cursor: 'pointer',

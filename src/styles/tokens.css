@@ -32,7 +32,7 @@
   --chart-3: #06b6d4;
   --chart-4: #34d399;
   --chart-5: #0d9488;
-  --radius: 6px;
+  --radius: 2px;
 
   /* Status colors */
   --color-success: oklch(0.65 0.2 145);
@@ -449,7 +449,7 @@ html.dark [data-slot="dialog-close"] svg {
 .modal-content,
 .ant-modal-content,
 [data-slot="dialog-content"] {
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   overflow: hidden;
 }
 
@@ -493,7 +493,7 @@ html.dark [data-slot="dialog-content"] {
   background-color: var(--surface-card) !important;
   color: var(--foreground) !important;
   border: 1px solid var(--surface-border) !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5) !important;
   overflow: hidden;
 }
@@ -603,7 +603,7 @@ html.dark [data-slot="dialog-content"] [data-slot="button"] {
   background: var(--surface-card-alt) !important;
   border: 1px solid var(--surface-border-strong) !important;
   color: #ffffff !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   height: 40px !important;
   padding: 0 22px !important;
   font-weight: 500 !important;
@@ -1255,7 +1255,7 @@ html.dark .rdt_TableCell button[type="button"]:not([class*="ant-radio"]):not([cl
   background: var(--surface-card-alt) !important;
   color: var(--foreground) !important;
   border: 1px solid var(--surface-border) !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
 }
 html.dark .rdt_TableCell .ant-btn:hover,
 html.dark .rdt_TableCell .btn:hover,
@@ -1444,7 +1444,7 @@ html.dark .rdt_TableCell .text-amber-600 {
   background-image: none !important;
   color: #ffffff !important;
   border: 1px solid #059669 !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   padding: 6px 14px !important;
   font-size: 12px !important;
   font-weight: 500 !important;
@@ -1650,7 +1650,7 @@ html.dark li.ps-menuitem-root.ps-active > .ps-menu-button {
   box-shadow:
     inset 3px 0 0 var(--mi-color, #10b981),
     0 0 14px color-mix(in srgb, var(--mi-color, #10b981) 35%, transparent) !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
 }
 html.dark span.ps-menu-label.ps-active.css-12w9als,
 html.dark div.menu-items a.ps-menu-button.ps-active span,
@@ -1812,7 +1812,7 @@ html.dark .bg-white .recharts-wrapper {
 .ant-picker,
 .ant-input-affix-wrapper,
 .ant-select:not(.ant-select-disabled) .ant-select-selector {
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   border-color: color-mix(in srgb, #10b981 22%, #d9d9d9) !important;
 }
 .ant-picker:hover,
@@ -1838,7 +1838,7 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
 .modal-content {
   background: linear-gradient(160deg, #f3faf7 0%, #ffffff 22%) !important;
   border: 1px solid color-mix(in srgb, #10b981 20%, var(--border)) !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   box-shadow: 0 24px 60px -22px color-mix(in srgb, #10b981 38%, rgba(0, 0, 0, 0.45)) !important;
 }
 html.dark [data-slot="dialog-content"],
@@ -1890,7 +1890,7 @@ html.dark .modal-content {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   color: var(--muted-foreground) !important;
   opacity: 1 !important;
   transition: background-color 0.15s ease, color 0.15s ease !important;
@@ -1913,7 +1913,7 @@ html.dark .modal-content {
 .modal-content input.form-control,
 .modal-content textarea.form-control {
   border: 1px solid color-mix(in srgb, #10b981 18%, var(--border)) !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
 }
 [data-slot="dialog-content"] input:not([type="checkbox"]):not([type="radio"]):focus,
 [data-slot="dialog-content"] textarea:focus,
@@ -1958,7 +1958,7 @@ html.dark .modal-content {
     color-mix(in srgb, #10b981 4%, var(--card)) 60%
   );
   border: 1px solid color-mix(in srgb, #10b981 22%, var(--border));
-  border-radius: 6px;
+  border-radius: 2px;
   box-shadow: 0 10px 26px -16px color-mix(in srgb, #10b981 45%, transparent);
   padding: 22px 24px;
 }
@@ -1973,7 +1973,7 @@ html.dark .modal-content {
   min-height: 46px;
   padding: 10px 12px;
   border: 1px solid color-mix(in srgb, #10b981 22%, var(--border));
-  border-radius: 6px;
+  border-radius: 2px;
   background: color-mix(in srgb, #10b981 6%, var(--card));
   transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
 }
@@ -2100,7 +2100,7 @@ li.ps-menuitem-root.ps-active.css-1654oxy > .ps-menu-button {
     color-mix(in srgb, var(--mi-color, #10b981) 5%, #ffffff) 100%
   ) !important;
   color: color-mix(in srgb, var(--mi-color, #10b981) 55%, #0f172a) !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   box-shadow: inset 3px 0 0 var(--mi-color, #10b981) !important;
 }
 
@@ -2252,7 +2252,7 @@ html.dark .theme-btn-back:disabled {
   background-color: #10b981 !important;
   border-color: #059669 !important;
   color: #ffffff !important;
-  border-radius: 6px !important;
+  border-radius: 2px !important;
 }
 .wallet-brand-btn:hover {
   filter: brightness(0.92);

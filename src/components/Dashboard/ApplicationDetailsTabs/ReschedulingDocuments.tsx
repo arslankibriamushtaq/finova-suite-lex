@@ -200,7 +200,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
               display: "inline-block",
-              borderRadius: "6px",
+              borderRadius: "2px",
               textTransform: "capitalize",
               ...statusColor
             }}
@@ -224,7 +224,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
               backgroundColor: "#0B8085 !important",
               color: "#000000",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -262,7 +262,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
               textOverflow: "ellipsis",
               whiteSpace: "nowrap",
               display: "inline-block",
-              borderRadius: "6px",
+              borderRadius: "2px",
               textTransform: "capitalize",
               ...statusColor
             }}

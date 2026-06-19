@@ -128,7 +128,7 @@ const CollateralManagement = () => {
           style={{
             whiteSpace: "nowrap",
             padding: "0.2rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor:
               row.availabilityStatus == "1"
                 ? "var(--color-status-red-soft)"
@@ -157,7 +157,7 @@ const CollateralManagement = () => {
           style={{
             whiteSpace: "nowrap",
             padding: "0.2rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.Status ? "var(--color-status-green)" : "var(--color-status-red-soft)",
             color: "var(--primary-foreground)",
             cursor: row.Status ? "pointer" : "default",
@@ -177,7 +177,7 @@ const CollateralManagement = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -322,14 +322,14 @@ const CollateralManagement = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
       >
         <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 w-100">
           <Button
-            style={{ borderRadius: 6, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+            style={{ borderRadius: 2, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="application-btn"
             onClick={() => navigate("/lms/addcollateral/collateralmanagement")}
           >
@@ -342,7 +342,7 @@ const CollateralManagement = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",

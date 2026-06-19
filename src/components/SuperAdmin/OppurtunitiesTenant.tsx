@@ -283,7 +283,7 @@ const OppurtunititesTenant = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.Status
               ? "rgba(146, 188, 131, 1)"
               : "rgba(55, 52, 53, 1)",
@@ -319,7 +319,7 @@ const OppurtunititesTenant = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >

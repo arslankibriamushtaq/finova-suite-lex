@@ -139,7 +139,7 @@ function GenerateInvoice() {
             backgroundColor: "var(--card)",
             padding: "50px",
             boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
-            borderRadius: "6px",
+            borderRadius: "2px",
             border: "2px solid var(--border)",
             color: "var(--foreground)",
             fontFamily: "Arial, sans-serif"
@@ -208,7 +208,7 @@ function GenerateInvoice() {
               backgroundColor: "var(--primary)",
               color: "var(--primary-foreground)",
               padding: "10px 16px",
-              borderRadius: "6px 6px 0 0",
+              borderRadius: "2px 2px 0 0",
               fontWeight: 600,
               fontSize: "13px"
             }}>

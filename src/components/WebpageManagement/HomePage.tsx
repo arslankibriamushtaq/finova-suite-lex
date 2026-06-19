@@ -38,7 +38,7 @@ const Homepage: React.FC = () => {
             style={{
               backgroundColor: 'var(--background)',
               padding: '20px 40px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               fontSize: '18px',
               fontWeight: 'bold',
               color: 'var(--color-text-dark)',

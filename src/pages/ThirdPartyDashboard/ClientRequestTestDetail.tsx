@@ -34,7 +34,7 @@ const Section = ({ title, children }: { title: string; children: React.ReactNode
   <div
     className="bg-white p-3 mb-3"
     style={{
-      borderRadius: 6,
+      borderRadius: 2,
       boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
       border: "1px solid var(--border)",
     }}
@@ -54,7 +54,7 @@ const StatusPill = ({ status }: { status: any }) => {
     <span
       style={{
         padding: "4px 10px",
-        borderRadius: 6,
+        borderRadius: 2,
         backgroundColor: isSuccess
           ? "var(--color-status-green)"
           : isClientError
@@ -87,7 +87,7 @@ const JsonBlock = ({ value }: { value: any }) => {
       style={{
         background: "var(--muted)",
         border: "1px solid var(--border)",
-        borderRadius: 6,
+        borderRadius: 2,
         padding: 12,
         fontSize: 12,
         whiteSpace: "pre-wrap",
@@ -193,7 +193,7 @@ const ClientRequestTestDetail = () => {
           <div
             className="bg-white p-4"
             style={{
-              borderRadius: 6,
+              borderRadius: 2,
               border: "1px solid var(--border)",
               textAlign: "center",
               color: "var(--muted-foreground)",

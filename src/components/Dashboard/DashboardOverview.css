@@ -1,7 +1,7 @@
 /* ===== Finance Statistics graph card — themed to match the stat cards ===== */
 .dashboard-graph-card.ant-card {
   border: 1px solid color-mix(in srgb, #10b981 18%, #e5e7eb);
-  border-radius: 6px;
+  border-radius: 2px;
   background: linear-gradient(135deg, #f3faf7 0%, #ffffff 55%);
   box-shadow: 0 8px 22px -14px color-mix(in srgb, #10b981 45%, transparent);
 }
@@ -46,7 +46,7 @@ html.dark .dashboard-graph-card.ant-card {
   width: 100%;
   min-height: 118px;
   padding: 18px 18px 16px;
-  border-radius: 6px;
+  border-radius: 2px;
   border: 1px solid color-mix(in srgb, var(--c) 24%, var(--surface-light));
   background: linear-gradient(
     135deg,

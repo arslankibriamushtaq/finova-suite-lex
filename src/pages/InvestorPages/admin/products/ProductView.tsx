@@ -138,7 +138,7 @@ const ProductView = () => {
             <span
               style={{
                 padding: "6px 12px",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 backgroundColor: statusColor,
                 color: "white",
                 fontSize: "12px",

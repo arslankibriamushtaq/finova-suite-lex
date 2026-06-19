@@ -252,7 +252,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
     <div style={{ padding: "20px", fontFamily: 'inherit', fontSize: '14px' }}>
       <div style={{ 
         background: "var(--surface-card)", 
-        borderRadius: "6px",
+        borderRadius: "2px",
         overflow: "hidden",
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
       }}>
@@ -342,7 +342,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
             border: `1px solid ${(isApproved || rejectedHistory?.application_status === "APPROVED") ? '#c3e6cb' : '#f5c6cb'}`,
             color: (isApproved || rejectedHistory?.application_status === "APPROVED") ? '#155724' : '#721c24',
             padding: '20px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             marginTop: '20px',
             textAlign: 'center'
           }}>
@@ -398,7 +398,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
               style={{
                 padding: '8px 12px',
                 border: '1px solid #d0d0d0',
-                borderRadius: '6px',
+                borderRadius: '2px',
                 backgroundColor: 'white',
                 color: '#333',
                 fontSize: '14px',
@@ -417,7 +417,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
               style={{
                 padding: '9px 14px',
                 border: 'none',
-                borderRadius: '6px',
+                borderRadius: '2px',
                 backgroundColor: rejecting || !rejectComment.trim() ? '#ccc' : '#000000',
                 color: 'white',
                 fontSize: '14px',
@@ -447,7 +447,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
                 minHeight: '120px',
                 padding: '12px',
                 border: '1px solid #d0d0d0',
-                borderRadius: '6px',
+                borderRadius: '2px',
                 fontSize: '14px',
                 fontFamily: 'inherit',
                 resize: 'vertical'

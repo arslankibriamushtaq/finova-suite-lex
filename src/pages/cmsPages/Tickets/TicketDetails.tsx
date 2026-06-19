@@ -60,7 +60,7 @@ const TicketDetails = () => {
             justifyContent: "center",
             width: "40px",
             height: "40px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             border: "1px solid var(--color-border-light)",
           }}
         />
@@ -71,7 +71,7 @@ const TicketDetails = () => {
       <div
         style={{
           border: "1px solid var(--color-border-subtle)",
-          borderRadius: "6px",
+          borderRadius: "2px",
           padding: "24px",
           marginBottom: "24px",
           backgroundColor: "var(--background)",
@@ -101,7 +101,7 @@ const TicketDetails = () => {
       <div
         style={{
           border: "1px solid var(--color-border-subtle)",
-          borderRadius: "6px",
+          borderRadius: "2px",
           padding: "24px",
           marginBottom: "24px",
           backgroundColor: "var(--background)",
@@ -131,7 +131,7 @@ const TicketDetails = () => {
       <div
         style={{
           border: "1px solid var(--color-border-subtle)",
-          borderRadius: "6px",
+          borderRadius: "2px",
           padding: "24px",
           marginBottom: "24px",
           backgroundColor: "var(--background)",
@@ -161,7 +161,7 @@ const TicketDetails = () => {
       <div
         style={{
           border: "1px solid var(--color-border-subtle)",
-          borderRadius: "6px",
+          borderRadius: "2px",
           padding: "24px",
           marginBottom: "24px",
           backgroundColor: "var(--background)",
@@ -187,7 +187,7 @@ const TicketDetails = () => {
                     alt={`Ticket image ${index + 1}`}
                     width={100}
                     height={100}
-                    style={{ objectFit: "cover", borderRadius: "6px" }}
+                    style={{ objectFit: "cover", borderRadius: "2px" }}
                   />
                 ))}
               </div>
@@ -210,7 +210,7 @@ const TicketDetails = () => {
       <div
         style={{
           border: "1px solid var(--color-border-subtle)",
-          borderRadius: "6px",
+          borderRadius: "2px",
           padding: "24px",
           backgroundColor: "var(--background)",
         }}
@@ -223,7 +223,7 @@ const TicketDetails = () => {
             padding: "8px 16px",
             backgroundColor: "#2196F3",
             color: "#fff",
-            borderRadius: "6px",
+            borderRadius: "2px",
             display: "inline-block",
           }}
         >
@@ -234,7 +234,7 @@ const TicketDetails = () => {
             display: "grid",
             gridTemplateColumns: "1fr 1fr",
             border: "1px solid var(--color-border-subtle)",
-            borderRadius: "6px",
+            borderRadius: "2px",
             overflow: "hidden",
           }}
         >

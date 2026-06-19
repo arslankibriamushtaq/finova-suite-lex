@@ -75,7 +75,7 @@ const ApplicationStatusBarChart = ({
           backgroundColor: '#fff', 
           padding: '8px 12px', 
           border: '1px solid #ddd',
-          borderRadius: '6px',
+          borderRadius: '2px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
         }}>
           <div style={{ color: '#FF3B3B', fontWeight: 'bold', marginBottom: '2px' }}>

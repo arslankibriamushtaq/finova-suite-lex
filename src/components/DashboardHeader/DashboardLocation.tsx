@@ -125,7 +125,7 @@ const DashboardLocation = (props: any) => {
                                 backgroundColor: "#fff",
                                 maxWidth: "100%",
                                 height: "400px",
-                                borderRadius: "6px",
+                                borderRadius: "2px",
                                 }}
                                 >
                                 <Tabs
@@ -133,7 +133,7 @@ const DashboardLocation = (props: any) => {
                                 onChange={handleTabChange}
                                 tabBarStyle={{
                                 backgroundColor: "#6C727F", // Background color for the tabs
-                                borderRadius: "6px", // Border radius for the tabs
+                                borderRadius: "2px", // Border radius for the tabs
                                 padding: "8px", // Add padding for better spacing
                                 border: "none", // Remove the border
                                 }}
@@ -142,7 +142,7 @@ const DashboardLocation = (props: any) => {
                                 <DefaultTabBar
                                 {...props}
                                 style={{
-                                borderRadius: "6px", // Ensure the active tab has rounded corners
+                                borderRadius: "2px", // Ensure the active tab has rounded corners
                                 }}
                                 />
                                 )}
@@ -153,7 +153,7 @@ const DashboardLocation = (props: any) => {
                                 style={{
                                 display: "inline-block",
                                 padding: "8px 16px",
-                                borderRadius: "6px",
+                                borderRadius: "2px",
                                 backgroundColor: "#6C727F", // Default background color
                                 color: "#FFFFFF", // Default text color
                                 }}
@@ -179,7 +179,7 @@ const DashboardLocation = (props: any) => {
                                 style={{
                                 display: "inline-block",
                                 padding: "8px 16px",
-                                borderRadius: "6px",
+                                borderRadius: "2px",
                                 backgroundColor: "#6C727F", // Default background color
                                 color: "#FFFFFF", // Default text color
                                 }}
@@ -203,7 +203,7 @@ const DashboardLocation = (props: any) => {
                         backgroundColor: "white",
                         zIndex: 1000,
                         maxWidth: "100%",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                     }}>
                         <img
                         src={mapImg}

@@ -161,7 +161,7 @@ const RejectedCustomers = () => {
               backgroundColor: "var(--color-action) !important",
               color: "var(--foreground)",
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >
@@ -716,7 +716,7 @@ const handleRiskChange = async () => {
           {/* Block Codes Table */}
           <div style={{
             border: "1px solid var(--color-surface-muted)",
-            borderRadius: "6px",
+            borderRadius: "2px",
             overflow: "hidden",
             maxHeight: "400px",
             overflowY: "auto"
@@ -796,7 +796,7 @@ const handleRiskChange = async () => {
                         backgroundColor: "var(--color-block-compliance)",
                         color: "white",
                         padding: "4px 12px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         fontSize: "12px",
                         fontWeight: "500"
                       }}>
@@ -813,7 +813,7 @@ const handleRiskChange = async () => {
                         color: "white",
                         border: "none",
                         padding: "6px 16px",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         fontSize: "12px",
                         fontWeight: "500",
                         cursor: "default",

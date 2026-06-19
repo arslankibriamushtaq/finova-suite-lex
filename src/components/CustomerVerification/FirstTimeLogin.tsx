@@ -108,7 +108,7 @@ const FirstTimeLogin = () => {
       <div
         style={{
           backgroundColor: "#ffffff",
-          borderRadius: "6px",
+          borderRadius: "2px",
           padding: "40px",
           maxWidth: "500px",
           width: "100%",
@@ -173,7 +173,7 @@ const FirstTimeLogin = () => {
                   width: "100%",
                   padding: "12px 40px 12px 16px",
                   border: errors.newPassword ? "1px solid #dc3545" : "1px solid #ddd",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   fontSize: "16px",
                   outline: "none",
                 }}
@@ -227,7 +227,7 @@ const FirstTimeLogin = () => {
           <div
             style={{
               backgroundColor: "#F8F9FA",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "16px",
               marginBottom: "24px",
             }}
@@ -301,7 +301,7 @@ const FirstTimeLogin = () => {
                   width: "100%",
                   padding: "12px 40px 12px 16px",
                   border: errors.confirmPassword ? "1px solid #dc3545" : "1px solid #ddd",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   fontSize: "16px",
                   outline: "none",
                 }}
@@ -360,7 +360,7 @@ const FirstTimeLogin = () => {
               backgroundColor: allRequirementsMet && !isLoading ? "#1963b9" : "#cccccc",
               color: "#ffffff",
               border: "none",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "14px",
               fontSize: "16px",
               fontWeight: "600",

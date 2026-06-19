@@ -593,7 +593,7 @@ const WalletDashboard = () => {
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            style={{ width: 280, minWidth: 200, borderRadius: 6, height: 40 }}
+            style={{ width: 280, minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <div style={{ width: 190 }}>
             <Select
@@ -630,7 +630,7 @@ const WalletDashboard = () => {
       <div
         className="bg-white"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
           overflow: "hidden",
@@ -921,7 +921,7 @@ const WalletDashboard = () => {
             <div
               className="bg-white"
               style={{
-                borderRadius: 6,
+                borderRadius: 2,
                 border: "1px solid var(--border)",
                 overflow: "hidden",
               }}

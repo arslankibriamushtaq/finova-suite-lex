@@ -49,7 +49,7 @@ const ServicesApis = () => {
         <span
           style={{
             padding: "6px 12px",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor: row.status === 1 ? "var(--color-success)" : "var(--color-error)",
             color: "white",
             fontSize: "12px",

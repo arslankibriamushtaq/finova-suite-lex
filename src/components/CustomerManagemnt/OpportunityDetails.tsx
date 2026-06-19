@@ -13,7 +13,7 @@ interface Field {
 const styles = {
   card: {
     marginBottom: "20px",
-    borderRadius: "6px",
+    borderRadius: "2px",
     boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
   },
   sectionTitle: {
@@ -304,7 +304,7 @@ const OpportunityDetail = () => {
         <div style={{ 
           backgroundColor: "#d1ecf1", 
           border: "1px solid #bee5eb", 
-          borderRadius: "6px", 
+          borderRadius: "2px", 
           padding: "15px",
           color: "#0c5460"
         }}>

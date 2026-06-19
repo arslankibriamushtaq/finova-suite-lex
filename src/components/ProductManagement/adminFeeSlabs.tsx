@@ -130,7 +130,7 @@ const handleNext=()=>{
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor:
               row.status === "active" || row.status === 1
                 ? "var(--chart-2)"

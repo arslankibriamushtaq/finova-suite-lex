@@ -82,7 +82,7 @@ const CollectionReport = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -94,7 +94,7 @@ const CollectionReport = () => {
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 6, background: "#fff" }}
+            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
             placeholder="To"
@@ -102,7 +102,7 @@ const CollectionReport = () => {
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
             allowClear
-            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 6, background: "#fff" }}
+            style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <button
             type="button"

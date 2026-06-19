@@ -443,7 +443,7 @@ const ContactUs = () => {
             backgroundColor: '#007bff',
             color: 'white',
             border: 'none',
-            borderRadius: '6px',
+            borderRadius: '2px',
             cursor: 'pointer'
           }}
         >
@@ -534,7 +534,7 @@ const ContactUs = () => {
             backgroundColor: '#f8d7da',
             color: '#721c24',
             padding: '15px',
-            borderRadius: '6px',
+            borderRadius: '2px',
             marginBottom: '20px',
             border: '1px solid #f5c6cb'
           }}>
@@ -604,7 +604,7 @@ const ContactUs = () => {
                   <div key={index} style={{
                     backgroundColor: 'white',
                     padding: '20px',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
                     marginBottom: '20px',
                     display: 'flex',
@@ -643,7 +643,7 @@ const ContactUs = () => {
             <div style={{
               backgroundColor: 'white',
               padding: '20px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)',
               display: 'flex',
               alignItems: 'center',
@@ -709,7 +709,7 @@ const ContactUs = () => {
             <div style={{
               backgroundColor: 'white',
               padding: '30px',
-              borderRadius: '6px',
+              borderRadius: '2px',
               boxShadow: '0 2px 10px rgba(0,0,0,0.1)'
             }}>
               <form>
@@ -725,7 +725,7 @@ const ContactUs = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       boxSizing: 'border-box'
                     }}
@@ -744,7 +744,7 @@ const ContactUs = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       boxSizing: 'border-box'
                     }}
@@ -763,7 +763,7 @@ const ContactUs = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       boxSizing: 'border-box'
                     }}
@@ -782,7 +782,7 @@ const ContactUs = () => {
                       width: '100%',
                       padding: '12px',
                       border: '1px solid #ddd',
-                      borderRadius: '6px',
+                      borderRadius: '2px',
                       fontSize: '14px',
                       resize: 'vertical',
                       boxSizing: 'border-box'
@@ -799,7 +799,7 @@ const ContactUs = () => {
                     backgroundColor: '#000',
                     color: 'white',
                     border: 'none',
-                    borderRadius: '6px',
+                    borderRadius: '2px',
                     fontSize: '16px',
                     fontWeight: 'bold',
                     cursor: 'pointer',

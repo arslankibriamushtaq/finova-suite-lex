@@ -121,7 +121,7 @@ const UpdatePartnerAdmin = () => {
   }
 
   return (
-    <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "6px" }}>
+    <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "2px" }}>
       <h4 style={{ marginBottom: "2rem" }}>Update Partner Admin</h4>
 
       <div className="row">

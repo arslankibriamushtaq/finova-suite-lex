@@ -243,7 +243,7 @@ const VerifyOtp: React.FC = () => {
         <div
           style={{
             backgroundColor: "#ffffff",
-            borderRadius: "6px",
+            borderRadius: "2px",
             padding: "40px",
             maxWidth: "450px",
             width: "100%",
@@ -311,7 +311,7 @@ const VerifyOtp: React.FC = () => {
                   width: "60px",
                   height: "60px",
                   border: `2px solid ${digit ? "#1963b9" : "#e0e0e0"}`,
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   fontSize: "24px",
                   fontWeight: "600",
                   textAlign: "center",
@@ -341,7 +341,7 @@ const VerifyOtp: React.FC = () => {
               padding: "14px",
               backgroundColor: "#1963b9",
               color: "#ffffff",
-              borderRadius: "6px",
+              borderRadius: "2px",
               border: "none",
               fontSize: "16px",
               fontWeight: "700",

@@ -202,15 +202,15 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
       <div className="profile-sec mt-3 mb-3">
         <div className="row g-3 align-items-center account-card">
           <div className="col-12">
-            <div className="p-4" style={{ background: "var(--surface-card)", borderRadius: "6px", fontFamily: 'inherit', fontSize: '14px' }}>
+            <div className="p-4" style={{ background: "var(--surface-card)", borderRadius: "2px", fontFamily: 'inherit', fontSize: '14px' }}>
               {hasComplianceHistory && (
-                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "6px", background: "var(--surface-card-alt)", border: "1px solid var(--surface-border)" }}>
+                <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "2px", background: "var(--surface-card-alt)", border: "1px solid var(--surface-border)" }}>
                   <h4 style={{ fontSize: "16px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
                     KYC / Compliance Summary
                   </h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
                     {complianceHistoryEntries.map(([key, value]) => (
-                      <div key={String(key)} style={{ padding: "12px", background: "var(--surface-card)", borderRadius: "6px", border: "1px solid var(--surface-border)" }}>
+                      <div key={String(key)} style={{ padding: "12px", background: "var(--surface-card)", borderRadius: "2px", border: "1px solid var(--surface-border)" }}>
                         <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>{String(key)}</div>
                         <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                           {typeof value === "object" ? JSON.stringify(value) : String(value ?? "-")}

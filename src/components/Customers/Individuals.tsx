@@ -260,7 +260,7 @@ const Individuals = () => {
         <div
           style={{
             padding: "0.22rem 1rem",
-            borderRadius: "6px",
+            borderRadius: "2px",
             backgroundColor:
               row.status
                 ? "var(--color-status-green)"
@@ -297,7 +297,7 @@ const Individuals = () => {
             type="primary"
             style={{
               borderColor: "white",
-              borderRadius: "6px",
+              borderRadius: "2px",
               padding: "10px 20px",
             }}
           >

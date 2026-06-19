@@ -173,7 +173,7 @@ function SalaryDetails({ fullDetail }: any) {
           <div style={{ 
             padding: "8px 16px", 
             background: "var(--surface-card-alt)", 
-            borderRadius: "6px",
+            borderRadius: "2px",
             fontSize: "14px",
             fontWeight: 600,
             color: "var(--foreground)"
@@ -205,7 +205,7 @@ function SalaryDetails({ fullDetail }: any) {
                   key={index}
                   style={{
                     border: "1px solid var(--surface-border)",
-                    borderRadius: "6px",
+                    borderRadius: "2px",
                     background: "var(--surface-card)",
                     overflow: "hidden",
                   }}
@@ -232,7 +232,7 @@ function SalaryDetails({ fullDetail }: any) {
                           <span
                             style={{
                               padding: "4px 12px",
-                              borderRadius: "6px",
+                              borderRadius: "2px",
                               fontSize: "12px",
                               fontWeight: 500,
                               backgroundColor: statusColor,
@@ -310,7 +310,7 @@ function SalaryDetails({ fullDetail }: any) {
                                 <span
                                   style={{
                                     padding: "4px 10px",
-                                    borderRadius: "6px",
+                                    borderRadius: "2px",
                                     fontSize: "12px",
                                     backgroundColor: statusColor,
                                     color: "white",
@@ -437,7 +437,7 @@ function SalaryDetails({ fullDetail }: any) {
               style={{
                 background: "#D1FAE5",
                 padding: "12px 20px",
-                borderRadius: "6px",
+                borderRadius: "2px",
                 marginTop: "20px",
               }}
             >
@@ -461,7 +461,7 @@ function SalaryDetails({ fullDetail }: any) {
                 </div>
               </div>
 
-              <div style={{ border: "1px solid var(--surface-border)", borderRadius: "6px", background: "var(--surface-card)", padding: "20px" }}>
+              <div style={{ border: "1px solid var(--surface-border)", borderRadius: "2px", background: "var(--surface-card)", padding: "20px" }}>
                 <Row gutter={[24, 24]}>
                   {/* Income Section */}
                   <Col xs={24} md={12}>
@@ -496,7 +496,7 @@ function SalaryDetails({ fullDetail }: any) {
                           Total Monthly Expenses
                         </h4>
                       </div>
-                      <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", background: "var(--surface-card-alt)", borderRadius: "6px", paddingLeft: "12px", paddingRight: "12px" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", background: "var(--surface-card-alt)", borderRadius: "2px", paddingLeft: "12px", paddingRight: "12px" }}>
                         <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>TOTAL EXPENSES</span>
                         <span style={{ fontSize: "16px", color: "var(--foreground)", fontWeight: 700 }}>
                           {formatAmount(salaryData.monthlyExpenses.totalExpenses)}

@@ -112,7 +112,7 @@ const PerformingLoans = () => {
       <div
         className="bg-white p-3 mb-3"
         style={{
-          borderRadius: 6,
+          borderRadius: 2,
           boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
           border: "1px solid var(--border)",
         }}
@@ -124,7 +124,7 @@ const PerformingLoans = () => {
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 6, height: 40 }}
+          style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
         <DatePicker
           placeholder="As of date"
@@ -132,7 +132,7 @@ const PerformingLoans = () => {
           onChange={(d) => setAsOfDate(d)}
           format="YYYY-MM-DD"
           allowClear
-          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 6 }}
+          style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <button
           type="button"

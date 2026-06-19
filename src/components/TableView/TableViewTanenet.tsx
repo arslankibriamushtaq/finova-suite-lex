@@ -33,7 +33,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
         paddingLeft: "8px", // override the cell padding for data cells
         paddingRight: "8px",
         fontSize: "12px",
-        borderTopLeftRadius: "6px",
+        borderTopLeftRadius: "2px",
         justifyContent: "center", // Center the content horizontally
         alignItems: "center", // Center the content vertically (if needed)
       },
@@ -48,7 +48,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
     //   },
     //   pageButtonsStyle: {
     //     // Customize the individual page buttons style
-    //     borderRadius: "6px",
+    //     borderRadius: "2px",
     //     marginLeft: "5px",
     //     marginRight: "5px",
     //     padding: "8px",
@@ -67,7 +67,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
     //     // Customize the rows per page dropdown style
     //     backgroundColor: "#004D72",
     //     color: "white",
-    //     borderRadius: "6px",
+    //     borderRadius: "2px",
     //     border: "1px solid #004D72",
     //   },
     // },
@@ -132,7 +132,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
               <div
                 style={{
                   padding: "0.22rem 1rem",
-                  borderRadius: "6px",
+                  borderRadius: "2px",
                   backgroundColor: column.backGround,
                   color: column.color,
                   cursor: row.ByDefault === "Active" ? "pointer" : "default",
@@ -153,7 +153,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
                     <div
                       style={{
                         padding: ".25rem 0.5rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         backgroundColor: "#0dcaf0",
                         color: "white",
                         marginRight: "4px",
@@ -166,7 +166,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
                     <div
                       style={{
                         padding: ".25rem 0.5rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         backgroundColor: "#4253a1",
                         color: "white",
                         marginRight: "4px",
@@ -179,7 +179,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
                     <div
                       style={{
                         padding: ".25rem 0.5rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         backgroundColor: "#000000",
                         color: "white",
                         marginRight: "4px",
@@ -192,7 +192,7 @@ const TableViewTanenent = ({ header, data, apiHeader }: any) => {
                     <div
                       style={{
                         padding: "0.22rem 1rem",
-                        borderRadius: "6px",
+                        borderRadius: "2px",
                         backgroundColor: themeBuilder?.table?.backgroundColor,
                         color: themeBuilder?.table?.headingColor,
                         cursor: row.Status === "Active" ? "pointer" : "default",

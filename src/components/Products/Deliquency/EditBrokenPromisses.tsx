@@ -245,7 +245,7 @@ const EditBrokenPromisses: any = ({ productId, setSelectedTab }: any) => {
           style={{
             padding: "8px 8px",
             border: "none",
-            borderRadius: "6px",
+            borderRadius: "2px",
           }}
           onClick={() => {
             setSelectedTab("Non-PerformingLoan");
@@ -257,7 +257,7 @@ const EditBrokenPromisses: any = ({ productId, setSelectedTab }: any) => {
           className="application-btn mb-2"
           /* style={{
             backgroundColor: "#EB0D0D",
-            borderRadius: "6px",
+            borderRadius: "2px",
             height: "fit-content",
             width: "fit-content",
           }} */
