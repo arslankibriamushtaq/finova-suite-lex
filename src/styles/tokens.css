@@ -1827,6 +1827,84 @@ html.dark .ant-select:not(.ant-select-disabled) .ant-select-selector {
 }
 
 /* ==========================================================================
+   PROFESSIONAL DATE PICKER — refined antd <DatePicker> field + calendar panel.
+   Only accents (focus ring, selected / today / hover) use the brand emerald;
+   surfaces & text are left to antd's theme so light AND dark stay correct.
+   Global — applies to every DatePicker (and RangePicker) in the project.
+   ========================================================================== */
+/* --- Field --- */
+.ant-picker {
+  border-radius: 6px !important;
+  padding-block: 6px !important;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease !important;
+}
+.ant-picker-focused,
+.ant-picker.ant-picker-focused,
+.ant-picker:focus-within {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px color-mix(in srgb, #10b981 18%, transparent) !important;
+}
+.ant-picker .ant-picker-suffix {
+  color: #10b981 !important;
+}
+.ant-picker .ant-picker-active-bar {
+  background: #10b981 !important;
+}
+
+/* --- Calendar dropdown panel --- */
+.ant-picker-dropdown .ant-picker-panel-container {
+  border-radius: 12px !important;
+  box-shadow: 0 12px 32px -12px rgba(16, 185, 129, 0.25),
+    0 8px 24px -16px rgba(0, 0, 0, 0.25) !important;
+  overflow: hidden;
+}
+.ant-picker-dropdown .ant-picker-panel {
+  border: 0 !important;
+}
+.ant-picker-dropdown .ant-picker-header {
+  border-bottom-color: color-mix(in srgb, #10b981 12%, transparent) !important;
+}
+.ant-picker-dropdown .ant-picker-header button:hover {
+  color: #10b981 !important;
+}
+/* Day / month / year cells */
+.ant-picker-dropdown .ant-picker-cell .ant-picker-cell-inner {
+  border-radius: 8px !important;
+  transition: background-color 0.15s ease, color 0.15s ease !important;
+}
+.ant-picker-dropdown .ant-picker-cell-in-view:hover .ant-picker-cell-inner {
+  background: color-mix(in srgb, #10b981 14%, transparent) !important;
+}
+/* Today indicator */
+.ant-picker-dropdown .ant-picker-cell-today .ant-picker-cell-inner::before {
+  border-color: #10b981 !important;
+  border-radius: 8px !important;
+}
+/* Selected day + range endpoints */
+.ant-picker-dropdown .ant-picker-cell-selected .ant-picker-cell-inner,
+.ant-picker-dropdown .ant-picker-cell-range-start .ant-picker-cell-inner,
+.ant-picker-dropdown .ant-picker-cell-range-end .ant-picker-cell-inner {
+  background: #10b981 !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  font-weight: 600;
+}
+/* Range fill */
+.ant-picker-dropdown .ant-picker-cell-in-range::before,
+.ant-picker-dropdown .ant-picker-cell-range-start::before,
+.ant-picker-dropdown .ant-picker-cell-range-end::before {
+  background: color-mix(in srgb, #10b981 16%, transparent) !important;
+}
+/* Footer "Today" link */
+.ant-picker-dropdown .ant-picker-today-btn {
+  color: #10b981 !important;
+  font-weight: 600;
+}
+.ant-picker-dropdown .ant-picker-today-btn:hover {
+  color: color-mix(in srgb, #10b981 78%, #000) !important;
+}
+
+/* ==========================================================================
    THEMED MODALS — emerald touch for every modal (shadcn Dialog, antd Modal,
    Bootstrap Modal): tinted surface, professional header/footer dividers,
    themed close (×), inputs/textarea, and action buttons.

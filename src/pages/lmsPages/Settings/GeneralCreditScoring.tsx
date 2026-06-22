@@ -303,9 +303,11 @@ const GeneralCreditScoring = () => {
         </TabsList>
 
         <TabsContent value="general-credit-scoring">
-          <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-            <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-              {/* <Settings className="h-5 w-5" /> */}
+          <div className="mb-4 flex items-center justify-between gap-3 border-b pb-3">
+            <h3 className="m-0 flex items-center gap-2.5 text-lg font-semibold text-foreground">
+              <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <Settings className="size-4" />
+              </span>
               General Credit Scoring
             </h3>
             <Button variant="outline" onClick={addCriteria} className="gap-2">
@@ -321,10 +323,11 @@ const GeneralCreditScoring = () => {
           ))}
         </div>
       ) : criteria.length === 0 ? (
-        <div className="text-center py-5 border-2 border-dashed rounded">
-          <p className="text-sm text-muted-foreground mb-3">
-            No criteria configured yet.
-          </p>
+        <div className="flex flex-col items-center gap-3 rounded-xl border border-dashed py-12 text-center">
+          <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <Settings className="size-5" />
+          </span>
+          <p className="text-sm text-muted-foreground">No criteria configured yet.</p>
           <Button onClick={addCriteria} className="gap-2">
             <Plus className="h-4 w-4" />
             Add Criteria
@@ -340,10 +343,17 @@ const GeneralCreditScoring = () => {
               }}
               style={{ scrollMarginTop: 96 }}
             >
-            <Card className="border-2">
-              <CardHeader className="pb-3">
+            <Card className="relative overflow-hidden rounded-xl border transition-shadow duration-200 hover:shadow-md">
+              {/* Soft emerald glow accent — consistent across all cards */}
+              <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+              <CardHeader className="relative pb-3">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-base">Criteria #{cIdx + 1}</CardTitle>
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/15">
+                      {cIdx + 1}
+                    </span>
+                    <CardTitle className="text-base">Criteria #{cIdx + 1}</CardTitle>
+                  </div>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
                       <Switch
@@ -365,7 +375,7 @@ const GeneralCreditScoring = () => {
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="relative space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Credit Scoring Field</Label>
@@ -414,7 +424,7 @@ const GeneralCreditScoring = () => {
                 </div>
 
                 {c.rules.length === 0 ? (
-                  <div className="text-center py-4 text-sm text-muted-foreground border-2 border-dashed rounded bg-muted/30">
+                  <div className="rounded-lg border border-dashed bg-muted/30 py-4 text-center text-sm text-muted-foreground">
                     No rules added. Click "Add Rule" to create scoring rules.
                   </div>
                 ) : (
@@ -422,7 +432,7 @@ const GeneralCreditScoring = () => {
                     {c.rules.map((rule, rIdx) => (
                       <div
                         key={rule.id || rIdx}
-                        className="grid grid-cols-1 md:grid-cols-5 gap-2 p-3 border rounded bg-background"
+                        className="grid grid-cols-1 gap-2 rounded-lg border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 md:grid-cols-5"
                       >
                         <div className="space-y-1">
                           <Label className="text-xs">Operator</Label>
@@ -513,7 +523,7 @@ const GeneralCreditScoring = () => {
 
           {/* Bottom save row — keep Save anchored at the end so users
               don't need to scroll back up after editing the last criteria */}
-          <div className="d-flex justify-content-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2">
             <Button onClick={handleSave} disabled={isSaving} className="gap-2">
               <Save className="h-4 w-4" />
               {isSaving ? "Saving..." : "Save"}

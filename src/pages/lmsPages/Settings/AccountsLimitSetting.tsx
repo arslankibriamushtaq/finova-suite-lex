@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Save } from "lucide-react";
+import { Save, Wallet } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Button } from "../../../components/ui/button";
@@ -127,8 +127,11 @@ const AccountsLimitSetting = () => {
 
   return (
     <div>
-      <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+      <div className="mb-4 flex items-center justify-between gap-3 border-b pb-3">
+        <h3 className="m-0 flex items-center gap-2.5 text-lg font-semibold text-foreground">
+          <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <Wallet className="size-4" />
+          </span>
           Accounts Limit Setting
         </h3>
       </div>
@@ -142,11 +145,21 @@ const AccountsLimitSetting = () => {
       ) : (
         <div className="space-y-4">
           {PERIODS.map((p) => (
-            <Card key={p.label} className="border-2">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base">{p.label} Limit</CardTitle>
+            <Card
+              key={p.label}
+              className="relative overflow-hidden rounded-xl border transition-shadow duration-200 hover:shadow-md"
+            >
+              {/* Soft emerald glow accent — consistent across all cards */}
+              <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+              <CardHeader className="relative pb-3">
+                <CardTitle className="flex items-center gap-2.5 text-base">
+                  <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                    <Wallet className="size-4" />
+                  </span>
+                  {p.label} Limit
+                </CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label>Minimum</Label>
@@ -186,7 +199,7 @@ const AccountsLimitSetting = () => {
             </Card>
           ))}
 
-          <div className="d-flex justify-content-end gap-2 pt-2">
+          <div className="flex justify-end gap-2 pt-2">
             <Button onClick={handleSave} disabled={isSaving} className="gap-2">
               <Save className="h-4 w-4" />
               {isSaving ? "Saving..." : "Save"}

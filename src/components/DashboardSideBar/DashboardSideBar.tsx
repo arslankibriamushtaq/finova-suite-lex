@@ -1303,8 +1303,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "notification",
           img: Images.SettingsIcon,
           // Scope to /Lms/Setting/* so it doesn't also match /LOS/Setting/*
-          // (the Access Control Management group).
-          active: pathname.includes("/Lms/Setting"),
+          // (the Access Control Management group). Exclude GeneralCreditScoring —
+          // that page belongs to the top-level "General Setting" item, so this
+          // submenu must not claim it (which would auto-open the LMS dropdown).
+          active:
+            pathname.includes("/Lms/Setting") &&
+            !pathname.includes("/Lms/Setting/GeneralCreditScoring"),
           submenu: [
             // {
             //   label: "Product Management",
@@ -2538,10 +2542,43 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           .ps-sidebar-root {
             border-right: 1px solid var(--surface-border) !important;
           }
-          /* Hard-stop the open-submenu height animation so a re-measure on
-             hover can never slide the items below an open group (the jerk). */
-          .ps-submenu-content {
-            transition: height 0s !important;
+          /* ===== Smooth, professional submenu open/close animation =====
+             react-pro-sidebar's own height animation was killed (transitionDuration=0)
+             because re-measuring an open submenu on re-render could slide the rows
+             below it (the jerk). Instead we animate height purely in CSS via the
+             grid 0fr→1fr trick: it's driven ONLY by the .ps-open class, never by JS
+             measurement, so incidental re-renders can't cause that slide. The inline
+             height react-pro-sidebar sets is overridden with height:auto. */
+          .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-content {
+            display: grid !important;
+            grid-template-rows: 0fr;
+            height: auto !important;
+            overflow: hidden !important;
+            transition: grid-template-rows 0.32s cubic-bezier(0.33, 1, 0.68, 1) !important;
+          }
+          .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-content > ul {
+            min-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-6px);
+            transition: opacity 0.28s ease 0.06s, transform 0.32s cubic-bezier(0.33, 1, 0.68, 1) 0.06s;
+          }
+          .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-root.ps-open > .ps-submenu-content {
+            grid-template-rows: 1fr;
+          }
+          .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-root.ps-open > .ps-submenu-content > ul {
+            opacity: 1;
+            transform: translateY(0);
+          }
+          /* Smoothly rotate the expand chevron as the group opens/closes */
+          .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-expand-icon {
+            transition: transform 0.32s cubic-bezier(0.33, 1, 0.68, 1) !important;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-content,
+            .ps-sidebar-root:not([data-collapsed="true"]) .ps-submenu-content > ul {
+              transition: none !important;
+            }
           }
           /* Hover icon highlight — moved from JS (setHoveredItem) to CSS so
              hovering a group no longer re-renders the sidebar (the re-render

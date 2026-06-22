@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -16,6 +17,19 @@ import {
   Camera,
   ZoomIn,
   X,
+  Phone,
+  Mail,
+  Hash,
+  CreditCard,
+  CalendarDays,
+  Clock,
+  User,
+  Contact,
+  ArrowLeftRight,
+  TrendingUp,
+  Gauge,
+  ShieldCheck,
+  BarChart3,
 } from "lucide-react";
 import {
   LineChart,
@@ -163,7 +177,7 @@ const chartTooltipStyle = {
 
 /* Label / value row */
 const Field = ({ label, value, mono }: { label: string; value: React.ReactNode; mono?: boolean }) => (
-  <div className="flex items-center justify-between gap-4 border-b border-border/60 py-2.5 text-sm last:border-b-0">
+  <div className="-mx-2 flex items-center justify-between gap-4 rounded-md border-b border-border/60 px-2 py-2.5 text-sm transition-colors last:border-b-0 hover:bg-muted/40">
     <span className="shrink-0 text-muted-foreground">{label}</span>
     <span
       className={cn(
@@ -177,13 +191,27 @@ const Field = ({ label, value, mono }: { label: string; value: React.ReactNode; 
 );
 
 /* Section title inside a tab */
-const Block = ({ title, right, children, className }: any) => (
-  <div className={cn("onb-card rounded-xl border p-4 md:p-5", className)}>
-    <div className="mb-3 flex items-center justify-between gap-2">
-      <h3 className="m-0 text-sm font-semibold text-foreground">{title}</h3>
+const Block = ({ title, right, children, className, icon: Icon }: any) => (
+  <div
+    className={cn(
+      "onb-card relative overflow-hidden rounded-xl border p-4 transition-shadow duration-200 hover:shadow-md md:p-5",
+      className
+    )}
+  >
+    {/* Soft emerald glow accent — consistent across all cards */}
+    <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+    <div className="relative mb-4 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2.5">
+        {Icon && (
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+            <Icon className="size-4" />
+          </span>
+        )}
+        <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">{title}</h3>
+      </div>
       {right}
     </div>
-    {children}
+    <div className="relative">{children}</div>
   </div>
 );
 
@@ -229,72 +257,96 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
     : customer.fullName || `${customer.firstName || ""} ${customer.lastName || ""}`.trim();
   const initials = (customer.firstName?.[0] || "") + (customer.lastName?.[0] || "");
 
+  const details = [
+    { icon: Hash, label: "CIF Number", value: customer.cifNumber },
+    {
+      icon: CreditCard,
+      label: customer.nationalIdType || "National ID",
+      value: customer.nationalId,
+    },
+    { icon: Phone, label: "Mobile", value: customer.mobileNumber },
+    { icon: Mail, label: "Email", value: customer.email },
+    { icon: CalendarDays, label: "Date of Birth", value: formatDate(customer.dateOfBirth) },
+    { icon: Clock, label: "Onboarded", value: formatDate(customer.createdAt) },
+  ].filter((d) => d.value && d.value !== "—");
+
   return (
     <div className="relative overflow-hidden border-b">
-      <div className="absolute inset-x-0 top-0 h-full bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
-      <div className="relative flex flex-col gap-4 p-5 sm:flex-row sm:items-center">
-        <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-muted text-base font-semibold text-muted-foreground ring-2 ring-emerald-500/20 shadow-sm">
-          {customer.profilePicture ? (
-            <img src={customer.profilePicture} alt={displayName} className="size-full object-cover" />
-          ) : (
-            initials || <CircleDot className="size-6" />
-          )}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent" />
+      <div className="relative flex flex-col gap-6 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+        {/* Identity */}
+        <div className="flex min-w-0 items-center gap-3 sm:gap-4">
+          <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-base font-semibold text-white ring-2 ring-emerald-500/25 shadow-md shadow-emerald-500/20 sm:size-14 sm:text-lg">
+            {customer.profilePicture ? (
+              <img src={customer.profilePicture} alt={displayName} className="size-full object-cover" />
+            ) : (
+              initials.toUpperCase() || <CircleDot className="size-6" />
+            )}
+          </div>
+
+          <div className="flex min-w-0 flex-col gap-2">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h2 className="m-0 max-w-full truncate text-start text-base font-semibold leading-tight text-foreground sm:text-lg">
+                {displayName || "—"}
+              </h2>
+              {flag && <span className="text-base leading-none">{flag}</span>}
+              <span className="text-sm text-muted-foreground">{nationality}</span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2">
+              {customer.lifecycleStage && (
+                <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
+                  {customer.lifecycleStage}
+                </Badge>
+              )}
+              {customer.kycStatus && <StatusBadge status={customer.kycStatus} />}
+              {customer.riskGrade && (
+                <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(customer.riskGrade)])}>
+                  Risk {customer.riskGrade}
+                </Badge>
+              )}
+              {customer.pepFlag && (
+                <Badge variant="outline" className={cn("border font-medium", TONES.amber)}>
+                  PEP
+                </Badge>
+              )}
+              {customer.sanctionsFlag && (
+                <Badge variant="outline" className={cn("border font-medium", TONES.red)}>
+                  Sanctioned
+                </Badge>
+              )}
+              {customer.isBlocked && (
+                <Badge variant="outline" className={cn("gap-1 border font-medium", TONES.red)}>
+                  <Lock className="size-3" /> Blocked
+                  {Array.isArray(customer.blockCodes) && customer.blockCodes.length > 0
+                    ? ` · ${customer.blockCodes.join(", ")}`
+                    : ""}
+                </Badge>
+              )}
+            </div>
+          </div>
         </div>
 
-        <div className="flex flex-1 flex-col gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="m-0 text-start text-base font-semibold leading-tight text-foreground">
-              {displayName || "—"}
-            </h2>
-            {flag && <span className="text-base leading-none">{flag}</span>}
-            <span className="text-sm text-muted-foreground">{nationality}</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
-            <span className="text-muted-foreground">
-              CIF <span className="font-medium text-foreground">{customer.cifNumber || "—"}</span>
-            </span>
-            <span className="text-muted-foreground">
-              {customer.nationalIdType || "ID"}{" "}
-              <span className="font-medium text-foreground">{customer.nationalId || "—"}</span>
-            </span>
-            {customer.mobileNumber && (
-              <span className="font-medium text-foreground">{customer.mobileNumber}</span>
-            )}
-            {customer.email && <span className="font-medium text-foreground">{customer.email}</span>}
-          </div>
-
-          <div className="mt-0.5 flex flex-wrap items-center gap-2">
-            {customer.lifecycleStage && (
-              <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
-                {customer.lifecycleStage}
-              </Badge>
-            )}
-            {customer.kycStatus && <StatusBadge status={customer.kycStatus} />}
-            {customer.riskGrade && (
-              <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(customer.riskGrade)])}>
-                Risk {customer.riskGrade}
-              </Badge>
-            )}
-            {customer.pepFlag && (
-              <Badge variant="outline" className={cn("border font-medium", TONES.amber)}>
-                PEP
-              </Badge>
-            )}
-            {customer.sanctionsFlag && (
-              <Badge variant="outline" className={cn("border font-medium", TONES.red)}>
-                Sanctioned
-              </Badge>
-            )}
-            {customer.isBlocked && (
-              <Badge variant="outline" className={cn("gap-1 border font-medium", TONES.red)}>
-                <Lock className="size-3" /> Blocked
-                {Array.isArray(customer.blockCodes) && customer.blockCodes.length > 0
-                  ? ` · ${customer.blockCodes.join(", ")}`
-                  : ""}
-              </Badge>
-            )}
-          </div>
+        {/* Detail grid — fills the right side */}
+        <div className="grid w-full grid-cols-1 gap-x-6 gap-y-4 min-[420px]:grid-cols-2 sm:gap-x-8 lg:w-auto lg:flex-1 lg:grid-cols-3 lg:justify-items-start xl:max-w-3xl">
+          {details.map((d) => {
+            const Icon = d.icon;
+            return (
+              <div key={d.label} className="flex items-center gap-2.5">
+                <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                  <Icon className="size-4" />
+                </span>
+                <div className="min-w-0">
+                  <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {d.label}
+                  </div>
+                  <div className="truncate text-sm font-semibold text-foreground" title={d.value}>
+                    {d.value}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -343,9 +395,10 @@ const Stepper = ({ onboarding, isAr }: any) => {
                 <div className="relative flex flex-col items-center">
                   <div
                     className={cn(
-                      "relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
+                      "onb-step-circle relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
                       circle
                     )}
+                    style={{ animationDelay: `${idx * 0.18}s` }}
                   >
                     {done ? (
                       <Check className="size-5" strokeWidth={3} />
@@ -365,29 +418,32 @@ const Stepper = ({ onboarding, isAr }: any) => {
                         : "left-1/2 -translate-x-1/2 text-center"
                     )}
                   >
-                    <span
-                      className={cn(
-                        "text-xs",
-                        done || current
-                          ? "font-semibold text-foreground"
-                          : "font-medium text-muted-foreground"
+                    <div className="onb-label" style={{ animationDelay: `${idx * 0.18 + 0.15}s` }}>
+                      <span
+                        className={cn(
+                          "text-xs",
+                          done || current
+                            ? "font-semibold text-foreground"
+                            : "font-medium text-muted-foreground"
+                        )}
+                      >
+                        {isAr ? step.labelAr || step.label : step.label}
+                      </span>
+                      {step.occurredAt && (
+                        <div className="text-[10px] text-muted-foreground">
+                          {formatDate(step.occurredAt)}
+                        </div>
                       )}
-                    >
-                      {isAr ? step.labelAr || step.label : step.label}
-                    </span>
-                    {step.occurredAt && (
-                      <div className="text-[10px] text-muted-foreground">
-                        {formatDate(step.occurredAt)}
-                      </div>
-                    )}
+                    </div>
                   </div>
                 </div>
                 {!isLast && (
                   <div
                     className={cn(
-                      "mx-2 h-0.5 flex-1 rounded-full transition-colors duration-500",
+                      "onb-connector mx-2 h-0.5 flex-1 rounded-full transition-colors duration-500",
                       done ? "bg-emerald-500" : "bg-border"
                     )}
+                    style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
                   />
                 )}
               </div>
@@ -646,6 +702,37 @@ const Onboarding360 = () => {
         .onb360-page h2 { font-size: 1rem !important;     line-height: 1.3 !important; margin: 0 !important; }
         .onb360-page h3 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .onb360-page h4 { font-size: 0.8125rem !important; line-height: 1.3 !important; margin: 0 !important; }
+
+        /* Stepper entrance animation — staggered, professional reveal */
+        @keyframes onbStepPop {
+          0%   { opacity: 0; transform: scale(0.4); }
+          60%  { opacity: 1; transform: scale(1.12); }
+          100% { opacity: 1; transform: scale(1); }
+        }
+        @keyframes onbConnGrow {
+          from { transform: scaleX(0); }
+          to   { transform: scaleX(1); }
+        }
+        @keyframes onbLabelIn {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .onb360-page .onb-step-circle {
+          animation: onbStepPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+        .onb360-page .onb-connector {
+          transform-origin: left center;
+          animation: onbConnGrow 0.45s ease-out both;
+        }
+        .onb360-page[dir="rtl"] .onb-connector { transform-origin: right center; }
+        .onb360-page .onb-label {
+          animation: onbLabelIn 0.4s ease-out both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .onb360-page .onb-step-circle,
+          .onb360-page .onb-connector,
+          .onb360-page .onb-label { animation: none !important; }
+        }
       `}</style>
       {loading ? (
         <LoadingState />
@@ -677,10 +764,10 @@ const Onboarding360 = () => {
             <div className="flex flex-col gap-4 p-4 md:p-5">
             {/* Key graphs — always visible, independent of tabs */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <Block title="Risk Score">
+              <Block title="Risk Score" icon={ShieldAlert}>
                 <RiskGauge risk={risk} />
               </Block>
-              <Block title="Money In vs Money Out">
+              <Block title="Money In vs Money Out" icon={ArrowLeftRight}>
                 {transactions.length === 0 ? (
                   <EmptyState icon={ArrowDownLeft} text="No transactions yet." />
                 ) : (
@@ -712,12 +799,12 @@ const Onboarding360 = () => {
                 {activeTab === "overview" && (
                   <div className="flex flex-col gap-4 pt-4">
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <Block title="Personal Information">
+                <Block title="Personal Information" icon={User}>
                   {personalRows.map((r) => (
                     <Field key={r.label} label={r.label} value={r.value || "—"} />
                   ))}
                 </Block>
-                <Block title="Contact & Identity">
+                <Block title="Contact & Identity" icon={Contact}>
                   {contactRows.map((r) => (
                     <Field key={r.label} label={r.label} value={r.value || "—"} />
                   ))}
@@ -732,29 +819,41 @@ const Onboarding360 = () => {
                 {activeTab === "wallet" && (
                   <div className="flex flex-col gap-4 pt-4">
               {!hasWallet ? (
-                <Block title="Wallet">
+                <Block title="Wallet" icon={WalletIcon}>
                   <EmptyState icon={WalletIcon} text="No wallet provisioned for this customer." />
                 </Block>
               ) : (
                 <>
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <Block title="Balance" right={<StatusBadge status={wallet.status} />}>
-                      <span className="text-xs text-muted-foreground">Total Balance</span>
-                      <div className="text-2xl font-semibold tracking-tight text-foreground">
+                    <Block title="Balance" icon={WalletIcon} right={<StatusBadge status={wallet.status} />}>
+                      <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                        Total Balance
+                      </span>
+                      <div className="mt-1 text-3xl font-bold tracking-tight text-foreground">
                         {formatMoney(wallet.totalBalance, currency)}
                       </div>
-                      <div className="mt-3 grid grid-cols-2 gap-3">
-                        <div>
-                          <div className="text-xs text-muted-foreground">Available</div>
-                          <div className="text-sm font-medium">{formatMoney(wallet.availableBalance, currency)}</div>
+                      <div className="mt-4 grid grid-cols-2 gap-3">
+                        <div className="rounded-lg border bg-muted/30 p-3">
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <span className="size-2 rounded-full bg-emerald-500" />
+                            Available
+                          </div>
+                          <div className="mt-1 text-sm font-semibold text-foreground">
+                            {formatMoney(wallet.availableBalance, currency)}
+                          </div>
                         </div>
-                        <div>
-                          <div className="text-xs text-muted-foreground">Reserved</div>
-                          <div className="text-sm font-medium">{formatMoney(wallet.reservedBalance, currency)}</div>
+                        <div className="rounded-lg border bg-muted/30 p-3">
+                          <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                            <span className="size-2 rounded-full bg-amber-500" />
+                            Reserved
+                          </div>
+                          <div className="mt-1 text-sm font-semibold text-foreground">
+                            {formatMoney(wallet.reservedBalance, currency)}
+                          </div>
                         </div>
                       </div>
                     </Block>
-                    <Block title="Account Details" className="lg:col-span-2">
+                    <Block title="Account Details" icon={CreditCard} className="lg:col-span-2">
                       <Field label="IBAN" value={<span className="inline-flex items-center gap-1">{wallet.iban || "—"}<CopyButton text={wallet.iban} /></span>} mono />
                       <Field label="Account No." value={<span className="inline-flex items-center gap-1">{wallet.accountNumber || "—"}<CopyButton text={wallet.accountNumber} /></span>} mono />
                       <Field label="Wallet Number" value={wallet.walletNumber || "—"} mono />
@@ -762,7 +861,7 @@ const Onboarding360 = () => {
                     </Block>
                   </div>
 
-                  <Block title="Spending Limits (Spent vs Limit)">
+                  <Block title="Spending Limits (Spent vs Limit)" icon={Gauge}>
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={limitChartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -786,15 +885,17 @@ const Onboarding360 = () => {
                 {activeTab === "transactions" && (
                   <div className="flex flex-col gap-4 pt-4">
               {transactions.length === 0 ? (
-                <Block title="Transactions">
+                <Block title="Transactions" icon={ArrowLeftRight}>
                   <EmptyState icon={ArrowDownLeft} text="No transactions yet." />
                 </Block>
               ) : (
-                  <Block title="Recent Transactions" right={<span className="text-xs text-muted-foreground">{transactions.length} total</span>}>
+                  <Block title="Recent Transactions" icon={ArrowLeftRight} right={<span className="text-xs text-muted-foreground">{transactions.length} total</span>}>
                     <div className="overflow-x-auto rounded-lg border">
                       <Table>
-                        <TableHeader className="bg-muted/50">
-                          <TableRow>
+                        <TableHeader
+                          style={{ background: "var(--theme-table-background-color)" }}
+                        >
+                          <TableRow className="border-0 hover:bg-transparent [&>th]:h-9 [&>th]:px-4 [&>th]:text-[12px] [&>th]:font-semibold [&>th]:tracking-[0.2px] [&>th]:text-white">
                             <TableHead>Date</TableHead>
                             <TableHead>Type</TableHead>
                             <TableHead className="text-right">Amount</TableHead>
@@ -807,9 +908,12 @@ const Onboarding360 = () => {
                           {transactions.map((tx, idx) => {
                             const isCredit = (tx.direction || "").toUpperCase() === "CREDIT";
                             return (
-                              <TableRow key={tx.id ?? tx.movementId ?? idx} className="hover:bg-muted/40">
-                                <TableCell className="text-xs text-muted-foreground">{formatDateTime(tx.timestamp)}</TableCell>
-                                <TableCell className="text-xs font-medium">{tx.type || "—"}</TableCell>
+                              <TableRow
+                                key={tx.id ?? tx.movementId ?? idx}
+                                className="border-b border-[var(--surface-border)] odd:bg-[var(--theme-table-row-alt)] hover:bg-[var(--theme-table-row-hover)] [&>td]:px-4 [&>td]:py-2 [&>td]:text-[12px]"
+                              >
+                                <TableCell className="text-muted-foreground">{formatDateTime(tx.timestamp)}</TableCell>
+                                <TableCell className="font-medium">{tx.type || "—"}</TableCell>
                                 <TableCell className="text-right">
                                   <span
                                     className={cn(
@@ -821,11 +925,11 @@ const Onboarding360 = () => {
                                     {formatMoney(tx.amount)}
                                   </span>
                                 </TableCell>
-                                <TableCell className="text-xs">{tx.counterpartyName || "—"}</TableCell>
+                                <TableCell>{tx.counterpartyName || "—"}</TableCell>
                                 <TableCell>
                                   <StatusBadge status={tx.status} />
                                 </TableCell>
-                                <TableCell className="max-w-[200px] truncate text-xs text-muted-foreground">{tx.purposeNote || "—"}</TableCell>
+                                <TableCell className="max-w-[200px] truncate text-muted-foreground">{tx.purposeNote || "—"}</TableCell>
                               </TableRow>
                             );
                           })}
@@ -842,7 +946,7 @@ const Onboarding360 = () => {
               <Tab eventKey="risk" title="Risk & KYC">
                 {activeTab === "risk" && (
                   <div className="flex flex-col gap-4 pt-4">
-              <Block title="Score Trend">
+              <Block title="Score Trend" icon={TrendingUp}>
                   {(risk?.history || []).length === 0 ? (
                     <EmptyState icon={ShieldAlert} text="No risk assessment yet." />
                   ) : (
@@ -859,7 +963,7 @@ const Onboarding360 = () => {
                 </Block>
 
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <Block title="Score Breakdown">
+                <Block title="Score Breakdown" icon={BarChart3}>
                   {(risk?.breakdown || []).length === 0 ? (
                     <EmptyState icon={ShieldAlert} text="No breakdown available." />
                   ) : (
@@ -875,7 +979,7 @@ const Onboarding360 = () => {
                   )}
                 </Block>
 
-                <Block title="KYC Details">
+                <Block title="KYC Details" icon={ShieldCheck}>
                   {kycRows.length === 0 ? (
                     <EmptyState icon={ShieldAlert} text="No KYC information." />
                   ) : (
@@ -890,23 +994,30 @@ const Onboarding360 = () => {
               {/* ---------------- Documents ---------------- */}
               <Tab eventKey="documents" title="Documents">
                 {activeTab === "documents" && (
-                  <div className="flex flex-col gap-4 pt-4">
-                    <Block title="Identity Documents">
+                  <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-3">
+                    <Block title="Identity Documents" icon={FileText} className="lg:col-span-2">
                       {documents.length === 0 ? (
                         <EmptyState icon={FileText} text="No documents available." />
                       ) : (
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           {documents.map((doc, idx) => (
-                            <div key={doc.documentId ?? idx} className="flex flex-col gap-2 rounded-xl border p-3">
+                            <div
+                              key={doc.documentId ?? idx}
+                              className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                            >
                               <div className="flex items-center justify-between gap-2">
                                 <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
                                   {doc.kind || "DOCUMENT"}
                                 </Badge>
-                                <span className="text-xs text-muted-foreground">{formatDate(doc.createdAt)}</span>
+                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <CalendarDays className="size-3" />
+                                  {formatDate(doc.createdAt)}
+                                </span>
                               </div>
                               <DocImage imagePath={doc.imagePath} label={doc.kind || "Document"} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
-                              <div className="text-xs text-muted-foreground">
-                                No. <span className="font-medium text-foreground">{doc.documentNumber || "—"}</span>
+                              <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
+                                <span className="text-muted-foreground">Document No.</span>
+                                <span className="font-mono font-medium text-foreground">{doc.documentNumber || "—"}</span>
                               </div>
                             </div>
                           ))}
@@ -914,10 +1025,23 @@ const Onboarding360 = () => {
                       )}
                     </Block>
 
-                    <Block title="Selfie">
+                    <Block title="Selfie" icon={Camera}>
                       {selfie ? (
-                        <div className="max-w-xs">
-                          <DocImage imagePath={selfie.imagePath} label="Selfie" onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                        <div className="w-full">
+                          <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
+                            <DocImage imagePath={selfie.imagePath} label="Selfie" onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                            {kyc?.selfieVerified != null && (
+                              <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
+                                <span className="text-muted-foreground">Verification</span>
+                                <Badge
+                                  variant="outline"
+                                  className={cn("border font-medium", kyc.selfieVerified ? TONES.emerald : TONES.amber)}
+                                >
+                                  {kyc.selfieVerified ? "Verified" : "Pending"}
+                                </Badge>
+                              </div>
+                            )}
+                          </div>
                         </div>
                       ) : (
                         <EmptyState icon={Camera} text="Selfie not captured for this customer" />
@@ -932,26 +1056,28 @@ const Onboarding360 = () => {
         </>
       )}
 
-      {/* Lightbox */}
-      {lightbox && (
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/75 p-4"
-          onClick={() => setLightbox(null)}
-        >
-          <div className="relative max-h-[90vh] max-w-3xl" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              onClick={() => setLightbox(null)}
-              className="absolute -right-3 -top-3 flex size-8 items-center justify-center rounded-full bg-background text-foreground shadow-md ring-1 ring-border"
-              aria-label="Close"
-            >
-              <X className="size-4" />
-            </button>
-            <img src={lightbox.src} alt={lightbox.label} className="max-h-[90vh] max-w-full rounded-lg object-contain" />
-            <div className="mt-2 text-center text-sm font-medium text-white">{lightbox.label}</div>
-          </div>
-        </div>
-      )}
+      {/* Lightbox — portaled to body so the overlay also covers the sidebar */}
+      {lightbox &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4"
+            onClick={() => setLightbox(null)}
+          >
+            <div className="relative max-h-[90vh] max-w-3xl" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                onClick={() => setLightbox(null)}
+                className="absolute -right-3 -top-3 flex size-8 items-center justify-center rounded-full bg-background text-foreground shadow-md ring-1 ring-border"
+                aria-label="Close"
+              >
+                <X className="size-4" />
+              </button>
+              <img src={lightbox.src} alt={lightbox.label} className="max-h-[90vh] max-w-full rounded-lg object-contain" />
+              <div className="mt-2 text-center text-sm font-medium text-white">{lightbox.label}</div>
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

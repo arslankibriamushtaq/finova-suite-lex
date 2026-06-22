@@ -16,8 +16,8 @@ import PulseLoading from "../../../components/Loader/PulseLoader";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import {
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -182,13 +182,7 @@ const WalletHome = () => {
           Wallets Created
         </h5>
         <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
-            <defs>
-              <linearGradient id="gradWallets" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#10b981" stopOpacity={0.45} />
-                <stop offset="100%" stopColor="#10b981" stopOpacity={0.05} />
-              </linearGradient>
-            </defs>
+          <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--surface-border)" vertical={false} />
             <XAxis
               dataKey="date"
@@ -211,15 +205,14 @@ const WalletHome = () => {
                 color: "var(--foreground)",
               }}
             />
-            <Area
-              type="monotone"
+            <Bar
               dataKey="count"
               name="Wallets"
-              stroke="#10b981"
-              strokeWidth={2}
-              fill="url(#gradWallets)"
+              fill="#10b981"
+              radius={[4, 4, 0, 0]}
+              maxBarSize={36}
             />
-          </AreaChart>
+          </BarChart>
         </ResponsiveContainer>
       </div>
 
