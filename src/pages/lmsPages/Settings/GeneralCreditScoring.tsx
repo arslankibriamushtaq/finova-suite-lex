@@ -239,6 +239,7 @@ const GeneralCreditScoring = () => {
           justify-content: flex-start;
           width: fit-content;
           align-self: flex-start;
+          margin-top: 14px;
           margin-bottom: 16px;
         }
         .gcs-tabs-trigger {
@@ -343,9 +344,7 @@ const GeneralCreditScoring = () => {
               }}
               style={{ scrollMarginTop: 96 }}
             >
-            <Card className="relative overflow-hidden rounded-xl border transition-shadow duration-200 hover:shadow-md">
-              {/* Soft emerald glow accent — consistent across all cards */}
-              <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+            <Card className="pro-card-glow">
               <CardHeader className="relative pb-3">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2.5">

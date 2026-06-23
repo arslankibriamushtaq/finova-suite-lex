@@ -44,7 +44,12 @@ function Loans() {
   return (
     <div className="service loan-reports-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Loan Reports</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <Banknote className="h-4 w-4" />
+          </span>
+          Loan Reports
+        </h3>
       </div>
 
       <div

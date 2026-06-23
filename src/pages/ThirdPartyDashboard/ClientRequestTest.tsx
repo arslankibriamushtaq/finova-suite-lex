@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Dropdown, Input, Menu } from "antd";
 import { DownOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
+import { History } from "lucide-react";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getClientRequestTest } from "../../redux/apis/apisThirdParty";
@@ -291,18 +292,16 @@ const ClientRequestTest = () => {
   return (
     <div className="service client-request-test-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Client Request Test</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <History className="h-4 w-4" />
+          </span>
+          Client Request Test
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
@@ -316,15 +315,7 @@ const ClientRequestTest = () => {
       </div>
 
       {/* Table card */}
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="pro-card">
         <TableView
           header={headers}
           data={paginatedData}

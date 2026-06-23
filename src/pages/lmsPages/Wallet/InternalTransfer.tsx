@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { ArrowRightLeft, RefreshCw, Eye, Send } from "lucide-react";
+import { ArrowRightLeft, RefreshCw, Eye, Send, History } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -255,16 +255,24 @@ const InternalTransfer = () => {
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-          <ArrowRightLeft className="h-5 w-5" /> Internal Transfer
+          <span className="pro-head-badge">
+            <ArrowRightLeft className="h-4 w-4" />
+          </span>
+          Internal Transfer
         </h3>
         <p className="mb-0 mt-1 text-sm text-muted-foreground">
           Move money between two customer wallets, both identified by mobile number.
         </p>
       </div>
 
-      <Card className="mb-4">
+      <Card className="mb-4 pro-card-glow">
         <CardHeader>
-          <CardTitle className="text-base">New Internal Transfer</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <ArrowRightLeft className="h-4 w-4" />
+            </span>
+            New Internal Transfer
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -355,10 +363,15 @@ const InternalTransfer = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="pro-card-glow">
         <CardHeader>
           <CardTitle className="text-base flex items-center justify-between">
-            <span>Transfer History</span>
+            <span className="flex items-center gap-2">
+              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <History className="h-4 w-4" />
+              </span>
+              Transfer History
+            </span>
             <AntInput
               allowClear
               placeholder="Search by mobile number"

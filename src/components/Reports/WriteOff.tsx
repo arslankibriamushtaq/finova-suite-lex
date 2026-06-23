@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
+import { FileX2 } from "lucide-react";
 import { DatePicker, Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useParams } from "react-router-dom";
@@ -158,19 +159,17 @@ const WriteOff = () => {
   };
 
   return (
-    <div className="col-12">
+    <div className="service col-12">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Write Off Loan</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <FileX2 className="h-4 w-4" />
+          </span>
+          Write Off Loan
+        </h3>
       </div>
 
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
@@ -202,13 +201,7 @@ const WriteOff = () => {
       </div>
 
       <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
+        className="pro-card"
       >
         <TableView
           setPage={setPage}

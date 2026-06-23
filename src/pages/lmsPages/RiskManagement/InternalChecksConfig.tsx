@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { ShieldCheck } from "lucide-react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { Switch } from "../../../components/ui/switch";
@@ -154,7 +155,12 @@ const InternalChecksConfig = () => {
   return (
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Internal Checks Configuration</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <ShieldCheck className="h-4 w-4" />
+          </span>
+          Internal Checks Configuration
+        </h3>
       </div>
 
       <div

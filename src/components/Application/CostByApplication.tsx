@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ArrowLeft, SaudiRiyal, Phone, Calendar, RefreshCw } from "lucide-react";
+import { ArrowLeft, SaudiRiyal, Phone, Calendar, RefreshCw, Receipt, ListChecks } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -85,18 +85,16 @@ const CostByApplication = () => {
           <ArrowLeft className="h-4 w-4" />
           Back
         </Button>
-        <h3 className="page-header-title mb-0 fw-bold text-dark ps-0">Cost By Application</h3>
+        <h3 className="page-header-title mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+          <span className="pro-head-badge">
+            <Receipt className="h-4 w-4" />
+          </span>
+          Cost By Application
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0,0,0,0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="filter-row">
           <div className="filter-field">
             <label className="filter-label">Environment</label>
@@ -131,7 +129,7 @@ const CostByApplication = () => {
 
       {/* Totals cards */}
       <div className="totals-grid mb-3">
-        <Card>
+        <Card className="pro-card-glow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Phone className="h-4 w-4" />
@@ -148,7 +146,7 @@ const CostByApplication = () => {
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="pro-card-glow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <SaudiRiyal className="h-4 w-4" />
@@ -168,7 +166,7 @@ const CostByApplication = () => {
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="pro-card-glow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Calendar className="h-4 w-4" />
@@ -185,7 +183,7 @@ const CostByApplication = () => {
             )}
           </CardContent>
         </Card>
-        <Card>
+        <Card className="pro-card-glow">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Calendar className="h-4 w-4" />
@@ -205,9 +203,14 @@ const CostByApplication = () => {
       </div>
 
       {/* Items */}
-      <Card className="mb-3">
+      <Card className="mb-3 pro-card-glow">
         <CardHeader>
-          <CardTitle className="text-base">Items</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <ListChecks className="h-4 w-4" />
+            </span>
+            Items
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Table className="cost-table">
@@ -322,7 +325,7 @@ const CostByApplication = () => {
         .application-cost-page .filter-select-trigger {
           width: 100%;
           height: 42px;
-          border-radius: 8px;
+          border-radius: 2px;
         }
         .application-cost-page .refresh-btn {
           display: inline-flex;
@@ -331,10 +334,10 @@ const CostByApplication = () => {
           gap: 8px;
           height: 42px;
           padding: 0 18px;
-          border-radius: 8px;
-          background-color: #000000;
+          border-radius: 2px;
+          background-color: #10b981;
           color: #ffffff;
-          border: 1px solid #000000;
+          border: 1px solid #10b981;
           font-size: 14px;
           font-weight: 500;
           white-space: nowrap;
@@ -344,7 +347,7 @@ const CostByApplication = () => {
           flex-shrink: 0;
         }
         .application-cost-page .refresh-btn:hover:not(:disabled) {
-          background-color: #1a1a1a;
+          background-color: #059669;
         }
         .application-cost-page .refresh-btn:disabled {
           opacity: 0.6;
@@ -366,7 +369,7 @@ const CostByApplication = () => {
           background-color: rgba(245, 158, 11, 0.08);
           border: 1px solid rgba(245, 158, 11, 0.3);
           border-left: 4px solid var(--color-warning, #f59e0b);
-          border-radius: 8px;
+          border-radius: 2px;
           padding: 10px 14px;
           font-size: 13px;
           color: var(--foreground);

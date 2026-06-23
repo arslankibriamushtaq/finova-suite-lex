@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Label } from "../../../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import { Badge } from "../../../components/ui/badge";
-import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus } from "lucide-react";
+import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus, Smartphone } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../../../components/ui/button";
@@ -579,7 +579,12 @@ const DeviceManagement = () => {
   return (
     <div className="service device-management-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Device Management</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <Smartphone className="h-4 w-4" />
+          </span>
+          Device Management
+        </h3>
       </div>
 
       {/* Filters card */}

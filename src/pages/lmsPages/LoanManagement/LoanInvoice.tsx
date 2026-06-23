@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Input, Button, Dropdown, Menu, DatePicker } from "antd";
+import { Receipt } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
 import TableView from "../../../components/TableView/TableView";
 import BuisnessModal from "../../../components/Customers/Modals/BuisnessModal";
@@ -304,18 +305,16 @@ const LoanInvoice = () => {
     <div className="service loan-invoice-page">
       <StringTest />
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Loan Invoice</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <Receipt className="h-4 w-4" />
+          </span>
+          Loan Invoice
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <DatePicker
             placeholder="From"
@@ -350,13 +349,7 @@ const LoanInvoice = () => {
 
       {/* Table card */}
       <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
+        className="pro-card"
       >
         <TableView
           setPage={setPage}

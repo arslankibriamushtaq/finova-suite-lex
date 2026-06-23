@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Select, DatePicker, Button, Dropdown, Menu } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { History } from "lucide-react";
 import toast from "react-hot-toast";
 import { getClientRequestProd, getClientsList, getServicesList } from "../../redux/apis/apisThirdParty";
 import { themeStyle } from "../../components/Config/Theme";
@@ -179,18 +180,16 @@ const ClientRequestProd = () => {
   return (
     <div className="service client-request-prod-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Client Request Prod</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <History className="h-4 w-4" />
+          </span>
+          Client Request Prod
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Select
             placeholder="Select Client"
@@ -253,15 +252,7 @@ const ClientRequestProd = () => {
       </div>
 
       {/* Table card */}
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="pro-card">
         {/* Table Header */}
         <div
           style={{

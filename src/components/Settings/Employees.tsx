@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Users } from "lucide-react";
 import {
   Button,
   Input,
@@ -326,7 +327,12 @@ const Employees = () => {
     <>
       <div className="service employees-page">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Employees List</h3>
+          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+            <span className="pro-head-badge">
+              <Users className="h-4 w-4" />
+            </span>
+            Employees List
+          </h3>
         </div>
 
         {/* Filters card */}

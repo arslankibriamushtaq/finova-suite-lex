@@ -312,7 +312,12 @@ const BlacklistNid = () => {
   return (
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Blacklist NID</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <ShieldOff className="h-4 w-4" />
+          </span>
+          Blacklist NID
+        </h3>
       </div>
 
       <div className="bg-white p-3 mb-3" style={{ borderRadius: 2, boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)", border: "1px solid var(--border)" }}>

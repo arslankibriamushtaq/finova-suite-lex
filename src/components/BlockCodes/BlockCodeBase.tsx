@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Button, Modal, Form, Input, Switch, Dropdown, Menu, Select } from "antd";
 import { EditOutlined, DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Plus } from "lucide-react";
+import { Plus, type LucideIcon } from "lucide-react";
 import TableView from "../TableView/TableView";
 import { Button as UIButton } from "../ui/button";
 import arrowDown from "../../assets/images/arrow-down.png";
@@ -17,9 +17,10 @@ const { TextArea } = Input;
 interface BlockCodeBaseProps {
   type?: string;
   title: string;
+  icon?: LucideIcon;
 }
 
-const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) => {
+const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeBaseProps) => {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -259,7 +260,14 @@ const BlockCodeBase = ({ type: defaultType = "", title }: BlockCodeBaseProps) =>
   return (
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">{title}</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          {Icon && (
+            <span className="pro-head-badge">
+              <Icon className="h-4 w-4" />
+            </span>
+          )}
+          {title}
+        </h3>
       </div>
 
       <div

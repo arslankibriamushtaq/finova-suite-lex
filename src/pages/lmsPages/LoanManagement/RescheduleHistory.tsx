@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Button, Dropdown, Input as AntInput, Menu } from "antd";
+import { History } from "lucide-react";
 import TableView from "../../../components/TableView/TableView";
 import { useParams } from "react-router-dom";
 import {
@@ -336,7 +337,12 @@ const RescheduleHistory = () => {
   return (
     <div className="service p-4">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Reschedule History</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <History className="h-4 w-4" />
+          </span>
+          Reschedule History
+        </h3>
       </div>
 
       <div className="d-flex flex-wrap align-items-center gap-2 mb-3">

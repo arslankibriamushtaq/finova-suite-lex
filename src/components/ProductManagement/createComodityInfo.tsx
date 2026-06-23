@@ -14,6 +14,7 @@ import {
   Users,
   Settings,
   RefreshCw,
+  X,
 } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
@@ -364,10 +365,10 @@ export default function CreateComodityInfo() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pm-create-page">
       {/* Header with tabs (no steps / progress) */}
       <div className="border-b bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+        <div className="px-3 py-3">
           <div className="max-w-8xl mx-auto">
             <div className={`flex items-center justify-between mb-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
               <div className={`flex items-center gap-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
@@ -382,7 +383,12 @@ export default function CreateComodityInfo() {
                 </Button>
               </div>
             </div>
-            <h1 className="text-2xl font-semibold mb-4">Edit Product</h1>
+            <h1 className="text-xl font-semibold mb-4 flex items-center gap-2.5">
+              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <Package className="h-4 w-4" />
+              </span>
+              Edit Product
+            </h1>
             <ProductCreateEditTabs
               activeTab="commodity-info"
               productId={productIdForTabs}
@@ -392,10 +398,10 @@ export default function CreateComodityInfo() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
+      <div className="px-3 py-4">
         <div className="max-w-4xl mx-auto space-y-6">
           <TooltipProvider>
-            <Card>
+            <Card className="pro-card-glow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5" />
@@ -604,7 +610,7 @@ export default function CreateComodityInfo() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="pro-card-glow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   Funding Configuration
@@ -732,7 +738,7 @@ export default function CreateComodityInfo() {
             </Card>
 
             {/* Commodity Items */}
-            <Card>
+            <Card className="pro-card-glow">
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <div>
@@ -884,7 +890,7 @@ export default function CreateComodityInfo() {
             </Card>
 
             {/* Provider Information */}
-            <Card>
+            <Card className="pro-card-glow">
               <CardHeader>
                 <CardTitle>Commodity Provider Information</CardTitle>
                 <p className="text-muted-foreground">Information about the commodity supplier or provider.</p>
@@ -934,7 +940,7 @@ export default function CreateComodityInfo() {
 
       {/* Footer Actions */}
       <div className="border-t bg-card sticky bottom-0">
-        <div className="container mx-auto px-6 py-4">
+        <div className="px-3 py-3">
           <div className="max-w-4xl mx-auto">
             <div className={`flex items-center justify-between ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
               <div className={`flex items-center gap-3 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
@@ -954,7 +960,8 @@ export default function CreateComodityInfo() {
                   <Save className="h-4 w-4" />
                   Save Draft
                 </Button> */}
-                <Button variant="ghost" onClick={() => router.push("/Los/ProductManagement/Create/BasicInfo")}>
+                <Button variant="outline" onClick={() => router.push("/Los/ProductManagement/Create/BasicInfo")} className="gap-2">
+                  <X className="h-4 w-4" />
                   Cancel
                 </Button>
               </div>

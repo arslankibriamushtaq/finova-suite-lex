@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Send, Banknote, Building2 } from "lucide-react";
+import { Send, Banknote, Building2, History } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -264,16 +264,26 @@ const SendMoney = () => {
   return (
     <div className="service">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark ps-0">Send Money</h3>
+        <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+          <span className="pro-head-badge">
+            <Send className="h-4 w-4" />
+          </span>
+          Send Money
+        </h3>
         <p className="mb-0 mt-1 text-sm text-muted-foreground">
           Send funds out of a customer wallet (identified by sender mobile) to an
           external bank account.
         </p>
       </div>
 
-      <Card className="mb-4">
+      <Card className="mb-4 pro-card-glow">
         <CardHeader>
-          <CardTitle className="text-base">New Transfer</CardTitle>
+          <CardTitle className="text-base flex items-center gap-2">
+            <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <Send className="h-4 w-4" />
+            </span>
+            New Transfer
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={rail} onValueChange={(v) => setRail(v as Rail)}>
@@ -470,10 +480,13 @@ const SendMoney = () => {
         </CardContent>
       </Card>
 
-      <Card>
+      <Card className="pro-card-glow">
         <CardHeader>
           <CardTitle className="text-base flex items-center justify-between">
-            <span>
+            <span className="flex items-center gap-2">
+              <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <History className="h-4 w-4" />
+              </span>
               Transfer History ({rail})
             </span>
             <AntInput

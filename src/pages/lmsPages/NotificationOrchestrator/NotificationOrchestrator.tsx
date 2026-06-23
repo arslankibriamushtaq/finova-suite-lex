@@ -348,7 +348,9 @@ const NotificationOrchestrator: React.FC = () => {
     <div className="service notification-orchestrator-page">
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          {/* <Activity className="h-5 w-5" style={{ color: "var(--primary)" }} /> */}
+          <span className="no-head-badge">
+            <Activity className="h-4 w-4" />
+          </span>
           Notification Rules
         </h3>
         <p className="text-muted small mb-0 mt-1">
@@ -382,14 +384,7 @@ const NotificationOrchestrator: React.FC = () => {
         {/* Routing Engine */}
         <TabsContent value="rules" className="mt-3">
           {/* Filter card */}
-          <div
-            className="bg-white p-3 mb-3"
-            style={{
-              borderRadius: 2,
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-              border: "1px solid var(--border)",
-            }}
-          >
+          <div className="no-card p-3 mb-3">
             <div className="d-flex flex-nowrap align-items-center gap-2 w-100" style={{ overflow: "visible" }}>
               <AntInput
                 allowClear
@@ -421,15 +416,7 @@ const NotificationOrchestrator: React.FC = () => {
           </div>
 
           {/* Rules table card */}
-          <div
-            className="bg-white"
-            style={{
-              borderRadius: 2,
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-              border: "1px solid var(--border)",
-              overflow: "hidden",
-            }}
-          >
+          <div className="no-card">
             <TableView
               header={ruleColumns}
               data={pagedRules}
@@ -452,14 +439,7 @@ const NotificationOrchestrator: React.FC = () => {
 
         {/* User Preference Sync */}
         <TabsContent value="preferences" className="mt-3">
-          <div
-            className="bg-white p-3 mb-3"
-            style={{
-              borderRadius: 2,
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-              border: "1px solid var(--border)",
-            }}
-          >
+          <div className="no-card p-3 mb-3">
             <div className="d-flex flex-wrap align-items-center gap-2 w-100">
               <AntInput
                 allowClear
@@ -480,18 +460,11 @@ const NotificationOrchestrator: React.FC = () => {
           </div>
 
           {isLoading ? (
-            <div className="bg-white p-5 text-center" style={{ borderRadius: 2, border: "1px solid var(--border)" }}>
+            <div className="no-card p-5 text-center">
               <Spin />
             </div>
           ) : preferences ? (
-            <div
-              className="bg-white p-3"
-              style={{
-                borderRadius: 2,
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-                border: "1px solid var(--border)",
-              }}
-            >
+            <div className="no-card p-3">
               <div className="d-flex align-items-center gap-3 pb-3 mb-3" style={{ borderBottom: "1px solid var(--border)" }}>
                 <div className="no-avatar">
                   {preferences.customerId?.charAt(0).toUpperCase() || "C"}
@@ -530,7 +503,7 @@ const NotificationOrchestrator: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white p-5 text-center text-muted" style={{ borderRadius: 2, border: "1px solid var(--border)" }}>
+            <div className="no-card p-5 text-center text-muted">
               Enter a customer ID and click <strong>Lookup</strong> to view their preferences.
             </div>
           )}

@@ -10,13 +10,58 @@
     grid-template-columns: 1fr;
   }
 }
+/* ===== Professional card pattern (shared by every card on this page) =====
+   Rounded surface, subtle emerald-tinted border + shadow, soft emerald glow
+   accent (::before), and a gentle hover lift — matches the rest of the app. */
+.notification-orchestrator-page .no-card,
 .notification-orchestrator-page .stat-tile {
+  position: relative;
+  overflow: hidden;
   background: var(--surface-card);
-  border: 1px solid var(--border);
+  border: 1px solid color-mix(in srgb, #10b981 16%, var(--surface-border));
   border-radius: 2px;
-  padding: 14px 18px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05),
+    0 8px 20px -16px color-mix(in srgb, #10b981 35%, transparent);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+.notification-orchestrator-page .no-card:hover,
+.notification-orchestrator-page .stat-tile:hover {
+  box-shadow: 0 6px 22px -10px rgba(16, 185, 129, 0.22),
+    0 8px 20px -16px rgba(0, 0, 0, 0.18);
+}
+.notification-orchestrator-page .no-card::before,
+.notification-orchestrator-page .stat-tile::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 128px;
+  height: 128px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.07);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.notification-orchestrator-page .no-card > *,
+.notification-orchestrator-page .stat-tile > * {
+  position: relative;
+}
+.notification-orchestrator-page .stat-tile {
+  padding: 16px 18px;
   text-align: left;
+}
+/* Header icon badge — emerald, matches the card headers across the app */
+.notification-orchestrator-page .no-head-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 2px;
+  background: color-mix(in srgb, #10b981 10%, transparent);
+  color: #10b981;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #10b981 15%, transparent);
+  flex-shrink: 0;
 }
 .notification-orchestrator-page .stat-label {
   font-size: 10px;

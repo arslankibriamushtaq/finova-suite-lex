@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import type { RootState } from "../../../redux/rootReducer";
 import { Button, Dropdown, Form, Input, Menu, Modal, Switch, DatePicker, Select } from "antd";
+import { CalendarX } from "lucide-react";
 import toast from "react-hot-toast";
 import TableView from "../../../components/TableView/TableView";
 import dayjs from "dayjs";
@@ -264,18 +265,16 @@ form.setFieldsValue({
   return (
     <div className="service broken-promises-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Broken Promises</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <CalendarX className="h-4 w-4" />
+          </span>
+          Broken Promises
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center justify-content-end gap-2 w-100">
           <Button
             type="primary"
@@ -290,13 +289,7 @@ form.setFieldsValue({
 
       {/* Table card */}
       <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
+        className="pro-card"
       >
         <TableView
           header={headers}

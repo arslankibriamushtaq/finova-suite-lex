@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { UserCog } from "lucide-react";
 import {
   Button,
   Input,
@@ -293,7 +294,12 @@ const RoleList = () => {
     <>
       <div className="service role-list-page">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Role</h3>
+          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+            <span className="pro-head-badge">
+              <UserCog className="h-4 w-4" />
+            </span>
+            Role
+          </h3>
         </div>
 
         {/* Filters card */}

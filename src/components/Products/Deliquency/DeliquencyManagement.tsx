@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { AlertTriangle } from "lucide-react";
 import { Tab, Tabs } from "react-bootstrap";
 import EarlySettlement from "./EarlySettlement";
 import Due from "./Due";
@@ -140,18 +141,16 @@ const DeliquencyManagement = () => {
   return (
     <div className="service delinquency-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Delinquency Management</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <AlertTriangle className="h-4 w-4" />
+          </span>
+          Delinquency Management
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <div style={{ flex: "1 1 280px", minWidth: 240 }}>
             <label
@@ -186,15 +185,7 @@ const DeliquencyManagement = () => {
       </div>
 
       {/* Tabs + content card */}
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="pro-card">
         <Tabs
           id="controlled-tab-example"
           className="px-3 pt-3"

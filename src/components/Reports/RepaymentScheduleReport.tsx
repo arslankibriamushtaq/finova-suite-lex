@@ -1,5 +1,6 @@
 ﻿import { useEffect, useMemo, useState } from "react";
 import TableView from "../TableView/TableView";
+import { CalendarDays } from "lucide-react";
 import { Col, Input, Row } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
@@ -212,19 +213,17 @@ const RepaymentScheduleReport = () => {
   };
 
   return (
-    <div className="col-12">
+    <div className="service col-12">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Repayment Schedule Report</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <CalendarDays className="h-4 w-4" />
+          </span>
+          Repayment Schedule Report
+        </h3>
       </div>
 
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
@@ -285,13 +284,7 @@ const RepaymentScheduleReport = () => {
       </Row>
 
       <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
+        className="pro-card"
       >
         <TableView
           setPage={setPage}

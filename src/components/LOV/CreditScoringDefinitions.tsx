@@ -7,7 +7,7 @@ import {
   updateCreditScoringFieldDefinition,
   deleteCreditScoringFieldDefinition,
 } from "../../redux/apis/apisRiskManagement";
-import { RefreshCw, Edit2, Trash2, Plus, ChevronDown } from "lucide-react";
+import { RefreshCw, Edit2, Trash2, Plus, ChevronDown, ListChecks } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../ui/button";
@@ -381,17 +381,17 @@ const CreditScoringDefinitions = () => {
   return (
     <div className="service credit-scoring-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Credit Scoring Field Definitions</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <ListChecks className="h-4 w-4" />
+          </span>
+          Credit Scoring Field Definitions
+        </h3>
       </div>
 
       {/* Filters card */}
       <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
+        className="pro-card p-3 mb-3"
       >
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
@@ -418,13 +418,7 @@ const CreditScoringDefinitions = () => {
 
       {/* Table card */}
       <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
+        className="pro-card"
       >
         <TableView
             header={tableHeaders}

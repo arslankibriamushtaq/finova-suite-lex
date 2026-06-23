@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { useRouter } from "../../lib/router"
 import { useSearchParams } from "../../lib/router"
-import { ArrowLeft, ArrowRight, HelpCircle, Upload } from "lucide-react"
+import { ArrowLeft, ArrowRight, HelpCircle, Upload, Package, FileText, X } from "lucide-react"
 import { Button } from "../ui/button"
 import { Input } from "../ui/input"
 import { Label } from "../ui/label"
@@ -543,11 +543,11 @@ export default function CreateBasicInfo() {
   const availableSubCategories = formData.master_category ? subCategoriesMap[formData.master_category] || [] : []
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pm-create-page">
       {isLoadingProductData && <Loader />}
       {/* Header with tabs (no steps / progress) */}
       <div className="border-b bg-card sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+        <div className="px-3 py-3">
           <div className="max-w-8xl mx-auto">
             <div className={`flex items-center justify-between mb-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
               <div className={`flex items-center gap-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
@@ -562,7 +562,12 @@ export default function CreateBasicInfo() {
                 )}
               </div>
             </div>
-            <h1 className="text-2xl font-semibold mb-4">{isEditMode ? "Edit Product" : "Create Product"}</h1>
+            <h1 className="text-xl font-semibold mb-4 flex items-center gap-2.5">
+              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <Package className="h-4 w-4" />
+              </span>
+              {isEditMode ? "Edit Product" : "Create Product"}
+            </h1>
             <ProductCreateEditTabs
               activeTab="basic-info"
               productId={effectiveProductId}
@@ -572,12 +577,17 @@ export default function CreateBasicInfo() {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto px-6 py-8">
+      <div className="px-3 py-4">
         <div className="max-w-8xl mx-auto">
           <TooltipProvider>
-            <Card>
+            <Card className="pro-card-glow">
               <CardHeader>
-                <CardTitle className="text-xl">Product Details</CardTitle>
+                <CardTitle className="text-xl flex items-center gap-2.5">
+                  <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                    <FileText className="h-4 w-4" />
+                  </span>
+                  Product Details
+                </CardTitle>
                 <p className="text-muted-foreground">
                   Enter the basic information for your new product. All fields marked with * are required.
                 </p>
@@ -839,7 +849,7 @@ export default function CreateBasicInfo() {
 
       {/* Footer Actions */}
       <div className="border-t bg-card sticky bottom-0">
-        <div className="container mx-auto px-6 py-4">
+        <div className="px-3 py-3">
           <div className="max-w-8xl mx-auto">
             <div className={`flex items-center justify-between ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
               <div className={`flex items-center gap-3 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
@@ -852,7 +862,10 @@ export default function CreateBasicInfo() {
                   <Save className="h-4 w-4" />
                   Save Draft
                 </Button> */}
-                <Button variant="ghost" onClick={handleCancel}>Cancel</Button>
+                <Button variant="outline" onClick={handleCancel} className="gap-2">
+                  <X className="h-4 w-4" />
+                  Cancel
+                </Button>
               </div>
 
               <Button onClick={handleNext} disabled={isLoading} className="gap-2">

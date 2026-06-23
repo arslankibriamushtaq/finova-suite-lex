@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DatePicker, Input as AntInput, Row as AntRow, Col as AntCol } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
+import { TrendingUp } from "lucide-react";
 import { getProfitRevenueReport } from "../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
@@ -167,17 +168,15 @@ const ProfitRevenueReport = () => {
       {loading && <Loader />}
       <div className="service p-4">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Profit & Revenue Report</h3>
+          <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+            <span className="pro-head-badge">
+              <TrendingUp className="h-4 w-4" />
+            </span>
+            Profit & Revenue Report
+          </h3>
         </div>
 
-        <div
-          className="bg-white p-3 mb-3"
-          style={{
-            borderRadius: 2,
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-            border: "1px solid var(--border)",
-          }}
-        >
+        <div className="pro-card p-3 mb-3">
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <AntInput
               allowClear
@@ -236,13 +235,7 @@ const ProfitRevenueReport = () => {
 
         {items.length > 0 && (
           <div
-            className="bg-white"
-            style={{
-              borderRadius: 2,
-              boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-              border: "1px solid var(--border)",
-              overflow: "hidden",
-            }}
+            className="pro-card"
           >
             <TableView
               data={mappedData}

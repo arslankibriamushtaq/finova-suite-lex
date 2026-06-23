@@ -145,12 +145,7 @@ const AccountsLimitSetting = () => {
       ) : (
         <div className="space-y-4">
           {PERIODS.map((p) => (
-            <Card
-              key={p.label}
-              className="relative overflow-hidden rounded-xl border transition-shadow duration-200 hover:shadow-md"
-            >
-              {/* Soft emerald glow accent — consistent across all cards */}
-              <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
+            <Card key={p.label} className="pro-card-glow">
               <CardHeader className="relative pb-3">
                 <CardTitle className="flex items-center gap-2.5 text-base">
                   <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">

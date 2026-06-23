@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Select } from "antd";
+import { SlidersHorizontal } from "lucide-react";
 import { Row, Col, Form, Button, Tabs, Tab } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import Skeleton from "react-loading-skeleton";
@@ -220,7 +221,12 @@ const AccountMapping = () => {
   return (
     <div className="service coa-config-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Chart of Account Configuration</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <SlidersHorizontal className="h-4 w-4" />
+          </span>
+          Chart of Account Configuration
+        </h3>
       </div>
       <div className="coa-card">
       {loading ? (

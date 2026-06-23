@@ -352,13 +352,18 @@ export default function CreateWizerd() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pm-create-page">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="container mx-auto px-6 py-6">
+        <div className="px-3 py-3">
           <div className={`max-w-8xl mx-auto ${isRTL ? "rtl:text-right" : ""}`}>
-            <h1 className="text-3xl font-bold text-foreground mb-2">Choose Your Setup Method</h1>
-            <p className="text-lg text-muted-foreground">
+            <h1 className="text-xl font-semibold text-foreground mb-1 flex items-center gap-2.5">
+              <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <Wrench className="h-4 w-4" />
+              </span>
+              Choose Your Setup Method
+            </h1>
+            <p className="text-sm text-muted-foreground">
               Select whether to use a pre-configured template or create a custom product from scratch
             </p>
             {selectedCategories && (
@@ -373,15 +378,15 @@ export default function CreateWizerd() {
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8">
-        <div className="max-w-8xl mx-auto space-y-8">
+      <div className="px-3 py-4">
+        <div className="max-w-8xl mx-auto space-y-6">
           {/* Setup Method Selection */}
           <div>
-            <div className="flex items-center gap-3 mb-6">
-              <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">
+            <div className="flex items-center gap-2.5 mb-4">
+              <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
                 1
               </div>
-              <h2 className="text-2xl font-semibold m-0">Choose Setup Method</h2>
+              <h2 className="text-base font-semibold m-0">Choose Setup Method</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Use Template Option */}
@@ -406,21 +411,21 @@ export default function CreateWizerd() {
 
               {/* Create Custom Option */}
               <Card
-                className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
-                  selectedOption === "custom" ? "ring-2 ring-primary bg-primary/5" : ""
+                className={`cursor-pointer rounded-xl border transition-all duration-200 hover:-translate-y-0.5 hover:border-emerald-500/50 hover:shadow-md ${
+                  selectedOption === "custom" ? "border-emerald-500 ring-1 ring-emerald-500 bg-emerald-500/[0.06]" : ""
                 }`}
                 onClick={() => setSelectedOption("custom")}
               >
-                <CardContent className="p-8 text-center">
-                  <div className="w-16 h-16 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Wrench className="h-8 w-8" />
+                <CardContent className="p-6 text-center">
+                  <div className="w-12 h-12 bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Wrench className="h-6 w-6" />
                   </div>
-                  <h3 className="text-xl font-semibold mb-3">Create Custom</h3>
-                  <p className="text-muted-foreground mb-4">
+                  <h3 className="text-base font-semibold mb-2">Create Custom</h3>
+                  <p className="text-sm text-muted-foreground mb-3">
                     Build your product from scratch with complete control over every configuration, workflow, and
                     setting.
                   </p>
-                  <div className="text-sm text-purple-600 font-medium">Full Control • More Time Required</div>
+                  <div className="text-xs text-emerald-600 font-medium">Full Control • More Time Required</div>
                 </CardContent>
               </Card>
             </div>
@@ -429,11 +434,11 @@ export default function CreateWizerd() {
           {/* Template Selection */}
           {selectedOption === "template" && (
             <div>
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center text-sm font-semibold">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
                   2
                 </div>
-                <h2 className="text-2xl font-semibold m-0">Select Template</h2>
+                <h2 className="text-base font-semibold m-0">Select Template</h2>
               </div>
 
               {getFilteredTemplates().length > 0 ? (

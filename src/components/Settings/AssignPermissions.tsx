@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Select, Button, Typography, Switch } from "antd";
+import { ShieldCheck, Layers } from "lucide-react";
 import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions } from "../../redux/apis/apisCrudFactoring";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 
 
 const { Option } = Select;
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 const AssignPermissions: React.FC = () => {
   const [selectedRole, setSelectedRole] = useState<string | undefined>(
@@ -144,65 +145,59 @@ const AssignPermissions: React.FC = () => {
     const hasPermissions = module.permissions && module.permissions.length > 0;
     const isFullySelected = isModuleFullySelected(module);
     const moduleName = (module.name || "").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
+    const total = module.permissions?.length || 0;
+    const selectedCount = module.permissions?.filter((p: any) => selectedPermissions.includes(p.id)).length || 0;
 
     return (
-      <div
-        key={module.id}
-        style={{
-          backgroundColor: "var(--color-surface-snow)",
-          border: "1px solid var(--color-border-subtle)",
-          borderRadius: "2px",
-          padding: "20px",
-          width: "100%",
-        }}
-      >
-        {loading && <Loader/>}
+      <div key={module.id} className="pro-card" style={{ padding: 18 }}>
         {/* Module Header with Switch */}
         <div
+          className="d-flex align-items-center justify-content-between"
           style={{
-            display: "flex",
-            alignItems: "center",
             gap: "12px",
-            marginBottom: hasPermissions ? "15px" : "0",
+            marginBottom: hasPermissions ? "14px" : "0",
             paddingBottom: hasPermissions ? "12px" : "0",
-            borderBottom: hasPermissions ? "1px solid var(--color-border-subtle)" : "none",
+            borderBottom: hasPermissions ? "1px solid var(--surface-border)" : "none",
           }}
         >
-          <Switch
-            className="red-switch"
-            checked={isFullySelected}
-            onChange={(checked: boolean) => toggleModulePermissions(module, checked)}
-            style={{
-              backgroundColor: isFullySelected ? "var(--foreground)" : undefined,
-            }}
-          />
-          <Text
-            style={{
-              fontSize: "16px",
-              fontWeight: "600",
-              color: "var(--foreground)",
-              margin: 0,
-            }}
-          >
-            {moduleName}
-          </Text>
+          <div className="d-flex align-items-center" style={{ gap: 10, minWidth: 0 }}>
+            <span className="pro-head-badge">
+              <Layers className="h-4 w-4" />
+            </span>
+            <span
+              className="text-truncate"
+              style={{ fontSize: "15px", fontWeight: 600, color: "var(--foreground)" }}
+            >
+              {moduleName}
+            </span>
+          </div>
+          <div className="d-flex align-items-center" style={{ gap: 10, flexShrink: 0 }}>
+            {total > 0 && (
+              <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-semibold text-emerald-600">
+                {selectedCount}/{total}
+              </span>
+            )}
+            <Switch
+              className="red-switch"
+              checked={isFullySelected}
+              onChange={(checked: boolean) => toggleModulePermissions(module, checked)}
+              style={{ backgroundColor: isFullySelected ? "var(--foreground)" : undefined }}
+            />
+          </div>
         </div>
 
         {/* Module Permissions */}
         {hasPermissions && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+          <div className="d-flex flex-column" style={{ gap: "4px" }}>
             {module.permissions.map((permission: any) => {
               const isChecked = selectedPermissions.includes(permission.id);
               const permissionName = (permission.permissionName || permission.permissionCode || "").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
-              
+
               return (
-                <div
+                <label
                   key={permission.id}
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                  }}
+                  className="d-flex align-items-center rounded-md px-2 py-1.5 transition-colors hover:bg-muted/50"
+                  style={{ gap: "10px", margin: 0, cursor: "pointer" }}
                 >
                   <Switch
                     className="red-switch"
@@ -210,10 +205,10 @@ const AssignPermissions: React.FC = () => {
                     onChange={() => togglePermission(permission.id)}
                     size="small"
                   />
-                  <Text style={{ fontSize: "14px", color: "var(--color-text-muted)", margin: 0 }}>
+                  <Text style={{ fontSize: "13.5px", color: "var(--foreground)", margin: 0 }}>
                     {permissionName}
                   </Text>
-                </div>
+                </label>
               );
             })}
           </div>
@@ -225,13 +220,27 @@ const AssignPermissions: React.FC = () => {
   return (
     <>
     {loading ? <Loader /> : (
-    <div className="pt-3" style={{ padding: "20px", paddingBottom: "100px" }}>
-      <div className="d-flex flex-column" style={{ marginBottom: "40px" }}>
-        <Text style={{ marginBottom: "8px", fontSize: "14px", fontWeight: "500" }}>
-          Roles
+    <div className="service" style={{ paddingBottom: "100px" }}>
+      {/* Page header */}
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <ShieldCheck className="h-4 w-4" />
+          </span>
+          Assign Permissions
+        </h3>
+        <p className="text-muted small mb-0 mt-1">
+          Select a role, then toggle the modules and permissions it should have access to.
+        </p>
+      </div>
+
+      {/* Role selector card */}
+      <div className="pro-card p-3 mb-4">
+        <Text style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>
+          Role
         </Text>
         <Select
-          placeholder="Roles"
+          placeholder="Select a role"
           style={{ width: "100%", maxWidth: "500px" }}
           onChange={handleRoleChange}
           value={selectedRole}
@@ -245,26 +254,26 @@ const AssignPermissions: React.FC = () => {
         </Select>
       </div>
 
-      <Title level={4} style={{ marginBottom: "30px", fontWeight: "600" }}>
+      <h4 className="fw-bold text-dark" style={{ marginBottom: "16px", fontSize: "15px" }}>
         Assign Permission to the Role
-      </Title>
+      </h4>
 
-      {/* Render all modules in a 3-column grid */}
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "20px",
-          marginBottom: "60px",
-        }}
-      >
+      {/* Render all modules in a responsive grid */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3" style={{ marginBottom: "32px" }}>
         {Array.isArray(modules) && modules.map((module: any) => renderModuleCard(module))}
       </div>
 
-      <div className="d-flex justify-content-end">
+      {/* Footer */}
+      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 pt-3 border-top">
+        <span className="text-muted small">
+          <span className="fw-semibold" style={{ color: "var(--foreground)" }}>
+            {selectedPermissions.length}
+          </span>{" "}
+          permission{selectedPermissions.length === 1 ? "" : "s"} selected
+        </span>
         <Button
           type="primary"
-         className="theme-btn-next"
+          className="theme-btn-next"
           onClick={() => {
             handleDepartmentPermissions();
           }}

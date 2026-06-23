@@ -1,5 +1,6 @@
 import React, { useState, useCallback } from "react";
 import { Button, DatePicker, Input, Upload, UploadFile, UploadProps } from "antd";
+import { BarChart3 } from "lucide-react";
 import { SearchOutlined } from "@ant-design/icons";
 import Papa from "papaparse";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -624,18 +625,16 @@ const Coa = () => {
   return (
     <div className="service coa-page py-2">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Chart of Accounts</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <BarChart3 className="h-4 w-4" />
+          </span>
+          Chart of Accounts
+        </h3>
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
@@ -711,15 +710,7 @@ const Coa = () => {
         </div>
       )}
       {isChartOfAccountPage && (
-        <div
-          className="bg-white"
-          style={{
-            borderRadius: 2,
-            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-            border: "1px solid var(--border)",
-            overflow: "hidden",
-          }}
-        >
+        <div className="pro-card">
           <Tabs
             id="controlled-tab-example"
             className="px-3 pt-3"

@@ -40,7 +40,12 @@ function AccountFinancing() {
   return (
     <div className="service account-financing-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Accounting &amp; Financing Reports</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <Library className="h-4 w-4" />
+          </span>
+          Accounting &amp; Financing Reports
+        </h3>
       </div>
 
       <div

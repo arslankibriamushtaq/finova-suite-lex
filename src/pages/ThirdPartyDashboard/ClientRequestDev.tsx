@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button, Dropdown, Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import { History } from "lucide-react";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getClientRequestDev } from "../../redux/apis/apisThirdParty";
@@ -138,19 +139,16 @@ const ClientRequestDev = () => {
   return (
     <div className="service client-request-dev-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Client Request Dev</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <History className="h-4 w-4" />
+          </span>
+          Client Request Dev
+        </h3>
       </div>
 
       {/* Table card */}
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="pro-card">
         <TableView
           header={Headers}
           data={data}

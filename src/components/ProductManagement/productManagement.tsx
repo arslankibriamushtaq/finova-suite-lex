@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Plus } from "lucide-react"
+import { Plus, Package } from "lucide-react"
 import { Input } from "antd"
 import { SearchOutlined } from "@ant-design/icons"
 import { Button } from "../ui/button"
@@ -349,18 +349,16 @@ export default function ProductManagement() {
   return (
     <div className="service product-management-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">{t("products")}</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <Package className="h-4 w-4" />
+          </span>
+          {t("products")}
+        </h3>
       </div>
 
       {/* Filters card — search + Add New on one line */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
@@ -395,15 +393,7 @@ export default function ProductManagement() {
       </div>
 
       {/* Table card */}
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="pro-card">
         <TableView
           setPage={setPage}
           setPageSize={setPageSize}
@@ -420,14 +410,17 @@ export default function ProductManagement() {
       </div>
 
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="confirm-dialog sm:max-w-md">
+          <DialogHeader className="items-center text-center">
+            <span className="mb-1 flex size-12 items-center justify-center rounded-full bg-red-100">
+              <Trash2 className="size-6 text-red-600" />
+            </span>
+            <DialogTitle className="text-center">Delete Product</DialogTitle>
+            <DialogDescription className="text-center">
               Are you sure you want to delete this product? This action cannot be undone.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:justify-center">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
               Cancel
             </Button>

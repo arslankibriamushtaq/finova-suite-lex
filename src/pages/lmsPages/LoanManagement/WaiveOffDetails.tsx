@@ -331,7 +331,12 @@ const WaiveOffDetails = () => {
 
         <div style={{ height: 20, width: 1, backgroundColor: "var(--border)" }} />
 
-        <h3 className="mb-0 fw-bold text-dark">Waive Off Details</h3>
+        <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2">
+          <span className="pro-head-badge">
+            <FileText className="h-4 w-4" />
+          </span>
+          Waive Off Details
+        </h3>
 
         <div className="ms-auto">
           <span

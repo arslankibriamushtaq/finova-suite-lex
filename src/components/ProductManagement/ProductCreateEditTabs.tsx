@@ -37,33 +37,16 @@ export default function ProductCreateEditTabs({
     return path
   }
 
+  const activeIndex = TABS.findIndex((t) => t.id === activeTab)
+
   return (
     <div
-      className={cn(
-        "product-tabs-bar",
-        className
-      )}
+      className={cn("flex items-center gap-1 overflow-x-auto border-b", className)}
       role="tablist"
-      style={{
-        background: "var(--surface-card)",
-        border: "1px solid var(--surface-border)",
-        borderRadius: 2,
-        padding: 6,
-        boxShadow: "var(--surface-elevation-1)",
-        display: "flex",
-        gap: 4,
-        overflowX: "auto",
-      }}
     >
-      <style>{`
-        .product-tabs-bar .product-tab-inactive:hover {
-          background: var(--surface-card-hover) !important;
-          color: var(--foreground) !important;
-          border-color: var(--surface-border) !important;
-        }
-      `}</style>
-      {TABS.map((tab) => {
+      {TABS.map((tab, i) => {
         const isActive = activeTab === tab.id
+        const isDone = activeIndex > -1 && i < activeIndex
         return (
           <button
             key={tab.id}
@@ -72,29 +55,28 @@ export default function ProductCreateEditTabs({
             aria-selected={isActive}
             onClick={() => router.push(buildPath(tab.path))}
             className={cn(
-              "px-5 py-2 text-sm font-semibold whitespace-nowrap transition-all rounded-lg",
+              "group relative flex items-center gap-2 whitespace-nowrap px-4 py-2.5 text-sm font-medium transition-colors",
               isActive
-                ? "product-tab-active"
-                : "product-tab-inactive"
+                ? "text-emerald-600"
+                : "text-muted-foreground hover:text-foreground"
             )}
-            style={
-              isActive
-                ? {
-                    background:
-                      "linear-gradient(135deg, #1f2940 0%, #0f172a 100%)",
-                    color: "#ffffff",
-                    boxShadow:
-                      "0 4px 12px rgba(15, 23, 42, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12)",
-                    border: "1px solid #0f172a",
-                  }
-                : {
-                    background: "transparent",
-                    color: "var(--muted-foreground)",
-                    border: "1px solid transparent",
-                  }
-            }
           >
+            <span
+              className={cn(
+                "flex size-5 shrink-0 items-center justify-center rounded-full text-[11px] font-semibold transition-colors",
+                isActive
+                  ? "bg-emerald-500 text-white"
+                  : isDone
+                  ? "bg-emerald-500/15 text-emerald-600"
+                  : "bg-muted text-muted-foreground group-hover:bg-muted-foreground/20"
+              )}
+            >
+              {i + 1}
+            </span>
             {tab.label}
+            {isActive && (
+              <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-emerald-500" />
+            )}
           </button>
         )
       })}

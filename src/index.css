@@ -139,6 +139,161 @@ body,
 }
 
 /* ---------------------------------------------------------------------------
+   Reusable professional card pattern — emerald-tinted border + subtle shadow,
+   a soft emerald glow accent (::before), and a gentle hover lift. Keeps the
+   app's 2px corner radius. Use `.pro-card` on any container and
+   `.pro-head-badge` for the emerald icon badge in section headers.
+--------------------------------------------------------------------------- */
+.pro-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--surface-card);
+  border: 1px solid color-mix(in srgb, #10b981 16%, var(--surface-border));
+  border-radius: 2px;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05),
+    0 8px 20px -16px color-mix(in srgb, #10b981 35%, transparent);
+  transition: box-shadow 0.2s ease;
+}
+.pro-card:hover {
+  box-shadow: 0 6px 22px -10px rgba(16, 185, 129, 0.22),
+    0 8px 20px -16px rgba(0, 0, 0, 0.18);
+}
+.pro-card::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 128px;
+  height: 128px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.07);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.pro-card > * {
+  position: relative;
+}
+
+/* ===== Compact filter bars in page headers (.pro-card "p-3" filter cards) =====
+   Slimmer fields + buttons and tighter card padding, applied globally so every
+   page's filter row is consistent. Heights are reduced to 36px and every
+   element is vertically centered so antd inputs/pickers/selects stay aligned. */
+.pro-card.p-3 {
+  padding-top: 0.625rem !important;
+  padding-bottom: 0.625rem !important;
+}
+/* Search input (with prefix icon) */
+.pro-card .ant-input-affix-wrapper {
+  height: 36px !important;
+  min-height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.pro-card .ant-input-affix-wrapper > .ant-input {
+  height: auto !important;
+  line-height: 1.4 !important;
+}
+/* Plain input */
+.pro-card > * .ant-input:not(textarea):not(.ant-input-affix-wrapper) {
+  height: 36px !important;
+  min-height: 36px !important;
+}
+/* Date pickers */
+.pro-card .ant-picker {
+  height: 36px !important;
+  min-height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
+/* Selects */
+.pro-card .ant-select:not(.ant-select-disabled) .ant-select-selector {
+  height: 36px !important;
+  min-height: 36px !important;
+  display: flex !important;
+  align-items: center !important;
+}
+.pro-card .ant-select-single .ant-select-selector .ant-select-selection-item,
+.pro-card .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  line-height: 34px !important;
+}
+/* Action buttons in the filter row */
+.pro-card .theme-btn-next,
+.pro-card [data-slot="button"],
+.pro-card .uo-btn-black {
+  height: 36px !important;
+  min-height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1 !important;
+}
+.pro-head-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 2px;
+  background: color-mix(in srgb, #10b981 10%, transparent);
+  color: #10b981;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, #10b981 15%, transparent);
+  flex-shrink: 0;
+}
+
+/* Emerald glow + hover-lift accent for shadcn <Card> (and similar), to match
+   the app's professional cards. Keeps the card's own background and radius —
+   only layers on the brand border, soft glow, and hover lift. */
+.pro-card-glow {
+  position: relative;
+  overflow: hidden;
+  border-color: color-mix(in srgb, #10b981 16%, var(--surface-border)) !important;
+  box-shadow: 0 1px 2px rgba(16, 185, 129, 0.05),
+    0 8px 20px -16px color-mix(in srgb, #10b981 35%, transparent) !important;
+  transition: box-shadow 0.2s ease;
+}
+.pro-card-glow:hover {
+  box-shadow: 0 6px 22px -10px rgba(16, 185, 129, 0.22),
+    0 8px 20px -16px rgba(0, 0, 0, 0.18) !important;
+}
+.pro-card-glow::before {
+  content: "";
+  position: absolute;
+  top: -40px;
+  right: -40px;
+  width: 128px;
+  height: 128px;
+  border-radius: 9999px;
+  background: rgba(16, 185, 129, 0.07);
+  filter: blur(40px);
+  pointer-events: none;
+}
+.pro-card-glow > * {
+  position: relative;
+}
+
+/* Consistent, professional heading scale for the Product Management create/edit
+   flow — Bootstrap otherwise oversizes h1–h4 on these pages. Add `pm-create-page`
+   to the page root so every step shares the same title sizes. */
+.pm-create-page h1 { font-size: 1.125rem !important; line-height: 1.3 !important; margin: 0 !important; }
+.pm-create-page h2 { font-size: 1rem !important; line-height: 1.3 !important; margin: 0 !important; }
+.pm-create-page h3 { font-size: 0.9375rem !important; line-height: 1.3 !important; margin: 0 !important; }
+.pm-create-page h4 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
+
+/* Confirmation dialogs (delete / discard, etc.) — drop the header/footer
+   divider lines that the global themed-modal rule adds, since these dialogs
+   have no body and the stray lines look broken. Add `confirm-dialog` to the
+   DialogContent. */
+.confirm-dialog [data-slot="dialog-header"],
+.confirm-dialog [data-slot="dialog-footer"] {
+  border: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* ---------------------------------------------------------------------------
    Keep the body's native scrollbar when a Radix UI overlay (shadcn Select /
    Dropdown / Popover / Dialog, etc.) opens. By default Radix's
    react-remove-scroll locks the body — it sets overflow:hidden (hiding the

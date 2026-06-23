@@ -2004,14 +2004,14 @@ html.dark .modal-content {
 }
 
 /* --- Secondary / Cancel action button (footer, non-primary) --- */
-[data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]),
-.ant-modal-footer .ant-btn:not(.ant-btn-primary),
+[data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):not([class*="destructive"]):not([class*="bg-red"]),
+.ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous),
 .modal-footer .btn:not(.btn-primary):not(.btn-danger) {
   border: 1px solid color-mix(in srgb, #10b981 30%, var(--border)) !important;
   color: var(--foreground) !important;
 }
-[data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):hover,
-.ant-modal-footer .ant-btn:not(.ant-btn-primary):hover,
+[data-slot="dialog-footer"] button[data-slot="button"]:not([class*="bg-primary"]):not([class*="destructive"]):not([class*="bg-red"]):hover,
+.ant-modal-footer .ant-btn:not(.ant-btn-primary):not(.ant-btn-dangerous):hover,
 .modal-footer .btn:not(.btn-primary):not(.btn-danger):hover {
   border-color: #10b981 !important;
   color: #059669 !important;
