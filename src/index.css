@@ -174,60 +174,137 @@ body,
   position: relative;
 }
 
-/* ===== Compact filter bars in page headers (.pro-card "p-3" filter cards) =====
-   Slimmer fields + buttons and tighter card padding, applied globally so every
-   page's filter row is consistent. Heights are reduced to 36px and every
-   element is vertically centered so antd inputs/pickers/selects stay aligned. */
-.pro-card.p-3 {
-  padding-top: 0.625rem !important;
-  padding-bottom: 0.625rem !important;
+/* ===== Compact filter bars in page headers (filter cards) =====
+   Slim, aligned fields + buttons applied globally so every page's filter row is
+   consistent — covers .pro-card AND .no-card (Notification Orchestrator etc.).
+   All controls share a 34px height, 13px font and are vertically centered so
+   the search input, selects, date pickers and buttons line up exactly. */
+.pro-card.p-3,
+.no-card.p-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
 }
-/* Search input (with prefix icon) */
-.pro-card .ant-input-affix-wrapper {
-  height: 36px !important;
-  min-height: 36px !important;
+/* Search / plain inputs */
+.pro-card .ant-input-affix-wrapper,
+.no-card .ant-input-affix-wrapper {
+  height: 34px !important;
+  min-height: 34px !important;
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 12px !important;
+}
+.pro-card .ant-input-affix-wrapper > .ant-input,
+.no-card .ant-input-affix-wrapper > .ant-input {
+  height: auto !important;
+  line-height: 1.3 !important;
+  font-size: 12px !important;
+}
+.pro-card > * .ant-input:not(textarea):not(.ant-input-affix-wrapper),
+.no-card > * .ant-input:not(textarea):not(.ant-input-affix-wrapper) {
+  height: 34px !important;
+  min-height: 34px !important;
+  font-size: 12px !important;
+}
+/* Date pickers */
+.pro-card .ant-picker,
+.no-card .ant-picker {
+  height: 34px !important;
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  font-size: 12px !important;
+}
+/* Selects — set both the outer box and the inner selector so they don't out-grow
+   the inputs/buttons (antd applies inline height:40 to the outer .ant-select). */
+.pro-card .ant-select:not(.ant-select-disabled),
+.no-card .ant-select:not(.ant-select-disabled) {
+  height: 34px !important;
+  font-size: 12px !important;
+}
+.pro-card .ant-select:not(.ant-select-disabled) .ant-select-selector,
+.no-card .ant-select:not(.ant-select-disabled) .ant-select-selector {
+  height: 34px !important;
+  min-height: 34px !important;
   display: flex !important;
   align-items: center !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
 }
-.pro-card .ant-input-affix-wrapper > .ant-input {
-  height: auto !important;
-  line-height: 1.4 !important;
-}
-/* Plain input */
-.pro-card > * .ant-input:not(textarea):not(.ant-input-affix-wrapper) {
-  height: 36px !important;
-  min-height: 36px !important;
-}
-/* Date pickers */
-.pro-card .ant-picker {
-  height: 36px !important;
-  min-height: 36px !important;
-  display: inline-flex !important;
-  align-items: center !important;
-}
-/* Selects */
-.pro-card .ant-select:not(.ant-select-disabled) .ant-select-selector {
-  height: 36px !important;
-  min-height: 36px !important;
-  display: flex !important;
-  align-items: center !important;
-}
 .pro-card .ant-select-single .ant-select-selector .ant-select-selection-item,
-.pro-card .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
-  line-height: 34px !important;
+.pro-card .ant-select-single .ant-select-selector .ant-select-selection-placeholder,
+.no-card .ant-select-single .ant-select-selector .ant-select-selection-item,
+.no-card .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  line-height: 32px !important;
+  font-size: 12px !important;
 }
 /* Action buttons in the filter row */
 .pro-card .theme-btn-next,
 .pro-card [data-slot="button"],
-.pro-card .uo-btn-black {
-  height: 36px !important;
-  min-height: 36px !important;
+.pro-card .uo-btn-black,
+.no-card .theme-btn-next,
+.no-card [data-slot="button"],
+.no-card .uo-btn-black {
+  height: 34px !important;
+  min-height: 34px !important;
   display: inline-flex !important;
   align-items: center !important;
   padding-top: 0 !important;
   padding-bottom: 0 !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
+  line-height: 1 !important;
+  font-size: 12px !important;
+}
+
+/* Legacy filter cards (still using Bootstrap/Tailwind "bg-white p-3") — apply
+   the same compact, aligned treatment so pages not yet migrated to .pro-card
+   still get consistent filter rows. Scoped to the .bg-white.p-3 combo (the
+   filter-card pattern), not plain .bg-white. */
+.bg-white.p-3 {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+.bg-white.p-3 .ant-input-affix-wrapper,
+.bg-white.p-3 .ant-picker,
+.bg-white.p-3 .ant-select:not(.ant-select-disabled),
+.bg-white.p-3 .ant-select:not(.ant-select-disabled) .ant-select-selector,
+.bg-white.p-3 .ant-input:not(textarea):not(.ant-input-affix-wrapper),
+.bg-white.p-3 .theme-btn-next,
+.bg-white.p-3 [data-slot="button"],
+.bg-white.p-3 .uo-btn-black,
+.bg-white.p-3 button.application-btn {
+  height: 34px !important;
+  min-height: 34px !important;
+  font-size: 12px !important;
+}
+.bg-white.p-3 .ant-input-affix-wrapper,
+.bg-white.p-3 .ant-picker,
+.bg-white.p-3 .ant-select:not(.ant-select-disabled) .ant-select-selector {
+  display: flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+.bg-white.p-3 .ant-input-affix-wrapper > .ant-input {
+  height: auto !important;
+  font-size: 12px !important;
+}
+.bg-white.p-3 .ant-select-single .ant-select-selector .ant-select-selection-item,
+.bg-white.p-3 .ant-select-single .ant-select-selector .ant-select-selection-placeholder {
+  line-height: 32px !important;
+  font-size: 12px !important;
+}
+.bg-white.p-3 .theme-btn-next,
+.bg-white.p-3 [data-slot="button"],
+.bg-white.p-3 .uo-btn-black {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  padding-left: 14px !important;
+  padding-right: 14px !important;
   line-height: 1 !important;
 }
 .pro-head-badge {

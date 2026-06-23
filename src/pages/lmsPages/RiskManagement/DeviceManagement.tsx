@@ -588,14 +588,7 @@ const DeviceManagement = () => {
       </div>
 
       {/* Filters card */}
-      <div
-        className="bg-white p-3 mb-3"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-        }}
-      >
+      <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
@@ -704,15 +697,8 @@ const DeviceManagement = () => {
 
           {/* All Devices Tab */}
           <TabsContent value="all" className="mt-0">
-            <div
-              className="bg-white"
-              style={{
-                borderRadius: 2,
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-                border: "1px solid var(--border)",
-                overflow: "hidden",
-              }}
-            >
+            <div className="pro-card">
+
               <TableView
                 header={allDevicesHeaders}
                 data={data}
@@ -732,15 +718,8 @@ const DeviceManagement = () => {
 
           {/* Blocked Devices Tab */}
           <TabsContent value="blocked" className="mt-0">
-            <div
-              className="bg-white"
-              style={{
-                borderRadius: 2,
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-                border: "1px solid var(--border)",
-                overflow: "hidden",
-              }}
-            >
+            <div className="pro-card">
+
               <TableView
                 header={blockedDevicesHeaders}
                 data={data}

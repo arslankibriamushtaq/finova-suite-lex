@@ -286,14 +286,14 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
 
           <div className="flex min-w-0 flex-col gap-2">
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
-              <h2 className="m-0 max-w-full truncate text-start text-base font-semibold leading-tight text-foreground sm:text-lg">
+              <h2 className="m-0 max-w-full truncate text-start text-sm font-semibold leading-tight text-foreground">
                 {displayName || "—"}
               </h2>
               {flag && <span className="text-base leading-none">{flag}</span>}
               <span className="text-sm text-muted-foreground">{nationality}</span>
             </div>
 
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2 [&_[data-slot=badge]]:text-[10px] [&_[data-slot=badge]]:px-2 [&_[data-slot=badge]]:py-0">
               {customer.lifecycleStage && (
                 <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
                   {customer.lifecycleStage}
@@ -328,19 +328,19 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
         </div>
 
         {/* Detail grid — fills the right side */}
-        <div className="grid w-full grid-cols-1 gap-x-6 gap-y-4 min-[420px]:grid-cols-2 sm:gap-x-8 lg:w-auto lg:flex-1 lg:grid-cols-3 lg:justify-items-start xl:max-w-3xl">
+        <div className="grid w-full grid-cols-1 gap-x-6 gap-y-4 min-[420px]:grid-cols-2 sm:gap-x-8 lg:w-auto lg:flex-1 lg:grid-cols-3 xl:max-w-3xl">
           {details.map((d) => {
             const Icon = d.icon;
             return (
-              <div key={d.label} className="flex items-center gap-2.5">
+              <div key={d.label} className="flex w-full min-w-0 items-center gap-2.5">
                 <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                   <Icon className="size-4" />
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <div className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
                     {d.label}
                   </div>
-                  <div className="truncate text-sm font-semibold text-foreground" title={d.value}>
+                  <div className="truncate text-xs font-semibold text-foreground" title={d.value}>
                     {d.value}
                   </div>
                 </div>
@@ -405,7 +405,7 @@ const Stepper = ({ onboarding, isAr }: any) => {
                     ) : failed ? (
                       <AlertTriangle className="size-5" />
                     ) : (
-                      <span className="text-sm font-semibold">{step.step ?? idx + 1}</span>
+                      <span className="text-sm font-semibold">{idx + 1}</span>
                     )}
                   </div>
                   <div
@@ -699,7 +699,7 @@ const Onboarding360 = () => {
         /* A global heading rule oversizes h2/h3 — force this page's headings to
            sensible sizes (Tailwind text-base / text-sm get overridden otherwise). */
         .onb360-page h1 { font-size: 1.125rem !important; line-height: 1.3 !important; margin: 0 !important; }
-        .onb360-page h2 { font-size: 1rem !important;     line-height: 1.3 !important; margin: 0 !important; }
+        .onb360-page h2 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .onb360-page h3 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .onb360-page h4 { font-size: 0.8125rem !important; line-height: 1.3 !important; margin: 0 !important; }
 
@@ -719,7 +719,8 @@ const Onboarding360 = () => {
         }
         .onb360-page .onb-step-circle {
           animation: onbStepPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-        }
+          z-index: 0;
+          }
         .onb360-page .onb-connector {
           transform-origin: left center;
           animation: onbConnGrow 0.45s ease-out both;
