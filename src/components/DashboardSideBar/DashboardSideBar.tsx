@@ -2757,6 +2757,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             align-items: center !important;
             width: 100% !important;
           }
+          /* Center the favicon on the same vertical axis as the collapsed
+             menu icons (drop the px-3 left padding, center the flex row). */
+          .is-collapsed .sidebar-logo-container {
+            justify-content: center !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+          }
           .is-collapsed .sidebar-logo-container img {
             max-width: 40px !important;
             height: auto !important;
