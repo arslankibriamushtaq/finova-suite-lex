@@ -222,7 +222,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   // Force hide sidebar on mobile/zoom threshold
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth <= 1024) {
+      if (window.innerWidth <= 768) {
         dispatch(authSlice.actions.setToggled(false));
       }
     };
@@ -2442,7 +2442,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         onBackdropClick={() => dispatch(authSlice.actions.toggleSidebar())}
         toggled={toggled}
         collapsed={isCollapsed}
-        customBreakPoint="1024px"
+        customBreakPoint="768px"
         collapsedWidth="80px"
         width="290px"
         className={`col-12 fw-bold menu-items css-12w9als ${isCollapsed ? "is-collapsed" : ""}`}
@@ -2450,7 +2450,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           fontSize: "13px",
           backgroundColor:
             themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
-          display: window.innerWidth <= 1024 && !toggled ? "none" : "block",
+          display: window.innerWidth <= 768 && !toggled ? "none" : "block",
         }}
       >
         <div
@@ -2463,7 +2463,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }}
         >
           <img
-            src={Images.DashboardLogo}
+            src={isCollapsed ? Images.SullisFavicon : Images.DashboardLogo}
             alt="logo"
             className="sidebar-logo sidebar-logo--light"
             onClick={() => navigate("/LOS/Dashboard")}
@@ -2475,7 +2475,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             }}
           />
           <img
-            src={Images.DashboardLogoWhite}
+            src={isCollapsed ? Images.SullisFavicon : Images.DashboardLogoWhite}
             alt="logo"
             className="sidebar-logo sidebar-logo--dark"
             onClick={() => navigate("/LOS/Dashboard")}
@@ -2486,7 +2486,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               transition: "width 0.3s ease"
             }}
           />
-          {window.innerWidth <= 1024 && !isCollapsed && (
+          {window.innerWidth <= 768 && !isCollapsed && (
             <button
               className="ms-auto btn border-0 p-0"
               style={{ color: "var(--theme-heading-text-color)", fontSize: "20px" }}
@@ -2725,15 +2725,29 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             opacity: 0 !important;
             visibility: hidden !important;
           }
-          .is-collapsed .ps-menu-button,
-          .is-collapsed .ps-menu-button * {
-            font-size: 0 !important;
-            color: transparent !important;
-            line-height: 0 !important;
-          }
           .is-collapsed .ps-menu-button {
+            font-size: 0 !important;
+            line-height: 0 !important;
             justify-content: center !important;
             padding: 0 !important;
+          }
+          /* Hide ONLY the text labels — never recolor the icon. A blanket
+             .ps-menu-button star-selector with color:transparent !important was
+             overriding each icon's inline per-module color (the SVG stroke is
+             currentColor), making every collapsed icon invisible. */
+          .is-collapsed .ps-menu-label,
+          .is-collapsed .sidebar-label-text {
+            color: transparent !important;
+          }
+          /* Keep icons crisp, full-size, and their own colour in the rail */
+          .is-collapsed .ps-menu-icon,
+          .is-collapsed .ps-menu-icon * {
+            font-size: initial !important;
+            line-height: normal !important;
+          }
+          .is-collapsed .ps-menu-icon svg {
+            width: 20px !important;
+            height: 20px !important;
           }
           .is-collapsed .ps-menu-icon {
             margin-right: 0 !important;

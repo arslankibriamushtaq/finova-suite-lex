@@ -10,7 +10,7 @@ import HeadingHeader from "../components/HeadingHeader";
 import { authSlice } from "../redux/apis/apisSlice";
 
 const Layout = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
   const collapsed = useSelector((state: RootState) => state.block.collapsed);
@@ -21,7 +21,7 @@ const Layout = () => {
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 1024;
+      const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (mobile) {
         dispatch(authSlice.actions.setToggled(false));

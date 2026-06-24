@@ -9,7 +9,7 @@ import { authSlice } from "../redux/apis/apisSlice";
 import DashboardInfoSubHeader from "../components/DashboardHeader/DashboardSubheader";
 import { filterUtils } from "../utils/const.utils";
 const LayoutDashboard = () => {
-  const [isMobile, setIsMobile] = useState(window.innerWidth <= 1024);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [loading, setLoading] = useState(true);
 const location=window.location.pathname
 
@@ -21,7 +21,7 @@ const location=window.location.pathname
 
   useEffect(() => {
     const handleResize = () => {
-      const mobile = window.innerWidth <= 1024;
+      const mobile = window.innerWidth <= 768;
       setIsMobile(mobile);
       if (mobile) {
         dispatch(authSlice.actions.setToggled(false));

@@ -95,7 +95,7 @@ const DashboardHeader = () => {
               className="bar-btn"
               style={{ position: "relative", zIndex: 1001 }}
               onClick={() => {
-                if (window.innerWidth <= 1024) {
+                if (window.innerWidth <= 768) {
                   dispatch(authSlice.actions.toggleSidebar());
                 } else {
                   dispatch(authSlice.actions.setCollapsed(!collapsed));
