@@ -372,17 +372,20 @@ const Stepper = ({ onboarding, isAr }: any) => {
       {steps.length === 0 ? (
         <p className="text-sm text-muted-foreground">No onboarding steps available.</p>
       ) : (
-        /* First/last circles sit flush at the left/right edges; the connectors
-           stretch between, and labels are positioned so they don't push the
-           circles inward — so the stepper spans edge-to-edge like the card. */
-        <div className="relative flex items-center pb-12">
+        /* Each step is an equal-width column so its label is bounded by the
+           column (wraps, never overlaps the neighbour) — no horizontal scroll.
+           Connectors are absolute lines drawn from each circle's centre to the
+           next, sitting behind the circles. */
+        <div className="relative flex items-start">
           {steps.map((step: any, idx: number) => {
             const status = (step.status || "PENDING").toUpperCase();
-            const isLast = idx === steps.length - 1;
             const isFirst = idx === 0;
             const done = status === "COMPLETED";
             const current = status === "CURRENT";
             const failed = status === "FAILED";
+            const prevDone =
+              idx > 0 &&
+              (steps[idx - 1]?.status || "PENDING").toUpperCase() === "COMPLETED";
             const circle = done
               ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
               : failed
@@ -391,61 +394,54 @@ const Stepper = ({ onboarding, isAr }: any) => {
               ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
               : "border-border text-muted-foreground";
             return (
-              <div key={step.step ?? idx} className="contents">
-                <div className="relative flex flex-col items-center">
+              <div
+                key={step.step ?? idx}
+                className="relative flex min-w-0 flex-1 flex-col items-center"
+              >
+                {/* Connector from the previous circle's centre to this one. */}
+                {!isFirst && (
                   <div
                     className={cn(
-                      "onb-step-circle relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
-                      circle
-                    )}
-                    style={{ animationDelay: `${idx * 0.18}s` }}
-                  >
-                    {done ? (
-                      <Check className="size-5" strokeWidth={3} />
-                    ) : failed ? (
-                      <AlertTriangle className="size-5" />
-                    ) : (
-                      <span className="text-sm font-semibold">{idx + 1}</span>
-                    )}
-                  </div>
-                  <div
-                    className={cn(
-                      "absolute top-12 w-28 leading-tight",
-                      isFirst
-                        ? "left-0 text-left"
-                        : isLast
-                        ? "right-0 text-right"
-                        : "left-1/2 -translate-x-1/2 text-center"
-                    )}
-                  >
-                    <div className="onb-label" style={{ animationDelay: `${idx * 0.18 + 0.15}s` }}>
-                      <span
-                        className={cn(
-                          "text-xs",
-                          done || current
-                            ? "font-semibold text-foreground"
-                            : "font-medium text-muted-foreground"
-                        )}
-                      >
-                        {isAr ? step.labelAr || step.label : step.label}
-                      </span>
-                      {step.occurredAt && (
-                        <div className="text-[10px] text-muted-foreground">
-                          {formatDate(step.occurredAt)}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                {!isLast && (
-                  <div
-                    className={cn(
-                      "onb-connector mx-2 h-0.5 flex-1 rounded-full transition-colors duration-500",
-                      done ? "bg-emerald-500" : "bg-border"
+                      "onb-connector absolute top-5 right-1/2 left-[-50%] z-0 h-0.5 rounded-full transition-colors duration-500",
+                      prevDone ? "bg-emerald-500" : "bg-border"
                     )}
                     style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
                   />
                 )}
+                <div
+                  className={cn(
+                    "onb-step-circle relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
+                    circle
+                  )}
+                  style={{ animationDelay: `${idx * 0.18}s` }}
+                >
+                  {done ? (
+                    <Check className="size-5" strokeWidth={3} />
+                  ) : failed ? (
+                    <AlertTriangle className="size-5" />
+                  ) : (
+                    <span className="text-sm font-semibold">{idx + 1}</span>
+                  )}
+                </div>
+                <div className="mt-2 w-full px-1 text-center leading-tight">
+                  <div className="onb-label" style={{ animationDelay: `${idx * 0.18 + 0.15}s` }}>
+                    <span
+                      className={cn(
+                        "block break-words text-xs",
+                        done || current
+                          ? "font-semibold text-foreground"
+                          : "font-medium text-muted-foreground"
+                      )}
+                    >
+                      {isAr ? step.labelAr || step.label : step.label}
+                    </span>
+                    {step.occurredAt && (
+                      <div className="text-[10px] text-muted-foreground">
+                        {formatDate(step.occurredAt)}
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             );
           })}
