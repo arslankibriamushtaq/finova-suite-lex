@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Plus, Settings, Trash2, Save } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -79,6 +80,8 @@ const newCriteria = (sortOrder: number): Criteria => ({
 });
 
 const GeneralCreditScoring = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activeTab = searchParams.get("tab") || "general-credit-scoring";
   const [criteria, setCriteria] = useState<Criteria[]>([]);
   const [fieldDefinitions, setFieldDefinitions] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -293,7 +296,11 @@ const GeneralCreditScoring = () => {
         }
       `}</style>
 
-      <Tabs defaultValue="general-credit-scoring" className="w-full">
+      <Tabs
+        value={activeTab}
+        onValueChange={(v) => setSearchParams({ tab: v })}
+        className="w-full"
+      >
         <TabsList className="gcs-tabs-list">
           <TabsTrigger value="general-credit-scoring" className="gcs-tabs-trigger">
             General Credit Scoring

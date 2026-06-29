@@ -98,7 +98,7 @@ const AllCustomers = () => {
       width: "200px",
     },
     {
-      name: "National ID",
+      name: "ID",
       selector: (row: any) => row.nationalId || "-",
       sortable: true,
       width: "150px",

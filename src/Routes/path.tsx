@@ -1549,6 +1549,10 @@ export const router = createBrowserRouter([
           element: <AccountFinancing />,
         },
         {
+          path: "/LOS/Ledger",
+          element: <Ledger />,
+        },
+        {
           path: "Lms/Reports/loans",
           element: <Loans />,
         },
@@ -2137,12 +2141,12 @@ export const router = createBrowserRouter([
         //   path: "accountingFinancing/vouchers",
         //   element: <Vouchers />,
         // },
-   
+
         {
           path: "Lms/accountingFinancing/trialbalance",
           element: <TrialBalance />,
         },
-   
+
         {
           path: "Lms/transactionHistory",
           element: <TransactionTabs />,

@@ -83,7 +83,7 @@ const ModuleIcon: React.FC<{ label?: string; fallback?: string; size?: number }>
 };
 
 const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolean }) => {
-  const [openSubmenuIndex, setOpenSubmenuIndex] = useState<number | null>(null);
+  const [openSubmenuIndices, setOpenSubmenuIndices] = useState<number[]>([]);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
   // Pages that live under BOTH tabs (Customers, General Setting). For these we
   // can't tell the tab from the URL, so we keep whichever tab the user last used.
@@ -175,48 +175,49 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         const nested = sub.submenu || sub.menu;
         return Array.isArray(nested) && nested.some((c: any) => c?.active);
       });
-    let matchIndex = items.findIndex(hasActiveLeaf);
-    if (matchIndex === -1) {
-      matchIndex = items.findIndex((item: any) => {
-        const link = item.Link || "";
-        const topSegment = link.split("/").filter(Boolean)[0];
-        if (!topSegment) return false;
-        return pathname.includes(`/${topSegment}`);
-      });
-    }
-    if (matchIndex !== -1) {
-      setOpenSubmenuIndex(matchIndex);
-      const parentItem = items[matchIndex];
-      if (parentItem && Array.isArray(parentItem.menu)) {
-        const nestedStates: Record<string, boolean> = {};
-        // Filter Boolean to match renderSubmenu's `item.menu.filter(Boolean)`.
-        // Without this, hasAccess-gated (falsy) entries shift the indices here
-        // vs. at render time, so the wrong nested submenu (e.g. Access Control
-        // Management instead of Risk Management) gets opened.
-        parentItem.menu.filter(Boolean).forEach((submenuItem: any, subIndex: any) => {
-          if (submenuItem) {
-            const hasNestedSubmenu =
-              (Array.isArray(submenuItem.submenu) && submenuItem.submenu.length > 0) ||
-              (Array.isArray(submenuItem.menu) && submenuItem.menu.length > 0);
-            if (hasNestedSubmenu) {
-              const nestedItems = submenuItem.submenu || submenuItem.menu;
-              const isAnyChildActive = nestedItems.some((child: any) => child.active);
-              const nestedKey = `${matchIndex}-${subIndex}`;
-              if (submenuItem.active || isAnyChildActive) {
-                nestedStates[nestedKey] = true;
-              }
+    // Financing and Connector Management stay open by default so the primary
+    // workflows are always visible regardless of the current route (their nested
+    // submenus stay collapsed unless they own the active route).
+    const financingIndex = items.findIndex(
+      (it: any) => it && it.label === "Financing"
+    );
+    const connectorIndex = items.findIndex(
+      (it: any) => it && it.label === "Connector Management"
+    );
+    const defaultOpen = [financingIndex, connectorIndex].filter((i) => i !== -1);
+
+    const matchIndex = items.findIndex(hasActiveLeaf);
+    // Open the route's owning group (if any) on top of the always-open defaults.
+    const openIndices = Array.from(
+      new Set([...defaultOpen, ...(matchIndex !== -1 ? [matchIndex] : [])])
+    );
+    setOpenSubmenuIndices(openIndices);
+
+    // Nested submenus auto-open only for the group that owns the active route.
+    const nestedStates: Record<string, boolean> = {};
+    const parentItem = matchIndex !== -1 ? items[matchIndex] : null;
+    if (parentItem && Array.isArray(parentItem.menu)) {
+      // Filter Boolean to match renderSubmenu's `item.menu.filter(Boolean)`.
+      // Without this, hasAccess-gated (falsy) entries shift the indices here
+      // vs. at render time, so the wrong nested submenu (e.g. Access Control
+      // Management instead of Risk Management) gets opened.
+      parentItem.menu.filter(Boolean).forEach((submenuItem: any, subIndex: any) => {
+        if (submenuItem) {
+          const hasNestedSubmenu =
+            (Array.isArray(submenuItem.submenu) && submenuItem.submenu.length > 0) ||
+            (Array.isArray(submenuItem.menu) && submenuItem.menu.length > 0);
+          if (hasNestedSubmenu) {
+            const nestedItems = submenuItem.submenu || submenuItem.menu;
+            const isAnyChildActive = nestedItems.some((child: any) => child.active);
+            const nestedKey = `${matchIndex}-${subIndex}`;
+            if (submenuItem.active || isAnyChildActive) {
+              nestedStates[nestedKey] = true;
             }
           }
-        });
-        setOpenNestedSubmenus(nestedStates);
-      }
-    } else {
-      // No group owns the current route (e.g. just switched to the Wallet tab
-      // on a Financing page) — collapse everything so a stale index from the
-      // other tab doesn't leave an unrelated submenu looking open.
-      setOpenSubmenuIndex(null);
-      setOpenNestedSubmenus({});
+        }
+      });
     }
+    setOpenNestedSubmenus(nestedStates);
   }, [pathname]);
 
   // Force hide sidebar on mobile/zoom threshold
@@ -2094,43 +2095,44 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/DeviceManagement",
         },
-        hasAccess("block_code_module") && {
-          label: "Block Codes",
-          img: Images.SettingsIcon,
-          imgActive: Images.SettingsIconDark,
-          active: pathname.split("/").includes("BlockCodes"),
-          menu: [
-            {
-              label: "All Block Codes",
-              Link: "AllBlockCodes",
-              LinkLable: "/LOS/BlockCodes",
-              active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
-            },
-            {
-              label: "Compliance",
-              Link: "Compliance",
-              LinkLable: "/LOS/BlockCodes",
-              active: pathname.includes("/LOS/BlockCodes/Compliance"),
-            },
-            {
-              label: "AML",
-              Link: "AML",
-              LinkLable: "/LOS/BlockCodes",
-              active: pathname.includes("/LOS/BlockCodes/AML"),
-            },
-            {
-              label: "Anti-Fraud",
-              Link: "AntiFraud",
-              LinkLable: "/LOS/BlockCodes",
-              active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
-            },
-            {
-              label: "Sanction",
-              Link: "Sanction",
-              LinkLable: "/LOS/BlockCodes",
-              active: pathname.includes("/LOS/BlockCodes/Sanction"),
-            },
-          ].filter(Boolean),
+      ].filter(Boolean),
+    },
+    hasAccess("block_code_module") && {
+      label: "Block Codes",
+      Link: "/LOS/BlockCodes/AllBlockCodes",
+      img: Images.SettingsIcon,
+      imgActive: Images.SettingsIconDark,
+      active: pathname.split("/").includes("BlockCodes"),
+      menu: [
+        {
+          label: "All Block Codes",
+          Link: "AllBlockCodes",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
+        },
+        {
+          label: "Compliance",
+          Link: "Compliance",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/Compliance"),
+        },
+        {
+          label: "AML",
+          Link: "AML",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/AML"),
+        },
+        {
+          label: "Anti-Fraud",
+          Link: "AntiFraud",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
+        },
+        {
+          label: "Sanction",
+          Link: "Sanction",
+          LinkLable: "/LOS/BlockCodes",
+          active: pathname.includes("/LOS/BlockCodes/Sanction"),
         },
       ].filter(Boolean),
     },
@@ -2187,34 +2189,43 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     },
     */
     {
-      label: "Transfers",
-      Link: "/Wallet/SendMoney",
+      label: "Send Money",
+      Link: "/LOS/Wallet/SendMoney",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
-      active:
-        pathname.includes("/Wallet/SendMoney") ||
-        pathname.includes("/Wallet/InternalTransfer"),
-      menu: [
-        {
-          label: "Send Money",
-          Link: "SendMoney",
-          LinkLable: "/LOS/Wallet",
-          active: pathname.includes("/Wallet/SendMoney"),
-        },
-        {
-          label: "Internal Transfer",
-          Link: "InternalTransfer",
-          LinkLable: "/LOS/Wallet",
-          active: pathname.includes("/Wallet/InternalTransfer"),
-        },
-      ].filter(Boolean),
+      active: pathname.includes("/Wallet/SendMoney"),
     },
     {
-      label: "General Setting",
-      Link: "/Lms/Setting/GeneralCreditScoring",
+      label: "Internal Transfer",
+      Link: "/LOS/Wallet/InternalTransfer",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/Wallet/InternalTransfer"),
+    },
+    {
+      label: "Ledger",
+      Link: "/LOS/Ledger",
+      img: Images.reportsIconDark,
+      imgActive: Images.reportsIconDark,
+      active: pathname === "/LOS/Ledger",
+    },
+    {
+      label: "General Credit Scoring",
+      Link: "/Lms/Setting/GeneralCreditScoring?tab=general-credit-scoring",
       img: Images.SettingsIcon,
       imgActive: Images.SettingsIconDark,
-      active: pathname.includes("/Lms/Setting/GeneralCreditScoring"),
+      active:
+        pathname.includes("/Lms/Setting/GeneralCreditScoring") &&
+        !location.search.includes("accounts-limit-setting"),
+    },
+    {
+      label: "Accounts Limit Setting",
+      Link: "/Lms/Setting/GeneralCreditScoring?tab=accounts-limit-setting",
+      img: Images.SettingsIcon,
+      imgActive: Images.SettingsIconDark,
+      active:
+        pathname.includes("/Lms/Setting/GeneralCreditScoring") &&
+        location.search.includes("accounts-limit-setting"),
     },
     {
       label: "Financing",
@@ -2422,11 +2433,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         label={<span className="sidebar-label-text">{item.label}</span>}
         icon={<ModuleIcon label={item.label} fallback={item.img} />}
         // defaultOpen={item.active}
-        open={openSubmenuIndex === index}
+        open={openSubmenuIndices.includes(index)}
         onClick={() => {
-          // Toggle the submenu open/close
-          setOpenSubmenuIndex((prevIndex) =>
-            prevIndex === index ? null : index
+          // Toggle the submenu open/close (multiple can be open at once)
+          setOpenSubmenuIndices((prev) =>
+            prev.includes(index)
+              ? prev.filter((i) => i !== index)
+              : [...prev, index]
           );
         }}
       >
@@ -2603,8 +2616,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           }
           /* Same height, full width, flush left, 12px text */
           .css-12w9als:not(.is-collapsed) .ps-menu-button {
-            height: 35px !important;
-            min-height: 35px !important;
+            height: 44px !important;
+            min-height: 44px !important;
             margin: 0 !important;
             width: 100% !important;
             font-size: 12px !important;

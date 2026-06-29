@@ -299,7 +299,7 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
                   {customer.lifecycleStage}
                 </Badge>
               )}
-              {customer.kycStatus && <StatusBadge status={customer.kycStatus} />}
+              {/* {customer.kycStatus && <StatusBadge status={customer.kycStatus} />} */}
               {customer.riskGrade && (
                 <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(customer.riskGrade)])}>
                   Risk {customer.riskGrade}

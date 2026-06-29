@@ -140,7 +140,7 @@ const DashboardHeader = () => {
                 >
                   {/* <img src={Images.HeaderIcon} alt="Header Icon" /> */}
 
-                  {splitCamelCase(view)}
+                  {/* {splitCamelCase(view)} */}
                 </div>
               </div>
             </div>
