@@ -715,7 +715,10 @@ const Onboarding360 = () => {
         }
         .onb360-page .onb-step-circle {
           animation: onbStepPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-          z-index: 0;
+          /* Must sit above the connector lines (which also animate a transform,
+             creating their own stacking context) so the line never covers the
+             tick. Higher than the connector's z-0. */
+          z-index: 1;
           }
         .onb360-page .onb-connector {
           transform-origin: left center;

@@ -90,7 +90,7 @@ const DashboardHeader = () => {
         }
       >
         <div className="d-flex">
-          <div className="d-flex align-items-center ps-3">
+          <div className="d-flex align-items-center ps-0">
             <button
               className="bar-btn"
               style={{ position: "relative", zIndex: 1001 }}
