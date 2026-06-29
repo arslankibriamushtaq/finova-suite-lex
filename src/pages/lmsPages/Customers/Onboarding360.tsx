@@ -300,11 +300,11 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
                 </Badge>
               )}
               {/* {customer.kycStatus && <StatusBadge status={customer.kycStatus} />} */}
-              {customer.riskGrade && (
+              {/* {customer.riskGrade && (
                 <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(customer.riskGrade)])}>
                   Risk {customer.riskGrade}
                 </Badge>
-              )}
+              )} */}
               {customer.pepFlag && (
                 <Badge variant="outline" className={cn("border font-medium", TONES.amber)}>
                   PEP
@@ -987,6 +987,100 @@ const Onboarding360 = () => {
                   )}
                 </Block>
               </div>
+
+              <Block title="Score Breakdown Details" icon={BarChart3}>
+                {(risk?.breakdown || []).length === 0 ? (
+                  <EmptyState icon={ShieldAlert} text="No breakdown available." />
+                ) : (
+                  <div className="overflow-x-auto">
+                    <table className="w-full min-w-[640px] border-collapse text-sm">
+                      <thead>
+                        <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
+                          <th className="px-3 py-2 text-start font-medium">Category</th>
+                          <th className="px-3 py-2 text-end font-medium">Category Wt.</th>
+                          <th className="px-3 py-2 text-end font-medium">Factor Wt.</th>
+                          <th className="px-3 py-2 text-end font-medium">Score</th>
+                          <th className="px-3 py-2 text-start font-medium">Calculation</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {risk.breakdown.map((b: any, i: number) => (
+                          <tr
+                            key={i}
+                            className="border-b border-border/60 transition-colors hover:bg-muted/40"
+                          >
+                            <td className="px-3 py-2.5 font-medium text-foreground">{b.category}</td>
+                            <td className="px-3 py-2.5 text-end tabular-nums">{b.categoryWeight}</td>
+                            <td className="px-3 py-2.5 text-end tabular-nums">{b.factorWeight}%</td>
+                            <td className="px-3 py-2.5 text-end font-semibold tabular-nums text-foreground">
+                              {b.scoreContribution}
+                            </td>
+                            <td className="px-3 py-2.5 font-mono text-xs text-muted-foreground">
+                              {b.calculationDetail}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr className="border-t-2 border-border font-semibold">
+                          <td className="px-3 py-2.5 text-foreground">Total</td>
+                          <td className="px-3 py-2.5" />
+                          <td className="px-3 py-2.5" />
+                          <td className="px-3 py-2.5 text-end tabular-nums text-foreground">
+                            {risk?.riskScore ?? risk?.riskCalculation?.totalScore ?? "—"}
+                          </td>
+                          <td className="px-3 py-2.5 text-xs text-muted-foreground">
+                            {risk?.riskLevel ? `Risk Level: ${risk.riskLevel}` : ""}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  </div>
+                )}
+              </Block>
+
+              {(() => {
+                const complianceAnswers =
+                  risk?.complianceQuestionHistory?.slice(-1)?.[0]?.answers || [];
+                if (complianceAnswers.length === 0) return null;
+                return (
+                  <Block title="Compliance Questionnaire" icon={ShieldCheck}>
+                    <div className="overflow-x-auto">
+                      <table className="w-full min-w-[640px] border-collapse text-sm">
+                        <thead>
+                          <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
+                            <th className="px-3 py-2 text-start font-medium">Question</th>
+                            <th className="px-3 py-2 text-start font-medium">Answer</th>
+                            <th className="px-3 py-2 text-end font-medium">Factor Wt.</th>
+                            <th className="px-3 py-2 text-end font-medium">Score</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {complianceAnswers.map((a: any, i: number) => (
+                            <tr
+                              key={i}
+                              className="border-b border-border/60 transition-colors hover:bg-muted/40"
+                            >
+                              <td className="px-3 py-2.5 font-medium text-foreground">
+                                {isRTL ? a.questionAr || a.questionEn : a.questionEn}
+                              </td>
+                              <td className="px-3 py-2.5 text-muted-foreground">
+                                {a.answer || "—"}
+                              </td>
+                              <td className="px-3 py-2.5 text-end tabular-nums">
+                                {a.factorWeightPct != null ? `${a.factorWeightPct}%` : "—"}
+                              </td>
+                              <td className="px-3 py-2.5 text-end font-semibold tabular-nums text-foreground">
+                                {a.scoreContribution ?? "—"}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </Block>
+                );
+              })()}
                   </div>
                 )}
               </Tab>
