@@ -183,10 +183,22 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         const nested = sub.submenu || sub.menu;
         return Array.isArray(nested) && nested.some((c: any) => c?.active);
       });
+    // Financing and Connector Management stay open by default so the primary
+    // workflows are always visible regardless of the current route (their nested
+    // submenus stay collapsed unless they own the active route).
+    const financingIndex = items.findIndex(
+      (it: any) => it && it.label === "Financing"
+    );
+    const connectorIndex = items.findIndex(
+      (it: any) => it && it.label === "Connector Management"
+    );
+    const defaultOpen = [financingIndex, connectorIndex].filter((i) => i !== -1);
+
     const matchIndex = items.findIndex(hasActiveLeaf);
-    // Open only the group that owns the active route; everything else stays
-    // collapsed (including on refresh). No groups are force-opened by default.
-    const openIndices = matchIndex !== -1 ? [matchIndex] : [];
+    // Open the route's owning group (if any) on top of the always-open defaults.
+    const openIndices = Array.from(
+      new Set([...defaultOpen, ...(matchIndex !== -1 ? [matchIndex] : [])])
+    );
     setOpenSubmenuIndices(openIndices);
 
     // Nested submenus auto-open only for the group that owns the active route.
