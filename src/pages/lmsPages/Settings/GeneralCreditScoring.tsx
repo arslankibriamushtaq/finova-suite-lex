@@ -29,6 +29,7 @@ import {
   getCreditScoringFieldDefinitions,
 } from "../../../redux/apis/apisRiskManagement";
 import AccountsLimitSetting from "./AccountsLimitSetting";
+import TransferChargeConfig from "./TransferChargeConfig";
 
 const OPERATORS = [
   { value: "EQ", label: "Equal (=)" },
@@ -308,6 +309,9 @@ const GeneralCreditScoring = () => {
           <TabsTrigger value="accounts-limit-setting" className="gcs-tabs-trigger">
             Accounts Limit Setting
           </TabsTrigger>
+          <TabsTrigger value="transfer-charges" className="gcs-tabs-trigger">
+            Transfer Charges
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="general-credit-scoring">
@@ -541,6 +545,10 @@ const GeneralCreditScoring = () => {
 
         <TabsContent value="accounts-limit-setting">
           <AccountsLimitSetting />
+        </TabsContent>
+
+        <TabsContent value="transfer-charges">
+          <TransferChargeConfig />
         </TabsContent>
       </Tabs>
     </div>

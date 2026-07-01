@@ -1,6 +1,77 @@
 import axiosWalletService from "../../utils/axiosWalletService";
 
 // ============================================================
+// Transfer Charge Configs (per rail: FT, IBFT, SWIFT, REMITTANCE, RFP, TOPUP)
+// ============================================================
+
+export type ChargeMode = "PERCENTAGE" | "FIXED";
+
+export interface ChargeConfig {
+  rail: string;
+  chargeMode: ChargeMode;
+  percentValue: number;
+  fixedAmount: number;
+  fixedCurrency: string;
+  minCharge: number;
+  shaSenderShare: number;
+  active: boolean;
+  updatedAt?: string | null;
+  updatedBy?: string | null;
+}
+
+/** Only the mode-relevant fields are sent; the backend preserves the rest. */
+export interface UpdateChargeConfigRequest {
+  chargeMode: ChargeMode;
+  percentValue?: number;
+  fixedAmount?: number;
+  fixedCurrency?: string;
+  minCharge?: number;
+  shaSenderShare?: number;
+  active?: boolean;
+}
+
+export function listChargeConfigs() {
+  return axiosWalletService.get(`/api/v1/admin/charge-configs`);
+}
+
+export function getChargeConfig(rail: string) {
+  return axiosWalletService.get(`/api/v1/admin/charge-configs/${rail}`);
+}
+
+export function updateChargeConfig(rail: string, body: UpdateChargeConfigRequest) {
+  return axiosWalletService.put(`/api/v1/admin/charge-configs/${rail}`, body);
+}
+
+export interface ChargePreviewRequest {
+  type: string;
+  amount: number;
+}
+
+export interface ChargePreviewResponse {
+  type: string;
+  amount: number;
+  currency: string;
+  chargeMode: ChargeMode;
+  chargePercent: number;
+  fixedAmount: number;
+  chargeBearer: string | null;
+  chargeAmount: number;
+  senderCharge: number | null;
+  receiverCharge: number | null;
+  totalAmount: number;
+  destAmount: number | null;
+  destCurrency: string | null;
+  beneficiaryReceives: number | null;
+}
+
+export function previewExternalTransferCharge(body: ChargePreviewRequest) {
+  return axiosWalletService.post(
+    `/api/v1/wallets/transfers/external/charges`,
+    body
+  );
+}
+
+// ============================================================
 // Wallet Limit Bounds (Accounts Limit Setting)
 // ============================================================
 
