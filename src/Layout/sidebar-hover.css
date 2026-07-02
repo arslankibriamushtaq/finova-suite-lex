@@ -48,6 +48,52 @@
 }
 
 /* ==========================================================================
+   Sidebar hover — subtle, professional micro-interactions
+   Layered on top of the color hover states in assets/scss/custom.scss.
+   No layout-triggering props animate (transform/opacity/box-shadow/color
+   only), so everything stays composited and smooth at 60fps.
+   ========================================================================== */
+
+/* Ease the background/color hover states so they fade instead of snapping. */
+.ps-sidebar-root .ps-menu-button {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    box-shadow 0.2s ease !important;
+}
+
+/* A thin accent bar fades in on the leading edge, tinted with the row's own
+   --mi-color. Restrained (no row movement) — reads as polished, not flashy. */
+.ps-sidebar-root .ps-menu-button:not(.ps-active):hover {
+  box-shadow: inset 2px 0 0 color-mix(in srgb, var(--mi-color, #10b981) 60%, transparent) !important;
+}
+
+/* Icon eases up to a gentle scale — smooth ease-out, no bounce/overshoot. */
+.ps-sidebar-root .ps-menu-icon {
+  transition: transform 0.2s ease-out !important;
+}
+.ps-sidebar-root .ps-menu-button:hover .ps-menu-icon {
+  transform: scale(1.15);
+}
+
+/* Chevron rotation eases when a submenu opens/closes. */
+.ps-sidebar-root .ps-submenu-expand-icon {
+  transition: transform 0.2s ease !important;
+}
+
+/* Respect users who prefer reduced motion. */
+@media (prefers-reduced-motion: reduce) {
+  .ps-sidebar-root .ps-menu-button,
+  .ps-sidebar-root .ps-menu-icon,
+  .ps-sidebar-root .ps-submenu-expand-icon {
+    transition: none !important;
+  }
+  .ps-sidebar-root .ps-menu-button:hover .ps-menu-icon {
+    transform: none;
+  }
+}
+
+/* ==========================================================================
    Page content area — base styles
    ========================================================================== */
 
