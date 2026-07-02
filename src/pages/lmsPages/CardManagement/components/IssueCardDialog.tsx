@@ -1,0 +1,310 @@
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../../../../components/ui/dialog";
+import { Button } from "../../../../components/ui/button";
+import { Input } from "../../../../components/ui/input";
+import { Label } from "../../../../components/ui/label";
+import { Checkbox } from "../../../../components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../../components/ui/select";
+import { issueAdminCard, getCardProducts } from "../../../../redux/apis/apisCardManagement";
+import { CARD_TIERS, DELIVERY_METHODS, isPhysical } from "../cardConstants";
+
+interface IssueCardDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onIssued: () => void;
+}
+
+const emptyForm = {
+  walletId: "",
+  cardholderName: "",
+  cardType: "VIRTUAL_DEBIT",
+  customerId: "",
+  ownerUserId: "",
+  tier: "CLASSIC",
+  currency: "CAD",
+  dailyLimit: "",
+  monthlyLimit: "",
+  contactlessEnabled: false,
+  deliveryMethod: "STANDARD",
+  address: "",
+  city: "",
+  postalCode: "",
+};
+
+const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps) => {
+  const [form, setForm] = useState({ ...emptyForm });
+  const [products, setProducts] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const setField = (key: keyof typeof emptyForm, value: any) =>
+    setForm((prev) => ({ ...prev, [key]: value }));
+
+  // Load issuable product catalog (drives card-type options + default limits).
+  useEffect(() => {
+    if (!open) return;
+    setForm({ ...emptyForm });
+    getCardProducts()
+      .then((res) => {
+        const list = res?.data?.data ?? res?.data;
+        if (Array.isArray(list)) setProducts(list);
+      })
+      .catch(() => {
+        /* catalog optional — enums back the dropdown as fallback */
+      });
+  }, [open]);
+
+  const selectedProduct = products.find((p) => p.code === form.cardType);
+  const availableTiers: string[] = selectedProduct?.availableTiers?.length
+    ? selectedProduct.availableTiers
+    : [...CARD_TIERS];
+  const physical = isPhysical(form.cardType);
+
+  const handleSubmit = async () => {
+    if (!form.walletId.trim()) return toast.error("Wallet ID is required");
+    if (!form.cardholderName.trim()) return toast.error("Cardholder name is required");
+    if (!form.cardType) return toast.error("Card type is required");
+    if (physical && (!form.address.trim() || !form.city.trim() || !form.postalCode.trim())) {
+      return toast.error("Shipping address, city and postal code are required for physical cards");
+    }
+
+    const body: any = {
+      walletId: form.walletId.trim(),
+      cardholderName: form.cardholderName.trim(),
+      cardType: form.cardType,
+      tier: form.tier,
+      currency: form.currency.trim() || "CAD",
+      contactlessEnabled: form.contactlessEnabled,
+    };
+    if (form.customerId.trim()) body.customerId = form.customerId.trim();
+    if (form.ownerUserId.trim()) body.ownerUserId = form.ownerUserId.trim();
+    if (form.dailyLimit !== "") body.dailyLimit = Number(form.dailyLimit);
+    if (form.monthlyLimit !== "") body.monthlyLimit = Number(form.monthlyLimit);
+    if (physical) {
+      body.deliveryMethod = form.deliveryMethod;
+      body.shipping = {
+        address: form.address.trim(),
+        city: form.city.trim(),
+        postalCode: form.postalCode.trim(),
+      };
+    }
+
+    try {
+      setIsSaving(true);
+      await issueAdminCard(body);
+      toast.success("Card issued successfully");
+      onOpenChange(false);
+      onIssued();
+    } catch (error: any) {
+      // Interceptor already toasts business errors; guard for the rest.
+      if (!error?.response?.data?.message) toast.error("Failed to issue card");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={(o) => !o && onOpenChange(false)}>
+      <DialogContent className="sm:max-w-[640px] max-h-[85vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Issue New Card</DialogTitle>
+          <DialogDescription>
+            Virtual cards are issued active instantly; physical cards start shipment automatically.
+          </DialogDescription>
+        </DialogHeader>
+
+        <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Wallet ID *</Label>
+              <Input
+                placeholder="Customer wallet UUID"
+                value={form.walletId}
+                onChange={(e) => setField("walletId", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Cardholder Name *</Label>
+              <Input
+                placeholder="Embossed name"
+                value={form.cardholderName}
+                onChange={(e) => setField("cardholderName", e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Card Type *</Label>
+              <Select
+                value={form.cardType}
+                onValueChange={(v) => {
+                  setField("cardType", v);
+                  setField("tier", "CLASSIC");
+                }}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select card type" />
+                </SelectTrigger>
+                <SelectContent>
+                  {(products.length
+                    ? products.map((p) => ({ code: p.code, label: p.displayName || p.code }))
+                    : [
+                        { code: "VIRTUAL_DEBIT", label: "Virtual Debit" },
+                        { code: "PHYSICAL_DEBIT", label: "Physical Debit" },
+                      ]
+                  ).map((opt) => (
+                    <SelectItem key={opt.code} value={opt.code}>
+                      {opt.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label>Tier</Label>
+              <Select value={form.tier} onValueChange={(v) => setField("tier", v)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select tier" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableTiers.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {t.charAt(0) + t.slice(1).toLowerCase()}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Customer ID</Label>
+              <Input
+                placeholder="Optional (recommended)"
+                value={form.customerId}
+                onChange={(e) => setField("customerId", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Owner User ID</Label>
+              <Input
+                placeholder="Optional Keycloak id"
+                value={form.ownerUserId}
+                onChange={(e) => setField("ownerUserId", e.target.value)}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Currency</Label>
+              <Input
+                placeholder="CAD"
+                value={form.currency}
+                onChange={(e) => setField("currency", e.target.value.toUpperCase())}
+              />
+            </div>
+            <div className="space-y-2 flex items-end">
+              <label className="flex items-center gap-2 cursor-pointer h-10">
+                <Checkbox
+                  checked={form.contactlessEnabled}
+                  onCheckedChange={(c) => setField("contactlessEnabled", !!c)}
+                />
+                <span className="text-sm">Contactless enabled</span>
+              </label>
+            </div>
+
+            <div className="space-y-2">
+              <Label>Daily Limit</Label>
+              <Input
+                type="number"
+                placeholder="Default 5000"
+                value={form.dailyLimit}
+                onChange={(e) => setField("dailyLimit", e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label>Monthly Limit</Label>
+              <Input
+                type="number"
+                placeholder="Default 50000"
+                value={form.monthlyLimit}
+                onChange={(e) => setField("monthlyLimit", e.target.value)}
+              />
+            </div>
+          </div>
+
+          {physical && (
+            <div className="border-t pt-4 space-y-4">
+              <p className="text-sm font-semibold text-foreground">Shipping (physical card)</p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Address *</Label>
+                  <Input
+                    placeholder="12 King St W, Unit 5"
+                    value={form.address}
+                    onChange={(e) => setField("address", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>City *</Label>
+                  <Input
+                    placeholder="Toronto"
+                    value={form.city}
+                    onChange={(e) => setField("city", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Postal Code *</Label>
+                  <Input
+                    placeholder="M5H1A1"
+                    value={form.postalCode}
+                    onChange={(e) => setField("postalCode", e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Delivery Method</Label>
+                  <Select
+                    value={form.deliveryMethod}
+                    onValueChange={(v) => setField("deliveryMethod", v)}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {DELIVERY_METHODS.map((m) => (
+                        <SelectItem key={m} value={m}>
+                          {m.charAt(0) + m.slice(1).toLowerCase()}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button onClick={handleSubmit} disabled={isSaving}>
+            {isSaving ? "Issuing..." : "Issue Card"}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+};
+
+export default IssueCardDialog;

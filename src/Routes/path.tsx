@@ -75,6 +75,10 @@ import OnboardCustomers from "../components/Customer/OnboardCustomers";
 import ProductManagement from "../components/ProductManagement/productManagement";
 import AddProduct from "../components/ProductManagement/addProduct";
 import ProductCategory from "../pages/lmsPages/ProductCategory/ProductCategory";
+import CardsDashboard from "../pages/lmsPages/CardManagement/CardsDashboard";
+import CardsList from "../pages/lmsPages/CardManagement/CardsList";
+import CardProducts from "../pages/lmsPages/CardManagement/CardProducts";
+import CardSettings from "../pages/lmsPages/CardManagement/CardSettings";
 import ProductSubCategory from "../pages/lmsPages/ProductSubCategory/ProductSubCategory";
 import DepartmentsPermissions from "../components/DepartmentManagement/DepartmentsPermissions";
 import RevenueSource from "../components/LOV/RevenueSource";
@@ -524,6 +528,10 @@ export const router = createBrowserRouter([
           { path: "/LOS/ProductManagement/Create/ProductAffiliation", element: <CreateProductAffiliation /> },
           { path: "/LOS/ProductManagement/ProductCategory", element: <ProductCategory /> },
           { path: "/LOS/ProductManagement/ProductSubCategory", element: <ProductSubCategory /> },
+          { path: "/CardManagement/Dashboard", element: <CardsDashboard /> },
+          { path: "/CardManagement/Cards", element: <CardsList /> },
+          { path: "/CardManagement/Products", element: <CardProducts /> },
+          { path: "/CardManagement/Settings", element: <CardSettings /> },
           { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },
           { path: "/LOS/Notification", element: <Notification /> },
           { path: "/LOS/NotificationOrchestrator", element: <NotificationOrchestrator /> },

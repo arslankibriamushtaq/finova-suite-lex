@@ -14,6 +14,7 @@ import {
   Bell,
   Users,
   Package,
+  CreditCard,
   ListChecks,
   ShieldAlert,
   ShieldCheck,
@@ -45,6 +46,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "notification orchestrator": { Icon: Bell, color: "#8b5cf6" },
   "customer management": { Icon: Users, color: "#8b5cf6" },
   "product management": { Icon: Package, color: "#f59e0b" },
+  "card management": { Icon: CreditCard, color: "#3b82f6" },
   lov: { Icon: ListChecks, color: "#14b8a6" },
   "risk management": { Icon: ShieldAlert, color: "#f43f5e" },
   "access control management": { Icon: ShieldCheck, color: "#6366f1" },
@@ -442,6 +444,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         }
       ].filter(Boolean)
     },
+   
     // hasAccess("department_management_module") &&
     // {
     //   label: "Department Management",
@@ -2047,6 +2050,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.ApiManagementIconDark,
       active: pathname.includes("/LOS/NotificationOrchestrator"),
     },
+    
     {
       label: "Customer Management",
       Link: "/CustomerManagement/CustomerList",
@@ -2104,6 +2108,38 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname == "/LOS/RiskManagement/DeviceManagement",
         },
       ].filter(Boolean),
+    },
+     {
+      label: "Card Management",
+      Link: "CardManagement/Dashboard",
+      LinkLable: "",
+      active: pathname.includes("/CardManagement/Dashboard"),
+      menu: [
+        {
+          label: "Dashboard",
+          Link: "Dashboard",
+          LinkLable: "/CardManagement",
+          active: pathname === "/CardManagement/Dashboard",
+        },
+        {
+          label: "Cards",
+          Link: "Cards",
+          LinkLable: "/CardManagement",
+          active: pathname === "/CardManagement/Cards",
+        },
+        {
+          label: "Card Products",
+          Link: "Products",
+          LinkLable: "/CardManagement",
+          active: pathname === "/CardManagement/Products",
+        },
+        {
+          label: "Card Settings",
+          Link: "Settings",
+          LinkLable: "/CardManagement",
+          active: pathname === "/CardManagement/Settings",
+        },
+      ],
     },
     hasAccess("block_code_module") && {
       label: "Block Codes",
