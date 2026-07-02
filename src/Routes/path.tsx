@@ -77,6 +77,7 @@ import AddProduct from "../components/ProductManagement/addProduct";
 import ProductCategory from "../pages/lmsPages/ProductCategory/ProductCategory";
 import CardsDashboard from "../pages/lmsPages/CardManagement/CardsDashboard";
 import CardsList from "../pages/lmsPages/CardManagement/CardsList";
+import CardDetail from "../pages/lmsPages/CardManagement/CardDetail";
 import CardProducts from "../pages/lmsPages/CardManagement/CardProducts";
 import CardSettings from "../pages/lmsPages/CardManagement/CardSettings";
 import ProductSubCategory from "../pages/lmsPages/ProductSubCategory/ProductSubCategory";
@@ -530,6 +531,7 @@ export const router = createBrowserRouter([
           { path: "/LOS/ProductManagement/ProductSubCategory", element: <ProductSubCategory /> },
           { path: "/CardManagement/Dashboard", element: <CardsDashboard /> },
           { path: "/CardManagement/Cards", element: <CardsList /> },
+          { path: "/CardManagement/Cards/:id", element: <CardDetail /> },
           { path: "/CardManagement/Products", element: <CardProducts /> },
           { path: "/CardManagement/Settings", element: <CardSettings /> },
           { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },

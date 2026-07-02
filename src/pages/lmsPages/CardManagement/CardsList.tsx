@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -47,13 +48,13 @@ import {
   isPhysical,
 } from "./cardConstants";
 import IssueCardDialog from "./components/IssueCardDialog";
-import CardDetailDialog from "./components/CardDetailDialog";
 import LimitsDialog from "./components/LimitsDialog";
 import TrackingDialog from "./components/TrackingDialog";
 
 const ALL = "all";
 
 const CardsList = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +71,6 @@ const CardsList = () => {
 
   // Dialog state
   const [showIssue, setShowIssue] = useState(false);
-  const [detailId, setDetailId] = useState<string | null>(null);
   const [limitsCard, setLimitsCard] = useState<any | null>(null);
   const [trackingId, setTrackingId] = useState<string | null>(null);
   const [actioningId, setActioningId] = useState<string | null>(null);
@@ -221,7 +221,7 @@ const CardsList = () => {
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault();
-                  setDetailId(row.id);
+                  navigate(`/CardManagement/Cards/${row.id}`);
                 }}
               >
                 <Eye className="h-4 w-4" />
@@ -389,7 +389,6 @@ const CardsList = () => {
       </div>
 
       <IssueCardDialog open={showIssue} onOpenChange={setShowIssue} onIssued={fetchData} />
-      <CardDetailDialog cardId={detailId} onOpenChange={() => setDetailId(null)} />
       <LimitsDialog card={limitsCard} onOpenChange={() => setLimitsCard(null)} onUpdated={fetchData} />
       <TrackingDialog cardId={trackingId} onOpenChange={() => setTrackingId(null)} onAdvanced={fetchData} />
     </div>

@@ -1438,7 +1438,8 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .theme-btn-next,
 .no-table tbody td button.dropdown-toggle,
 .no-table tbody td .ant-btn,
-.no-table tbody td button[class*="bg-foreground"] {
+.no-table tbody td button[class*="bg-foreground"],
+.card-settings-page table td button[class*="bg-foreground"] {
   background-color: #059669 !important;
   background: #059669 !important;
   background-image: none !important;
@@ -1466,7 +1467,8 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .theme-btn-next:hover,
 .no-table tbody td button.dropdown-toggle:hover,
 .no-table tbody td .ant-btn:hover,
-.no-table tbody td button[class*="bg-foreground"]:hover {
+.no-table tbody td button[class*="bg-foreground"]:hover,
+.card-settings-page table td button[class*="bg-foreground"]:hover {
   background-color: #047857 !important;
   background: #047857 !important;
   border-color: #047857 !important;
@@ -1509,7 +1511,8 @@ html.dark .rdt_TableCell .text-amber-600 {
 .no-table tbody td .gradient-btn svg,
 .no-table tbody td .theme-btn-next svg,
 .no-table tbody td .ant-btn svg,
-.no-table tbody td button[class*="bg-foreground"] svg {
+.no-table tbody td button[class*="bg-foreground"] svg,
+.card-settings-page table td button[class*="bg-foreground"] svg {
   color: #ffffff !important;
   fill: currentColor;
 }

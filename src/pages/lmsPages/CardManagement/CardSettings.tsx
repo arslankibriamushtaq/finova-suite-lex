@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Pencil, SlidersHorizontal, Coins } from "lucide-react";
+import { Pencil, SlidersHorizontal, Coins, ChevronDown } from "lucide-react";
 import { Button } from "../../../components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import {
@@ -110,10 +116,30 @@ const TierLimitsTab = () => {
                 <td className="px-4 py-3">{formatMoney(row.dailyLimit)}</td>
                 <td className="px-4 py-3">{formatMoney(row.monthlyLimit)}</td>
                 <td className="px-4 py-3 text-right">
-                  <Button variant="outline" size="sm" className="gap-1" onClick={() => openEdit(row)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                    Edit
-                  </Button>
+                  <div className="inline-block text-left" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          Select
+                          <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                        <DropdownMenuItem
+                          onSelect={(e) => {
+                            e.preventDefault();
+                            openEdit(row);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </td>
               </tr>
             ))
@@ -251,10 +277,30 @@ const FeesTab = () => {
                   {formatMoney(row.totalFee ?? Number(row.issuanceFee) + Number(row.shipmentFee), row.currency)}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <Button variant="outline" size="sm" className="gap-1" onClick={() => openEdit(row)}>
-                    <Pencil className="h-3.5 w-3.5" />
-                    Edit
-                  </Button>
+                  <div className="inline-block text-left" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          Select
+                          <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                        <DropdownMenuItem
+                          onSelect={(e) => {
+                            e.preventDefault();
+                            openEdit(row);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </td>
               </tr>
             ))
@@ -375,6 +421,13 @@ const CardSettings = () => {
         }
         .card-settings-page table tbody tr:hover {
           background: var(--theme-table-row-hover);
+        }
+        /* Right-align the Action column (header + cells) so the Select button
+           lines up under the "Action" heading, with breathing room from the edge. */
+        .card-settings-page table th:last-child,
+        .card-settings-page table td:last-child {
+          text-align: right !important;
+          padding-right: 24px !important;
         }
         /* Compact, professional row action (Edit) button — the global .pro-card
            rule sizes buttons to 34px, too tall for an inline table action. */

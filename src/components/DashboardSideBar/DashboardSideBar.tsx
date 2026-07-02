@@ -2113,7 +2113,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       label: "Card Management",
       Link: "CardManagement/Dashboard",
       LinkLable: "",
-      active: pathname.includes("/CardManagement/Dashboard"),
+      active: pathname.includes("/CardManagement"),
       menu: [
         {
           label: "Dashboard",
@@ -2126,7 +2126,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           label: "Cards",
           Link: "Cards",
           LinkLable: "/CardManagement",
-          active: pathname === "/CardManagement/Cards",
+          active: pathname.includes("/CardManagement/Cards"),
         },
         {
           label: "Card Products",
