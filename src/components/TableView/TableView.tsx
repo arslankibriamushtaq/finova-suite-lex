@@ -504,7 +504,10 @@ const TableView = ({
                     <Select
                       defaultValue={pageSize}
                       onChange={handlePerChange}
-                      style={{ width: 80 }}
+                      size="small"
+                      className="tableview-pagesize"
+                      popupClassName="tableview-pagesize-popup"
+                      style={{ width: 72, fontSize: 12 }}
                     >
                       {[5, 10, 15, 20].map((size) => (
                         <Select.Option key={size} value={size}>

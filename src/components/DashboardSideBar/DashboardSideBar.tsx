@@ -2120,6 +2120,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "Dashboard",
           LinkLable: "/CardManagement",
           active: pathname === "/CardManagement/Dashboard",
+          noIcon: true,
         },
         {
           label: "Cards",
@@ -2446,7 +2447,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             style={{ fontSize: "12px", fontWeight: "400", textDecoration: "none" }}
             className={it.active ? "active" : ""}
             icon={
-              getModuleTheme(it.label) || it.img ? (
+              !it.noIcon && (getModuleTheme(it.label) || it.img) ? (
                 <ModuleIcon label={it.label} fallback={it.img} />
               ) : null
             }

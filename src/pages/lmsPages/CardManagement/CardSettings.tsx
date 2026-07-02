@@ -122,7 +122,7 @@ const TierLimitsTab = () => {
       </table>
 
       <Dialog open={!!editRow} onOpenChange={(o) => !o && setEditRow(null)}>
-        <DialogContent className="sm:max-w-[440px]">
+        <DialogContent className="pro-dialog sm:max-w-[440px]">
           <DialogHeader>
             <DialogTitle>Edit {editRow ? prettyEnum(editRow.tier) : ""} Limits</DialogTitle>
           </DialogHeader>
@@ -263,7 +263,7 @@ const FeesTab = () => {
       </table>
 
       <Dialog open={!!editRow} onOpenChange={(o) => !o && setEditRow(null)}>
-        <DialogContent className="sm:max-w-[460px]">
+        <DialogContent className="pro-dialog sm:max-w-[460px]">
           <DialogHeader>
             <DialogTitle>
               Edit Fee —{" "}
@@ -315,6 +315,93 @@ const FeesTab = () => {
 const CardSettings = () => {
   return (
     <div className="service card-settings-page">
+      <style>{`
+        /* Underline tabs — match the project's tab style (not shadcn pills) */
+        .card-settings-page [data-slot="tabs-list"] {
+          background: transparent !important;
+          padding: 0 !important;
+          height: auto !important;
+          gap: 0 !important;
+          border-radius: 0 !important;
+          justify-content: flex-start !important;
+          border-bottom: 1px solid var(--surface-border);
+          width: 100%;
+        }
+        .card-settings-page [data-slot="tabs-trigger"] {
+          flex: 0 0 auto !important;
+          width: auto !important;
+          background: transparent !important;
+          border: 0 !important;
+          border-radius: 0 !important;
+          box-shadow: none !important;
+          color: var(--muted-foreground) !important;
+          font-size: 13px !important;
+          font-weight: 500 !important;
+          padding: 7px 12px !important;
+          position: relative;
+        }
+        .card-settings-page [data-slot="tabs-trigger"]:hover { color: var(--foreground) !important; }
+        .card-settings-page [data-slot="tabs-trigger"][data-state="active"] {
+          color: #10b981 !important;
+          font-weight: 600 !important;
+        }
+        .card-settings-page [data-slot="tabs-trigger"][data-state="active"]::after {
+          content: "";
+          position: absolute;
+          left: 12px; right: 12px; bottom: -1px;
+          height: 2px;
+          border-radius: 2px;
+          background: #10b981;
+        }
+        /* Tables — match the shared TableView (branded header, striped, hover, 12px) */
+        .card-settings-page table thead tr {
+          background: var(--theme-table-background-color) !important;
+        }
+        .card-settings-page table thead th {
+          color: #ffffff !important;
+          font-size: 12px !important;
+          font-weight: 600 !important;
+          padding: 10px 14px !important;
+          letter-spacing: 0.2px;
+        }
+        .card-settings-page table tbody td {
+          font-size: 12px !important;
+          padding: 10px 14px !important;
+          border-bottom: 1px solid var(--surface-border) !important;
+          color: var(--foreground);
+        }
+        .card-settings-page table tbody tr:nth-child(even) {
+          background: var(--theme-table-row-alt);
+        }
+        .card-settings-page table tbody tr:hover {
+          background: var(--theme-table-row-hover);
+        }
+        /* Compact, professional row action (Edit) button — the global .pro-card
+           rule sizes buttons to 34px, too tall for an inline table action. */
+        .card-settings-page table [data-slot="button"] {
+          height: 28px !important;
+          min-height: 28px !important;
+          padding: 0 12px !important;
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          gap: 6px !important;
+          border-radius: 6px !important;
+          border: 1px solid color-mix(in srgb, #10b981 35%, transparent) !important;
+          background: color-mix(in srgb, #10b981 8%, transparent) !important;
+          color: #059669 !important;
+          box-shadow: none !important;
+          transition: background 0.15s ease, border-color 0.15s ease !important;
+        }
+        .card-settings-page table [data-slot="button"]:hover {
+          background: color-mix(in srgb, #10b981 16%, transparent) !important;
+          border-color: #10b981 !important;
+          color: #047857 !important;
+        }
+        .card-settings-page table [data-slot="button"] svg {
+          width: 13px !important;
+          height: 13px !important;
+        }
+      `}</style>
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
           <span className="pro-head-badge">

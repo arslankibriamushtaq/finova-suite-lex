@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { CheckCircle2, Circle, Truck } from "lucide-react";
+import { Check, Truck } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +10,7 @@ import {
   DialogFooter,
 } from "../../../../components/ui/dialog";
 import { Button } from "../../../../components/ui/button";
+import { cn } from "../../../../lib/utils";
 import {
   getAdminCardTracking,
   advanceAdminCardTracking,
@@ -66,10 +67,24 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
 
   return (
     <Dialog open={!!cardId} onOpenChange={(o) => !o && onOpenChange(false)}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="pro-dialog sm:max-w-[520px]">
+        <style>{`
+          @keyframes trackStepIn {
+            from { opacity: 0; transform: translateX(-8px); }
+            to   { opacity: 1; transform: translateX(0); }
+          }
+          .track-step {
+            animation: trackStepIn 0.4s cubic-bezier(0.33, 1, 0.68, 1) both;
+          }
+          @media (prefers-reduced-motion: reduce) {
+            .track-step { animation: none !important; }
+          }
+        `}</style>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Truck className="h-5 w-5 text-primary" />
+            <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+              <Truck className="size-4" />
+            </span>
             Shipment Tracking
           </DialogTitle>
           {tracking?.trackingNumber && (
@@ -93,28 +108,64 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
             No tracking information available.
           </p>
         ) : (
-          <ol className="relative ml-2 border-l border-border pl-6 py-2 space-y-6">
-            {timeline.map((step) => (
-              <li key={step.stage} className="relative">
-                <span className="absolute -left-[31px] top-0 bg-background">
-                  {step.reached ? (
-                    <CheckCircle2 className="h-5 w-5 text-green-600" />
-                  ) : (
-                    <Circle className="h-5 w-5 text-muted-foreground/40" />
-                  )}
-                </span>
-                <p
-                  className={`text-sm font-medium ${
-                    step.reached ? "text-foreground" : "text-muted-foreground"
-                  }`}
+          <ol className="relative py-1 pl-1">
+            {timeline.map((step, i) => {
+              const reached = !!step.reached;
+              const isCurrent = step.stage === tracking?.currentStage;
+              const isLast = i === timeline.length - 1;
+              return (
+                <li
+                  key={step.stage}
+                  className="track-step relative flex gap-3 pb-6 last:pb-0"
+                  style={{ animationDelay: `${i * 0.09}s` }}
                 >
-                  {step.label || step.stage}
-                </p>
-                {step.at && (
-                  <p className="text-xs text-muted-foreground">{formatDate(step.at)}</p>
-                )}
-              </li>
-            ))}
+                  {/* connector line to the next node */}
+                  {!isLast && (
+                    <span
+                      className="absolute left-[11px] top-6 -bottom-0 w-0.5"
+                      style={{ background: reached ? "#10b981" : "var(--surface-border)" }}
+                    />
+                  )}
+                  {/* node */}
+                  <span
+                    className={cn(
+                      "relative z-10 flex size-6 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
+                      reached
+                        ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
+                        : isCurrent
+                        ? "border-emerald-500 bg-background text-emerald-600 ring-4 ring-emerald-500/15"
+                        : "border-border bg-background text-muted-foreground"
+                    )}
+                  >
+                    {reached ? (
+                      <Check className="size-3.5" strokeWidth={3} />
+                    ) : (
+                      <span className="size-1.5 rounded-full bg-current" />
+                    )}
+                  </span>
+                  <div className="min-w-0 pt-0.5">
+                    <p
+                      className={cn(
+                        "m-0 flex items-center gap-2 text-[13px] font-semibold",
+                        reached || isCurrent ? "text-foreground" : "text-muted-foreground"
+                      )}
+                    >
+                      {step.label || step.stage}
+                      {isCurrent && !reached && (
+                        <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600">
+                          Current
+                        </span>
+                      )}
+                    </p>
+                    {step.at && (
+                      <p className="m-0 mt-0.5 text-[11px] text-muted-foreground">
+                        {formatDate(step.at)}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              );
+            })}
           </ol>
         )}
 

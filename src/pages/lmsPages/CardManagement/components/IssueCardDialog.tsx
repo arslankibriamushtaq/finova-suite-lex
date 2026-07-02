@@ -118,7 +118,7 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onOpenChange(false)}>
-      <DialogContent className="sm:max-w-[640px] max-h-[85vh] overflow-y-auto">
+      <DialogContent className="pro-dialog sm:max-w-[720px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Issue New Card</DialogTitle>
           <DialogDescription>

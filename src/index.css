@@ -239,6 +239,14 @@ body,
   line-height: 32px !important;
   font-size: 12px !important;
 }
+/* shadcn Select trigger (used in Card Management filter rows) — match the 34px
+   compact height so it lines up with the search input and buttons. */
+.pro-card [data-slot="select-trigger"],
+.no-card [data-slot="select-trigger"] {
+  height: 34px !important;
+  min-height: 34px !important;
+  font-size: 12px !important;
+}
 /* Action buttons in the filter row */
 .pro-card .theme-btn-next,
 .pro-card [data-slot="button"],
@@ -384,6 +392,97 @@ html body[data-scroll-locked] {
   margin-right: 0 !important;
   padding-right: 0 !important;
   --removed-body-scroll-bar-size: 0px !important;
+}
+
+/* Professional, consistent checkboxes across the project. The Radix checkbox
+   renders as a <button>, and with Tailwind preflight disabled the app's global
+   button styling bleeds in (giving unchecked boxes a green fill). Pin the
+   unchecked state to a clean bordered box and the checked state to emerald. */
+[data-slot="checkbox"] {
+  background-color: var(--background) !important;
+  background-image: none !important;
+  border: 1.5px solid color-mix(in srgb, #64748b 45%, transparent) !important;
+  border-radius: 5px !important;
+  box-shadow: none !important;
+}
+[data-slot="checkbox"][data-state="checked"],
+[data-slot="checkbox"][data-state="indeterminate"] {
+  background-color: #10b981 !important;
+  border-color: #10b981 !important;
+  color: #ffffff !important;
+}
+[data-slot="checkbox"]:hover:not([data-state="checked"]) {
+  border-color: #10b981 !important;
+}
+[data-slot="checkbox"]:focus-visible {
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.22) !important;
+}
+/* Consistent spacing between every checkbox and its label, project-wide:
+   - labels that wrap a checkbox (flex) get a uniform 12px gap
+   - a checkbox followed by a separate <Label> sibling gets a 12px left margin */
+label:has(> [data-slot="checkbox"]) {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.5rem !important;
+}
+/* Separate-sibling pattern (checkbox next to its own <Label>, not wrapped) */
+[data-slot="checkbox"] + [data-slot="label"],
+[data-slot="checkbox"] + label {
+  margin-inline-start: 0.5rem;
+}
+
+/* Reusable compact dialog — professional, consistent 12px text and 36px fields.
+   Add `pro-dialog` to a shadcn DialogContent to apply it. */
+.pro-dialog [data-slot="dialog-title"] { font-size: 15px !important; }
+.pro-dialog [data-slot="dialog-description"] { font-size: 12px !important; }
+.pro-dialog [data-slot="label"],
+.pro-dialog label,
+.pro-dialog label span,
+.pro-dialog .text-sm,
+.pro-dialog input,
+.pro-dialog textarea,
+.pro-dialog [data-slot="select-trigger"],
+.pro-dialog [data-slot="select-trigger"] span,
+.pro-dialog [data-slot="button"] {
+  font-size: 12px !important;
+}
+.pro-dialog [data-slot="label"] { font-weight: 600; }
+.pro-dialog input:not([type="checkbox"]),
+.pro-dialog [data-slot="select-trigger"] {
+  height: 36px !important;
+  min-height: 36px !important;
+}
+
+/* Action dropdown menus (shadcn DropdownMenu in table Action columns, etc.) —
+   compact 12px text, applied project-wide. */
+[data-slot="dropdown-menu-content"],
+[data-slot="dropdown-menu-item"],
+[data-slot="dropdown-menu-checkbox-item"],
+[data-slot="dropdown-menu-radio-item"],
+[data-slot="dropdown-menu-sub-trigger"],
+[data-slot="dropdown-menu-label"] {
+  font-size: 12px !important;
+}
+[data-slot="dropdown-menu-item"] svg,
+[data-slot="dropdown-menu-checkbox-item"] svg,
+[data-slot="dropdown-menu-sub-trigger"] svg {
+  width: 14px !important;
+  height: 14px !important;
+}
+
+/* Table page-size select (shared TableView) — smaller text, incl. the portaled
+   dropdown options. Applies to every table in the project. */
+.tableview-pagesize .ant-select-selection-item,
+.tableview-pagesize .ant-select-selection-search-input,
+.tableview-pagesize .ant-select-selection-placeholder {
+  font-size: 12px !important;
+}
+.tableview-pagesize-popup .ant-select-item,
+.tableview-pagesize-popup .ant-select-item-option-content {
+  font-size: 12px !important;
+  min-height: 28px !important;
+  line-height: 28px !important;
 }
 :root {
   /* Single source of truth for the app's professional font stack */

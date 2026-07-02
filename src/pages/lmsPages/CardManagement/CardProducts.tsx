@@ -394,7 +394,30 @@ const CardProducts = () => {
 
       {/* Add/Edit modal */}
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
-        <DialogContent className="sm:max-w-[680px] max-h-[85vh] overflow-y-auto">
+        <DialogContent className="cardprod-dialog sm:max-w-[820px] max-h-[85vh] overflow-y-auto">
+          <style>{`
+            .cardprod-dialog [data-slot="dialog-title"] { font-size: 15px; }
+            .cardprod-dialog [data-slot="dialog-description"] { font-size: 12px; }
+            .cardprod-dialog [data-slot="label"],
+            .cardprod-dialog label,
+            .cardprod-dialog label span,
+            .cardprod-dialog .text-sm,
+            .cardprod-dialog input,
+            .cardprod-dialog textarea,
+            .cardprod-dialog [data-slot="select-trigger"],
+            .cardprod-dialog [data-slot="select-trigger"] span,
+            .cardprod-dialog [data-slot="button"] {
+              font-size: 12px !important;
+            }
+            .cardprod-dialog [data-slot="label"] { font-weight: 600; }
+            .cardprod-dialog label span { font-weight: 500; }
+            /* Compact field heights to match the smaller text */
+            .cardprod-dialog input:not([type="checkbox"]),
+            .cardprod-dialog [data-slot="select-trigger"] {
+              height: 36px !important;
+              min-height: 36px !important;
+            }
+          `}</style>
           <DialogHeader>
             <DialogTitle>{modalMode === "edit" ? "Edit Product" : "Add New Product"}</DialogTitle>
             <DialogDescription>
@@ -493,7 +516,7 @@ const CardProducts = () => {
               <Label>Available Tiers</Label>
               <div className="flex flex-wrap gap-4">
                 {CARD_TIERS.map((tier) => (
-                  <label key={tier} className="flex items-center gap-2 cursor-pointer">
+                  <label key={tier} className="flex items-center gap-3 cursor-pointer">
                     <Checkbox
                       checked={form.availableTiers.includes(tier)}
                       onCheckedChange={(c) => toggleTier(tier, !!c)}
@@ -515,28 +538,28 @@ const CardProducts = () => {
             </div>
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.instantIssue}
                   onCheckedChange={(c) => setField("instantIssue", !!c)}
                 />
                 <span className="text-sm">Instant issue</span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.requiresShipping}
                   onCheckedChange={(c) => setField("requiresShipping", !!c)}
                 />
                 <span className="text-sm">Requires shipping</span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.requiresActivation}
                   onCheckedChange={(c) => setField("requiresActivation", !!c)}
                 />
                 <span className="text-sm">Requires activation</span>
               </label>
-              <label className="flex items-center gap-2 cursor-pointer">
+              <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.contactlessSupported}
                   onCheckedChange={(c) => setField("contactlessSupported", !!c)}

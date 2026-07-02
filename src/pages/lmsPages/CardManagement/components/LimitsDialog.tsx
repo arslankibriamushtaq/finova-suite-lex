@@ -54,7 +54,7 @@ const LimitsDialog = ({ card, onOpenChange, onUpdated }: LimitsDialogProps) => {
 
   return (
     <Dialog open={!!card} onOpenChange={(o) => !o && onOpenChange(false)}>
-      <DialogContent className="sm:max-w-[440px]">
+      <DialogContent className="pro-dialog sm:max-w-[460px]">
         <DialogHeader>
           <DialogTitle>Edit Limits</DialogTitle>
         </DialogHeader>
