@@ -47,6 +47,16 @@ export function issueAdminCard(body: any) {
 }
 
 // 4.5 — Lifecycle actions
+// Freeze is the soft, reversible hold (ACTIVE → FROZEN); block is the hard,
+// admin-only action for lost/fraud (ACTIVE/FROZEN → BLOCKED). Keep them distinct.
+export function freezeAdminCard(id: string) {
+  return axiosCardManagement.post(`/api/v1/admin/cards/${id}/freeze`);
+}
+
+export function unfreezeAdminCard(id: string) {
+  return axiosCardManagement.post(`/api/v1/admin/cards/${id}/unfreeze`);
+}
+
 export function blockAdminCard(id: string) {
   return axiosCardManagement.post(`/api/v1/admin/cards/${id}/block`);
 }
@@ -101,6 +111,27 @@ export function updateAdminCardFee(body: {
   currency?: string;
 }) {
   return axiosCardManagement.put(`/api/v1/admin/cards/fees`, body);
+}
+
+// 4.9 — Card transactions (per-card statement, newest first)
+export function getAdminCardTransactions(id: string) {
+  return axiosCardManagement.get(`/api/v1/admin/cards/${id}/transactions`);
+}
+
+export function recordAdminCardTransaction(
+  id: string,
+  body: {
+    txnType: string;
+    status?: string;
+    amount: number;
+    currency?: string;
+    merchantName?: string;
+    description?: string;
+    reference?: string;
+    occurredAt?: string;
+  }
+) {
+  return axiosCardManagement.post(`/api/v1/admin/cards/${id}/transactions`, body);
 }
 
 // 5 — Issuable products catalog (labels / features / default limits)

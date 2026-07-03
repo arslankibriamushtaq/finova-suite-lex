@@ -19,8 +19,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../../components/ui/select";
-import { issueAdminCard, getCardProducts } from "../../../../redux/apis/apisCardManagement";
-import { CARD_TIERS, DELIVERY_METHODS, isPhysical } from "../cardConstants";
+import { issueAdminCard } from "../../../../redux/apis/apisCardManagement";
+import {
+  CARD_TYPES,
+  CARD_TIERS,
+  CARD_TYPE_LABELS,
+  DELIVERY_METHODS,
+  prettyEnum,
+  isPhysical,
+} from "../cardConstants";
 
 interface IssueCardDialogProps {
   open: boolean;
@@ -47,30 +54,16 @@ const emptyForm = {
 
 const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps) => {
   const [form, setForm] = useState({ ...emptyForm });
-  const [products, setProducts] = useState<any[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const setField = (key: keyof typeof emptyForm, value: any) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
-  // Load issuable product catalog (drives card-type options + default limits).
   useEffect(() => {
     if (!open) return;
     setForm({ ...emptyForm });
-    getCardProducts()
-      .then((res) => {
-        const list = res?.data?.data ?? res?.data;
-        if (Array.isArray(list)) setProducts(list);
-      })
-      .catch(() => {
-        /* catalog optional — enums back the dropdown as fallback */
-      });
   }, [open]);
 
-  const selectedProduct = products.find((p) => p.code === form.cardType);
-  const availableTiers: string[] = selectedProduct?.availableTiers?.length
-    ? selectedProduct.availableTiers
-    : [...CARD_TIERS];
   const physical = isPhysical(form.cardType);
 
   const handleSubmit = async () => {
@@ -158,15 +151,9 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                   <SelectValue placeholder="Select card type" />
                 </SelectTrigger>
                 <SelectContent>
-                  {(products.length
-                    ? products.map((p) => ({ code: p.code, label: p.displayName || p.code }))
-                    : [
-                        { code: "VIRTUAL_DEBIT", label: "Virtual Debit" },
-                        { code: "PHYSICAL_DEBIT", label: "Physical Debit" },
-                      ]
-                  ).map((opt) => (
-                    <SelectItem key={opt.code} value={opt.code}>
-                      {opt.label}
+                  {CARD_TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>
+                      {CARD_TYPE_LABELS[t] || prettyEnum(t)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -179,9 +166,9 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                   <SelectValue placeholder="Select tier" />
                 </SelectTrigger>
                 <SelectContent>
-                  {availableTiers.map((t) => (
+                  {CARD_TIERS.map((t) => (
                     <SelectItem key={t} value={t}>
-                      {t.charAt(0) + t.slice(1).toLowerCase()}
+                      {prettyEnum(t)}
                     </SelectItem>
                   ))}
                 </SelectContent>

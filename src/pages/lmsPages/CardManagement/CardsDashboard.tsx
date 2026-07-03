@@ -21,6 +21,7 @@ const STATUS_BAR_COLORS: Record<string, string> = {
   ACTIVE: "#22c55e",
   ISSUED: "#3b82f6",
   REQUESTED: "#f59e0b",
+  FROZEN: "#06b6d4",
   BLOCKED: "#f97316",
   EXPIRED: "#94a3b8",
   CANCELLED: "#ef4444",

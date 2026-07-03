@@ -9,6 +9,7 @@ export const CARD_STATUSES = [
   "REQUESTED",
   "ISSUED",
   "ACTIVE",
+  "FROZEN",
   "BLOCKED",
   "EXPIRED",
   "CANCELLED",
@@ -16,7 +17,19 @@ export const CARD_STATUSES = [
 
 export const CARD_TYPES = ["VIRTUAL_DEBIT", "PHYSICAL_DEBIT"] as const;
 
-export const CARD_TIERS = ["CLASSIC", "GOLD", "PLATINUM"] as const;
+export const CARD_TIERS = ["CLASSIC", "GOLD", "PLATINUM", "INFINITE"] as const;
+
+// Card transaction enums (per-card statement — §4.9)
+export const TXN_TYPES = [
+  "PURCHASE",
+  "REFUND",
+  "WITHDRAWAL",
+  "TOPUP",
+  "REVERSAL",
+  "FEE",
+] as const;
+
+export const TXN_STATUSES = ["COMPLETED", "PENDING", "DECLINED", "REVERSED"] as const;
 
 export const SHIPMENT_STATUSES = [
   "ORDER",
@@ -62,6 +75,8 @@ export const cardStatusClasses = (status?: string): string => {
       return "bg-blue-100 text-blue-700 border border-blue-200";
     case "REQUESTED":
       return "bg-amber-100 text-amber-700 border border-amber-200";
+    case "FROZEN":
+      return "bg-cyan-100 text-cyan-700 border border-cyan-200";
     case "BLOCKED":
       return "bg-orange-100 text-orange-700 border border-orange-200";
     case "EXPIRED":
@@ -107,3 +122,24 @@ export const formatMoney = (value?: number | null, currency?: string): string =>
   const num = Number(value).toLocaleString(undefined, { minimumFractionDigits: 0 });
   return currency ? `${num} ${currency}` : num;
 };
+
+// Transaction status badge classes (per-card statement — §4.9)
+export const txnStatusClasses = (status?: string): string => {
+  switch (status) {
+    case "COMPLETED":
+      return "bg-green-100 text-green-700 border border-green-200";
+    case "PENDING":
+      return "bg-amber-100 text-amber-700 border border-amber-200";
+    case "DECLINED":
+      return "bg-red-100 text-red-700 border border-red-200";
+    case "REVERSED":
+      return "bg-gray-100 text-gray-600 border border-gray-200";
+    default:
+      return "bg-gray-100 text-gray-600 border border-gray-200";
+  }
+};
+
+// Credits (money in) vs debits (money out) — drives the +/- sign and colour on
+// the statement. REFUND / TOPUP / REVERSAL add to the wallet; the rest draw down.
+export const isCreditTxn = (txnType?: string) =>
+  txnType === "REFUND" || txnType === "TOPUP" || txnType === "REVERSAL";

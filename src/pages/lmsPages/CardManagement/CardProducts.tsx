@@ -53,10 +53,13 @@ const emptyForm = {
   displayName: "",
   description: "",
   category: "DEBIT",
+  binPrefix: "",
+  tier: "CLASSIC",
   instantIssue: true,
   requiresShipping: false,
   requiresActivation: false,
   contactlessSupported: false,
+  physicalOrderable: false,
   availableTiers: ["CLASSIC"] as string[],
   features: "",
   defaultDailyLimit: "",
@@ -126,10 +129,13 @@ const CardProducts = () => {
       displayName: row.displayName || "",
       description: row.description || "",
       category: row.category || "DEBIT",
+      binPrefix: row.binPrefix || "",
+      tier: row.tier || "CLASSIC",
       instantIssue: !!row.instantIssue,
       requiresShipping: !!row.requiresShipping,
       requiresActivation: !!row.requiresActivation,
       contactlessSupported: !!row.contactlessSupported,
+      physicalOrderable: !!row.physicalOrderable,
       availableTiers: Array.isArray(row.availableTiers) ? row.availableTiers : [],
       features: Array.isArray(row.features) ? row.features.join("\n") : "",
       defaultDailyLimit: row.defaultDailyLimit ?? "",
@@ -160,10 +166,13 @@ const CardProducts = () => {
       displayName: form.displayName.trim(),
       description: form.description.trim() || null,
       category: form.category.trim() || null,
+      binPrefix: form.binPrefix.trim() || null,
+      tier: form.tier,
       instantIssue: form.instantIssue,
       requiresShipping: form.requiresShipping,
       requiresActivation: form.requiresActivation,
       contactlessSupported: form.contactlessSupported,
+      physicalOrderable: form.physicalOrderable,
       availableTiers: form.availableTiers,
       features: form.features
         .split("\n")
@@ -247,6 +256,11 @@ const CardProducts = () => {
     {
       name: "Card Type",
       cell: (row: any) => CARD_TYPE_LABELS[row.cardType] || prettyEnum(row.cardType),
+    },
+    {
+      name: "BIN",
+      cell: (row: any) => row.binPrefix || "-",
+      width: "80px",
     },
     {
       name: "Tiers",
@@ -467,6 +481,29 @@ const CardProducts = () => {
                   onChange={(e) => setField("category", e.target.value)}
                 />
               </div>
+              <div className="space-y-2">
+                <Label>BIN Prefix</Label>
+                <Input
+                  placeholder="e.g. 48"
+                  value={form.binPrefix}
+                  onChange={(e) => setField("binPrefix", e.target.value.replace(/[^0-9]/g, ""))}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label>Tier</Label>
+                <Select value={form.tier} onValueChange={(v) => setField("tier", v)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {CARD_TIERS.map((t) => (
+                      <SelectItem key={t} value={t}>
+                        {prettyEnum(t)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>Description</Label>
                 <Input
@@ -537,7 +574,7 @@ const CardProducts = () => {
               />
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3 pt-1">
               <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.instantIssue}
@@ -565,6 +602,13 @@ const CardProducts = () => {
                   onCheckedChange={(c) => setField("contactlessSupported", !!c)}
                 />
                 <span className="text-sm">Contactless</span>
+              </label>
+              <label className="flex items-center gap-3 cursor-pointer">
+                <Checkbox
+                  checked={form.physicalOrderable}
+                  onCheckedChange={(c) => setField("physicalOrderable", !!c)}
+                />
+                <span className="text-sm">Physical orderable</span>
               </label>
             </div>
           </div>

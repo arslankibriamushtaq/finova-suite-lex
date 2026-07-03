@@ -8,8 +8,9 @@ import {
   Plus,
   CreditCard,
   Eye,
-  Lock,
-  Unlock,
+  Snowflake,
+  Ban,
+  ShieldCheck,
   XCircle,
   SlidersHorizontal,
   Truck,
@@ -31,6 +32,8 @@ import {
 } from "../../../components/ui/dropdown-menu";
 import {
   getAllAdminCards,
+  freezeAdminCard,
+  unfreezeAdminCard,
   blockAdminCard,
   unblockAdminCard,
   cancelAdminCard,
@@ -250,6 +253,31 @@ const CardsList = () => {
                 Edit limits
               </DropdownMenuItem>
 
+              {/* Soft freeze — a reversible hold (ACTIVE ⇄ FROZEN) */}
+              {row.status === "FROZEN" ? (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    runAction(row.id, unfreezeAdminCard, "Card unfrozen");
+                  }}
+                >
+                  <Snowflake className="h-4 w-4" />
+                  Unfreeze
+                </DropdownMenuItem>
+              ) : (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    runAction(row.id, freezeAdminCard, "Card frozen");
+                  }}
+                  disabled={row.status !== "ACTIVE"}
+                >
+                  <Snowflake className="h-4 w-4" />
+                  Freeze
+                </DropdownMenuItem>
+              )}
+
+              {/* Hard block — admin-only, for lost/fraud (ACTIVE/FROZEN → BLOCKED) */}
               {row.status === "BLOCKED" ? (
                 <DropdownMenuItem
                   onSelect={(e) => {
@@ -257,19 +285,19 @@ const CardsList = () => {
                     runAction(row.id, unblockAdminCard, "Card unblocked");
                   }}
                 >
-                  <Unlock className="h-4 w-4" />
-                  Unfreeze
+                  <ShieldCheck className="h-4 w-4" />
+                  Unblock
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
                   onSelect={(e) => {
                     e.preventDefault();
-                    runAction(row.id, blockAdminCard, "Card frozen");
+                    runAction(row.id, blockAdminCard, "Card blocked");
                   }}
                   disabled={row.status === "CANCELLED" || row.status === "EXPIRED"}
                 >
-                  <Lock className="h-4 w-4" />
-                  Freeze
+                  <Ban className="h-4 w-4" />
+                  Block
                 </DropdownMenuItem>
               )}
 
