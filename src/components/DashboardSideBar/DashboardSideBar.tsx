@@ -2608,6 +2608,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           .ps-sidebar-root {
             border-right: 1px solid var(--surface-border) !important;
           }
+          /* Pin the logo header so it stays put while the menu items scroll
+             beneath it. The container itself is the scroll parent, so a sticky
+             child sticks to its top. Solid bg (set inline) hides scrolled rows. */
+          .sidebar-logo-container {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 20 !important;
+          }
           /* ===== Smooth, professional submenu open/close animation =====
              react-pro-sidebar's own height animation was killed (transitionDuration=0)
              because re-measuring an open submenu on re-render could slide the rows
