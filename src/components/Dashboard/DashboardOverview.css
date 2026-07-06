@@ -125,8 +125,8 @@ html.dark .dashboard-graph-card.ant-card {
   text-overflow: ellipsis;
 }
 
-/* Small period-over-period change chip next to the value */
-.dashboard-stats .stat-card__trend {
+/* Real per-card percentage chip next to the value */
+.dashboard-stats .stat-card__chip {
   flex-shrink: 0;
   font-size: 11px;
   font-weight: 700;
@@ -134,22 +134,31 @@ html.dark .dashboard-graph-card.ant-card {
   padding: 3px 7px;
   border-radius: 999px;
   letter-spacing: 0.2px;
+  white-space: nowrap;
 }
-.dashboard-stats .stat-card__trend--up {
+.dashboard-stats .stat-card__chip--up {
   color: #067647;
   background: color-mix(in srgb, #22c55e 16%, transparent);
 }
-.dashboard-stats .stat-card__trend--down {
+.dashboard-stats .stat-card__chip--down {
   color: #b42318;
   background: color-mix(in srgb, #f43f5e 16%, transparent);
 }
-html.dark .dashboard-stats .stat-card__trend--up {
+.dashboard-stats .stat-card__chip--neutral {
+  color: color-mix(in srgb, var(--c) 70%, #334155);
+  background: color-mix(in srgb, var(--c) 14%, transparent);
+}
+html.dark .dashboard-stats .stat-card__chip--up {
   color: #4ade80;
   background: color-mix(in srgb, #22c55e 22%, transparent);
 }
-html.dark .dashboard-stats .stat-card__trend--down {
+html.dark .dashboard-stats .stat-card__chip--down {
   color: #fb7185;
   background: color-mix(in srgb, #f43f5e 22%, transparent);
+}
+html.dark .dashboard-stats .stat-card__chip--neutral {
+  color: color-mix(in srgb, var(--c) 55%, #cbd5e1);
+  background: color-mix(in srgb, var(--c) 24%, transparent);
 }
 
 /* Full-bleed sparkline pinned to the bottom edge of the card */

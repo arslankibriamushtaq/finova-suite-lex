@@ -45,6 +45,9 @@ type CardTheme =
   | "violet"
   | "indigo";
 
+/** What the little percentage chip on a card means. */
+type ChipKind = "share" | "growth" | "none";
+
 interface StatCard {
   title: string;
   value: string | number;
@@ -52,8 +55,8 @@ interface StatCard {
   theme: CardTheme;
   /** Mini trend series driving the in-card sparkline. */
   series: { x: number; y: number }[];
-  /** Period-over-period change (last point vs previous), for the trend chip. */
-  delta: number | null;
+  /** Real, per-card percentage chip (or null when no honest number exists). */
+  chip: { text: string; title: string; tone: "up" | "down" | "neutral" } | null;
 }
 
 /** Solid brand color per theme — mirrors the CSS `--c` used by the cards. */
@@ -184,26 +187,48 @@ const WalletHome = () => {
   // Chart — wallets created per day (already aggregated by the API)
   const chartData = dashboard?.walletsCreated ?? [];
 
-  // A card definition without the derived trend fields — the trend is attached
-  // below so every card shares the same real creation cadence, scaled to its
-  // own value.
-  const defs: Array<Omit<StatCard, "series" | "delta"> & { metric: number }> = [
-    { title: "Total Wallets", value: summary?.totalWallets ?? 0, icon: Wallet, theme: "emerald", metric: summary?.totalWallets ?? 0 },
-    { title: "Active Wallets", value: summary?.activeWallets ?? 0, icon: BadgeCheck, theme: "teal", metric: summary?.activeWallets ?? 0 },
-    { title: "Pending Activation", value: summary?.pendingActivation ?? 0, icon: Clock, theme: "amber", metric: summary?.pendingActivation ?? 0 },
-    { title: `Total Balance (${CURRENCY})`, value: fmt(summary?.totalBalance ?? 0), icon: Banknote, theme: "green", metric: summary?.totalBalance ?? 0 },
-    { title: "Frozen Wallets", value: summary?.frozenWallets ?? 0, icon: Snowflake, theme: "cyan", metric: summary?.frozenWallets ?? 0 },
-    { title: "Closed Wallets", value: summary?.closedWallets ?? 0, icon: XCircle, theme: "rose", metric: summary?.closedWallets ?? 0 },
-    { title: "Total Customers", value: summary?.totalCustomers ?? 0, icon: Users, theme: "indigo", metric: summary?.totalCustomers ?? 0 },
-    { title: "Wallet Accounts", value: summary?.walletAccounts ?? 0, icon: ArrowLeftRight, theme: "violet", metric: summary?.walletAccounts ?? 0 },
+  // Real period growth for count totals: new wallets added in the selected
+  // range (from walletsCreated) relative to the base that existed before it.
+  const total = summary?.totalWallets ?? 0;
+  const newInPeriod = chartData.reduce((s, p) => s + (p.count || 0), 0);
+  const priorBase = total - newInPeriod;
+  const periodGrowth = priorBase > 0 ? (newInPeriod / priorBase) * 100 : null;
+
+  const pctText = (n: number) => `${n.toFixed(n > 0 && n < 10 ? 1 : 0)}%`;
+
+  // Each card carries a `chipKind` describing which real percentage (if any)
+  // is honest for it: `share` = portion of total wallets, `growth` = period
+  // growth from walletsCreated, `none` = no reliable per-card series.
+  const defs: Array<
+    Omit<StatCard, "series" | "chip"> & { metric: number; chipKind: ChipKind }
+  > = [
+    { title: "Total Wallets", value: summary?.totalWallets ?? 0, icon: Wallet, theme: "emerald", metric: summary?.totalWallets ?? 0, chipKind: "growth" },
+    { title: "Active Wallets", value: summary?.activeWallets ?? 0, icon: BadgeCheck, theme: "teal", metric: summary?.activeWallets ?? 0, chipKind: "share" },
+    { title: "Pending Activation", value: summary?.pendingActivation ?? 0, icon: Clock, theme: "amber", metric: summary?.pendingActivation ?? 0, chipKind: "share" },
+    { title: `Total Balance (${CURRENCY})`, value: fmt(summary?.totalBalance ?? 0), icon: Banknote, theme: "green", metric: summary?.totalBalance ?? 0, chipKind: "none" },
+    { title: "Frozen Wallets", value: summary?.frozenWallets ?? 0, icon: Snowflake, theme: "cyan", metric: summary?.frozenWallets ?? 0, chipKind: "share" },
+    { title: "Closed Wallets", value: summary?.closedWallets ?? 0, icon: XCircle, theme: "rose", metric: summary?.closedWallets ?? 0, chipKind: "share" },
+    { title: "Total Customers", value: summary?.totalCustomers ?? 0, icon: Users, theme: "indigo", metric: summary?.totalCustomers ?? 0, chipKind: "none" },
+    { title: "Wallet Accounts", value: summary?.walletAccounts ?? 0, icon: ArrowLeftRight, theme: "violet", metric: summary?.walletAccounts ?? 0, chipKind: "growth" },
   ];
 
-  const cards: StatCard[] = defs.map(({ metric, ...rest }) => {
-    const series = buildTrend(chartData, metric);
-    const last = series[series.length - 1]?.y ?? 0;
-    const prev = series[series.length - 2]?.y ?? last;
-    const delta = prev ? ((last - prev) / prev) * 100 : null;
-    return { ...rest, series, delta };
+  const cards: StatCard[] = defs.map(({ metric, chipKind, ...rest }) => {
+    let chip: StatCard["chip"] = null;
+    if (chipKind === "share" && total > 0) {
+      const pct = (metric / total) * 100;
+      chip = {
+        text: `${pctText(pct)} of total`,
+        title: `${metric.toLocaleString()} of ${total.toLocaleString()} wallets`,
+        tone: "neutral",
+      };
+    } else if (chipKind === "growth" && periodGrowth !== null) {
+      chip = {
+        text: `${periodGrowth >= 0 ? "▲" : "▼"} ${pctText(Math.abs(periodGrowth))}`,
+        title: `${newInPeriod.toLocaleString()} new in selected period`,
+        tone: periodGrowth >= 0 ? "up" : "down",
+      };
+    }
+    return { ...rest, series: buildTrend(chartData, metric), chip };
   });
 
   // Recent wallets table (already sorted + limited by the API)
@@ -275,14 +300,12 @@ const WalletHome = () => {
                   <p className="stat-card__value">
                     {loading ? <PulseLoading size="sm" /> : stat.value}
                   </p>
-                  {!loading && stat.delta !== null && Math.abs(stat.delta) >= 0.1 && (
+                  {!loading && stat.chip && (
                     <span
-                      className={`stat-card__trend stat-card__trend--${
-                        stat.delta >= 0 ? "up" : "down"
-                      }`}
+                      className={`stat-card__chip stat-card__chip--${stat.chip.tone}`}
+                      title={stat.chip.title}
                     >
-                      {stat.delta >= 0 ? "▲" : "▼"}{" "}
-                      {Math.abs(stat.delta).toFixed(1)}%
+                      {stat.chip.text}
                     </span>
                   )}
                 </div>
