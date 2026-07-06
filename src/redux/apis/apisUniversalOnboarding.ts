@@ -74,15 +74,37 @@ export function publishWorkflow(countryCode: string) {
 export interface OnboardingSessionStep {
   stepId?: number | string;
   stepName?: string;
+  label?: string;
+  labelAr?: string;
+  currentStepLabel?: string;
   orderIndex?: number;
   status?: string;
   completedAt?: string | null;
   startedAt?: string | null;
+  occurredAt?: string | null;
   data?: any;
 }
 
 export interface OnboardingSession {
   workflowId?: string;
+  flowType?: string;
+  status?: string;
+  currentStep?: string;
+  currentStepLabel?: string;
+  currentStepLabelAr?: string;
+  rawStep?: string;
+  totalSteps?: number;
+  completedSteps?: number;
+  progressPercent?: number;
+  customerName?: string | null;
+  maskedEmail?: string | null;
+  maskedMobile?: string | null;
+  customerId?: string | null;
+  failureReason?: string | null;
+  startedAt?: string | null;
+  updatedAt?: string | null;
+
+  // Legacy / fallback keys (older payload shapes)
   sessionId?: string;
   userId?: string;
   fullName?: string;
@@ -92,15 +114,10 @@ export interface OnboardingSession {
   mobile?: string;
   flow?: string;
   countryCode?: string;
-  status?: string;
-  currentStep?: string;
   currentStepName?: string;
   currentStepIndex?: number;
-  totalSteps?: number;
-  completedSteps?: number;
   progress?: number;
   createdAt?: string | null;
-  updatedAt?: string | null;
   steps?: OnboardingSessionStep[];
   [key: string]: any;
 }

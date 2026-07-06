@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { RefreshCw, Search, Eye } from "lucide-react";
+import { RefreshCw, Search, Eye, ChevronDown, Users } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -12,6 +12,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 
 import {
   getOnboardingSessions,
@@ -29,9 +35,8 @@ const STATUS_OPTIONS = [
 
 const FLOW_OPTIONS = [
   { value: "ALL", label: "All Flows" },
-  { value: "CANADA", label: "Canada" },
-  { value: "SAUDI", label: "Saudi Arabia" },
-  { value: "UAE", label: "UAE" },
+  { value: "LOCAL", label: "Local" },
+  { value: "FOREIGN", label: "Foreign" },
 ];
 
 const STATUS_BADGE: Record<string, string> = {
@@ -62,18 +67,30 @@ const formatDate = (dateString: string | null | undefined) => {
   }
 };
 
-// Best-effort accessors — the onboarding service payload key names can vary.
+// Accessors — primary keys match the live payload; older keys kept as fallbacks.
 const getWorkflowId = (row: OnboardingSession) =>
   row.workflowId || row.sessionId || row.id || "";
 const getName = (row: OnboardingSession) =>
-  row.fullName || row.name || row.email || row.phone || row.mobile || "-";
+  row.customerName ||
+  row.fullName ||
+  row.name ||
+  row.maskedEmail ||
+  row.maskedMobile ||
+  row.email ||
+  row.phone ||
+  row.mobile ||
+  "-";
 const getContact = (row: OnboardingSession) =>
-  row.email || row.phone || row.mobile || "-";
-const getFlow = (row: OnboardingSession) => row.flow || row.countryCode || "-";
+  row.maskedEmail || row.maskedMobile || row.email || row.phone || row.mobile || "-";
+const getFlow = (row: OnboardingSession) =>
+  row.flowType || row.flow || row.countryCode || "-";
 const getCurrentStep = (row: OnboardingSession) =>
-  row.currentStepName || row.currentStep || "-";
+  row.currentStepLabel || row.currentStepName || row.currentStep || "-";
 
 const getProgress = (row: OnboardingSession): number => {
+  if (typeof row.progressPercent === "number") {
+    return Math.min(100, Math.round(row.progressPercent));
+  }
   if (typeof row.progress === "number") {
     return row.progress > 1 ? Math.round(row.progress) : Math.round(row.progress * 100);
   }
@@ -188,12 +205,18 @@ const OnboardingUsers = () => {
   const headers = [
     {
       name: "User",
-      cell: (row: OnboardingSession) => (
-        <div className="flex flex-col leading-tight">
-          <span className="font-medium text-foreground">{getName(row)}</span>
-          <span className="text-[11px] text-muted-foreground">{getContact(row)}</span>
-        </div>
-      ),
+      cell: (row: OnboardingSession) => {
+        const name = getName(row);
+        const contact = getContact(row);
+        return (
+          <div className="flex flex-col leading-tight">
+            <span className="font-medium text-foreground">{name}</span>
+            {contact !== "-" && contact !== name && (
+              <span className="text-[11px] text-muted-foreground">{contact}</span>
+            )}
+          </div>
+        );
+      },
       width: "220px",
     },
     {
@@ -233,7 +256,9 @@ const OnboardingUsers = () => {
     {
       name: "Started",
       cell: (row: OnboardingSession) => (
-        <span className="text-sm text-muted-foreground">{formatDate(row.createdAt)}</span>
+        <span className="text-sm text-muted-foreground">
+          {formatDate(row.startedAt || row.createdAt)}
+        </span>
       ),
       width: "170px",
     },
@@ -247,18 +272,31 @@ const OnboardingUsers = () => {
     {
       name: "Actions",
       cell: (row: OnboardingSession) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1.5"
-          onClick={(e) => {
-            e.stopPropagation();
-            openDetail(row);
-          }}
-        >
-          <Eye className="h-3.5 w-3.5" />
-          View
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="sm"
+              className="gap-1.5 rounded-[2px] text-white hover:opacity-90"
+              style={{ backgroundColor: "var(--color-action)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              Select
+              <ChevronDown className="h-3.5 w-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              className="gap-2"
+              onClick={(e) => {
+                e.stopPropagation();
+                openDetail(row);
+              }}
+            >
+              <Eye className="h-3.5 w-3.5" />
+              View Details
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       ),
       ignoreRowClick: true,
       allowOverflow: true,
@@ -267,15 +305,22 @@ const OnboardingUsers = () => {
   ];
 
   return (
-    <div className="service">
-      <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between flex-wrap gap-2">
+    <div className="service customer-list-page">
+      <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <Users className="h-4 w-4" />
+          </span>
           Onboarding Users
         </h3>
-        <div className="d-flex align-items-center gap-2 flex-wrap">
+      </div>
+
+      {/* Filters card */}
+      <div className="pro-card p-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <div
             className="d-flex align-items-center gap-1 border px-2"
-            style={{ borderRadius: 6, height: 38 }}
+            style={{ borderRadius: 2, height: 34, flex: "1 1 240px", minWidth: 200 }}
           >
             <Search className="h-4 w-4 text-muted-foreground" />
             <input
@@ -284,7 +329,7 @@ const OnboardingUsers = () => {
               onChange={(e) => setSearchInput(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && applySearch()}
               placeholder="Search name, email, phone…"
-              style={{ width: 220, border: "none", outline: "none", background: "transparent" }}
+              style={{ flex: 1, border: "none", outline: "none", background: "transparent" }}
               className="text-sm"
             />
           </div>
@@ -335,15 +380,8 @@ const OnboardingUsers = () => {
         </div>
       </div>
 
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      {/* Table card */}
+      <div className="pro-card">
         <TableView
           header={headers}
           data={data}

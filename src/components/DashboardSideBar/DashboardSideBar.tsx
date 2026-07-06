@@ -2060,6 +2060,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       active: pathname.split("/").includes("CustomerManagement"),
       menu: [
         {
+          label: "Users",
+          Link: "OnboardingUsers",
+          LinkLable: "/LOS/CustomerManagement",
+          active: pathname.includes("/OnboardingUsers"),
+        },
+        {
           label: "Customers",
           Link: "CustomerList",
           LinkLable: "/LOS/CustomerManagement",
@@ -2068,12 +2074,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             pathname.includes("/CustomerDetails") ||
             pathname.includes("/CostByCustomer") ||
             pathname.includes("/OnboardingCostByCustomer"),
-        },
-        {
-          label: "Users",
-          Link: "OnboardingUsers",
-          LinkLable: "/LOS/CustomerManagement",
-          active: pathname.includes("/OnboardingUsers"),
         },
       ].filter(Boolean),
     },
