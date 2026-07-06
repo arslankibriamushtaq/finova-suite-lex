@@ -2247,6 +2247,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/Wallet/InternalTransfer"),
     },
+     {
+          label: "Wallet Transactions Limits",
+          Link: "/LOS/CustomerManagement/WalletTransactionLimits",
+          // LinkLable: "/LOS/CustomerManagement",
+                imgActive: Images.CustomerManagementIconDark,
+
+          active: pathname.includes("/WalletTransactionLimits"),
+        },
     {
       label: "Ledger",
       Link: "/LOS/Ledger",
