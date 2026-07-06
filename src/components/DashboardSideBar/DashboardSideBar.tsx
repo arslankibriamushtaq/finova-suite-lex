@@ -67,6 +67,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "general setting": { Icon: SettingsIcon, color: "#0d9488" },
   "send money": { Icon: Send, color: "#8b5cf6" },
   "internal transfer": { Icon: ArrowLeftRight, color: "#6366f1" },
+  "wallet transactions limits": { Icon: SlidersHorizontal, color: "#14b8a6" },
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
@@ -2247,14 +2248,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/Wallet/InternalTransfer"),
     },
-     {
-          label: "Wallet Transactions Limits",
-          Link: "/LOS/CustomerManagement/WalletTransactionLimits",
-          // LinkLable: "/LOS/CustomerManagement",
-                imgActive: Images.CustomerManagementIconDark,
-
-          active: pathname.includes("/WalletTransactionLimits"),
-        },
+    {
+      label: "Wallet Transactions Limits",
+      Link: "/LOS/CustomerManagement/WalletTransactionLimits",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/WalletTransactionLimits"),
+    },
     {
       label: "Ledger",
       Link: "/LOS/Ledger",

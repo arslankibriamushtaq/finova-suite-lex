@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { RefreshCw, Check, X, ChevronDown } from "lucide-react";
+import { RefreshCw, Check, X, ChevronDown, SlidersHorizontal } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -286,6 +286,9 @@ const WalletTransactionLimits = () => {
     <div className="service">
       <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
         <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
+          <span className="pro-head-badge">
+            <SlidersHorizontal className="h-4 w-4" />
+          </span>
           Wallet Transactions Limits
         </h3>
         <div className="d-flex align-items-center gap-2">
@@ -310,15 +313,7 @@ const WalletTransactionLimits = () => {
         </div>
       </div>
 
-      <div
-        className="bg-white"
-        style={{
-          borderRadius: 2,
-          boxShadow: "0 1px 3px rgba(0, 0, 0, 0.04)",
-          border: "1px solid var(--border)",
-          overflow: "hidden",
-        }}
-      >
+      <div className="pro-card">
         <TableView
           header={headers}
           data={data}

@@ -1,7 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Input } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
 import { History, ChevronDown, Eye } from "lucide-react";
 import {
   DropdownMenu,
@@ -16,125 +14,73 @@ import { getClientRequestDevList } from "../../redux/apis/apisThirdParty";
 const ClientRequestDev = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [allRows, setAllRows] = useState<any[]>([]);
+  const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [debouncedSearch, setDebouncedSearch] = useState("");
-
-  // 1s debounce
-  useEffect(() => {
-    const handle = setTimeout(() => {
-      setDebouncedSearch(searchTerm.trim().toLowerCase());
-      setPage(1);
-    }, 1000);
-    return () => clearTimeout(handle);
-  }, [searchTerm]);
-
-  // Reset to page 1 when pageSize changes
-  useEffect(() => {
-    setPage(1);
-  }, [pageSize]);
+  const [totalRows, setTotalRows] = useState(0);
+  const [totalPage, setTotalPage] = useState(0);
+  const [from, setFrom] = useState(0);
+  const [to, setTo] = useState(0);
 
   const extractItems = (root: any): any[] => {
-    const data =
+    const items =
       root?.data?.content ||
       root?.data?.items ||
       root?.data ||
       root?.content ||
       [];
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(items) ? items : [];
   };
 
-  const fetchAll = async () => {
+  const fetchData = async () => {
     try {
       setLoading(true);
-      // Backend caps each page, so walk every page and concatenate so search +
-      // pagination both work over the full result set.
-      const firstRes = await getClientRequestDevList(0, 100);
-      const firstRoot = firstRes?.data;
-      let combined: any[] = [...extractItems(firstRoot)];
+      // Backend pagination: request only the current page (API is 0-based).
+      const res = await getClientRequestDevList(page - 1, pageSize);
+      const root = res?.data ?? {};
+      const rows = extractItems(root);
 
-      const pagination =
-        firstRoot?.pagination ||
-        firstRoot?.data?.pagination ||
-        firstRoot?.page ||
-        firstRoot?.data?.page;
-      const totalPagesFromApi = Number(pagination?.totalPages) || 1;
+      // Pagination metadata can live at the root, under `pagination`, or inside
+      // a Spring-style page object (`data.content` + totals).
+      const container = root?.data ?? root;
+      const meta =
+        root?.pagination ||
+        root?.data?.pagination ||
+        (Array.isArray(container) ? root : container) ||
+        {};
 
-      if (totalPagesFromApi > 1) {
-        const remaining = await Promise.all(
-          Array.from({ length: totalPagesFromApi - 1 }, (_, i) =>
-            getClientRequestDevList(i + 1, 100)
-              .then((r) => extractItems(r?.data))
-              .catch(() => [])
-          )
-        );
-        combined = combined.concat(...remaining);
-      }
+      const total =
+        Number(meta?.totalElements ?? meta?.total ?? meta?.totalCount) ||
+        rows.length;
+      const pages =
+        Number(meta?.totalPages ?? meta?.last_page) ||
+        Math.max(1, Math.ceil(total / pageSize));
 
-      setAllRows(combined);
+      setData(rows);
+      setTotalRows(total);
+      setTotalPage(pages);
+      setFrom(total === 0 ? 0 : (page - 1) * pageSize + 1);
+      setTo(Math.min(page * pageSize, total));
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
           "Failed to fetch dev requests"
       );
-      setAllRows([]);
+      setData([]);
+      setTotalRows(0);
+      setTotalPage(0);
+      setFrom(0);
+      setTo(0);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchAll();
+    fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  // Client-side filter — searches across request id, API code, service, API,
-  // mobile, NID and status so users can find rows easily.
-  const filteredRows = useMemo(() => {
-    if (!debouncedSearch) return allRows;
-    return allRows.filter((row: any) => {
-      const haystack = [
-        row.requestId,
-        row.id,
-        row.apiCode,
-        row.clientName,
-        row.client?.name,
-        row.providerName,
-        row.provider?.name,
-        row.serviceName,
-        row.service?.name,
-        row.serviceId,
-        row.apiName,
-        row.api?.name,
-        row.endpoint,
-        row.mobilePhone,
-        row.mobile,
-        row.phone,
-        row.phoneNumber,
-        row.nid,
-        row.nationalId,
-        row.responseStatus,
-        row.statusCode,
-        row.status,
-        row.httpMethod,
-        row.method,
-      ]
-        .filter(Boolean)
-        .map((v) => String(v).toLowerCase())
-        .join(" ");
-      return haystack.includes(debouncedSearch);
-    });
-  }, [allRows, debouncedSearch]);
-
-  // Client-side pagination over the filtered set
-  const totalRows = filteredRows.length;
-  const totalPage = Math.max(1, Math.ceil(totalRows / pageSize));
-  const startIndex = (page - 1) * pageSize;
-  const paginatedData = filteredRows.slice(startIndex, startIndex + pageSize);
+  }, [page, pageSize]);
 
   const handleView = (row: any) => {
     const id = row.id || row.requestId || row.uuid;
@@ -283,29 +229,15 @@ const ClientRequestDev = () => {
         </h3>
       </div>
 
-      {/* Filters card */}
-      <div className="pro-card p-3 mb-3">
-        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <Input
-            allowClear
-            placeholder="Search by request ID, API code, service, API, mobile, NID, status"
-            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
-          />
-        </div>
-      </div>
-
       {/* Table card */}
       <div className="pro-card">
         <TableView
           header={headers}
-          data={paginatedData}
+          data={data}
           totalRows={totalRows}
           isLoading={loading}
-          from={totalRows > 0 ? startIndex + 1 : 0}
-          to={Math.min(page * pageSize, totalRows)}
+          from={from}
+          to={to}
           page={page}
           totalPage={totalPage}
           setPage={setPage}
