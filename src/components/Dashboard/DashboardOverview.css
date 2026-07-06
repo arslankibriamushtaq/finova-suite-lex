@@ -41,11 +41,12 @@ html.dark .dashboard-graph-card.ant-card {
   position: relative;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  gap: 14px;
+  justify-content: flex-start;
+  gap: 12px;
   width: 100%;
-  min-height: 118px;
-  padding: 18px 18px 16px;
+  min-height: 150px;
+  padding: 18px 18px 0;
+  overflow: hidden;
   border-radius: 2px;
   border: 1px solid color-mix(in srgb, var(--c) 24%, var(--surface-light));
   background: linear-gradient(
@@ -106,6 +107,13 @@ html.dark .dashboard-graph-card.ant-card {
   height: 20px;
 }
 
+.dashboard-stats .stat-card__value-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
 .dashboard-stats .stat-card__value {
   margin: 0;
   font-size: 20px;
@@ -115,6 +123,41 @@ html.dark .dashboard-graph-card.ant-card {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Small period-over-period change chip next to the value */
+.dashboard-stats .stat-card__trend {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 3px 7px;
+  border-radius: 999px;
+  letter-spacing: 0.2px;
+}
+.dashboard-stats .stat-card__trend--up {
+  color: #067647;
+  background: color-mix(in srgb, #22c55e 16%, transparent);
+}
+.dashboard-stats .stat-card__trend--down {
+  color: #b42318;
+  background: color-mix(in srgb, #f43f5e 16%, transparent);
+}
+html.dark .dashboard-stats .stat-card__trend--up {
+  color: #4ade80;
+  background: color-mix(in srgb, #22c55e 22%, transparent);
+}
+html.dark .dashboard-stats .stat-card__trend--down {
+  color: #fb7185;
+  background: color-mix(in srgb, #f43f5e 22%, transparent);
+}
+
+/* Full-bleed sparkline pinned to the bottom edge of the card */
+.dashboard-stats .stat-card__spark {
+  margin: 6px -18px 0;
+  margin-top: auto;
+  height: 40px;
+  pointer-events: auto;
 }
 
 /* ===== Per-card brand colors ===== */

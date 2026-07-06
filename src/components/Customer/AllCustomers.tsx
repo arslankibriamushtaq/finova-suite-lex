@@ -265,27 +265,27 @@ const AllCustomers = () => {
       >
         View Details
       </Menu.Item>
-      <Menu.Item
+      {/* <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
         onClick={() => handleMenuClick("changeRisk", row)}
       >
         Change Risk
-      </Menu.Item>
-      <Menu.Item
+      </Menu.Item> */}
+      {/* <Menu.Item
         key="costByCustomer"
         icon={<SaudiRiyal size={14} />}
         onClick={() => handleMenuClick("costByCustomer", row)}
       >
         Cost By Customer
-      </Menu.Item>
-      <Menu.Item
+      </Menu.Item> */}
+      {/* <Menu.Item
         key="onboardingCostByCustomer"
         icon={<UserPlus size={14} />}
         onClick={() => handleMenuClick("onboardingCostByCustomer", row)}
       >
         Onboarding Cost By Customer
-      </Menu.Item>
+      </Menu.Item> */}
       <Menu.Item
         key="checkBeneficiaries"
         icon={<Users size={14} />}

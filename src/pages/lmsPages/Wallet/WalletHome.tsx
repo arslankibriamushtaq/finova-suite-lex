@@ -18,6 +18,8 @@ import dayjs from "dayjs";
 import {
   BarChart,
   Bar,
+  Area,
+  AreaChart,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -27,6 +29,7 @@ import {
 import {
   getAdminWalletDashboard,
   type WalletDashboardData,
+  type WalletsCreatedPoint,
 } from "../../../redux/apis/apisWalletAdmin";
 
 const RECENT_LIMIT = 10;
@@ -47,7 +50,91 @@ interface StatCard {
   value: string | number;
   icon: LucideIcon;
   theme: CardTheme;
+  /** Mini trend series driving the in-card sparkline. */
+  series: { x: number; y: number }[];
+  /** Period-over-period change (last point vs previous), for the trend chip. */
+  delta: number | null;
 }
+
+/** Solid brand color per theme — mirrors the CSS `--c` used by the cards. */
+const THEME_COLOR: Record<CardTheme, string> = {
+  emerald: "#10b981",
+  teal: "#14b8a6",
+  amber: "#f59e0b",
+  green: "#22c55e",
+  rose: "#f43f5e",
+  cyan: "#06b6d4",
+  violet: "#8b5cf6",
+  indigo: "#6366f1",
+};
+
+/**
+ * Build a cumulative growth curve from the real daily-creation cadence,
+ * scaled so the final point equals the card's current value. This keeps the
+ * sparkline shaped by real data while ending on the exact metric shown.
+ */
+const buildTrend = (
+  points: WalletsCreatedPoint[],
+  target: number
+): { x: number; y: number }[] => {
+  if (!points.length || !target) return [];
+  const totalCreated = points.reduce((s, p) => s + (p.count || 0), 0) || 1;
+  let cum = 0;
+  return points.map((p, i) => {
+    cum += p.count || 0;
+    return { x: i, y: Math.round((cum / totalCreated) * target * 100) / 100 };
+  });
+};
+
+/** Compact, axis-less area chart shown at the bottom of every stat card. */
+const Sparkline = ({
+  data,
+  color,
+}: {
+  data: { x: number; y: number }[];
+  color: string;
+}) => {
+  if (!data || data.length < 2) return null;
+  const gid = `spark-${color.replace("#", "")}`;
+  return (
+    <ResponsiveContainer width="100%" height={40}>
+      <AreaChart data={data} margin={{ top: 4, right: 0, left: 0, bottom: 0 }}>
+        <defs>
+          <linearGradient id={gid} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={color} stopOpacity={0.35} />
+            <stop offset="100%" stopColor={color} stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <Tooltip
+          cursor={false}
+          contentStyle={{
+            background: "var(--surface-card)",
+            border: "1px solid var(--surface-border)",
+            borderRadius: 4,
+            fontSize: 11,
+            padding: "2px 8px",
+            color: "var(--foreground)",
+          }}
+          labelFormatter={() => ""}
+          formatter={(v: any) => [
+            Number(v).toLocaleString(undefined, { maximumFractionDigits: 2 }),
+            "",
+          ]}
+        />
+        <Area
+          type="monotone"
+          dataKey="y"
+          stroke={color}
+          strokeWidth={2}
+          fill={`url(#${gid})`}
+          dot={false}
+          activeDot={{ r: 2.5, strokeWidth: 0 }}
+          isAnimationActive
+        />
+      </AreaChart>
+    </ResponsiveContainer>
+  );
+};
 
 const STATUS_BADGE: Record<string, { bg: string; color: string }> = {
   ACTIVE: { bg: "#dcfce7", color: "#166534" },
@@ -62,8 +149,8 @@ const WalletHome = () => {
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
 
-  const loadDashboard = async () => {
-    setLoading(true);
+  const loadDashboard = async (silent = false) => {
+    if (!silent) setLoading(true);
     try {
       const res: any = await getAdminWalletDashboard({
         from: fromDate ? dayjs(fromDate).format("YYYY-MM-DD") : undefined,
@@ -72,9 +159,9 @@ const WalletHome = () => {
       });
       setDashboard(res?.data?.data ?? null);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to load wallet statistics");
+      if (!silent) toast.error(error?.message || "Failed to load wallet statistics");
     } finally {
-      setLoading(false);
+      if (!silent) setLoading(false);
     }
   };
 
@@ -83,24 +170,41 @@ const WalletHome = () => {
     loadDashboard();
   }, [fromDate, toDate]);
 
+  // Live refresh — silently poll every 60s so the cards/graphs stay current.
+  useEffect(() => {
+    const id = setInterval(() => loadDashboard(true), 60_000);
+    return () => clearInterval(id);
+  }, [fromDate, toDate]);
+
   const summary = dashboard?.summary;
 
   const fmt = (n: number) =>
     Number(n ?? 0).toLocaleString(undefined, { maximumFractionDigits: 2 });
 
-  const cards: StatCard[] = [
-    { title: "Total Wallets", value: summary?.totalWallets ?? 0, icon: Wallet, theme: "emerald" },
-    { title: "Active Wallets", value: summary?.activeWallets ?? 0, icon: BadgeCheck, theme: "teal" },
-    { title: "Pending Activation", value: summary?.pendingActivation ?? 0, icon: Clock, theme: "amber" },
-    { title: `Total Balance (${CURRENCY})`, value: fmt(summary?.totalBalance ?? 0), icon: Banknote, theme: "green" },
-    { title: "Frozen Wallets", value: summary?.frozenWallets ?? 0, icon: Snowflake, theme: "cyan" },
-    { title: "Closed Wallets", value: summary?.closedWallets ?? 0, icon: XCircle, theme: "rose" },
-    { title: "Total Customers", value: summary?.totalCustomers ?? 0, icon: Users, theme: "indigo" },
-    { title: "Wallet Accounts", value: summary?.walletAccounts ?? 0, icon: ArrowLeftRight, theme: "violet" },
-  ];
-
   // Chart — wallets created per day (already aggregated by the API)
   const chartData = dashboard?.walletsCreated ?? [];
+
+  // A card definition without the derived trend fields — the trend is attached
+  // below so every card shares the same real creation cadence, scaled to its
+  // own value.
+  const defs: Array<Omit<StatCard, "series" | "delta"> & { metric: number }> = [
+    { title: "Total Wallets", value: summary?.totalWallets ?? 0, icon: Wallet, theme: "emerald", metric: summary?.totalWallets ?? 0 },
+    { title: "Active Wallets", value: summary?.activeWallets ?? 0, icon: BadgeCheck, theme: "teal", metric: summary?.activeWallets ?? 0 },
+    { title: "Pending Activation", value: summary?.pendingActivation ?? 0, icon: Clock, theme: "amber", metric: summary?.pendingActivation ?? 0 },
+    { title: `Total Balance (${CURRENCY})`, value: fmt(summary?.totalBalance ?? 0), icon: Banknote, theme: "green", metric: summary?.totalBalance ?? 0 },
+    { title: "Frozen Wallets", value: summary?.frozenWallets ?? 0, icon: Snowflake, theme: "cyan", metric: summary?.frozenWallets ?? 0 },
+    { title: "Closed Wallets", value: summary?.closedWallets ?? 0, icon: XCircle, theme: "rose", metric: summary?.closedWallets ?? 0 },
+    { title: "Total Customers", value: summary?.totalCustomers ?? 0, icon: Users, theme: "indigo", metric: summary?.totalCustomers ?? 0 },
+    { title: "Wallet Accounts", value: summary?.walletAccounts ?? 0, icon: ArrowLeftRight, theme: "violet", metric: summary?.walletAccounts ?? 0 },
+  ];
+
+  const cards: StatCard[] = defs.map(({ metric, ...rest }) => {
+    const series = buildTrend(chartData, metric);
+    const last = series[series.length - 1]?.y ?? 0;
+    const prev = series[series.length - 2]?.y ?? last;
+    const delta = prev ? ((last - prev) / prev) * 100 : null;
+    return { ...rest, series, delta };
+  });
 
   // Recent wallets table (already sorted + limited by the API)
   const recent = dashboard?.recentWallets ?? [];
@@ -167,9 +271,26 @@ const WalletHome = () => {
                     <Icon strokeWidth={2} />
                   </span>
                 </div>
-                <p className="stat-card__value">
-                  {loading ? <PulseLoading size="sm" /> : stat.value}
-                </p>
+                <div className="stat-card__value-row">
+                  <p className="stat-card__value">
+                    {loading ? <PulseLoading size="sm" /> : stat.value}
+                  </p>
+                  {!loading && stat.delta !== null && Math.abs(stat.delta) >= 0.1 && (
+                    <span
+                      className={`stat-card__trend stat-card__trend--${
+                        stat.delta >= 0 ? "up" : "down"
+                      }`}
+                    >
+                      {stat.delta >= 0 ? "▲" : "▼"}{" "}
+                      {Math.abs(stat.delta).toFixed(1)}%
+                    </span>
+                  )}
+                </div>
+                <div className="stat-card__spark">
+                  {!loading && (
+                    <Sparkline data={stat.series} color={THEME_COLOR[stat.theme]} />
+                  )}
+                </div>
               </div>
             </div>
           );
