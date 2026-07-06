@@ -4,7 +4,7 @@ stages:
 # -----------------------------
 # DEV PIPELINE
 # -----------------------------
-clone-dev:
+clone-sullis:
   stage: clone
   tags:
     - new_mytm_dev
