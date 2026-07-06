@@ -115,7 +115,7 @@ const InternalTransfer = () => {
     senderMobile: "",
     receiverMobile: "",
     amount: "",
-    currency: "SAR",
+    currency: "CAD",
     purposeNote: "",
   });
 
@@ -152,7 +152,7 @@ const InternalTransfer = () => {
         senderMobile: form.senderMobile.trim(),
         receiverMobile: form.receiverMobile.trim(),
         amount: Number(form.amount),
-        currency: form.currency.trim() || "SAR",
+        currency: form.currency.trim() || "CAD",
       });
       setResolved(res?.data?.data || res?.data || null);
       toast.success("Parties resolved");
@@ -171,7 +171,7 @@ const InternalTransfer = () => {
       senderMobile: form.senderMobile.trim(),
       receiverMobile: form.receiverMobile.trim(),
       amount: Number(form.amount),
-      currency: form.currency.trim() || "SAR",
+      currency: form.currency.trim() || "CAD",
       purposeNote: form.purposeNote.trim() || undefined,
       idempotencyKey: newIdemKey(),
     };
@@ -181,6 +181,9 @@ const InternalTransfer = () => {
       toast.success("Internal transfer initiated");
       setForm((s) => ({ ...s, amount: "", purposeNote: "" }));
       setResolved(null);
+      // Immediately reflect the new transfer in the history below.
+      setHistoryMobile(body.senderMobile);
+      loadHistory(body.senderMobile);
     } catch (error: any) {
       console.error(error);
       toast.error(
@@ -191,13 +194,19 @@ const InternalTransfer = () => {
     }
   };
 
-  const loadHistory = async () => {
-    if (!historyMobile.trim()) return toast.error("Enter a mobile number");
+  const loadHistory = async (mobileArg?: string) => {
+    const mobile = (typeof mobileArg === "string" ? mobileArg : historyMobile).trim();
+    if (!mobile) return toast.error("Enter a mobile number");
     setIsHistoryLoading(true);
     try {
-      const res = await adminListInternalByMobile(historyMobile.trim(), 0, 20);
-      const payload = res?.data?.data ? res.data : res?.data || {};
-      const rows = payload?.data || payload || [];
+      const res = await adminListInternalByMobile(mobile, 0, 20);
+      // Unwrap the response envelope: supports { data: [] }, { data: { content: [] } },
+      // { content: [] }, or a bare array.
+      const body = res?.data ?? {};
+      const inner = body?.data ?? body;
+      const rows = Array.isArray(inner)
+        ? inner
+        : inner?.content ?? inner?.data ?? [];
       setHistory(Array.isArray(rows) ? rows : []);
     } catch (error: any) {
       console.error(error);
@@ -378,7 +387,7 @@ const InternalTransfer = () => {
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={historyMobile}
               onChange={(e) => setHistoryMobile(e.target.value)}
-              onPressEnter={loadHistory}
+              onPressEnter={() => loadHistory()}
               style={{ width: 300, minWidth: 200, borderRadius: 2, height: 40 }}
             />
           </CardTitle>

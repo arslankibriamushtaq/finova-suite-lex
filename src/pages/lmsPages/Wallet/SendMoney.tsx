@@ -149,6 +149,10 @@ const SendMoney = () => {
         amount: "",
         purposeNote: "",
       }));
+      // Immediately reflect the new transfer in the history below.
+      setRail("FT");
+      setHistoryMobile(body.senderMobile);
+      loadHistory(body.senderMobile, "FT");
     } catch (error: any) {
       console.error(error);
       toast.error(error?.response?.data?.message || "Failed to send FT transfer");
@@ -191,6 +195,10 @@ const SendMoney = () => {
         amount: "",
         purposeNote: "",
       }));
+      // Immediately reflect the new transfer in the history below.
+      setRail("IBFT");
+      setHistoryMobile(body.senderMobile);
+      loadHistory(body.senderMobile, "IBFT");
     } catch (error: any) {
       console.error(error);
       toast.error(
@@ -201,14 +209,22 @@ const SendMoney = () => {
     }
   };
 
-  const loadHistory = async () => {
-    if (!historyMobile.trim()) return toast.error("Enter a sender mobile");
+  const loadHistory = async (mobileArg?: string, railArg?: Rail) => {
+    const mobile = (typeof mobileArg === "string" ? mobileArg : historyMobile).trim();
+    if (!mobile) return toast.error("Enter a sender mobile");
+    const activeRail = railArg || rail;
     setIsHistoryLoading(true);
     try {
-      const fn = rail === "FT" ? adminListExternalFtByMobile : adminListIbftByMobile;
-      const res = await fn(historyMobile.trim(), 0, 20);
-      const payload = res?.data?.data ? res.data : res?.data || {};
-      const rows = payload?.data || payload || [];
+      const fn =
+        activeRail === "FT" ? adminListExternalFtByMobile : adminListIbftByMobile;
+      const res = await fn(mobile, 0, 20);
+      // Unwrap the response envelope: supports { data: [] }, { data: { content: [] } },
+      // { content: [] }, or a bare array.
+      const body = res?.data ?? {};
+      const inner = body?.data ?? body;
+      const rows = Array.isArray(inner)
+        ? inner
+        : inner?.content ?? inner?.data ?? [];
       setHistory(Array.isArray(rows) ? rows : []);
     } catch (error: any) {
       console.error(error);
@@ -495,7 +511,7 @@ const SendMoney = () => {
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={historyMobile}
               onChange={(e) => setHistoryMobile(e.target.value)}
-              onPressEnter={loadHistory}
+              onPressEnter={() => loadHistory()}
               style={{ width: 300, minWidth: 200, borderRadius: 2, height: 40 }}
             />
           </CardTitle>
