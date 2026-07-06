@@ -180,6 +180,16 @@ export function getClientRequestTestDetail(id: string) {
   return axiosMiddlewareThirdParty.get(`/api/v1/client-requests/test/${id}`);
 }
 
+export function getClientRequestDevList(page: number = 0, size: number = 10) {
+  return axiosMiddlewareThirdParty.get(
+    `/api/v1/client-requests/dev?page=${page}&size=${size}`
+  );
+}
+
+export function getClientRequestDevDetail(id: string) {
+  return axiosMiddlewareThirdParty.get(`/api/v1/client-requests/dev/${id}`);
+}
+
 export function getRequestDetail(requestId: number) {
   return axiosThirdParty.get(`/api/requests/detail/${requestId}`);
 }

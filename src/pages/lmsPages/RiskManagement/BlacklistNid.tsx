@@ -140,14 +140,6 @@ const BlacklistNid = () => {
       toast.error("National ID is required");
       return;
     }
-    if (!/^\d{10}$/.test(nid)) {
-      toast.error("National ID must be exactly 10 digits");
-      return;
-    }
-    if (nid[0] !== "1" && nid[0] !== "2") {
-      toast.error("National ID must start with 1 or 2");
-      return;
-    }
     if (!formData.reason.trim()) {
       toast.error("Reason is required");
       return;
@@ -366,19 +358,10 @@ const BlacklistNid = () => {
               <Input
                 placeholder="e.g. 1234567890"
                 value={formData.nationalId}
-                maxLength={10}
                 onChange={(e) => {
-                  const val = e.target.value.replace(/\D/g, "").slice(0, 10);
+                  const val = e.target.value;
                   setFormData({ ...formData, nationalId: val });
-                  if (!val) {
-                    setNidError("National ID is required");
-                  } else if (val.length < 10) {
-                    setNidError("National ID must be exactly 10 digits");
-                  } else if (val[0] !== "1" && val[0] !== "2") {
-                    setNidError("National ID must start with 1 or 2");
-                  } else {
-                    setNidError("");
-                  }
+                  setNidError(val.trim() ? "" : "National ID is required");
                 }}
                 className={nidError ? "border-red-500 focus-visible:ring-red-500" : ""}
               />

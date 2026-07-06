@@ -21,6 +21,7 @@ import ClientAdminList from "../pages/ThirdPartyDashboard/ClientAdminList";
 import AddEditClientAdmin from "../pages/ThirdPartyDashboard/AddEditClientAdmin";
 import ClientRequestProd from "../pages/ThirdPartyDashboard/ClientRequestProd";
 import ClientRequestDev from "../pages/ThirdPartyDashboard/ClientRequestDev";
+import ClientRequestDevDetail from "../pages/ThirdPartyDashboard/ClientRequestDevDetail";
 import ClientRequestTest from "../pages/ThirdPartyDashboard/ClientRequestTest";
 import ClientRequestTestDetail from "../pages/ThirdPartyDashboard/ClientRequestTestDetail";
 import RequestDetail from "../pages/ThirdPartyDashboard/RequestDetail";
@@ -1764,6 +1765,7 @@ export const router = createBrowserRouter([
          { path: "ThirdPartyManagement/Clients/:clientId/Admins/Edit/:id", element: <AddEditClientAdmin /> },
          { path: "ThirdPartyManagement/RequestHistory/ClientRequestProd", element: <ClientRequestProd /> },
          { path: "ThirdPartyManagement/RequestHistory/ClientRequestDev", element: <ClientRequestDev /> },
+         { path: "ThirdPartyManagement/RequestHistory/ClientRequestDev/:id", element: <ClientRequestDevDetail /> },
          { path: "ThirdPartyManagement/RequestHistory/ClientRequestTest", element: <ClientRequestTest /> },
          { path: "ThirdPartyManagement/RequestHistory/ClientRequestTest/:id", element: <ClientRequestTestDetail /> },
          { path: "ThirdPartyManagement/RequestHistory/RequestDetail/:id", element: <RequestDetail /> },
