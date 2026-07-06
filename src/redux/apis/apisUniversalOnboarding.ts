@@ -68,3 +68,65 @@ export function getSubmissionData(sessionId: string) {
 export function publishWorkflow(countryCode: string) {
   return axiosOnboardingService.post(`${BASE_PATH}/workflows/${countryCode}/publish`);
 }
+
+// 6. Onboarding Sessions (users currently going through onboarding)
+
+export interface OnboardingSessionStep {
+  stepId?: number | string;
+  stepName?: string;
+  orderIndex?: number;
+  status?: string;
+  completedAt?: string | null;
+  startedAt?: string | null;
+  data?: any;
+}
+
+export interface OnboardingSession {
+  workflowId?: string;
+  sessionId?: string;
+  userId?: string;
+  fullName?: string;
+  name?: string;
+  email?: string;
+  phone?: string;
+  mobile?: string;
+  flow?: string;
+  countryCode?: string;
+  status?: string;
+  currentStep?: string;
+  currentStepName?: string;
+  currentStepIndex?: number;
+  totalSteps?: number;
+  completedSteps?: number;
+  progress?: number;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+  steps?: OnboardingSessionStep[];
+  [key: string]: any;
+}
+
+export interface OnboardingSessionsParams {
+  page?: number;
+  size?: number;
+  status?: string;
+  flow?: string;
+  search?: string;
+}
+
+/** LIST — all onboarding users + current step + progress (Spring pageable). */
+export function getOnboardingSessions(params: OnboardingSessionsParams = {}) {
+  return axiosOnboardingService.get(`${BASE_PATH}/sessions`, {
+    params: {
+      page: params.page ?? 0,
+      size: params.size ?? 20,
+      status: params.status || undefined,
+      flow: params.flow || undefined,
+      search: params.search || undefined,
+    },
+  });
+}
+
+/** DETAIL — full first→last step timeline for one user. */
+export function getOnboardingSessionDetail(workflowId: string) {
+  return axiosOnboardingService.get(`${BASE_PATH}/sessions/${workflowId}`);
+}

@@ -2069,6 +2069,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             pathname.includes("/CostByCustomer") ||
             pathname.includes("/OnboardingCostByCustomer"),
         },
+        {
+          label: "Users",
+          Link: "OnboardingUsers",
+          LinkLable: "/LOS/CustomerManagement",
+          active: pathname.includes("/OnboardingUsers"),
+        },
       ].filter(Boolean),
     },
     hasAccess("RISK") && {

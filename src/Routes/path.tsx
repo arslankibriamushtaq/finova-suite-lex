@@ -226,6 +226,8 @@ import RescheduleConfigManagement from "../pages/lmsPages/Settings/RescheduleCon
 import DunningPolicyManagement from "../pages/lmsPages/Settings/DunningPolicyManagement";
 import GeneralCreditScoring from "../pages/lmsPages/Settings/GeneralCreditScoring";
 import WalletTransactionLimits from "../pages/lmsPages/CustomerManagement/WalletTransactionLimits";
+import OnboardingUsers from "../pages/lmsPages/CustomerManagement/OnboardingUsers";
+import OnboardingUserDetail from "../pages/lmsPages/CustomerManagement/OnboardingUserDetail";
 import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
@@ -800,6 +802,14 @@ export const router = createBrowserRouter([
             element: <OnboardingCostByCustomer />,
           },
           { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
+          {
+            path: "/LOS/CustomerManagement/OnboardingUsers",
+            element: <OnboardingUsers />,
+          },
+          {
+            path: "/LOS/CustomerManagement/OnboardingUsers/:workflowId",
+            element: <OnboardingUserDetail />,
+          },
           {
             path: "/LOS/CustomerManagement/WalletTransactionLimits",
             element: <WalletTransactionLimits />,
