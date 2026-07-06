@@ -7,11 +7,11 @@ stages:
 clone-dev:
   stage: clone
   tags:
-    - sullis-digital
+    - new_mytm_dev
   variables:
     GIT_STRATEGY: none
   script:
-    - cd /opt/react-dashboard
+    - cd /www/wwwroot/react-projects/financing-dashboard.xintdev.com
     - git pull origin sullis-digital
     - ./deploy.sh
     - echo "Code updated successfully"
