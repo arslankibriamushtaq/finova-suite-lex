@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { History, ChevronDown, Eye } from "lucide-react";
+import { History, ChevronDown, Eye, Search, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -21,6 +21,7 @@ const ClientRequestDev = () => {
   const [totalPage, setTotalPage] = useState(0);
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(0);
+  const [search, setSearch] = useState("");
 
   const extractItems = (root: any): any[] => {
     const items =
@@ -81,6 +82,38 @@ const ClientRequestDev = () => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize]);
+
+  // Client-side search over the loaded rows across the visible columns.
+  const filteredData = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return data;
+    return data.filter((row) => {
+      const haystack = [
+        row.requestId,
+        row.id,
+        row.apiCode,
+        row.clientName,
+        row.client?.name,
+        row.serviceName,
+        row.service?.name,
+        row.serviceId,
+        row.apiName,
+        row.api?.name,
+        row.endpoint,
+        row.mobilePhone,
+        row.mobile,
+        row.phone,
+        row.phoneNumber,
+        row.nid,
+        row.nationalId,
+        row.responseStatus ?? row.statusCode ?? row.status,
+      ]
+        .filter((v) => v !== undefined && v !== null)
+        .join(" ")
+        .toLowerCase();
+      return haystack.includes(q);
+    });
+  }, [data, search]);
 
   const handleView = (row: any) => {
     const id = row.id || row.requestId || row.uuid;
@@ -229,21 +262,51 @@ const ClientRequestDev = () => {
         </h3>
       </div>
 
+      {/* Filters card */}
+      <div className="pro-card p-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <div
+            className="d-flex align-items-center gap-1 border px-2"
+            style={{ borderRadius: 2, height: 34, flex: "1 1 240px", minWidth: 200 }}
+          >
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search ID, API, client, status…"
+              style={{ flex: 1, border: "none", outline: "none", background: "transparent" }}
+              className="text-sm"
+            />
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="text-muted-foreground hover:text-foreground"
+                aria-label="Clear search"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Table card */}
       <div className="pro-card">
         <TableView
           header={headers}
-          data={data}
-          totalRows={totalRows}
+          data={filteredData}
+          totalRows={search ? filteredData.length : totalRows}
           isLoading={loading}
-          from={from}
-          to={to}
+          from={search ? (filteredData.length ? 1 : 0) : from}
+          to={search ? filteredData.length : to}
           page={page}
           totalPage={totalPage}
           setPage={setPage}
           pageSize={pageSize}
           setPageSize={setPageSize}
-          paginationShow={true}
+          paginationShow={!search}
         />
       </div>
     </div>
