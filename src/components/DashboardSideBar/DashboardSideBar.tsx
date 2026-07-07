@@ -3,7 +3,7 @@ import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import "./DashboardSideBar.css";
 import { Images } from "../Config/Images";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
@@ -161,7 +161,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   }, []);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
     const toggled = useSelector((state: RootState) => state.block.toggled);
   const reduxCollapsed = useSelector((state: RootState) => state.block.collapsed);
   const isCollapsed = effectiveCollapsed !== undefined ? effectiveCollapsed : reduxCollapsed;
@@ -2538,11 +2537,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             src={isCollapsed ? Images.SullisFavicon : Images.DashboardLogo}
             alt="logo"
             className="sidebar-logo sidebar-logo--light"
-            onClick={() => navigate("/LOS/Dashboard")}
             style={{
               width: isCollapsed ? "40px" : "150px",
               height: "auto",
-              cursor: "pointer",
+              cursor: "default",
               transition: "width 0.3s ease"
             }}
           />
@@ -2550,11 +2548,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             src={isCollapsed ? Images.SullisFavicon : Images.DashboardLogoWhite}
             alt="logo"
             className="sidebar-logo sidebar-logo--dark"
-            onClick={() => navigate("/LOS/Dashboard")}
             style={{
               width: isCollapsed ? "40px" : "150px",
               height: "auto",
-              cursor: "pointer",
+              cursor: "default",
               transition: "width 0.3s ease"
             }}
           />
