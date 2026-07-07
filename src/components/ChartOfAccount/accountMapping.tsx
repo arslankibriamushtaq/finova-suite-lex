@@ -37,6 +37,15 @@ const AccountMapping = () => {
 
   const navigate = useNavigate();
 
+  // Display-only rename: show "Micro financing" products as "General Accounts".
+  const getProductDisplayName = (name?: string) => {
+    const normalized = (name || "").toLowerCase().replace(/\s+/g, "");
+    if (normalized === "microfinancing" || normalized === "microfinance") {
+      return "General Accounts";
+    }
+    return name;
+  };
+
   const fetchInitialData = async () => {
     try {
       setLoading(true);
@@ -267,7 +276,7 @@ const AccountMapping = () => {
                 >
                   {prodId?.map((option: any) => (
                     <Select.Option key={option.id} value={option.id}>
-                      {option?.nameEn}
+                      {getProductDisplayName(option?.nameEn)}
                     </Select.Option>
                   ))}
                 </Select>

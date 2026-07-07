@@ -2463,3 +2463,61 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
 .dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after {
   background-color: #ffffff;
 }
+
+/* Underline nav tabs — matches the CoaConfiguration look: dark bold active label
+   with an emerald underline, gray inactive labels, no boxes/backgrounds. */
+.coa-tabs {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  height: auto !important;
+  gap: 0 !important;
+  justify-content: flex-start !important;
+  width: fit-content;
+  border-bottom: 1px solid var(--border);
+}
+.coa-tabs .coa-tab-trigger {
+  flex: 0 0 auto !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--muted-foreground) !important;
+  padding: 8px 14px !important;
+  font-size: 13px;
+  font-weight: 400;
+  height: auto !important;
+  box-shadow: none !important;
+  outline: none !important;
+  position: relative;
+  transition: color 0.15s ease;
+}
+.coa-tabs .coa-tab-trigger:hover {
+  color: var(--foreground) !important;
+}
+.coa-tabs .coa-tab-trigger[data-state="active"] {
+  color: var(--foreground) !important;
+  background: transparent !important;
+  font-weight: 600;
+  box-shadow: none !important;
+}
+.coa-tabs .coa-tab-trigger[data-state="active"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background-color: var(--primary);
+}
+
+/* Compact form fields for the Send Money forms — 13px inputs, labels and
+   placeholders to match the smaller tab labels. */
+.coa-form label,
+.coa-form input,
+.coa-form textarea {
+  font-size: 13px !important;
+}
+.coa-form input::placeholder,
+.coa-form textarea::placeholder {
+  font-size: 13px !important;
+}

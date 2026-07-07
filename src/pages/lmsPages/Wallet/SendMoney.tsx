@@ -1,6 +1,6 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { Send, Banknote, Building2, History } from "lucide-react";
+import { Send, History } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -303,18 +303,18 @@ const SendMoney = () => {
         </CardHeader>
         <CardContent>
           <Tabs value={rail} onValueChange={(v) => setRail(v as Rail)}>
-            <TabsList className="mb-4 wallet-tabs">
-              <TabsTrigger value="FT" className="gap-2 wallet-tab-trigger">
-                <Banknote className="h-4 w-4" /> FT (Scotia RTP)
+            <TabsList className="mb-4 coa-tabs">
+              <TabsTrigger value="FT" className="coa-tab-trigger">
+                FT (Scotia RTP)
               </TabsTrigger>
-              <TabsTrigger value="IBFT" className="gap-2 wallet-tab-trigger">
-                <Building2 className="h-4 w-4" /> IBFT (Scotia EFT)
+              <TabsTrigger value="IBFT" className="coa-tab-trigger">
+                IBFT (Scotia EFT)
               </TabsTrigger>
             </TabsList>
 
             {/* FT form */}
             <TabsContent value="FT">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
                 <FormField label="Sender Mobile" required>
                   <Input
                     placeholder="+9665XXXXXXXX"
@@ -406,7 +406,7 @@ const SendMoney = () => {
 
             {/* IBFT form */}
             <TabsContent value="IBFT">
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
                 <FormField label="Sender Mobile" required>
                   <Input
                     placeholder="+9665XXXXXXXX"
