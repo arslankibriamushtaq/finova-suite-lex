@@ -48,7 +48,6 @@ import {
   cardStatusClasses,
   shipmentStatusClasses,
   prettyEnum,
-  isPhysical,
 } from "./cardConstants";
 import IssueCardDialog from "./components/IssueCardDialog";
 import LimitsDialog from "./components/LimitsDialog";
@@ -231,17 +230,15 @@ const CardsList = () => {
                 View details
               </DropdownMenuItem>
 
-              {isPhysical(row.cardType) && (
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    setTrackingId(row.id);
-                  }}
-                >
-                  <Truck className="h-4 w-4" />
-                  Tracking
-                </DropdownMenuItem>
-              )}
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setTrackingId(row.id);
+                }}
+              >
+                <Truck className="h-4 w-4" />
+                Tracking
+              </DropdownMenuItem>
 
               <DropdownMenuItem
                 onSelect={(e) => {
