@@ -133,7 +133,6 @@ const OnboardingUsers = () => {
   const [status, setStatus] = useState("ALL");
   const [flow, setFlow] = useState("ALL");
   const [searchInput, setSearchInput] = useState("");
-  const [search, setSearch] = useState("");
 
   // Pagination (Spring pageable is 0-based; TableView is 1-based)
   const [page, setPage] = useState(1);
@@ -146,7 +145,7 @@ const OnboardingUsers = () => {
   useEffect(() => {
     loadSessions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [page, pageSize, status, flow, search]);
+  }, [page, pageSize, status, flow]);
 
   const loadSessions = async () => {
     setIsLoading(true);
@@ -156,7 +155,6 @@ const OnboardingUsers = () => {
         size: pageSize,
         status: status === "ALL" ? undefined : status,
         flow: flow === "ALL" ? undefined : flow,
-        search: search || undefined,
       });
 
       const body = res?.data?.data ?? res?.data ?? {};
@@ -188,10 +186,27 @@ const OnboardingUsers = () => {
     }
   };
 
-  const applySearch = () => {
-    setPage(1);
-    setSearch(searchInput.trim());
-  };
+  // Client-side search over the loaded rows — the onboarding API ignores the
+  // `search` param, so we filter what's already fetched. Live, as-you-type.
+  // Note: this only matches records on the loaded page(s) and only visible
+  // (masked) values.
+  const q = searchInput.trim().toLowerCase();
+  const filteredData = q
+    ? data.filter((row) => {
+        const haystack = [
+          getName(row),
+          getContact(row),
+          getFlow(row),
+          getCurrentStep(row),
+          row.status,
+          getWorkflowId(row),
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        return haystack.includes(q);
+      })
+    : data;
 
   const openDetail = (row: OnboardingSession) => {
     const wf = getWorkflowId(row);
@@ -327,7 +342,6 @@ const OnboardingUsers = () => {
               type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && applySearch()}
               placeholder="Search name, email, phone…"
               style={{ flex: 1, border: "none", outline: "none", background: "transparent" }}
               className="text-sm"
@@ -384,7 +398,7 @@ const OnboardingUsers = () => {
       <div className="pro-card">
         <TableView
           header={headers}
-          data={data}
+          data={filteredData}
           isLoading={isLoading}
           paginationShow
           page={page}
