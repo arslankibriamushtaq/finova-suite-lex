@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
-import { RefreshCw, Search, Eye, ChevronDown, Users } from "lucide-react";
+import { Input } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
+import { RefreshCw, Eye, ChevronDown, Users } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -333,20 +335,14 @@ const OnboardingUsers = () => {
       {/* Filters card */}
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <div
-            className="d-flex align-items-center gap-1 border px-2"
-            style={{ borderRadius: 2, height: 34, flex: "1 1 240px", minWidth: 200 }}
-          >
-            <Search className="h-4 w-4 text-muted-foreground" />
-            <input
-              type="text"
-              value={searchInput}
-              onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search name, email, phone…"
-              style={{ flex: 1, border: "none", outline: "none", background: "transparent" }}
-              className="text-sm"
-            />
-          </div>
+          <Input
+            allowClear
+            placeholder="Search name, email, phone…"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={searchInput}
+            onChange={(e) => setSearchInput(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
           <div style={{ width: 160 }}>
             <Select
               value={flow}
