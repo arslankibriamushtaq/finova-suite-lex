@@ -113,6 +113,22 @@ export function updateAdminCardFee(body: {
   return axiosCardManagement.put(`/api/v1/admin/cards/fees`, body);
 }
 
+// 4.8b — Tier spend limits (min/max spend per tier + spend category, e.g. POS/ATM)
+export function getAdminTierSpendLimits() {
+  return axiosCardManagement.get(`/api/v1/admin/cards/tier-spend-limits`);
+}
+
+export interface TierSpendLimitCell {
+  tier: string;
+  category: string;
+  minLimit: number;
+  maxLimit: number;
+}
+
+export function updateAdminTierSpendLimits(body: { cells: TierSpendLimitCell[] }) {
+  return axiosCardManagement.put(`/api/v1/admin/cards/tier-spend-limits`, body);
+}
+
 // 4.9 — Card transactions (per-card statement, newest first)
 export function getAdminCardTransactions(id: string) {
   return axiosCardManagement.get(`/api/v1/admin/cards/${id}/transactions`);

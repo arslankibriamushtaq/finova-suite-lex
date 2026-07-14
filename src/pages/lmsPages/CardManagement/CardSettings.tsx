@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { Pencil, SlidersHorizontal, Coins, ChevronDown } from "lucide-react";
+import { Pencil, SlidersHorizontal, Coins, ChevronDown, Wallet } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import {
   DropdownMenu,
@@ -23,6 +23,8 @@ import {
   updateAdminTierLimit,
   getAdminCardFees,
   updateAdminCardFee,
+  getAdminTierSpendLimits,
+  updateAdminTierSpendLimits,
 } from "../../../redux/apis/apisCardManagement";
 import { CARD_TYPE_LABELS, prettyEnum, formatMoney } from "./cardConstants";
 
@@ -358,6 +360,172 @@ const FeesTab = () => {
   );
 };
 
+// ---- Tier spend limits section (min/max spend per tier + category) --------
+const unwrapCells = (res: any): any[] => {
+  const body = res?.data;
+  const d = body?.data ?? body;
+  if (Array.isArray(d?.cells)) return d.cells;
+  if (Array.isArray(d)) return d;
+  if (Array.isArray(body?.cells)) return body.cells;
+  return [];
+};
+
+const TierSpendLimitsTab = () => {
+  const [rows, setRows] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [editRow, setEditRow] = useState<any | null>(null);
+  const [minLimit, setMinLimit] = useState("");
+  const [maxLimit, setMaxLimit] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+
+  const load = () => {
+    setIsLoading(true);
+    getAdminTierSpendLimits()
+      .then((res) => setRows(unwrapCells(res)))
+      .catch((e: any) => {
+        if (!e?.response?.data?.message) toast.error("Failed to load card limits");
+      })
+      .finally(() => setIsLoading(false));
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const openEdit = (row: any) => {
+    setEditRow(row);
+    setMinLimit(row.minLimit ?? "");
+    setMaxLimit(row.maxLimit ?? "");
+  };
+
+  const save = async () => {
+    if (!editRow) return;
+    if (minLimit === "" || maxLimit === "") return toast.error("Both limits are required");
+    if (Number(minLimit) < 0 || Number(maxLimit) < 0) return toast.error("Limits must be ≥ 0");
+    if (Number(maxLimit) < Number(minLimit))
+      return toast.error("Max limit must be ≥ min limit");
+    try {
+      setIsSaving(true);
+      await updateAdminTierSpendLimits({
+        cells: [
+          {
+            tier: editRow.tier,
+            category: editRow.category,
+            minLimit: Number(minLimit),
+            maxLimit: Number(maxLimit),
+          },
+        ],
+      });
+      toast.success("Card limit updated");
+      setEditRow(null);
+      load();
+    } catch (e: any) {
+      if (!e?.response?.data?.message) toast.error("Failed to update card limit");
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="pro-card overflow-hidden">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="text-left" style={{ background: "var(--theme-table-background-color)" }}>
+            <th className="px-4 py-3 font-semibold text-white">Tier</th>
+            <th className="px-4 py-3 font-semibold text-white">Category</th>
+            <th className="px-4 py-3 font-semibold text-white">Min Limit</th>
+            <th className="px-4 py-3 font-semibold text-white">Max Limit</th>
+            <th className="px-4 py-3 font-semibold text-white text-right">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {isLoading ? (
+            <tr>
+              <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                Loading...
+              </td>
+            </tr>
+          ) : rows.length === 0 ? (
+            <tr>
+              <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
+                No card limits configured
+              </td>
+            </tr>
+          ) : (
+            rows.map((row) => (
+              <tr
+                key={`${row.tier}-${row.category}`}
+                className="border-t"
+                style={{ borderColor: "var(--surface-border)" }}
+              >
+                <td className="px-4 py-3 font-medium">{prettyEnum(row.tier)}</td>
+                <td className="px-4 py-3">{prettyEnum(row.category)}</td>
+                <td className="px-4 py-3">{formatMoney(row.minLimit)}</td>
+                <td className="px-4 py-3">{formatMoney(row.maxLimit)}</td>
+                <td className="px-4 py-3 text-right">
+                  <div className="inline-block text-left" onClick={(e) => e.stopPropagation()}>
+                    <DropdownMenu modal={false}>
+                      <DropdownMenuTrigger asChild>
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                        >
+                          Select
+                          <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                        </button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                        <DropdownMenuItem
+                          onSelect={(e) => {
+                            e.preventDefault();
+                            openEdit(row);
+                          }}
+                        >
+                          <Pencil className="h-4 w-4" />
+                          Edit
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
+      </table>
+
+      <Dialog open={!!editRow} onOpenChange={(o) => !o && setEditRow(null)}>
+        <DialogContent className="pro-dialog sm:max-w-[460px]">
+          <DialogHeader>
+            <DialogTitle>
+              Edit Limit —{" "}
+              {editRow ? `${prettyEnum(editRow.tier)} · ${prettyEnum(editRow.category)}` : ""}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Min Limit</Label>
+              <Input type="number" value={minLimit} onChange={(e) => setMinLimit(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Max Limit</Label>
+              <Input type="number" value={maxLimit} onChange={(e) => setMaxLimit(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditRow(null)} disabled={isSaving}>
+              Cancel
+            </Button>
+            <Button onClick={save} disabled={isSaving}>
+              {isSaving ? "Saving..." : "Update"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+  );
+};
+
 const CardSettings = () => {
   return (
     <div className="service card-settings-page">
@@ -474,6 +642,10 @@ const CardSettings = () => {
             <Coins className="h-4 w-4" />
             Order Fees
           </TabsTrigger>
+          <TabsTrigger value="spend-limits" className="gap-2">
+            <Wallet className="h-4 w-4" />
+            Card Limits
+          </TabsTrigger>
         </TabsList>
         <TabsContent value="tier-limits">
           <p className="text-sm text-muted-foreground mb-3">
@@ -488,6 +660,13 @@ const CardSettings = () => {
             and configure fees only.
           </p>
           <FeesTab />
+        </TabsContent>
+        <TabsContent value="spend-limits">
+          <p className="text-sm text-muted-foreground mb-3">
+            Min / max spend limits per tier and spend category (e.g. POS, ATM). These bound the
+            limits that can be set on cards of each tier.
+          </p>
+          <TierSpendLimitsTab />
         </TabsContent>
       </Tabs>
     </div>
