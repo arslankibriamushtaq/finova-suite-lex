@@ -33,7 +33,9 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { useTranslation } from "react-i18next";
 const ProductCategories = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -76,14 +78,14 @@ const ProductCategories = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -96,25 +98,25 @@ const ProductCategories = () => {
     //   // width: "15%",
     // },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
        width: "200px",
     },
     {
-      name: "Slug",
+      name: t("productCategories.col.slug"),
       selector: (row: { slug: any }) => row.slug,
       // sortable: true,
       width: "200px",
     },
     {
-      name: "Parent",
+      name: t("productCategories.col.parent"),
       selector: (row: { parent: any }) => row.parent,
       // sortable: true,
       // width: "75%",
     },
     {
-      name: "By Default",
+      name: t("productCategories.col.byDefault"),
       cell: (row: any) => (
         <div
           style={{
@@ -131,12 +133,12 @@ const ProductCategories = () => {
             cursor: row.is_default === 1 ? "pointer" : "default",
           }}
         >
-          {row.is_default == 1 ? "Active" : "Inactive"}
+          {row.is_default == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Set Default",
+      name: t("productCategories.col.setDefault"),
       cell: (row: any) => (
         <Switch
           className="red-switch"
@@ -169,7 +171,7 @@ const ProductCategories = () => {
       ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -186,12 +188,12 @@ const ProductCategories = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("shared.changeStatus"),
       cell: (row: any) => (
         <Switch
           className="red-switch"
@@ -365,7 +367,7 @@ const ProductCategories = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -384,7 +386,7 @@ const ProductCategories = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -400,7 +402,7 @@ const ProductCategories = () => {
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -422,13 +424,13 @@ const ProductCategories = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("productCategories.modal.editTitle") : t("shared.addNewRecord")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -438,7 +440,7 @@ const ProductCategories = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -446,11 +448,11 @@ const ProductCategories = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={12}>
-                <label className="fw-400">Reason</label>
+                <label className="fw-400">{t("productCategories.label.reason")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Reason"
+                  placeholder={t("productCategories.ph.reason")}
                   value={formData.reason}
                   onChange={(e: any) =>
                     setFormData({ ...formData, reason: e.target.value })
@@ -458,10 +460,10 @@ const ProductCategories = () => {
                 />
                 </Col>
                 <Col className = "px-2" md={12}>
-                <label className="fw-400">Type</label>
+                <label className="fw-400">{t("common:type")}</label>
                 <Select
                   className="fs-6"
-                  placeholder="Select type"
+                  placeholder={t("productCategories.ph.selectType")}
                   value={formData.type_id}
                   onChange={(e: any) =>
                     setFormData({ ...formData, type_id: e})
@@ -485,10 +487,10 @@ const ProductCategories = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("productCategories.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("productCategories.modal.deleteTitle")
           }
           /* footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
@@ -508,10 +510,10 @@ const ProductCategories = () => {
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("productCategories.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("productCategories.confirmAddBody")
+                : t("productCategories.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

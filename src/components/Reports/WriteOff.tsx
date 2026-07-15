@@ -10,8 +10,10 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const WriteOff = () => {
+  const { t } = useTranslation("reports");
   const [period, setPeriod] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -47,7 +49,7 @@ const WriteOff = () => {
       }
     } catch (error: any) {
       console.error("Error fetching write off loans:", error);
-      toast.error(error?.message || "Failed to fetch write off loans");
+      toast.error(error?.message || t("writeOff.toast.fetchError"));
       setAllCallActivity([]);
     } finally {
       setLoading(false);
@@ -111,32 +113,32 @@ const WriteOff = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Loan ID",
+      name: t("writeOff.col.loanId"),
       selector: (row: any) => row.loanId,
       width: "200px",
     },
     {
-      name: "Customer ID",
+      name: t("writeOff.col.customerId"),
       selector: (row: any) => row.customerId,
       width: "200px",
     },
     {
-      name: "Write Off Date",
+      name: t("writeOff.col.writeOffDate"),
       selector: (row: any) => formatDate(row.writeOffDate),
     },
     {
-      name: "Principal Written Off",
+      name: t("writeOff.col.principalWrittenOff"),
       cell: (row: any) => <span>{formatNumber(row.principalWrittenOff)} SAR</span>,
     },
     {
-      name: "Provision Released",
+      name: t("writeOff.col.provisionReleased"),
       cell: (row: any) => <span>{formatNumber(row.provisionReleased)} SAR</span>,
     },
   ];
 
   const exportToCSV = () => {
     if (!mappedData.length) {
-      toast.error("No data to export");
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvHeaders = [
@@ -165,7 +167,7 @@ const WriteOff = () => {
           <span className="pro-head-badge">
             <FileX2 className="h-4 w-4" />
           </span>
-          Write Off Loan
+          {t("writeOff.title")}
         </h3>
       </div>
 
@@ -173,7 +175,7 @@ const WriteOff = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by loan ID, customer ID, date"
+          placeholder={t("writeOff.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -181,7 +183,7 @@ const WriteOff = () => {
         />
         <DatePicker
           picker="month"
-          placeholder="Period"
+          placeholder={t("writeOff.period")}
           value={period}
           onChange={(date) => setPeriod(date)}
           format="YYYY-MM"
@@ -195,7 +197,7 @@ const WriteOff = () => {
           disabled={!mappedData.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t("action.exportCsv")}
         </button>
         </div>
       </div>

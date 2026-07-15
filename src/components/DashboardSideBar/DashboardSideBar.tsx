@@ -8,6 +8,7 @@ import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
 import SubHeaderFlowLms from "../DashboardHeader/SubHeaderFlowLms";
+import { useTranslation } from "react-i18next";
 import { FaMobileAlt, FaTimes } from "react-icons/fa";
 import {
   LayoutDashboard,
@@ -77,6 +78,88 @@ const DEFAULT_MI_COLOR = "#10b981";
 const getModuleTheme = (label?: string) =>
   label ? MODULE_THEME[label.trim().toLowerCase()] : undefined;
 
+// Map each English sidebar label (kept as the item's stable identity — it drives
+// icon/color lookup via MODULE_THEME, active-tab comparisons, and module reuse)
+// to its translation key. Labels are translated ONLY at render time via tr()
+// below, so none of that logic is affected.
+const SIDEBAR_LABEL_KEYS: Record<string, string> = {
+  Dashboard: "dashboard",
+  "Notification Orchestrator": "notificationOrchestrator",
+  "Customer Management": "customerManagement",
+  Users: "users",
+  Customers: "customers",
+  "Risk Management": "riskManagement",
+  "Blacklist NID": "blacklistNid",
+  "Blacklist Mobile": "blacklistMobile",
+  "Fraud Rule Management": "fraudRuleManagement",
+  "Internal Checks Config": "internalChecksConfig",
+  "Device Management": "deviceManagement",
+  "Card Management": "cardManagement",
+  Cards: "cards",
+  "Card Products": "cardProducts",
+  "Card Settings": "cardSettings",
+  "Block Codes": "blockCodes",
+  "All Block Codes": "allBlockCodes",
+  Compliance: "compliance",
+  AML: "aml",
+  "Anti-Fraud": "antiFraud",
+  Sanction: "sanction",
+  "Access Control Management": "accessControlManagement",
+  Employees: "employees",
+  "Manage Roles": "manageRoles",
+  "Manage Permissions": "managePermissions",
+  "Send Money": "sendMoney",
+  "Internal Transfer": "internalTransfer",
+  "Wallet Transactions Limits": "walletTransactionsLimits",
+  Ledger: "ledger",
+  "General Credit Scoring": "generalCreditScoring",
+  "Accounts Limit Setting": "accountsLimitSetting",
+  Financing: "financing",
+  LOS: "los",
+  "Product Management": "productManagement",
+  Products: "products",
+  "Contract Template": "contractTemplate",
+  "Product Category": "productCategory",
+  "Product Sub Category": "productSubCategory",
+  LOV: "lov",
+  "Source Of Income": "sourceOfIncome",
+  Occupation: "occupation",
+  "Source Of Wealth": "sourceOfWealth",
+  "Source Of Funds": "sourceOfFunds",
+  "Template Types": "templateTypes",
+  "Net Worth Ranges": "netWorthRanges",
+  "Purpose of Financing": "purposeOfFinancing",
+  "Credit Scoring Definitions": "creditScoringDefinitions",
+  "Approval Conditions": "approvalConditions",
+  LMS: "lms",
+  "Loan Management": "loanManagement",
+  "All Applications": "allApplications",
+  Reports: "reports",
+  "Account Report": "accountReport",
+  "Simah Report": "simahReport",
+  "Accounting & Financing": "accountingFinancing",
+  "Loans Reports": "loansReports",
+  "Chart of account": "chartOfAccount",
+  Accounts: "accounts",
+  "COA Configuration": "coaConfiguration",
+  "Chart of accounts field": "chartOfAccountsField",
+  Collections: "collections",
+  "Waiver Requests": "waiverRequests",
+  Setting: "setting",
+  Delinquency: "delinquency",
+  Rescheduling: "rescheduling",
+  "Dunning Policy": "dunningPolicy",
+  "Connector Management": "connectorManagement",
+  "Environment Settings": "environmentSettings",
+  Providers: "providers",
+  "All Provider APIs": "allProviderApis",
+  "Clients Management": "clientsManagement",
+  Clients: "clients",
+  "Client Request Prod": "clientRequestProd",
+  "Client Request Dev": "clientRequestDev",
+  "Client Request Test": "clientRequestTest",
+};
+
 /* Renders a colored lucide icon when the label is a known module; otherwise
    falls back to the legacy PNG icon (or nothing). */
 const ModuleIcon: React.FC<{ label?: string; fallback?: string; size?: number }> = ({
@@ -94,6 +177,11 @@ const ModuleIcon: React.FC<{ label?: string; fallback?: string; size?: number }>
 };
 
 const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolean }) => {
+  const { t, i18n } = useTranslation("sidebar");
+  // RTL for Arabic — react-pro-sidebar flips submenu expand arrows + padding.
+  const isRTL = i18n.dir() === "rtl";
+  const tr = (label?: string) =>
+    label && SIDEBAR_LABEL_KEYS[label] ? t(SIDEBAR_LABEL_KEYS[label]) : label;
   const [openSubmenuIndices, setOpenSubmenuIndices] = useState<number[]>([]);
   const [openNestedSubmenus, setOpenNestedSubmenus] = useState<Record<string, boolean>>({});
   // Pages that live under BOTH tabs (Customers, General Setting). For these we
@@ -2433,7 +2521,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         return (
           <SubMenu
             key={key}
-            label={<span className="sidebar-label-text">{it.label}</span>}
+            label={<span className="sidebar-label-text">{tr(it.label)}</span>}
             open={isOpen}
             className="nested-submenu"
             rootStyles={{ ["--mi-color" as any]: getModuleTheme(it.label)?.color }}
@@ -2465,7 +2553,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               ) : null
             }
           >
-            <span className="sidebar-label-text">{it.label}</span>
+            <span className="sidebar-label-text">{tr(it.label)}</span>
           </MenuItem>
         </Link>
       );
@@ -2488,7 +2576,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       style={{ ["--mi-color" as any]: getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR }}
     >
       <SubMenu
-        label={<span className="sidebar-label-text">{item.label}</span>}
+        label={<span className="sidebar-label-text">{tr(item.label)}</span>}
         icon={<ModuleIcon label={item.label} fallback={item.img} />}
         // defaultOpen={item.active}
         open={openSubmenuIndices.includes(index)}
@@ -2509,6 +2597,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   return (
     <>
       <Sidebar
+        rtl={isRTL}
         transitionDuration={0}
         onBackdropClick={() => dispatch(authSlice.actions.toggleSidebar())}
         toggled={toggled}
@@ -2591,7 +2680,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                           active={item.active}
                           icon={<ModuleIcon label={item.label} fallback={item.img} />}
                         >
-                          {item.label}
+                          {tr(item.label)}
                         </MenuItem>
                       </Link>
                     </div>

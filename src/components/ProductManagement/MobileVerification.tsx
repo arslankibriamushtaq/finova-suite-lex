@@ -1,23 +1,25 @@
 import { Input } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 
 function MobileVerification({ setSelectedTab }: any) {
+  const { t } = useTranslation("productManagement2");
   return (
     <div>
       <h1
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Mobile Verification
+        {t("verification.mobileVerification")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -26,10 +28,10 @@ function MobileVerification({ setSelectedTab }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -40,10 +42,10 @@ function MobileVerification({ setSelectedTab }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -52,10 +54,10 @@ function MobileVerification({ setSelectedTab }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -67,15 +69,15 @@ function MobileVerification({ setSelectedTab }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            App Id
+            {t("verification.appId")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -84,10 +86,10 @@ function MobileVerification({ setSelectedTab }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            App Key
+            {t("verification.appKey")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -98,10 +100,10 @@ function MobileVerification({ setSelectedTab }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Service Key
+            {t("verification.serviceKey")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -110,10 +112,10 @@ function MobileVerification({ setSelectedTab }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Organization Number
+            {t("verification.organizationNumber")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -126,14 +128,14 @@ function MobileVerification({ setSelectedTab }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -145,7 +147,7 @@ function MobileVerification({ setSelectedTab }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 

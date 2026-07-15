@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { Users, Landmark, Globe, RefreshCw, Inbox, X } from "lucide-react";
 
 import {
@@ -33,7 +34,9 @@ const formatDate = (dateString?: string | null) => {
   }
 };
 
-const ActiveBadge = ({ active }: { active?: boolean }) => (
+const ActiveBadge = ({ active }: { active?: boolean }) => {
+  const { t } = useTranslation("walletBlocks");
+  return (
   <span
     className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium"
     style={{
@@ -45,9 +48,10 @@ const ActiveBadge = ({ active }: { active?: boolean }) => (
       className="inline-block h-1.5 w-1.5 rounded-full"
       style={{ backgroundColor: active ? "rgb(34,197,94)" : "rgb(148,163,184)" }}
     />
-    {active ? "Active" : "Inactive"}
+    {active ? t("beneficiaries.active") : t("beneficiaries.inactive")}
   </span>
-);
+  );
+};
 
 const StatCard = ({
   label,
@@ -87,7 +91,7 @@ const SectionTitle = ({
     <span className="text-muted-foreground">{icon}</span>
     <span style={{ fontSize: "0.95rem", fontWeight: 600 }}>{label}</span>
     <span
-      className="ml-1 inline-flex min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-semibold"
+      className="ms-1 inline-flex min-w-[20px] items-center justify-center rounded-full px-1.5 text-xs font-semibold"
       style={{ backgroundColor: "var(--muted)", color: "var(--muted-foreground)" }}
     >
       {count}
@@ -172,6 +176,7 @@ const mono = (v: React.ReactNode) => (
 );
 
 const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
+  const { t } = useTranslation("walletBlocks");
   const [data, setData] = useState<CustomerBeneficiariesResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -190,7 +195,7 @@ const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
       } catch (error) {
         console.error(error);
         if (!cancelled) {
-          toast.error("Failed to load beneficiaries");
+          toast.error(t("beneficiaries.toast.loadFailed"));
           setData(null);
         }
       } finally {
@@ -221,7 +226,7 @@ const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close"
+            aria-label={t("common:close")}
             className="absolute flex items-center justify-center rounded-full transition-colors"
             style={{
               top: 16,
@@ -251,10 +256,10 @@ const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
             <span className="wallet-brand-bg inline-flex h-9 w-9 items-center justify-center rounded-lg">
               <Users className="h-5 w-5" />
             </span>
-            Customer Beneficiaries
+            {t("beneficiaries.title")}
           </DialogTitle>
           <DialogDescription style={{ marginTop: 2 }}>
-            Saved IBAN and external (IBFT) payees for this customer.
+            {t("beneficiaries.subtitle")}
           </DialogDescription>
         </DialogHeader>
 
@@ -262,20 +267,20 @@ const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
           {isLoading ? (
             <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
               <RefreshCw className="h-4 w-4 animate-spin" />
-              Loading beneficiaries...
+              {t("beneficiaries.loading")}
             </div>
           ) : (
             <div className="space-y-5">
               {/* Stat cards */}
               <div className="flex gap-3">
-                <StatCard label="Total" value={data?.totalCount ?? 0} />
+                <StatCard label={t("beneficiaries.stat.total")} value={data?.totalCount ?? 0} />
                 <StatCard
-                  label="IBAN"
+                  label={t("beneficiaries.stat.iban")}
                   value={data?.ibanCount ?? 0}
                   accent="rgb(37,99,235)"
                 />
                 <StatCard
-                  label="IBFT"
+                  label={t("beneficiaries.stat.ibft")}
                   value={data?.ibftCount ?? 0}
                   accent="rgb(124,58,237)"
                 />
@@ -285,20 +290,20 @@ const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
               <section>
                 <SectionTitle
                   icon={<Landmark className="h-4 w-4" />}
-                  label="IBAN Beneficiaries"
+                  label={t("beneficiaries.ibanSection")}
                   count={iban.length}
                 />
                 {iban.length === 0 ? (
-                  <EmptyState text="No IBAN beneficiaries saved." />
+                  <EmptyState text={t("beneficiaries.emptyIban")} />
                 ) : (
                   <BeneficiaryTable
                     columns={[
-                      { key: "nickname", label: "Nickname" },
-                      { key: "beneficiary", label: "Beneficiary" },
-                      { key: "iban", label: "IBAN" },
-                      { key: "bank", label: "Bank" },
-                      { key: "status", label: "Status" },
-                      { key: "created", label: "Created" },
+                      { key: "nickname", label: t("beneficiaries.col.nickname") },
+                      { key: "beneficiary", label: t("beneficiaries.col.beneficiary") },
+                      { key: "iban", label: t("beneficiaries.col.iban") },
+                      { key: "bank", label: t("beneficiaries.col.bank") },
+                      { key: "status", label: t("beneficiaries.col.status") },
+                      { key: "created", label: t("beneficiaries.col.created") },
                     ]}
                     rows={iban.map((b) => [
                       b.nickname || "-",
@@ -318,21 +323,21 @@ const BeneficiariesDialog = ({ customerId, onClose }: Props) => {
               <section>
                 <SectionTitle
                   icon={<Globe className="h-4 w-4" />}
-                  label="IBFT Beneficiaries"
+                  label={t("beneficiaries.ibftSection")}
                   count={ibft.length}
                 />
                 {ibft.length === 0 ? (
-                  <EmptyState text="No IBFT beneficiaries saved." />
+                  <EmptyState text={t("beneficiaries.emptyIbft")} />
                 ) : (
                   <BeneficiaryTable
                     columns={[
-                      { key: "nickname", label: "Nickname" },
-                      { key: "beneficiary", label: "Beneficiary" },
-                      { key: "institution", label: "Institution" },
-                      { key: "account", label: "Account" },
-                      { key: "bank", label: "Bank" },
-                      { key: "currency", label: "Currency" },
-                      { key: "status", label: "Status" },
+                      { key: "nickname", label: t("beneficiaries.col.nickname") },
+                      { key: "beneficiary", label: t("beneficiaries.col.beneficiary") },
+                      { key: "institution", label: t("beneficiaries.col.institution") },
+                      { key: "account", label: t("beneficiaries.col.account") },
+                      { key: "bank", label: t("beneficiaries.col.bank") },
+                      { key: "currency", label: t("beneficiaries.col.currency") },
+                      { key: "status", label: t("beneficiaries.col.status") },
                     ]}
                     rows={ibft.map((b) => [
                       b.nickname || "-",

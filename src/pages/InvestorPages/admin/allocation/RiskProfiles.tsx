@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Plus,
@@ -19,8 +20,8 @@ import {
 const customerRiskProfiles = [
   {
     id: 'CRP-001',
-    name: 'Low Risk (0-30)',
-    description: 'Conservative customers with minimal risk tolerance',
+    name: 'rp.crp.low.name',
+    description: 'rp.crp.low.desc',
     creditScoreMin: 700,
     creditScoreMax: 850,
     defaultRate: 0.5,
@@ -34,8 +35,8 @@ const customerRiskProfiles = [
   },
   {
     id: 'CRP-002',
-    name: 'Medium Risk (31-70)',
-    description: 'Balanced customers with moderate risk profile',
+    name: 'rp.crp.medium.name',
+    description: 'rp.crp.medium.desc',
     creditScoreMin: 600,
     creditScoreMax: 699,
     defaultRate: 2.8,
@@ -49,8 +50,8 @@ const customerRiskProfiles = [
   },
   {
     id: 'CRP-003',
-    name: 'High Risk (71-100)',
-    description: 'Aggressive customers with high risk tolerance',
+    name: 'rp.crp.high.name',
+    description: 'rp.crp.high.desc',
     creditScoreMin: 500,
     creditScoreMax: 599,
     defaultRate: 5.5,
@@ -67,8 +68,8 @@ const customerRiskProfiles = [
 const investorRiskProfiles = [
   {
     id: 'IRP-001',
-    name: 'Conservative',
-    description: 'Risk-averse investors seeking stable returns',
+    name: 'rp.irp.conservative.name',
+    description: 'rp.irp.conservative.desc',
     riskTolerance: 'Low',
     expectedReturn: 8.5,
     maxExposure: 15,
@@ -81,8 +82,8 @@ const investorRiskProfiles = [
   },
   {
     id: 'IRP-002',
-    name: 'Balanced',
-    description: 'Moderate investors balancing risk and return',
+    name: 'rp.irp.balanced.name',
+    description: 'rp.irp.balanced.desc',
     riskTolerance: 'Medium',
     expectedReturn: 12.2,
     maxExposure: 25,
@@ -95,8 +96,8 @@ const investorRiskProfiles = [
   },
   {
     id: 'IRP-003',
-    name: 'Aggressive',
-    description: 'High-risk investors seeking maximum returns',
+    name: 'rp.irp.aggressive.name',
+    description: 'rp.irp.aggressive.desc',
     riskTolerance: 'High',
     expectedReturn: 18.7,
     maxExposure: 40,
@@ -110,6 +111,9 @@ const investorRiskProfiles = [
 ];
 
 export default function RiskProfiles() {
+  const { t } = useTranslation('investor');
+  const tolKey: Record<string, string> = { 'Low': 'rp.risk.low', 'Medium': 'rp.risk.medium', 'High': 'rp.risk.high' };
+  const tTol = (v: string) => (tolKey[v] ? t(tolKey[v]) : v);
   const [activeTab, setActiveTab] = useState('customer');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -117,7 +121,7 @@ export default function RiskProfiles() {
   const [showImportModal, setShowImportModal] = useState(false);
 
   const handleCreateProfile = () => {
-    alert('Risk profile created successfully!');
+    alert(t('rp.createdSuccess'));
     setShowCreateModal(false);
   };
 
@@ -127,24 +131,24 @@ export default function RiskProfiles() {
   };
 
   const handleUpdateProfile = () => {
-    alert('Risk profile updated successfully!');
+    alert(t('rp.updatedSuccess'));
     setShowEditModal(false);
     setSelectedProfile(null);
   };
 
   const handleDeleteProfile = (profileId: string) => {
-    if (confirm('Are you sure you want to delete this risk profile?')) {
-      alert(`Risk profile ${profileId} deleted successfully!`);
+    if (confirm(t('rp.deleteConfirm'))) {
+      alert(t('rp.deletedSuccess', { id: profileId }));
     }
   };
 
   const handleImportProfiles = () => {
-    alert('Risk profiles imported successfully!');
+    alert(t('rp.importedSuccess'));
     setShowImportModal(false);
   };
 
   const handleExportProfiles = () => {
-    alert('Exporting risk profiles to CSV...');
+    alert(t('rp.exporting'));
   };
 
   return (
@@ -157,12 +161,12 @@ export default function RiskProfiles() {
               to="/admin/allocation"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Dashboard
+              <ArrowLeft className="w-5 h-5 me-2" />
+              {t('sl.backToDashboard')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Risk Profiles</h1>
-              <p className="text-gray-600">Manage customer and investor risk profile mappings</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('rp.title')}</h1>
+              <p className="text-gray-600">{t('rp.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -170,22 +174,22 @@ export default function RiskProfiles() {
               onClick={() => setShowImportModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Upload className="w-4 h-4 mr-2" />
-              Import CSV
+              <Upload className="w-4 h-4 me-2" />
+              {t('rp.importCsv')}
             </button>
             <button
               onClick={handleExportProfiles}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export
+              <Download className="w-4 h-4 me-2" />
+              {t('common:export')}
             </button>
             <button
               onClick={() => setShowCreateModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Profile
+              <Plus className="w-4 h-4 me-2" />
+              {t('rp.createProfile')}
             </button>
           </div>
         </div>
@@ -203,8 +207,8 @@ export default function RiskProfiles() {
             }`}
           >
             <div className="flex items-center">
-              <Shield className="w-4 h-4 mr-2" />
-              Customer Risk Profiles
+              <Shield className="w-4 h-4 me-2" />
+              {t('rp.tab.customer')}
             </div>
           </button>
           <button
@@ -216,8 +220,8 @@ export default function RiskProfiles() {
             }`}
           >
             <div className="flex items-center">
-              <Target className="w-4 h-4 mr-2" />
-              Investor Risk Profiles
+              <Target className="w-4 h-4 me-2" />
+              {t('rp.tab.investor')}
             </div>
           </button>
           <button
@@ -229,8 +233,8 @@ export default function RiskProfiles() {
             }`}
           >
             <div className="flex items-center">
-              <TrendingUp className="w-4 h-4 mr-2" />
-              Risk Mapping
+              <TrendingUp className="w-4 h-4 me-2" />
+              {t('rp.tab.mapping')}
             </div>
           </button>
         </nav>
@@ -240,21 +244,21 @@ export default function RiskProfiles() {
       {activeTab === 'customer' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Customer Risk Profiles</h3>
-            <p className="text-sm text-gray-600">Define risk categories for loan applicants based on credit scores and financial behavior</p>
+            <h3 className="text-lg font-semibold text-gray-900">{t('rp.customerTitle')}</h3>
+            <p className="text-sm text-gray-600">{t('rp.customerSubtitle')}</p>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profile</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Credit Score Range</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Default Rate</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volatility</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rate Uplift</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Loan</th>
-                  <th className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.profile')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.creditRange')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.defaultRate')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.volatility')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.rateUplift')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.maxLoan')}</th>
+                  <th className="relative px-6 py-3"><span className="sr-only">{t('common:actions')}</span></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -262,8 +266,8 @@ export default function RiskProfiles() {
                   <tr key={profile.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{profile.name}</div>
-                        <div className="text-sm text-gray-500">{profile.description}</div>
+                        <div className="text-sm font-medium text-gray-900">{t(profile.name)}</div>
+                        <div className="text-sm text-gray-500">{t(profile.description)}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -293,19 +297,19 @@ export default function RiskProfiles() {
                         notation: 'compact'
                       }).format(profile.parameters.maxLoanAmount)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleEditProfile(profile)}
                           className="text-black hover:text-blue-900"
-                          title="Edit Profile"
+                          title={t('rp.editProfile')}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteProfile(profile.id)}
                           className="text-red-600 hover:text-red-900"
-                          title="Delete Profile"
+                          title={t('rp.deleteProfile')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -323,21 +327,21 @@ export default function RiskProfiles() {
       {activeTab === 'investor' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Investor Risk Profiles</h3>
-            <p className="text-sm text-gray-600">Define risk tolerance levels for investors and their investment preferences</p>
+            <h3 className="text-lg font-semibold text-gray-900">{t('rp.investorTitle')}</h3>
+            <p className="text-sm text-gray-600">{t('rp.investorSubtitle')}</p>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profile</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Risk Tolerance</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expected Return</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Max Exposure</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Min Investment</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preferred Risks</th>
-                  <th className="relative px-6 py-3"><span className="sr-only">Actions</span></th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.profile')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.riskTolerance')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.expectedReturn')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.maxExposure')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.minInvestment')}</th>
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">{t('rp.col.preferredRisks')}</th>
+                  <th className="relative px-6 py-3"><span className="sr-only">{t('common:actions')}</span></th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -345,8 +349,8 @@ export default function RiskProfiles() {
                   <tr key={profile.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{profile.name}</div>
-                        <div className="text-sm text-gray-500">{profile.description}</div>
+                        <div className="text-sm font-medium text-gray-900">{t(profile.name)}</div>
+                        <div className="text-sm text-gray-500">{t(profile.description)}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -355,7 +359,7 @@ export default function RiskProfiles() {
                         profile.riskTolerance === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-red-100 text-red-800'
                       }`}>
-                        {profile.riskTolerance}
+                        {tTol(profile.riskTolerance)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">
@@ -377,24 +381,24 @@ export default function RiskProfiles() {
                       <div className="flex flex-wrap gap-1">
                         {profile.preferredCustomerRisks.map((risk, index) => (
                           <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
-                            {risk.split(' ')[0]}
+                            {tTol(risk.split(' ')[0])}
                           </span>
                         ))}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => handleEditProfile(profile)}
                           className="text-black hover:text-blue-900"
-                          title="Edit Profile"
+                          title={t('rp.editProfile')}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
                         <button
                           onClick={() => handleDeleteProfile(profile.id)}
                           className="text-red-600 hover:text-red-900"
-                          title="Delete Profile"
+                          title={t('rp.deleteProfile')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -412,18 +416,18 @@ export default function RiskProfiles() {
       {activeTab === 'mapping' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Risk Profile Mapping</h3>
-            <p className="text-sm text-gray-600">Configure how investor risk tolerances map to customer risk profiles</p>
+            <h3 className="text-lg font-semibold text-gray-900">{t('rp.mappingTitle')}</h3>
+            <p className="text-sm text-gray-600">{t('rp.mappingSubtitle')}</p>
           </div>
           
           <div className="overflow-x-auto">
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-sm font-medium text-gray-900">Investor Tolerance</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">Low Risk Customers</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">Medium Risk Customers</th>
-                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">High Risk Customers</th>
+                  <th className="px-4 py-3 text-start text-sm font-medium text-gray-900">{t('rp.map.investorTolerance')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">{t('rp.map.lowCustomers')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">{t('rp.map.mediumCustomers')}</th>
+                  <th className="px-4 py-3 text-center text-sm font-medium text-gray-900">{t('rp.map.highCustomers')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
@@ -431,8 +435,8 @@ export default function RiskProfiles() {
                   <tr key={investor.id}>
                     <td className="px-4 py-4 text-sm font-medium text-gray-900">
                       <div>
-                        <div>{investor.name}</div>
-                        <div className="text-xs text-gray-500">{investor.riskTolerance} tolerance</div>
+                        <div>{t(investor.name)}</div>
+                        <div className="text-xs text-gray-500">{t('rp.toleranceLabel', { tolerance: tTol(investor.riskTolerance) })}</div>
                       </div>
                     </td>
                     <td className="px-4 py-4 text-center">
@@ -464,11 +468,11 @@ export default function RiskProfiles() {
 
           <div className="mt-6 flex justify-end">
             <button
-              onClick={() => alert('Risk mapping saved successfully!')}
+              onClick={() => alert(t('rp.mappingSaved'))}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Save className="w-4 h-4 mr-2" />
-              Save Mapping
+              <Save className="w-4 h-4 me-2" />
+              {t('rp.saveMapping')}
             </button>
           </div>
         </div>
@@ -479,7 +483,7 @@ export default function RiskProfiles() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Create Risk Profile</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('rp.createModalTitle')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -490,26 +494,26 @@ export default function RiskProfiles() {
 
             <form className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Profile Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.profileType')}</label>
                 <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                  <option value="customer">Customer Risk Profile</option>
-                  <option value="investor">Investor Risk Profile</option>
+                  <option value="customer">{t('rp.customerProfileOpt')}</option>
+                  <option value="investor">{t('rp.investorProfileOpt')}</option>
                 </select>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Profile Name *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.profileName')}</label>
                 <input
                   type="text"
-                  placeholder="Enter profile name"
+                  placeholder={t('rp.enterName')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.description')}</label>
                 <textarea
-                  placeholder="Describe the risk profile"
+                  placeholder={t('rp.describeProfile')}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 />
@@ -517,7 +521,7 @@ export default function RiskProfiles() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Default Rate (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.defaultRatePct')}</label>
                   <input
                     type="number"
                     step="0.1"
@@ -526,7 +530,7 @@ export default function RiskProfiles() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Volatility (%)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.volatilityPct')}</label>
                   <input
                     type="number"
                     step="0.1"
@@ -542,14 +546,14 @@ export default function RiskProfiles() {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleCreateProfile}
                   className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
                 >
-                  Create Profile
+                  {t('rp.createProfile')}
                 </button>
               </div>
             </form>
@@ -562,7 +566,7 @@ export default function RiskProfiles() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Import Risk Profiles</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('rp.importModalTitle')}</h3>
               <button
                 onClick={() => setShowImportModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -573,7 +577,7 @@ export default function RiskProfiles() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Upload CSV File</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('rp.uploadCsv')}</label>
                 <input
                   type="file"
                   accept=".csv"
@@ -583,7 +587,7 @@ export default function RiskProfiles() {
 
               <div className="bg-gray-50 rounded-lg p-3">
                 <p className="text-xs text-gray-600">
-                  CSV should include columns: name, description, creditScoreMin, creditScoreMax, defaultRate, volatility
+                  {t('rp.csvHint')}
                 </p>
               </div>
 
@@ -592,13 +596,13 @@ export default function RiskProfiles() {
                   onClick={() => setShowImportModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   onClick={handleImportProfiles}
                   className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
                 >
-                  Import
+                  {t('rp.import')}
                 </button>
               </div>
             </div>

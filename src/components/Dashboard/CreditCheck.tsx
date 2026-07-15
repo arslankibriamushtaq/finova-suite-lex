@@ -7,8 +7,10 @@ import Loader from "../Loader/Loader";
 
 import CreditWeightagesInfo from "./CreditWeightagesInfo";
 import ApproveCreditInfo from "./ApproveCreditInfo";
+import { useTranslation } from "react-i18next";
 
 function CreditCheck({ setActiveTab, fullDetail }: any) {
+  const { t } = useTranslation("dashboard");
   const [active, setActive] = useState("CreditWeightagesInfo");
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -61,11 +63,11 @@ function CreditCheck({ setActiveTab, fullDetail }: any) {
         setCreditHistory(creditHistoryArray);
         
       } else {
-        toast.error("Failed to load credit data");
+        toast.error(t("creditTab.toast.loadFailed"));
       }
     } catch (error: any) {
       console.error("API Error:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load credit data");
+      toast.error(error?.response?.data?.message || error?.message || t("creditTab.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -104,7 +106,7 @@ function CreditCheck({ setActiveTab, fullDetail }: any) {
 
   const tabOptions = useMemo(() => [
     {
-      title: "Credit Weightages Info",
+      title: t("creditTab.tab.weightagesInfo"),
       key: "CreditWeightagesInfo",
       component: (
         <CreditWeightagesInfo
@@ -116,7 +118,7 @@ function CreditCheck({ setActiveTab, fullDetail }: any) {
       ),
     },
     {
-      title: `Current Application weightage is: ${totalScore}`,
+      title: t("creditTab.tab.currentWeightage", { score: totalScore }),
       key: "CurrentApplicationWeightage",
       component: (
         <CreditWeightagesInfo
@@ -128,7 +130,7 @@ function CreditCheck({ setActiveTab, fullDetail }: any) {
       ),
     },
     {
-      title: "Approve Credit Info",
+      title: t("creditTab.tab.approveInfo"),
       key: "ApproveCreditInfo",
       component: (
         // <ApproveCreditInfo

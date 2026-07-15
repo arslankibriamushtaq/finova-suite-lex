@@ -1,6 +1,8 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const NafathVerification = () => {
+  const { t } = useTranslation("customersB");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const applicationNumber = searchParams.get("applicationNumber") || "FVAN-6152142950";
@@ -42,7 +44,7 @@ const NafathVerification = () => {
             marginBottom: "12px",
           }}
         >
-          You have a pending Nafath verification
+          {t("customersB:nafath.pendingTitle")}
         </h2>
 
         {/* Instruction */}
@@ -54,7 +56,7 @@ const NafathVerification = () => {
             lineHeight: "1.5",
           }}
         >
-          Please verify your Nafath account to proceed with your application.
+          {t("customersB:nafath.instruction")}
         </p>
 
         {/* Application Number */}
@@ -66,7 +68,7 @@ const NafathVerification = () => {
             marginBottom: "32px",
           }}
         >
-          Application Number: {applicationNumber}
+          {t("customersB:nafath.applicationNumber", { number: applicationNumber })}
         </div>
 
         {/* Inner Verification Box */}
@@ -87,7 +89,7 @@ const NafathVerification = () => {
               marginBottom: "24px",
             }}
           >
-            Nafath Verification
+            {t("customersB:nafath.verification")}
           </h3>
 
           {/* Graphic Icon */}
@@ -179,7 +181,7 @@ const NafathVerification = () => {
               marginBottom: "24px",
             }}
           >
-            Please login to your Nafath account and verify this number.
+            {t("customersB:nafath.innerInstruction")}
           </p>
 
           {/* Verify Button */}
@@ -204,7 +206,7 @@ const NafathVerification = () => {
               e.currentTarget.style.backgroundColor = "#1963b9";
             }}
           >
-            Verify with Nafath
+            {t("customersB:nafath.verifyBtn")}
           </button>
         </div>
       </div>

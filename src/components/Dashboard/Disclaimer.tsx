@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function Disclaimer({ setSelectedTab }: any) {
+  const { t } = useTranslation("dashboard");
   const [disclaimerData, setDisclaimerData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [agreed, setAgreed] = useState(false);
@@ -26,7 +28,7 @@ function Disclaimer({ setSelectedTab }: any) {
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error fetching disclaimer data:", error);
-      toast.error("Failed to fetch disclaimer information");
+      toast.error(t("disclaimer.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -40,7 +42,7 @@ function Disclaimer({ setSelectedTab }: any) {
           {/* Header with Toggle */}
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div className="d-flex align-items-center">
-              <span className="me-3">I agreed and accepted the following disclaimer:</span>
+              <span className="me-3">{t("disclaimer.agreeLabel")}</span>
             </div>
             <div className="d-flex align-items-center">
               <div className="form-check form-check-inline">
@@ -54,7 +56,7 @@ function Disclaimer({ setSelectedTab }: any) {
                   style={{ accentColor: "#000000" }}
                 />
                 <label className="form-check-label ms-1" htmlFor="disclaimerYes">
-                  Yes
+                  {t("common:yes")}
                 </label>
               </div>
               <div className="form-check form-check-inline ms-3">
@@ -68,7 +70,7 @@ function Disclaimer({ setSelectedTab }: any) {
                   style={{ accentColor: "#000000" }}
                 />
                 <label className="form-check-label ms-1" htmlFor="disclaimerNo">
-                  No
+                  {t("common:no")}
                 </label>
               </div>
             </div>

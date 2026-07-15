@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { useFormik } from "formik"
+import { useTranslation } from "react-i18next"
 import { ArrowLeft, ArrowRight, Eye, Pencil, Trash2, ChevronDown } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card"
 import { Button as UIButton } from "../../ui/button"
@@ -49,6 +50,7 @@ export default function IncomeSlabsTab({
   onPrevious,
   productId,
 }: IncomeSlabsTabProps) {
+  const { t } = useTranslation("productManagement2")
   const [data, setData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
   const [page, setPage] = useState(1)
@@ -73,20 +75,20 @@ export default function IncomeSlabsTab({
     },
     validate: (values) => {
       const err: Record<string, string> = {}
-      if (!values.from_income) err.from_income = "Please enter from income"
+      if (!values.from_income) err.from_income = t("incomeSlabs.fromRequired")
       else if (isNaN(Number(values.from_income)) || Number(values.from_income) < 0)
-        err.from_income = "From income must be a number greater than or equal to 0"
-      if (!values.to_income) err.to_income = "Please enter to income"
+        err.from_income = t("incomeSlabs.fromNumber")
+      if (!values.to_income) err.to_income = t("incomeSlabs.toRequired")
       else if (isNaN(Number(values.to_income)) || Number(values.to_income) < 0)
-        err.to_income = "To income must be a number greater than or equal to 0"
-      if (!values.multiplier_percentage) err.multiplier_percentage = "Please enter multiplier percentage"
+        err.to_income = t("incomeSlabs.toNumber")
+      if (!values.multiplier_percentage) err.multiplier_percentage = t("incomeSlabs.multiplierRequired")
       else if (isNaN(Number(values.multiplier_percentage)) || Number(values.multiplier_percentage) < 0)
-        err.multiplier_percentage = "Multiplier percentage must be a number greater than or equal to 0"
+        err.multiplier_percentage = t("incomeSlabs.multiplierNumber")
       return err
     },
     onSubmit: async (values) => {
       if (!productId) {
-        toast.error("Product ID not found. Please complete Basic Information step first.")
+        toast.error(t("incomeSlabs.noProductId"))
         return
       }
       const payload = {
@@ -100,24 +102,24 @@ export default function IncomeSlabsTab({
         if (isEditMode && selectedRow) {
           const response = await updateIncomeSlab(selectedRow.id, payload)
           if (response?.data?.message === "success") {
-            toast.success("Income slab updated successfully")
+            toast.success(t("incomeSlabs.updated"))
             setShowModal(false)
             fetchIncomeSlabs()
           } else {
-            toast.error(response?.data?.message || "Failed to update income slab")
+            toast.error(response?.data?.message || t("incomeSlabs.updateFailed"))
           }
         } else {
           const response = await createIncomeSlab(payload)
           if (response?.data?.message === "success") {
-            toast.success("Income slab created successfully")
+            toast.success(t("incomeSlabs.created"))
             setShowModal(false)
             fetchIncomeSlabs()
           } else {
-            toast.error(response?.data?.message || "Failed to create income slab")
+            toast.error(response?.data?.message || t("incomeSlabs.createFailed"))
           }
         }
       } catch (error: any) {
-        toast.error(error?.response?.data?.message || "Failed to save income slab")
+        toast.error(error?.response?.data?.message || t("incomeSlabs.saveFailed"))
       }
     },
   })
@@ -142,7 +144,7 @@ export default function IncomeSlabsTab({
       }
     } catch (error: any) {
       console.error("Error fetching income slabs:", error)
-      toast.error(error?.response?.data?.message || "Failed to fetch income slabs")
+      toast.error(error?.response?.data?.message || t("incomeSlabs.fetchFailed"))
     } finally {
       setLoading(false)
     }
@@ -193,14 +195,14 @@ export default function IncomeSlabsTab({
     try {
       const response = await deleteIncomeSlab(row.id)
       if (response?.data?.message === "success") {
-        toast.success("Income slab deleted successfully")
+        toast.success(t("incomeSlabs.deleted"))
         fetchIncomeSlabs()
       } else {
-        toast.error(response?.data?.message || "Failed to delete income slab")
+        toast.error(response?.data?.message || t("incomeSlabs.deleteFailed"))
       }
     } catch (error: any) {
       console.error("Error deleting income slab:", error)
-      toast.error(error?.response?.data?.message || "Failed to delete income slab")
+      toast.error(error?.response?.data?.message || t("incomeSlabs.deleteFailed"))
     }
   }
 
@@ -229,28 +231,28 @@ export default function IncomeSlabsTab({
 
   const tableHeaders = [
     {
-      name: "Sr No.",
+      name: t("incomeSlabs.srNo"),
       selector: (row: any) => row.srNo,
       sortable: true,
       width: "100px",
     },
     {
-      name: "From Income",
+      name: t("incomeSlabs.fromIncome"),
       selector: (row: any) => row.from_income || "-",
       sortable: true,
     },
     {
-      name: "To Income",
+      name: t("incomeSlabs.toIncome"),
       selector: (row: any) => row.to_income || "-",
       sortable: true,
     },
     {
-      name: "Multiplier Percentage",
+      name: t("incomeSlabs.multiplier"),
       selector: (row: any) => row.multiplier_percentage || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -269,29 +271,29 @@ export default function IncomeSlabsTab({
       sortable: true,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
-              Select <ChevronDown className="h-4 w-4" />
+              {t("common:select")} <ChevronDown className="h-4 w-4" />
             </UIButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => handleMenuClick("view", row)}>
               <Eye className="h-4 w-4" />
-              View
+              {t("common:view")}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleMenuClick("edit", row)}>
               <Pencil className="h-4 w-4" />
-              Edit
+              {t("common:edit")}
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
               onSelect={() => handleMenuClick("delete", row)}
             >
               <Trash2 className="h-4 w-4" />
-              Delete
+              {t("common:delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -314,13 +316,13 @@ export default function IncomeSlabsTab({
         <CardHeader>
           <div className="flex justify-between items-center">
             <div>
-              <CardTitle>Affordability Income Slabs</CardTitle>
+              <CardTitle>{t("incomeSlabs.title")}</CardTitle>
               <p className="text-muted-foreground">
-                Manage income slabs for product eligibility calculation.
+                {t("incomeSlabs.subtitle")}
               </p>
             </div>
             <button className="theme-btn-next" onClick={handleAdd}>
-              Add New Slab
+              {t("incomeSlabs.addSlab")}
             </button>
           </div>
         </CardHeader>
@@ -350,18 +352,18 @@ export default function IncomeSlabsTab({
         <DialogContent className="sm:max-w-[640px]">
           <DialogHeader>
             <DialogTitle>
-              {isViewMode ? "View Income Slab" : isEditMode ? "Edit Income Slab" : "Add New Income Slab"}
+              {isViewMode ? t("incomeSlabs.viewTitle") : isEditMode ? t("incomeSlabs.editTitle") : t("incomeSlabs.addTitle")}
             </DialogTitle>
           </DialogHeader>
           <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="from_income">From Income</Label>
+                <Label htmlFor="from_income">{t("incomeSlabs.fromIncome")}</Label>
                 <Input
                   id="from_income"
                   type="number"
                   step="0.01"
-                  placeholder="Enter from income"
+                  placeholder={t("incomeSlabs.fromIncomePlaceholder")}
                   value={formik.values.from_income}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -372,12 +374,12 @@ export default function IncomeSlabsTab({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="to_income">To Income</Label>
+                <Label htmlFor="to_income">{t("incomeSlabs.toIncome")}</Label>
                 <Input
                   id="to_income"
                   type="number"
                   step="0.01"
-                  placeholder="Enter to income"
+                  placeholder={t("incomeSlabs.toIncomePlaceholder")}
                   value={formik.values.to_income}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -390,12 +392,12 @@ export default function IncomeSlabsTab({
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="multiplier_percentage">Multiplier Percentage</Label>
+                <Label htmlFor="multiplier_percentage">{t("incomeSlabs.multiplier")}</Label>
                 <Input
                   id="multiplier_percentage"
                   type="number"
                   step="0.01"
-                  placeholder="Enter multiplier percentage"
+                  placeholder={t("incomeSlabs.multiplierPlaceholder")}
                   value={formik.values.multiplier_percentage}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
@@ -406,7 +408,7 @@ export default function IncomeSlabsTab({
                 )}
               </div>
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="status">{t("common:status")}</Label>
                 <div className="pt-2">
                   <Switch
                     id="status"
@@ -426,11 +428,11 @@ export default function IncomeSlabsTab({
                   formik.resetForm()
                 }}
               >
-                {isViewMode ? "Close" : "Cancel"}
+                {isViewMode ? t("common:close") : t("common:cancel")}
               </UIButton>
               {!isViewMode && (
                 <UIButton type="submit">
-                  {isEditMode ? "Update" : "Add"}
+                  {isEditMode ? t("common:update") : t("common:add")}
                 </UIButton>
               )}
             </DialogFooter>
@@ -441,12 +443,12 @@ export default function IncomeSlabsTab({
       <AlertDialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Income Slab</AlertDialogTitle>
-            <p className="text-sm text-muted-foreground">Are you sure you want to delete this income slab?</p>
+            <AlertDialogTitle>{t("incomeSlabs.deleteTitle")}</AlertDialogTitle>
+            <p className="text-sm text-muted-foreground">{t("incomeSlabs.deleteMessage")}</p>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>No</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteConfirm}>Yes</AlertDialogAction>
+            <AlertDialogCancel>{t("common:no")}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm}>{t("common:yes")}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -455,10 +457,10 @@ export default function IncomeSlabsTab({
       <div className="flex justify-between gap-3 pt-4">
         <UIButton variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </UIButton>
         <UIButton onClick={onNext} className="gap-2">
-          Next: Duration Settings
+          {t("nav.nextDurationSettings")}
           <ArrowRight className="h-4 w-4" />
         </UIButton>
       </div>

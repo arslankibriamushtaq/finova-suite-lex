@@ -1,0 +1,112 @@
+/* ==========================================================================
+   Global RTL overrides for the dashboard shell (Arabic).
+   Loaded app-wide from index.css; everything is scoped to [dir="rtl"], which
+   src/hooks/use-language.tsx sets on <html> when Arabic is active. LTR is
+   untouched.
+
+   Root cause fixed here: the legacy shell uses PHYSICAL offsets —
+     .colOne { position: fixed; width: 275px }   (sidebar, no left/right)
+     .colTwo { width: 100%; padding-left: 275px } (content gutter)
+   In RTL the fixed sidebar lands on the right (via flex static position), but
+   the content's padding-left stays on the LEFT, leaving an empty gutter and
+   pushing content under the sidebar. We flip the gutter to the right.
+   ========================================================================== */
+
+/* --- Fixed sidebar: pin explicitly to the right in RTL --- */
+[dir="rtl"] .colOne {
+  left: auto;
+  right: 0;
+}
+
+/* --- Content gutter: reserve space on the RIGHT (start side), not the left ---
+   The three main layouts also set `padding-inline-start` inline (dynamic for
+   the collapsed 80px / expanded 290px states); being inline + logical it wins
+   over the 275px below and resolves to the right in RTL, so the collapse
+   animation keeps working. Layouts without the inline value fall back to the
+   275px reservation here. */
+[dir="rtl"] .colTwo {
+  padding-left: 0 !important;
+  padding-right: 275px;
+}
+
+/* --- Header profile dropdown: custom absolutely-positioned menu.
+   It's pinned `right: 0` (anchored to the right in LTR). In RTL the avatar
+   trigger sits on the left, so anchor the panel to the left instead so it stays
+   attached to its button. --- */
+[dir="rtl"] .profile-dropdown {
+  right: auto !important;
+  left: 0 !important;
+}
+/* Profile-menu button icons: the icon sits before the label; its `margin-right`
+   spacing must move to the left in RTL, and the directional log-out arrow
+   (.profile-btn.right) must mirror to point the correct way. */
+[dir="rtl"] .profile-btn .icon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+[dir="rtl"] .profile-btn.right .icon {
+  transform: scaleX(-1);
+}
+
+/* --- Header: the view/account logo block uses a left border + fixed width --- */
+[dir="rtl"] .header_layout .border-left,
+[dir="rtl"] .border-left {
+  border-left: 0;
+  border-right: 1px solid var(--border, #e5e7eb);
+}
+
+/* --- Responsive: at/under the mobile breakpoint the fixed sidebar becomes an
+   off-canvas drawer and the desktop gutter must collapse in RTL too. The JS
+   already drops the .colTwo class on mobile; this is a belt-and-suspenders
+   guard so no right gutter is ever stranded on small screens. --- */
+@media (max-width: 768px) {
+  [dir="rtl"] .colTwo {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
+  }
+  /* Off-canvas mobile sidebar slides from the right in RTL. */
+  [dir="rtl"] .sidebar-mobile > .flex:first-child,
+  [dir="rtl"] .sidebar-mobile > div:first-child {
+    left: auto;
+    right: 0;
+  }
+}
+
+/* --- Sidebar: active-item accent bar on the RIGHT (start side) in RTL ---
+   The active row draws a 3px inset bar via `box-shadow: inset 3px 0 0` (left
+   edge). Flip the offset negative so the bar sits on the right edge in RTL.
+   `html[dir="rtl"]` matches the specificity of the source `html:not(.dark)` /
+   `html.dark` rules and, being imported later, wins the tie. */
+html[dir="rtl"] body .ps-sidebar-root .ps-menu-button.ps-active,
+html[dir="rtl"] body .ps-sidebar-root .ps-menu-button.ps-active:hover,
+html[dir="rtl"] body .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button,
+html[dir="rtl"] body .ps-sidebar-root [class*="css-"].ps-active > .ps-menu-button:hover,
+html[dir="rtl"] body .ps-sidebar-root .ps-menuitem-root .ps-menu-button.ps-active {
+  /* inset offset negative -> bar renders on the RIGHT inner edge in RTL */
+  box-shadow: inset -3px 0 0 var(--mi-color, #10b981) !important;
+}
+
+/* --- Sidebar HOVER accent bar on the RIGHT in RTL ---
+   Any accent bar shown while hovering a row must sit on the right edge too.
+   Forcing the box-shadow here overrides whatever draws it on the left. --- */
+html[dir="rtl"] body .ps-sidebar-root .ps-menu-button:hover,
+html[dir="rtl"] body .ps-sidebar-root .ps-submenu-content .ps-menu-button:hover,
+html[dir="rtl"] body .ps-sidebar-root [class*="css-"] .ps-menu-button:hover,
+html[dir="rtl"] body .ps-sidebar-root a:hover .ps-menu-button {
+  box-shadow: inset -3px 0 0 var(--mi-color, #10b981) !important;
+}
+
+/* --- Sidebar: submenu expand arrow on the LEFT (end side) in RTL ---
+   The custom style pins the chevron to `right: 14px`; move it to the left. */
+html[dir="rtl"] .css-12w9als:not(.is-collapsed) .ps-submenu-expand-icon,
+html[dir="rtl"] .ps-submenu-expand-icon {
+  right: auto !important;
+  left: 14px !important;
+}
+
+/* --- Safe general niceties (scoped, low-risk) --- */
+/* Default text alignment for RTL content areas that don't set their own. */
+[dir="rtl"] .page-content-area {
+  text-align: right;
+}
+/* Keep flex/utility rows readable — do not force-reverse; dir handles order. */

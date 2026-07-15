@@ -1,19 +1,21 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import OperationalExpenses from "./OperationalExpenses";
 import OperationalExpensesSummary from "./OperationalExpensesSummary";
 
 
 const OperationalExpenseTab = () => {
+  const { t } = useTranslation("reconciliation");
   const [selectTab, setSelectedTab] = useState("OperationalExpenses");
   const tapOptions = [
     {
-      title: "Detailed Operational Expenses",
+      title: t("opExpensesTabs.detailed"),
       key: "OperationalExpenses",
       folder: <OperationalExpenses />,
     },
     {
-      title: "Operational Expenses Summary",
+      title: t("opExpensesTabs.summary"),
       key: "OperationalExpensesSummary",
       folder: <OperationalExpensesSummary/>,
     },

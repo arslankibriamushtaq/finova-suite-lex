@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft,
@@ -216,6 +217,7 @@ const Block = ({ title, right, children, className, icon: Icon }: any) => (
 );
 
 const CopyButton = ({ text }: { text?: string }) => {
+  const { t } = useTranslation("customerManagement");
   const [copied, setCopied] = useState(false);
   if (!text) return null;
   return (
@@ -228,7 +230,7 @@ const CopyButton = ({ text }: { text?: string }) => {
         })
       }
       className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-      aria-label="Copy"
+      aria-label={t("onboarding360.action.copy")}
     >
       {copied ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
     </button>
@@ -247,6 +249,7 @@ const EmptyState = ({ icon: Icon, text }: any) => (
 /* ------------------------------------------------------------------ */
 
 const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
+  const { t } = useTranslation("customerManagement");
   if (!customer) return null;
   const flag = countryConfig?.flagEmoji || "";
   const nationality = isAr
@@ -258,16 +261,16 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
   const initials = (customer.firstName?.[0] || "") + (customer.lastName?.[0] || "");
 
   const details = [
-    { icon: Hash, label: "CIF Number", value: customer.cifNumber },
+    { icon: Hash, label: t("onboarding360.field.cifNumber"), value: customer.cifNumber },
     {
       icon: CreditCard,
-      label: customer.nationalIdType || "National ID",
+      label: customer.nationalIdType || t("onboarding360.field.nationalId"),
       value: customer.nationalId,
     },
-    { icon: Phone, label: "Mobile", value: customer.mobileNumber },
-    { icon: Mail, label: "Email", value: customer.email },
-    { icon: CalendarDays, label: "Date of Birth", value: formatDate(customer.dateOfBirth) },
-    { icon: Clock, label: "Onboarded", value: formatDate(customer.createdAt) },
+    { icon: Phone, label: t("onboarding360.field.mobile"), value: customer.mobileNumber },
+    { icon: Mail, label: t("common:email"), value: customer.email },
+    { icon: CalendarDays, label: t("onboarding360.field.dateOfBirth"), value: formatDate(customer.dateOfBirth) },
+    { icon: Clock, label: t("onboarding360.field.onboarded"), value: formatDate(customer.createdAt) },
   ].filter((d) => d.value && d.value !== "—");
 
   return (
@@ -307,17 +310,17 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
               )} */}
               {customer.pepFlag && (
                 <Badge variant="outline" className={cn("border font-medium", TONES.amber)}>
-                  PEP
+                  {t("onboarding360.badge.pep")}
                 </Badge>
               )}
               {customer.sanctionsFlag && (
                 <Badge variant="outline" className={cn("border font-medium", TONES.red)}>
-                  Sanctioned
+                  {t("onboarding360.badge.sanctioned")}
                 </Badge>
               )}
               {customer.isBlocked && (
                 <Badge variant="outline" className={cn("gap-1 border font-medium", TONES.red)}>
-                  <Lock className="size-3" /> Blocked
+                  <Lock className="size-3" /> {t("onboarding360.badge.blocked")}
                   {Array.isArray(customer.blockCodes) && customer.blockCodes.length > 0
                     ? ` · ${customer.blockCodes.join(", ")}`
                     : ""}
@@ -358,6 +361,7 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
 /* ------------------------------------------------------------------ */
 
 const Stepper = ({ onboarding, isAr }: any) => {
+  const { t } = useTranslation("customerManagement");
   const steps: any[] = onboarding?.steps || [];
 
   return (
@@ -370,7 +374,7 @@ const Stepper = ({ onboarding, isAr }: any) => {
       )}
 
       {steps.length === 0 ? (
-        <p className="text-sm text-muted-foreground">No onboarding steps available.</p>
+        <p className="text-sm text-muted-foreground">{t("onboarding360.stepper.noSteps")}</p>
       ) : (
         /* Each step is an equal-width column so its label is bounded by the
            column (wraps, never overlaps the neighbour) — no horizontal scroll.
@@ -456,6 +460,7 @@ const Stepper = ({ onboarding, isAr }: any) => {
 /* ------------------------------------------------------------------ */
 
 const RiskGauge = ({ risk }: any) => {
+  const { t } = useTranslation("customerManagement");
   const score = Number(risk?.riskScore ?? 0);
   const tone = riskTone(risk?.riskLevel);
   const color = TONE_HEX[tone];
@@ -473,16 +478,16 @@ const RiskGauge = ({ risk }: any) => {
           <span className="text-2xl font-bold" style={{ color }}>
             {risk?.riskScore != null ? score : "—"}
           </span>
-          <span className="text-xs text-muted-foreground">Risk Score</span>
+          <span className="text-xs text-muted-foreground">{t("onboarding360.risk.score")}</span>
         </div>
       </div>
       <Badge variant="outline" className={cn("mt-1 border font-medium", TONES[tone])}>
-        {risk?.riskLevel || "Not assessed"}
+        {risk?.riskLevel || t("onboarding360.risk.notAssessed")}
       </Badge>
       <div className="mt-2 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
-        {risk?.riskGrade && <span>Grade {risk.riskGrade}</span>}
+        {risk?.riskGrade && <span>{t("onboarding360.risk.grade", { grade: risk.riskGrade })}</span>}
         {risk?.complianceStatus && <span>{risk.complianceStatus}</span>}
-        {risk?.isPep && <span className="font-medium text-amber-500">PEP</span>}
+        {risk?.isPep && <span className="font-medium text-amber-500">{t("onboarding360.badge.pep")}</span>}
       </div>
     </div>
   );
@@ -501,6 +506,7 @@ const DocImage = ({
   label: string;
   onEnlarge?: (src: string, label: string) => void;
 }) => {
+  const { t } = useTranslation("customerManagement");
   const [src, setSrc] = useState<string | null>(null);
   const [err, setErr] = useState(false);
 
@@ -530,7 +536,7 @@ const DocImage = ({
   if (err)
     return (
       <div className="flex h-48 items-center justify-center rounded-lg border border-dashed text-center text-sm text-muted-foreground">
-        Failed to load {label}
+        {t("onboarding360.doc.failedToLoad", { label })}
       </div>
     );
   if (!src) return <Skeleton className="h-48 w-full rounded-lg" />;
@@ -542,7 +548,7 @@ const DocImage = ({
     >
       <img src={src} alt={label} loading="lazy" className="h-48 w-full bg-muted object-cover transition-transform duration-200 group-hover:scale-105" />
       <span className="absolute inset-0 flex items-center justify-center gap-1 bg-black/45 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-        <ZoomIn className="size-4" /> Click to enlarge
+        <ZoomIn className="size-4" /> {t("onboarding360.doc.clickToEnlarge")}
       </span>
     </button>
   );
@@ -563,6 +569,7 @@ const LoadingState = () => (
 );
 
 const Onboarding360 = () => {
+  const { t } = useTranslation("customerManagement");
   const params = useParams();
   const customerId = params.id || params.customerId;
   const navigate = useNavigate();
@@ -613,12 +620,12 @@ const Onboarding360 = () => {
 
   const limitChartData = useMemo(
     () => [
-      { name: "Today", Spent: Number(limits.todaySpent ?? 0), Limit: Number(limits.dailyLimit ?? 0) },
-      { name: "Week", Spent: Number(limits.weekSpent ?? 0), Limit: Number(limits.weeklyLimit ?? 0) },
-      { name: "Month", Spent: Number(limits.monthSpent ?? 0), Limit: Number(limits.monthlyLimit ?? 0) },
-      { name: "Year", Spent: Number(limits.yearSpent ?? 0), Limit: Number(limits.yearlyLimit ?? 0) },
+      { name: t("onboarding360.chart.today"), Spent: Number(limits.todaySpent ?? 0), Limit: Number(limits.dailyLimit ?? 0) },
+      { name: t("onboarding360.chart.week"), Spent: Number(limits.weekSpent ?? 0), Limit: Number(limits.weeklyLimit ?? 0) },
+      { name: t("onboarding360.chart.month"), Spent: Number(limits.monthSpent ?? 0), Limit: Number(limits.monthlyLimit ?? 0) },
+      { name: t("onboarding360.chart.year"), Spent: Number(limits.yearSpent ?? 0), Limit: Number(limits.yearlyLimit ?? 0) },
     ],
-    [limits]
+    [limits, t]
   );
 
   const txnSummary = useMemo(() => {
@@ -630,42 +637,42 @@ const Onboarding360 = () => {
       else debit += amt;
     });
     return [
-      { name: "Money In", value: credit, fill: "#10b981" },
-      { name: "Money Out", value: debit, fill: "#ef4444" },
+      { name: t("onboarding360.chart.moneyIn"), value: credit, fill: "#10b981" },
+      { name: t("onboarding360.chart.moneyOut"), value: debit, fill: "#ef4444" },
     ];
-  }, [transactions]);
+  }, [transactions, t]);
 
   const personalRows = customer
     ? [
-        { label: "Full Name", value: customer.fullName },
-        { label: "Date of Birth", value: formatDate(customer.dateOfBirth) },
-        { label: "Gender", value: customer.gender },
-        { label: "Nationality", value: customer.nationality },
-        { label: "Residency", value: customer.residencyType },
-        { label: "Customer Type", value: customer.customerType },
+        { label: t("onboarding360.personal.fullName"), value: customer.fullName },
+        { label: t("onboarding360.field.dateOfBirth"), value: formatDate(customer.dateOfBirth) },
+        { label: t("onboarding360.personal.gender"), value: customer.gender },
+        { label: t("onboarding360.personal.nationality"), value: customer.nationality },
+        { label: t("onboarding360.personal.residency"), value: customer.residencyType },
+        { label: t("onboarding360.personal.customerType"), value: customer.customerType },
       ]
     : [];
 
   const contactRows = customer
     ? [
-        { label: "Mobile", value: customer.mobileNumber },
-        { label: "Email", value: customer.email },
-        { label: customer.nationalIdType || "National ID", value: customer.nationalId },
-        { label: "CIF Number", value: customer.cifNumber },
-        { label: "Created", value: formatDate(customer.createdAt) },
-        { label: "Updated", value: formatDate(customer.updatedAt) },
+        { label: t("onboarding360.field.mobile"), value: customer.mobileNumber },
+        { label: t("common:email"), value: customer.email },
+        { label: customer.nationalIdType || t("onboarding360.field.nationalId"), value: customer.nationalId },
+        { label: t("onboarding360.field.cifNumber"), value: customer.cifNumber },
+        { label: t("onboarding360.contact.created"), value: formatDate(customer.createdAt) },
+        { label: t("onboarding360.contact.updated"), value: formatDate(customer.updatedAt) },
       ]
     : [];
 
   const kycRows = kyc
     ? [
-        { label: "KYC Status", value: kyc.kycStatus },
-        { label: "Document Type", value: kyc.documentType },
-        { label: "Face Match Score", value: kyc.faceMatchScore != null ? `${kyc.faceMatchScore}` : "—" },
-        { label: "Document Verified", value: kyc.documentVerified ? "Yes" : "No" },
-        { label: "Selfie Verified", value: kyc.selfieVerified ? "Yes" : "No" },
-        { label: "PIN Set", value: kyc.pinSet ? "Yes" : "No" },
-        { label: "Biometrics", value: kyc.biometricsEnabled ? "Enabled" : "Disabled" },
+        { label: t("onboarding360.kyc.status"), value: kyc.kycStatus },
+        { label: t("onboarding360.kyc.documentType"), value: kyc.documentType },
+        { label: t("onboarding360.kyc.faceMatchScore"), value: kyc.faceMatchScore != null ? `${kyc.faceMatchScore}` : "—" },
+        { label: t("onboarding360.kyc.documentVerified"), value: kyc.documentVerified ? t("common:yes") : t("common:no") },
+        { label: t("onboarding360.kyc.selfieVerified"), value: kyc.selfieVerified ? t("common:yes") : t("common:no") },
+        { label: t("onboarding360.kyc.pinSet"), value: kyc.pinSet ? t("common:yes") : t("common:no") },
+        { label: t("onboarding360.kyc.biometrics"), value: kyc.biometricsEnabled ? t("common:enabled") : t("common:disabled") },
       ]
     : [];
 
@@ -742,13 +749,13 @@ const Onboarding360 = () => {
             <AlertTriangle className="size-8 text-red-500" />
             <p className="text-sm text-muted-foreground">{error}</p>
             <Button variant="outline" onClick={() => setReloadKey((k) => k + 1)}>
-              Retry
+              {t("onboarding360.retry")}
             </Button>
           </div>
         </Card>
       ) : !data ? (
         <Card>
-          <div className="py-14 text-center text-sm text-muted-foreground">No data available for this customer.</div>
+          <div className="py-14 text-center text-sm text-muted-foreground">{t("onboarding360.noData")}</div>
         </Card>
       ) : (
         <>
@@ -764,12 +771,12 @@ const Onboarding360 = () => {
             <div className="flex flex-col gap-4 p-4 md:p-5">
             {/* Key graphs — always visible, independent of tabs */}
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <Block title="Risk Score" icon={ShieldAlert}>
+              <Block title={t("onboarding360.risk.score")} icon={ShieldAlert}>
                 <RiskGauge risk={risk} />
               </Block>
-              <Block title="Money In vs Money Out" icon={ArrowLeftRight}>
+              <Block title={t("onboarding360.block.moneyInVsOut")} icon={ArrowLeftRight}>
                 {transactions.length === 0 ? (
-                  <EmptyState icon={ArrowDownLeft} text="No transactions yet." />
+                  <EmptyState icon={ArrowDownLeft} text={t("onboarding360.empty.noTransactions")} />
                 ) : (
                   <ResponsiveContainer width="100%" height={220}>
                     <BarChart data={txnSummary} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
@@ -795,16 +802,16 @@ const Onboarding360 = () => {
               className="mb-4"
             >
               {/* ---------------- Overview ---------------- */}
-              <Tab eventKey="overview" title="Overview">
+              <Tab eventKey="overview" title={t("onboarding360.tab.overview")}>
                 {activeTab === "overview" && (
                   <div className="flex flex-col gap-4 pt-4">
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <Block title="Personal Information" icon={User}>
+                <Block title={t("onboarding360.block.personalInfo")} icon={User}>
                   {personalRows.map((r) => (
                     <Field key={r.label} label={r.label} value={r.value || "—"} />
                   ))}
                 </Block>
-                <Block title="Contact & Identity" icon={Contact}>
+                <Block title={t("onboarding360.block.contactIdentity")} icon={Contact}>
                   {contactRows.map((r) => (
                     <Field key={r.label} label={r.label} value={r.value || "—"} />
                   ))}
@@ -815,19 +822,19 @@ const Onboarding360 = () => {
               </Tab>
 
               {/* ---------------- Wallet ---------------- */}
-              <Tab eventKey="wallet" title="Wallet">
+              <Tab eventKey="wallet" title={t("onboarding360.tab.wallet")}>
                 {activeTab === "wallet" && (
                   <div className="flex flex-col gap-4 pt-4">
               {!hasWallet ? (
-                <Block title="Wallet" icon={WalletIcon}>
-                  <EmptyState icon={WalletIcon} text="No wallet provisioned for this customer." />
+                <Block title={t("onboarding360.block.wallet")} icon={WalletIcon}>
+                  <EmptyState icon={WalletIcon} text={t("onboarding360.empty.noWallet")} />
                 </Block>
               ) : (
                 <>
                   <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-                    <Block title="Balance" icon={WalletIcon} right={<StatusBadge status={wallet.status} />}>
+                    <Block title={t("onboarding360.block.balance")} icon={WalletIcon} right={<StatusBadge status={wallet.status} />}>
                       <span className="text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-                        Total Balance
+                        {t("onboarding360.wallet.totalBalance")}
                       </span>
                       <div className="mt-1 text-3xl font-bold tracking-tight text-foreground">
                         {formatMoney(wallet.totalBalance, currency)}
@@ -836,7 +843,7 @@ const Onboarding360 = () => {
                         <div className="rounded-lg border bg-muted/30 p-3">
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <span className="size-2 rounded-full bg-emerald-500" />
-                            Available
+                            {t("onboarding360.wallet.available")}
                           </div>
                           <div className="mt-1 text-sm font-semibold text-foreground">
                             {formatMoney(wallet.availableBalance, currency)}
@@ -845,7 +852,7 @@ const Onboarding360 = () => {
                         <div className="rounded-lg border bg-muted/30 p-3">
                           <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                             <span className="size-2 rounded-full bg-amber-500" />
-                            Reserved
+                            {t("onboarding360.wallet.reserved")}
                           </div>
                           <div className="mt-1 text-sm font-semibold text-foreground">
                             {formatMoney(wallet.reservedBalance, currency)}
@@ -853,15 +860,15 @@ const Onboarding360 = () => {
                         </div>
                       </div>
                     </Block>
-                    <Block title="Account Details" icon={CreditCard} className="lg:col-span-2">
-                      <Field label="IBAN" value={<span className="inline-flex items-center gap-1">{wallet.iban || "—"}<CopyButton text={wallet.iban} /></span>} mono />
-                      <Field label="Account No." value={<span className="inline-flex items-center gap-1">{wallet.accountNumber || "—"}<CopyButton text={wallet.accountNumber} /></span>} mono />
-                      <Field label="Wallet Number" value={wallet.walletNumber || "—"} mono />
-                      <Field label="Currency" value={currency || "—"} />
+                    <Block title={t("onboarding360.block.accountDetails")} icon={CreditCard} className="lg:col-span-2">
+                      <Field label={t("onboarding360.wallet.iban")} value={<span className="inline-flex items-center gap-1">{wallet.iban || "—"}<CopyButton text={wallet.iban} /></span>} mono />
+                      <Field label={t("onboarding360.wallet.accountNo")} value={<span className="inline-flex items-center gap-1">{wallet.accountNumber || "—"}<CopyButton text={wallet.accountNumber} /></span>} mono />
+                      <Field label={t("onboarding360.wallet.walletNumber")} value={wallet.walletNumber || "—"} mono />
+                      <Field label={t("onboarding360.wallet.currency")} value={currency || "—"} />
                     </Block>
                   </div>
 
-                  <Block title="Spending Limits (Spent vs Limit)" icon={Gauge}>
+                  <Block title={t("onboarding360.block.spendingLimits")} icon={Gauge}>
                     <ResponsiveContainer width="100%" height={260}>
                       <BarChart data={limitChartData} margin={{ top: 5, right: 10, left: 0, bottom: 0 }}>
                         <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
@@ -869,8 +876,8 @@ const Onboarding360 = () => {
                         <YAxis tick={{ fontSize: 11, fill: "var(--muted-foreground)" }} />
                         <ReTooltip contentStyle={chartTooltipStyle} cursor={{ fill: "var(--muted)" }} formatter={(v: any) => formatMoney(v, currency)} />
                         <Legend wrapperStyle={{ fontSize: 12 }} />
-                        <Bar dataKey="Limit" fill="var(--muted-foreground)" radius={[5, 5, 0, 0]} maxBarSize={28} fillOpacity={0.35} />
-                        <Bar dataKey="Spent" fill="#10b981" radius={[5, 5, 0, 0]} maxBarSize={28} />
+                        <Bar dataKey="Limit" name={t("onboarding360.chart.limit")} fill="var(--muted-foreground)" radius={[5, 5, 0, 0]} maxBarSize={28} fillOpacity={0.35} />
+                        <Bar dataKey="Spent" name={t("onboarding360.chart.spent")} fill="#10b981" radius={[5, 5, 0, 0]} maxBarSize={28} />
                       </BarChart>
                     </ResponsiveContainer>
                   </Block>
@@ -881,27 +888,27 @@ const Onboarding360 = () => {
               </Tab>
 
               {/* ---------------- Transactions ---------------- */}
-              <Tab eventKey="transactions" title="Transactions">
+              <Tab eventKey="transactions" title={t("onboarding360.tab.transactions")}>
                 {activeTab === "transactions" && (
                   <div className="flex flex-col gap-4 pt-4">
               {transactions.length === 0 ? (
-                <Block title="Transactions" icon={ArrowLeftRight}>
-                  <EmptyState icon={ArrowDownLeft} text="No transactions yet." />
+                <Block title={t("onboarding360.block.transactions")} icon={ArrowLeftRight}>
+                  <EmptyState icon={ArrowDownLeft} text={t("onboarding360.empty.noTransactions")} />
                 </Block>
               ) : (
-                  <Block title="Recent Transactions" icon={ArrowLeftRight} right={<span className="text-xs text-muted-foreground">{transactions.length} total</span>}>
+                  <Block title={t("onboarding360.block.recentTransactions")} icon={ArrowLeftRight} right={<span className="text-xs text-muted-foreground">{t("onboarding360.txn.total", { count: transactions.length })}</span>}>
                     <div className="overflow-x-auto rounded-lg border">
                       <Table>
                         <TableHeader
                           style={{ background: "var(--theme-table-background-color)" }}
                         >
                           <TableRow className="border-0 hover:bg-transparent [&>th]:h-9 [&>th]:px-4 [&>th]:text-[12px] [&>th]:font-semibold [&>th]:tracking-[0.2px] [&>th]:text-white">
-                            <TableHead>Date</TableHead>
-                            <TableHead>Type</TableHead>
-                            <TableHead className="text-right">Amount</TableHead>
-                            <TableHead>Counterparty</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead>Note</TableHead>
+                            <TableHead>{t("common:date")}</TableHead>
+                            <TableHead>{t("common:type")}</TableHead>
+                            <TableHead className="text-end">{t("common:amount")}</TableHead>
+                            <TableHead>{t("onboarding360.txn.counterparty")}</TableHead>
+                            <TableHead>{t("common:status")}</TableHead>
+                            <TableHead>{t("onboarding360.txn.note")}</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -914,7 +921,7 @@ const Onboarding360 = () => {
                               >
                                 <TableCell className="text-muted-foreground">{formatDateTime(tx.timestamp)}</TableCell>
                                 <TableCell className="font-medium">{tx.type || "—"}</TableCell>
-                                <TableCell className="text-right">
+                                <TableCell className="text-end">
                                   <span
                                     className={cn(
                                       "inline-flex items-center gap-1 font-semibold",
@@ -943,12 +950,12 @@ const Onboarding360 = () => {
               </Tab>
 
               {/* ---------------- Risk & KYC ---------------- */}
-              <Tab eventKey="risk" title="Risk & KYC">
+              <Tab eventKey="risk" title={t("onboarding360.tab.riskKyc")}>
                 {activeTab === "risk" && (
                   <div className="flex flex-col gap-4 pt-4">
-              <Block title="Score Trend" icon={TrendingUp}>
+              <Block title={t("onboarding360.block.scoreTrend")} icon={TrendingUp}>
                   {(risk?.history || []).length === 0 ? (
-                    <EmptyState icon={ShieldAlert} text="No risk assessment yet." />
+                    <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noRiskAssessment")} />
                   ) : (
                     <ResponsiveContainer width="100%" height={220}>
                       <LineChart data={risk.history} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
@@ -963,9 +970,9 @@ const Onboarding360 = () => {
                 </Block>
 
               <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-                <Block title="Score Breakdown" icon={BarChart3}>
+                <Block title={t("onboarding360.block.scoreBreakdown")} icon={BarChart3}>
                   {(risk?.breakdown || []).length === 0 ? (
-                    <EmptyState icon={ShieldAlert} text="No breakdown available." />
+                    <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noBreakdown")} />
                   ) : (
                     <ResponsiveContainer width="100%" height={240}>
                       <BarChart data={risk.breakdown} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
@@ -979,28 +986,28 @@ const Onboarding360 = () => {
                   )}
                 </Block>
 
-                <Block title="KYC Details" icon={ShieldCheck}>
+                <Block title={t("onboarding360.block.kycDetails")} icon={ShieldCheck}>
                   {kycRows.length === 0 ? (
-                    <EmptyState icon={ShieldAlert} text="No KYC information." />
+                    <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noKyc")} />
                   ) : (
                     kycRows.map((r) => <Field key={r.label} label={r.label} value={r.value} />)
                   )}
                 </Block>
               </div>
 
-              <Block title="Score Breakdown Details" icon={BarChart3}>
+              <Block title={t("onboarding360.block.scoreBreakdownDetails")} icon={BarChart3}>
                 {(risk?.breakdown || []).length === 0 ? (
-                  <EmptyState icon={ShieldAlert} text="No breakdown available." />
+                  <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noBreakdown")} />
                 ) : (
                   <div className="overflow-x-auto">
                     <table className="w-full min-w-[640px] border-collapse text-sm">
                       <thead>
                         <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-                          <th className="px-3 py-2 text-start font-medium">Category</th>
-                          <th className="px-3 py-2 text-end font-medium">Category Wt.</th>
-                          <th className="px-3 py-2 text-end font-medium">Factor Wt.</th>
-                          <th className="px-3 py-2 text-end font-medium">Score</th>
-                          <th className="px-3 py-2 text-start font-medium">Calculation</th>
+                          <th className="px-3 py-2 text-start font-medium">{t("common:category")}</th>
+                          <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.categoryWeight")}</th>
+                          <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.factorWeight")}</th>
+                          <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.score")}</th>
+                          <th className="px-3 py-2 text-start font-medium">{t("onboarding360.breakdown.calculation")}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1023,14 +1030,14 @@ const Onboarding360 = () => {
                       </tbody>
                       <tfoot>
                         <tr className="border-t-2 border-border font-semibold">
-                          <td className="px-3 py-2.5 text-foreground">Total</td>
+                          <td className="px-3 py-2.5 text-foreground">{t("common:total")}</td>
                           <td className="px-3 py-2.5" />
                           <td className="px-3 py-2.5" />
                           <td className="px-3 py-2.5 text-end tabular-nums text-foreground">
                             {risk?.riskScore ?? risk?.riskCalculation?.totalScore ?? "—"}
                           </td>
                           <td className="px-3 py-2.5 text-xs text-muted-foreground">
-                            {risk?.riskLevel ? `Risk Level: ${risk.riskLevel}` : ""}
+                            {risk?.riskLevel ? t("onboarding360.breakdown.riskLevel", { level: risk.riskLevel }) : ""}
                           </td>
                         </tr>
                       </tfoot>
@@ -1044,15 +1051,15 @@ const Onboarding360 = () => {
                   risk?.complianceQuestionHistory?.slice(-1)?.[0]?.answers || [];
                 if (complianceAnswers.length === 0) return null;
                 return (
-                  <Block title="Compliance Questionnaire" icon={ShieldCheck}>
+                  <Block title={t("onboarding360.block.complianceQuestionnaire")} icon={ShieldCheck}>
                     <div className="overflow-x-auto">
                       <table className="w-full min-w-[640px] border-collapse text-sm">
                         <thead>
                           <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
-                            <th className="px-3 py-2 text-start font-medium">Question</th>
-                            <th className="px-3 py-2 text-start font-medium">Answer</th>
-                            <th className="px-3 py-2 text-end font-medium">Factor Wt.</th>
-                            <th className="px-3 py-2 text-end font-medium">Score</th>
+                            <th className="px-3 py-2 text-start font-medium">{t("onboarding360.compliance.question")}</th>
+                            <th className="px-3 py-2 text-start font-medium">{t("onboarding360.compliance.answer")}</th>
+                            <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.factorWeight")}</th>
+                            <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.score")}</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -1086,12 +1093,12 @@ const Onboarding360 = () => {
               </Tab>
 
               {/* ---------------- Documents ---------------- */}
-              <Tab eventKey="documents" title="Documents">
+              <Tab eventKey="documents" title={t("onboarding360.tab.documents")}>
                 {activeTab === "documents" && (
                   <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-3">
-                    <Block title="Identity Documents" icon={FileText} className="lg:col-span-2">
+                    <Block title={t("onboarding360.block.identityDocuments")} icon={FileText} className="lg:col-span-2">
                       {documents.length === 0 ? (
-                        <EmptyState icon={FileText} text="No documents available." />
+                        <EmptyState icon={FileText} text={t("onboarding360.empty.noDocuments")} />
                       ) : (
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                           {documents.map((doc, idx) => (
@@ -1101,16 +1108,16 @@ const Onboarding360 = () => {
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
-                                  {doc.kind || "DOCUMENT"}
+                                  {doc.kind || t("onboarding360.doc.documentFallback")}
                                 </Badge>
                                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <CalendarDays className="size-3" />
                                   {formatDate(doc.createdAt)}
                                 </span>
                               </div>
-                              <DocImage imagePath={doc.imagePath} label={doc.kind || "Document"} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                              <DocImage imagePath={doc.imagePath} label={doc.kind || t("onboarding360.doc.documentLabel")} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
                               <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
-                                <span className="text-muted-foreground">Document No.</span>
+                                <span className="text-muted-foreground">{t("onboarding360.doc.documentNo")}</span>
                                 <span className="font-mono font-medium text-foreground">{doc.documentNumber || "—"}</span>
                               </div>
                             </div>
@@ -1119,26 +1126,26 @@ const Onboarding360 = () => {
                       )}
                     </Block>
 
-                    <Block title="Selfie" icon={Camera}>
+                    <Block title={t("onboarding360.block.selfie")} icon={Camera}>
                       {selfie ? (
                         <div className="w-full">
                           <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
-                            <DocImage imagePath={selfie.imagePath} label="Selfie" onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                            <DocImage imagePath={selfie.imagePath} label={t("onboarding360.doc.selfieLabel")} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
                             {kyc?.selfieVerified != null && (
                               <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
-                                <span className="text-muted-foreground">Verification</span>
+                                <span className="text-muted-foreground">{t("onboarding360.doc.verification")}</span>
                                 <Badge
                                   variant="outline"
                                   className={cn("border font-medium", kyc.selfieVerified ? TONES.emerald : TONES.amber)}
                                 >
-                                  {kyc.selfieVerified ? "Verified" : "Pending"}
+                                  {kyc.selfieVerified ? t("onboarding360.doc.verified") : t("common:pending")}
                                 </Badge>
                               </div>
                             )}
                           </div>
                         </div>
                       ) : (
-                        <EmptyState icon={Camera} text="Selfie not captured for this customer" />
+                        <EmptyState icon={Camera} text={t("onboarding360.empty.noSelfie")} />
                       )}
                     </Block>
                   </div>
@@ -1162,7 +1169,7 @@ const Onboarding360 = () => {
                 type="button"
                 onClick={() => setLightbox(null)}
                 className="absolute -right-3 -top-3 flex size-8 items-center justify-center rounded-full bg-background text-foreground shadow-md ring-1 ring-border"
-                aria-label="Close"
+                aria-label={t("common:close")}
               >
                 <X className="size-4" />
               </button>

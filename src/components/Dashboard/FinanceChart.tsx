@@ -8,6 +8,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useTranslation } from "react-i18next";
 
 const data = Array.from({ length: 20 }, (_, i) => ({
   name: `${i + 1}`,
@@ -17,7 +18,9 @@ const data = Array.from({ length: 20 }, (_, i) => ({
   RejectedFinance: Math.floor(Math.random() * 2000) + 1000,
 }));
 
-const FinanceBarChart: React.FC = () => (
+const FinanceBarChart: React.FC = () => {
+  const { t } = useTranslation("dashboard");
+  return (
   // <ResponsiveContainer width="100%" height={300}>
   //   <BarChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
   //     <CartesianGrid strokeDasharray="3 3" />
@@ -36,12 +39,13 @@ const FinanceBarChart: React.FC = () => (
       <YAxis />
       <Tooltip cursor={false} />
       <Legend />
-      <Bar dataKey="RejectedFinance" fill="#94a3b8" name="Rejected Finance" />
-      <Bar dataKey="DisbursedFinance" fill="#0d9488" name="Disbursed Finance" />
-      <Bar dataKey="ApprovedFinance" fill="#10b981" name="Approved Finance" />
-      <Bar dataKey="AppliedFinance" fill="#6ee7b7" name="Applied Finance" />
+      <Bar dataKey="RejectedFinance" fill="#94a3b8" name={t("financeChart.rejected")} />
+      <Bar dataKey="DisbursedFinance" fill="#0d9488" name={t("financeChart.disbursed")} />
+      <Bar dataKey="ApprovedFinance" fill="#10b981" name={t("financeChart.approved")} />
+      <Bar dataKey="AppliedFinance" fill="#6ee7b7" name={t("financeChart.applied")} />
     </BarChart>
   </ResponsiveContainer>
-);
+  );
+};
 
 export default FinanceBarChart;

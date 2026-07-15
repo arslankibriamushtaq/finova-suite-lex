@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType } from "../../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import Loader from "../../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 interface FieldConfig {
   key: string;
@@ -14,6 +15,7 @@ interface FieldConfig {
 }
 
 function PersonalInformation({ fullDetail }: any) {
+  const { t } = useTranslation("financing");
   const [personalData, setPersonalData] = useState<any>(null);
   const [addressData, setAddressData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -389,7 +391,7 @@ function PersonalInformation({ fullDetail }: any) {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch personal information");
+      toast.error(t("toast.fetchPersonalInfoFailed"));
       setPersonalData(null);
       setAddressData(null);
     } finally {
@@ -426,7 +428,7 @@ function PersonalInformation({ fullDetail }: any) {
 
         {isPersonalDataEmpty ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-            No response found
+            {t("detail.noResponseFound")}
           </div>
         ) : (
           <div>
@@ -475,7 +477,7 @@ function PersonalInformation({ fullDetail }: any) {
 
         {isAddressDataEmpty ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-            No response found
+            {t("detail.noResponseFound")}
           </div>
         ) : (
           <div>

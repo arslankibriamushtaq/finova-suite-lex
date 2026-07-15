@@ -1,7 +1,9 @@
 import React from "react";
 import { Row, Col, Descriptions } from "antd";
+import { useTranslation } from "react-i18next";
 
 const FinancingInfoTab: React.FC = () => {
+  const { t } = useTranslation("customerManagement");
   return (
     <div>
       <Row gutter={24}>
@@ -10,12 +12,12 @@ const FinancingInfoTab: React.FC = () => {
             bordered
             column={1}
             size="small"
-            title="Financing Info (English)"
+            title={t("financingInfo.title")}
             style={{ background: "var(--color-surface-ice)", borderRadius: 2 }}
           >
-            <Descriptions.Item label="Loan Amount">PKR 2,000,000</Descriptions.Item>
-            <Descriptions.Item label="Tenure">24 Months</Descriptions.Item>
-            <Descriptions.Item label="Status">Pending Approval</Descriptions.Item>
+            <Descriptions.Item label={t("financingInfo.loanAmount")}>PKR 2,000,000</Descriptions.Item>
+            <Descriptions.Item label={t("financingInfo.tenure")}>24 Months</Descriptions.Item>
+            <Descriptions.Item label={t("common:status")}>{t("financingInfo.pendingApproval")}</Descriptions.Item>
           </Descriptions>
         </Col>
 

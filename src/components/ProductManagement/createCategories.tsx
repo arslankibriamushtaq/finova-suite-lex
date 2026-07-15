@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { ArrowRight, ChevronRight, ArrowLeft, FolderTree, Check } from "lucide-react"
 import { useRouter } from "../../lib/router"
 import { useLanguage } from "../../hooks/use-language"
@@ -90,6 +91,7 @@ import { getAllCategories, getSubCategories } from "../../redux/apis/apisCrudPro
  
 export default function CreateCategories() {
   const { t, isRTL } = useLanguage()
+  const { t: tp } = useTranslation("productManagement2")
   const router = useRouter()
   const [selectedMasterCategory, setSelectedMasterCategory] = useState<string | null>(null)
   const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null)
@@ -152,7 +154,7 @@ export default function CreateCategories() {
             <span className="pro-head-badge">
               <FolderTree className="h-4 w-4" />
             </span>
-            Select Product Category
+            {tp("createCategories.title")}
           </h1>
         </div>
 
@@ -163,7 +165,7 @@ export default function CreateCategories() {
               <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
                 1
               </div>
-              <h2 className="text-base font-semibold m-0">Select Master Category</h2>
+              <h2 className="text-base font-semibold m-0">{tp("createCategories.selectMaster")}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {categories.map((category:any) => {
@@ -193,7 +195,7 @@ export default function CreateCategories() {
                         (nameEn.charAt(0) || "?").toUpperCase()
                       )}
                     </span>
-                    <div className="min-w-0 flex-1 pr-4">
+                    <div className="min-w-0 flex-1 pe-4">
                       <h3 className="font-semibold leading-tight">{nameEn}</h3>
                       {(category.nameAr || category.name_ar) && (
                         <div className="text-xs text-muted-foreground" dir="rtl">
@@ -224,7 +226,7 @@ export default function CreateCategories() {
                 >
                   2
                 </div>
-                <h2 className="text-base font-semibold m-0">Select Sub-Category</h2>
+                <h2 className="text-base font-semibold m-0">{tp("createCategories.selectSub")}</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {subCategories.map((subCategory: any) => {
@@ -267,13 +269,13 @@ export default function CreateCategories() {
           <div className="flex items-center justify-between pt-6 border-t">
             <Button variant="outline" onClick={() => router.push("/Los/ProductManagement")} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Back to Products
+              {tp("createCategories.backToProducts")}
             </Button>
  
             <div className="flex gap-3">
               {selectedMasterCategory && selectedSubCategory && (
                 <Button onClick={handleCategorySelection} className="gap-2">
-                  Continue to Setup Options
+                  {tp("createCategories.continueToSetup")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               )}

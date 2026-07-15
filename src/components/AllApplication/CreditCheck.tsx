@@ -1,22 +1,24 @@
 import React, { useState } from "react";
 import { Container, Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import CreditInfo from "./CreditInfo";
 
 const CreditCheck = () => {
+  const { t } = useTranslation("allApplication");
   const [selectTab, setSelectedTab] = useState("CreditWeightagesInfoas");
   const tapOptions = [
     {
-      title: "Credit Weightages Info as",
+      title: t("creditCheck.tab.weightagesInfo"),
       key: "CreditWeightagesInfoas",
       folder: <CreditInfo />,
     },
     {
-      title: "Approve Credit Info",
+      title: t("creditCheck.tab.approveCreditInfo"),
       key: "ApproveCreditInfo",
       folder: "",
     },
     {
-      title:'Current Application Weightages is: 75',
+      title: t("creditCheck.tab.currentWeightages", { value: 75 }),
       key: "CurrentApplicationWeightages",
       folder: "",
     }

@@ -15,6 +15,7 @@ import Loader from "../../components/Loader/Loader";
 import toast from "react-hot-toast";
 import { Images } from "../../components/Config/Images";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 type Department = {
   id: string;
   DepartmentName: string;
@@ -25,6 +26,7 @@ type Department = {
 };
 
 const Departments = () => {
+  const { t } = useTranslation("dashboard");
   const [departmentModal, setDepartmentModal] = useState(false);
   const [departmentData, setDepartmentData] = useState<Department[]>([]);
   const [loader, setLoader] = useState(false);
@@ -38,7 +40,7 @@ const Departments = () => {
   const navigate = useNavigate();
   const Departments_Header = [
     {
-      name: "Department Name",
+      name: t("acmDept.departmentName"),
       selector: (row: { DepartmentName: any }) => row.DepartmentName,
     },
     // {
@@ -58,7 +60,7 @@ const Departments = () => {
     //   ),
     // },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { Status: any }) => row.Status,
       cell: (row: any) => (
         <div
@@ -69,12 +71,12 @@ const Departments = () => {
             color: "white",
           }}
         >
-          {row.Status ? "Active" : "InActive"}
+          {row.Status ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Action",
+      name: t("manageRoles.action"),
       selector: (row: { ChangeStatus: any }) => row.ChangeStatus,
       cell: (row: any, index: any) => (
         <div>
@@ -89,12 +91,12 @@ const Departments = () => {
     },
 
     {
-      name: "Action",
+      name: t("manageRoles.action"),
       selector: (row: { Action: any }) => row.Action,
       cell: (row: any) => (
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Select
+            {t("common:select")}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -111,7 +113,7 @@ const Departments = () => {
                       <img src={item.img} alt="" />
                     </div>
 
-                    {item.label}
+                    {item.label === "Edit" ? t("common:edit") : item.label}
                   </div>
                 </>
               </Dropdown.Item>
@@ -233,12 +235,12 @@ const Departments = () => {
         {loader && <Loader />}
         <div className="col-12 d-flex justify-content-center mb-3">
           <div className="col-5">
-            <h3>Departments</h3>
+            <h3>{t("acmDept.title")}</h3>
           </div>
           <div className="col-7 d-flex justify-content-end gap-2">
             <div className="col-4">
               <Input
-                placeholder="Type here"
+                placeholder={t("manageRoles.typeHere")}
                 className="p-2"
                 value={searchInput}
                 onChange={onSearchInput}
@@ -250,7 +252,7 @@ const Departments = () => {
                 setDepartmentModal(true);
               }}
             >
-              +Add Departments
+              {t("acmDept.addDepartments")}
             </button>
           </div>
         </div>
@@ -264,14 +266,14 @@ const Departments = () => {
             setDepartmentModal(false);
           }}
         >
-          <h3> Add Department</h3>
+          <h3>{t("acmDept.addDepartment")}</h3>
         </Modal.Header>
         <ModalBody>
           <div className="d-flex gap-5">
             <div className="col-6">
-              Department Name{" "}
+              {t("acmDept.departmentName")}{" "}
               <Input
-                placeholder="Department Name"
+                placeholder={t("acmDept.departmentName")}
                 className="p-2 mt-1"
                 onChange={(e: any) => {
                   setAddDepartmentData({
@@ -304,14 +306,14 @@ const Departments = () => {
                 });
               }}
             />
-            <div className="ps-2">Active/inactive</div>
+            <div className="ps-2">{t("manageRoles.activeInactive")}</div>
           </div>
           <div className="col-12 d-flex justify-content-end border-top">
             <button
               className="theme-btn-next mt-3"
               onClick={createDepartmentStatus}
             >
-              Add department
+              {t("acmDept.addDepartmentBtn")}
             </button>
           </div>
         </ModalBody>

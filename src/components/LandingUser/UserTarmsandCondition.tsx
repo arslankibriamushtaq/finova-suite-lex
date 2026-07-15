@@ -6,8 +6,10 @@ import { Checkbox } from "antd";
 import { uploadStepDocuments } from "../../utils/uploadStepDocuments";
 import RequiredDocFields from "./RequiredDocFields";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const UserTermsandCondition: React.FC = () => {
+  const { t } = useTranslation("landingUser");
   const [agree, setAgree] = useState(false);
   const [loading, setLoading] = useState(false);
   const [docFiles, setDocFiles] = useState<Record<number, File | null>>({});
@@ -26,7 +28,7 @@ const UserTermsandCondition: React.FC = () => {
       if (!docsOk) return;
       navigate("/applyloan/businessdetails");
     } catch (error: any) {
-      toast.error(error?.message || "Something went wrong!");
+      toast.error(error?.message || t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -45,8 +47,8 @@ const UserTermsandCondition: React.FC = () => {
             />
           ) : (
             <div>
-              <h2 style={{ textAlign: "left" }}>Terms and Conditions not available</h2>
-              <p>Please select a product from the previous page to view the terms and conditions.</p>
+              <h2 style={{ textAlign: "left" }}>{t("terms.notAvailable.title")}</h2>
+              <p>{t("terms.notAvailable.desc")}</p>
             </div>
           )}
 
@@ -56,7 +58,7 @@ const UserTermsandCondition: React.FC = () => {
               checked = {agree}
               onChange={(e: any)=>setAgree(e?.target?.checked)}
             >
-              I agree with Terms and Conditions.
+              {t("terms.agree")}
             </Checkbox>
           </div>
 
@@ -94,7 +96,7 @@ const UserTermsandCondition: React.FC = () => {
             navigate("/applyloan/partner");
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
         <button
           type="button"
@@ -110,7 +112,7 @@ const UserTermsandCondition: React.FC = () => {
           }}
           onClick={handleNext}
         >
-          {loading ? "Submitting..." : "Next Step"}
+          {loading ? t("action.submitting") : t("action.nextStep")}
         </button>
       </div>
       </div>

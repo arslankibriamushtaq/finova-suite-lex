@@ -19,7 +19,9 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { Modal, ModalBody, ModalHeader } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 const Buisness = () => {
+  const { t } = useTranslation("customersB");
   const [editRowId, setEditRowId] = useState(null);
   const [value, setValue] = useState();
   const [editFormData, setEditFormData] = useState<any>({});
@@ -82,13 +84,13 @@ const Buisness = () => {
         Update Customer Name
       </Menu.Item> */}
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<EyeOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item key="accountTimeline" icon={<ClockCircleOutlined />}>
-        Account Timeline
+        {t("customersB:general.accountTimeline")}
       </Menu.Item>
     </Menu>
   );
@@ -200,7 +202,7 @@ const Buisness = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -213,7 +215,7 @@ const Buisness = () => {
         ),
     },
     {
-      name: "Legal Name",
+      name: t("customersB:business.legalName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -226,7 +228,7 @@ const Buisness = () => {
         ),
     },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -239,7 +241,7 @@ const Buisness = () => {
         ),
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -253,7 +255,7 @@ const Buisness = () => {
       width: "200px",
     },
     {
-      name: "Tax ID",
+      name: t("customersB:business.taxId"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -266,7 +268,7 @@ const Buisness = () => {
         ),
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -280,8 +282,8 @@ const Buisness = () => {
       width: "200px",
     },
     {
-      name: "Status",
-  
+      name: t("common:status"),
+
       cell: (row: any) => (
         <div
           style={{
@@ -294,7 +296,7 @@ const Buisness = () => {
             cursor: row.status  ? "pointer" : "default",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
@@ -313,7 +315,7 @@ const Buisness = () => {
     //   ),
     // },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -326,7 +328,7 @@ const Buisness = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -358,7 +360,7 @@ const Buisness = () => {
       setUpdatedName("");
     } catch (error: any) {
       // toast.error(error?.message);
-      toast.error("Something went wrong!");
+      toast.error(t("customersB:toast.somethingWentWrong"));
       // setLoader(false);
     }
   };
@@ -384,23 +386,23 @@ const Buisness = () => {
       handleSubmit();
     } catch (error: any) {
       // toast.error(error?.message);
-      toast.error("Something went wrong!");
+      toast.error(t("customersB:toast.somethingWentWrong"));
       // setLoader(false);
     }
   };
   const applicableOption = [
-    { label: "Name", value: 0 },
-    { label: "Email", value: 1 },
-    { label: "Invoice No", value: 12 },
+    { label: t("common:name"), value: 0 },
+    { label: t("common:email"), value: 1 },
+    { label: t("customersB:searchType.invoiceNo"), value: 12 },
     // { label: "NID", value: 3 },
-    { label: "LoanId", value: 4 },
-    { label: "InvoiceId", value: 5 },
-    { label: "ApplicationId", value: 6 },
-    { label: "ApplicationNo", value: 7 },
+    { label: t("customersB:searchType.loanId"), value: 4 },
+    { label: t("customersB:searchType.invoiceId"), value: 5 },
+    { label: t("customersB:searchType.applicationId"), value: 6 },
+    { label: t("customersB:searchType.applicationNo"), value: 7 },
     // { label: "ProductName", value: 8 },
-    { label: "LegalName", value: 9 },
-    { label: "TaxId", value: 10 },
-    { label: "None", value: 11 },
+    { label: t("customersB:searchType.legalName"), value: 9 },
+    { label: t("customersB:searchType.taxId"), value: 10 },
+    { label: t("common:none"), value: 11 },
   ];
   return (
     <>
@@ -411,7 +413,7 @@ const Buisness = () => {
             className="d-flex align-items-center col-6 justify-content-between mt-1"
             style={{ fontSize: "18px", fontWeight: "Bold" }}
           >
-            Business
+            {t("customersB:business.title")}
           </div>
           <div className="col-6 d-flex justify-content-end">
             <span className="pe-3">
@@ -421,7 +423,7 @@ const Buisness = () => {
                   setSelectApplicable(e);
                 }}
                 style={{ width: "100%", minWidth: "100px", height: "33px" }}
-                placeholder="Search Type"
+                placeholder={t("customersB:searchType.placeholder")}
               >
                 {applicableOption?.map((option) => (
                   <Select.Option value={option.value}>
@@ -432,7 +434,7 @@ const Buisness = () => {
             </span>
             <span className="pe-2">
               <Input
-                placeholder="Search"
+                placeholder={t("common:search")}
                 value={searchValue}
                 prefix={<SearchOutlined />}
                 onChange={(e: any) => {
@@ -456,7 +458,7 @@ const Buisness = () => {
           />
           {buisnessCustomers?.length == 0 && (
             <div className="d-flex justify-content-center mt-5 bg-red">
-              No data found
+              {t("customersB:general.noDataFound")}
             </div>
           )}
         </div>
@@ -472,7 +474,7 @@ const Buisness = () => {
         }}
       >
         <ModalHeader style={{ fontSize: "16px", fontWeight: 600 }} closeButton>
-          Update Customer Name
+          {t("customersB:business.updateCustomerName")}
         </ModalHeader>
 
         <ModalBody className="modal-body-scroll">
@@ -482,7 +484,7 @@ const Buisness = () => {
                 className="d-flex mb-2"
                 style={{ fontSize: "14px", fontWeight: 600 }}
               >
-                Customer ID
+                {t("customersB:business.customerId")}
               </label>
               <Input name="id" value={updatedId.split("-")[0]} disabled />
             </div>
@@ -491,7 +493,7 @@ const Buisness = () => {
                 className="d-flex mb-2"
                 style={{ fontSize: "14px", fontWeight: 600 }}
               >
-                Enter Name
+                {t("customersB:business.enterName")}
               </label>
               <Input
                 name="name"
@@ -505,7 +507,7 @@ const Buisness = () => {
                 className="theme-btn-next"
                 onClick={() => handleUpdateName()}
               >
-                Update
+                {t("common:update")}
               </button>
             </div>
           </div>

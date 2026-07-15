@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 
 import * as Yup from "yup";
@@ -24,6 +25,7 @@ import {
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
 const OperationalExpensesSummary = () => {
+  const { t } = useTranslation("reconciliation");
   const [modal, setModal] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
   const [editRowId, setEditRowId] = useState(null);
@@ -311,22 +313,22 @@ const OperationalExpensesSummary = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Service Type",
+      name: t("col.serviceType"),
       cell: (row: any) => "-",
     },
-   
- 
+
+
     {
-      name: "Transaction Count",
+      name: t("col.transactionCount"),
             selector: (row: { Amount: any }) => "-",
     },
     {
-      name: "Total Amount",
+      name: t("col.totalAmount"),
       selector: (row: { VoucherType: any }) => "-",
     },
- 
+
     {
-      name: "Avarage Cost",
+      name: t("col.averageCost"),
       selector: (row: { Amount: any }) => "-",
     },
     

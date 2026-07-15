@@ -26,6 +26,7 @@ import * as Yup from "yup";
 import { NumberFormatter } from "../../App";
 import { useDispatch } from "react-redux";
 import { setPayInvoices } from "../../redux/apis/apisSlice";
+import { useTranslation } from "react-i18next";
 
 // Payment status strings from lending-service
 const PAYMENT_STATUS = {
@@ -43,6 +44,7 @@ const PAYMENT_STATUS = {
 } as const;
 
 const Invoices = () => {
+  const { t } = useTranslation("accountingLoans");
   const dispatch = useDispatch();
   const [searchValue, setSearchValue] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -124,7 +126,7 @@ const Invoices = () => {
               setInvoiceNo(row.invoiceId);
             }}
           >
-            Update Due Date
+            {t("invoices.updateDueDate")}
           </Menu.Item>
         )}
         <Menu.Item
@@ -133,7 +135,7 @@ const Invoices = () => {
           }}
           icon={<EyeOutlined />}
         >
-          View
+          {t("common:view")}
         </Menu.Item>
 
         {row.isEligibleForWriteOff && (
@@ -144,7 +146,7 @@ const Invoices = () => {
             }}
             icon={<EditOutlined />}
           >
-            Waive late charges
+            {t("invoices.waiveLateCharges")}
           </Menu.Item>
         )}
         {/* <Menu.Item
@@ -187,19 +189,19 @@ const Invoices = () => {
 
   const paymentStatusCell = (row: any) => {
     const map: Record<string, { label: string; color: string }> = {
-      PAID: { label: "Paid", color: "var(--color-success)" },
-      PARTIALLY_PAID: { label: "Partially Paid", color: "var(--color-success)" },
-      SCHEDULED: { label: "Scheduled", color: "var(--color-disabled)" },
-      DUE: { label: "Due", color: "var(--color-warning)" },
-      GRACE_PERIOD: { label: "Grace Period", color: "var(--color-warning)" },
-      OVERDUE: { label: "Overdue", color: "var(--destructive)" },
-      WAIVED: { label: "Waived", color: "var(--color-disabled)" },
-      DEFERRED: { label: "Deferred", color: "var(--color-warning)" },
-      WRITTEN_OFF: { label: "Written Off", color: "var(--destructive)" },
-      PENDING: { label: "Pending", color: "var(--color-warning)" },
-      CANCELLED: { label: "Cancelled", color: "var(--color-disabled)" },
+      PAID: { label: t("invoices.status.paid"), color: "var(--color-success)" },
+      PARTIALLY_PAID: { label: t("invoices.status.partiallyPaid"), color: "var(--color-success)" },
+      SCHEDULED: { label: t("invoices.status.scheduled"), color: "var(--color-disabled)" },
+      DUE: { label: t("invoices.status.due"), color: "var(--color-warning)" },
+      GRACE_PERIOD: { label: t("invoices.status.gracePeriod"), color: "var(--color-warning)" },
+      OVERDUE: { label: t("invoices.status.overdue"), color: "var(--destructive)" },
+      WAIVED: { label: t("invoices.status.waived"), color: "var(--color-disabled)" },
+      DEFERRED: { label: t("invoices.status.deferred"), color: "var(--color-warning)" },
+      WRITTEN_OFF: { label: t("invoices.status.writtenOff"), color: "var(--destructive)" },
+      PENDING: { label: t("invoices.status.pending"), color: "var(--color-warning)" },
+      CANCELLED: { label: t("invoices.status.cancelled"), color: "var(--color-disabled)" },
     };
-    const cfg = map[row.paymentStatus] ?? { label: row.paymentStatus || "Unknown", color: "var(--color-disabled)" };
+    const cfg = map[row.paymentStatus] ?? { label: row.paymentStatus || t("invoices.unknown"), color: "var(--color-disabled)" };
     return (
       <div style={{ padding: "0.22rem 1rem", borderRadius: "2px", backgroundColor: cfg.color, color: "var(--primary-foreground)", display: "inline-block" }}>
         {cfg.label}
@@ -208,17 +210,17 @@ const Invoices = () => {
   };
 
   const Customer_ALL_List_Header = [
-    { name: "Invoice ID", selector: (row: any) => row.invoiceId, width: "200px" },
-    { name: "Installment #", selector: (row: any) => row.installmentNumber, width: "120px" },
-    { name: "Due Date", selector: (row: any) => row.dueDate || "-", width: "130px" },
+    { name: t("invoices.col.invoiceId"), selector: (row: any) => row.invoiceId, width: "200px" },
+    { name: t("invoices.col.installmentNo"), selector: (row: any) => row.installmentNumber, width: "120px" },
+    { name: t("invoices.col.dueDate"), selector: (row: any) => row.dueDate || "-", width: "130px" },
     {
-      name: "Installment Amount",
+      name: t("invoices.col.installmentAmount"),
       selector: (row: any) => row.installmentAmount,
       cell: (row: any) => row?.installmentAmount,
       width: "160px",
     },
     {
-      name: "Fee Amount",
+      name: t("invoices.col.feeAmount"),
       selector: (row: any) => row.feeAmount,
       cell: (row: any) =>
         row.feeAmount != null ? (
@@ -229,7 +231,7 @@ const Invoices = () => {
       width: "130px",
     },
       {
-      name: "Profit Amount",
+      name: t("invoices.col.profitAmount"),
       selector: (row: any) => row.profit,
       cell: (row: any) =>
         row.profit != null ? (
@@ -258,7 +260,7 @@ const Invoices = () => {
     //   width: "170px",
     // },
     {
-      name: "Payment Status",
+      name: t("invoices.col.paymentStatus"),
       selector: (row: any) => row.paymentStatus,
       cell: paymentStatusCell,
       width: "150px",
@@ -269,18 +271,18 @@ const Invoices = () => {
     //   width: "160px",
     // },
     {
-      name: "DPD",
+      name: t("invoices.col.dpd"),
       selector: (row: any) => row.dpd ?? "-",
       width: "80px",
     },
     {
-      name: "Late Penalty",
+      name: t("invoices.col.latePenalty"),
       selector: (row: any) => row.latePenaltyAmount,
       cell: (row: any) => row?.latePenaltyAmount ,
       width: "130px",
     },
     {
-      name: "Waived Penalty",
+      name: t("invoices.col.waivedPenalty"),
       selector: (row: any) => row.waivedPenaltyAmount,
       cell: (row: any) =>
         row.waivedPenaltyAmount != null ? (
@@ -292,7 +294,7 @@ const Invoices = () => {
       width: "140px",
     },
     {
-      name: "Total Penalty",
+      name: t("invoices.col.totalPenalty"),
       selector: (row: any) => row.remainingPenaltyAmount,
       cell: (row: any) =>
         row.remainingPenaltyAmount != null ? (
@@ -304,24 +306,24 @@ const Invoices = () => {
       width: "160px",
     },
     {
-      name: "Total Amount",
+      name: t("invoices.col.totalAmount"),
       selector: (row: any) => row.outstandingBalance,
       cell: (row: any) => row?.outstandingBalance ,
       width: "170px",
     },
-    { name: "Paid Date", selector: (row: any) => row.paidDate ? new Date(row.paidDate).toLocaleDateString() : "-", width: "120px" },
+    { name: t("invoices.col.paidDate"), selector: (row: any) => row.paidDate ? new Date(row.paidDate).toLocaleDateString() : "-", width: "120px" },
     {
-      name: "Paid Amount",
+      name: t("invoices.col.paidAmount"),
       selector: (row: any) => row.paidAmount,
       cell: (row: any) => row.paidAmount != null ? <NumberFormatter value={row?.paidAmount} /> : <span>-</span>,
       width: "120px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "2px", padding: "10px 20px" }}>
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -329,11 +331,11 @@ const Invoices = () => {
   ];
 
   const EarlySettlement_List_Header = [
-    { name: "Invoice ID", selector: (row: any) => row.invoiceId, width: "200px" },
-    { name: "Installment #", selector: (row: any) => row.installmentNumber, width: "120px" },
-    { name: "Due Date", selector: (row: any) => row.dueDate || "-", width: "130px" },
+    { name: t("invoices.col.invoiceId"), selector: (row: any) => row.invoiceId, width: "200px" },
+    { name: t("invoices.col.installmentNo"), selector: (row: any) => row.installmentNumber, width: "120px" },
+    { name: t("invoices.col.dueDate"), selector: (row: any) => row.dueDate || "-", width: "130px" },
     {
-      name: "Installment Amount",
+      name: t("invoices.col.installmentAmount"),
       selector: (row: any) => row.installmentAmount,
       cell: (row: any) => <NumberFormatter value={row?.installmentAmount} />,
       width: "160px",
@@ -345,7 +347,7 @@ const Invoices = () => {
     //   width: "170px",
     // },
     {
-      name: "Payment Status",
+      name: t("invoices.col.paymentStatus"),
       selector: (row: any) => row.paymentStatus,
       cell: paymentStatusCell,
       width: "150px",
@@ -356,24 +358,24 @@ const Invoices = () => {
     //   width: "160px",
     // },
     {
-      name: "ES Discount Amount",
+      name: t("invoices.col.esDiscountAmount"),
       selector: (row: any) => row.esDiscountAmount,
       cell: (row: any) => row.esDiscountAmount != null ? <NumberFormatter value={row.esDiscountAmount} /> : <span>-</span>,
       width: "170px",
     },
     {
-      name: "ES Discount %",
+      name: t("invoices.col.esDiscountPercent"),
       selector: (row: any) => row.esDiscountPercentage,
       cell: (row: any) => row.esDiscountPercentage != null ? <span>{row.esDiscountPercentage}%</span> : <span>-</span>,
       width: "130px",
     },
     {
-      name: "Valid Until Day",
+      name: t("invoices.col.validUntilDay"),
       selector: (row: any) => row.esValidUntilDay ?? "-",
       width: "130px",
     },
     {
-      name: "Total After Discount",
+      name: t("invoices.col.totalAfterDiscount"),
       selector: (row: any) => row.esTotalAfterDiscount,
       cell: (row: any) =>
         row.esTotalAfterDiscount != null
@@ -382,11 +384,11 @@ const Invoices = () => {
       width: "170px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button className="gradient-btn" type="primary" style={{ borderColor: "var(--background)", borderRadius: "2px", padding: "10px 20px" }}>
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -450,7 +452,7 @@ const Invoices = () => {
       }
     } catch (error) {
       // Handle error case
-      toast.error("Failed to submit payment. Please try again.");
+      toast.error(t("pay.toast.submitFailed"));
     }
   };
   const handleSubmitWaiveAmount = async (values: any) => {
@@ -471,7 +473,7 @@ const Invoices = () => {
         response?.data?.notificationMessage === "Request initiated for the operation" ||
         response?.data?.message === "success"
       ) {
-        toast.success(response?.data?.notificationMessage || "Operation successful");
+        toast.success(response?.data?.notificationMessage || t("invoices.toast.writeOffSuccess"));
         setLoader(false);
         setWaveLateDialog(false);
         individualCustomer(); // refresh list
@@ -480,7 +482,7 @@ const Invoices = () => {
           response?.data?.data?.notificationMessage ||
           response?.data?.notificationMessage ||
           response?.data?.errors?.[0] ||
-          "Failed"
+          t("invoices.toast.writeOffFailed")
         );
         setWaveLateDialog(false);
         setLoader(false);
@@ -489,7 +491,7 @@ const Invoices = () => {
       setLoader(false);
       setWaveLateDialog(false);
       // Handle error case
-      toast.error(error?.response?.data?.message || "Failed to submit write-off. Please try again.");
+      toast.error(error?.response?.data?.message || t("invoices.toast.writeOffSubmitFailed"));
     }
   };
   const [loader, setLoader] = useState<boolean>(false);
@@ -504,7 +506,7 @@ const Invoices = () => {
       setAllinvoiceList(dataArray);
       setTotalRows(dataArray.length);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch installments");
+      toast.error(error?.response?.data?.message || error?.message || t("invoices.toast.fetchInstallmentsFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -517,20 +519,20 @@ const Invoices = () => {
       { value: 4, label: "Prefer_not_to_say" },
     ],
     RepaymentType: [
-      { value: 0, label: "invoice" },
-      { value: 1, label: "Promise" },
+      { value: 0, label: t("pay.optInvoice") },
+      { value: 1, label: t("pay.optPromise") },
     ],
     RepaymentStatus: [
-      { value: 0, label: "Pending" },
-      { value: 1, label: "Approved" },
-      { value: 2, label: "Rejected" },
+      { value: 0, label: t("pay.optPending") },
+      { value: 1, label: t("pay.optApproved") },
+      { value: 2, label: t("pay.optRejected") },
     ],
 
     RepaymentChannel: [
-      { value: 0, label: "Cheque" },
-      { value: 1, label: "Online" },
-      { value: 2, label: "Cash" },
-      { value: 3, label: "Gateway" },
+      { value: 0, label: t("pay.cheque") },
+      { value: 1, label: t("pay.online") },
+      { value: 2, label: t("pay.cash") },
+      { value: 3, label: t("txnHistory.mode.gateway") },
     ],
   };
 
@@ -602,7 +604,7 @@ profit:item?.profitComponent ?? 0,
       const list = res?.data?.data || res?.data || [];
       setWaiverData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch waiver requests");
+      toast.error(error?.response?.data?.message || error?.message || t("invoices.toast.fetchWaiverFailed"));
     } finally {
       setWaiverLoading(false);
     }
@@ -626,16 +628,16 @@ profit:item?.profitComponent ?? 0,
 
   const validateWaiver = (): boolean => {
     const e: Record<string, string> = {};
-    if (!waiverReason.trim()) e.reason = "Reason is required";
+    if (!waiverReason.trim()) e.reason = t("invoices.waiver.val.reasonRequired");
     if (waiverModalType === "approve") {
       if (!waiverAmount) {
-        e.amount = "Amount is required";
+        e.amount = t("invoices.waiver.val.amountRequired");
       } else {
         const amt = parseFloat(waiverAmount);
         if (isNaN(amt) || amt <= 0) {
-          e.amount = "Enter a valid amount";
+          e.amount = t("invoices.waiver.val.amountInvalid");
         } else if (amt > parseFloat(selectedWaiver?.requestedAmount)) {
-          e.amount = `Cannot exceed requested amount`;
+          e.amount = t("invoices.waiver.val.amountExceeds");
         }
       }
     }
@@ -652,17 +654,17 @@ profit:item?.profitComponent ?? 0,
           reason: waiverReason.trim(),
           amount: parseFloat(waiverAmount),
         });
-        toast.success("Waiver request approved successfully");
+        toast.success(t("invoices.waiver.toast.approved"));
       } else {
         await rejectWaiverByInvoice(selectedWaiver.invoiceId, {
           reason: waiverReason.trim(),
         });
-        toast.success("Waiver request rejected");
+        toast.success(t("invoices.waiver.toast.rejected"));
       }
       closeWaiverModal();
       fetchWaiverData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || `Failed to ${waiverModalType} waiver request`);
+      toast.error(error?.response?.data?.message || error?.message || t("invoices.toast.writeOffFailed"));
     } finally {
       setWaiverActionLoading(false);
     }
@@ -675,8 +677,8 @@ profit:item?.profitComponent ?? 0,
         if (key === "reject") openWaiverModal("reject", row);
       }}
     >
-      <Menu.Item key="approve" icon={<CheckCircleOutlined />}>Approve</Menu.Item>
-      <Menu.Item key="reject" icon={<CloseCircleOutlined />} danger>Reject</Menu.Item>
+      <Menu.Item key="approve" icon={<CheckCircleOutlined />}>{t("common:approve")}</Menu.Item>
+      <Menu.Item key="reject" icon={<CloseCircleOutlined />} danger>{t("common:reject")}</Menu.Item>
     </Menu>
   );
 
@@ -719,10 +721,10 @@ profit:item?.profitComponent ?? 0,
 
   const WaiverColumns = [
     { name: "#", cell: (_row: any, index: number) => waiverStart + index + 1, width: "60px" },
-    { name: "Invoice ID", selector: (row: any) => row.invoiceId || "-", width: "180px" },
-    { name: "Requested Amount", selector: (row: any) => formatWaiverCurrency(row.requestedAmount), width: "170px" },
+    { name: t("invoices.col.invoiceId"), selector: (row: any) => row.invoiceId || "-", width: "180px" },
+    { name: t("invoices.col.requestedAmount"), selector: (row: any) => formatWaiverCurrency(row.requestedAmount), width: "170px" },
     {
-      name: "Reason",
+      name: t("invoices.col.reason"),
       cell: (row: any) => (
         <span title={row.reason || ""} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any, overflow: "hidden", fontSize: 12 }}>
           {row.reason || "-"}
@@ -730,9 +732,9 @@ profit:item?.profitComponent ?? 0,
       ),
       width: "200px",
     },
-    { name: "Status", cell: (row: any) => <WaiverStatusPill status={row.status} />, width: "120px" },
+    { name: t("common:status"), cell: (row: any) => <WaiverStatusPill status={row.status} />, width: "120px" },
     {
-      name: "Rejection Reason",
+      name: t("invoices.col.rejectionReason"),
       cell: (row: any) => (
         <span title={row.rejectionReason || ""} style={{ display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as any, overflow: "hidden", fontSize: 12, color: row.rejectionReason ? "var(--color-status-coral)" : "var(--muted-foreground)" }}>
           {row.rejectionReason || "-"}
@@ -740,10 +742,10 @@ profit:item?.profitComponent ?? 0,
       ),
       width: "180px",
     },
-    { name: "Requested At", selector: (row: any) => formatWaiverDateTime(row.requestedAt), width: "170px" },
-    { name: "Processed At", selector: (row: any) => formatWaiverDateTime(row.processedAt), width: "170px" },
+    { name: t("invoices.col.requestedAt"), selector: (row: any) => formatWaiverDateTime(row.requestedAt), width: "170px" },
+    { name: t("invoices.col.processedAt"), selector: (row: any) => formatWaiverDateTime(row.processedAt), width: "170px" },
     {
-      name: "Action",
+      name: t("invoices.col.action"),
       cell: (row: any) => {
         if (row.status !== "PENDING") {
           return <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>—</span>;
@@ -751,7 +753,7 @@ profit:item?.profitComponent ?? 0,
         return (
           <Dropdown overlay={waiverActionMenu(row)} trigger={["click"]}>
             <Button className="gradient-btn" type="primary" style={{ borderColor: "white", borderRadius: 2, padding: "10px 20px" }}>
-              Select <DownOutlined />
+              {t("account.select")} <DownOutlined />
             </Button>
           </Dropdown>
         );
@@ -859,15 +861,15 @@ profit:item?.profitComponent ?? 0,
   };
 
   const validationSchema = Yup.object({
-    paymentMethod: Yup.string().required("Payment Method is required."),
-    payerName: Yup.string().required("Payer Name is required."),
+    paymentMethod: Yup.string().required(t("pay.val.paymentMethodRequired")),
+    payerName: Yup.string().required(t("pay.val.payerNameRequired")),
     chequeNo: Yup.string().when(
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque") {
           return schema
-            .required("Cheque Number is required.")
-            .matches(/^[0-9]+$/, "Cheque Number must be numeric.");
+            .required(t("pay.val.chequeNumberRequired"))
+            .matches(/^[0-9]+$/, t("pay.val.chequeNumberNumeric"));
         }
         return schema.notRequired();
       }
@@ -877,7 +879,7 @@ profit:item?.profitComponent ?? 0,
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque") {
-          return schema.required("Branch Code is required.");
+          return schema.required(t("pay.val.branchCodeRequired"));
         }
         return schema.notRequired();
       }
@@ -887,7 +889,7 @@ profit:item?.profitComponent ?? 0,
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cash") {
-          return schema.required("Receipt Number is required.");
+          return schema.required(t("pay.val.receiptNumberRequired"));
         }
         return schema.notRequired();
       }
@@ -897,7 +899,7 @@ profit:item?.profitComponent ?? 0,
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque" || paymentMethod === "Credit Card") {
-          return schema.required("Bank Name is required.");
+          return schema.required(t("pay.val.bankNameRequired"));
         }
         return schema.notRequired();
       }
@@ -907,7 +909,7 @@ profit:item?.profitComponent ?? 0,
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque" || paymentMethod === "Credit Card") {
-          return schema.required("Bank Account Number is required.");
+          return schema.required(t("pay.val.bankAccNumberRequired"));
         }
         return schema.notRequired();
       }
@@ -952,7 +954,7 @@ profit:item?.profitComponent ?? 0,
       {loader && <Loader />}
       <div className="service invoices-page">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Loan Invoices</h3>
+          <h3 className="mb-0 fw-bold text-dark">{t("invoices.title")}</h3>
         </div>
 
         {/* Filters card */}
@@ -967,7 +969,7 @@ profit:item?.profitComponent ?? 0,
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <Input
               allowClear
-              placeholder="Search by invoice ID, installment, status, due date"
+              placeholder={t("invoices.searchPlaceholder")}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchValue}
               onChange={(e: any) => setSearchValue(e.target.value)}
@@ -987,7 +989,7 @@ profit:item?.profitComponent ?? 0,
                 }}
                 onClick={handleChangeInvoice}
               >
-                Pay Invoices
+                {t("invoices.payInvoices")}
               </Button>
             )}
           </div>
@@ -1009,7 +1011,7 @@ profit:item?.profitComponent ?? 0,
             onSelect={(k) => setActiveTab(k || "loanInvoices")}
             className="px-3 pt-3"
           >
-          <Tab eventKey="loanInvoices" title="Loan Invoices">
+          <Tab eventKey="loanInvoices" title={t("invoices.tabLoan")}>
             <div className="cs-table p-2">
               <TableView
                 setPage={setPage}
@@ -1030,12 +1032,12 @@ profit:item?.profitComponent ?? 0,
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}
                 >
-                  No data found
+                  {t("invoices.noData")}
                 </div>
               )}
             </div>
           </Tab>
-          <Tab eventKey="earlySettlement" title="Early Settlement Invoices">
+          <Tab eventKey="earlySettlement" title={t("invoices.tabEarlySettlement")}>
             <div className="cs-table p-2">
               <TableView
                 setPage={setEarlySettlementPage}
@@ -1063,12 +1065,12 @@ profit:item?.profitComponent ?? 0,
                   className="d-flex justify-content-center mt-5"
                   style={{ color: "var(--destructive)" }}
                 >
-                  No data found
+                  {t("invoices.noData")}
                 </div>
               )}
             </div>
           </Tab>
-          <Tab eventKey="waiverRequests" title="Waive Off Requests">
+          <Tab eventKey="waiverRequests" title={t("invoices.tabWaiver")}>
             <div className="cs-table p-2">
               <TableView
                 setPage={setWaiverPage}
@@ -1086,7 +1088,7 @@ profit:item?.profitComponent ?? 0,
               />
               {!waiverLoading && waiverTotal === 0 && (
                 <div className="d-flex justify-content-center mt-5" style={{ color: "var(--destructive)" }}>
-                  No waiver requests found
+                  {t("invoices.noWaiver")}
                 </div>
               )}
             </div>
@@ -1102,7 +1104,7 @@ profit:item?.profitComponent ?? 0,
             setSelectedInvoice(null);
           }}
         >
-          <Modal.Title>Pay Invoice Manually</Modal.Title>
+          <Modal.Title>{t("pay.title")}</Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{
@@ -1152,7 +1154,7 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Invoice No.
+                      {t("pay.invoiceNo")}
                     </label>
                     <Field name="invoiceNumber" className="form-control" />
                   </Col>
@@ -1162,7 +1164,7 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Amount
+                      {t("pay.amount")}
                     </label>
                     <Field name="totalAmount" className="form-control" />
                   </Col>
@@ -1175,17 +1177,17 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Payment Method <span className="text-danger">*</span>
+                      {t("pay.paymentMethod")} <span className="text-danger">*</span>
                     </label>
                     <Field
                       as="select"
                       name="paymentMethod"
                       className="form-control"
                     >
-                      <option label="Select Payment Method" value="" />
-                      <option value="Cheque">Cheque</option>
-                      <option value="Credit Card">Online</option>
-                      <option selected value="Cash">Cash</option>
+                      <option label={t("pay.selectPaymentMethod")} value="" />
+                      <option value="Cheque">{t("pay.cheque")}</option>
+                      <option value="Credit Card">{t("pay.online")}</option>
+                      <option selected value="Cash">{t("pay.cash")}</option>
                     </Field>
                     <ErrorMessage
                       name="paymentMethod"
@@ -1199,7 +1201,7 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Due Date
+                      {t("pay.dueDate")}
                     </label>
                     <Field
                       name="dueDate"
@@ -1217,13 +1219,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Cheque Number <span className="text-danger">*</span>
+                          {t("pay.chequeNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="chequeNo"
                           className="form-control"
-                          placeholder="Cheque Num..."
+                          placeholder={t("pay.chequeNumPlaceholder")}
                         />
                         <ErrorMessage
                           name="chequeNo"
@@ -1237,13 +1239,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Branch Code <span className="text-danger">*</span>
+                          {t("pay.branchCode")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="branchCode"
                           className="form-control"
-                          placeholder="Branch Code"
+                          placeholder={t("pay.branchCode")}
                         />
                         <ErrorMessage
                           name="branchCode"
@@ -1259,13 +1261,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Name <span className="text-danger">*</span>
+                          {t("pay.bankName")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankName"
                           className="form-control"
-                          placeholder="Bank Name"
+                          placeholder={t("pay.bankName")}
                         />
                         <ErrorMessage
                           name="bankName"
@@ -1279,13 +1281,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Acc Number <span className="text-danger">*</span>
+                          {t("pay.bankAccNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankAccNumber"
                           className="form-control"
-                          placeholder="Bank Account Number"
+                          placeholder={t("pay.bankAccountNumber")}
                         />
                         <ErrorMessage
                           name="bankAccNumber"
@@ -1304,13 +1306,13 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Payer Name <span className=" text-danger">*</span>
+                      {t("pay.payerName")} <span className=" text-danger">*</span>
                     </label>
                     <Field
                       as="input"
                       name="payerName"
                       className="form-control"
-                      placeholder="Payer Name"
+                      placeholder={t("pay.payerName")}
                     />
                     <ErrorMessage
                       name="payerName"
@@ -1324,14 +1326,14 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Repayment Types
+                      {t("pay.repaymentTypes")}
                     </label>
                     <Field
                       as="select"
                       name="repaymentTypes"
                       className="form-control"
                     >
-                      <option label="Select Type" value="" />
+                      <option label={t("pay.selectType")} value="" />
                       {enums.RepaymentType.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -1354,13 +1356,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Name <span className="text-danger">*</span>
+                          {t("pay.bankName")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankName"
                           className="form-control"
-                          placeholder="Bank Name"
+                          placeholder={t("pay.bankName")}
                         />
                         <ErrorMessage
                           name="bankName"
@@ -1374,13 +1376,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Acc Number <span className="text-danger">*</span>
+                          {t("pay.bankAccNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankAccNumber"
                           className="form-control"
-                          placeholder="Bank Account Number"
+                          placeholder={t("pay.bankAccountNumber")}
                         />
                         <ErrorMessage
                           name="bankAccNumber"
@@ -1399,10 +1401,10 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Status
+                      {t("pay.status")}
                     </label>
                     <Field as="select" name="Status" className="form-control">
-                      <option label="Set Status" value="" />
+                      <option label={t("pay.setStatus")} value="" />
                       {enums.RepaymentStatus.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -1443,13 +1445,13 @@ profit:item?.profitComponent ?? 0,
                           className="mb-2 "
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Receipt Number <span className="text-danger">*</span>
+                          {t("pay.receiptNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="receiptNumber"
                           className="form-control"
-                          placeholder="Receipt Number"
+                          placeholder={t("pay.receiptNumber")}
                         />
                         <ErrorMessage
                           name="receiptNumber"
@@ -1467,7 +1469,7 @@ profit:item?.profitComponent ?? 0,
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Document
+                        {t("pay.document")}
                       </label>
                       <br />
                       {!fileName ? (
@@ -1486,7 +1488,7 @@ profit:item?.profitComponent ?? 0,
                             color: "var(--muted-foreground)",
                           }}
                         >
-                          Click here to upload a file
+                          {t("pay.clickToUpload")}
                         </div>
                       ) : (
                         // Display this when a file is selected
@@ -1540,7 +1542,7 @@ profit:item?.profitComponent ?? 0,
                       borderRadius: "2px",
                     }}
                   >
-                    Submit
+                    {t("common:submit")}
                   </button>
                 </div>
               </Form>
@@ -1559,7 +1561,7 @@ profit:item?.profitComponent ?? 0,
         }}
       >
         <ModalHeader style={{ fontSize: "16px", fontWeight: 600 }} closeButton>
-          Update Due Date
+          {t("invoices.updateDueDate")}
         </ModalHeader>
 
         <ModalBody className="modal-body-scroll">
@@ -1569,7 +1571,7 @@ profit:item?.profitComponent ?? 0,
                 className="d-flex mb-2"
                 style={{ fontSize: "14px", fontWeight: 500 }}
               >
-                Invoice No
+                {t("accInvoices.col.invoiceNo")}
               </label>
               <Input name="id" value={invoiceNo} disabled />
             </div>
@@ -1578,7 +1580,7 @@ profit:item?.profitComponent ?? 0,
                 className="d-flex mb-2"
                 style={{ fontSize: "14px", fontWeight: 600 }}
               >
-                Due Date
+                {t("pay.dueDate")}
               </label>
               <Input
                 name="name"
@@ -1594,7 +1596,7 @@ profit:item?.profitComponent ?? 0,
                 className="theme-btn-next"
                 onClick={() => handleUpdateDueDate()}
               >
-                Update
+                {t("common:update")}
               </button>
             </div>
           </div>
@@ -1609,7 +1611,7 @@ profit:item?.profitComponent ?? 0,
         }}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Waive Late Charges</Modal.Title>
+          <Modal.Title>{t("invoices.waiveLateTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{
@@ -1634,7 +1636,7 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Invoice No.
+                      {t("pay.invoiceNo")}
                     </label>
                     <Field
                       name="invoiceNumber"
@@ -1649,7 +1651,7 @@ profit:item?.profitComponent ?? 0,
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Penalty Amount
+                      {t("invoices.penaltyAmount")}
                     </label>
                     <Field
                       name="totalAmount"
@@ -1674,7 +1676,7 @@ profit:item?.profitComponent ?? 0,
                       borderRadius: "2px",
                     }}
                   >
-                    Submit
+                    {t("common:submit")}
                   </button>
                 </div>
               </Form>
@@ -1687,7 +1689,7 @@ profit:item?.profitComponent ?? 0,
       <Modal show={!!waiverModalType} onHide={closeWaiverModal} centered>
         <Modal.Header closeButton>
           <Modal.Title style={{ fontSize: 16 }}>
-            {waiverModalType === "approve" ? "Approve Waiver Request" : "Reject Waiver Request"}
+            {waiverModalType === "approve" ? t("invoices.waiver.approveTitle") : t("invoices.waiver.rejectTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -1695,14 +1697,14 @@ profit:item?.profitComponent ?? 0,
             {waiverModalType === "approve" && (
               <Col md={12} className="mb-3">
                 <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 4 }}>
-                  Waiver Amount (SAR) *
+                  {t("invoices.waiver.amountLabel")}
                 </label>
                 <input
                   type="number"
                   min={0.01}
                   step={0.01}
                   className={`form-control${waiverErrors.amount ? " is-invalid" : ""}`}
-                  placeholder={`Max: ${parseFloat(selectedWaiver?.requestedAmount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
+                  placeholder={t("invoices.waiver.maxPlaceholder", { value: parseFloat(selectedWaiver?.requestedAmount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 }) })}
                   value={waiverAmount}
                   onChange={(e) => {
                     const max = parseFloat(selectedWaiver?.requestedAmount || 0);
@@ -1714,18 +1716,18 @@ profit:item?.profitComponent ?? 0,
                 />
                 {waiverErrors.amount && <div className="invalid-feedback" style={{ display: "block" }}>{waiverErrors.amount}</div>}
                 <small className="text-muted" style={{ fontSize: 11 }}>
-                  Requested: {formatWaiverCurrency(selectedWaiver?.requestedAmount)} — cannot exceed this amount
+                  {t("invoices.waiver.requestedHint", { value: formatWaiverCurrency(selectedWaiver?.requestedAmount) })}
                 </small>
               </Col>
             )}
             <Col md={12} className="mb-1">
               <label style={{ fontSize: 13, fontWeight: 600, display: "block", marginBottom: 4 }}>
-                {waiverModalType === "approve" ? "Approval Reason *" : "Rejection Reason *"}
+                {waiverModalType === "approve" ? t("invoices.waiver.approvalReason") : t("invoices.waiver.rejectionReason")}
               </label>
               <textarea
                 rows={3}
                 className={`form-control${waiverErrors.reason ? " is-invalid" : ""}`}
-                placeholder={waiverModalType === "approve" ? "Enter reason for approval..." : "Enter reason for rejection..."}
+                placeholder={waiverModalType === "approve" ? t("invoices.waiver.approvalPlaceholder") : t("invoices.waiver.rejectionPlaceholder")}
                 value={waiverReason}
                 onChange={(e) => {
                   setWaiverReason(e.target.value);
@@ -1737,7 +1739,7 @@ profit:item?.profitComponent ?? 0,
           </Row>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={closeWaiverModal} disabled={waiverActionLoading}>Cancel</Button>
+          <Button onClick={closeWaiverModal} disabled={waiverActionLoading}>{t("common:cancel")}</Button>
           <Button
             className="gradient-btn"
             type="primary"
@@ -1746,7 +1748,7 @@ profit:item?.profitComponent ?? 0,
             danger={waiverModalType === "reject"}
             style={{ borderColor: "white", borderRadius: 2, padding: "10px 20px" }}
           >
-            {waiverModalType === "approve" ? "Approve" : "Reject"}
+            {waiverModalType === "approve" ? t("common:approve") : t("common:reject")}
           </Button>
         </Modal.Footer>
       </Modal>

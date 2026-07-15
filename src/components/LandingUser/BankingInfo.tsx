@@ -8,8 +8,10 @@ import { uploadStepDocuments } from "../../utils/uploadStepDocuments";
 import { verifyIBAN, submitApplication } from "../../redux/apis/apisCrudFactoring";
 import RequiredDocFields from "./RequiredDocFields";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const BankingInfo = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
   const applicationNo = useSelector(
@@ -46,7 +48,7 @@ const BankingInfo = () => {
 
   const handleVerifyIban = async () => {
     if (!formValues.iban) {
-      toast.error("Please enter IBAN.");
+      toast.error(t("banking.toast.enterIban"));
       return;
     }
 
@@ -67,16 +69,16 @@ const BankingInfo = () => {
 
       const res = await verifyIBAN(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "IBAN verification failed.");
+        toast.error(res?.data?.message || t("banking.toast.ibanFailed"));
         return;
       }
 
-      toast.success(res?.data?.message || "IBAN verified successfully.");
+      toast.success(res?.data?.message || t("banking.toast.ibanSuccess"));
       setIbanData(res.data.data);
       setIbanVerified(true);
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || error?.message || "Something went wrong!");
+      toast.error(error?.response?.data?.message || error?.message || t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -91,11 +93,11 @@ const BankingInfo = () => {
 
       const res = await submitApplication(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "Application submission failed.");
+        toast.error(res?.data?.message || t("banking.toast.submitFailed"));
         return;
       }
 
-      toast.success(res?.data?.message || "Application submitted successfully.");
+      toast.success(res?.data?.message || t("banking.toast.submitSuccess"));
 
       navigate("/applyloan/finish", {
         state: {
@@ -107,7 +109,7 @@ const BankingInfo = () => {
       });
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || error?.message || "Something went wrong!");
+      toast.error(error?.response?.data?.message || error?.message || t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -122,10 +124,10 @@ const BankingInfo = () => {
               className="mb-1 required-asterisk"
               style={{ fontWeight: 500 }}
             >
-              IBAN
+              {t("banking.iban")}
             </label>
             <Input
-              placeholder="Enter IBAN"
+              placeholder={t("banking.iban.placeholder")}
               maxLength={24}
               minLength={24}
               className="form-control"
@@ -149,7 +151,7 @@ const BankingInfo = () => {
       {/* IBAN Verification Result Card */}
       {ibanVerified && ibanData && (
         <Card
-          title="IBAN Verification Details"
+          title={t("banking.card.title")}
           className="mb-4"
           style={{ borderRadius: "2px", border: "1px solid #e8e8e8" }}
           headStyle={{ background: "#f5f7fa", fontWeight: 600, fontSize: "16px" }}
@@ -157,7 +159,7 @@ const BankingInfo = () => {
           <Row>
             <Col md={6} className="mb-3">
               <div style={{ color: "#999", fontSize: "13px", marginBottom: "4px" }}>
-                Bank Name
+                {t("banking.card.bankName")}
               </div>
               <div style={{ fontWeight: 500, fontSize: "15px" }}>
                 {ibanData?.bank?.bankName || "—"}
@@ -165,7 +167,7 @@ const BankingInfo = () => {
             </Col>
             <Col md={6} className="mb-3">
               <div style={{ color: "#999", fontSize: "13px", marginBottom: "4px" }}>
-                Bank Identifier
+                {t("banking.card.bankIdentifier")}
               </div>
               <div style={{ fontWeight: 500, fontSize: "15px" }}>
                 {ibanData?.bank?.bankIdentifier || "—"}
@@ -175,7 +177,7 @@ const BankingInfo = () => {
           <Row>
             <Col md={6} className="mb-3">
               <div style={{ color: "#999", fontSize: "13px", marginBottom: "4px" }}>
-                Identity Number
+                {t("banking.card.identityNumber")}
               </div>
               <div style={{ fontWeight: 500, fontSize: "15px" }}>
                 {ibanData?.identityNumber || "—"}
@@ -183,7 +185,7 @@ const BankingInfo = () => {
             </Col>
             <Col md={6} className="mb-3">
               <div style={{ color: "#999", fontSize: "13px", marginBottom: "4px" }}>
-                Beneficiary Name
+                {t("banking.card.beneficiaryName")}
               </div>
               <div style={{ fontWeight: 500, fontSize: "15px" }}>
                 {ibanData?.beneficiaryName || "—"}
@@ -193,13 +195,13 @@ const BankingInfo = () => {
           <Row>
             <Col md={6}>
               <div style={{ color: "#999", fontSize: "13px", marginBottom: "4px" }}>
-                Status
+                {t("common:status")}
               </div>
               <Badge
                 status={ibanData?.status === 1 ? "success" : "error"}
                 text={
                   <span style={{ fontWeight: 500, fontSize: "14px" }}>
-                    {ibanData?.status === 1 ? "Active" : "Inactive"}
+                    {ibanData?.status === 1 ? t("common:active") : t("common:inactive")}
                   </span>
                 }
               />
@@ -226,7 +228,7 @@ const BankingInfo = () => {
             });
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
         <button
           className="step-buttons"
@@ -242,10 +244,10 @@ const BankingInfo = () => {
           onClick={ibanVerified ? handleSubmitApplication : handleVerifyIban}
         >
           {loading
-            ? "Processing..."
+            ? t("action.processing")
             : ibanVerified
-            ? "Submit"
-            : "Verify"}
+            ? t("common:submit")
+            : t("action.verify")}
         </button>
       </div>
     </>

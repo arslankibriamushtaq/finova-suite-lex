@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PartnerFactoringInformation = ({ setSelectedTab }: any) => {
+  const { t } = useTranslation("partner");
   const detailSections = [
     {
-      heading: "Factoring Application Info:",
+      heading: t("factoringInfo.applicationInfoHeading"),
       align: "start",
       details: [
         { label: "Application Number", value: "FVAN-2560297671" },

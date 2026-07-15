@@ -7,7 +7,9 @@ import csv from "../../assets/images/print-csv.svg";
 import blackPrint from "../../assets/images/blac-print.png";
 import { Tabs } from "antd";
 import ChartSkeleton from "../ChartSkeleton";
+import { useTranslation } from "react-i18next";
 const Ibft = (props: any) => {
+  const { t } = useTranslation("dashboard");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [legends, setLegends] = useState<any>();
   const [activeTab, setActiveTab] = useState("numbers");
@@ -32,11 +34,11 @@ const Ibft = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Numbers", // Y-axis label
+      name: t("services.numbers"), // Y-axis label
     },
     series: [
       {
-        name: "Incoming", // Name for the first set of bars
+        name: t("ibft.series.incoming"), // Name for the first set of bars
         data: props?.dashboardData?.ibft_report_card?.graph?.map(
           (day) => day?.total_fund
         ), // Data for the first set of bars
@@ -50,7 +52,7 @@ const Ibft = (props: any) => {
         },
       },
       {
-        name: "Out Going", // Name for the first set of bars
+        name: t("ibft.series.outgoing"), // Name for the first set of bars
         data: props?.dashboardData?.ibft_report_card?.outgoing_graph?.map(
           (day) => day?.total_fund
         ), // Data for the first set of bars
@@ -68,7 +70,7 @@ const Ibft = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -93,11 +95,11 @@ const Ibft = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Numbers", // Y-axis label
+      name: t("services.numbers"), // Y-axis label
     },
     series: [
       {
-        name: "Incoming", // Name for the first set of bars
+        name: t("ibft.series.incoming"), // Name for the first set of bars
         data: props?.dashboardData?.ibft_report_card?.graph?.map(
           (day) => day?.average_fund
         ), // Data for the first set of bars
@@ -111,7 +113,7 @@ const Ibft = (props: any) => {
         },
       },
       {
-        name: "Out Going", // Name for the first set of bars
+        name: t("ibft.series.outgoing"), // Name for the first set of bars
         data: props?.dashboardData?.ibft_report_card?.outgoing_graph?.map(
           (day) => day?.average_fund
         ), // Data for the first set of bars
@@ -129,7 +131,7 @@ const Ibft = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -148,12 +150,12 @@ const Ibft = (props: any) => {
   const ticketsTab = [
     {
       key: "Amount",
-      label: "Total Funds",
+      label: t("ibft.tab.totalFunds"),
       chartOptions: numbersBarChartOptions,
     },
     {
       key: "Sales",
-      label: "Avg Funds",
+      label: t("ibft.tab.avgFunds"),
       chartOptions: avgBarChartOptions,
     },
   ];
@@ -170,7 +172,7 @@ const Ibft = (props: any) => {
           className="d-flex"
           style={{ justifyContent: "space-between", padding: "20px 15px" }}
         >
-          <h4>IBFT</h4>
+          <h4>{t("ibft.title")}</h4>
           <div className="csv-print">
             <img
               src={blackPrint}
@@ -179,7 +181,7 @@ const Ibft = (props: any) => {
               height={15}
               style={{ cursor: "pointer" }} // Add pointer cursor
             />
-            Print CSV
+            {t("services.printCsv")}
           </div>
         </div>
 
@@ -196,7 +198,7 @@ const Ibft = (props: any) => {
           >
             <div className="ticket p-3">
               <label className="label-tag" style={{ position: "absolute" }}>
-                Incoming / Outgoing Funds
+                {t("ibft.label")}
               </label>
               <Tabs
                 defaultActiveKey="numbers"

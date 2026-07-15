@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Select } from "antd";
 
 import { Row, Col, Form, FormGroup, Modal } from "react-bootstrap";
@@ -14,6 +15,7 @@ import { useParams } from "react-router-dom";
 import Loader from "../../../components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
 const CollateralManagementEdit = () => {
+  const { t } = useTranslation("loanManagement");
   const id = useParams();
   const navigate = useNavigate();
   const [files, setFiles] = useState<any>([]);
@@ -76,19 +78,19 @@ const CollateralManagementEdit = () => {
   }, []);
   const CollateralType = [
     {
-      label: "Property",
+      label: t("collateralForm.typeProperty"),
       type: "radio",
       name: "Property",
       value: "property",
     },
     {
-      label: "Vehicle",
+      label: t("collateralForm.typeVehicle"),
       type: "radio",
       name: "Property",
       value: "vehicle",
     },
     {
-      label: "Cash & Cash equivalents",
+      label: t("collateralForm.typeCash"),
       type: "radio",
       name: "Property",
       value: "cash",
@@ -102,13 +104,13 @@ const CollateralManagementEdit = () => {
     //   Placeholder: "1324567",
     // },
     {
-      label: "Property Address",
+      label: t("field.propertyAddress"),
       type: "text",
       name: "propertyAddress",
       Placeholder: "Placeholder",
     },
     {
-      label: "Market Value",
+      label: t("field.marketValue"),
       type: "number",
       name: "marketValue",
       value: formValues.marketValue,
@@ -123,13 +125,13 @@ const CollateralManagementEdit = () => {
     //   Placeholder: "1324567",
     // },
     {
-      label: "Property Address",
+      label: t("field.propertyAddress"),
       type: "text",
       name: "propertyAddress",
       Placeholder: "Placeholder",
     },
     {
-      label: "Market Value",
+      label: t("field.marketValue"),
       type: "number",
       name: "marketValue",
       Placeholder: "Placeholder",
@@ -137,26 +139,26 @@ const CollateralManagementEdit = () => {
   ];
   const collectrolOwnerDetails = [
     {
-      label: "Name",
+      label: t("field.name"),
       type: "text",
       name: "name",
       value: formValues.name,
       Placeholder: "1324567",
     },
     {
-      label: "Mobile No",
+      label: t("field.mobileNo"),
       type: "text",
       name: "mobileNo",
       Placeholder: "Placeholder",
     },
     {
-      label: "Nid",
+      label: t("field.nidLabel"),
       type: "text",
       name: "nid",
       Placeholder: "Placeholder",
     },
     {
-      label: "Email",
+      label: t("common:email"),
       type: "text",
       name: "email",
       Placeholder: "Placeholder",
@@ -164,19 +166,19 @@ const CollateralManagementEdit = () => {
   ];
   const souceInfoDetails = [
     {
-      label: "Bank Name",
+      label: t("field.bankName"),
       type: "text",
       name: "name",
       Placeholder: "1324567",
     },
     {
-      label: "Branch Code",
+      label: t("field.branchCode"),
       type: "text",
       name: "code",
       Placeholder: "Placeholder",
     },
     {
-      label: "Account No.",
+      label: t("field.accountNoDot"),
       type: "text",
       name: "no",
       Placeholder: "Placeholder",
@@ -190,20 +192,20 @@ const CollateralManagementEdit = () => {
     //   Placeholder: "1324567",
     // },
     {
-      label: "Vehicle registration",
+      label: t("field.vehicleRegistration"),
       type: "text",
       name: "registrationNumber",
       Placeholder: "Placeholder",
       value: formValues.vehicleRegistrationNo,
     },
     {
-      label: "Vehicle Type",
+      label: t("field.vehicleType"),
       type: "text",
       name: "type",
       Placeholder: "Placeholder",
     },
     {
-      label: "Market Value",
+      label: t("field.marketValue"),
       type: "text",
       name: "value",
       value: formValues.marketValue,
@@ -213,21 +215,21 @@ const CollateralManagementEdit = () => {
 
   const CollateralValuation = [
     {
-      label: "External Agency Name",
+      label: t("field.externalAgencyName"),
       type: "text",
       name: "externalAgencyName",
       value: formValues.externalAgencyName,
       Placeholder: "Placeholder",
     },
     {
-      label: "Valuation Amount",
+      label: t("field.valuationAmount"),
       type: "number",
       name: "valuationAmount",
       value: formValues.valuationAmount,
       Placeholder: "Placeholder",
     },
     {
-      label: "Valuation Date",
+      label: t("field.valuationDate"),
       type: "date",
       name: "valuationDate",
       Placeholder: "Placeholder",
@@ -390,13 +392,13 @@ const CollateralManagementEdit = () => {
 
       if (response) {
         setLoader(false);
-        toast.success("Collateral submitted successfully");
+        toast.success(t("collateralForm.toastSubmitted"));
         navigate("/lms/LoanManagement/CollectrolManagement");
       }
     } catch (error) {
       console.error("Error:", error);
       setLoader(false);
-      toast.error("Failed to submit collateral");
+      toast.error(t("collateralForm.toastFailed"));
     }
   };
 
@@ -409,7 +411,7 @@ const CollateralManagementEdit = () => {
         className="d-flex align-items-center justify-content-between mt-1 mb-3"
         style={{ fontSize: "15px", fontWeight: "Bold" }}
       >
-        Collateral Management
+        {t("collateralForm.heading")}
       </div>
       <div
         className="p-4"
@@ -418,7 +420,7 @@ const CollateralManagementEdit = () => {
         <div className="col-12 mt-5 border-bottom">
           <div className="col-8 d-flex justify-content-start mb-5">
             <div className="me-2 w-100">
-              <label>Account Number</label>
+              <label>{t("field.accountNumber")}</label>
               <Input
                 name="accountNumber" // Updated to match API key
                 value={formValues.accountNumber}
@@ -429,7 +431,7 @@ const CollateralManagementEdit = () => {
               />
             </div>
             <div className="w-100">
-              <label>Application ID</label>
+              <label>{t("field.applicationId")}</label>
               <Select
                 size="large"
                 className="mt-2"
@@ -459,7 +461,7 @@ const CollateralManagementEdit = () => {
         <hr />
 
         <Row>
-          <Form.Label className="mt-2 fw-bold">Collateral Type</Form.Label>
+          <Form.Label className="mt-2 fw-bold">{t("collateralForm.sectionCollateralType")}</Form.Label>
           {CollateralType.map((field: any, index) => (
             <Col md={3} className="mb-3" key={index}>
               <Form.Group>
@@ -485,7 +487,7 @@ const CollateralManagementEdit = () => {
         <hr />
 
         <Row>
-          <Form.Label className="mt-2 fw-bold">Collateral Details</Form.Label>
+          <Form.Label className="mt-2 fw-bold">{t("collateralForm.sectionCollateralDetails")}</Form.Label>
           {radioInputValue == "vehicle" ? (
             <>
               {" "}
@@ -532,7 +534,7 @@ const CollateralManagementEdit = () => {
                   </Col>
                 </>
               ))}
-              <div className="mt-2 fw-bold">Collateral Owner</div>
+              <div className="mt-2 fw-bold">{t("collateralForm.collateralOwner")}</div>
               {collectrolOwnerDetails.map((field: any, index) => (
                 <>
                   <Col md={4} className="mb-3" key={index}>
@@ -554,7 +556,7 @@ const CollateralManagementEdit = () => {
                   </Col>
                 </>
               ))}
-              <div className="mt-2 fw-bold">Source Account Information</div>
+              <div className="mt-2 fw-bold">{t("collateralForm.sourceAccountInfo")}</div>
               {souceInfoDetails.map((field: any, index) => (
                 <>
                   <Col md={4} className="mb-3" key={index}>
@@ -610,7 +612,7 @@ const CollateralManagementEdit = () => {
                   className="mt-2 "
                   style={{ fontSize: "16px", fontWeight: "600" }}
                 >
-                  Upload Documents
+                  {t("collateralForm.uploadDocuments")}
                 </Form.Label>
                 <Form.Control
                   type="file"
@@ -625,7 +627,7 @@ const CollateralManagementEdit = () => {
                 <>
                   {" "}
                   <span style={{ color: "var(--color-danger-action)" }}>
-                    {files.length} documents uploaded
+                    {t("collateralForm.documentsUploaded", { count: files.length })}
                   </span>
                 </>
               )}
@@ -662,7 +664,7 @@ const CollateralManagementEdit = () => {
         <hr />
 
         <Row>
-          <Form.Label className="mt-2 fw-bold">Collateral Valuation</Form.Label>
+          <Form.Label className="mt-2 fw-bold">{t("collateralForm.sectionCollateralValuation")}</Form.Label>
           {CollateralValuation.map((field: any, index) => (
             <Col md={4} className="mb-3" key={index}>
               <Form.Group>
@@ -690,7 +692,7 @@ const CollateralManagementEdit = () => {
                   className="mt-2"
                   style={{ fontSize: "16px", fontWeight: "600" }}
                 >
-                  Upload Valuation Report
+                  {t("collateralForm.uploadValuationReport")}
                 </Form.Label>
                 <Form.Control
                   type="file"
@@ -705,7 +707,7 @@ const CollateralManagementEdit = () => {
                 <>
                   {" "}
                   <span style={{ color: "var(--color-danger-action)" }}>
-                    {reportFiles.length} documents uploaded
+                    {t("collateralForm.documentsUploaded", { count: reportFiles.length })}
                   </span>
                 </>
               )}
@@ -750,7 +752,7 @@ const CollateralManagementEdit = () => {
                 padding: "10px",
               }}
             >
-              Submit
+              {t("common:submit")}
             </button>
           </div>
         </Row>
@@ -770,13 +772,13 @@ const CollateralManagementEdit = () => {
             </div>
 
             <div className="text-center">
-              <h3 className="mt-4 fw-bold">Collateral Under Review</h3>
+              <h3 className="mt-4 fw-bold">{t("collateralForm.underReviewTitle")}</h3>
               <p
                 className="mt-4 mb-5"
                 style={{ lineHeight: "24px", fontSize: "20px" }}
               >
-                Collateral is under review. Your application will be <br />{" "}
-                processed after the collateral details are verified.
+                {t("collateralForm.underReviewBody1")} <br />{" "}
+                {t("collateralForm.underReviewBody2")}
               </p>
             </div>
             <div className="text-center">
@@ -788,7 +790,7 @@ const CollateralManagementEdit = () => {
                   borderRadius: "2px",
                 }}
               >
-                ok
+                {t("common:ok")}
               </button>
             </div>
           </Modal.Body>

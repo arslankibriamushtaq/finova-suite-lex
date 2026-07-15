@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 
 import * as Yup from "yup";
@@ -24,6 +25,7 @@ import {
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
 const OperationalExpenses = () => {
+  const { t } = useTranslation("reconciliation");
   const [modal, setModal] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
   const [editRowId, setEditRowId] = useState(null);
@@ -325,45 +327,45 @@ const OperationalExpenses = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Service Type",
+      name: t("col.serviceType"),
       cell: (row: any) => "-",
     },
-   
+
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
             selector: (row: { Amount: any }) => "-",
     },
     {
-      name: "Customer ID",
+      name: t("col.customerId"),
       selector: (row: { VoucherType: any }) => "-",
     },
- 
+
     {
-      name: "Transfer No",
+      name: t("col.transferNumber"),
       selector: (row: { Amount: any }) => "-",
     },
     {
-      name: "Service Detail",
+      name: t("col.serviceDetail"),
       selector: (row: { Currency: any }) => "-",
     },
     {
-      name: "Refrence Number",
+      name: t("col.referenceNumber"),
       selector: (row: { Currency: any }) => "-",
     },
     {
-      name: "Payment Status",
+      name: t("col.paymentStatus"),
       selector: (row: { Currency: any }) => "-",
     },
     {
-      name: "Notes",
+      name: t("col.notes"),
       selector: (row: { Currency: any }) => "-",
     },
     {
-      name: "Unit Cost",
+      name: t("col.unitCost"),
       selector: (row: { Currency: any }) => "-",
     },
   

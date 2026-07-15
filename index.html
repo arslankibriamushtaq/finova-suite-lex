@@ -16,7 +16,11 @@
     />
     <link rel="stylesheet" href="./src/index.css" />
     <link rel="stylesheet" href="./src/assets/scss/custom.css" />
+    <!-- Late global (LTR+RTL) overrides — after custom.css so they win -->
+    <link rel="stylesheet" href="./src/styles/overrides.css" />
     <link rel="stylesheet" href="./src/boot-loader.css" />
+    <!-- RTL overrides must load LAST so they win cascade ties over custom.css -->
+    <link rel="stylesheet" href="./src/styles/rtl.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

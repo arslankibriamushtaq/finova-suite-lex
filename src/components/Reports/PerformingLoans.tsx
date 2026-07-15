@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import { getNplReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const PerformingLoans = () => {
+  const { t } = useTranslation("reports");
   const [asOfDate, setAsOfDate] = useState<any>(null);
   const [reportData, setReportData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,7 @@ const PerformingLoans = () => {
       }
     } catch (error: any) {
       console.error("Error fetching NPL report:", error);
-      toast.error(error?.message || "Failed to fetch NPL report");
+      toast.error(error?.message || t("performingLoans.toast.fetchError"));
       setReportData(null);
     } finally {
       setLoading(false);
@@ -73,12 +75,12 @@ const PerformingLoans = () => {
 
   const columns = [
     {
-      name: "Aging Bucket (Days)",
+      name: t("performingLoans.col.agingBucket"),
       selector: (row: any) => row.bucket,
       sortable: true,
     },
     {
-      name: "Outstanding Amount",
+      name: t("performingLoans.col.outstandingAmount"),
       cell: (row: any) => (
         <span>
           {formatNumber(row.outstanding)} SAR
@@ -90,7 +92,7 @@ const PerformingLoans = () => {
 
   const exportToCSV = () => {
     if (!buckets.length) {
-      toast.error("No data to export");
+      toast.error(t("toast.noExportData"));
       return;
     }
     const headers = ["Aging Bucket", "Outstanding (SAR)"];
@@ -111,7 +113,7 @@ const PerformingLoans = () => {
           <span className="pro-head-badge">
             <AlertTriangle className="h-4 w-4" />
           </span>
-          Non-performing Loan Summary
+          {t("performingLoans.title")}
         </h3>
       </div>
 
@@ -119,14 +121,14 @@ const PerformingLoans = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by bucket"
+          placeholder={t("performingLoans.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
         <DatePicker
-          placeholder="As of date"
+          placeholder={t("filter.asOfDate")}
           value={asOfDate}
           onChange={(d) => setAsOfDate(d)}
           format="YYYY-MM-DD"
@@ -140,7 +142,7 @@ const PerformingLoans = () => {
           disabled={loading}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          {loading ? "Loading..." : "Refresh"}
+          {loading ? t("common:loading") : t("common:refresh")}
         </button>
         <button
           type="button"
@@ -149,7 +151,7 @@ const PerformingLoans = () => {
           disabled={!buckets.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t("action.exportCsv")}
         </button>
         </div>
       </div>
@@ -158,7 +160,7 @@ const PerformingLoans = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Outstanding</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.totalOutstanding")}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}
@@ -169,7 +171,7 @@ const PerformingLoans = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>NPL Outstanding</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.nplOutstanding")}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}
@@ -180,7 +182,7 @@ const PerformingLoans = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>NPL Ratio</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.nplRatio")}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}
@@ -191,7 +193,7 @@ const PerformingLoans = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Filtered Buckets</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("performingLoans.summary.filteredBuckets")}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.bucketCount}
               </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "antd";
+import { useTranslation } from "react-i18next";
 import Coa from "./coa";
 
 interface NoLedgerAccountModalProps {
@@ -8,6 +9,7 @@ interface NoLedgerAccountModalProps {
 }
 
 const NoLedgerAccountModal: React.FC<NoLedgerAccountModalProps> = ({ isVisible, onClose }) => {
+    const { t } = useTranslation("accountingLoans");
     const [modalVisible, setModalVisible] = useState(isVisible);
 
     // Function to close the modal only when API call is successful
@@ -17,13 +19,13 @@ const NoLedgerAccountModal: React.FC<NoLedgerAccountModalProps> = ({ isVisible, 
     };
     return (
         <Modal
-            title="No Ledger Accounts Found"
+            title={t("noLedger.title")}
             open={modalVisible}
             onCancel={() => setModalVisible(true)}
             footer={null}
             centered
             width={600} // Adjust modal size for better layout
-        ><p>No ledger accounts found against this Customer ID</p>
+        ><p>{t("noLedger.body")}</p>
             <Coa onSuccess={handleCloseModal} />
         </Modal>
     );

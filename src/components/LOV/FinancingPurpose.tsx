@@ -27,7 +27,9 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { useTranslation } from "react-i18next";
 const FinancingPurpose = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -71,14 +73,14 @@ const FinancingPurpose = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -91,13 +93,13 @@ const FinancingPurpose = () => {
     //   // width: "15%",
     // },
     {
-      name: "Title",
+      name: t("financingPurpose.col.title"),
       selector: (row: { title: any }) => row.title,
       // sortable: true,
       // width: "75%",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -114,12 +116,12 @@ const FinancingPurpose = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("shared.changeStatus"),
       cell: (row: any) => (
         <Switch
           className="red-switch"
@@ -151,7 +153,7 @@ const FinancingPurpose = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -164,7 +166,7 @@ const FinancingPurpose = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -176,13 +178,13 @@ const FinancingPurpose = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deletePurposeOfFinance(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("financingPurpose.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("financingPurpose.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("financingPurpose.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -199,7 +201,7 @@ const FinancingPurpose = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updatePurposeOfFinance(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("financingPurpose.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -211,13 +213,13 @@ const FinancingPurpose = () => {
               status: 0 
              });
             getList();
-            return "Updated successfully";
+            return t("financingPurpose.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("financingPurpose.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createPurposeOfFinance(body), {
-          loading: "Adding finance purpose...",
+          loading: t("financingPurpose.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -229,9 +231,9 @@ const FinancingPurpose = () => {
                 status: 0 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("financingPurpose.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("financingPurpose.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -304,7 +306,7 @@ const FinancingPurpose = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -323,7 +325,7 @@ const FinancingPurpose = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -339,7 +341,7 @@ const FinancingPurpose = () => {
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -361,13 +363,13 @@ const FinancingPurpose = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("financingPurpose.modal.editTitle") : t("shared.addNewRecord")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -377,7 +379,7 @@ const FinancingPurpose = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -385,11 +387,11 @@ const FinancingPurpose = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={12}>
-                <label className="fw-400">Title</label>
+                <label className="fw-400">{t("financingPurpose.label.title")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter title"
+                  placeholder={t("financingPurpose.ph.title")}
                   value={formData.title}
                   onChange={(e: any) =>
                     setFormData({ ...formData, title: e.target.value })
@@ -397,10 +399,10 @@ const FinancingPurpose = () => {
                 />
                 </Col>
                 <Col className = "px-2" md={12}>
-                <label className="fw-400">Product</label>
+                <label className="fw-400">{t("financingPurpose.label.product")}</label>
                 <Select
                   className="fs-6"
-                  placeholder="Enter title"
+                  placeholder={t("financingPurpose.ph.title")}
                   value={formData.product_id}
                   onChange={(e: any) =>
                     setFormData({ ...formData, product_id: e})
@@ -424,14 +426,14 @@ const FinancingPurpose = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("financingPurpose.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("financingPurpose.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -440,17 +442,17 @@ const FinancingPurpose = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("financingPurpose.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("financingPurpose.confirmAddBody")
+                : t("financingPurpose.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

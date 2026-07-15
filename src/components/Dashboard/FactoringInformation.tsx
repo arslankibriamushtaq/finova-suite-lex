@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import enTranslations from "../../locales/en.json";
 import arTranslations from "../../locales/ar.json";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function FactoringInformation({ packageDetails }: any) {
+  const { t } = useTranslation("dashboard");
   const [factoringData, setFactoringData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -75,7 +77,7 @@ function FactoringInformation({ packageDetails }: any) {
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error fetching factoring data:", error);
-      toast.error("Failed to fetch factoring information");
+      toast.error(t("factoringInfo.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }

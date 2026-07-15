@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import  ClassicEditor  from '@ckeditor/ckeditor5-build-classic';
@@ -21,6 +22,7 @@ interface TermsConditionsData {
 }
 
 const TermsConditionsSettings: React.FC = () => {
+  const { t } = useTranslation('webPages');
   const [termsData, setTermsData] = useState<TermsConditionsData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -163,7 +165,7 @@ const TermsConditionsSettings: React.FC = () => {
                 }
               }, 100);
             }}
-            placeholder={label || 'Enter text'}
+            placeholder={label || t('field.enterText')}
             style={{
               width: '100%',
               padding: '8px',
@@ -256,7 +258,7 @@ const TermsConditionsSettings: React.FC = () => {
               style={{ maxWidth: '100%', maxHeight: '100px', objectFit: 'contain' }}
             />
           ) : (
-            <span style={{ color: 'var(--color-text-muted)' }}>Click to upload image</span>
+            <span style={{ color: 'var(--color-text-muted)' }}>{t('clickToUploadImage')}</span>
           )}
         </div>
       );
@@ -476,13 +478,13 @@ const TermsConditionsSettings: React.FC = () => {
             url: fullUrl,
             alt: result.data.filename || 'Uploaded image'
           });
-          toast.success('Image uploaded successfully!');
+          toast.success(t('toast.imageUploaded'));
         } else {
           throw new Error('Invalid response from server');
         }
       } catch (error) {
         console.error('Image upload error:', error);
-        toast.error('Failed to upload image');
+        toast.error(t('toast.failedUploadImage'));
       }
     };
     
@@ -516,7 +518,7 @@ const TermsConditionsSettings: React.FC = () => {
       const sections = validateAndPrepareData();
       
       if (sections.length === 0) {
-        toast.error('No changes to publish');
+        toast.error(t('toast.noChangesToPublish'));
         return;
       }
 
@@ -529,7 +531,7 @@ const TermsConditionsSettings: React.FC = () => {
 
       if (response.status === 200) {
         const result = response.data;
-        toast.success('Terms & Conditions published successfully!');
+        toast.success(t('toast.termsPublished'));
         
         // Refresh data after successful publish
         setTimeout(() => {
@@ -540,7 +542,7 @@ const TermsConditionsSettings: React.FC = () => {
       }
     } catch (error) {
       console.error('Publish error:', error);
-      toast.error('Failed to publish changes');
+      toast.error(t('toast.failedPublishChanges'));
     }
   };
 
@@ -684,7 +686,7 @@ const TermsConditionsSettings: React.FC = () => {
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
-        <h3>Error Loading Terms & Conditions</h3>
+        <h3>{t('state.errorLoadingTerms')}</h3>
         <p>{error}</p>
         <button
           onClick={() => fetchTermsData(locale)}
@@ -698,7 +700,7 @@ const TermsConditionsSettings: React.FC = () => {
             marginTop: '10px'
           }}
         >
-          Retry
+          {t('retry')}
         </button>
       </div>
     );
@@ -714,7 +716,7 @@ const TermsConditionsSettings: React.FC = () => {
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
-        No terms & conditions data available.
+        {t('state.noTermsData')}
       </div>
     );
   }
@@ -724,7 +726,7 @@ const TermsConditionsSettings: React.FC = () => {
       {/* Header with Language Switcher */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          Terms & Conditions Page
+          {t('header.termsConditionsPage')}
         </h2>
         {/* Language Switcher */}
         <div 
@@ -758,7 +760,7 @@ const TermsConditionsSettings: React.FC = () => {
 
       {/* PUBLISH Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
-        <div className="header-footer-settings__publish-text">PUBLISH</div>
+        <div className="header-footer-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Hero Image Section */}
@@ -1115,11 +1117,11 @@ const TermsConditionsSettings: React.FC = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginTop: 0 }}>Edit Repeater Field</h3>
+            <h3 style={{ marginTop: 0 }}>{t('modal.editRepeaterField')}</h3>
             <div style={{ marginBottom: '20px' }}>
               {editingRepeaterData.map((item, index) => (
                 <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '2px' }}>
-                  <h4>Item {index + 1}</h4>
+                  <h4>{t('modal.itemN', { number: index + 1 })}</h4>
                   {Object.entries(item).map(([key, value]) => (
                     <div key={key} style={{ marginBottom: '10px' }}>
                       <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
@@ -1162,7 +1164,7 @@ const TermsConditionsSettings: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
               <button
                 onClick={() => {
@@ -1179,7 +1181,7 @@ const TermsConditionsSettings: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
             </div>
           </div>
@@ -1209,7 +1211,7 @@ const TermsConditionsSettings: React.FC = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginTop: 0 }}>Edit Content</h3>
+            <h3 style={{ marginTop: 0 }}>{t('modal.editContent')}</h3>
             <div style={{ marginBottom: '20px' }}>
                <CKEditor
                  editor={ClassicEditor as any}
@@ -1245,7 +1247,7 @@ const TermsConditionsSettings: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
               <button
                 onClick={handleTextEditorCancel}
@@ -1258,7 +1260,7 @@ const TermsConditionsSettings: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
             </div>
           </div>
@@ -1288,11 +1290,11 @@ const TermsConditionsSettings: React.FC = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginTop: 0 }}>Edit Repeater Field</h3>
+            <h3 style={{ marginTop: 0 }}>{t('modal.editRepeaterField')}</h3>
             <div style={{ marginBottom: '20px' }}>
               {editingRepeaterData.map((item, index) => (
                 <div key={index} style={{ marginBottom: '15px', padding: '10px', border: '1px solid var(--color-border-light)', borderRadius: '2px' }}>
-                  <h4>Item {index + 1}</h4>
+                  <h4>{t('modal.itemN', { number: index + 1 })}</h4>
                   {Object.entries(item).map(([key, value]) => (
                     <div key={key} style={{ marginBottom: '10px' }}>
                       <label style={{ display: 'block', marginBottom: '5px', fontWeight: 'bold' }}>
@@ -1330,7 +1332,7 @@ const TermsConditionsSettings: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
               <button
                 onClick={handleRepeaterCancel}
@@ -1343,7 +1345,7 @@ const TermsConditionsSettings: React.FC = () => {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
             </div>
           </div>

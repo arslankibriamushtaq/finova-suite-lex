@@ -8,8 +8,10 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 import { uploadStepDocuments } from "../../utils/uploadStepDocuments";
 import RequiredDocFields from "./RequiredDocFields";
+import { useTranslation } from "react-i18next";
 
 const OrbitSms = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -71,7 +73,7 @@ const OrbitSms = () => {
   
   const handleVerifyOtp = async () => {
     if (!isComplete) {
-      toast.error("Please enter the 4-digit code");
+      toast.error(t("otpCommon.enterCode"));
       return;
     }
 
@@ -101,11 +103,11 @@ const OrbitSms = () => {
       setLoading(true);
       const res = await verifyOtp(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "OTP verification failed.");
+        toast.error(res?.data?.message || t("otpCommon.verifyFailed"));
         return;
       }
 
-      toast.success(res?.data?.message || "OTP verified successfully.");
+      toast.success(res?.data?.message || t("otpCommon.verifiedSuccess"));
 
       // Upload dynamic required documents for this step
       const docsOk = await uploadStepDocuments(5, requiredDocuments, docFiles);
@@ -120,7 +122,7 @@ const OrbitSms = () => {
     } catch (err: any) {
       console.error(err);
       toast.error(
-        err?.response?.data?.message || err?.message || "Something went wrong!"
+        err?.response?.data?.message || err?.message || t("common.somethingWentWrong")
       );
     } finally {
       setLoading(false);
@@ -131,7 +133,7 @@ const OrbitSms = () => {
     <>
       <div className="d-flex justify-content-center p-4 mt-4">
         <div className="otp-card">
-          <h2 className="otp-title">SMS Verification</h2>
+          <h2 className="otp-title">{t("sms.title")}</h2>
           <div className="d-flex justify-content-center">
             <img src={Images.otp} alt="" width={88} height={88} />
           </div>
@@ -183,7 +185,7 @@ const OrbitSms = () => {
             });
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
         <button
           className="step-buttons"
@@ -198,7 +200,7 @@ const OrbitSms = () => {
           }}
           onClick={handleVerifyOtp}
         >
-          {loading ? "Verifying..." : "Verify"}
+          {loading ? t("action.verifying") : t("action.verify")}
         </button>
       </div>
     </>

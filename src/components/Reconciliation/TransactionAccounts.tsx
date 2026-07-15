@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import OperationalExpenses from "./OperationalExpenses";
 import OperationalExpensesSummary from "./OperationalExpensesSummary";
@@ -8,30 +9,31 @@ import VatAccount from "./VatAccount";
 import RevenueAccount from "./RevenueAccount";
 import WalletAccount from "./WalletAccount";
 const TransactionAccounts = () => {
+  const { t } = useTranslation("reconciliation");
   const [selectTab, setSelectedTab] = useState("PoolAccount");
   const tapOptions = [
     {
-      title: "Pool Account",
+      title: t("transactionAccounts.pool"),
       key: "PoolAccount",
       folder: <PoolAccount />,
     },
     {
-      title: "Collection Account",
+      title: t("transactionAccounts.collection"),
       key: "CollectionAccount",
       folder: <CollectionAccount/>,
     },
     {
-      title: "VAT Account",
+      title: t("transactionAccounts.vat"),
       key: "VATAccount",
       folder: <VatAccount />,
     },
     {
-      title: "Revenue Account",
+      title: t("transactionAccounts.revenue"),
       key: "RevenueAccount",
       folder: <RevenueAccount/>,
     },
     {
-      title: "Wallet Account",
+      title: t("transactionAccounts.wallet"),
       key: "WalletAccount",
       folder: <WalletAccount/>,
     },

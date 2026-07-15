@@ -7,6 +7,7 @@ import Loader from "../../Loader/Loader";
 import TableView from "../../TableView/TableView";
 import { Button, Dropdown, Menu } from "antd";
 import arrowDown from "../../../assets/images/arrow-down.png";
+import { useTranslation } from "react-i18next";
 
 const getDocumentStatusColor = (status: string): { backgroundColor: string; color: string } => {
   const statusLower = status?.toLowerCase() || "";
@@ -22,6 +23,7 @@ const getDocumentStatusColor = (status: string): { backgroundColor: string; colo
 };
 
 function ReschedulingDocuments({ fullDetail }: any) {
+  const { t } = useTranslation("financing");
   const location = useLocation();
   const { id } = useParams();
   const rowData = location.state?.rowData;
@@ -64,7 +66,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
       setRescheduleHistory(Array.isArray(history) ? history : []);
     } catch (error: any) {
       console.error("Error fetching reschedule history:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch reschedule history");
+      toast.error(error?.response?.data?.message || t("toast.fetchRescheduleHistoryFailed"));
       setRescheduleHistory([]);
     } finally {
       setHistoryLoading(false);
@@ -103,7 +105,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
       }
     } catch (error: any) {
       console.error("Error fetching rescheduling request details:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch rescheduling request details");
+      toast.error(error?.response?.data?.message || t("toast.fetchReschedulingDetailsFailed"));
       setDocuments([]);
       setReschedulingData(null);
     } finally {
@@ -113,7 +115,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
 
   const handleAction = async (action: "approved" | "rejected", Id: number) => {
     if (!loanApplicationId) {
-      toast.error("Missing required information");
+      toast.error(t("toast.missingInfo"));
       return;
     }
 
@@ -127,7 +129,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
       const response = await updateDocStatus(Id, body);
 
       if (response?.data?.success || response?.data?.notificationMessage === "Operation successful.") {
-        toast.success(`Document ${action === "approved" ? "approved" : "rejected"} successfully`);
+        toast.success(action === "approved" ? t("toast.docApproved") : t("toast.docRejected"));
         await fetchReschedulingRequestDetails(Number(loanApplicationId));
       } else {
         toast.error(response?.data?.message || `Failed to ${action} document`);
@@ -146,25 +148,25 @@ function ReschedulingDocuments({ fullDetail }: any) {
         key="approve"
         onClick={() => handleAction("approved", row.id)}
       >
-        Approve
+        {t("common:approve")}
       </Menu.Item>
       <Menu.Item
         key="reject"
         onClick={() => handleAction("rejected", row.id)}
       >
-        Reject
+        {t("common:reject")}
       </Menu.Item>
     </Menu>
   );
 
   const tableHeaders = [
     {
-      name: "Reason",
+      name: t("col.reason"),
       selector: (row: any) => row.reason,
       sortable: true,
     },
     {
-      name: "Document",
+      name: t("col.document"),
       cell: (row: any) => {
         if (!row.document || row.document === "-") {
           return "-";
@@ -176,14 +178,14 @@ function ReschedulingDocuments({ fullDetail }: any) {
             rel="noopener noreferrer"
             style={{ color: "#1890ff", textDecoration: "underline" }}
           >
-            View Document
+            {t("resched.viewDocument")}
           </a>
         );
       },
       sortable: false,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.status || "-";
         const statusColor = getDocumentStatusColor(status);
@@ -214,7 +216,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
       width: "150px",
     },
     {
-      name: "Action",
+      name: t("col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -228,7 +230,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -239,13 +241,13 @@ function ReschedulingDocuments({ fullDetail }: any) {
 
   const historyTableHeaders = [
     {
-      name: "Reschedule Type",
+      name: t("resched.rescheduleType"),
       selector: (row: any) => row.rescheduleType?.replace(/_/g, " ") || "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.status || "-";
         const statusColor = getDocumentStatusColor(status);
@@ -276,67 +278,67 @@ function ReschedulingDocuments({ fullDetail }: any) {
       width: "100px",
     },
     {
-      name: "Extension Months",
-      selector: (row: any) => row.extensionMonths != null ? `${row.extensionMonths} months` : "-",
+      name: t("resched.extensionMonths"),
+      selector: (row: any) => row.extensionMonths != null ? `${row.extensionMonths} ${t("unit.months")}` : "-",
       sortable: true,
       width: "130px",
     },
     {
-      name: "Holiday Months",
-      selector: (row: any) => row.holidayMonths != null ? `${row.holidayMonths} months` : "-",
+      name: t("resched.holidayMonths"),
+      selector: (row: any) => row.holidayMonths != null ? `${row.holidayMonths} ${t("unit.months")}` : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "New Tenure Months",
-      selector: (row: any) => row.newTenureMonths != null ? `${row.newTenureMonths} months` : "-",
+      name: t("resched.newTenureMonths"),
+      selector: (row: any) => row.newTenureMonths != null ? `${row.newTenureMonths} ${t("unit.months")}` : "-",
       sortable: true,
       width: "130px",
     },
     {
-      name: "Old Installment",
+      name: t("resched.oldInstallment"),
       selector: (row: any) => row.oldInstallment != null ? `SAR ${parseFloat(row.oldInstallment).toFixed(2)}` : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "New Installment",
+      name: t("resched.newInstallment"),
       selector: (row: any) => row.newInstallment != null ? `SAR ${parseFloat(row.newInstallment).toFixed(2)}` : "-",
       sortable: true,
       width: "130px",
     },
     {
-      name: "Old Maturity Date",
+      name: t("resched.oldMaturityDate"),
       selector: (row: any) => row.oldMaturityDate ? new Date(row.oldMaturityDate).toLocaleDateString() : "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: "New Maturity Date",
+      name: t("resched.newMaturityDate"),
       selector: (row: any) => row.newMaturityDate ? new Date(row.newMaturityDate).toLocaleDateString() : "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Profit Rate",
+      name: t("resched.profitRate"),
       selector: (row: any) => row.newProfitRate || "-",
       sortable: true,
       width: "100px",
     },
     {
-      name: "Write Off Amount",
+      name: t("resched.writeOffAmount"),
       selector: (row: any) => row.writeOffAmount != null ? `SAR ${parseFloat(row.writeOffAmount).toFixed(2)}` : "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: "Justification",
+      name: t("resched.justification"),
       selector: (row: any) => row.justification || "-",
       sortable: false,
       width: "250px",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
       width: "120px",
@@ -352,7 +354,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
       {/* Reschedule History Section */}
       <div>
         <h5 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px" }}>
-          Reschedule History
+          {t("resched.rescheduleHistory")}
         </h5>
         
         {historyLoading ? (
@@ -365,7 +367,7 @@ function ReschedulingDocuments({ fullDetail }: any) {
           />
         ) : (
           <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-            No reschedule history available
+            {t("resched.noRescheduleHistory")}
           </div>
         )}
       </div>

@@ -12,6 +12,7 @@ import {
 import ReactECharts from "echarts-for-react";
 import toast from "react-hot-toast";
 import { Select } from "antd";
+import { useTranslation } from "react-i18next";
 
 interface ChartData {
   name: string;
@@ -44,6 +45,7 @@ const ApplicationStatusBarChart = ({
   width = "100%",
   // yearSelectorText = "This Year",
 }: ReusableBarChartProps) => {
+  const { t } = useTranslation("dashboard");
   const [chartData, setChartData] = useState<ChartData[]>(initialData || []);
   const [year, setYear] = useState("2025");
   const [activeTooltip, setActiveTooltip] = useState<any>(null);
@@ -63,7 +65,7 @@ const ApplicationStatusBarChart = ({
       const data = await fetchData(year);
       setChartData(data);
     } catch (error: any) {
-      toast.error(error.message || "Failed to load data");
+      toast.error(error.message || t("appStatusChart.toast.loadFailed"));
     }
   };
 
@@ -97,11 +99,11 @@ const ApplicationStatusBarChart = ({
     },
     yAxis: {
       type: "value",
-      name: "Avg Time", // Y-axis label
+      name: t("appStatusChart.yAxis.avgTime"), // Y-axis label
     },
     series: [
       {
-        name: "Series 1", // Name for the first set of bars
+        name: t("appStatusChart.series1"), // Name for the first set of bars
         data: [10, 20, 15, 25, 30], // Data for the first set of bars
         type: "bar",
         barGap: "0%", // No gap between bars in different series
@@ -117,7 +119,7 @@ const ApplicationStatusBarChart = ({
       trigger: "axis",
       formatter: function (params: any[]) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });

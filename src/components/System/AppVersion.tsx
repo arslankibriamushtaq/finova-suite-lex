@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Menu, Select, Modal, Input, Form } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -18,6 +19,7 @@ import arrowDown from "../../assets/images/arrow-down.png";
 import toast from "react-hot-toast";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 const AppVersion = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -43,7 +45,7 @@ const AppVersion = () => {
       await toast.promise(
         deleteAppVersion(rowData?.id), // API call
         {
-          loading: "Deleting App Version...",
+          loading: t("appVersion.deleting"),
           success: (response) => {
             if (response?.data?.successfull) {
               return response?.data?.notificationMessage;
@@ -51,13 +53,13 @@ const AppVersion = () => {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.notificationMessage ||
-                  "Failed to deleting App Version"
+                  t("appVersion.deleteFailed")
               );
             }
           },
           error: (err) =>
             err?.message ||
-            "Something went wrong while deleting the App Version",
+            t("appVersion.deleteError"),
         }
       );
     } catch (error: any) {
@@ -95,32 +97,32 @@ const AppVersion = () => {
   }, [page, pageSize]);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "380px",
     },
 
     {
-      name: "Device Type",
+      name: t("appVersion.deviceType"),
       selector: (row: { device_type: any }) => row.device_type,
       sortable: true,
       width: "280px",
     },
     {
-      name: "Version",
+      name: t("appVersion.version"),
       selector: (row: { version: any }) => row.version,
       sortable: true,
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: { description: any }) => row.description,
       sortable: true,
       width: "280px",
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -135,7 +137,7 @@ const AppVersion = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -148,14 +150,14 @@ const AppVersion = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -241,7 +243,7 @@ const AppVersion = () => {
         await toast.promise(
           editAppVersion(updateBody), // Pass the body with ID included
           {
-            loading: "Updating App Version...",
+            loading: t("appVersion.updating"),
             success: (response: any) => {
               if (response?.data?.success) {
                 setIsModalVisible(false);
@@ -250,23 +252,23 @@ const AppVersion = () => {
               } else {
                 throw new Error(
                   response?.response?.data?.errors?.[0] ||
-                    "Failed to update App Version"
+                    t("appVersion.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating the App Version.",
+              t("appVersion.updateError"),
           }
         );
       } else {
         await toast.promise(
           createAppVersion(formValues), // API call
           {
-            loading: "Adding App Version...",
+            loading: t("appVersion.adding"),
             success: (response) => {
               if (response?.data?.success) {
-                toast.success("App Version Added Successfully");
+                toast.success(t("appVersion.addSuccess"));
                 setFormValues({
                   device_type: "",
                   version: "",
@@ -280,13 +282,13 @@ const AppVersion = () => {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.notificationMessage ||
-                    "Failed to add Version."
+                    t("appVersion.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding the app version.",
+              t("appVersion.addError"),
           }
         );
       }
@@ -317,7 +319,7 @@ const AppVersion = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -335,14 +337,14 @@ const AppVersion = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("shared.excel")}</button>
+          <button className="invoice-btn">{t("shared.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New App Version
+            {t("appVersion.addNew")}
           </button>
         </div>
       </div>
@@ -364,13 +366,13 @@ const AppVersion = () => {
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={
-          selectedItem === "edit" ? "Edit App Version" : "Add New App Version"
+          selectedItem === "edit" ? t("appVersion.editTitle") : t("appVersion.addNew")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button
             key="save"
@@ -378,7 +380,7 @@ const AppVersion = () => {
             disabled={isLoading}
             onClick={handleOk}
           >
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
@@ -388,22 +390,22 @@ const AppVersion = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Device Type</label>
+                  <label className="input-label">{t("appVersion.deviceType")}</label>
                   <Select
                     value={formValues.device_type}
                     onChange={(value) => handleChange("device_type", value)}
                     style={{ width: "100%", marginTop: "0" }}
                   >
-                    <Select.Option value="android">Android</Select.Option>
-                    <Select.Option value="ios">IOS</Select.Option>
+                    <Select.Option value="android">{t("appVersion.android")}</Select.Option>
+                    <Select.Option value="ios">{t("appVersion.ios")}</Select.Option>
                   </Select>
                 </div>
               </Form.Item>
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Version</label>
+                  <label className="input-label">{t("appVersion.version")}</label>
                   <Input
-                    placeholder="Enter Version"
+                    placeholder={t("appVersion.versionPlaceholder")}
                     className="fs-6"
                     value={formValues.version}
                     onChange={(e) => handleChange("version", e.target.value)}
@@ -415,9 +417,9 @@ const AppVersion = () => {
 
             <Form.Item className="col-12">
               <div className="custom-input-container">
-                <label className="input-label">Description</label>
+                <label className="input-label">{t("common:description")}</label>
                 <Input
-                  placeholder="Enter Version"
+                  placeholder={t("appVersion.versionPlaceholder")}
                   className="fs-6"
                   value={formValues.description}
                   onChange={(e) => handleChange("description", e.target.value)}
@@ -445,7 +447,7 @@ const AppVersion = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -460,7 +462,7 @@ const AppVersion = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -474,7 +476,7 @@ const AppVersion = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure want to delete this App Version?
+            {t("appVersion.deleteConfirm")}
           </p>
         </div>
       </Modal>

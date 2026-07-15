@@ -11,6 +11,7 @@ import { ImageElementContainer } from "html2canvas/dist/types/dom/replaced-eleme
 import { FaDownload, FaPencilAlt, FaUpload } from "react-icons/fa";
 import { getLedgerAccount, uploadAccounts } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 // import { useDropzone } from "react-dropzone";
 
@@ -35,6 +36,7 @@ const accountCodePattern = /^[A-Za-z0-9-]+$/; // Alphanumeric with optional dash
 //   onSuccess: () => void; // Callback function to close modal on success
 // }
 const Coa = () => {
+  const { t } = useTranslation("accountingLoans");
   const [selectTab, setSelectedTab] = useState("account");
   const navigate = useNavigate();
   const location = useLocation(); // Get current route
@@ -66,7 +68,7 @@ const Coa = () => {
     await toast.promise(
       uploadAccounts(data), // The promise to track
       {
-        loading: "Uploading accounts...", // Loading state message
+        loading: t("coa.toast.uploading"), // Loading state message
 
         success: (res) => {
           if (res?.data?.notificationMessage === "Operation successful.") {
@@ -81,7 +83,7 @@ const Coa = () => {
         },
         error: (err) => {
           console.error("Error occurred:", err);
-          return err?.message || "Something went wrong!";
+          return err?.message || t("coa.toast.genericError");
         },
       }
     );
@@ -95,7 +97,7 @@ const Coa = () => {
     );
     return missingHeaders.length === 0
       ? null
-      : `Missing required headers: ${missingHeaders.join(", ")}.`;
+      : t("coa.val.missingHeaders", { headers: missingHeaders.join(", ") });
   };
 
   // const validateAccountNames = (data, headers) => {
@@ -184,20 +186,21 @@ const Coa = () => {
         // Check if parent account is invalid
         if (!validAccountTypes.includes(parentAccount)) {
           errors.push(
-            `Invalid "account parent" in row ${
-              rowIndex + 2
-            }: "${parentAccount}". Allowed values are: ${validAccountTypes.join(
-              ", "
-            )}.`
+            t("coa.val.invalidParent", {
+              row: rowIndex + 2,
+              value: parentAccount,
+              allowed: validAccountTypes.join(", "),
+            })
           );
         }
 
         // Check if account name and parent account are the same
         if (accountName === parentAccount) {
           errors.push(
-            `Invalid relationship in row ${
-              rowIndex + 2
-            }: "account name" and "account parent" cannot be the same ("${accountName}").`
+            t("coa.val.sameNameParent", {
+              row: rowIndex + 2,
+              value: accountName,
+            })
           );
         }
       });
@@ -215,18 +218,14 @@ const Coa = () => {
       if (accountCode) {
         if (accountCodeSet.has(accountCode)) {
           errors.push(
-            `Duplicate "account code" found in row ${
-              rowIndex + 2
-            }: "${accountCode}". Account codes must be unique.`
+            t("coa.val.duplicateCode", { row: rowIndex + 2, value: accountCode })
           );
         } else {
           accountCodeSet.add(accountCode);
         }
       } else {
         errors.push(
-          `Missing or invalid "account code" in row ${
-            rowIndex + 2
-          }. Account code cannot be empty.`
+          t("coa.val.missingCode", { row: rowIndex + 2 })
         );
       }
     });
@@ -243,18 +242,14 @@ const Coa = () => {
       if (accountCode) {
         if (accountCodeSet.has(accountCode)) {
           errors.push(
-            `Duplicate "account name" found in row ${
-              rowIndex + 2
-            }: "${accountCode}". Account name must be unique.`
+            t("coa.val.duplicateName", { row: rowIndex + 2, value: accountCode })
           );
         } else {
           accountCodeSet.add(accountCode);
         }
       } else {
         errors.push(
-          `Missing or invalid "account code" in row ${
-            rowIndex + 2
-          }. Account name cannot be empty.`
+          t("coa.val.missingName", { row: rowIndex + 2 })
         );
       }
     });
@@ -285,20 +280,21 @@ const Coa = () => {
             (!colIndex || !row[headers[colIndex]]?.toString().trim())
           ) {
             errors.push(
-              `Missing value in row ${
-                rowIndex + 2
-              }, column "${requiredHeader}". "Account parent" is required unless "account name" is one of the following: ${validAccountTypes.join(
-                ", "
-              )}.`
+              t("coa.val.missingMandatoryParent", {
+                row: rowIndex + 2,
+                column: requiredHeader,
+                allowed: validAccountTypes.join(", "),
+              })
             );
           }
         } else if (colIndex !== undefined) {
           const value = row[headers[colIndex]]?.toString().trim();
           if (!value || value === "") {
             errors.push(
-              `Missing value in row ${
-                rowIndex + 2
-              }, column "${requiredHeader}".`
+              t("coa.val.missingMandatory", {
+                row: rowIndex + 2,
+                column: requiredHeader,
+              })
             );
           }
         }
@@ -320,9 +316,10 @@ const Coa = () => {
         const accountCode = row[headers[colIndex]]?.toString().trim();
         if (!accountCode || !accountCodePattern.test(accountCode)) {
           errors.push(
-            `Invalid "Account Code" in row ${rowIndex + 2}, column ${
-              colIndex + 1
-            }. Account Code must match the predefined format.`
+            t("coa.val.invalidAccountCode", {
+              row: rowIndex + 2,
+              col: colIndex + 1,
+            })
           );
         }
       });
@@ -359,9 +356,10 @@ const Coa = () => {
         // If the parent account is missing or incorrect, log an error
         else {
           errors.push(
-            `Invalid parent account reference in row ${
-              rowIndex + 2
-            }: "${parentAccount}" does not exist.`
+            t("coa.val.invalidParentRef", {
+              row: rowIndex + 2,
+              value: parentAccount,
+            })
           );
         }
       }
@@ -423,7 +421,7 @@ const Coa = () => {
             setErrorsData(allErrors);
             // allErrors.forEach((error) => toast.error(error));
           } else {
-            toast.success("CSV file validated successfully!");
+            toast.success(t("coa.toast.csvValidated"));
             setErrorCheck(true);
           }
           // if (accountNameErrors.length > 0) {
@@ -434,9 +432,7 @@ const Coa = () => {
         },
         error: (err: any) => {
           console.error("Error parsing CSV:", err);
-          toast.error(
-            "Failed to parse the CSV file. Please check the content."
-          );
+          toast.error(t("coa.toast.parseFailedContent"));
         },
       });
     };
@@ -450,7 +446,7 @@ const Coa = () => {
   };
   const tapOptions = [
     {
-      title: "Account",
+      title: t("coa.tabAccount"),
       key: "account",
       folder: (
         <Account
@@ -559,16 +555,14 @@ const Coa = () => {
               addAccounts(transformedData); // Proceed if no errors
             } else {
               console.error("detected", localErrorsData);
-              toast.error("There are errors in the uploaded CSV.");
+              toast.error(t("coa.toast.csvHasErrors"));
             }
             setErrorsData(localErrorsData);
             setJsonData(transformedData);
           },
           error: (err: any) => {
             console.error("Error parsing CSV:", err);
-            toast.error(
-              "Failed to parse the CSV file. Please check the file content."
-            );
+            toast.error(t("coa.toast.parseFailedFile"));
           },
         });
       };
@@ -580,14 +574,14 @@ const Coa = () => {
       ];
 
       if (!allowedTypes.includes(file.type)) {
-        toast.error("Invalid file type! Only CSV, XLS, and XLSX are allowed.");
+        toast.error(t("coa.toast.invalidFileType"));
         return Upload.LIST_IGNORE; // Prevent file from being added to the upload list
       }
 
       // Check file size (must be less than 5 MB)
       const isLessThan5MB = file.size / 1024 / 1024 < 5;
       if (!isLessThan5MB) {
-        toast.error("File size must be smaller than 5MB!");
+        toast.error(t("coa.toast.fileTooLarge"));
         return Upload.LIST_IGNORE; // Prevent file from being added to the upload list
       }
       // Proceed with parsing if valid
@@ -629,7 +623,7 @@ const Coa = () => {
           <span className="pro-head-badge">
             <BarChart3 className="h-4 w-4" />
           </span>
-          Chart of Accounts
+          {t("coa.title")}
         </h3>
       </div>
 
@@ -638,14 +632,14 @@ const Coa = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search"
+            placeholder={t("common:search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchValue}
             onChange={(e: any) => setSearchValue(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
-            placeholder="Filter by date"
+            placeholder={t("coa.filterByDate")}
             value={fromDate}
             onChange={(date: any) => setFromDate(date)}
             format="YYYY-MM-DD"
@@ -659,7 +653,7 @@ const Coa = () => {
             disabled={!csvData?.length}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t("coa.exportCsv")}
           </button>
           <Button
             className="theme-btn-next"
@@ -667,7 +661,7 @@ const Coa = () => {
             icon={<FaDownload />}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Template CSV
+            {t("coa.templateCsv")}
           </Button>
           <Upload {...uploadProps}>
             <Button
@@ -676,7 +670,7 @@ const Coa = () => {
               icon={<FaUpload />}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              Upload
+              {t("coa.upload")}
             </Button>
           </Upload>
           {isChartOfAccountPage && (
@@ -686,7 +680,7 @@ const Coa = () => {
               onClick={() => setAddGroupMod(true)}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              Add Account
+              {t("coa.addAccount")}
             </Button>
           )}
         </div>
@@ -703,7 +697,7 @@ const Coa = () => {
             overflowY: "auto",
           }}
         >
-          <div className="label">Errors</div>
+          <div className="label">{t("coa.errors")}</div>
           {errorsData.map((item: any, index: any) => (
             <div key={index} className="pt-3">{`${index + 1}-${item}`}</div>
           ))}

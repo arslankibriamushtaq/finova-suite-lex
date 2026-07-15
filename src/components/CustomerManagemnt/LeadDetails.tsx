@@ -14,6 +14,7 @@ import {
 import dayjs from "dayjs";
 // import StepForms from "./LeadTabs/StepFroms";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { getUserDetails } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
@@ -84,6 +85,7 @@ const styles: { [key: string]: React.CSSProperties } = {
 const LeadDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation("customerManagement");
   const [selectTab, setSelectedTab] = useState<string>("Overview");
   const [overviewChildTab, setOverviewChildTab] = useState<string>("Customer Information");
   const [loading, setLoading] = useState(false);
@@ -150,7 +152,7 @@ const LeadDetail = () => {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to fetch user details"
+        error?.response?.data?.message || error?.message || t("leadDetails.fetchError")
       );
     } finally {
       setLoading(false);
@@ -342,7 +344,13 @@ const LeadDetail = () => {
         console.log("Updating:", editingType, values);
         // Add your API call here to update the data
         toast.success(
-          `${editingType === "supplier" ? "Supplier" : "Buyer"} information updated successfully`
+          t("leadDetails.entityUpdateSuccess", {
+            entity: t(
+              editingType === "supplier"
+                ? "leadDetails.entity.supplier"
+                : "leadDetails.entity.buyer"
+            ),
+          })
         );
         setIsEditModalVisible(false);
         form.resetFields();
@@ -380,7 +388,7 @@ const LeadDetail = () => {
     ) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
-          No employment details available
+          {t("leadDetails.employment.noData")}
         </div>
       );
     }
@@ -406,10 +414,10 @@ const LeadDetail = () => {
                 marginBottom: "5px",
               }}
             >
-              Employment History
+              {t("leadDetails.employment.history")}
             </h2>
             <p style={{ color: "var(--muted-foreground)", fontSize: "14px", margin: 0 }}>
-              View all employment records and details
+              {t("leadDetails.employment.subtitle")}
             </p>
           </div>
           <div
@@ -422,7 +430,10 @@ const LeadDetail = () => {
               color: "var(--foreground)",
             }}
           >
-            {employmentStatusInfo.length} {employmentStatusInfo.length === 1 ? "Record" : "Records"}
+            {employmentStatusInfo.length}{" "}
+            {employmentStatusInfo.length === 1
+              ? t("leadDetails.employment.record")
+              : t("leadDetails.employment.records")}
           </div>
         </div>
 
@@ -437,7 +448,7 @@ const LeadDetail = () => {
               employment.occupation_title ||
               employment.employerName ||
               employment.employer_name ||
-              "Employment Record";
+              t("leadDetails.employment.recordFallback");
             const employerName = employment.employerName || employment.employer_name || "--";
             const joiningDate = employment.joiningDate || employment.joining_date || "--";
             const amount =
@@ -520,7 +531,7 @@ const LeadDetail = () => {
                       >
                         <span>{employerName}</span>
                         <span>•</span>
-                        <span>Joined: {joiningDate}</span>
+                        <span>{t("leadDetails.employment.joined", { date: joiningDate })}</span>
                         {amount > 0 && (
                           <>
                             <span>•</span>
@@ -561,17 +572,17 @@ const LeadDetail = () => {
                                 color: "var(--foreground)",
                               }}
                             >
-                              Personal Information
+                              {t("leadDetails.section.personalInfo")}
                             </h4>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>FULL NAME</span>
+                            <span style={styles.label}>{t("leadDetails.field.fullName")}</span>
                             <span style={styles.value}>
                               {employment.fullName || employment.full_name || "--"}
                             </span>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>EMPLOYMENT TYPE</span>
+                            <span style={styles.label}>{t("leadDetails.field.employmentType")}</span>
                             <span style={styles.value}>
                               {employment.employmentType || employment.employment_type || "--"}
                             </span>
@@ -599,15 +610,15 @@ const LeadDetail = () => {
                                 color: "var(--foreground)",
                               }}
                             >
-                              Employment Details
+                              {t("leadDetails.section.employmentDetails")}
                             </h4>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>EMPLOYER NAME</span>
+                            <span style={styles.label}>{t("leadDetails.field.employerName")}</span>
                             <span style={styles.value}>{employerName}</span>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>EMPLOYMENT STATUS</span>
+                            <span style={styles.label}>{t("leadDetails.field.employmentStatus")}</span>
                             <span style={styles.value}>
                               <span
                                 style={{
@@ -624,13 +635,14 @@ const LeadDetail = () => {
                             </span>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>JOINING DATE</span>
+                            <span style={styles.label}>{t("leadDetails.field.joiningDate")}</span>
                             <span style={styles.value}>{joiningDate}</span>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>WORKING MONTHS</span>
+                            <span style={styles.label}>{t("leadDetails.field.workingMonths")}</span>
                             <span style={styles.value}>
-                              {employment.workingMonths || employment.working_months || 0} months
+                              {employment.workingMonths || employment.working_months || 0}{" "}
+                              {t("leadDetails.months")}
                             </span>
                           </div>
                         </div>
@@ -659,12 +671,12 @@ const LeadDetail = () => {
                                   color: "var(--foreground)",
                                 }}
                               >
-                                Occupation Details
+                                {t("leadDetails.section.occupationDetails")}
                               </h4>
                             </div>
                             {employment.occupationCode && (
                               <div style={styles.fieldRow}>
-                                <span style={styles.label}>OCCUPATION CODE</span>
+                                <span style={styles.label}>{t("leadDetails.field.occupationCode")}</span>
                                 <span style={styles.value}>
                                   {employment.occupationCode || employment.occupation_code || "--"}
                                 </span>
@@ -672,7 +684,7 @@ const LeadDetail = () => {
                             )}
                             {employment.occupationTitle && (
                               <div style={styles.fieldRow}>
-                                <span style={styles.label}>OCCUPATION TITLE</span>
+                                <span style={styles.label}>{t("leadDetails.field.occupationTitle")}</span>
                                 <span style={styles.value}>
                                   {employment.occupationTitle ||
                                     employment.occupation_title ||
@@ -682,7 +694,7 @@ const LeadDetail = () => {
                             )}
                             {employment.occupationCode_meaning && (
                               <div style={styles.fieldRow}>
-                                <span style={styles.label}>DESCRIPTION</span>
+                                <span style={styles.label}>{t("leadDetails.field.descriptionCaps")}</span>
                                 <span style={styles.value}>
                                   {employment.occupationCode_meaning || "--"}
                                 </span>
@@ -712,17 +724,17 @@ const LeadDetail = () => {
                                 color: "var(--foreground)",
                               }}
                             >
-                              Compensation Details
+                              {t("leadDetails.section.compensationDetails")}
                             </h4>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>BASIC WAGE</span>
+                            <span style={styles.label}>{t("leadDetails.field.basicWage")}</span>
                             <span style={styles.value}>
                               {formatAmount(employment.basicWage || employment.basic_wage)}
                             </span>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>HOUSING ALLOWANCE</span>
+                            <span style={styles.label}>{t("leadDetails.field.housingAllowance")}</span>
                             <span style={styles.value}>
                               {formatAmount(
                                 employment.housingAllowance || employment.housing_allowance
@@ -730,7 +742,7 @@ const LeadDetail = () => {
                             </span>
                           </div>
                           <div style={styles.fieldRow}>
-                            <span style={styles.label}>OTHER ALLOWANCE</span>
+                            <span style={styles.label}>{t("leadDetails.field.otherAllowance")}</span>
                             <span style={styles.value}>
                               {formatAmount(
                                 employment.otherAllowance || employment.other_allowance
@@ -740,7 +752,7 @@ const LeadDetail = () => {
                           {employment.isEmployeePensioned && (
                             <>
                               <div style={styles.fieldRow}>
-                                <span style={styles.label}>PENSION AMOUNT</span>
+                                <span style={styles.label}>{t("leadDetails.field.pensionAmount")}</span>
                                 <span style={styles.value}>
                                   {formatAmount(
                                     employment.pensionAmount || employment.pension_amount
@@ -748,13 +760,13 @@ const LeadDetail = () => {
                                 </span>
                               </div>
                               <div style={styles.fieldRow}>
-                                <span style={styles.label}>PENSION TYPE</span>
+                                <span style={styles.label}>{t("leadDetails.field.pensionType")}</span>
                                 <span style={styles.value}>
                                   {employment.pensionType || employment.pension_type || "--"}
                                 </span>
                               </div>
                               <div style={styles.fieldRow}>
-                                <span style={styles.label}>PENSION START DATE</span>
+                                <span style={styles.label}>{t("leadDetails.field.pensionStartDate")}</span>
                                 <span style={styles.value}>
                                   {employment.pensionStartDate ||
                                     employment.pension_start_date ||
@@ -808,40 +820,41 @@ const LeadDetail = () => {
     // TableView header configuration
     const loanApplicationHeader = [
       {
-        name: "Loan Application Number",
+        name: t("leadDetails.loan.col.number"),
         selector: (row: any) => row.loan_application_number || "--",
         width: "200px",
       },
       {
-        name: "Amount",
+        name: t("common:amount"),
         selector: (row: any) => formatAmount(row.amount),
       },
       {
-        name: "Duration",
-        selector: (row: any) => (row.duration ? `${row.duration} months` : "--"),
+        name: t("leadDetails.loan.col.duration"),
+        selector: (row: any) =>
+          row.duration ? `${row.duration} ${t("leadDetails.months")}` : "--",
       },
       {
-        name: "Type",
+        name: t("common:type"),
         selector: (row: any) => row.type || "--",
       },
       {
-        name: "Status",
+        name: t("common:status"),
         selector: (row: any) => row.status?.name || "--",
       },
       {
-        name: "Product",
+        name: t("leadDetails.loan.col.product"),
         selector: (row: any) => row.product?.name || "--",
       },
       {
-        name: "Created At",
+        name: t("common:createdAt"),
         selector: (row: any) => formatDate(row.created_at),
       },
       {
-        name: "Updated At",
+        name: t("common:updatedAt"),
         selector: (row: any) => formatDate(row.updated_at),
       },
       {
-        name: "Action",
+        name: t("leadDetails.action"),
         cell: (row: any) => (
           <Button
             className="gradient-btn"
@@ -863,7 +876,7 @@ const LeadDetail = () => {
               }
             }}
           >
-            View Details
+            {t("common:viewDetails")}
           </Button>
         ),
         // width: "250px",
@@ -899,7 +912,7 @@ const LeadDetail = () => {
   const renderCustomerInformation = () => {
     if (!nafathData) {
       return (
-        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>No data available</div>
+        <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>{t("common:noData")}</div>
       );
     }
 
@@ -1219,7 +1232,7 @@ const LeadDetail = () => {
     if (affordabilityData.length === 0) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
-          No affordability questions available
+          {t("leadDetails.affordability.noData")}
         </div>
       );
     }
@@ -1253,7 +1266,7 @@ const LeadDetail = () => {
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
         <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
-          Affordability Questions
+          {t("leadDetails.affordability.title")}
         </h5>
         {sortedDates.map((date, dateIndex) => (
           <div
@@ -1373,7 +1386,7 @@ const LeadDetail = () => {
     if (nonAffordabilityData.length === 0) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
-          No compliance question history available
+          {t("leadDetails.complianceHistory.noData")}
         </div>
       );
     }
@@ -1407,7 +1420,7 @@ const LeadDetail = () => {
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
         <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
-          Compliance Question History
+          {t("leadDetails.complianceHistory.title")}
         </h5>
         {sortedDates.map((date, dateIndex) => (
           <div
@@ -1509,7 +1522,7 @@ const LeadDetail = () => {
     if (kycHistory.length === 0) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
-          No risk history available
+          {t("leadDetails.risk.noData")}
         </div>
       );
     }
@@ -1543,7 +1556,7 @@ const LeadDetail = () => {
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
         <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
-          Risk History
+          {t("leadDetails.risk.title")}
         </h5>
         {kycHistory.map((kyc: any, index: number) => {
           const stepData = parseStepData(kyc.step);
@@ -1560,11 +1573,11 @@ const LeadDetail = () => {
               <Row gutter={24}>
                 <Col xs={24} md={12}>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>KYC ID</span>
+                    <span style={styles.label}>{t("leadDetails.risk.kycId")}</span>
                     <span style={styles.value}>{kyc.kyc_id || "--"}</span>
                   </div>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>Risk Level</span>
+                    <span style={styles.label}>{t("leadDetails.risk.riskLevel")}</span>
                     <span style={styles.value}>
                       <span
                         style={{
@@ -1582,11 +1595,11 @@ const LeadDetail = () => {
                     </span>
                   </div>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>Risk Score</span>
+                    <span style={styles.label}>{t("leadDetails.risk.riskScore")}</span>
                     <span style={styles.value}>{kyc.risk_score || "--"}</span>
                   </div>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>Is PEP</span>
+                    <span style={styles.label}>{t("leadDetails.risk.isPep")}</span>
                     <span style={styles.value}>
                       {kyc.is_pep ? (
                         <span
@@ -1599,7 +1612,7 @@ const LeadDetail = () => {
                             display: "inline-block",
                           }}
                         >
-                          Yes
+                          {t("common:yes")}
                         </span>
                       ) : (
                         <span
@@ -1612,7 +1625,7 @@ const LeadDetail = () => {
                             display: "inline-block",
                           }}
                         >
-                          No
+                          {t("common:no")}
                         </span>
                       )}
                     </span>
@@ -1620,7 +1633,7 @@ const LeadDetail = () => {
                 </Col>
                 <Col xs={24} md={12}>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>Status</span>
+                    <span style={styles.label}>{t("common:status")}</span>
                     <span style={styles.value}>
                       <span
                         style={{
@@ -1639,15 +1652,15 @@ const LeadDetail = () => {
                     </span>
                   </div>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>Phone</span>
+                    <span style={styles.label}>{t("common:phone")}</span>
                     <span style={styles.value}>{kyc.phone || "--"}</span>
                   </div>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>NID</span>
+                    <span style={styles.label}>{t("leadDetails.field.nid")}</span>
                     <span style={styles.value}>{kyc.nid || "--"}</span>
                   </div>
                   <div style={styles.fieldRow}>
-                    <span style={styles.label}>Created At</span>
+                    <span style={styles.label}>{t("common:createdAt")}</span>
                     <span style={styles.value}>{formatDate(kyc.created_at)}</span>
                   </div>
                 </Col>
@@ -1666,7 +1679,7 @@ const LeadDetail = () => {
     if (blockHistory.length === 0) {
       return (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
-          No block history available
+          {t("leadDetails.block.noData")}
         </div>
       );
     }
@@ -1691,7 +1704,7 @@ const LeadDetail = () => {
     return (
       <div style={{ padding: "20px", background: "var(--background)" }}>
         <h5 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "20px", color: "var(--foreground)" }}>
-          Block History
+          {t("leadDetails.block.title")}
         </h5>
         {blockHistory.map((block: any, index: number) => (
           <div
@@ -1706,15 +1719,15 @@ const LeadDetail = () => {
             <Row gutter={24}>
               <Col xs={24} md={12}>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Block Code</span>
+                  <span style={styles.label}>{t("leadDetails.block.blockCode")}</span>
                   <span style={styles.value}>{block.block_code?.code || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Description</span>
+                  <span style={styles.label}>{t("common:description")}</span>
                   <span style={styles.value}>{block.block_code?.description || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Action</span>
+                  <span style={styles.label}>{t("leadDetails.action")}</span>
                   <span style={styles.value}>
                     <span
                       style={{
@@ -1735,19 +1748,19 @@ const LeadDetail = () => {
               </Col>
               <Col xs={24} md={12}>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Action By</span>
+                  <span style={styles.label}>{t("leadDetails.block.actionBy")}</span>
                   <span style={styles.value}>{block.action_by?.name || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Email</span>
+                  <span style={styles.label}>{t("common:email")}</span>
                   <span style={styles.value}>{block.action_by?.email || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Reason</span>
+                  <span style={styles.label}>{t("leadDetails.block.reason")}</span>
                   <span style={styles.value}>{block.reason || "--"}</span>
                 </div>
                 <div style={styles.fieldRow}>
-                  <span style={styles.label}>Created At</span>
+                  <span style={styles.label}>{t("common:createdAt")}</span>
                   <span style={styles.value}>{formatDate(block.created_at)}</span>
                 </div>
               </Col>
@@ -1769,18 +1782,18 @@ const LeadDetail = () => {
       {/* Supplier Details Section */}
       <Card bordered={false} style={styles.card}>
         <h5 style={{ fontWeight: 600, marginBottom: "20px", fontSize: "16px" }}>
-          Supplier Details
+          {t("leadDetails.supplierDetails")}
         </h5>
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>Phone</span>
+              <span style={styles.label}>{t("common:phone")}</span>
               <span style={styles.value}>{userDetails?.user?.phone || "966219088888"}</span>
             </div>
           </Col>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>UNN Number</span>
+              <span style={styles.label}>{t("leadDetails.unnNumber")}</span>
               <span style={styles.value}>{userDetails?.supplier?.unn || "7829178917"}</span>
             </div>
           </Col>
@@ -1788,7 +1801,7 @@ const LeadDetail = () => {
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>NID Number</span>
+              <span style={styles.label}>{t("leadDetails.nidNumber")}</span>
               <span style={styles.value}>
                 {userDetails?.user?.nid || "1972197298"}
                 <EditOutlined
@@ -1800,7 +1813,7 @@ const LeadDetail = () => {
           </Col>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>Type</span>
+              <span style={styles.label}>{t("common:type")}</span>
               <span style={styles.value}>{userDetails?.supplier?.type || "Business"}</span>
             </div>
           </Col>
@@ -1808,7 +1821,7 @@ const LeadDetail = () => {
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>DOB</span>
+              <span style={styles.label}>{t("leadDetails.dob")}</span>
               <span style={styles.value}>
                 {userDetails?.user?.dob || "1402-04-15"}
                 <EditOutlined
@@ -1823,17 +1836,17 @@ const LeadDetail = () => {
 
       {/* Buyer Details Section */}
       <Card bordered={false} style={styles.card}>
-        <h5 style={{ fontWeight: 600, marginBottom: "20px", fontSize: "16px" }}>Buyer Details</h5>
+        <h5 style={{ fontWeight: 600, marginBottom: "20px", fontSize: "16px" }}>{t("leadDetails.buyerDetails")}</h5>
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>Phone</span>
+              <span style={styles.label}>{t("common:phone")}</span>
               <span style={styles.value}>{userDetails?.buyer?.phone || "966219800000"}</span>
             </div>
           </Col>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>UNN Number</span>
+              <span style={styles.label}>{t("leadDetails.unnNumber")}</span>
               <span style={styles.value}>{userDetails?.buyer?.unn || "7918721987"}</span>
             </div>
           </Col>
@@ -1841,7 +1854,7 @@ const LeadDetail = () => {
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>NID Number</span>
+              <span style={styles.label}>{t("leadDetails.nidNumber")}</span>
               <span style={styles.value}>
                 {userDetails?.buyer?.nid || "1989327983"}
                 <EditOutlined
@@ -1853,7 +1866,7 @@ const LeadDetail = () => {
           </Col>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>Type</span>
+              <span style={styles.label}>{t("common:type")}</span>
               <span style={styles.value}>{userDetails?.buyer?.type || "Business"}</span>
             </div>
           </Col>
@@ -1861,7 +1874,7 @@ const LeadDetail = () => {
         <Row gutter={24}>
           <Col xs={24} md={12}>
             <div style={styles.fieldRow}>
-              <span style={styles.label}>DOB</span>
+              <span style={styles.label}>{t("leadDetails.dob")}</span>
               <span style={styles.value}>
                 {userDetails?.buyer?.dob || "1402-04-08"}
                 <EditOutlined
@@ -1884,43 +1897,43 @@ const LeadDetail = () => {
           }}
           className="mb-3"
         >
-          <Tab eventKey="Buyer Information" title="Buyer Information">
+          <Tab eventKey="Buyer Information" title={t("leadDetails.tab.buyerInformation")}>
             {selectTab === "Buyer Information" && <BuyerInfoTabs />}
           </Tab>
-          <Tab eventKey="Supplier Information" title="Supplier Information">
+          <Tab eventKey="Supplier Information" title={t("leadDetails.tab.supplierInformation")}>
             {selectTab === "Supplier Information" && <SupplierInfoTabs />}
           </Tab>
-          <Tab eventKey="Overview" title="Overview">
+          <Tab eventKey="Overview" title={t("leadDetails.tab.overview")}>
             {selectTab === "Overview" && <OverviewTabs />}
           </Tab>
-          <Tab eventKey="Company's Manager List" title="Company's Manager List">
+          <Tab eventKey="Company's Manager List" title={t("leadDetails.tab.companyManagerList")}>
             {selectTab === "Company's Manager List" && <CompanyManagerList />}
           </Tab>
-          <Tab eventKey="Bayaan Check" title="Bayaan Check">
+          <Tab eventKey="Bayaan Check" title={t("leadDetails.tab.bayaanCheck")}>
             {selectTab === "Bayaan Check" && <BayanTabs />}
           </Tab>
-          <Tab eventKey="Credit Check" title="Credit Check">
+          <Tab eventKey="Credit Check" title={t("leadDetails.tab.creditCheck")}>
             {selectTab === "Credit Check" && <CreditCheck />}
           </Tab>
-          <Tab eventKey="Invoices" title="Invoices">
+          <Tab eventKey="Invoices" title={t("leadDetails.tab.invoices")}>
             {selectTab === "Invoices" && (
               <div style={{ padding: "20px" }}>
                 <FinancingInformation />
               </div>
             )}
           </Tab>
-          <Tab eventKey="Documents" title="Documents">
+          <Tab eventKey="Documents" title={t("leadDetails.tab.documents")}>
             {selectTab === "Documents" && (
               <div style={{ padding: "20px" }}>
-                <h5>Documents</h5>
-                <p>Documents content coming soon...</p>
+                <h5>{t("leadDetails.tab.documents")}</h5>
+                <p>{t("leadDetails.documents.comingSoon")}</p>
               </div>
             )}
           </Tab>
-          <Tab eventKey="Factoring Information" title="Factoring Information">
+          <Tab eventKey="Factoring Information" title={t("leadDetails.tab.factoringInformation")}>
             {selectTab === "Factoring Information" && <FinancingInformation />}
           </Tab>
-          <Tab eventKey="Compliance Check" title="Compliance Check">
+          <Tab eventKey="Compliance Check" title={t("leadDetails.tab.complianceCheck")}>
             {selectTab === "Compliance Check" && <ComplianceCheck />}
           </Tab>
         </Tabs>
@@ -1928,12 +1941,12 @@ const LeadDetail = () => {
 
       {/* Edit Modal */}
       <Modal
-        title="Update Info"
+        title={t("leadDetails.modal.title")}
         open={isEditModalVisible}
         onCancel={handleEditModalClose}
         onOk={handleEditModalUpdate}
-        okText="Update"
-        cancelText="Close"
+        okText={t("common:update")}
+        cancelText={t("common:close")}
         width={500}
         okButtonProps={{
           style: {
@@ -1956,11 +1969,11 @@ const LeadDetail = () => {
           <Row>
             <Col span={24}>
               <Form.Item
-                label="NID Number"
+                label={t("leadDetails.nidNumber")}
                 name="nid"
-                rules={[{ required: true, message: "Please enter NID number" }]}
+                rules={[{ required: true, message: t("leadDetails.modal.nidRequired") }]}
               >
-                <Input placeholder="Enter NID Number" style={{ height: "38px" }} />
+                <Input placeholder={t("leadDetails.modal.nidPlaceholder")} style={{ height: "38px" }} />
               </Form.Item>
             </Col>
           </Row>
@@ -1968,14 +1981,14 @@ const LeadDetail = () => {
           <Row>
             <Col span={24}>
               <Form.Item
-                label="DOB"
+                label={t("leadDetails.dob")}
                 name="dob"
-                rules={[{ required: true, message: "Please select DOB" }]}
+                rules={[{ required: true, message: t("leadDetails.modal.dobRequired") }]}
               >
                 <DatePicker
                   className="w-100"
                   format="YYYY-MM-DD"
-                  placeholder="Select Date of Birth"
+                  placeholder={t("leadDetails.modal.dobPlaceholder")}
                   style={{ height: "38px" }}
                 />
               </Form.Item>

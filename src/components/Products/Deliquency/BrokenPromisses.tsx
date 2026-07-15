@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "antd";
 import { Row, Col, Form } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -8,6 +9,7 @@ import Loader from "../../Loader/Loader";
 import { useNavigate } from "react-router-dom";
 
 const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
+  const { t } = useTranslation("productManagement2");
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,23 +31,23 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
 
   const CollateralType = [
     {
-      label: "Percentage",
+      label: t("delinquency.percentage"),
       type: "radio",
       name: "Percentage",
       value: "Percentage",
     },
-    { label: "Fixed", type: "radio", name: "Fixed", value: "Fixed" },
+    { label: t("delinquency.fixed"), type: "radio", name: "Fixed", value: "Fixed" },
   ];
 
   const PercentageDetail = [
     {
       label:
         radioInputValue == "Percentage"
-          ? "Penalty Amount in %"
-          : "Penalty Amount",
+          ? t("delinquency.penaltyAmountPct")
+          : t("delinquency.penaltyAmount"),
       type: "number",
       name: "penalty",
-      placeholder: "Penalty",
+      placeholder: t("delinquency.penalty"),
     },
 
     /* {
@@ -61,16 +63,16 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
       placeholder: "Till Day",
     }, */
     {
-      label: "Promises Per Year",
+      label: t("delinquency.promisesPerYear"),
       type: "number",
       name: "promisesPerYear",
-      placeholder: "Promises Per Year",
+      placeholder: t("delinquency.promisesPerYear"),
     },
     {
-      label: "Promises Per Loan",
+      label: t("delinquency.promisesPerLoan"),
       type: "number",
       name: "promisesPerLoan",
-      placeholder: "Promises Per Loan",
+      placeholder: t("delinquency.promisesPerLoan"),
     },
   ];
 
@@ -93,13 +95,13 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
 
   const validateFields = () => {
     const newErrors: any = {};
-    if (!formValues.penalty) newErrors.penalty = "Penalty is required";
+    if (!formValues.penalty) newErrors.penalty = t("delinquency.penaltyRequired");
     /* if (!formValues.fromDay) newErrors.fromDay = "From Day is required";
     if (!formValues.tillDay) newErrors.tillDay = "Till Day is required"; */
     if (!formValues.promisesPerYear)
-      newErrors.promisesPerYear = "Promises Per Year is required";
+      newErrors.promisesPerYear = t("delinquency.promisesPerYearRequired");
     if (!formValues.promisesPerLoan)
-      newErrors.promisesPerLoan = "Promises Per Loan is required";
+      newErrors.promisesPerLoan = t("delinquency.promisesPerLoanRequired");
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -126,7 +128,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
         toast.error(res.data.errors[0]);
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      toast.error(error.message || t("delinquency.errorOccurred"));
     }
   };
   const updateSubmitForm = async () => {
@@ -171,7 +173,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
       }
     } catch (error: any) {
       setLoader(false);
-      toast.error(error.message || "An error occurred");
+      toast.error(error.message || t("delinquency.errorOccurred"));
     }
   };
   const getDeliquencyData = async () => {
@@ -199,7 +201,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
     } catch (error: any) {
       setLoader(false);
       setLoading(false);
-      toast.error(error.message || "An error occurred");
+      toast.error(error.message || t("delinquency.errorOccurred"));
     }
   };
   useEffect(() => {
@@ -214,7 +216,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
           className="d-flex align-items-center justify-content-between mt-1 mb-3"
           style={{ fontSize: "15px", fontWeight: "Bold" }}
         >
-          Penalty Amount Settings
+          {t("delinquency.penaltyAmountSettings")}
         </div>
 
         <Row>
@@ -342,7 +344,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
             setSelectedTab("Non-PerformingLoan");
           }}
         >
-          Back
+          {t("common:back")}
         </Button>
         <Button
           className="application-btn mb-2"
@@ -354,7 +356,7 @@ const BrokenPromisses = ({ productId, setSelectedTab }: any) => {
           }} */
           onClick={updateSubmitForm}
         >
-          Save & Next
+          {t("delinquency.saveNext")}
         </Button>
       </div>
     </div>

@@ -10,8 +10,10 @@ import {
 import toast from "react-hot-toast";
 import { Images } from "../Config/Images";
 import { themeStyle } from "../Config/Theme";
+import { useTranslation } from "react-i18next";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 const CreateInvoice = () => {
+  const { t } = useTranslation("accountingLoans");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -136,8 +138,8 @@ const CreateInvoice = () => {
     const selectedDueDate = e.target.value;
 
     if (new Date(selectedDueDate) <= new Date(invoiceDate)) {
-      setError("Due Date must be after Invoice Date");
-      toast.error("Due Date must be after Invoice Date");
+      setError(t("createInvoice.toast.dueAfterInvoice"));
+      toast.error(t("createInvoice.toast.dueAfterInvoice"));
       setDueDate(""); // Reset due date if invalid
     } else {
       setError(""); // Clear error if valid
@@ -218,8 +220,8 @@ const CreateInvoice = () => {
     ],
 
     InvoiceTypes: [
-      { value: 0, label: "Loan Invoice" },
-      { value: 1, label: "Operations Invoice" },
+      { value: 0, label: t("createInvoice.typeLoanInvoice") },
+      { value: 1, label: t("createInvoice.typeOperationsInvoice") },
     ],
   };
   const handleGenerateInvoice = async () => {
@@ -258,13 +260,13 @@ const CreateInvoice = () => {
       const response = await addInvoice(data);
       setInvoiceData(response.data);
       if (response.data.success) {
-        toast.success("Invoice generated successfully!");
+        toast.success(t("createInvoice.toast.generated"));
         navigate(
           `/lms/loanmanagement/generateInvoice/${response.data.data.invoiceID}`
         );
       }
     } catch (error) {
-      toast.error("Error generating invoice");
+      toast.error(t("createInvoice.toast.generateFailed"));
     }
   };
   const getAccountNumberByApplication = async (number: any) => {
@@ -303,27 +305,27 @@ const CreateInvoice = () => {
   return (
     <>
       <div>
-        <h5>Create Invoice</h5>
+        <h5>{t("createInvoice.title")}</h5>
         <div className="col-12 d-flex mt-5 ">
           <div className="col-8 d-flex justify-content-between align-items-end">
             <div className="me-2 w-100">
-              <label>Account Number <span className="bg-red"> *</span></label>
+              <label>{t("createInvoice.accountNumber")} <span className="bg-red"> *</span></label>
               <Input
                 name="accountNumber" // Updated to match API key
                 value={formValues.accountNumber}
                 onChange={handleInputChange}
                 size="large"
                 className="mt-2"
-                placeholder="Account Number"
+                placeholder={t("createInvoice.accountNumber")}
               />
             </div>
             <div className="w-100">
-              <label>Application ID <span className="bg-red"> *</span></label>
+              <label>{t("createInvoice.applicationId")} <span className="bg-red"> *</span></label>
               {formValues.accountNumber.length > 0 ? (
                 <Select
                   size="large"
                   className="mt-2"
-                  placeholder="Application ID"
+                  placeholder={t("createInvoice.applicationId")}
                   value={formValues.applicationID}
                   onChange={handleSelectChange}
                 >
@@ -366,7 +368,7 @@ const CreateInvoice = () => {
           <div className="d-flex justify-content-between mt-4">
             <div className="me-2">
               <label style={{ fontWeight: "700", fontSize: "28px" }}>
-                Invoice No. <span className="bg-red"> *</span>
+                {t("createInvoice.invoiceNo")} <span className="bg-red"> *</span>
               </label>
               <Input
                 name="invoiceNumber" // Updated to match API key
@@ -374,18 +376,18 @@ const CreateInvoice = () => {
                 readOnly
                 size="large"
                 className="mt-2"
-                placeholder="Invoice No."
+                placeholder={t("createInvoice.invoiceNo")}
               />
             </div>
             <div className="ms-2">
               <label style={{ fontWeight: "700", fontSize: "28px" }}>
-                Invoice Type
+                {t("createInvoice.invoiceType")}
               </label>
               <Select
                 value={invoiceType}
                 size="large"
                 className="mt-2"
-                placeholder="Select Invoice Type"
+                placeholder={t("createInvoice.selectInvoiceType")}
                 onChange={(value: any) => setInvoiceType(value)}
               >
                 {enums.InvoiceTypes.map((item) => (
@@ -424,25 +426,25 @@ const CreateInvoice = () => {
             className="col-6 p-3"
             style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
           >
-            <label>Name <span className="bg-red"> *</span></label>
+            <label>{t("createInvoice.name")} <span className="bg-red"> *</span></label>
             <Input
               name="from" // Updated to match API key
               value={formValues.from}
               onChange={handleInputChange}
               size="large"
               className="mt-2 mb-3"
-              placeholder="Name"
+              placeholder={t("createInvoice.name")}
             />
             <div className="col-12 d-flex justify-content-between mt-2 gap-2">
               <div className="col-6">
-                <label>Payment Terms</label>
+                <label>{t("createInvoice.paymentTerms")}</label>
                 <Select
                   size="large"
                   className="mt-2"
-                  placeholder="Payment Terms"
+                  placeholder={t("createInvoice.paymentTerms")}
                   onChange={handleSelectPayment}
                 >
-                  <option value="">select the payment</option>
+                  <option value="">{t("createInvoice.selectPayment")}</option>
                   {enums.PaymentTypes.map((item: any) => {
                     return (
                       <>
@@ -455,12 +457,12 @@ const CreateInvoice = () => {
                 </Select>
               </div>
               <div className="col-6">
-                <label>PO Number</label>
+                <label>{t("createInvoice.poNumber")}</label>
                 <Input
                   name="poNumber" // Updated to match API key
                   size="large"
                   className="mt-2"
-                  placeholder="optional"
+                  placeholder={t("createInvoice.optional")}
                   value={formValues.poNumber}
                   onChange={handleInputChange}
                 />
@@ -473,24 +475,24 @@ const CreateInvoice = () => {
           >
             {" "}
             <div className="">
-              <label>Billing To <span className="bg-red"> *</span></label>
+              <label>{t("createInvoice.billingTo")} <span className="bg-red"> *</span></label>
               <Input
                 name="billingTo" // Updated to match API key
                 size="large"
                 className="mt-2 w-100 mb-3"
-                placeholder="Billing To"
+                placeholder={t("createInvoice.billingTo")}
                 value={formValues.billingTo}
                 onChange={handleInputChange}
               />
             </div>
             <div className="mt-2">
-              <label>Ship To </label>
+              <label>{t("createInvoice.shipTo")} </label>
               <Input
                 name="shipTo" // Updated to match API key
                 type="select"
                 size="large"
                 className="mt-2 w-100"
-                placeholder="optional"
+                placeholder={t("createInvoice.optional")}
                 value={formValues.shipTo}
                 onChange={handleInputChange}
               />
@@ -503,7 +505,7 @@ const CreateInvoice = () => {
         >
           <div className="col-6">
             <div className="">
-              <label>Invoice Date <span className="bg-red"> *</span></label>
+              <label>{t("createInvoice.invoiceDate")} <span className="bg-red"> *</span></label>
               <Input
                 type="text"
                 name="invoiceDate"
@@ -517,7 +519,7 @@ const CreateInvoice = () => {
           </div>
           <div className="col-6">
             <div className="me-1">
-              <label>Due Date <span className="bg-red"> *</span></label>
+              <label>{t("createInvoice.dueDate")} <span className="bg-red"> *</span></label>
               <Input
                 id="dueDate"
                 type="date"
@@ -560,7 +562,7 @@ const CreateInvoice = () => {
               color: "var(--primary-foreground)",
             }}
           >
-            Item
+            {t("createInvoice.item")}
           </div>
           <div
             className="row mb-2 p-3 col-6"
@@ -571,7 +573,7 @@ const CreateInvoice = () => {
               color: "var(--primary-foreground)",
             }}
           >
-            Amount
+            {t("createInvoice.amount")}
           </div>
         </div>
         {/* Data Fields Section */}
@@ -580,7 +582,7 @@ const CreateInvoice = () => {
             <div className="col-6">
               <Input
                 name="item"
-                placeholder="Item"
+                placeholder={t("createInvoice.item")}
                 size="large"
                 value={field.item}
                 onChange={(event) => handleFieldChange(index, event)}
@@ -594,7 +596,7 @@ const CreateInvoice = () => {
             <div style={{ flex: 5.85 }}>
               <Input
                 name="price"
-                placeholder="Price"
+                placeholder={t("createInvoice.price")}
                 size="large"
                 value={field.price}
                 onChange={(event) => handleFieldChange(index, event)}
@@ -621,7 +623,7 @@ const CreateInvoice = () => {
           onClick={handleAddField}
           style={{ fontSize: "16px" }}
         >
-          + Add New Line
+          {t("createInvoice.addNewLine")}
         </button>
       </div>
       <div
@@ -631,7 +633,7 @@ const CreateInvoice = () => {
         }}
       >
         <div className="col-6" style={{ fontWeight: 600 }}>
-          Sub Total
+          {t("createInvoice.subTotal")}
         </div>
         <div
           className="col-6 d-flex justify-content-end font-bold "
@@ -644,36 +646,36 @@ const CreateInvoice = () => {
       <div className="col-12 d-flex justify-content-end">
         <div className="col-7 d-flex mt-3">
           <div className="me-2">
-            <label>Tax(%) </label>
+            <label>{t("createInvoice.tax")} </label>
             <Input
               name="tax" // Updated to match API key
               value={formValues.tax}
               onChange={handleInputChange}
               size="large"
               className="mt-2"
-              placeholder="optional"
+              placeholder={t("createInvoice.optional")}
             />
           </div>
           <div className="me-2">
-            <label>Shipping </label>
+            <label>{t("createInvoice.shipping")} </label>
             <Input
               name="shipping" // Updated to match API key
               value={formValues.shipping}
               onChange={handleInputChange}
               size="large"
               className="mt-2"
-              placeholder="optional"
+              placeholder={t("createInvoice.optional")}
             />
           </div>
           <div className="me-2">
-            <label>Discount(%) </label>
+            <label>{t("createInvoice.discount")} </label>
             <Input
               name="discount" // Updated to match API key
               value={formValues.discount}
               onChange={handleInputChange}
               size="large"
               className="mt-2"
-              placeholder="optional"
+              placeholder={t("createInvoice.optional")}
             />
           </div>
         </div>
@@ -686,7 +688,7 @@ const CreateInvoice = () => {
         }}
       >
         <div className="col-6" style={{ fontWeight: 600 }}>
-          Total
+          {t("createInvoice.total")}
         </div>
         <div
           className="col-6 d-flex justify-content-end font-bold "
@@ -697,26 +699,26 @@ const CreateInvoice = () => {
       </div>
       <div className="col-12 d-flex gap-2 mt-4">
         <div className="col-6 mb-3">
-          <label>Notes </label>
+          <label>{t("createInvoice.notes")} </label>
           <Input
             name="notes" // Updated to match API key
             value={formValues.notes}
             onChange={handleInputChange}
             size="large"
             className="mt-2"
-            placeholder="optional"
+            placeholder={t("createInvoice.optional")}
           />
         </div>
 
         <div className="col-6">
-          <label>Terms </label>
+          <label>{t("createInvoice.terms")} </label>
           <Input
             name="terms" // Updated to match API key
             value={formValues.terms}
             onChange={handleInputChange}
             size="large"
             className="mt-2"
-            placeholder="optional"
+            placeholder={t("createInvoice.optional")}
           />
         </div>
       </div>
@@ -731,7 +733,7 @@ const CreateInvoice = () => {
               fontSize: "14px",
             }}
           >
-            Send to customer
+            {t("createInvoice.sendToCustomer")}
           </button>
           <button
             className="theme-btn-next"
@@ -740,7 +742,7 @@ const CreateInvoice = () => {
             }}
             onClick={handleGenerateInvoice}
           >
-            Generate Invoice
+            {t("createInvoice.generate")}
           </button>
         </div>
       </div>

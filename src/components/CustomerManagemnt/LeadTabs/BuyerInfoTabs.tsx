@@ -1,25 +1,27 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import Business from "./BuyerInfoTabs/Business";
 import KYC from "./BuyerInfoTabs/KYC";
 import Compliclear from "./BuyerInfoTabs/Compliclear";
 
 const BuyerInfoTabs = () => {
+  const { t } = useTranslation("customerManagement");
   const [selectTab, setSelectedTab] = useState<string>("Business");
 
   const tabOptions = [
     {
-      title: "Business",
+      title: t("buyerInfo.tab.business"),
       key: "Business",
       component: <Business />,
     },
     {
-      title: "KYC",
+      title: t("buyerInfo.tab.kyc"),
       key: "KYC",
       component: <KYC />,
     },
     {
-      title: "Compliclear",
+      title: t("buyerInfo.tab.compliclear"),
       key: "Compliclear",
       component: <Compliclear />,
     },

@@ -1,24 +1,26 @@
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const Business = () => {
+  const { t } = useTranslation("customerManagement");
   const [selectTab, setSelectedTab] = useState<string>("BusinessVerification");
 
   const tabOptions = [
     {
-      title: "Business Verification",
+      title: t("leadTabs.buyerBusiness.tab.businessVerification"),
       key: "BusinessVerification",
     },
     {
-      title: "Upload Business Documents",
+      title: t("leadTabs.buyerBusiness.tab.uploadBusinessDocuments"),
       key: "UploadBusinessDocuments",
     },
     {
-      title: "Company Address",
+      title: t("leadTabs.buyerBusiness.tab.companyAddress"),
       key: "CompanyAddress",
     },
     {
-      title: "Approve Buyer Business",
+      title: t("leadTabs.buyerBusiness.tab.approveBuyerBusiness"),
       key: "ApproveBuyerBusiness",
     },
   ];
@@ -38,7 +40,7 @@ const Business = () => {
             {selectTab === item.key && (
               <div style={{ padding: "20px" }}>
                 <h5>{item.title}</h5>
-                <p>Content for {item.title} coming soon...</p>
+                <p>{t("leadTabs.buyerBusiness.comingSoon", { title: item.title })}</p>
               </div>
             )}
           </Tab>

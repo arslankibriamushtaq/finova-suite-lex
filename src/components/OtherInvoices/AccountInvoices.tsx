@@ -14,8 +14,10 @@ import {
 import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const AccountInvoices = () => {
+  const { t } = useTranslation("accountingLoans");
   const [addCustomerModal, setAddCustomerModal] = useState(false);
   const [individualModal, setIndividualModal] = useState(false);
   const [customerValue, setCustomerValue] = useState("individuals");
@@ -151,7 +153,7 @@ const AccountInvoices = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EyeOutlined />}>
-        View
+        {t("otherAccount.view")}
       </Menu.Item>
       {/* <Menu.Item key="view" icon={<EyeOutlined />}>
         View
@@ -190,7 +192,7 @@ const AccountInvoices = () => {
     //     ),
     // },
     {
-      name: "Name",
+      name: t("otherAccount.col.name"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -203,7 +205,7 @@ const AccountInvoices = () => {
         ),
     },
     {
-      name: "Type",
+      name: t("otherAccount.col.type"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -216,7 +218,7 @@ const AccountInvoices = () => {
         ),
     },
     {
-      name: "Phone No",
+      name: t("otherAccount.col.phoneNo"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -229,7 +231,7 @@ const AccountInvoices = () => {
         ),
     },
     {
-      name: "Email",
+      name: t("otherAccount.col.email"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -242,7 +244,7 @@ const AccountInvoices = () => {
         ),
     },
     {
-      name: "Status",
+      name: t("otherAccount.col.status"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -266,12 +268,12 @@ const AccountInvoices = () => {
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}
         >
-          {row.Status === "Active" ? "Active" : "Inactive"}
+          {row.Status === "Active" ? t("otherAccount.status.active") : t("otherAccount.status.inactive")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -284,7 +286,7 @@ const AccountInvoices = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -383,7 +385,7 @@ const AccountInvoices = () => {
               className="d-flex justify-content-center mt-5"
               style={{ color: "red" }}
             >
-              No data found
+              {t("otherAccount.noData")}
             </div>
           )}
         </div>

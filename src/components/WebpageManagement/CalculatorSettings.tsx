@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Types for API integration
 interface CalculatorData {
@@ -36,6 +37,7 @@ const DUMMY_CALCULATOR_DATA: CalculatorData = {
 };
 
 const CalculatorSettings = () => {
+  const { t } = useTranslation('webPages');
   const navigate = useNavigate();
   
   // UI States
@@ -104,7 +106,7 @@ const CalculatorSettings = () => {
       <div className="calculator-settings">
         <div className="calculator-settings__loading">
           <div className="calculator-settings__loading-spinner"></div>
-          <p>Loading calculator data...</p>
+          <p>{t('loading.calculator')}</p>
         </div>
       </div>
     );
@@ -115,13 +117,13 @@ const CalculatorSettings = () => {
       {/* Header Section */}
       <div className="calculator-settings__header">
         <h2 className="calculator-settings__header-title">
-          Calculator Page / Setting
+          {t('calculator.title')}
         </h2>
       </div>
 
       {/* PUBLISH Bar */}
       <div className="calculator-settings__publish-bar" onClick={handlePublish}>
-        <div className="calculator-settings__publish-text">PUBLISH</div>
+        <div className="calculator-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Main Content Area */}
@@ -130,7 +132,7 @@ const CalculatorSettings = () => {
         <div className="calculator-settings__form-container">
           {/* Language Selector */}
           <div className="calculator-settings__language-selector">
-            <span className="calculator-settings__language-text">ENGLISH</span>
+            <span className="calculator-settings__language-text">{t('languageEnglish')}</span>
             <div className="calculator-settings__language-icon">
               ✓
             </div>
@@ -139,12 +141,12 @@ const CalculatorSettings = () => {
           {/* Financing Amount Section */}
           <div className="calculator-settings__section">
             <h3 className="calculator-settings__section-title">
-              Financing Amount:
+              {t('calculator.financingAmount')}
             </h3>
             <div className="calculator-settings__input-row">
               <div className="calculator-settings__input-group">
                 <label className="calculator-settings__label">
-                  Min Financing Amount
+                  {t('calculator.minAmount')}
                 </label>
                 <input
                   type="number"
@@ -155,7 +157,7 @@ const CalculatorSettings = () => {
               </div>
               <div className="calculator-settings__input-group">
                 <label className="calculator-settings__label">
-                  Max Financing Amount
+                  {t('calculator.maxAmount')}
                 </label>
                 <input
                   type="number"
@@ -167,7 +169,7 @@ const CalculatorSettings = () => {
             </div>
             <div className="calculator-settings__input-group calculator-settings__input-group--full">
               <label className="calculator-settings__label">
-                Suggest Financing Amount
+                {t('calculator.suggestAmount')}
               </label>
               <input
                 type="number"
@@ -181,12 +183,12 @@ const CalculatorSettings = () => {
           {/* Financing Fee Section */}
           <div className="calculator-settings__section">
             <h3 className="calculator-settings__section-title">
-              Financing Fee:
+              {t('calculator.financingFee')}
             </h3>
             <div className="calculator-settings__input-row">
               <div className="calculator-settings__input-group">
                 <label className="calculator-settings__label">
-                  Cost of Financing Amount
+                  {t('calculator.costOfFinancing')}
                 </label>
                 <input
                   type="number"
@@ -197,7 +199,7 @@ const CalculatorSettings = () => {
               </div>
               <div className="calculator-settings__input-group">
                 <label className="calculator-settings__label">
-                  Cost of Term Amount
+                  {t('calculator.costOfTerm')}
                 </label>
                 <input
                   type="number"
@@ -212,12 +214,12 @@ const CalculatorSettings = () => {
           {/* Loan Tenure Section */}
           <div className="calculator-settings__section">
             <h3 className="calculator-settings__section-title">
-              Loan Tenure:
+              {t('calculator.loanTenure')}
             </h3>
             <div className="calculator-settings__input-row">
               <div className="calculator-settings__input-group">
                 <label className="calculator-settings__label">
-                  Min Tenure
+                  {t('calculator.minTenure')}
                 </label>
                 <input
                   type="number"
@@ -228,7 +230,7 @@ const CalculatorSettings = () => {
               </div>
               <div className="calculator-settings__input-group">
                 <label className="calculator-settings__label">
-                  Max Tenure
+                  {t('calculator.maxTenure')}
                 </label>
                 <input
                   type="number"
@@ -249,9 +251,9 @@ const CalculatorSettings = () => {
             <div className="calculator-settings__success-icon">
               ✓
             </div>
-            <h3 className="calculator-settings__success-title">Calculator Settings Published!</h3>
+            <h3 className="calculator-settings__success-title">{t('success.calculatorTitle')}</h3>
             <p className="calculator-settings__success-text">
-              Your calculator settings have been successfully published.
+              {t('success.calculatorText')}
             </p>
             <button
               onClick={() => {
@@ -260,7 +262,7 @@ const CalculatorSettings = () => {
               }}
               className="theme-btn-next"
             >
-              OK
+              {t('common:ok')}
             </button>
           </div>
         </div>

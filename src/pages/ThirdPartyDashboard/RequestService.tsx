@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Select } from "antd";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
@@ -7,6 +8,7 @@ import { getRequestService, getServicesList } from "../../redux/apis/apisThirdPa
 const { Option } = Select;
 
 const RequestService = () => {
+  const { t } = useTranslation("connector");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [services, setServices] = useState<any[]>([]);
@@ -72,20 +74,20 @@ const RequestService = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch requests");
+      toast.error(error?.response?.data?.message || t("requestService.toast.fetchFailed"));
       setSkelitonLoading(false);
     }
   };
 
   const Headers = [
     {
-      name: "ID",
+      name: t("requestService.col.id"),
       selector: (row: any) => row.id || "-",
       sortable: true,
       width: "80px",
     },
     {
-      name: "API Name",
+      name: t("requestService.col.apiName"),
       selector: (row: any) => row.api_name || row.name || row.api?.name || "-",
       sortable: true,
     },
@@ -95,7 +97,7 @@ const RequestService = () => {
       sortable: true,
     }, */
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -106,7 +108,7 @@ const RequestService = () => {
             fontSize: "12px",
           }}
         >
-          {row.status === "Active" || row.status === 1 ? "Active" : "Inactive"}
+          {row.status === "Active" || row.status === 1 ? t("common:active") : t("common:inactive")}
         </span>
       ),
       sortable: true,
@@ -122,11 +124,11 @@ const RequestService = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Request Service</h2>
+        <h2>{t("requestService.title")}</h2>
         <Select
           /* className="form-control" */
           style={{ width: 250 }}
-          placeholder="Select Service"
+          placeholder={t("requestService.placeholder.selectService")}
           value={selectedService || undefined}
           onChange={(value) => setSelectedService(value)}
         >
@@ -153,7 +155,7 @@ const RequestService = () => {
           to={data.length || 0}
         />
       ) : (
-        <div className="text-center p-4">Please select a service to view requests</div>
+        <div className="text-center p-4">{t("requestService.empty")}</div>
       )}
     </div>
   );

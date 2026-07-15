@@ -7,9 +7,11 @@ import { useNavigate } from "react-router-dom";
 import { FaFileInvoice } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { getPartnerDashboard } from "../../redux/apis/apisCrud";
 
 const DashboardPartner = () => {
+  const { t } = useTranslation("partner");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>({});
   const navigate = useNavigate();
@@ -18,72 +20,72 @@ const DashboardPartner = () => {
   }, []);
   const cardsData = [
     {
-      title: "Paid Financing Amount",
+      title: t("dashboard.paidFinancingAmount"),
       value: "1,200",
     },
     {
-      title: "Total Comission",
+      title: t("dashboard.totalComission"),
       value: data?.total_application_commission,
     },
   ];
 
   const producer = [
     {
-      title: "Total Applications",
+      title: t("dashboard.totalApplications"),
       value: data?.total_applications_count,
     },
     {
-      title: "Incomplete Applications",
+      title: t("dashboard.incompleteApplications"),
       value: data?.incomplete_applications_count,
     },
     {
-      title: "Pending Applications",
+      title: t("dashboard.pendingApplications"),
       value: data?.pending_applications_count,
     },
     {
-      title: "Approved Applications",
+      title: t("dashboard.approvedApplications"),
       value: data?.approved_applications_count,
     },
     {
-      title: "Total Application Amount",
+      title: t("dashboard.totalApplicationAmount"),
       value: data?.total_applications_sum,
     },
     {
-      title: "Total Financing Amount",
+      title: t("dashboard.totalFinancingAmount"),
       value: "204",
     },
   ];
   const Activity_Loans_Header = [
     {
-      name: "Application Number",
+      name: t("col.applicationNumber"),
       selector: (row: any) => row.applicationNumber,
     },
     {
-      name: "Product",
+      name: t("col.product"),
       selector: (row: any) => row.product,
     },
     {
-      name: "Customer Name",
+      name: t("col.customerName"),
       selector: (row: any) => row.customerName,
     },
     {
-      name: "Duration",
+      name: t("col.duration"),
       selector: (row: any) => row.duration,
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) => row.type,
     },
     {
-      name: "Application Date",
+      name: t("col.applicationDate"),
       selector: (row: any) => row.applicationDate,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: any) => row.amount,
     },
     {
-      name: "Parent Status",
+      name: t("col.parentStatus"),
       cell: (row: any) => (
         <span
           style={{
@@ -105,7 +107,7 @@ const DashboardPartner = () => {
       ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -124,7 +126,7 @@ const DashboardPartner = () => {
       width: "350px",
     },
     {
-      name: "Action",
+      name: t("col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -138,7 +140,7 @@ const DashboardPartner = () => {
               fontSize: "12px",
             }}
           >
-            Action <img src={arrowDown} alt="" />
+            {t("col.action")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -152,14 +154,14 @@ const DashboardPartner = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("menu.viewDetails")}
       </Menu.Item>
       <Menu.Item
         key="invoice"
         icon={<FaFileInvoice />}
         onClick={() => handleMenuClick("invoice", row)}
       >
-        Invoice
+        {t("menu.invoice")}
       </Menu.Item>
     </Menu>
   );
@@ -245,7 +247,7 @@ const DashboardPartner = () => {
             </div>
 
             <div className="row mt-4">
-              <h3>Recent Applications</h3>
+              <h3>{t("dashboard.recentApplications")}</h3>
               <div className="col-12 custom-table-wrapper">
                 <TableView header={Activity_Loans_Header} />
               </div>

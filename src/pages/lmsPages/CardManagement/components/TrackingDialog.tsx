@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Check, Truck } from "lucide-react";
 import {
@@ -24,6 +25,7 @@ interface TrackingDialogProps {
 }
 
 const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProps) => {
+  const { t } = useTranslation("cardManagement");
   const [tracking, setTracking] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isAdvancing, setIsAdvancing] = useState(false);
@@ -52,11 +54,11 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
     try {
       setIsAdvancing(true);
       await advanceAdminCardTracking(cardId);
-      toast.success("Shipment advanced");
+      toast.success(t("tracking.toast.advanced"));
       load();
       onAdvanced?.();
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Failed to advance shipment");
+      if (!error?.response?.data?.message) toast.error(t("tracking.toast.advanceFailed"));
     } finally {
       setIsAdvancing(false);
     }
@@ -85,27 +87,27 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
             <span className="inline-flex size-7 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
               <Truck className="size-4" />
             </span>
-            Shipment Tracking
+            {t("tracking.title")}
           </DialogTitle>
           {tracking?.trackingNumber && (
             <DialogDescription>
               {tracking.carrier} · {tracking.trackingNumber}
               {tracking.estimatedDeliveryDate
-                ? ` · ETA ${formatDate(tracking.estimatedDeliveryDate)}`
+                ? ` · ${t("tracking.eta", { date: formatDate(tracking.estimatedDeliveryDate) })}`
                 : ""}
             </DialogDescription>
           )}
         </DialogHeader>
 
         {isLoading ? (
-          <p className="text-sm text-muted-foreground py-8 text-center">Loading...</p>
+          <p className="text-sm text-muted-foreground py-8 text-center">{t("common:loading")}</p>
         ) : tracking && tracking.shippable === false ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            This card is not shippable (virtual card).
+            {t("tracking.notShippable")}
           </p>
         ) : timeline.length === 0 ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            No tracking information available.
+            {t("tracking.noInfo")}
           </p>
         ) : (
           <div className="overflow-x-auto pb-1 pt-2">
@@ -157,7 +159,7 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
                     </p>
                     {isCurrent && !reached && (
                       <span className="mt-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-medium text-emerald-600">
-                        Current
+                        {t("tracking.current")}
                       </span>
                     )}
                     {step.at && (
@@ -174,11 +176,11 @@ const TrackingDialog = ({ cardId, onOpenChange, onAdvanced }: TrackingDialogProp
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isAdvancing}>
-            Close
+            {t("common:close")}
           </Button>
           {tracking?.shippable && !isDelivered && timeline.length > 0 && (
             <Button onClick={handleAdvance} disabled={isAdvancing || isLoading}>
-              {isAdvancing ? "Advancing..." : "Advance Shipment"}
+              {isAdvancing ? t("tracking.advancing") : t("tracking.advanceShipment")}
             </Button>
           )}
         </DialogFooter>

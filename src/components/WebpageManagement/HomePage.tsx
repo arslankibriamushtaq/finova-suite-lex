@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LandingPage from '../WebPages/LandingPage';
 
 const Homepage: React.FC = () => {
+  const { t } = useTranslation('webPages');
   const navigate = useNavigate();
   const [showEditOption, setShowEditOption] = useState(false);
 
@@ -45,7 +47,7 @@ const Homepage: React.FC = () => {
               boxShadow: '0 4px 20px rgba(0, 0, 0, 0.3)'
             }}
           >
-            Edit Template
+            {t('editTemplate')}
           </div>
         </div>
       )}

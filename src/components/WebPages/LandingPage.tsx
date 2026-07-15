@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 // URL for external RTL stylesheet
 const rtlCssUrl = new URL('../../styles/arabic-rtl.css', import.meta.url).href;
@@ -91,6 +92,7 @@ interface LandingPageData {
 }
 
 const LandingPage = () => {
+  const { t } = useTranslation('webPages');
   const [pageData, setPageData] = useState<LandingPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -680,7 +682,7 @@ const LandingPage = () => {
         fontSize: '18px',
         color: '#e74c3c'
       }}>
-        Error: {error}
+        {t('errorWithMessage', { message: error })}
       </div>
     );
   }
@@ -695,7 +697,7 @@ const LandingPage = () => {
         fontSize: '18px',
         color: '#333'
       }}>
-        No data available
+        {t('state.noDataAvailableShort')}
       </div>
     );
   }
@@ -1035,14 +1037,14 @@ const LandingPage = () => {
                 marginBottom: '5px'
               }}>
                 {isCalculating ? (
-                  <span style={{ fontSize: '14px', color: '#999' }}>Calculating...</span>
+                  <span style={{ fontSize: '14px', color: '#999' }}>{t('state.calculating')}</span>
                 ) : (
                   `${(selectedAmount / 3).toFixed(2)} SAR`
                 )}
               </div>
               <div className="header-footer-settings__landing-calculator-result-installments">
                 {isCalculating ? (
-                  <span style={{ fontSize: '12px', color: '#999' }}>Calculating...</span>
+                  <span style={{ fontSize: '12px', color: '#999' }}>{t('state.calculating')}</span>
                 ) : (
                   pageData.calculator?.payable_installment_text || 
                   `${maxTenure || 3} Equal Installments`

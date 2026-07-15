@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Select, Switch } from "antd";
 import toast from "react-hot-toast";
 import { setProductData } from "../../redux/apis/apisSlice";
@@ -9,6 +10,7 @@ import { store } from "../../redux/store";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 const AddProduct = ({setSelectedTab}:any) => {
+  const { t } = useTranslation("productManagement2");
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [categories, setCategories] = useState([]);
   const [country, setCountry] = useState([]);
@@ -49,10 +51,10 @@ const readOnly = mode === "view";
         const data = res?.data?.data?.active_categories;
         setCategories(data);
       } else {
-        toast.error(res?.data?.message || "Failed to Fetch Categories.");
+        toast.error(res?.data?.message || t("addProduct.fetchCategoriesFailed"));
       }
     } catch (err) {
-      toast.error("Failed to Fetch Categories.");
+      toast.error(t("addProduct.fetchCategoriesFailed"));
     }
   };
   const countryApi = async () => {
@@ -62,10 +64,10 @@ const readOnly = mode === "view";
         const data = res?.data?.data;
         setCountry(data);
       } else {
-        toast.error(res?.data?.message || "Failed to Fetch Categories.");
+        toast.error(res?.data?.message || t("addProduct.fetchCategoriesFailed"));
       }
     } catch (err) {
-      toast.error("Failed to Fetch Categories.");
+      toast.error(t("addProduct.fetchCategoriesFailed"));
     }
   };
 
@@ -111,7 +113,7 @@ const readOnly = mode === "view";
         toast.success(response?.data?.message);
       } else {
         
-        toast.error(response?.data?.message || "Failed to add product.");
+        toast.error(response?.data?.message || t("addProduct.addFailed"));
       }
     } catch (err:any) {
 
@@ -165,10 +167,10 @@ const readOnly = mode === "view";
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Product Name
+            {t("field.productName")}
           </label>
           <Input
-            placeholder="Enter Name"
+            placeholder={t("addProduct.enterName")}
             className="fs-6 form-control"
             value={formValues.name_en}
             onChange={(e) => handleChange("name_en", e.target.value)}
@@ -177,10 +179,10 @@ const readOnly = mode === "view";
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-          اسم
+          {t("addProduct.nameArLabel")}
           </label>
           <Input
-            placeholder=" اسم"
+            placeholder={t("addProduct.nameArPlaceholder")}
             className="fs-6 form-control "
           dir="rtl"
             value={formValues.name_ar}
@@ -192,10 +194,10 @@ const readOnly = mode === "view";
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Notification Email
+            {t("addProduct.notificationEmail")}
           </label>
           <Input
-            placeholder="Enter Email"
+            placeholder={t("addProduct.enterEmail")}
             className="fs-6 form-control"
             value={formValues.email}
             onChange={(e) => handleChange("email", e.target.value)}
@@ -204,10 +206,10 @@ const readOnly = mode === "view";
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Country
+            {t("field.country")}
           </label>
           <Select
-            placeholder="Enter Name"
+            placeholder={t("addProduct.enterName")}
             className="fs-6"
             value={formValues.country_id}
             onChange={(value) => handleChange("country_id", value)}
@@ -225,10 +227,10 @@ const readOnly = mode === "view";
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Category
+            {t("common:category")}
           </label>
           <Select
-            placeholder="Enter Name"
+            placeholder={t("addProduct.enterName")}
             className="fs-6"
             value={selectedCategoryId}
             onChange={(value) => handleChange("category_id", value)}
@@ -266,12 +268,12 @@ const readOnly = mode === "view";
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Upload Logo
+            {t("addProduct.uploadLogo")}
           </label>
           <Input
             type="file"
             accept="image/*"
-            placeholder="Enter Name"
+            placeholder={t("addProduct.enterName")}
             className="fs-6"
             onChange={(e) => {
               const file = e.target.files?.[0] || null;
@@ -298,18 +300,18 @@ const readOnly = mode === "view";
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Product Type
+            {t("field.productType")}
           </label>
           <Select
-            placeholder="Select Product Type"
+            placeholder={t("addProduct.selectProductType")}
             className="fs-6"
             value={formValues.product_type_id}
             onChange={(value) => handleChange("product_type_id", value)}
             disabled={readOnly}
           >
-            <option value={1}>SME</option>
-            <option value={2}>Individual</option>
-            <option value={3}>Corporate</option>
+            <option value={1}>{t("addProduct.typeSme")}</option>
+            <option value={2}>{t("addProduct.typeIndividual")}</option>
+            <option value={3}>{t("addProduct.typeCorporate")}</option>
           </Select>
         </Col>
       </Row>
@@ -322,7 +324,7 @@ const readOnly = mode === "view";
             disabled={readOnly}
           />
           <label className="me-1" style={{ fontWeight: 400 }}>
-            Has Installments?
+            {t("addProduct.hasInstallments")}
           </label>
         </Col>
         <Col md={2}>
@@ -333,7 +335,7 @@ const readOnly = mode === "view";
             disabled={readOnly}
           />
           <label className="me-1" style={{ fontWeight: 400 }}>
-            With Collateral?
+            {t("addProduct.withCollateral")}
           </label>
         </Col>
         <Col md={2}>
@@ -349,7 +351,7 @@ const readOnly = mode === "view";
             disabled={readOnly}
           />
           <label className="me-1" style={{ fontWeight: 400 }}>
-            Active{" "}
+            {t("common:active")}{" "}
           </label>
         </Col>
         <Col md={2}>
@@ -360,16 +362,16 @@ const readOnly = mode === "view";
             disabled={readOnly}
           />
           <label className="" style={{ fontWeight: 400 }}>
-            Send details via mail{" "}
+            {t("addProduct.sendDetailsViaMail")}{" "}
           </label>
         </Col>
       </Row>
 
       <div className="d-flex justify-content-end">
-        <button className="step-buttons me-2" disabled={readOnly}>Previous</button>
+        <button className="step-buttons me-2" disabled={readOnly}>{t("common:previous")}</button>
         {readOnly ? null : (
           <button className="step-buttons" onClick={handleSubmit}>
-            Next
+            {t("common:next")}
           </button>
         )}
       </div>

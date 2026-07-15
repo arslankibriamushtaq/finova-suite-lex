@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Dropdown, Menu, Select, Tabs, Modal, Input, Form } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
@@ -17,6 +18,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 const Users = () => {
+  const { t } = useTranslation("adminMisc");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [from, setFrom] = useState(0);
@@ -134,41 +136,41 @@ const Users = () => {
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", "edit")}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("ui.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { email: any }) => row.email,
       sortable: true,
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
     },
     {
-      name: "Cnic",
+      name: t("users.col.cnic"),
       cell: (row: any) => (
         <MaskedValue value={row.cnic} showToggle={false} unmaskedCount={4} />
       ),
@@ -177,27 +179,27 @@ const Users = () => {
     },
 
     {
-      name: "Designation",
+      name: t("users.col.designation"),
       selector: (row: { designation: any }) => row.designation,
       sortable: true,
     },
     {
-      name: "Department",
+      name: t("users.col.department"),
       selector: (row: { department: any }) => row.department,
       sortable: true,
     },
     {
-      name: "Role",
+      name: t("users.col.role"),
       selector: (row: { role: any }) => row.role,
       sortable: true,
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -219,7 +221,7 @@ const Users = () => {
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -234,7 +236,7 @@ const Users = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -272,7 +274,7 @@ const Users = () => {
     let validationErrors: Record<string, string> = {};
 
     if (!formValues.name) {
-      validationErrors.name = "Name is required";
+      validationErrors.name = t("users.valid.name");
     }
     setErrors(validationErrors);
 
@@ -293,7 +295,7 @@ const Users = () => {
         await toast.promise(
           createUser(formValues), // API call
           {
-            loading: "Adding User",
+            loading: t("users.toast.adding"),
             success: (response) => {
               if (response?.data?.success) {
                 setFormValues({
@@ -309,18 +311,18 @@ const Users = () => {
                 });
                 getUsers(page, pageSize);
                 setOpenModal(false);
-                return "New User Added Successfuly";
+                return t("users.toast.addSuccess");
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.message ||
-                    "Failed to Income Type."
+                    t("users.toast.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding the Income Type.",
+              t("users.toast.addError"),
           }
         );
       }
@@ -389,7 +391,7 @@ const Users = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             // onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
           />
@@ -405,11 +407,11 @@ const Users = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("ui.searchPlaceholder")}
               />
             </div>
             <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("ui.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -417,16 +419,16 @@ const Users = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("ui.pdf")}
           </button>
-            <button className="invoice-btn">Print</button>
+            <button className="invoice-btn">{t("common:print")}</button>
             <button
               className="theme-btn"
               onClick={() => {
                 setOpenModal(true);
               }}
             >
-              Add New Users
+              {t("users.addBtn")}
             </button>
           </div>
         </div>
@@ -448,7 +450,7 @@ const Users = () => {
       <Modal
         className="custom-mod"
         style={{ maxWidth: "732px" }}
-        title={selectedItem === "edit" ? "Edit User" : "Add New User"}
+        title={selectedItem === "edit" ? t("users.modal.editTitle") : t("users.modal.addTitle")}
         visible={openModal}
         // onCancel={handleCancel}
         footer={[
@@ -459,7 +461,7 @@ const Users = () => {
                 setOpenModal(false);
               }}
             >
-              Close
+              {t("common:close")}
             </Button>
             ,
             <button
@@ -468,7 +470,7 @@ const Users = () => {
               // disabled={isLoading}
               onClick={handleOk}
             >
-              {selectedItem === "edit" ? "Edit" : "Add"}
+              {selectedItem === "edit" ? t("common:edit") : t("common:add")}
             </button>
             ,
           </div>,
@@ -480,9 +482,9 @@ const Users = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
-                    placeholder="Enter Name"
+                    placeholder={t("users.form.namePlaceholder")}
                     className="fs-6"
                     value={formValues.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -493,9 +495,9 @@ const Users = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Email</label>
+                  <label className="input-label">{t("common:email")}</label>
                   <Input
-                    placeholder="Enter Email"
+                    placeholder={t("users.form.emailPlaceholder")}
                     className="fs-6"
                     value={formValues.email}
                     onChange={(e) => handleChange("email", e.target.value)}
@@ -507,9 +509,9 @@ const Users = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Password</label>
+                  <label className="input-label">{t("users.form.password")}</label>
                   <Input
-                    placeholder="Enter Password"
+                    placeholder={t("users.form.passwordPlaceholder")}
                     className="fs-6"
                     value={formValues.password}
                     onChange={(e) => handleChange("password", e.target.value)}
@@ -520,9 +522,9 @@ const Users = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Confirm Password</label>
+                  <label className="input-label">{t("users.form.confirmPassword")}</label>
                   <Input
-                    placeholder="Enter Confirm Password"
+                    placeholder={t("users.form.confirmPasswordPlaceholder")}
                     className="fs-6"
                     value={formValues.password_confirmation}
                     onChange={(e) =>
@@ -536,9 +538,9 @@ const Users = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Phone No</label>
+                  <label className="input-label">{t("users.form.phoneNo")}</label>
                   <Input
-                    placeholder="Enter Phone No."
+                    placeholder={t("users.form.phonePlaceholder")}
                     className="fs-6"
                     value={formValues.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
@@ -549,9 +551,9 @@ const Users = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">CNIC</label>
+                  <label className="input-label">{t("users.form.cnic")}</label>
                   <Input
-                    placeholder="Enter complaint type"
+                    placeholder={t("users.form.cnicPlaceholder")}
                     className="fs-6"
                     value={formValues.cnic}
                     onChange={(e) => handleChange("cnic", e.target.value)}
@@ -563,12 +565,12 @@ const Users = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Assign Department</label>
+                  <label className="input-label">{t("users.form.assignDept")}</label>
                   <Select
                     value={formValues.department_id} // will hold the selected ID
                     onChange={(value) => handleSubType("department_id", value)}
                     style={{ width: "100%", marginTop: "0" }}
-                    placeholder="Select a Complaint Type"
+                    placeholder={t("users.form.selectDeptPlaceholder")}
                   >
                     {department.map((item) => (
                       <Select.Option key={item.id} value={item.id}>
@@ -582,12 +584,12 @@ const Users = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Assign Role</label>
+                  <label className="input-label">{t("users.form.assignRole")}</label>
                   <Select
                     value={formValues.role} // will hold the selected ID
                     onChange={(value) => handleSubType("role", value)}
                     style={{ width: "100%", marginTop: "0" }}
-                    placeholder="Select a Role"
+                    placeholder={t("users.form.selectRolePlaceholder")}
                   >
                     {roleData.map((item) => (
                       <Select.Option key={item.id} value={item.id}>
@@ -602,9 +604,9 @@ const Users = () => {
               {/* Name Field */}
               <Form.Item className="w-50">
                 <div className="custom-input-container">
-                  <label className="input-label">Designation</label>
+                  <label className="input-label">{t("users.form.designation")}</label>
                   <Input
-                    placeholder="Enter Designation"
+                    placeholder={t("users.form.designationPlaceholder")}
                     className="fs-6"
                     value={formValues.designation}
                     onChange={(e) =>

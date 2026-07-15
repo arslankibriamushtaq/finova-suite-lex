@@ -6,7 +6,9 @@ import { Col, Card, DatePicker } from "antd";
 import dayjs from "dayjs";
 import DashboardOverview from "./DashboardOverview";
 import DashboardRecentApplications from "./DashboardRecentApplications";
+import { useTranslation } from "react-i18next";
 const LandingDashboardPage = () => {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(false);
   const [dashboardData, setDashboardData] = useState<any>();
   const [recentApplications, setRecentApplications] = useState<any[]>([]);
@@ -52,24 +54,24 @@ const LandingDashboardPage = () => {
             <div className="d-flex justify-content-end align-items-end gap-3">
               <div style={{ minWidth: "180px" }}>
                 <label htmlFor="fromDate" className="form-label" style={{ marginBottom: "8px", display: "block", fontSize: "14px", fontWeight: 500 }}>
-                  From
+                  {t("common:from")}
                 </label>
                 <DatePicker
                   value={fromDate}
                   onChange={handleFromDateChange}
-                  placeholder="Select From Date"
+                  placeholder={t("home.selectFromDate")}
                   style={{ width: "100%" }}
                   format="YYYY-MM-DD"
                 />
               </div>
               <div style={{ minWidth: "180px" }}>
                 <label htmlFor="toDate" className="form-label" style={{ marginBottom: "8px", display: "block", fontSize: "14px", fontWeight: 500 }}>
-                  To
+                  {t("common:to")}
                 </label>
                 <DatePicker
                   value={toDate}
                   onChange={handleToDateChange}
-                  placeholder="Select To Date"
+                  placeholder={t("home.selectToDate")}
                   style={{ width: "100%" }}
                   format="YYYY-MM-DD"
                   disabledDate={(current) => {

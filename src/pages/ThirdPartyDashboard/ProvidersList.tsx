@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getAllProviders, createProvider, updateProvider, deleteProvider } from "../../redux/apis/apisMiddlewareProviders";
@@ -36,6 +37,7 @@ const initialFormValues = {
 };
 
 const ProvidersList = () => {
+  const { t } = useTranslation("connector");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,7 +56,7 @@ const ProvidersList = () => {
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch providers");
+      toast.error(error?.response?.data?.message || t("providersList.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +91,7 @@ const ProvidersList = () => {
 
   const handleSave = async () => {
     if (!formValues.code?.trim() || !formValues.name?.trim()) {
-      toast.error("Code and Name are required");
+      toast.error(t("providersList.validation.codeNameRequired"));
       return;
     }
 
@@ -108,7 +110,7 @@ const ProvidersList = () => {
           status: formValues.status,
         };
         await updateProvider(editingProvider.id, body);
-        toast.success("Provider updated successfully");
+        toast.success(t("providersList.toast.updateSuccess"));
       } else {
         const body = {
           code: formValues.code.trim(),
@@ -122,7 +124,7 @@ const ProvidersList = () => {
           retryCount: Number(formValues.retryCount),
         };
         await createProvider(body);
-        toast.success("Provider created successfully");
+        toast.success(t("providersList.toast.createSuccess"));
       }
 
       setIsDialogOpen(false);
@@ -130,20 +132,20 @@ const ProvidersList = () => {
       setFormValues(initialFormValues);
       loadProviders();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save provider");
+      toast.error(error?.response?.data?.message || t("providersList.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Are you sure you want to delete this provider?")) return;
+    if (!window.confirm(t("providersList.deleteConfirm"))) return;
     try {
       await deleteProvider(id);
-      toast.success("Provider deleted successfully");
+      toast.success(t("providersList.toast.deleteSuccess"));
       loadProviders();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete provider");
+      toast.error(error?.response?.data?.message || t("providersList.toast.deleteFailed"));
     }
   };
 
@@ -163,27 +165,27 @@ const ProvidersList = () => {
 
   const headers = [
     {
-      name: "Code",
+      name: t("providersList.col.code"),
       selector: (row: any) => row.code || "-",
       sortable: true,
     },
     {
-      name: "Name",
+      name: t("providersList.col.name"),
       selector: (row: any) => row.name || "-",
       sortable: true,
     },
     {
-      name: "Category",
+      name: t("providersList.col.category"),
       selector: (row: any) => row.category || "-",
       sortable: true,
     },
     {
-      name: "Auth Type",
+      name: t("providersList.col.authType"),
       selector: (row: any) => row.authType || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.status || "ACTIVE";
         const colorClass =
@@ -196,17 +198,17 @@ const ProvidersList = () => {
       },
     },
     {
-      name: "Timeout (ms)",
+      name: t("providersList.col.timeout"),
       selector: (row: any) => row.timeoutMs ?? "-",
       sortable: true,
     },
     {
-      name: "Retries",
+      name: t("providersList.col.retries"),
       selector: (row: any) => row.retryCount ?? "-",
       sortable: true,
     },
     {
-      name: "Action",
+      name: t("providersList.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -219,7 +221,7 @@ const ProvidersList = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("providersList.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -231,7 +233,7 @@ const ProvidersList = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -241,7 +243,7 @@ const ProvidersList = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -257,7 +259,7 @@ const ProvidersList = () => {
           <span className="pro-head-badge">
             <Plug className="h-4 w-4" />
           </span>
-          Providers
+          {t("providersList.title")}
         </h3>
       </div>
 
@@ -266,7 +268,7 @@ const ProvidersList = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by name, code, or category"
+            placeholder={t("providersList.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -278,7 +280,7 @@ const ProvidersList = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="h-4 w-4" />
-            Add Provider
+            {t("providersList.addProvider")}
           </Button>
         </div>
       </div>
@@ -286,43 +288,43 @@ const ProvidersList = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[650px]">
           <DialogHeader>
-            <DialogTitle>{editingProvider ? "Edit Provider" : "Add Provider"}</DialogTitle>
+            <DialogTitle>{editingProvider ? t("providersList.modalTitleEdit") : t("providersList.modalTitleAdd")}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
-              <Label>Code</Label>
+              <Label>{t("providersList.form.code")}</Label>
               <Input
-                placeholder="e.g. NAFATH"
+                placeholder={t("providersList.form.codePlaceholder")}
                 value={formValues.code}
                 onChange={(e) => setFormValues({ ...formValues, code: e.target.value })}
                 disabled={!!editingProvider}
               />
             </div>
             <div className="space-y-2">
-              <Label>Name</Label>
+              <Label>{t("providersList.form.name")}</Label>
               <Input
-                placeholder="Provider name"
+                placeholder={t("providersList.form.namePlaceholder")}
                 value={formValues.name}
                 onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Description</Label>
+              <Label>{t("providersList.form.description")}</Label>
               <Input
-                placeholder="Brief description"
+                placeholder={t("providersList.form.descriptionPlaceholder")}
                 value={formValues.description}
                 onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Category</Label>
+              <Label>{t("providersList.form.category")}</Label>
               <Select
                 value={formValues.category}
                 onValueChange={(val) => setFormValues({ ...formValues, category: val })}
                 disabled={!!editingProvider}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t("providersList.form.categoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((cat) => (
@@ -332,13 +334,13 @@ const ProvidersList = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Auth Type</Label>
+              <Label>{t("providersList.form.authType")}</Label>
               <Select
                 value={formValues.authType}
                 onValueChange={(val) => setFormValues({ ...formValues, authType: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select auth type" />
+                  <SelectValue placeholder={t("providersList.form.authTypePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {AUTH_TYPES.map((auth) => (
@@ -348,48 +350,48 @@ const ProvidersList = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Base URL (Dev)</Label>
+              <Label>{t("providersList.form.baseUrlDev")}</Label>
               <Input
-                placeholder="https://sandbox.example.com/api"
+                placeholder={t("providersList.form.baseUrlDevPlaceholder")}
                 value={formValues.baseUrlDev}
                 onChange={(e) => setFormValues({ ...formValues, baseUrlDev: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Base URL (Prod)</Label>
+              <Label>{t("providersList.form.baseUrlProd")}</Label>
               <Input
-                placeholder="https://api.example.com/api"
+                placeholder={t("providersList.form.baseUrlProdPlaceholder")}
                 value={formValues.baseUrlProd}
                 onChange={(e) => setFormValues({ ...formValues, baseUrlProd: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Timeout (ms)</Label>
+              <Label>{t("providersList.form.timeout")}</Label>
               <Input
                 type="number"
-                placeholder="30000"
+                placeholder={t("providersList.form.timeoutPlaceholder")}
                 value={formValues.timeoutMs}
                 onChange={(e) => setFormValues({ ...formValues, timeoutMs: Number(e.target.value) })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Retry Count</Label>
+              <Label>{t("providersList.form.retryCount")}</Label>
               <Input
                 type="number"
-                placeholder="3"
+                placeholder={t("providersList.form.retryPlaceholder")}
                 value={formValues.retryCount}
                 onChange={(e) => setFormValues({ ...formValues, retryCount: Number(e.target.value) })}
               />
             </div>
             {editingProvider && (
               <div className="space-y-2">
-                <Label>Status</Label>
+                <Label>{t("providersList.form.status")}</Label>
                 <Select
                   value={formValues.status}
                   onValueChange={(val) => setFormValues({ ...formValues, status: val })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
+                    <SelectValue placeholder={t("providersList.form.statusPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {STATUS_OPTIONS.map((s) => (
@@ -401,9 +403,9 @@ const ProvidersList = () => {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("common:cancel")}</Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save"}
+              {isSaving ? t("providersList.saving") : t("common:save")}
             </Button>
           </DialogFooter>
         </DialogContent>

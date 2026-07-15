@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useRouter, useSearchParams } from "../../lib/router"
 import {
   ArrowLeft,
@@ -124,7 +125,8 @@ const commodityProviders = [
 ]
 
 export default function CreateComodityInfo() {
-  const { t, isRTL } = useLanguage()
+  const { isRTL } = useLanguage()
+  const { t } = useTranslation("productManagement2")
   const router = useRouter()
   const [searchParams] = useSearchParams()
   const productIdFromUrl = searchParams.get("id")
@@ -139,7 +141,7 @@ export default function CreateComodityInfo() {
   useEffect(() => {
     const effectiveProductId = productIdFromUrl || sessionStorage.getItem("productId")
     if (!effectiveProductId) {
-      toast.error("Product ID not found. Please start from Basic Information.")
+      toast.error(t("createDocs.startFromBasicInfo"))
       router.push("/Los/ProductManagement/Create/BasicInfo")
     }
   }, [productIdFromUrl])
@@ -282,56 +284,56 @@ export default function CreateComodityInfo() {
     const newErrors: Record<string, string> = {}
 
     if (formData.commodities.length === 0) {
-      newErrors.commodities = "At least one commodity is required"
+      newErrors.commodities = t("commodityCreate.errCommodityRequired")
     }
 
     formData.commodities.forEach((commodity, index) => {
       if (!commodity.name.trim()) {
-        newErrors[`commodity_${index}_name`] = "Commodity name is required"
+        newErrors[`commodity_${index}_name`] = t("commodityCreate.errNameRequired")
       }
       if (!commodity.category) {
-        newErrors[`commodity_${index}_category`] = "Category is required"
+        newErrors[`commodity_${index}_category`] = t("commodityCreate.errCategoryRequired")
       }
       if (commodity.unit_price <= 0) {
-        newErrors[`commodity_${index}_price`] = "Unit price must be greater than 0"
+        newErrors[`commodity_${index}_price`] = t("commodityCreate.errPriceGtZero")
       }
     })
 
     if (!formData.commodity_provider.trim()) {
-      newErrors.commodity_provider = "Commodity provider is required"
+      newErrors.commodity_provider = t("commodityCreate.errProviderRequired")
     }
 
     if (formData.commodity_source === "broker") {
       if (!formData.broker_commission || formData.broker_commission <= 0) {
-        newErrors.broker_commission = "Broker commission is required and must be greater than 0"
+        newErrors.broker_commission = t("commodityCreate.errBrokerCommission")
       }
       if (!formData.broker_provider) {
-        newErrors.broker_provider = "Please select a commodity provider"
+        newErrors.broker_provider = t("commodityCreate.errSelectProvider")
       }
     }
 
     if (formData.funding_settings.funding_types.length === 0) {
-      newErrors.funding_types = "At least one funding type must be selected"
+      newErrors.funding_types = t("commodityCreate.errFundingType")
     }
 
     if (formData.funding_settings.funding_types.includes("investor_funded")) {
       const investmentSettings = formData.funding_settings.investment_settings
       if (!investmentSettings) {
-        newErrors.investment_settings = "Investment settings are required"
+        newErrors.investment_settings = t("commodityCreate.errInvestmentSettings")
       } else {
         if (investmentSettings.min_investment <= 0) {
-          newErrors.min_investment = "Minimum investment must be greater than 0"
+          newErrors.min_investment = t("commodityCreate.errMinInvestment")
         }
         if (investmentSettings.max_investment <= investmentSettings.min_investment) {
-          newErrors.max_investment = "Maximum investment must be greater than minimum"
+          newErrors.max_investment = t("commodityCreate.errMaxInvestment")
         }
         if (investmentSettings.expected_return <= 0) {
-          newErrors.expected_return = "Expected return must be greater than 0"
+          newErrors.expected_return = t("commodityCreate.errExpectedReturn")
         }
       }
 
       if (!formData.funding_settings.portfolio_ids || formData.funding_settings.portfolio_ids.length === 0) {
-        newErrors.portfolio_ids = "Please select at least one portfolio for investor funding"
+        newErrors.portfolio_ids = t("commodityCreate.errPortfolio")
       }
     }
 
@@ -379,7 +381,7 @@ export default function CreateComodityInfo() {
                   className="gap-2"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Products
+                  {t("createCategories.backToProducts")}
                 </Button>
               </div>
             </div>
@@ -387,7 +389,7 @@ export default function CreateComodityInfo() {
               <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Package className="h-4 w-4" />
               </span>
-              Edit Product
+              {t("createDocs.editProduct")}
             </h1>
             <ProductCreateEditTabs
               activeTab="commodity-info"
@@ -405,15 +407,15 @@ export default function CreateComodityInfo() {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Package className="h-5 w-5" />
-                  Commodity Source
+                  {t("commodityCreate.sourceTitle")}
                 </CardTitle>
                 <p className="text-muted-foreground">
-                  Choose whether commodities come from company inventory or external brokers.
+                  {t("commodityCreate.sourceDesc")}
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <Label>Commodity Source Type *</Label>
+                  <Label>{t("commodityCreate.sourceTypeLabel")}</Label>
                   <RadioGroup
                     value={formData.commodity_source}
                     onValueChange={(value: "company_inventory" | "broker") => updateFormData("commodity_source", value)}
@@ -424,9 +426,9 @@ export default function CreateComodityInfo() {
                       <div className="space-y-1">
                         <Label htmlFor="company_inventory" className="font-medium flex items-center gap-2">
                           <Building2 className="h-4 w-4" />
-                          Company Inventory
+                          {t("commodityCreate.companyInventory")}
                         </Label>
-                        <p className="text-sm text-muted-foreground">Commodities managed directly by the company</p>
+                        <p className="text-sm text-muted-foreground">{t("commodityCreate.companyInventoryDesc")}</p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2 p-4 border rounded-lg">
@@ -434,9 +436,9 @@ export default function CreateComodityInfo() {
                       <div className="space-y-1">
                         <Label htmlFor="broker" className="font-medium flex items-center gap-2">
                           <Users className="h-4 w-4" />
-                          Commodity from Broker
+                          {t("commodityCreate.commodityFromBroker")}
                         </Label>
-                        <p className="text-sm text-muted-foreground">Commodities sourced through external brokers</p>
+                        <p className="text-sm text-muted-foreground">{t("commodityCreate.commodityFromBrokerDesc")}</p>
                       </div>
                     </div>
                   </RadioGroup>
@@ -444,23 +446,23 @@ export default function CreateComodityInfo() {
 
                 {formData.commodity_source === "broker" && (
                   <div className="space-y-6 p-4 bg-muted/50 rounded-lg">
-                    <h3 className="text-lg font-medium">Broker Configuration</h3>
+                    <h3 className="text-lg font-medium">{t("commodityCreate.brokerConfiguration")}</h3>
 
                     <div className="space-y-2">
-                      <Label>Commodity Provider *</Label>
+                      <Label>{t("commodityCreate.commodityProvider")}</Label>
                       <Select
                         value={formData.broker_provider || ""}
                         onValueChange={(value) => updateFormData("broker_provider", value)}
                       >
                         <SelectTrigger className={errors.broker_provider ? "border-destructive" : ""}>
-                          <SelectValue placeholder="Select commodity provider" />
+                          <SelectValue placeholder={t("commodityCreate.selectCommodityProvider")} />
                         </SelectTrigger>
                         <SelectContent>
                           {commodityProviders.map((provider) => (
                             <SelectItem key={provider.id} value={provider.id}>
                               <div className="flex items-center justify-between w-full">
                                 <span>{provider.name}</span>
-                                <Badge variant="outline" className="ml-2">
+                                <Badge variant="outline" className="ms-2">
                                   {provider.type}
                                 </Badge>
                               </div>
@@ -474,24 +476,24 @@ export default function CreateComodityInfo() {
                     <div className="space-y-4 p-4 border rounded-lg">
                       <h4 className="font-medium flex items-center gap-2">
                         <Settings className="h-4 w-4" />
-                        API Configuration
+                        {t("commodityCreate.apiConfiguration")}
                       </h4>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>API Endpoint</Label>
+                          <Label>{t("commodityCreate.apiEndpoint")}</Label>
                           <Input
-                            placeholder="https://api.provider.com/commodities"
+                            placeholder={t("commodityCreate.apiEndpointPlaceholder")}
                             value={formData.broker_api_endpoint || ""}
                             onChange={(e) => updateFormData("broker_api_endpoint", e.target.value)}
                           />
                         </div>
 
                         <div className="space-y-2">
-                          <Label>API Key</Label>
+                          <Label>{t("commodityCreate.apiKey")}</Label>
                           <Input
                             type="password"
-                            placeholder="Enter API key"
+                            placeholder={t("commodityCreate.enterApiKey")}
                             value={formData.broker_api_key || ""}
                             onChange={(e) => updateFormData("broker_api_key", e.target.value)}
                           />
@@ -505,16 +507,16 @@ export default function CreateComodityInfo() {
                         className="gap-2 bg-transparent"
                       >
                         <RefreshCw className={`h-4 w-4 ${isTestingApi ? "animate-spin" : ""}`} />
-                        {isTestingApi ? "Testing API..." : "Test API Connection"}
+                        {isTestingApi ? t("commodityCreate.testingApi") : t("commodityCreate.testApiConnection")}
                       </Button>
                     </div>
 
                     <div className="space-y-4 p-4 border rounded-lg">
-                      <h4 className="font-medium">Profit Configuration</h4>
+                      <h4 className="font-medium">{t("commodityCreate.profitConfiguration")}</h4>
 
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div className="space-y-2">
-                          <Label>Profit Calculation Method</Label>
+                          <Label>{t("commodityCreate.profitCalculationMethod")}</Label>
                           <Select
                             value={formData.profit_calculation_method || "percentage"}
                             onValueChange={(value: "fixed" | "percentage") =>
@@ -525,15 +527,15 @@ export default function CreateComodityInfo() {
                               <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="percentage">Percentage</SelectItem>
-                              <SelectItem value="fixed">Fixed Amount</SelectItem>
+                              <SelectItem value="percentage">{t("commodityCreate.percentage")}</SelectItem>
+                              <SelectItem value="fixed">{t("commodityCreate.fixedAmount")}</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
 
                         <div className="space-y-2">
                           <Label>
-                            Profit Margin {formData.profit_calculation_method === "percentage" ? "(%)" : "(Amount)"}
+                            {formData.profit_calculation_method === "percentage" ? t("commodityCreate.profitMarginPct") : t("commodityCreate.profitMarginAmount")}
                           </Label>
                           <Input
                             type="number"
@@ -545,7 +547,7 @@ export default function CreateComodityInfo() {
                         </div>
 
                         <div className="space-y-2">
-                          <Label>Broker Commission (%)</Label>
+                          <Label>{t("commodityCreate.brokerCommission")}</Label>
                           <Input
                             type="number"
                             step="0.1"
@@ -562,9 +564,9 @@ export default function CreateComodityInfo() {
                     </div>
 
                     <div className="space-y-2">
-                      <Label>Broker Terms & Conditions</Label>
+                      <Label>{t("commodityCreate.brokerTerms")}</Label>
                       <Textarea
-                        placeholder="Special terms, conditions, and agreements with the broker..."
+                        placeholder={t("commodityCreate.brokerTermsPlaceholder")}
                         value={formData.broker_terms || ""}
                         onChange={(e) => updateFormData("broker_terms", e.target.value)}
                         rows={3}
@@ -575,32 +577,32 @@ export default function CreateComodityInfo() {
 
                 {formData.commodity_source === "company_inventory" && (
                   <div className="space-y-6 p-4 bg-muted/50 rounded-lg">
-                    <h3 className="text-lg font-medium">Inventory Management</h3>
+                    <h3 className="text-lg font-medium">{t("commodityCreate.inventoryManagement")}</h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Inventory Location</Label>
+                        <Label>{t("commodityCreate.inventoryLocation")}</Label>
                         <Input
-                          placeholder="Warehouse address or location code"
+                          placeholder={t("commodityCreate.inventoryLocationPlaceholder")}
                           value={formData.inventory_location || ""}
                           onChange={(e) => updateFormData("inventory_location", e.target.value)}
                         />
                       </div>
 
                       <div className="space-y-2">
-                        <Label>Stock Management System</Label>
+                        <Label>{t("commodityCreate.stockManagement")}</Label>
                         <Select
                           value={formData.stock_management || ""}
                           onValueChange={(value) => updateFormData("stock_management", value)}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Select system" />
+                            <SelectValue placeholder={t("commodityCreate.selectSystem")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="fifo">First In, First Out (FIFO)</SelectItem>
-                            <SelectItem value="lifo">Last In, First Out (LIFO)</SelectItem>
-                            <SelectItem value="weighted_average">Weighted Average</SelectItem>
-                            <SelectItem value="specific_identification">Specific Identification</SelectItem>
+                            <SelectItem value="fifo">{t("commodityCreate.fifo")}</SelectItem>
+                            <SelectItem value="lifo">{t("commodityCreate.lifo")}</SelectItem>
+                            <SelectItem value="weighted_average">{t("commodityCreate.weightedAverage")}</SelectItem>
+                            <SelectItem value="specific_identification">{t("commodityCreate.specificIdentification")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -613,16 +615,16 @@ export default function CreateComodityInfo() {
             <Card className="pro-card-glow">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  Funding Configuration
+                  {t("commodityCreate.fundingConfiguration")}
                 </CardTitle>
                 <p className="text-muted-foreground">
-                  Choose how this product will be funded and configure investment parameters if applicable.
+                  {t("commodityCreate.fundingConfigurationDesc")}
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-4">
-                  <Label>Funding Type * {/* Updated to allow multiple selection */}</Label>
-                  <p className="text-sm text-muted-foreground">Select one or more funding types for this product.</p>
+                  <Label>{t("commodityCreate.fundingType")} {/* Updated to allow multiple selection */}</Label>
+                  <p className="text-sm text-muted-foreground">{t("commodityCreate.fundingTypeHint")}</p>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     <div className="flex items-center space-x-2 p-4 border rounded-lg">
                       <Checkbox
@@ -632,9 +634,9 @@ export default function CreateComodityInfo() {
                       />
                       <div className="space-y-1">
                         <Label htmlFor="company_backed" className="font-medium cursor-pointer">
-                          Company Backed
+                          {t("commodityCreate.companyBacked")}
                         </Label>
-                        <p className="text-sm text-muted-foreground">Funded directly by company resources</p>
+                        <p className="text-sm text-muted-foreground">{t("commodityCreate.companyBackedDesc")}</p>
                       </div>
                     </div>
 
@@ -646,9 +648,9 @@ export default function CreateComodityInfo() {
                       />
                       <div className="space-y-1">
                         <Label htmlFor="crowd_funded" className="font-medium cursor-pointer">
-                          Crowd-Funded
+                          {t("commodityCreate.crowdFunded")}
                         </Label>
-                        <p className="text-sm text-muted-foreground">Funded through crowdfunding platform</p>
+                        <p className="text-sm text-muted-foreground">{t("commodityCreate.crowdFundedDesc")}</p>
                       </div>
                     </div>
 
@@ -660,9 +662,9 @@ export default function CreateComodityInfo() {
                       />
                       <div className="space-y-1">
                         <Label htmlFor="investor_funded" className="font-medium cursor-pointer">
-                          Investor Funded
+                          {t("commodityCreate.investorFunded")}
                         </Label>
-                        <p className="text-sm text-muted-foreground">Funded by selected investor portfolio</p>
+                        <p className="text-sm text-muted-foreground">{t("commodityCreate.investorFundedDesc")}</p>
                       </div>
                     </div>
                   </div>
@@ -671,12 +673,12 @@ export default function CreateComodityInfo() {
 
                 {formData.funding_settings.funding_types.includes("investor_funded") && (
                   <div className="space-y-6 p-4 bg-muted/50 rounded-lg">
-                    <h3 className="text-lg font-medium">Portfolio Selection</h3>
+                    <h3 className="text-lg font-medium">{t("commodityCreate.portfolioSelection")}</h3>
 
                     <div className="space-y-2">
-                      <Label>Select Portfolio(s) *</Label>
+                      <Label>{t("commodityCreate.selectPortfolios")}</Label>
                       <p className="text-sm text-muted-foreground">
-                        Choose one or more portfolios to fund this product.
+                        {t("commodityCreate.selectPortfoliosHint")}
                       </p>
                       <div className="space-y-2 max-h-48 overflow-y-auto">
                         {mockPortfolios.map((portfolio) => (
@@ -702,7 +704,7 @@ export default function CreateComodityInfo() {
 
                     {formData.funding_settings.portfolio_ids && formData.funding_settings.portfolio_ids.length > 0 && (
                       <div className="p-3 bg-background rounded-lg border">
-                        <h4 className="font-medium mb-2">Selected Portfolios Summary</h4>
+                        <h4 className="font-medium mb-2">{t("commodityCreate.selectedPortfoliosSummary")}</h4>
                         <div className="space-y-1">
                           {formData.funding_settings.portfolio_ids.map((portfolioId) => {
                             const portfolio = mockPortfolios.find((p) => p.id === portfolioId)
@@ -717,7 +719,7 @@ export default function CreateComodityInfo() {
                           })}
                           <div className="border-t pt-1 mt-2 font-medium">
                             <div className="flex justify-between">
-                              <span>Total Available:</span>
+                              <span>{t("commodityCreate.totalAvailable")}</span>
                               <span>
                                 {formData.funding_settings.portfolio_ids
                                   .reduce((total, portfolioId) => {
@@ -744,13 +746,13 @@ export default function CreateComodityInfo() {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <Package className="h-5 w-5" />
-                      Commodity Items
+                      {t("commodityCreate.commodityItems")}
                     </CardTitle>
-                    <p className="text-muted-foreground">Define the commodities involved in this product.</p>
+                    <p className="text-muted-foreground">{t("commodityCreate.commodityItemsDesc")}</p>
                   </div>
                   <Button onClick={addCommodity} className="gap-2">
                     <Plus className="h-4 w-4" />
-                    Add Commodity
+                    {t("commodityCreate.addCommodity")}
                   </Button>
                 </div>
               </CardHeader>
@@ -758,7 +760,7 @@ export default function CreateComodityInfo() {
                 {formData.commodities.length === 0 ? (
                   <div className="text-center py-8 text-muted-foreground">
                     <Package className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>No commodities added yet. Click "Add Commodity" to get started.</p>
+                    <p>{t("commodityCreate.noCommodities")}</p>
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -766,7 +768,7 @@ export default function CreateComodityInfo() {
                       <Card key={commodity.id} className="relative">
                         <CardHeader className="pb-4">
                           <div className="flex items-center justify-between">
-                            <h3 className="text-lg font-medium">Commodity {index + 1}</h3>
+                            <h3 className="text-lg font-medium">{t("commodityCreate.commodityN", { index: index + 1 })}</h3>
                             <Button
                               variant="ghost"
                               size="sm"
@@ -780,9 +782,9 @@ export default function CreateComodityInfo() {
                         <CardContent className="space-y-4">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="space-y-2">
-                              <Label>Commodity Name (English) *</Label>
+                              <Label>{t("commodityCreate.commodityNameEn")}</Label>
                               <Input
-                                placeholder="e.g., Gold Bars"
+                                placeholder={t("commodityCreate.commodityNameEnPlaceholder")}
                                 value={commodity.name}
                                 onChange={(e) => updateCommodity(commodity.id, "name", e.target.value)}
                                 className={errors[`commodity_${index}_name`] ? "border-destructive" : ""}
@@ -793,9 +795,9 @@ export default function CreateComodityInfo() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Commodity Name (Arabic)</Label>
+                              <Label>{t("commodityCreate.commodityNameAr")}</Label>
                               <Input
-                                placeholder="مثال: سبائك الذهب"
+                                placeholder={t("commodityCreate.commodityNameArPlaceholder")}
                                 value={commodity.name_ar}
                                 onChange={(e) => updateCommodity(commodity.id, "name_ar", e.target.value)}
                                 dir="rtl"
@@ -803,7 +805,7 @@ export default function CreateComodityInfo() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Category *</Label>
+                              <Label>{t("commodityCreate.categoryLabel")}</Label>
                               <Select
                                 value={commodity.category}
                                 onValueChange={(value) => updateCommodity(commodity.id, "category", value)}
@@ -811,7 +813,7 @@ export default function CreateComodityInfo() {
                                 <SelectTrigger
                                   className={errors[`commodity_${index}_category`] ? "border-destructive" : ""}
                                 >
-                                  <SelectValue placeholder="Select category" />
+                                  <SelectValue placeholder={t("commodityCreate.selectCategory")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {commodityCategories.map((category) => (
@@ -827,16 +829,16 @@ export default function CreateComodityInfo() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Unit</Label>
+                              <Label>{t("commodityCreate.unit")}</Label>
                               <Input
-                                placeholder="e.g., kg, pieces, liters"
+                                placeholder={t("commodityCreate.unitPlaceholder")}
                                 value={commodity.unit}
                                 onChange={(e) => updateCommodity(commodity.id, "unit", e.target.value)}
                               />
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Minimum Quantity</Label>
+                              <Label>{t("commodityCreate.minQuantity")}</Label>
                               <Input
                                 type="number"
                                 placeholder="1"
@@ -846,7 +848,7 @@ export default function CreateComodityInfo() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Maximum Quantity</Label>
+                              <Label>{t("commodityCreate.maxQuantity")}</Label>
                               <Input
                                 type="number"
                                 placeholder="1000"
@@ -856,7 +858,7 @@ export default function CreateComodityInfo() {
                             </div>
 
                             <div className="space-y-2">
-                              <Label>Unit Price *</Label>
+                              <Label>{t("commodityCreate.unitPrice")}</Label>
                               <Input
                                 type="number"
                                 step="0.01"
@@ -872,9 +874,9 @@ export default function CreateComodityInfo() {
                           </div>
 
                           <div className="space-y-2">
-                            <Label>Description</Label>
+                            <Label>{t("common:description")}</Label>
                             <Textarea
-                              placeholder="Detailed description of the commodity..."
+                              placeholder={t("commodityCreate.descriptionPlaceholder")}
                               value={commodity.description}
                               onChange={(e) => updateCommodity(commodity.id, "description", e.target.value)}
                               rows={3}
@@ -892,15 +894,15 @@ export default function CreateComodityInfo() {
             {/* Provider Information */}
             <Card className="pro-card-glow">
               <CardHeader>
-                <CardTitle>Commodity Provider Information</CardTitle>
-                <p className="text-muted-foreground">Information about the commodity supplier or provider.</p>
+                <CardTitle>{t("commodityCreate.providerInfoTitle")}</CardTitle>
+                <p className="text-muted-foreground">{t("commodityCreate.providerInfoDesc")}</p>
               </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Provider Name (English) *</Label>
+                    <Label>{t("commodityCreate.providerNameEn")}</Label>
                     <Input
-                      placeholder="e.g., ABC Commodities Ltd"
+                      placeholder={t("commodityCreate.providerNameEnPlaceholder")}
                       value={formData.commodity_provider}
                       onChange={(e) => updateFormData("commodity_provider", e.target.value)}
                       className={errors.commodity_provider ? "border-destructive" : ""}
@@ -911,9 +913,9 @@ export default function CreateComodityInfo() {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Provider Name (Arabic)</Label>
+                    <Label>{t("commodityCreate.providerNameAr")}</Label>
                     <Input
-                      placeholder="مثال: شركة السلع التجارية المحدودة"
+                      placeholder={t("commodityCreate.providerNameArPlaceholder")}
                       value={formData.commodity_provider_ar}
                       onChange={(e) => updateFormData("commodity_provider_ar", e.target.value)}
                       dir="rtl"
@@ -922,9 +924,9 @@ export default function CreateComodityInfo() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Provider Contact Information</Label>
+                  <Label>{t("commodityCreate.providerContact")}</Label>
                   <Textarea
-                    placeholder="Contact details, address, phone, email..."
+                    placeholder={t("commodityCreate.providerContactPlaceholder")}
                     value={formData.provider_contact}
                     onChange={(e) => updateFormData("provider_contact", e.target.value)}
                     rows={3}
@@ -962,7 +964,7 @@ export default function CreateComodityInfo() {
                 </Button> */}
                 <Button variant="outline" onClick={() => router.push("/Los/ProductManagement/Create/BasicInfo")} className="gap-2">
                   <X className="h-4 w-4" />
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
               </div>
 
@@ -973,10 +975,10 @@ export default function CreateComodityInfo() {
                   className="gap-2 bg-transparent"
                 >
                   <ArrowLeft className="h-4 w-4" />
-                  Previous
+                  {t("common:previous")}
                 </Button>
                 <Button onClick={handleNext} disabled={isLoading} className="gap-2">
-                  {isLoading ? "Saving..." : "Next: Settings"}
+                  {isLoading ? t("creditScoring.saving") : t("basicInfo.nextSettings")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>

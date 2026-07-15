@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { DatePicker, Select } from "antd";
 import TableView from "../TableView/TableView";
 import { Images } from "../Config/Images";
@@ -7,6 +8,7 @@ import toast from "react-hot-toast";
 import { formatDate } from "../../App";
 
 const BlockHistory = () => {
+  const { t } = useTranslation("settings");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -23,7 +25,7 @@ const BlockHistory = () => {
 
   const Block_History_Header = [
     {
-      name: "Date",
+      name: t("common:date"),
       cell: (row: any) => (
         <div>
           {row.created_at ? new Date(row.created_at).toLocaleString('en-US', {
@@ -40,7 +42,7 @@ const BlockHistory = () => {
       width: "200px",
     },
     {
-      name: "User (Blocked To)",
+      name: t("blockHistory.col.user"),
       cell: (row: any) => (
         <div>
           <div style={{ fontWeight: "600", fontSize: "14px" }}>
@@ -48,7 +50,7 @@ const BlockHistory = () => {
           </div>
           {row.user_nid && (
             <div style={{ fontSize: "12px", color: "var(--color-text-muted)", marginTop: "4px" }}>
-              | NID: {row.user_nid}
+              | {t("blockHistory.nid")}: {row.user_nid}
             </div>
           )}
         </div>
@@ -57,7 +59,7 @@ const BlockHistory = () => {
       width: "280px",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       cell: (row: any) => (
         <span style={{
           backgroundColor: 
@@ -81,7 +83,7 @@ const BlockHistory = () => {
       width: "150px",
     },
     {
-      name: "Action",
+      name: t("blockHistory.col.action"),
       cell: (row: any) => (
         <button style={{
           backgroundColor: row.action === 'block' ? "var(--color-error)" : "var(--color-success)",
@@ -101,13 +103,13 @@ const BlockHistory = () => {
       width: "120px",
     },
     {
-      name: "Block Code",
+      name: t("blockHistory.col.blockCode"),
       selector: (row: { block_code: any }) => row.block_code || "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Reason",
+      name: t("blockHistory.col.reason"),
       cell: (row: { reason: any }) => (
         <div style={{ 
           maxWidth: "200px", 
@@ -121,7 +123,7 @@ const BlockHistory = () => {
       width: "250px",
     },
     {
-      name: "Blocked From (User)",
+      name: t("blockHistory.col.blockedFrom"),
       cell: (row: any) => (
         <div>
           <div style={{ fontWeight: "600", fontSize: "14px" }}>
@@ -167,7 +169,7 @@ const BlockHistory = () => {
         setTotalPage(responseData?.last_page || 1);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch block history");
+      toast.error(error?.message || t("blockHistory.toast.fetchFailed"));
       console.error("Error fetching block history:", error);
     } finally {
       setSkelitonLoading(false);
@@ -202,7 +204,7 @@ const BlockHistory = () => {
       <div className="d-flex justify-content-end col-12 filter-select">
         <Select
           style={{ width: "140px", marginRight: "8px" }}
-          placeholder="Action"
+          placeholder={t("blockHistory.filterAction")}
           allowClear
           value={action || undefined}
           onChange={(value) => {
@@ -210,8 +212,8 @@ const BlockHistory = () => {
             setPage(1); // Reset to first page on filter change
           }}
         >
-          <Select.Option value="block">Block</Select.Option>
-          <Select.Option value="unblock">Unblock</Select.Option>
+          <Select.Option value="block">{t("common:block")}</Select.Option>
+          <Select.Option value="unblock">{t("common:unblock")}</Select.Option>
         </Select>
 
         <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
@@ -225,7 +227,7 @@ const BlockHistory = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search by user name, email, or block code..."
+              placeholder={t("blockHistory.searchPlaceholder")}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
             />
@@ -237,7 +239,7 @@ const BlockHistory = () => {
             >
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t("common:from")}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -247,7 +249,7 @@ const BlockHistory = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t("common:to")}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);

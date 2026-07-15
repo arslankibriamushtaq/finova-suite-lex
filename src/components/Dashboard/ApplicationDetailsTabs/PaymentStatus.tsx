@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import Loader from '../../Loader/Loader';
 import TableView from '../../TableView/TableView';
+import { useTranslation } from 'react-i18next';
 
 interface InvoiceData {
   invoiceNo: string;
@@ -14,6 +15,7 @@ interface InvoiceData {
 }
 
 function PaymentStatus() {
+  const { t } = useTranslation('financing');
   const { id } = useParams();
   const [invoiceData, setInvoiceData] = useState<InvoiceData[]>([]);
   const [loading, setLoading] = useState(false);
@@ -69,7 +71,7 @@ function PaymentStatus() {
       }
     } catch (error: any) {
       console.error('Error fetching invoice data:', error);
-      toast.error(error?.response?.data?.message || 'Failed to load invoice data');
+      toast.error(error?.response?.data?.message || t('toast.loadInvoiceFailed'));
     } finally {
       setLoading(false);
     }
@@ -77,31 +79,31 @@ function PaymentStatus() {
 
   const invoiceTableHeader = [
     {
-      name: 'Invoice No.',
+      name: t('pay.invoiceNo'),
       selector: (row: InvoiceData) => row.invoiceNo,
       sortable: true,
       width: '200px',
     },
     {
-      name: 'Invoice Date',
+      name: t('pay.invoiceDate'),
       selector: (row: InvoiceData) => row.invoiceDate,
       sortable: true,
       width: '280px',
     },
     {
-      name: 'Due Date',
+      name: t('pay.dueDate'),
       selector: (row: InvoiceData) => row.dueDate,
       sortable: true,
       width: '280px',
     },
     {
-      name: 'Total Amount',
+      name: t('pay.totalAmount'),
       selector: (row: InvoiceData) => row.totalAmount ? `SR ${row.totalAmount.toLocaleString()}` : '-',
       sortable: true,
       width: '250px',
     },
     {
-      name: 'Payment Status',
+      name: t('pay.paymentStatus'),
       cell: (row: InvoiceData) => (
         <div
           style={{
@@ -111,7 +113,7 @@ function PaymentStatus() {
             color: "white",
           }}
         >
-          {row.paymentStatus}
+          {row.paymentStatus === 'Paid' ? t('pay.paid') : t('pay.unpaid')}
         </div>
       ),
       sortable: true,
@@ -126,7 +128,7 @@ function PaymentStatus() {
       {/* Payment Status Info Table */}
       <div style={{ marginBottom: "40px" }}>
         <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "18px", marginBottom: "20px", textAlign:"left" }}>
-          Payment Status Info:
+          {t('pay.paymentStatusInfo')}
         </h2>
         <div style={{ 
           background: "var(--background)",

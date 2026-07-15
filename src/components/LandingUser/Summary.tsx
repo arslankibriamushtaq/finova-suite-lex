@@ -8,8 +8,10 @@ import { Images } from "../Config/Images";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const Summary = () => {
+    const { t } = useTranslation("landingUser");
     const navigate =useNavigate()
     const location = useLocation();
     const [summary, setSummary] = useState<any>([]);
@@ -43,26 +45,26 @@ const Summary = () => {
     const cards: Card[] = [
       {
           businessInfo: [
-          { label: "Cr Name", value: summary?.businessInfo_english?.crName },
-          { label: "Cr Number", value: summary?.businessInfo_english?.crNumber },
-          { label: "Name", value: summary?.businessInfo_english?.parties[0]?.name  },
-          { label: "Relation Name", value: summary?.businessInfo_english?.parties[0]?.relationName },
-          { label: "Nationality Name", value: summary?.businessInfo_english?.Nationality },
-          { label: "Business Type Name", value: summary?.businessInfo_english?.businessTypeName },
-          { label: "Calender Type Name", value: summary?.businessInfo_english?.calendarTypeName },
-          { label: "Status of CR Name", value: summary?.businessInfo_english?.statusOfCrName },
-          { label: "General Address", value: summary?.businessInfo_english?.generalAddress },
-          { label: "District Name", value: summary?.businessInfo_english?.districtName },
-          { label: "Url Name", value: summary?.businessInfo_english?.urlsName },
-          { label: "Location Name", value: summary?.businessInfo_english?.locationName },
+          { label: t("summary.field.crName"), value: summary?.businessInfo_english?.crName },
+          { label: t("summary.field.crNumber"), value: summary?.businessInfo_english?.crNumber },
+          { label: t("summary.field.name"), value: summary?.businessInfo_english?.parties[0]?.name  },
+          { label: t("summary.field.relationName"), value: summary?.businessInfo_english?.parties[0]?.relationName },
+          { label: t("summary.field.nationalityName"), value: summary?.businessInfo_english?.Nationality },
+          { label: t("summary.field.businessTypeName"), value: summary?.businessInfo_english?.businessTypeName },
+          { label: t("summary.field.calendarTypeName"), value: summary?.businessInfo_english?.calendarTypeName },
+          { label: t("summary.field.statusOfCrName"), value: summary?.businessInfo_english?.statusOfCrName },
+          { label: t("summary.field.generalAddress"), value: summary?.businessInfo_english?.generalAddress },
+          { label: t("summary.field.districtName"), value: summary?.businessInfo_english?.districtName },
+          { label: t("summary.field.urlName"), value: summary?.businessInfo_english?.urlsName },
+          { label: t("summary.field.locationName"), value: summary?.businessInfo_english?.locationName },
           ],
           financialDetails: [
-          { label: "Annual Revenue", value: summary?.financial_details?.annual_revenue },
-          { label: "Average Invoice Value", value: summary?.financial_details?.average_invoice_value },
-          { label: "Outstanding Invoices Value", value: summary?.financial_details?.outstanding_invoices_value },
+          { label: t("summary.field.annualRevenue"), value: summary?.financial_details?.annual_revenue },
+          { label: t("summary.field.averageInvoiceValue"), value: summary?.financial_details?.average_invoice_value },
+          { label: t("summary.field.outstandingInvoicesValue"), value: summary?.financial_details?.outstanding_invoices_value },
           ],
           banking_info: [
-          { label: "IBAN", value: summary?.banking_info?.iban },
+          { label: t("summary.field.iban"), value: summary?.banking_info?.iban },
           ],
       },  
     ];
@@ -107,11 +109,11 @@ const Summary = () => {
             authorizedFormData: authorizedFormData
           }
         })
-        toast.error(err?.response?.data?.message || "API call failed.");
+        toast.error(err?.response?.data?.message || t("summary.toast.apiFailed"));
       }
     }
 
-   
+
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement>,
@@ -131,7 +133,7 @@ const Summary = () => {
   const handleVerifyOtp = async () => {
 
     if (!isComplete) {
-      toast.error("Please enter the 4-digit code");
+      toast.error(t("otpCommon.enterCode"));
       return;
     }
     const body: any = {
@@ -144,15 +146,15 @@ const Summary = () => {
     try {
       //setLoading(true);
       await toast.promise(otpVerification(body), {
-        loading: "Verifying OTP...",
+        loading: t("otpCommon.verifyingOtp"),
         success: (res: any) => {
           if (res?.data?.success) {
             setModal(false)
             return res?.data?.message;
           }
-          throw new Error(res?.data?.message || "Failed to verify");
+          throw new Error(res?.data?.message || t("summary.toast.verifyFailed"));
         },
-        error: (err) => err?.message || "Something went wrong!",
+        error: (err) => err?.message || t("common.somethingWentWrong"),
       });
     } finally {
       //setLoading(false);
@@ -168,7 +170,7 @@ const Summary = () => {
       await toast.promise(
         createNafathRequest(body), // The promise to track
         {
-          loading: "Creating Nafath Request...", // Loading state message
+          loading: t("summary.toast.creatingNafath"), // Loading state message
           success: (res) => {
             if (res?.data?.success) {
               navigate("/applyloan/nafathVerification", {
@@ -188,7 +190,7 @@ const Summary = () => {
           },
           error: (err) => {
             console.error("Error occurred:", err);
-            return err?.message || "Something went wrong!";
+            return err?.message || t("common.somethingWentWrong");
           },
         }
       );
@@ -210,7 +212,7 @@ const Summary = () => {
           return response?.data?.message
         }
       }catch (err: any) {
-        toast.error(err?.response?.data?.message || "API call failed.");
+        toast.error(err?.response?.data?.message || t("summary.toast.apiFailed"));
       }
     }
   useEffect(() => {
@@ -232,7 +234,7 @@ return (
         {cards.map((card, i) => (
             <div className="col-12 p-4" key={i}>
                 <div className= "card-box">
-                  <label className="p-2" style={{fontSize: "20px"}}>Business Info</label>
+                  <label className="p-2" style={{fontSize: "20px"}}>{t("summary.businessInfo")}</label>
                     <div className="card-fields p-2">
                         {card?.businessInfo?.map((f, j) => (
                             <div className="field-row" key={j}>
@@ -243,7 +245,7 @@ return (
                     </div>
                 </div>
                 <div className= "card-box mt-4">
-                  <label className="p-2" style={{fontSize: "20px"}}>Financial Details</label>
+                  <label className="p-2" style={{fontSize: "20px"}}>{t("summary.financialDetails")}</label>
                     <div className="card-fields p-2">
                         {card?.financialDetails?.map((f, j) => (
                             <div className="field-row" key={j}>
@@ -254,7 +256,7 @@ return (
                     </div>
                 </div>
                 <div className= "card-box mt-4">
-                  <label className="p-2" style={{fontSize: "20px"}}>Banking Info</label>
+                  <label className="p-2" style={{fontSize: "20px"}}>{t("summary.bankingInfo")}</label>
                     <div className="card-fields p-2">
                         {card?.banking_info?.map((f, j) => (
                             <div className="field-row" key={j}>
@@ -270,7 +272,7 @@ return (
     <Row className="mt-4 mb-4 p-4">
         <Col md={6}>
             <label className="mb-2 required-asterisk" style={{fontSize:"14px", fontWeight: 600 }}>
-                Upload Contract
+                {t("summary.uploadContract")}
             </label>
             <div className = "file-input-wrapper">
                 <input 
@@ -287,10 +289,9 @@ return (
                   onChange={(e) =>
                     setUnifonic(e?.target?.checked)
                   }
-            >   
-              By Entering the Correct OTP, I Accept the above initial E-Contract Terms and Conditions, 
-              I will sign and upload the physical copy of the contract through customer portal.
-            </Checkbox> 
+            >
+              {t("summary.consent")}
+            </Checkbox>
         </Col>
       </Row>
       
@@ -322,15 +323,14 @@ return (
             className="text-center pt-3"
           >
             <div>
-              Please enter the verification code from your authentication
-              device.
+              {t("summary.modal.enterCode")}
             </div>
           </div>
           <div
             style={{ fontSize: "16px", fontWeight: "600", lineHeight: "22px" }}
             className="text-center pt-3"
           >
-            <div>Verification Code</div>
+            <div>{t("summary.modal.verificationCode")}</div>
           </div>
           <div className="otp-inputs">
             {Array(4)
@@ -363,7 +363,7 @@ return (
                 handleVerifyOtp();
               }}
             >
-              Verify
+              {t("action.verify")}
             </button>
           </div>
         </Modal.Body>
@@ -378,9 +378,9 @@ return (
           businessFormData: businessFormData,
           authorizedFormData: authorizedFormData
         }
-      })}}>Previous</button>
+      })}}>{t("common:previous")}</button>
       <button className = "step-buttons" onClick={()=>{handleSubmit()}}>
-        Next Step
+        {t("action.nextStep")}
       </button>
     </div>
     </div> : 
@@ -393,7 +393,7 @@ return (
           boxShadow: "0 2px 6px rgba(0, 0, 0, 0.08)",
           border: "1px solid #cfe3ee",
           }}>
-          No Summary Available!
+          {t("summary.noSummary")}
       </div>
       <button className = "step-buttons" style={{background: "#ccc"}} onClick={()=>{navigate("/applyloan/bankingInfo", {
         state: {
@@ -404,7 +404,7 @@ return (
           businessFormData: businessFormData,
           authorizedFormData: authorizedFormData
         }
-      })}}>Previous</button>
+      })}}>{t("common:previous")}</button>
       </>
     }
     </>

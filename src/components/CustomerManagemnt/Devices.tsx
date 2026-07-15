@@ -1,8 +1,10 @@
 import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
 import { getDevices } from "../../redux/apis/apisCrud";
+import { useTranslation } from "react-i18next";
 
 const Devices = () => {
+  const { t } = useTranslation("customerManagement");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(15);
   const [page, setPage] = useState(1);
@@ -68,59 +70,59 @@ const Devices = () => {
       
     // },
     {
-      name: "Device ID",
+      name: t("devices.col.deviceId"),
       selector: (row: any) => row.device_id || "-",
       width: "200px",
     },
     {
-      name: "Device",
+      name: t("devices.col.device"),
       selector: (row: any) => row.device || "-",
     },
     {
-      name: "Device Model",
+      name: t("devices.col.deviceModel"),
       selector: (row: any) => row.device_model || "-",
       width: "350px",
     },
     {
-      name: "OS",
+      name: t("devices.col.os"),
       selector: (row: any) => row.os || "-",
     },
     {
-      name: "Browser",
+      name: t("devices.col.browser"),
       selector: (row: any) => row.browser || "-",
       width: "350px",
     },
     {
-      name: "IP Address",
+      name: t("devices.col.ipAddress"),
       selector: (row: any) => row.ip || "-",
       width: "250px",
     },
     {
-      name: "Location",
+      name: t("devices.col.location"),
       selector: (row: any) => row.location_info || "-",
       width: "450px",
     },
     {
-      name: "User",
+      name: t("devices.col.user"),
       selector: (row: any) => row.user?.name || "-",
       width: "300px",
     },
     {
-      name: "User Phone",
+      name: t("devices.col.userPhone"),
       selector: (row: any) => row.user?.phone || "-",
       width: "200px",
     },
     {
-      name: "Is Blocked",
-      selector: (row: any) => row.is_blocked ? "Yes" : "No",
+      name: t("devices.col.isBlocked"),
+      selector: (row: any) => row.is_blocked ? t("common:yes") : t("common:no"),
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) => formatDate(row.created_at),
       width: "200px",
     },
     {
-      name: "Updated At",
+      name: t("common:updatedAt"),
       selector: (row: any) => formatDate(row.updated_at),
       width: "200px",
     },

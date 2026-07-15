@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import { Button, Descriptions, Table, Card } from "antd";
 import { ArrowLeft } from "lucide-react";
@@ -8,6 +9,7 @@ import TableView from "../../../../components/TableView/TableView";
 import Loader from "../../../../components/Loader/Loader";
 
 const KycKybDetail = () => {
+  const { t } = useTranslation("investor");
   const { investorId } = useParams<{ investorId: string }>();
   const [searchParams] = useSearchParams();
   const type = searchParams.get("type") as "kyc" | "kyb";
@@ -41,10 +43,10 @@ const KycKybDetail = () => {
       if (response?.success) {
         setDetailData(response.data || {});
       } else {
-        toast.error(response?.notificationMessage || "Failed to fetch detail data");
+        toast.error(response?.notificationMessage || t("kkd.fetchError"));
       }
     } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || "Failed to fetch detail data");
+      toast.error(error?.notificationMessage || error?.message || t("kkd.fetchError"));
     } finally {
       setLoading(false);
     }
@@ -62,10 +64,10 @@ const KycKybDetail = () => {
         setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
         setShowTransactions(true);
       } else {
-        toast.error(response?.notificationMessage || "Failed to fetch transactions");
+        toast.error(response?.notificationMessage || t("kkd.txFetchError"));
       }
     } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || "Failed to fetch transactions");
+      toast.error(error?.notificationMessage || error?.message || t("kkd.txFetchError"));
     } finally {
       setTransactionsLoading(false);
     }
@@ -73,13 +75,13 @@ const KycKybDetail = () => {
 
   const transactionHeaders = [
     {
-      name: "Transaction ID",
+      name: t("kkd.col.txId"),
       selector: (row: any) => row.id || "-",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Transaction Type",
+      name: t("kkd.col.txType"),
       cell: (row: any) => {
         // TransactionType enum: starts at 0
         const typeValue = row.transactionType !== undefined 
@@ -92,32 +94,32 @@ const KycKybDetail = () => {
         }
         
         // TransactionType enum: 0=Deposit, 1=Withdrawal, 2=Transfer, 3=Payment, 4=Refund, 5=Investment, 6=Return
-        let typeText = "Unknown";
-        
+        let typeText = t("kkd.txType.unknown");
+
         switch (typeValue) {
           case 0:
-            typeText = "Deposit";
+            typeText = t("kkd.txType.deposit");
             break;
           case 1:
-            typeText = "Withdrawal";
+            typeText = t("kkd.txType.withdrawal");
             break;
           case 2:
-            typeText = "Transfer";
+            typeText = t("kkd.txType.transfer");
             break;
           case 3:
-            typeText = "Payment";
+            typeText = t("kkd.txType.payment");
             break;
           case 4:
-            typeText = "Refund";
+            typeText = t("kkd.txType.refund");
             break;
           case 5:
-            typeText = "Investment";
+            typeText = t("kkd.txType.investment");
             break;
           case 6:
-            typeText = "Return";
+            typeText = t("kkd.txType.return");
             break;
           default:
-            typeText = row.transactionType?.toString() || row.type?.toString() || "Unknown";
+            typeText = row.transactionType?.toString() || row.type?.toString() || t("kkd.txType.unknown");
         }
         
         return typeText;
@@ -125,47 +127,47 @@ const KycKybDetail = () => {
       sortable: true,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: any) => row.amount ? `SAR ${row.amount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: any) => row.description || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         // TransactionStatus enum: 0=Pending, 1=Completed, 2=Failed, 3=Cancelled, 4=Reversed
         const statusValue = row.status !== undefined ? (typeof row.status === 'number' ? row.status : parseInt(row.status)) : 0;
-        let statusText = "Pending";
+        let statusText = t("kkd.txStatus.pending");
         let statusColor = "var(--color-warning-amber)"; // Yellow for Pending
-        
+
         switch (statusValue) {
           case 0:
-            statusText = "Pending";
+            statusText = t("kkd.txStatus.pending");
             statusColor = "var(--color-warning-amber)"; // Yellow
             break;
           case 1:
-            statusText = "Completed";
+            statusText = t("kkd.txStatus.completed");
             statusColor = "var(--color-success)"; // Green
             break;
           case 2:
-            statusText = "Failed";
+            statusText = t("kkd.txStatus.failed");
             statusColor = "var(--color-error)"; // Red
             break;
           case 3:
-            statusText = "Cancelled";
+            statusText = t("kkd.txStatus.cancelled");
             statusColor = "#8c8c8c"; // Gray
             break;
           case 4:
-            statusText = "Reversed";
+            statusText = t("kkd.txStatus.reversed");
             statusColor = "var(--color-error-light)"; // Light Red
             break;
           default:
-            statusText = row.status?.toString() || "Pending";
+            statusText = row.status?.toString() || t("kkd.txStatus.pending");
             statusColor = "var(--color-warning-amber)";
         }
         
@@ -186,7 +188,7 @@ const KycKybDetail = () => {
       sortable: true,
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleString() : "-",
       sortable: true,
       width: "180px",
@@ -211,15 +213,15 @@ const KycKybDetail = () => {
           onClick={() => navigate("/InvestorDashboard/Investors")}
           className="mb-4"
         >
-          Back to Investors
+          {t("kycd.backToInvestors")}
         </Button>
         <h1 className="text-3xl font-bold text-gray-900">
-          {type === "kyc" ? "KYC Detail" : "KYB Detail"}
+          {type === "kyc" ? t("kkd.kycDetail") : t("kkd.kybDetail")}
         </h1>
       </div>
 
       <Card className="mb-6">
-        <Descriptions title="Investor Information" bordered column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}>
+        <Descriptions title={t("kkd.investorInfo")} bordered column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}>
           {detailData &&
             Object.keys(detailData)
               .filter((key) => {
@@ -255,7 +257,7 @@ const KycKybDetail = () => {
                 } else if (typeof value === "object") {
                   displayValue = JSON.stringify(value, null, 2);
                 } else if (typeof value === "boolean") {
-                  displayValue = value ? "Yes" : "No";
+                  displayValue = value ? t("common:yes") : t("common:no");
                 } else if (typeof value === "number" && key.toLowerCase().includes("amount")) {
                   displayValue = `SAR ${value.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                 } else if (key.toLowerCase().includes("employeedesignation") || key.toLowerCase().includes("employee_designation")) {
@@ -263,19 +265,19 @@ const KycKybDetail = () => {
                   const designationValue = typeof value === 'number' ? value : parseInt(value);
                   switch (designationValue) {
                     case 0:
-                      displayValue = "CEO";
+                      displayValue = t("kkd.desig.ceo");
                       break;
                     case 1:
-                      displayValue = "CFO";
+                      displayValue = t("kkd.desig.cfo");
                       break;
                     case 2:
-                      displayValue = "Director";
+                      displayValue = t("kkd.desig.director");
                       break;
                     case 0:
-                      displayValue = "Managaer";
+                      displayValue = t("kkd.desig.manager");
                       break;
-          
-                      displayValue = "CEO";
+
+                      displayValue = t("kkd.desig.ceo");
                       break;
                     default:
 
@@ -306,13 +308,13 @@ const KycKybDetail = () => {
             loading={transactionsLoading}
             style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
           >
-            View All Transactions
+            {t("kkd.viewAllTransactions")}
           </Button>
         </Card>
       )}
 
       {showTransactions && (
-        <Card title="Transaction History" className="mt-6">
+        <Card title={t("kkd.transactionHistory")} className="mt-6">
           <TableView
             header={transactionHeaders}
             data={transactions}

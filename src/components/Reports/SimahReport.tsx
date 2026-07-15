@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import { getSimahReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const SimahReport = ({ loader }: any) => {
+  const { t } = useTranslation("reports");
 
   const [initialRender, setInitialRender] = useState(false);
   const [pageSize, setPageSize] = useState(10);
@@ -55,19 +57,19 @@ const SimahReport = ({ loader }: any) => {
     //   width: "250px"
     // },
     {
-      name: "Facility Type",
+      name: t('simah.col.facilityType'),
       selector: (row: any) => row.facilityType,
       sortable: true,
       // width: "150px"
     },
     {
-      name: "Payment Status",
+      name: t('simah.col.paymentStatus'),
       selector: (row: any) => row.paymentStatus,
       sortable: true,
       // width: "150px"
     },
     {
-      name: "Simah Status",
+      name: t('simah.col.simahStatus'),
       selector: (row: any) => row.simahStatus,
       sortable: true,
       // width: "150px"
@@ -121,7 +123,7 @@ const SimahReport = ({ loader }: any) => {
       setTo(Math.min(page * pageSize, totalItems));
     } catch (error: any) {
       console.error("❌ Error fetching Simah Report:", error);
-      toast.error(error?.message || "Failed to fetch Simah Report");
+      toast.error(error?.message || t('simah.toast.fetchError'));
     } finally {
       setLoading(false);
     }
@@ -195,7 +197,7 @@ const SimahReport = ({ loader }: any) => {
   // ===========================================
   const exportToCSV = (data: any[], fileName: string) => {
     if (!data || data.length === 0) {
-      toast.error("No data to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
 
@@ -226,7 +228,7 @@ const SimahReport = ({ loader }: any) => {
     const csvString = csvRows.join("\n");
     const blob = new Blob([csvString], { type: "text/csv;charset=utf-8;" });
     saveAs(blob, `${fileName}.csv`);
-    toast.success("Report exported successfully!");
+    toast.success(t('toast.exportSuccess'));
   };
 
   // ===========================================
@@ -239,7 +241,7 @@ const SimahReport = ({ loader }: any) => {
           <span className="pro-head-badge">
             <ShieldCheck className="h-4 w-4" />
           </span>
-          Simah Report
+          {t('simah.title')}
         </h3>
       </div>
 
@@ -248,14 +250,14 @@ const SimahReport = ({ loader }: any) => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by loan, customer, facility, status"
+            placeholder={t('simah.searchPlaceholder')}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
-            placeholder="From"
+            placeholder={t('common:from')}
             value={fromDate}
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
@@ -263,7 +265,7 @@ const SimahReport = ({ loader }: any) => {
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t('common:to')}
             value={toDate}
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
@@ -277,7 +279,7 @@ const SimahReport = ({ loader }: any) => {
             onClick={() => exportToCSV(filteredData, `Simah_Report_${dayjs().format("YYYY-MM-DD")}`)}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export Report
+            {t('action.exportReport')}
           </button>
         </div>
       </div>

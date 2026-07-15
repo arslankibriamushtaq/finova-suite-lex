@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 interface Transaction {
   transaction_id?: string;
@@ -15,6 +16,7 @@ interface Transaction {
 }
 
 function BankStatement({ financialData }: any) {
+  const { t } = useTranslation("financing");
   const [accountData, setAccountData] = useState<any>(null);
   const [disbursementAccount, setDisbursementAccount] = useState<any>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -117,14 +119,14 @@ function BankStatement({ financialData }: any) {
       <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "2px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
         {isAccountDataEmpty ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-            No response found
+            {t("detail.noResponseFound")}
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
             {/* Account Holder Name */}
             <div>
               <label style={{ display: "block", fontSize: "14px", color: "var(--foreground)", marginBottom: "8px", fontWeight: 500 }}>
-                Account Holder Name
+                {t("bank.accountHolderName")}
               </label>
               <input
                 type="text"
@@ -146,7 +148,7 @@ function BankStatement({ financialData }: any) {
             {/* Bank Name */}
             <div>
               <label style={{ display: "block", fontSize: "14px", color: "var(--foreground)", marginBottom: "8px", fontWeight: 500 }}>
-                Bank Name
+                {t("bank.bankName")}
               </label>
               <input
                 type="text"
@@ -168,7 +170,7 @@ function BankStatement({ financialData }: any) {
             {/* IBAN */}
             <div>
               <label style={{ display: "block", fontSize: "14px", color: "var(--foreground)", marginBottom: "8px", fontWeight: 500 }}>
-                IBAN
+                {t("bank.iban")}
               </label>
               <input
                 type="text"
@@ -193,23 +195,23 @@ function BankStatement({ financialData }: any) {
       {disbursementAccount && (
         <div style={{ background: "var(--surface-card)", padding: "20px", borderRadius: "2px", marginBottom: "20px", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
           <div style={{ fontSize: "18px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
-            Disbursement Account
+            {t("bank.disbursementAccount")}
           </div>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
             <div>
-              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>Account Holder</div>
+              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>{t("bank.accountHolder")}</div>
               <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                 {disbursementAccount.account_holder_name || disbursementAccount.holder_name || disbursementAccount.name || "-"}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>Bank Name</div>
+              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>{t("bank.bankName")}</div>
               <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                 {disbursementAccount.bank?.name || disbursementAccount.bank || disbursementAccount.provider_id || "-"}
               </div>
             </div>
             <div>
-              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>IBAN</div>
+              <div style={{ fontSize: "13px", color: "var(--muted-foreground)", marginBottom: "6px" }}>{t("bank.iban")}</div>
               <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                 {disbursementAccount.iban || disbursementAccount.IBAN || "-"}
               </div>
@@ -220,7 +222,7 @@ function BankStatement({ financialData }: any) {
       {/* Bottom Section - Transaction Details */}
       {isTransactionsEmpty ? (
         <div style={{ background: "var(--surface-card)", padding: "40px", borderRadius: "2px", textAlign: "center", color: "var(--foreground)", boxShadow: "0 1px 3px rgba(0,0,0,0.1)" }}>
-          No response found
+          {t("detail.noResponseFound")}
         </div>
       ) : (
         <div style={{ maxHeight: "600px", overflowY: "auto", paddingRight: "8px" }}>
@@ -244,7 +246,7 @@ function BankStatement({ financialData }: any) {
                 <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
                   {/* Account ID */}
                   <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Account ID:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>{t("bank.accountId")}</div>
                     <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {transaction.account_id || "-"}
                     </div>
@@ -252,7 +254,7 @@ function BankStatement({ financialData }: any) {
 
                   {/* Provider ID */}
                   <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Provider ID:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>{t("bank.providerId")}</div>
                     <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {transaction.provider_id || "-"}
                     </div>
@@ -260,7 +262,7 @@ function BankStatement({ financialData }: any) {
 
                   {/* Credit/Debit Indicator */}
                   <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Credit/Debit Indicator:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>{t("bank.creditDebitIndicator")}</div>
                     <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {transaction.credit_debit_indicator || transaction.indicator || "-"}
                     </div>
@@ -268,7 +270,7 @@ function BankStatement({ financialData }: any) {
 
                   {/* Amount */}
                   <div style={{ padding: "12px 0", borderBottom: "1px solid var(--surface-border)", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Amount:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>{t("bank.amount")}</div>
                     <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {formatCurrency(transaction.amount, transaction.currency)}
                     </div>
@@ -276,7 +278,7 @@ function BankStatement({ financialData }: any) {
 
                   {/* Booking Date Time */}
                   <div style={{ padding: "12px 0", display: "flex", justifyContent: "space-between" }}>
-                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>Booking Date Time:</div>
+                    <div style={{ fontSize: "14px", color: "var(--foreground)" }}>{t("bank.bookingDateTime")}</div>
                     <div style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>
                       {formatDateTime(transaction.booking_date_time || transaction.booking_date || transaction.date)}
                     </div>

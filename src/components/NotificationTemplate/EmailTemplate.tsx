@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 
 import TransactionPush from "./OptNotification/TransactionPush";
@@ -9,22 +10,23 @@ import EmailOther from "./EmailNotification/EmailOther";
 import EmailOtp from "./EmailNotification/EmailOtp";
 
 const EmailTemplate = () => {
+  const { t } = useTranslation("notifications");
   localStorage.setItem("tabs", "BusinessInformation");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>("EmailOtp");
   const tapOptions = [
     {
-      title: "OTP SMS",
+      title: t("tabs.otpSms"),
       key: "EmailOtp",
       folder: <EmailOtp setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "Transaction SMS ",
+      title: t("tabs.transactionSms"),
       key: "EmailOther",
       folder: <EmailOther setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "Other SMS",
+      title: t("tabs.otherSms"),
       key: "EmailTransaction",
       folder: <EmailTransaction setSelectedTab={setSelectedTab} />,
     }

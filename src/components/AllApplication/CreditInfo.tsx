@@ -1,18 +1,20 @@
 import { Row, Col } from "react-bootstrap";
 import { Select } from "antd";
+import { useTranslation } from "react-i18next";
 
 const CreditInfo = () => {
+  const { t } = useTranslation("allApplication");
   const fields = [
-    { label: "Customer type", value: "Individual (weight: 2)" },
-    { label: "Employment tenure", value: "<= 5 Years (weight: 5)" },
-    { label: "Current employment tenure", value: "<= 5 Years (weight: 7)" },
-    { label: "Age of customer", value: "<= 40 Years (weight: 19)" },
-    { label: "Region", value: "Riyadh (weight: 10)" },
-    { label: "Simah credit score", value: "Very Low Risk (weight: 50)" },
-    { label: "Number of active credit products", value: "> 4 Other Lenders (weight: 5)" },
-    { label: "Credit consumption", value: "DSCR <= 1 (weight: 27)" },
-    { label: "Average monthly balance", value: "> 5000 (weight: 10)" },
-    { label: "Salary", value: "John Doe" },
+    { label: t("creditInfo.customerType"), value: "Individual (weight: 2)" },
+    { label: t("creditInfo.employmentTenure"), value: "<= 5 Years (weight: 5)" },
+    { label: t("creditInfo.currentEmploymentTenure"), value: "<= 5 Years (weight: 7)" },
+    { label: t("creditInfo.ageOfCustomer"), value: "<= 40 Years (weight: 19)" },
+    { label: t("creditInfo.region"), value: "Riyadh (weight: 10)" },
+    { label: t("creditInfo.simahCreditScore"), value: "Very Low Risk (weight: 50)" },
+    { label: t("creditInfo.activeCreditProducts"), value: "> 4 Other Lenders (weight: 5)" },
+    { label: t("creditInfo.creditConsumption"), value: "DSCR <= 1 (weight: 27)" },
+    { label: t("creditInfo.averageMonthlyBalance"), value: "> 5000 (weight: 10)" },
+    { label: t("creditInfo.salary"), value: "John Doe" },
   ];
 
   return (

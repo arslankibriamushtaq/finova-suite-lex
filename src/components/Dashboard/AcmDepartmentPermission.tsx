@@ -12,8 +12,10 @@ import {
   updatePermissionToRole,
 } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const AcmDepatmentPermssion: React.FC = () => {
+  const { t } = useTranslation("dashboard");
   const [createAssignPermission, setCreateAssignPermission] = useState(false);
   const [selectedSubOptions, setSelectedSubOptions] = useState<any>({});
   const [departmentId, setDepartmentId] = useState<any>("");
@@ -249,7 +251,7 @@ const AcmDepatmentPermssion: React.FC = () => {
           className=""
           style={{ fontSize: "16px", lineHeight: "16px", fontWeight: "600" }}
         >
-          Manage Permissions
+          {t("editAcmDept.managePermissions")}
         </div>
       </div>
       <div className="border-bottom pt-2"></div>
@@ -257,7 +259,7 @@ const AcmDepatmentPermssion: React.FC = () => {
         className="mt-4"
         style={{ fontSize: "12px", lineHeight: "12px", fontWeight: "500" }}
       >
-        Select Role
+        {t("perm.selectRole")}
       </div>
       <div className="col-lg-4 col-12 d-flex align-items-center pb-3 pt-1">
         <Select
@@ -274,13 +276,13 @@ const AcmDepatmentPermssion: React.FC = () => {
         </Select>
       </div>
       <div className="col-12  d-flex justify-content-between border-top p-2 ">
-        <h6 className="col-9 mt-2">Assign permissions</h6>
+        <h6 className="col-9 mt-2">{t("editAcmDept.assignPermissions")}</h6>
         <div
           className="col-3 d-flex justify-content-end"
           style={{ border: "1px solid black", borderRadius: "2px" }}
         >
           <div className="d-flex justify-content-between align-items-center p-1 mb-2">
-            <div className="me-5">Assign all permissions</div>
+            <div className="me-5">{t("perm.assignAllPermissions")}</div>
             <Switch
               checked={createAssignPermission}
               onChange={() => {
@@ -389,7 +391,7 @@ const AcmDepatmentPermssion: React.FC = () => {
             createPermissions();
           }}
         >
-          Save
+          {t("common:save")}
         </button>
       </div>
     </div>

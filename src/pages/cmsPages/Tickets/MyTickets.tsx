@@ -22,8 +22,10 @@ import {
 import toast from "react-hot-toast";
 import { formatDate } from "../../../App";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const MyTickets = () => {
+  const { t } = useTranslation("cms");
   const [ticketsData, setTicketsData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -134,12 +136,12 @@ const MyTickets = () => {
       }
     };
     const statuses = [
-      { id: 1, title: "PENDING" },
-      { id: 2, title: "ASSIGNED" },
-      { id: 3, title: "REJECTED" },
-      { id: 4, title: "RESOLVED" },
-      { id: 5, title: "INVALID" },
-      { id: 6, title: "REVERT" },
+      { id: 1, title: t("status.pending") },
+      { id: 2, title: t("status.assigned") },
+      { id: 3, title: t("status.rejected") },
+      { id: 4, title: t("status.resolved") },
+      { id: 5, title: t("status.invalid") },
+      { id: 6, title: t("status.revert") },
     ];
   useEffect(() => {
     getData();
@@ -188,19 +190,19 @@ const MyTickets = () => {
       {
         key: "edit",
         icon: <EditOutlined />,
-        label: "Edit",
+        label: t("common:edit"),
         onClick: () => handleChange("edit", row),
       },
     {
       key: "view",
       icon: <EyeOutlined />,
-      label: "View Details",
+      label: t("common:viewDetails"),
       onClick: () => handleChange("view", row),
     },
     {
       key: "escalate",
       icon: <ArrowRightOutlined />,
-      label: "Escalate Ticket",
+      label: t("tickets.escalateTicket"),
       onClick: () => handleChange("escalate", row),
     },
   ];
@@ -208,43 +210,43 @@ const MyTickets = () => {
 
   const Table_Headers = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       selector: (row: any) => row.srNo,
     },
     {
-      name: "Complainer Name",
+      name: t("fields.complainerName"),
       selector: (row: any) => row.complainerName,
     },
     {
-      name: "Contact No",
+      name: t("fields.contactNo"),
       selector: (row: any) => row.contactNo,
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: any) => row.description,
     },
     {
-      name: "Department",
+      name: t("fields.department"),
       selector: (row: any) => row.department?.name || "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: any) => statuses.find((status: any) => status.id === row.status)?.title || "-",
     },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: any) => row.category?.title || "-",
     },
     {
-      name: "Sub Category",
+      name: t("fields.subCategory"),
       selector: (row: any) => row.subCategory?.title || "-",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) => formatDate(row.createdAt),
     },
     {
-      name: "Escalations",
+      name: t("fields.escalations"),
       selector: (row: any) => row.escalations,
       cell: (row: any) => (
         <div
@@ -262,7 +264,7 @@ const MyTickets = () => {
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown menu={{ items: menu(row) }} trigger={["click"]}>
           <Button
@@ -274,7 +276,7 @@ const MyTickets = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("fields.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -312,7 +314,7 @@ const MyTickets = () => {
       }
 
       await toast.promise(updateTicket(selectedRow?.id, body), {
-        loading: "Updating...",
+        loading: t("toast.updating"),
         success: (response: any) => {
           if (response?.data?.success) {
             setEditComplaintModal(false);
@@ -327,10 +329,10 @@ const MyTickets = () => {
           }
           return response?.data?.message;
         },
-        error: (err) => (err?.response?.data?.message) || "Failed to update",
+        error: (err) => (err?.response?.data?.message) || t("toast.failedUpdate"),
       });
     } catch (error: any) {
-      toast.error(error?.message || "Failed to update ticket");
+      toast.error(error?.message || t("tickets.toast.failedUpdateTicket"));
     } finally {
       setLoadingSave(false);
     }
@@ -344,7 +346,7 @@ const MyTickets = () => {
         comment: escalateFormData.comment,
       };
       await toast.promise(escalateTicket(selectedRow?.id, body), {
-        loading: "Escalating...",
+        loading: t("tickets.toast.escalatingLoading"),
         success: (response: any) => {
           if (response?.data?.success) {
             setEscalateModal(false);
@@ -356,7 +358,7 @@ const MyTickets = () => {
           }
           return response?.data?.message;
         },
-        error: (err) => (err?.response?.data?.message) || "Failed to escalate",
+        error: (err) => (err?.response?.data?.message) || t("tickets.toast.failedEscalate"),
       });
     } catch (error: any) {
       toast.error(error?.message);
@@ -369,11 +371,11 @@ const MyTickets = () => {
       <div>
         <div className="d-flex justify-content-between align-items-center mb-3">
           <div>
-            <h1 style={{ fontSize: "22px" }} className="mb-0">My Tickets</h1>
+            <h1 style={{ fontSize: "22px" }} className="mb-0">{t("tickets.myTitle")}</h1>
           </div>
           <div className="d-flex justify-content-end align-items-center">
             <Input
-              placeholder="Search tickets"
+              placeholder={t("tickets.searchTickets")}
               value={searchValue}
               prefix={<SearchOutlined />}
               onChange={(e: any) => {
@@ -405,7 +407,7 @@ const MyTickets = () => {
           maskClosable={false}
           title={
             <span style={{ fontSize: "16px", fontWeight: 600 }}>
-              Edit Complaint
+              {t("tickets.editComplaint")}
             </span>
           }
           footer={null}
@@ -421,10 +423,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Select Category
+                {t("fields.selectCategory")}
               </label>
               <Select
-                placeholder="Select Category"
+                placeholder={t("fields.selectCategory")}
                 value={complaintFormData.category || undefined}
                 onChange={(value) => setComplaintFormData({ ...complaintFormData, category: value })}
                 style={{ width: "100%", height: "40px" }}
@@ -443,10 +445,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Select Sub Category
+                {t("fields.selectSubCategory")}
               </label>
               <Select
-                placeholder="Select SubCategory"
+                placeholder={t("fields.selectSubCategoryAlt")}
                 value={complaintFormData.subCategory || undefined}
                 onChange={(value) => setComplaintFormData({ ...complaintFormData, subCategory: value })}
                 style={{ width: "100%", height: "40px" }}
@@ -466,10 +468,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Department
+                {t("fields.department")}
               </label>
               <Select
-                placeholder="Select Department"
+                placeholder={t("fields.selectDepartment")}
                 value={complaintFormData.department || undefined}
                 onChange={(value) => setComplaintFormData({ ...complaintFormData, department: value })}
                 style={{ width: "100%", height: "40px" }}
@@ -488,10 +490,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Select Status
+                {t("fields.selectStatus")}
               </label>
               <Select
-                placeholder="Select Status"
+                placeholder={t("fields.selectStatus")}
                 value={complaintFormData.status || undefined}
                 onChange={(value) => setComplaintFormData({ ...complaintFormData, status: value })}
                 style={{ width: "100%", height: "40px" }}
@@ -511,10 +513,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Comment
+                {t("fields.comment")}
               </label>
               <Input
-                placeholder="Enter comment"
+                placeholder={t("fields.enterComment")}
                 value={complaintFormData.description || undefined}
                 onChange={(e) => setComplaintFormData({ ...complaintFormData, description: e.target.value })}
                 style={{ height: "40px" }}
@@ -541,7 +543,7 @@ const MyTickets = () => {
                   fontWeight: 500,
                 }}
               >
-                Close
+                {t("common:close")}
               </button>
               <button
                 onClick={handleSave}
@@ -558,7 +560,7 @@ const MyTickets = () => {
                   opacity: loadingSave ? 0.6 : 1,
                 }}
               >
-                {loadingSave ? "Saving..." : "Save"}
+                {loadingSave ? t("tickets.saving") : t("common:save")}
               </button>
             </div>
           </div>
@@ -577,7 +579,7 @@ const MyTickets = () => {
           maskClosable={false}
           title={
             <span style={{ fontSize: "16px", fontWeight: 600 }}>
-              Escalate Ticket
+              {t("tickets.escalateTicket")}
             </span>
           }
           footer={null}
@@ -593,10 +595,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Select Department
+                {t("fields.selectDepartment")}
               </label>
               <Select
-                placeholder="Select Department"
+                placeholder={t("fields.selectDepartment")}
                 value={escalateFormData.department_id || undefined}
                 onChange={(value) => setEscalateFormData({ ...escalateFormData, department_id: value })}
                 style={{ width: "100%", height: "40px" }}
@@ -618,10 +620,10 @@ const MyTickets = () => {
                   color: "var(--color-text-dark)",
                 }}
               >
-                Comment
+                {t("fields.comment")}
               </label>
               <TextArea
-                placeholder="Enter comment"
+                placeholder={t("fields.enterComment")}
                 value={escalateFormData.comment}
                 onChange={(e) => setEscalateFormData({ ...escalateFormData, comment: e.target.value })}
                 rows={4}
@@ -656,7 +658,7 @@ const MyTickets = () => {
                   fontWeight: 500,
                 }}
               >
-                Close
+                {t("common:close")}
               </button>
               <button
                 onClick={handleEscalate}
@@ -673,7 +675,7 @@ const MyTickets = () => {
                   opacity: loadingEscalate ? 0.6 : 1,
                 }}
               >
-                {loadingEscalate ? "Escalating..." : "Save Changes"}
+                {loadingEscalate ? t("tickets.escalating") : t("common:saveChanges")}
               </button>
             </div>
           </div>

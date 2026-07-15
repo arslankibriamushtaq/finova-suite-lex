@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Plus, Trash2 } from "lucide-react"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
@@ -26,6 +27,7 @@ export default function ProductRulesTab({
 
   productId,
 }: ProductRulesTabProps) {
+  const { t } = useTranslation("productManagement2")
   const [countries, setCountries] = useState<any[]>([])
   const [isLoadingCountries, setIsLoadingCountries] = useState(false)
   const [currentPage, setCurrentPage] = useState(1)
@@ -168,18 +170,18 @@ export default function ProductRulesTab({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Product Rules</CardTitle>
+          <CardTitle>{t("productRules.title")}</CardTitle>
           <p className="text-muted-foreground">
-            Configure product-specific rules and constraints.
+            {t("productRules.subtitle")}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label>Max Outstanding Balance</Label>
+              <Label>{t("productRules.maxOutstanding")}</Label>
               <Input
                 type="number"
-                placeholder="Enter Max Outstanding Balance"
+                placeholder={t("productRules.maxOutstandingPlaceholder")}
                 value={formData.max_outstanding_balance}
                 onChange={(e) => updateFormData("max_outstanding_balance", Number(e.target.value))}
                 className={errors.max_outstanding_balance ? "border-destructive" : ""}
@@ -187,14 +189,14 @@ export default function ProductRulesTab({
               {errors.max_outstanding_balance && (
                 <p className="text-sm text-destructive">{errors.max_outstanding_balance}</p>
               )}
-              <p className="text-xs text-muted-foreground">Maximum outstanding balance allowed</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.maxOutstandingHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Age at Maturity</Label>
+              <Label>{t("productRules.ageAtMaturity")}</Label>
               <Input
                 type="number"
-                placeholder="Enter Age at Maturity"
+                placeholder={t("productRules.ageAtMaturityPlaceholder")}
                 value={formData.age_at_maturity}
                 onChange={(e) => updateFormData("age_at_maturity", Number(e.target.value))}
                 className={errors.age_at_maturity ? "border-destructive" : ""}
@@ -202,46 +204,46 @@ export default function ProductRulesTab({
               {errors.age_at_maturity && (
                 <p className="text-sm text-destructive">{errors.age_at_maturity}</p>
               )}
-              <p className="text-xs text-muted-foreground">Age at maturity requirement</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.ageAtMaturityHint")}</p>
             </div>
 
             <div className="md:col-span-2 space-y-4">
               <div className="flex items-center justify-between">
-                <Label>Cooling Off Period</Label>
+                <Label>{t("productRules.coolingOffPeriod")}</Label>
                 <Button type="button" onClick={addCoolingOffEntry} variant="outline" size="sm" className="gap-2">
                   <Plus className="h-4 w-4" />
-                 Cooling Period
+                 {t("productRules.coolingPeriodBtn")}
                 </Button>
               </div>
-              
+
               {(!formData.cooling_off || formData.cooling_off.length === 0) ? (
                 <div className="text-center py-4 text-muted-foreground border border-dashed rounded-md">
-                  <p>No cooling off periods configured. Click "Add Loan" to get started.</p>
+                  <p>{t("productRules.coolingEmpty")}</p>
                 </div>
               ) : (
                 <div className="space-y-4">
                   {formData.cooling_off.map((entry: any, index: number) => (
                     <div key={entry.id || index} className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end p-4 border rounded-md">
                       <div className="space-y-2">
-                        <Label>Cooling Type</Label>
+                        <Label>{t("productRules.coolingType")}</Label>
                         <AntSelect
                           style={{ width: "100%" }}
-                          placeholder="Select Loan Type"
+                          placeholder={t("productRules.selectLoanType")}
                           value={entry.loan_type || undefined}
                           onChange={(value) => updateCoolingOffEntry(entry.id, "loan_type", value)}
                         >
-                          <AntSelect.Option value="1st">After First Loan </AntSelect.Option>
-                          <AntSelect.Option value="2nd">After Second Loan</AntSelect.Option>
-                          <AntSelect.Option value="3rd">After Third Loan</AntSelect.Option>
+                          <AntSelect.Option value="1st">{t("productRules.afterFirstLoan")} </AntSelect.Option>
+                          <AntSelect.Option value="2nd">{t("productRules.afterSecondLoan")}</AntSelect.Option>
+                          <AntSelect.Option value="3rd">{t("productRules.afterThirdLoan")}</AntSelect.Option>
                         </AntSelect>
                       </div>
-                      
+
                       <div className="space-y-2">
-                        <Label>Cooling Days</Label>
+                        <Label>{t("productRules.coolingDays")}</Label>
                         <Input
                           type="number"
                           min="0"
-                          placeholder="Enter Loan Days"
+                          placeholder={t("productRules.enterLoanDays")}
                           value={entry.loan_days || 0}
                           onChange={(e) => {
                             const value = Math.max(0, Number(e.target.value) || 0)
@@ -265,14 +267,14 @@ export default function ProductRulesTab({
                   ))}
                 </div>
               )}
-              <p className="text-xs text-muted-foreground">Configure cooling off periods for different loan types</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.coolingHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Maximum Internal Payable Allowed</Label>
+              <Label>{t("productRules.maxInternalPayable")}</Label>
               <Input
                 type="number"
-                placeholder="Enter Maximum Internal Payable Allowed"
+                placeholder={t("productRules.maxInternalPayablePlaceholder")}
                 value={formData.max_internal_payable_amount ?? ""}
                 onChange={(e) =>
                   updateFormData(
@@ -286,16 +288,16 @@ export default function ProductRulesTab({
                 <p className="text-sm text-destructive">{errors.max_internal_payable_amount}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Caps the internal payable amount for the product
+                {t("productRules.maxInternalPayableHint")}
               </p>
             </div>
 
             <div className="space-y-2">
-              <Label>SIMAH Cooling Period</Label>
+              <Label>{t("productRules.simahCoolingPeriod")}</Label>
               <Input
                 type="number"
                 min="0"
-                placeholder="Enter SIMAH cooling period (days)"
+                placeholder={t("productRules.simahCoolingPlaceholder")}
                 value={formData.simah_cooling_off_days ?? ""}
                 onChange={(e) =>
                   updateFormData(
@@ -309,25 +311,25 @@ export default function ProductRulesTab({
                 <p className="text-sm text-destructive">{errors.simah_cooling_off_days}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Number of days for SIMAH cooling period enforcement
+                {t("productRules.simahCoolingHint")}
               </p>
             </div>
 
             <div className="space-y-2">
               <div className="flex items-center justify-between">
-                <Label>Eligible Nationalities</Label>
+                <Label>{t("productRules.eligibleNationalities")}</Label>
                 <Checkbox
                   checked={isAllSelected}
                   onChange={(e) => handleSelectAll(e.target.checked)}
                   disabled={isLoadingCountries || countries.length === 0}
                 >
-                  Select All
+                  {t("common:selectAll")}
                 </Checkbox>
               </div>
               <AntSelect
                 mode="multiple"
                 style={{ width: "100%" }}
-                placeholder="Select Eligible Nationalities"
+                placeholder={t("productRules.selectNationalities")}
                 value={selectedNationalities}
                 onChange={(value) => {
                   updateFormData("eligible_nationalities", value)
@@ -353,7 +355,7 @@ export default function ProductRulesTab({
                   return nameToSearch.toLowerCase().includes(searchText)
                 }}
                 maxTagCount={isAllSelected ? 1 : undefined}
-                maxTagPlaceholder={(omittedValues) => `+${omittedValues.length} more`}
+                maxTagPlaceholder={(omittedValues) => t("productRules.moreCount", { count: omittedValues.length })}
                 tagRender={(props) => {
                   const { label, value, closable } = props
                   
@@ -363,7 +365,7 @@ export default function ProductRulesTab({
                       <span
                         className="bg-blue-50 border border-blue-300 rounded py-0.5 px-2 my-0.5 inline-block"
                       >
-                        All Nationalities Selected
+                        {t("productRules.allNationalitiesSelected")}
                         {closable && (
                           <span
                             style={{ marginLeft: '4px', cursor: 'pointer' }}
@@ -433,14 +435,14 @@ export default function ProductRulesTab({
               {errors.eligible_nationalities && (
                 <p className="text-sm text-destructive">{errors.eligible_nationalities}</p>
               )}
-              <p className="text-xs text-muted-foreground">Select eligible nationalities for this product</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.nationalitiesHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Employment Status Vendor</Label>
+              <Label>{t("productRules.employmentVendor")}</Label>
               <AntSelect
                 style={{ width: "100%" }}
-                placeholder="Select Employment Status Vendor"
+                placeholder={t("productRules.selectEmploymentVendor")}
                 value={formData.employment_status_vendor || undefined}
                 onChange={(value) => updateFormData("employment_status_vendor", value)}
                 className={errors.employment_status_vendor ? "border-destructive" : ""}
@@ -451,14 +453,14 @@ export default function ProductRulesTab({
               {errors.employment_status_vendor && (
                 <p className="text-sm text-destructive">{errors.employment_status_vendor}</p>
               )}
-              <p className="text-xs text-muted-foreground">Select employment status vendor</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.employmentVendorHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Commodity Vendor</Label>
+              <Label>{t("productRules.commodityVendor")}</Label>
               <AntSelect
                 style={{ width: "100%" }}
-                placeholder="Select Commodity Vendor"
+                placeholder={t("productRules.selectCommodityVendor")}
                 value={formData.commodity_vendor || undefined}
                 onChange={(value) => updateFormData("commodity_vendor", value)}
                 className={errors.commodity_vendor ? "border-destructive" : ""}
@@ -469,7 +471,7 @@ export default function ProductRulesTab({
               {errors.commodity_vendor && (
                 <p className="text-sm text-destructive">{errors.commodity_vendor}</p>
               )}
-              <p className="text-xs text-muted-foreground">Select commodity vendor</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.commodityVendorHint")}</p>
             </div>
           </div>
         </CardContent>
@@ -478,15 +480,15 @@ export default function ProductRulesTab({
       {/* Simah Check Rules Section */}
       <Card>
         <CardHeader>
-          <CardTitle>Simah Check Rules</CardTitle>
+          <CardTitle>{t("simah.title")}</CardTitle>
           <p className="text-muted-foreground">
-            Configure SIMAH credit check rules and thresholds.
+            {t("simah.subtitle")}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label>Minimum SIMAH Score Allowed</Label>
+              <Label>{t("simah.minScoreLabel")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -497,11 +499,11 @@ export default function ProductRulesTab({
               {errors.minimum_simah_score_allowed && (
                 <p className="text-sm text-destructive">{errors.minimum_simah_score_allowed}</p>
               )}
-              <p className="text-xs text-muted-foreground">Minimum SIMAH credit score required for eligibility</p>
+              <p className="text-xs text-muted-foreground">{t("simah.minScoreHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Delinquency Allowed</Label>
+              <Label>{t("simah.delinquencyLabel")}</Label>
               <div className="flex items-center gap-3 pt-2">
                 <Switch
                   checked={formData.delinquency_allowed === true}
@@ -509,17 +511,17 @@ export default function ProductRulesTab({
                   style={{ backgroundColor: formData.delinquency_allowed ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
-                  {formData.delinquency_allowed ? "Allowed" : "Not Allowed"}
+                  {formData.delinquency_allowed ? t("productRules.allowed") : t("productRules.notAllowed")}
                 </span>
               </div>
               {errors.delinquency_allowed && (
                 <p className="text-sm text-destructive">{errors.delinquency_allowed}</p>
               )}
-              <p className="text-xs text-muted-foreground">Enable to allow delinquencies</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.delinquencyToggleHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Stage 2 Allowed (Last 12 Months)</Label>
+              <Label>{t("simah.stage2Label")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -530,11 +532,11 @@ export default function ProductRulesTab({
               {errors.stage2_allowed_last_12 && (
                 <p className="text-sm text-destructive">{errors.stage2_allowed_last_12}</p>
               )}
-              <p className="text-xs text-muted-foreground">Maximum Stage 2 accounts allowed in the last 12 months</p>
+              <p className="text-xs text-muted-foreground">{t("simah.stage2Hint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Stage 3 Allowed (Last 12 Months)</Label>
+              <Label>{t("simah.stage3Label")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -545,11 +547,11 @@ export default function ProductRulesTab({
               {errors.stage3_allowed_last_12 && (
                 <p className="text-sm text-destructive">{errors.stage3_allowed_last_12}</p>
               )}
-              <p className="text-xs text-muted-foreground">Maximum Stage 3 accounts allowed in the last 12 months</p>
+              <p className="text-xs text-muted-foreground">{t("simah.stage3Hint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Max Utility Write-off Amount</Label>
+              <Label>{t("simah.utilityLabel")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -560,11 +562,11 @@ export default function ProductRulesTab({
               {errors.max_utility_writeoff_amount && (
                 <p className="text-sm text-destructive">{errors.max_utility_writeoff_amount}</p>
               )}
-              <p className="text-xs text-muted-foreground">Maximum utility write-off amount allowed</p>
+              <p className="text-xs text-muted-foreground">{t("simah.utilityHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Max Telecom Write-off Amount</Label>
+              <Label>{t("simah.telecomLabel")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -575,11 +577,11 @@ export default function ProductRulesTab({
               {errors.max_telecom_writeoff_amount && (
                 <p className="text-sm text-destructive">{errors.max_telecom_writeoff_amount}</p>
               )}
-              <p className="text-xs text-muted-foreground">Maximum telecom write-off amount allowed</p>
+              <p className="text-xs text-muted-foreground">{t("simah.telecomHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Partial Settlements Allowed (Last 12 Months)</Label>
+              <Label>{t("simah.partialLabel")}</Label>
               <Input
                 type="number"
                 placeholder="0"
@@ -590,11 +592,11 @@ export default function ProductRulesTab({
               {errors.partial_settlements_allowed_last_12 && (
                 <p className="text-sm text-destructive">{errors.partial_settlements_allowed_last_12}</p>
               )}
-              <p className="text-xs text-muted-foreground">Maximum partial settlements allowed in the last 12 months</p>
+              <p className="text-xs text-muted-foreground">{t("simah.partialHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Bounced Cheques Allowed</Label>
+              <Label>{t("simah.bouncedLabel")}</Label>
               <div className="flex items-center gap-3 pt-2">
                 <Switch
                   checked={formData.bounced_cheques_allowed === true}
@@ -602,17 +604,17 @@ export default function ProductRulesTab({
                   style={{ backgroundColor: formData.bounced_cheques_allowed ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
-                  {formData.bounced_cheques_allowed ? "Allowed" : "Not Allowed"}
+                  {formData.bounced_cheques_allowed ? t("productRules.allowed") : t("productRules.notAllowed")}
                 </span>
               </div>
               {errors.bounced_cheques_allowed && (
                 <p className="text-sm text-destructive">{errors.bounced_cheques_allowed}</p>
               )}
-              <p className="text-xs text-muted-foreground">Enable to allow bounced cheques</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.bouncedToggleHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Default Allowed (Last 12 Months)</Label>
+              <Label>{t("simah.defaultLabel")}</Label>
               <div className="flex items-center gap-3 pt-2">
                 <Switch
                   checked={formData.default_allowed_last_12 === true}
@@ -620,17 +622,17 @@ export default function ProductRulesTab({
                   style={{ backgroundColor: formData.default_allowed_last_12 ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
-                  {formData.default_allowed_last_12 ? "Allowed" : "Not Allowed"}
+                  {formData.default_allowed_last_12 ? t("productRules.allowed") : t("productRules.notAllowed")}
                 </span>
               </div>
               {errors.default_allowed_last_12 && (
                 <p className="text-sm text-destructive">{errors.default_allowed_last_12}</p>
               )}
-              <p className="text-xs text-muted-foreground">Enable to allow defaults in the last 12 months</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.defaultToggleHint")}</p>
             </div>
 
             <div className="space-y-2">
-              <Label>Write-off Allowed (Last 12 Months)</Label>
+              <Label>{t("simah.writeoffLabel")}</Label>
               <div className="flex items-center gap-3 pt-2">
                 <Switch
                   checked={formData.writeoff_allowed_last_12 === true}
@@ -638,13 +640,13 @@ export default function ProductRulesTab({
                   style={{ backgroundColor: formData.writeoff_allowed_last_12 ? 'var(--primary)' : undefined }}
                 />
                 <span className="text-sm text-muted-foreground">
-                  {formData.writeoff_allowed_last_12 ? "Allowed" : "Not Allowed"}
+                  {formData.writeoff_allowed_last_12 ? t("productRules.allowed") : t("productRules.notAllowed")}
                 </span>
               </div>
               {errors.writeoff_allowed_last_12 && (
                 <p className="text-sm text-destructive">{errors.writeoff_allowed_last_12}</p>
               )}
-              <p className="text-xs text-muted-foreground">Enable to allow write-offs in the last 12 months</p>
+              <p className="text-xs text-muted-foreground">{t("productRules.writeoffToggleHint")}</p>
             </div>
           </div>
         </CardContent>
@@ -654,8 +656,8 @@ export default function ProductRulesTab({
       <div className="flex justify-end gap-3 mb-2 pt-4">
        
         <Button onClick={onNext} className="gap-2">
-        Save
-         
+        {t("common:save")}
+
         </Button>
       </div>
     </div>

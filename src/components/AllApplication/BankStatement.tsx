@@ -1,7 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const BankStatement = () => {
+  const { t } = useTranslation("allApplication");
   const accountInfo = {
     accountHolder: "John Doe",
     bankName: "BLUE",
@@ -35,13 +37,13 @@ const BankStatement = () => {
         <Row>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label className="fs-12">Account Holder Name</Form.Label>
+              <Form.Label className="fs-12">{t("bankStatement.accountHolderName")}</Form.Label>
               <Form.Control className="fs-14 rounded-2" value={accountInfo.accountHolder} readOnly />
             </Form.Group>
           </Col>
           <Col md={6}>
             <Form.Group className="mb-3">
-              <Form.Label className="fs-12">Bank Name</Form.Label>
+              <Form.Label className="fs-12">{t("bankStatement.bankName")}</Form.Label>
               <Form.Control className="fs-14 rounded-2" value={accountInfo.bankName} readOnly />
             </Form.Group>
           </Col>
@@ -49,7 +51,7 @@ const BankStatement = () => {
         <Row>
         <Col md={6}>
         <Form.Group>
-          <Form.Label className="fs-12">Account Number</Form.Label>
+          <Form.Label className="fs-12">{t("bankStatement.accountNumber")}</Form.Label>
           <Form.Control className="fs-14 rounded-2" value={accountInfo.accountNumber} readOnly />
         </Form.Group>
         </Col>
@@ -61,18 +63,18 @@ const BankStatement = () => {
           <Col md={6} key={i}>
             <div className="bordered-section p-3 h-100" style={{borderTopLeftRadius:'0px'}}>
               <div className="fw-600 fs-14 mb-3 text-center">
-                Transaction ID: {txn.transactionId}
+                {t("bankStatement.transactionId", { value: txn.transactionId })}
               </div>
               <Form.Group className="mb-2">
-                <Form.Label className="fs-12">Account ID</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.accountId")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.accountId} readOnly />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="fs-12">Provider ID</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.providerId")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.providerId} readOnly />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="fs-12">Credit/Debit Indicator</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.indicator")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.indicator} readOnly />
               </Form.Group>
               <Form.Group className="mb-2">
@@ -80,7 +82,7 @@ const BankStatement = () => {
                 <Form.Control className="fs-14 rounded-2" value={txn.reference} readOnly />
               </Form.Group>
               <Form.Group>
-                <Form.Label className="fs-12">Booking Date Time</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.bookingDateTime")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.bookingDate} readOnly />
               </Form.Group>
             </div>
@@ -92,18 +94,18 @@ const BankStatement = () => {
           <Col md={6} key={i}>
             <div className="bordered-section p-3 h-100" style={{borderTopLeftRadius:'0px'}}>
               <div className="fw-600 fs-14 mb-3 text-center">
-                Transaction ID: {txn.transactionId}
+                {t("bankStatement.transactionId", { value: txn.transactionId })}
               </div>
               <Form.Group className="mb-2">
-                <Form.Label className="fs-12">Account ID</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.accountId")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.accountId} readOnly />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="fs-12">Provider ID</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.providerId")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.providerId} readOnly />
               </Form.Group>
               <Form.Group className="mb-2">
-                <Form.Label className="fs-12">Credit/Debit Indicator</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.indicator")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.indicator} readOnly />
               </Form.Group>
               <Form.Group className="mb-2">
@@ -111,7 +113,7 @@ const BankStatement = () => {
                 <Form.Control className="fs-14 rounded-2" value={txn.reference} readOnly />
               </Form.Group>
               <Form.Group>
-                <Form.Label className="fs-12">Booking Date Time</Form.Label>
+                <Form.Label className="fs-12">{t("bankStatement.bookingDateTime")}</Form.Label>
                 <Form.Control className="fs-14 rounded-2" value={txn.bookingDate} readOnly />
               </Form.Group>
             </div>

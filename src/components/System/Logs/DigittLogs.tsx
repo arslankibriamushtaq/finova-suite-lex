@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Select } from "antd";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import TableView from "../../TableView/TableView";
@@ -13,6 +14,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const DigittLogs = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -27,36 +29,36 @@ const DigittLogs = () => {
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
     },
     {
-      name: "Trace ID",
+      name: t("logs.traceId"),
       selector: (row: { traceID: any }) => row.traceID,
       sortable: true,
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
     },
     {
-      name: "Level",
+      name: t("logs.level"),
       selector: (row: { level: any }) => row.level,
       sortable: true,
     },
     {
-      name: "Message",
+      name: t("logs.message"),
       selector: (row: { message: any }) => row.message,
       sortable: true,
     },
-  
+
   ];
   const getList = async () => {
     try {
@@ -107,12 +109,12 @@ const DigittLogs = () => {
       const doc = new jsPDF();
   
       const tableColumn = [
-        "Sr",
-        "Phone",
-        "Trace ID",
-        "Created At",
-        "Level",
-        "Message",
+        t("shared.sr"),
+        t("common:phone"),
+        t("logs.traceId"),
+        t("common:createdAt"),
+        t("logs.level"),
+        t("logs.message"),
       ];
   
       const tableRows = mappedData?.map((item: any) => [
@@ -140,7 +142,7 @@ const DigittLogs = () => {
         <Select
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
         />
@@ -156,12 +158,12 @@ const DigittLogs = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
 
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -169,9 +171,9 @@ const DigittLogs = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
         </div>
       </div>
 

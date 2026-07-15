@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Pencil, SlidersHorizontal, Coins, ChevronDown, Wallet } from "lucide-react";
 import { Button } from "../../../components/ui/button";
@@ -38,6 +39,7 @@ const unwrap = (res: any): any[] => {
 
 // ---- Tier limits section --------------------------------------------------
 const TierLimitsTab = () => {
+  const { t } = useTranslation("cardManagement");
   const [rows, setRows] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editRow, setEditRow] = useState<any | null>(null);
@@ -50,7 +52,7 @@ const TierLimitsTab = () => {
     getAdminTierLimits()
       .then((res) => setRows(unwrap(res)))
       .catch((e: any) => {
-        if (!e?.response?.data?.message) toast.error("Failed to load tier limits");
+        if (!e?.response?.data?.message) toast.error(t("settings.tierLimits.toast.loadFailed"));
       })
       .finally(() => setIsLoading(false));
   };
@@ -67,9 +69,10 @@ const TierLimitsTab = () => {
 
   const save = async () => {
     if (!editRow) return;
-    if (dailyLimit === "" || monthlyLimit === "") return toast.error("Both limits are required");
+    if (dailyLimit === "" || monthlyLimit === "")
+      return toast.error(t("settings.validation.bothLimitsRequired"));
     if (Number(dailyLimit) < 0 || Number(monthlyLimit) < 0)
-      return toast.error("Limits must be ≥ 0");
+      return toast.error(t("settings.validation.limitsNonNegative"));
     try {
       setIsSaving(true);
       await updateAdminTierLimit({
@@ -77,11 +80,11 @@ const TierLimitsTab = () => {
         dailyLimit: Number(dailyLimit),
         monthlyLimit: Number(monthlyLimit),
       });
-      toast.success("Tier limit updated");
+      toast.success(t("settings.tierLimits.toast.updated"));
       setEditRow(null);
       load();
     } catch (e: any) {
-      if (!e?.response?.data?.message) toast.error("Failed to update tier limit");
+      if (!e?.response?.data?.message) toast.error(t("settings.tierLimits.toast.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -91,24 +94,24 @@ const TierLimitsTab = () => {
     <div className="pro-card overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left" style={{ background: "var(--theme-table-background-color)" }}>
-            <th className="px-4 py-3 font-semibold text-white">Tier</th>
-            <th className="px-4 py-3 font-semibold text-white">Daily Limit</th>
-            <th className="px-4 py-3 font-semibold text-white">Monthly Limit</th>
-            <th className="px-4 py-3 font-semibold text-white text-right">Action</th>
+          <tr className="text-start" style={{ background: "var(--theme-table-background-color)" }}>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.col.tier")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.tierLimits.col.dailyLimit")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.tierLimits.col.monthlyLimit")}</th>
+            <th className="px-4 py-3 font-semibold text-white text-end">{t("settings.col.action")}</th>
           </tr>
         </thead>
         <tbody>
           {isLoading ? (
             <tr>
               <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
-                Loading...
+                {t("common:loading")}
               </td>
             </tr>
           ) : rows.length === 0 ? (
             <tr>
               <td colSpan={4} className="px-4 py-8 text-center text-muted-foreground">
-                No tier limits configured
+                {t("settings.tierLimits.empty")}
               </td>
             </tr>
           ) : (
@@ -117,15 +120,15 @@ const TierLimitsTab = () => {
                 <td className="px-4 py-3 font-medium">{prettyEnum(row.tier)}</td>
                 <td className="px-4 py-3">{formatMoney(row.dailyLimit)}</td>
                 <td className="px-4 py-3">{formatMoney(row.monthlyLimit)}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="inline-block text-left" onClick={(e) => e.stopPropagation()}>
+                <td className="px-4 py-3 text-end">
+                  <div className="inline-block text-start" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
                           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                          Select
+                          {t("common:select")}
                           <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                         </button>
                       </DropdownMenuTrigger>
@@ -137,7 +140,7 @@ const TierLimitsTab = () => {
                           }}
                         >
                           <Pencil className="h-4 w-4" />
-                          Edit
+                          {t("common:edit")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -152,15 +155,15 @@ const TierLimitsTab = () => {
       <Dialog open={!!editRow} onOpenChange={(o) => !o && setEditRow(null)}>
         <DialogContent className="pro-dialog sm:max-w-[440px]">
           <DialogHeader>
-            <DialogTitle>Edit {editRow ? prettyEnum(editRow.tier) : ""} Limits</DialogTitle>
+            <DialogTitle>{t("settings.tierLimits.dialog.title", { tier: editRow ? prettyEnum(editRow.tier) : "" })}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Daily Limit</Label>
+              <Label>{t("settings.tierLimits.field.dailyLimit")}</Label>
               <Input type="number" value={dailyLimit} onChange={(e) => setDailyLimit(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Monthly Limit</Label>
+              <Label>{t("settings.tierLimits.field.monthlyLimit")}</Label>
               <Input
                 type="number"
                 value={monthlyLimit}
@@ -170,10 +173,10 @@ const TierLimitsTab = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRow(null)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={save} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Update"}
+              {isSaving ? t("action.saving") : t("common:update")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -184,6 +187,7 @@ const TierLimitsTab = () => {
 
 // ---- Fees section ---------------------------------------------------------
 const FeesTab = () => {
+  const { t } = useTranslation("cardManagement");
   const [rows, setRows] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editRow, setEditRow] = useState<any | null>(null);
@@ -197,7 +201,7 @@ const FeesTab = () => {
     getAdminCardFees()
       .then((res) => setRows(unwrap(res)))
       .catch((e: any) => {
-        if (!e?.response?.data?.message) toast.error("Failed to load fees");
+        if (!e?.response?.data?.message) toast.error(t("settings.fees.toast.loadFailed"));
       })
       .finally(() => setIsLoading(false));
   };
@@ -215,8 +219,10 @@ const FeesTab = () => {
 
   const save = async () => {
     if (!editRow) return;
-    if (issuanceFee === "" || shipmentFee === "") return toast.error("Both fees are required");
-    if (Number(issuanceFee) < 0 || Number(shipmentFee) < 0) return toast.error("Fees must be ≥ 0");
+    if (issuanceFee === "" || shipmentFee === "")
+      return toast.error(t("settings.fees.toast.bothRequired"));
+    if (Number(issuanceFee) < 0 || Number(shipmentFee) < 0)
+      return toast.error(t("settings.fees.toast.nonNegative"));
     try {
       setIsSaving(true);
       await updateAdminCardFee({
@@ -226,11 +232,11 @@ const FeesTab = () => {
         shipmentFee: Number(shipmentFee),
         currency: currency.trim() || "CAD",
       });
-      toast.success("Fee updated");
+      toast.success(t("settings.fees.toast.updated"));
       setEditRow(null);
       load();
     } catch (e: any) {
-      if (!e?.response?.data?.message) toast.error("Failed to update fee");
+      if (!e?.response?.data?.message) toast.error(t("settings.fees.toast.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -240,26 +246,26 @@ const FeesTab = () => {
     <div className="pro-card overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left" style={{ background: "var(--theme-table-background-color)" }}>
-            <th className="px-4 py-3 font-semibold text-white">Card Type</th>
-            <th className="px-4 py-3 font-semibold text-white">Tier</th>
-            <th className="px-4 py-3 font-semibold text-white">Issuance Fee</th>
-            <th className="px-4 py-3 font-semibold text-white">Shipment Fee</th>
-            <th className="px-4 py-3 font-semibold text-white">Total</th>
-            <th className="px-4 py-3 font-semibold text-white text-right">Action</th>
+          <tr className="text-start" style={{ background: "var(--theme-table-background-color)" }}>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.fees.col.cardType")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.col.tier")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.fees.col.issuanceFee")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.fees.col.shipmentFee")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.fees.col.total")}</th>
+            <th className="px-4 py-3 font-semibold text-white text-end">{t("settings.col.action")}</th>
           </tr>
         </thead>
         <tbody>
           {isLoading ? (
             <tr>
               <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                Loading...
+                {t("common:loading")}
               </td>
             </tr>
           ) : rows.length === 0 ? (
             <tr>
               <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
-                No fees configured
+                {t("settings.fees.empty")}
               </td>
             </tr>
           ) : (
@@ -278,15 +284,15 @@ const FeesTab = () => {
                 <td className="px-4 py-3 font-medium">
                   {formatMoney(row.totalFee ?? Number(row.issuanceFee) + Number(row.shipmentFee), row.currency)}
                 </td>
-                <td className="px-4 py-3 text-right">
-                  <div className="inline-block text-left" onClick={(e) => e.stopPropagation()}>
+                <td className="px-4 py-3 text-end">
+                  <div className="inline-block text-start" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
                           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                          Select
+                          {t("common:select")}
                           <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                         </button>
                       </DropdownMenuTrigger>
@@ -298,7 +304,7 @@ const FeesTab = () => {
                           }}
                         >
                           <Pencil className="h-4 w-4" />
-                          Edit
+                          {t("common:edit")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -314,18 +320,19 @@ const FeesTab = () => {
         <DialogContent className="pro-dialog sm:max-w-[460px]">
           <DialogHeader>
             <DialogTitle>
-              Edit Fee —{" "}
-              {editRow
-                ? `${CARD_TYPE_LABELS[editRow.cardType] || prettyEnum(editRow.cardType)} · ${prettyEnum(
-                    editRow.tier
-                  )}`
-                : ""}
+              {t("settings.fees.dialog.title", {
+                label: editRow
+                  ? `${CARD_TYPE_LABELS[editRow.cardType] || prettyEnum(editRow.cardType)} · ${prettyEnum(
+                      editRow.tier
+                    )}`
+                  : "",
+              })}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Issuance Fee</Label>
+                <Label>{t("settings.fees.field.issuanceFee")}</Label>
                 <Input
                   type="number"
                   value={issuanceFee}
@@ -333,7 +340,7 @@ const FeesTab = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Shipment Fee</Label>
+                <Label>{t("settings.fees.field.shipmentFee")}</Label>
                 <Input
                   type="number"
                   value={shipmentFee}
@@ -342,16 +349,16 @@ const FeesTab = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Currency</Label>
+              <Label>{t("settings.fees.field.currency")}</Label>
               <Input value={currency} onChange={(e) => setCurrency(e.target.value.toUpperCase())} />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRow(null)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={save} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Update"}
+              {isSaving ? t("action.saving") : t("common:update")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -371,6 +378,7 @@ const unwrapCells = (res: any): any[] => {
 };
 
 const TierSpendLimitsTab = () => {
+  const { t } = useTranslation("cardManagement");
   const [rows, setRows] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [editRow, setEditRow] = useState<any | null>(null);
@@ -383,7 +391,7 @@ const TierSpendLimitsTab = () => {
     getAdminTierSpendLimits()
       .then((res) => setRows(unwrapCells(res)))
       .catch((e: any) => {
-        if (!e?.response?.data?.message) toast.error("Failed to load card limits");
+        if (!e?.response?.data?.message) toast.error(t("settings.spendLimits.toast.loadFailed"));
       })
       .finally(() => setIsLoading(false));
   };
@@ -400,10 +408,12 @@ const TierSpendLimitsTab = () => {
 
   const save = async () => {
     if (!editRow) return;
-    if (minLimit === "" || maxLimit === "") return toast.error("Both limits are required");
-    if (Number(minLimit) < 0 || Number(maxLimit) < 0) return toast.error("Limits must be ≥ 0");
+    if (minLimit === "" || maxLimit === "")
+      return toast.error(t("settings.validation.bothLimitsRequired"));
+    if (Number(minLimit) < 0 || Number(maxLimit) < 0)
+      return toast.error(t("settings.validation.limitsNonNegative"));
     if (Number(maxLimit) < Number(minLimit))
-      return toast.error("Max limit must be ≥ min limit");
+      return toast.error(t("settings.spendLimits.toast.maxGteMin"));
     try {
       setIsSaving(true);
       await updateAdminTierSpendLimits({
@@ -416,11 +426,11 @@ const TierSpendLimitsTab = () => {
           },
         ],
       });
-      toast.success("Card limit updated");
+      toast.success(t("settings.spendLimits.toast.updated"));
       setEditRow(null);
       load();
     } catch (e: any) {
-      if (!e?.response?.data?.message) toast.error("Failed to update card limit");
+      if (!e?.response?.data?.message) toast.error(t("settings.spendLimits.toast.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -430,25 +440,25 @@ const TierSpendLimitsTab = () => {
     <div className="pro-card overflow-hidden">
       <table className="w-full text-sm">
         <thead>
-          <tr className="text-left" style={{ background: "var(--theme-table-background-color)" }}>
-            <th className="px-4 py-3 font-semibold text-white">Tier</th>
-            <th className="px-4 py-3 font-semibold text-white">Category</th>
-            <th className="px-4 py-3 font-semibold text-white">Min Limit</th>
-            <th className="px-4 py-3 font-semibold text-white">Max Limit</th>
-            <th className="px-4 py-3 font-semibold text-white text-right">Action</th>
+          <tr className="text-start" style={{ background: "var(--theme-table-background-color)" }}>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.col.tier")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.spendLimits.col.category")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.spendLimits.col.minLimit")}</th>
+            <th className="px-4 py-3 font-semibold text-white">{t("settings.spendLimits.col.maxLimit")}</th>
+            <th className="px-4 py-3 font-semibold text-white text-end">{t("settings.col.action")}</th>
           </tr>
         </thead>
         <tbody>
           {isLoading ? (
             <tr>
               <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                Loading...
+                {t("common:loading")}
               </td>
             </tr>
           ) : rows.length === 0 ? (
             <tr>
               <td colSpan={5} className="px-4 py-8 text-center text-muted-foreground">
-                No card limits configured
+                {t("settings.spendLimits.empty")}
               </td>
             </tr>
           ) : (
@@ -462,15 +472,15 @@ const TierSpendLimitsTab = () => {
                 <td className="px-4 py-3">{prettyEnum(row.category)}</td>
                 <td className="px-4 py-3">{formatMoney(row.minLimit)}</td>
                 <td className="px-4 py-3">{formatMoney(row.maxLimit)}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="inline-block text-left" onClick={(e) => e.stopPropagation()}>
+                <td className="px-4 py-3 text-end">
+                  <div className="inline-block text-start" onClick={(e) => e.stopPropagation()}>
                     <DropdownMenu modal={false}>
                       <DropdownMenuTrigger asChild>
                         <button
                           type="button"
                           className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                         >
-                          Select
+                          {t("common:select")}
                           <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                         </button>
                       </DropdownMenuTrigger>
@@ -482,7 +492,7 @@ const TierSpendLimitsTab = () => {
                           }}
                         >
                           <Pencil className="h-4 w-4" />
-                          Edit
+                          {t("common:edit")}
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>
@@ -498,26 +508,27 @@ const TierSpendLimitsTab = () => {
         <DialogContent className="pro-dialog sm:max-w-[460px]">
           <DialogHeader>
             <DialogTitle>
-              Edit Limit —{" "}
-              {editRow ? `${prettyEnum(editRow.tier)} · ${prettyEnum(editRow.category)}` : ""}
+              {t("settings.spendLimits.dialog.title", {
+                label: editRow ? `${prettyEnum(editRow.tier)} · ${prettyEnum(editRow.category)}` : "",
+              })}
             </DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Min Limit</Label>
+              <Label>{t("settings.spendLimits.field.minLimit")}</Label>
               <Input type="number" value={minLimit} onChange={(e) => setMinLimit(e.target.value)} />
             </div>
             <div className="space-y-2">
-              <Label>Max Limit</Label>
+              <Label>{t("settings.spendLimits.field.maxLimit")}</Label>
               <Input type="number" value={maxLimit} onChange={(e) => setMaxLimit(e.target.value)} />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setEditRow(null)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={save} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Update"}
+              {isSaving ? t("action.saving") : t("common:update")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -527,6 +538,7 @@ const TierSpendLimitsTab = () => {
 };
 
 const CardSettings = () => {
+  const { t } = useTranslation("cardManagement");
   return (
     <div className="service card-settings-page">
       <style>{`
@@ -628,7 +640,7 @@ const CardSettings = () => {
           <span className="pro-head-badge">
             <SlidersHorizontal className="h-4 w-4" />
           </span>
-          Card Settings
+          {t("settings.title")}
         </h3>
       </div>
 
@@ -636,35 +648,32 @@ const CardSettings = () => {
         <TabsList className="mb-3">
           <TabsTrigger value="tier-limits" className="gap-2">
             <SlidersHorizontal className="h-4 w-4" />
-            Tier Limits
+            {t("settings.tab.tierLimits")}
           </TabsTrigger>
           <TabsTrigger value="fees" className="gap-2">
             <Coins className="h-4 w-4" />
-            Order Fees
+            {t("settings.tab.orderFees")}
           </TabsTrigger>
           <TabsTrigger value="spend-limits" className="gap-2">
             <Wallet className="h-4 w-4" />
-            Card Limits
+            {t("settings.tab.cardLimits")}
           </TabsTrigger>
         </TabsList>
         <TabsContent value="tier-limits">
           <p className="text-sm text-muted-foreground mb-3">
-            Default daily / monthly limits per tier. New cards inherit their tier's limit at
-            issuance unless an explicit limit is provided.
+            {t("settings.tierLimits.description")}
           </p>
           <TierLimitsTab />
         </TabsContent>
         <TabsContent value="fees">
           <p className="text-sm text-muted-foreground mb-3">
-            One-time issuance fee + shipment fee (physical only) per card type and tier. These quote
-            and configure fees only.
+            {t("settings.fees.description")}
           </p>
           <FeesTab />
         </TabsContent>
         <TabsContent value="spend-limits">
           <p className="text-sm text-muted-foreground mb-3">
-            Min / max spend limits per tier and spend category (e.g. POS, ATM). These bound the
-            limits that can be set on cards of each tier.
+            {t("settings.spendLimits.description")}
           </p>
           <TierSpendLimitsTab />
         </TabsContent>

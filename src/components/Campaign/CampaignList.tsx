@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Button,
   Dropdown,
@@ -42,6 +43,7 @@ function createCampaign(body: any) {
   );
 }
 const CampaignList = () => {
+  const { t } = useTranslation("adminMisc");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -74,22 +76,22 @@ const CampaignList = () => {
       await toast.promise(
         deleteCampaign(rowData?.id), // API call
         {
-          loading: "Deleting Campaign...",
+          loading: t("campaign.toast.deleting"),
           success: (response) => {
             if (response?.data?.success) {
               getList();
               setIsDeleteModalVisible(false);
-              return "Campaign deleted successfully";
+              return t("campaign.toast.deleteSuccess");
             } else {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.message ||
-                  "Failed to deleting Campaign."
+                  t("campaign.toast.deleteFailed")
               );
             }
           },
           error: (err) =>
-            err?.message || "Something went wrong while deleting the Campaign.",
+            err?.message || t("campaign.toast.deleteError"),
         }
       );
     } catch (error: any) {
@@ -126,50 +128,50 @@ const CampaignList = () => {
   }, [page, pageSize]);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("ui.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
       //   width: "15%",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       //   width: "75%",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type,
       sortable: true,
     },
     {
-      name: "Entry Fee",
+      name: t("campaign.col.entryFee"),
       selector: (row: { entry_fee: any }) => row.entry_fee,
       sortable: true,
     },
     {
-      name: "Start Date",
+      name: t("campaign.col.startDate"),
       selector: (row: { start_date: any }) => row.start_date,
       sortable: true,
     },
     {
-      name: "End Date",
+      name: t("campaign.col.endDate"),
       selector: (row: { end_date: any }) => row.end_date,
       sortable: true,
     },
     {
-      name: "Priority Level",
+      name: t("campaign.col.priorityLevel"),
       selector: (row: { priority_level: any }) => row.priority_level,
       sortable: true,
     },
     {
-      name: "Terms & Conditions",
+      name: t("campaign.col.terms"),
       selector: (row: { terms_and_conditions: any }) =>
         row.terms_and_conditions,
       sortable: true,
     },
     {
-      name: "Banner",
+      name: t("campaign.col.banner"),
       cell: (row: any) => (
         <div>
           <img src={row.banner} alt="banner" width={30} height={30} />
@@ -177,7 +179,7 @@ const CampaignList = () => {
       ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -193,12 +195,12 @@ const CampaignList = () => {
             cursor: row.status === "active" ? "pointer" : "default",
           }}
         >
-          {row.status == "active" ? "Active" : "Inactive"}
+          {row.status == "active" ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -213,7 +215,7 @@ const CampaignList = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -227,14 +229,14 @@ const CampaignList = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -318,31 +320,31 @@ const CampaignList = () => {
     let validationErrors: Record<string, string> = {};
 
     if (!name) {
-      validationErrors.name = "Name is required";
+      validationErrors.name = t("campaign.valid.name");
     }
     if (!entry_fee) {
-      validationErrors.entry_fee = "Entry Fee is required";
+      validationErrors.entry_fee = t("campaign.valid.entryFee");
     }
     if (!type) {
-      validationErrors.type = "Type is required";
+      validationErrors.type = t("campaign.valid.type");
     }
     if (priority_level==="") {
-      validationErrors.priority_level = "Priority Level is required";
+      validationErrors.priority_level = t("campaign.valid.priorityLevel");
     }
     if (!start_date) {
-      validationErrors.start_date = "Start Date is required";
+      validationErrors.start_date = t("campaign.valid.startDate");
     }
     if (!end_date) {
-      validationErrors.end_date = "End Date is required";
+      validationErrors.end_date = t("campaign.valid.endDate");
     }
     if (!terms_and_conditions) {
-      validationErrors.terms_and_conditions = "Terms & Conditions is required";
+      validationErrors.terms_and_conditions = t("campaign.valid.terms");
     }
     if (!banner) {
-      validationErrors.banner = "Banner is required";
+      validationErrors.banner = t("campaign.valid.banner");
     }
     if (!status) {
-      validationErrors.status = "Status is required";
+      validationErrors.status = t("campaign.valid.status");
     }
     setErrors(validationErrors);
 
@@ -363,21 +365,21 @@ const CampaignList = () => {
         };
 
         await toast.promise(editCampaign(updateBody), {
-          loading: "Updating campaign...",
+          loading: t("campaign.toast.updating"),
           success: (response: any) => {
             if (response?.data?.success) {
               getList();
               setIsModalVisible(false);
-              return "Campaign updated successfully";
+              return t("campaign.toast.updateSuccess");
             } else {
               throw new Error(
                 response?.response?.data?.errors?.[0] ||
-                  "Failed to update campaign."
+                  t("campaign.toast.updateFailed")
               );
             }
           },
           error: (err) =>
-            err?.message || "Something went wrong while updating the campaign.",
+            err?.message || t("campaign.toast.updateError"),
         });
       } else {
         const formData = new FormData();
@@ -405,7 +407,7 @@ const CampaignList = () => {
         }
 
         await toast.promise(createCampaign(formData), {
-          loading: "Adding campaign...",
+          loading: t("campaign.toast.adding"),
           success: (response: any) => {
             if (response?.data?.success) {
               // Reset form
@@ -422,17 +424,17 @@ const CampaignList = () => {
               });
               getList();
               setIsModalVisible(false);
-              return "New campaign added successfully";
+              return t("campaign.toast.addSuccess");
             } else {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.message ||
-                  "Failed to add campaign."
+                  t("campaign.toast.addFailed")
               );
             }
           },
           error: (err) =>
-            err?.message || "Something went wrong while adding the campaign.",
+            err?.message || t("campaign.toast.addError"),
         });
       }
     } catch (error: any) {
@@ -502,7 +504,7 @@ const CampaignList = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -520,11 +522,11 @@ const CampaignList = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("ui.searchPlaceholder")}
             />
           </div>
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("ui.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -532,11 +534,11 @@ const CampaignList = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("ui.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New Campaign
+            {t("campaign.addBtn")}
           </button>
         </div>
       </div>
@@ -557,13 +559,13 @@ const CampaignList = () => {
       <Modal
         className="custom-mod"
         style={{ maxWidth: "732px" }}
-        title={selectedItem === "edit" ? "Edit Campaign" : "Add New Campaign"}
+        title={selectedItem === "edit" ? t("campaign.modal.editTitle") : t("campaign.modal.addTitle")}
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={
           <div className="d-flex justify-content-end gap-2 w-100">
             <Button key="close" onClick={handleCancel}>
-              Close
+              {t("common:close")}
             </Button>
             <Button
               key="save"
@@ -573,7 +575,7 @@ const CampaignList = () => {
               onClick={handleOk}
               style={{ width: "fit-content" }}
             >
-              {selectedItem === "edit" ? "Edit Campaign" : "Add New Campaign"}
+              {selectedItem === "edit" ? t("campaign.modal.editTitle") : t("campaign.modal.addTitle")}
             </Button>
           </div>
         }
@@ -584,9 +586,9 @@ const CampaignList = () => {
               <Form.Item className="w-48"  validateStatus={errors.name ? "error" : ""}
                 help={errors.name}>
                 <div className="custom-input-container">
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
-                    placeholder="Enter Name"
+                    placeholder={t("campaign.form.namePlaceholder")}
                     className="fs-6"
                     value={formValues.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -597,9 +599,9 @@ const CampaignList = () => {
               <Form.Item  className="w-48" validateStatus={errors.entry_fee ? "error" : ""}
                 help={errors.entry_fee}>
                   <div className="custom-input-container">
-                  <label className="input-label">Entry Fee</label>
+                  <label className="input-label">{t("campaign.col.entryFee")}</label>
                 <Input
-                  placeholder="Enter Fee"
+                  placeholder={t("campaign.form.feePlaceholder")}
                     className="fs-6"
                   value={formValues.entry_fee}
                   onChange={(e) => handleChange("entry_fee", e.target.value)}
@@ -610,14 +612,14 @@ const CampaignList = () => {
               <Form.Item  className="w-48" validateStatus={errors.type ? "error" : ""}
                 help={errors.type}>
                   <div className="custom-input-container">
-                  <label className="input-label">Select Type</label>
+                  <label className="input-label">{t("campaign.form.selectType")}</label>
                 <Select
-                  placeholder="Placeholder"
+                  placeholder={t("campaign.form.placeholder")}
                   value={formValues.type}
                   onChange={(val) => handleChange("type", val)}
                 >
-                  <Select.Option value="Promotion">Promotion</Select.Option>
-                  <Select.Option value="Games">Games</Select.Option>
+                  <Select.Option value="Promotion">{t("campaign.type.promotion")}</Select.Option>
+                  <Select.Option value="Games">{t("campaign.type.games")}</Select.Option>
                 </Select>
                 </div>
               </Form.Item>
@@ -625,9 +627,9 @@ const CampaignList = () => {
               <Form.Item  className="w-48" validateStatus={errors.priority_level ? "error" : ""}
                 help={errors.priority_level}>
                   <div className="custom-input-container">
-                  <label className="input-label">Priority Level</label>
+                  <label className="input-label">{t("campaign.col.priorityLevel")}</label>
                 <Select
-                  placeholder="Placeholder"
+                  placeholder={t("campaign.form.placeholder")}
                   value={formValues.priority_level}
                   onChange={(val) => handleChange("priority_level", val)}
                 >
@@ -641,10 +643,10 @@ const CampaignList = () => {
               <Form.Item className="w-48 modal-date-pickr" validateStatus={errors.start_date ? "error" : ""}
                 help={errors.start_date}>
                   <div className="custom-input-container">
-                  <label className="input-label">Start Date</label>
+                  <label className="input-label">{t("campaign.col.startDate")}</label>
                 <DatePicker
                   style={{ width: "100%" }}
-                  placeholder="Enter Start Date"
+                  placeholder={t("campaign.form.startPlaceholder")}
                   value={formValues.start_date}
                   onChange={(date) => handleChange("start_date", date)}
                 />
@@ -653,10 +655,10 @@ const CampaignList = () => {
 
               <Form.Item className="w-48 modal-date-pickr" validateStatus={errors.end_date ? "error" : ""} help={errors.end_date}>
                 <div className="custom-input-container">
-                  <label className="input-label">End Date</label>
+                  <label className="input-label">{t("campaign.col.endDate")}</label>
                 <DatePicker
                   style={{ width: "100%" }}
-                  placeholder="Enter End Date"
+                  placeholder={t("campaign.form.endPlaceholder")}
                   value={formValues.end_date}
                   onChange={(date) => handleChange("end_date", date)}
                 />
@@ -666,9 +668,9 @@ const CampaignList = () => {
               <Form.Item  className="w-48" validateStatus={errors.terms_and_conditions ? "error" : ""}
                 help={errors.terms_and_conditions}>
                   <div className="custom-input-container">
-                  <label className="input-label">Terms & Conditions</label>
+                  <label className="input-label">{t("campaign.col.terms")}</label>
                 <Input
-                  placeholder="Placeholder"
+                  placeholder={t("campaign.form.placeholder")}
                     className="fs-6"
                   value={formValues.terms_and_conditions}
                   onChange={(e) =>
@@ -692,12 +694,12 @@ const CampaignList = () => {
                     return false; // prevent auto-upload
                   }}
                 >
-                  <Button>Upload Banner</Button>
+                  <Button>{t("campaign.form.uploadBanner")}</Button>
                 </Upload>
 
                 {formValues.banner && (
                   <span style={{ marginLeft: "10px", fontSize: "16px" }}>
-                    Banner uploaded
+                    {t("campaign.form.bannerUploaded")}
                   </span>
                 )}
                 {/* </div> */}
@@ -707,14 +709,14 @@ const CampaignList = () => {
               <Form.Item className="w-100" validateStatus={errors.status ? "error" : ""}
                 help={errors.status}>
                   <div className="custom-input-container">
-                  <label className="input-label">Status</label>
+                  <label className="input-label">{t("common:status")}</label>
                 <Select
-                  placeholder="Placeholder"
+                  placeholder={t("campaign.form.placeholder")}
                   value={formValues.status}
                   onChange={(val) => handleChange("status", val)}
                 >
-                  <Select.Option value="active">Active</Select.Option>
-                  <Select.Option value="inactive">Inactive</Select.Option>
+                  <Select.Option value="active">{t("common:active")}</Select.Option>
+                  <Select.Option value="inactive">{t("common:inactive")}</Select.Option>
                 </Select>
                 </div>
               </Form.Item>
@@ -741,7 +743,7 @@ const CampaignList = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -756,7 +758,7 @@ const CampaignList = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -770,7 +772,7 @@ const CampaignList = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure you want to delete this Campaign?
+            {t("campaign.confirm.delete")}
           </p>
         </div>
       </Modal>

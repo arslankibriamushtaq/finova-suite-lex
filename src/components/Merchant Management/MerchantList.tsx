@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Button,
@@ -31,6 +32,7 @@ import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 
 const MerchantList = () => {
+  const { t } = useTranslation("adminMisc");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -90,14 +92,14 @@ const [formData, setFormData] = useState({
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -110,37 +112,37 @@ const [formData, setFormData] = useState({
     //   // width: "15%",
     // },
     {
-      name: "Name (En)",
+      name: t("merchant.col.nameEn"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Name (Ar)",
+      name: t("merchant.col.nameAr"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Logo",
+      name: t("merchant.col.logo"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Favicon",
+      name: t("merchant.col.favicon"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Secret Key",
+      name: t("merchant.col.secretKey"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -157,12 +159,12 @@ const [formData, setFormData] = useState({
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Action",
+      name: t("merchant.col.action"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -175,7 +177,7 @@ const [formData, setFormData] = useState({
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -187,13 +189,13 @@ const [formData, setFormData] = useState({
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteCommodityType(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("merchant.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("common:deletedSuccessfully");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("merchant.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -210,7 +212,7 @@ const [formData, setFormData] = useState({
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateCommodityType(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("merchant.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -221,13 +223,13 @@ const [formData, setFormData] = useState({
               status: 0 
              });
             getList();
-            return "Updated successfully";
+            return t("common:updatedSuccessfully");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("merchant.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createCommodityType(body), {
-          loading: "Adding finance purpose...",
+          loading: t("merchant.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -238,9 +240,9 @@ const [formData, setFormData] = useState({
                 status: 0 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("merchant.toast.addSuccess");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("merchant.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -287,7 +289,7 @@ const [formData, setFormData] = useState({
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -303,7 +305,7 @@ const [formData, setFormData] = useState({
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -322,7 +324,7 @@ const [formData, setFormData] = useState({
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("ui.searchPlaceholder")}
               />
             </div>
 
@@ -331,13 +333,13 @@ const [formData, setFormData] = useState({
               onClick={() => {
                 setShowModal(true);
                 setSelectedItem("add");
-                setFormData({ 
+                setFormData({
                   name: "",
-                  status: 0 
+                  status: 0
                 });
               }}
             >
-              Add Merchant
+              {t("merchant.addBtn")}
             </button>
           </div>
         </div>
@@ -359,13 +361,13 @@ const [formData, setFormData] = useState({
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Merchant" : "Add New Merchant"
+            selectedItem === "edit" ? t("merchant.modal.editTitle") : t("merchant.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -375,7 +377,7 @@ const [formData, setFormData] = useState({
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -385,46 +387,46 @@ const [formData, setFormData] = useState({
       <div className="row">
         {/* Name */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Name (En)</label>
+          <label className="form-label">{t("merchant.form.nameEn")}</label>
           <Input
-            placeholder="Name"
+            placeholder={t("merchant.form.namePlaceholder")}
           />
         </div>
 
         {/* اسم */}
         <div className="col-md-6 mb-3">
           <label className="form-label" style={{ textAlign: "right", display: "block" }}>
-            Name (Ar)
+            {t("merchant.form.nameAr")}
           </label>
           <Input
-            placeholder="اسم"
+            placeholder={t("merchant.form.nameArPlaceholder")}
             style={{ height: "40px", direction: "rtl" }}
           />
         </div>
 
         {/* Partner Email */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Partner Email</label>
+          <label className="form-label">{t("merchant.form.partnerEmail")}</label>
           <Input
             type="email"
-            placeholder="Partner Email"
+            placeholder={t("merchant.form.partnerEmail")}
             style={{ height: "40px" }}
           />
         </div>
 
         {/* Contact No */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Contact No.</label>
+          <label className="form-label">{t("merchant.form.contactNo")}</label>
           <Input
             addonBefore="+966"
-            placeholder="Contact No"
+            placeholder={t("merchant.form.contactNoPlaceholder")}
             style={{ height: "40px" }}
           />
         </div>
 
         {/* Country */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Country</label>
+          <label className="form-label">{t("merchant.form.country")}</label>
           <Select
             style={{ width: "100%" }}
           >
@@ -433,16 +435,16 @@ const [formData, setFormData] = useState({
           </Select>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Page Title</label>
+          <label className="form-label">{t("merchant.form.pageTitle")}</label>
           <Input
             addonBefore="+966"
-            placeholder="Contact No"
+            placeholder={t("merchant.form.contactNoPlaceholder")}
             style={{ height: "40px" }}
           />
         </div>
         {/* Choose Brand Color */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Brand Color</label>
+          <label className="form-label">{t("merchant.form.brandColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -454,7 +456,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Primary Color</label>
+          <label className="form-label">{t("merchant.form.primaryColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -466,7 +468,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Secondary Color</label>
+          <label className="form-label">{t("merchant.form.secondaryColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -478,7 +480,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Background Color</label>
+          <label className="form-label">{t("merchant.form.backgroundColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -490,7 +492,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Text Color</label>
+          <label className="form-label">{t("merchant.form.textColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -502,7 +504,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Button Color</label>
+          <label className="form-label">{t("merchant.form.buttonColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -514,7 +516,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Button text Color</label>
+          <label className="form-label">{t("merchant.form.buttonTextColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -526,7 +528,7 @@ const [formData, setFormData] = useState({
           </div>
         </div>
          <div className="col-md-6 mb-3">
-          <label className="form-label">Font Family</label>
+          <label className="form-label">{t("merchant.form.fontFamily")}</label>
           <Select
             style={{ width: "100%" }}
           >
@@ -536,38 +538,38 @@ const [formData, setFormData] = useState({
         </div>
         {/* Affiliation URL */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Minimum Tenure</label>
+          <label className="form-label">{t("merchant.form.minTenure")}</label>
           <Input
-            placeholder="Minimum Tenur"
+            placeholder={t("merchant.form.minTenurePlaceholder")}
             style={{ height: "40px" }}
           />
         </div>
 
         {/* Affiliation Code */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Maximum Tenure</label>
+          <label className="form-label">{t("merchant.form.maxTenure")}</label>
           <Input
-            placeholder="Maximum Tenure"
+            placeholder={t("merchant.form.maxTenurePlaceholder")}
             style={{ height: "40px" }}
           />
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Minimum Financing Amount</label>
+          <label className="form-label">{t("merchant.form.minFinancing")}</label>
           <Input
-            placeholder="Minimum Financing Amount"
+            placeholder={t("merchant.form.minFinancing")}
             style={{ height: "40px" }}
           />
         </div>
         <div className="col-md-6 mb-3">
-          <label className="form-label">Maximum Financing Amount</label>
+          <label className="form-label">{t("merchant.form.maxFinancing")}</label>
           <Input
-            placeholder="Maximum Financing Amount"
+            placeholder={t("merchant.form.maxFinancing")}
             style={{ height: "40px" }}
           />
         </div>
         {/* Logo */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Upload Logo</label>
+          <label className="form-label">{t("merchant.form.uploadLogo")}</label>
           <div style={{ position: "relative" }}>
             <input
               type="file"
@@ -609,7 +611,7 @@ const [formData, setFormData] = useState({
                   padding: 0,
                   zIndex: 10,
                 }}
-                title="Remove logo"
+                title={t("merchant.form.removeLogo")}
               >
                 ×
               </button>
@@ -630,7 +632,7 @@ const [formData, setFormData] = useState({
 
         {/* Favicon */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Upload Favicon</label>
+          <label className="form-label">{t("merchant.form.uploadFavicon")}</label>
           <div style={{ position: "relative" }}>
             <input
               type="file"
@@ -672,7 +674,7 @@ const [formData, setFormData] = useState({
                   padding: 0,
                   zIndex: 10,
                 }}
-                title="Remove favicon"
+                title={t("merchant.form.removeFavicon")}
               >
                 ×
               </button>
@@ -693,9 +695,9 @@ const [formData, setFormData] = useState({
 
         {/* API Secret Key */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">API Secret Key</label>
+          <label className="form-label">{t("merchant.form.apiSecretKey")}</label>
           <Input
-            placeholder="Auto-generated key"
+            placeholder={t("merchant.form.autoGeneratedKey")}
             style={{ height: "40px", backgroundColor: "#f5f5f5" }}
             readOnly
           />
@@ -703,7 +705,7 @@ const [formData, setFormData] = useState({
 
         {/* Enable API */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Mdr Settings</label>
+          <label className="form-label">{t("merchant.form.mdrSettings")}</label>
           <Select
             style={{ width: "100%" }}
           >
@@ -718,7 +720,7 @@ const [formData, setFormData] = useState({
             <Switch
               className="red-switch"
             />
-            <label className="form-label mb-0">Status</label>
+            <label className="form-label mb-0">{t("common:status")}</label>
           </div>
         </div>
 
@@ -736,14 +738,14 @@ const [formData, setFormData] = useState({
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("merchant.confirm.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("merchant.confirm.addTitle")
+              : t("merchant.confirm.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -752,17 +754,17 @@ const [formData, setFormData] = useState({
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("merchant.confirm.update")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("merchant.confirm.add")
+                : t("merchant.confirm.delete")
             }`}
           </Form>
         </Modal>

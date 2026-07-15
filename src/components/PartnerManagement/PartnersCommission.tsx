@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import TableView from "../TableView/TableView";
 import { getPartnerCommissions } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import Loader from "../Loader/Loader";
 
 const PartnersCommission = () => {
+  const { t } = useTranslation("partner");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [from, setFrom] = useState(0);
@@ -19,32 +21,32 @@ const PartnersCommission = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Application No.",
+      name: t("col.applicationNo"),
       selector: (row: { application_no: any }) => row.application_no || "-",
       sortable: true,
     },
     {
-      name: "Customer Name",
+      name: t("col.customerName"),
       selector: (row: { customer_name: any }) => row.customer_name || "-",
       sortable: true,
     },
     {
-      name: "Product",
+      name: t("col.product"),
       selector: (row: { product: any }) => row.product || "-",
       sortable: true,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount || "-",
       sortable: true,
     },
     {
-      name: "Commission",
+      name: t("col.commission"),
       selector: (row: { commission: any }) => row.commission || "-",
       sortable: true,
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { date: any }) => row.date || "-",
       sortable: true,
     },
@@ -73,11 +75,11 @@ const PartnersCommission = () => {
         setTotalApplications(response?.data?.data?.application_count || 0);
         setTotalCommission(response?.data?.data?.commission_sum || 0);
       } else {
-        toast.error(response?.data?.message || "Failed to fetch commission data");
+        toast.error(response?.data?.message || t("toast.commissionFetchFailed"));
       }
     } catch (error: any) {
       console.error("Error fetching commission data:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch commission data");
+      toast.error(error?.response?.data?.message || t("toast.commissionFetchFailed"));
     } finally {
       setSkelitonLoading(false);
       setLoading(false);
@@ -107,11 +109,11 @@ const PartnersCommission = () => {
       >
         {/* Header */}
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h4 style={{ margin: 0, fontWeight: 600 }}>All Partners</h4>
+          <h4 style={{ margin: 0, fontWeight: 600 }}>{t("commission.allPartners")}</h4>
         </div>
 
         {/* Overview Section */}
-        <h5 style={{ marginBottom: "1.5rem", fontWeight: 600 }}>Overview</h5>
+        <h5 style={{ marginBottom: "1.5rem", fontWeight: 600 }}>{t("commission.overview")}</h5>
 
         {/* Metrics Cards */}
         <div className="row mb-4">
@@ -125,7 +127,7 @@ const PartnersCommission = () => {
               }}
             >
               <p style={{ margin: 0, fontSize: "14px", color: "var(--color-text-slate)" }}>
-                Total Applied Applications
+                {t("commission.totalAppliedApplications")}
               </p>
               <h2 style={{ margin: "0.5rem 0 0 0", fontWeight: 700 }}>
                 {totalApplications}
@@ -144,7 +146,7 @@ const PartnersCommission = () => {
               }}
             >
               <p style={{ margin: 0, fontSize: "14px", color: "#e9ecef" }}>
-                Total Commission
+                {t("commission.totalCommission")}
               </p>
               <h2 style={{ margin: "0.5rem 0 0 0", fontWeight: 700 }}>
                 {totalCommission.toFixed(2)}

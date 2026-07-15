@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import "./DashboardOverview.css";
 import {
   ClipboardList,
@@ -37,56 +38,57 @@ const DashboardOverview: React.FC<{ applicationData: any; loading: boolean }> = 
   loading,
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation("dashboard");
 
   const statsData: StatCard[] = [
     {
-      title: "Total Applied Applications",
+      title: t("overview.totalApplied"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalAppliedApplications,
       icon: ClipboardList,
       theme: "emerald",
       link: "/LOS/FinancingApplications/AllApplications",
     },
     {
-      title: "Total Completed Applications",
+      title: t("overview.totalCompleted"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalCompletedApplications,
       icon: FileCheck2,
       theme: "teal",
     },
     {
-      title: "Total In Progress Applications",
+      title: t("overview.totalInProgress"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalInProgressApplications,
       icon: Hourglass,
       theme: "amber",
       link: "/LOS/FinancingApplications/InProgressFinancing",
     },
     {
-      title: "Total Approved Applications",
+      title: t("overview.totalApproved"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalApprovedApplications,
       icon: BadgeCheck,
       theme: "green",
       link: "/LOS/FinancingApplications/ApprovedFinancing",
     },
     {
-      title: "Total Rejected Applications",
+      title: t("overview.totalRejected"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalRejectedApplications,
       icon: FileX2,
       theme: "rose",
       link: "/LOS/FinancingApplications/RejectedFinancing",
     },
     {
-      title: "Today's Completed Applications",
+      title: t("overview.todaysCompleted"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.todaysCompletedApplications || 0,
       icon: CalendarCheck2,
       theme: "cyan",
     },
     {
-      title: "Total Disbursed Amount",
+      title: t("overview.totalDisbursed"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalDisbursedAmount,
       icon: Banknote,
       theme: "violet",
     },
     {
-      title: "Total Customers",
+      title: t("overview.totalCustomers"),
       value: loading ? <PulseLoading size="sm" /> : applicationData?.totalCustomers,
       icon: Users,
       theme: "indigo",

@@ -3,13 +3,15 @@ import TableView from "../TableView/TableView";
 import { getAllTransaction, getCallAction } from "../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import { NumberFormatter } from "../../App";
-const PaymentMode: any = {
-  0: 'Cheque',
-  1: 'Online',
-  2: 'Cash',
-  3: 'Gateway',
-};
+import { useTranslation } from "react-i18next";
 const TransactionHistory = () => {
+  const { t } = useTranslation("accountingLoans");
+  const PaymentMode: any = {
+    0: t("txnHistory.mode.cheque"),
+    1: t("txnHistory.mode.online"),
+    2: t("txnHistory.mode.cash"),
+    3: t("txnHistory.mode.gateway"),
+  };
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [allDataTransaction, setAllDataTransaction] = useState<any>();
@@ -40,36 +42,36 @@ const TransactionHistory = () => {
   };
   const History_List_Header = [
     {
-      name: "Application No",
+      name: t("txnHistory.col.applicationNo"),
       selector: (row: any) => row.applicationNo,
     },
 
     {
-      name: " Transaction ID",
+      name: t("txnHistory.col.transactionId"),
       selector: (row: any) => row.transactionId,
     },
     {
-      name: "Transaction Date",
+      name: t("txnHistory.col.transactionDate"),
       selector: (row: any) => row.transactionDate,
       width: "120px",
     },
     {
-      name: "Description",
+      name: t("txnHistory.col.description"),
       selector: (row: any) => row.description,
       // width: "400px",
     },
 
     {
-      name: "Debit Amount",
+      name: t("txnHistory.col.debitAmount"),
       selector: (row: any) => <NumberFormatter value={row.debitAmount} />,
     },
     {
-      name: "Credit Amount",
+      name: t("txnHistory.col.creditAmount"),
       selector: (row: any) => <NumberFormatter value={row.creditAmount} />,
     },
 
     {
-      name: "Currency",
+      name: t("txnHistory.col.currency"),
       selector: (row: any) => row.currency,
     },
     // {
@@ -77,15 +79,15 @@ const TransactionHistory = () => {
     //   selector: (row: any) => row.currency,
     // },
     {
-      name: "Posted By",
-      selector: (row: any) => "System Admin",
+      name: t("txnHistory.col.postedBy"),
+      selector: (row: any) => t("txnHistory.postedByValue"),
     },
     {
-      name: "Mode",
+      name: t("txnHistory.col.mode"),
       selector: (row: any) => row.mode,
     },
     {
-      name: "Status",
+      name: t("txnHistory.col.status"),
       width: "150px",
       cell: (row: any) => (
         <div
@@ -98,7 +100,7 @@ const TransactionHistory = () => {
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}
         >
-          {"Approved"}
+          {t("txnHistory.approved")}
         </div>
       ),
     },
@@ -165,7 +167,7 @@ const TransactionHistory = () => {
             className="d-flex justify-content-center mt-5"
             style={{ color: "red" }}
           >
-            No data found
+            {t("txnHistory.noData")}
           </div>
         )}
       </div>

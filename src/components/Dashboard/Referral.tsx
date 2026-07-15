@@ -10,10 +10,12 @@ import TableView from "../TableView/TableView";
 import { Activity_Loans_Header } from "../Config/TableHeaders";
 import { getAllReferral } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 import SkeletonLabel from "../SkeletonLabel";
 
 const Referral = () => {
+  const { t } = useTranslation("dashboard");
   const data1 = [
     {
       Id: "kajbdsf",
@@ -46,42 +48,42 @@ const Referral = () => {
   const [pageSize, setPageSize] = useState(15);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("referral.col.sr"),
       selector: (row: { user_id: any }) => row.user_id,
       sortable: true,
       width: "100px"
     },
     {
-      name: "Referrer Phone",
+      name: t("referral.col.referrerPhone"),
       selector: (row: {  referrer_phone: any }) => row.referrer_phone,
       sortable: true,
       width: "150px"
     },
     {
-      name: "Referred Phone",
+      name: t("referral.col.referredPhone"),
       selector: (row: { referred_phone: any }) => row.referred_phone,
       sortable: true,
       width: "220px"
     },
     {
-      name: "Tier ID",
+      name: t("referral.col.tierId"),
       selector: (row: { tier_id: any }) => row.tier_id,
       sortable: true,
       width: "180px"
     },
     {
-      name: "Referrer Reward Value",
+      name: t("referral.col.referrerReward"),
       selector: (row: { referrer_reward_value: any }) => row.referrer_reward_value,
       sortable: true,
       width: "150px"
     },
     {
-      name: "Referred Reward Value",
+      name: t("referral.col.referredReward"),
       selector: (row: { referred_reward_value: any }) => row.referred_reward_value,
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { status: any }) => row.status,
       sortable: true,
     },
@@ -182,7 +184,7 @@ dashboardData?.map((item: any) => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -200,14 +202,14 @@ dashboardData?.map((item: any) => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("pipeline.searchPlaceholder")}
             />
           </div>
 
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
-          
+          <button className="invoice-btn">{t("btn.excel")}</button>
+          <button className="invoice-btn">{t("btn.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
+
         </div>
       </div>
         </div>

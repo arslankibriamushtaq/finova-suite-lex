@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Button, Dropdown, Menu, Select, Steps, StepProps } from "antd";
 
 import { FaSortAmountUp } from "react-icons/fa";
@@ -50,6 +51,7 @@ const getApproveStepIcon = (stepIndex: any, status: any) => {
   return iconMap[stepIndex]; // wait
 };
 const ApplicationManagement = () => {
+  const { t } = useTranslation("loanManagement");
   const [customerValue, setCustomerValue] = useState("individuals");
   const [buisnessForm, setBusinessForm] = useState(false);
   const [editRowId, setEditRowId] = useState(null);
@@ -78,8 +80,8 @@ const ApplicationManagement = () => {
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [approveStepStatus, setApproveStepStatus] = useState<StepProps[]>([
-    { title: "Modify Loan Status", status: "wait" },
-    { title: "Generate Invoices", status: "wait" },
+    { title: t("applications.stepModifyLoanStatus"), status: "wait" },
+    { title: t("applications.stepGenerateInvoices"), status: "wait" },
   ]);
   const [activeTab, setActiveTab] = useState("AllApplication");
   const [manualModal, setManualModal] = useState(false);
@@ -154,8 +156,8 @@ const ApplicationManagement = () => {
   const handleApprove = async (id: any, status: boolean) => {
     setIsModalVisible(true);
     setApproveStepStatus([
-      { title: "Modify Loan Status", status: "process" },
-      { title: "Generate Invoices", status: "wait" },
+      { title: t("applications.stepModifyLoanStatus"), status: "process" },
+      { title: t("applications.stepGenerateInvoices"), status: "wait" },
     ]);
     setLoader(true);
 
@@ -178,7 +180,7 @@ const ApplicationManagement = () => {
 
             // Show success after delay
             setTimeout(() => {
-              toast.success("Loan has been Approved and Invoices are Generated");
+              toast.success(t("applications.toastApprovedAndInvoices"));
               setIsModalVisible(false);
               localStorage.setItem("tabs", "DueLoan");
               getAll();
@@ -198,7 +200,7 @@ const ApplicationManagement = () => {
         if (index !== -1) errored[index].status = "error";
         return errored;
       });
-      toast.error(error?.message || "Something went wrong");
+      toast.error(error?.message || t("common:somethingWentWrong"));
     } finally {
       setLoader(false);
     }
@@ -272,19 +274,19 @@ const ApplicationManagement = () => {
     try {
       if (manualActionType === "approve") {
         await approveManualApproval(selectedTaskId, { notes: manualNotes });
-        toast.success("Application Approved Successfully");
+        toast.success(t("applications.toastApproved"));
       } else {
         await rejectManualApproval(selectedTaskId, {
           rejectionReason: manualRejectionReason,
           notes: manualNotes
         });
-        toast.success("Application Rejected Successfully");
+        toast.success(t("applications.toastRejected"));
       }
       setManualModal(false);
       setManualNotes("");
       getAll();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Action failed");
+      toast.error(error?.response?.data?.message || error?.message || t("applications.toastActionFailed"));
     } finally {
       setLoader(false);
     }
@@ -302,7 +304,7 @@ const ApplicationManagement = () => {
       
       // We will calculate pagination state after mapping/filtering in the render block
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch loan applications");
+      toast.error(error?.response?.data?.message || error?.message || t("applications.toastFetchFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -429,10 +431,10 @@ const ApplicationManagement = () => {
       return (
         <Menu onClick={({ key }: any) => handleManualAction(key, row)}>
           <Menu.Item key="manualApprove" icon={<CheckCircleOutlined />}>
-            Approve
+            {t("common:approve")}
           </Menu.Item>
           <Menu.Item key="manualReject" icon={<CloseCircleOutlined />}>
-            Reject
+            {t("common:reject")}
           </Menu.Item>
         </Menu>
       );
@@ -442,10 +444,10 @@ const ApplicationManagement = () => {
         {row.laonStatus == "Pending" && (
           <>
             <Menu.Item key="approve" icon={<EditOutlined />}>
-              Approve
+              {t("common:approve")}
             </Menu.Item>
             <Menu.Item key="reject" icon={<EditOutlined />}>
-              Reject
+              {t("common:reject")}
             </Menu.Item>
           </>
         )}
@@ -458,15 +460,15 @@ const ApplicationManagement = () => {
               Disburse Approve Amount
             </Menu.Item> */}
             <Menu.Item key="viewSchedule" icon={<EyeOutlined />}>
-              View Schedule
+              {t("applications.actionViewSchedule")}
             </Menu.Item>
           </>
         )}
         <Menu.Item key="viewDetail" icon={<EyeOutlined />}>
-          View Detail
+          {t("applications.actionViewDetail")}
         </Menu.Item>
         <Menu.Item key="costByApplication" icon={<SaudiRiyal size={14} />}>
-          Cost By Application
+          {t("applications.actionCostByApplication")}
         </Menu.Item>
         {/* <Menu.Item key="edit" icon={<EditOutlined />}>
           Edit
@@ -489,11 +491,11 @@ const ApplicationManagement = () => {
         )}
         {row.rescheduleStatus && (
           <Menu.Item key="rescheduleHistory" icon={<MdSchedule />}>
-            Reschedule History
+            {t("applications.actionRescheduleHistory")}
           </Menu.Item>
         )}
         <Menu.Item key="waiveOffDetails" icon={<EyeOutlined />}>
-          Waive Off Details
+          {t("applications.actionWaiveOffDetails")}
         </Menu.Item>
       </Menu>
     );
@@ -565,87 +567,87 @@ const ApplicationManagement = () => {
 
   const Account_Documents_List_Header = [
     {
-      name: "Application No",
+      name: t("applications.colApplicationNo"),
       selector: (row: any) => row.applicationNumber,
       sortable: true,
       width: "170px",
     },
     {
-      name: "National ID",
+      name: t("applications.colNationalId"),
       selector: (row: any) => row.nationalId,
       sortable: true,
       width: "140px",
     },
     {
-      name: "Product Name",
+      name: t("field.productName"),
       selector: (row: any) => row.productName,
       sortable: true,
       width: "160px",
     },
     {
-      name: "Sharia Structure",
+      name: t("applications.colShariaStructure"),
       selector: (row: any) => row.shariaStructure,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Requested Amount",
+      name: t("applications.colRequestedAmount"),
       selector: (row: any) => formatSar(row.requestedAmount),
       sortable: true,
       width: "160px",
     },
     {
-      name: "Tenure",
-      selector: (row: any) => row.requestedTenureMonths ? `${row.requestedTenureMonths} months` : "-",
+      name: t("applications.colTenure"),
+      selector: (row: any) => row.requestedTenureMonths ? t("applications.tenureMonths", { count: row.requestedTenureMonths }) : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Profit Rate",
+      name: t("applications.colProfitRate"),
       selector: (row: any) =>
         row.profitRate != null ? `${parseFloat(row.profitRate).toFixed(2)}%` : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Offered Amount",
+      name: t("applications.colOfferedAmount"),
       selector: (row: any) => formatSar(row.offeredAmount),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Total Amount",
+      name: t("applications.colTotalAmount"),
       selector: (row: any) =>
         formatSar(row.totalPayable ?? row.offeredTotalPayable ?? row.totalAmount),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Offered Installment",
+      name: t("applications.colOfferedInstallment"),
       selector: (row: any) => formatSar(row.offeredMonthlyInstallment),
       sortable: true,
       width: "170px",
     },
     {
-      name: "Purpose",
+      name: t("applications.colPurpose"),
       selector: (row: any) => row.purposeOfFinance,
       sortable: true,
       width: "130px",
     },
     {
-      name: "Employer",
+      name: t("applications.colEmployer"),
       selector: (row: any) => row.employerName || "-",
       sortable: true,
       width: "160px",
     },
     {
-      name: "Monthly Income",
+      name: t("applications.colMonthlyIncome"),
       selector: (row: any) => formatSar(row.monthlyIncome),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Credit Score",
+      name: t("applications.colCreditScore"),
       cell: (row: any) => {
         const score = row.creditScore;
         if (score == null) return <span>-</span>;
@@ -674,7 +676,7 @@ const ApplicationManagement = () => {
       width: "130px",
     },
     {
-      name: "Current Step",
+      name: t("applications.colCurrentStep"),
       cell: (row: any) => <Pill value={row.stepperLabel} />,
       width: "180px",
     },
@@ -750,7 +752,7 @@ const ApplicationManagement = () => {
     //   width: "180px",
     // },
     {
-      name: "Status",
+      name: t("common:status"),
       width: "180px",
       cell: (row: any) => (
         <Pill value={(row.status || "-").replace(/_/g, " ")} />
@@ -778,12 +780,12 @@ const ApplicationManagement = () => {
     //   width: "120px",
     // },
     {
-      name: "Disbursement",
+      name: t("applications.colDisbursement"),
       cell: (row: any) => <Pill value={row.disbursementStatus} />,
       width: "140px",
     },
     {
-      name: "Reschedule Status",
+      name: t("applications.colRescheduleStatus"),
       cell: (row: any) => {
         const status = row.rescheduleStatus;
         if (!status) return <span>-</span>;
@@ -812,13 +814,13 @@ const ApplicationManagement = () => {
       width: "170px",
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -830,7 +832,7 @@ const ApplicationManagement = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -1021,23 +1023,23 @@ const ApplicationManagement = () => {
     Object.keys(formValues).forEach((key) => {
 
       if (!formValues[key] && typeof formValues[key] !== "boolean") {
-        newErrors[key] = "This field is required";
+        newErrors[key] = t("fieldRequired");
       }
     });
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
   const businessOption = [
-    { label: "business", value: "business" },
-    { label: "Individual", value: "individual" },
+    { label: t("option.business"), value: "business" },
+    { label: t("option.individual"), value: "individual" },
   ];
   const isVariableRateLoanOptions = [
-    { label: "True", value: true },
-    { label: "False", value: false },
+    { label: t("option.true"), value: true },
+    { label: t("option.false"), value: false },
   ];
   const tenureTypeOptions = [
-    { label: "Monthly", value: 2 },
-    { label: "Yearly", value: 1 },
+    { label: t("option.monthly"), value: 2 },
+    { label: t("option.yearly"), value: 1 },
   ];
   const applicableOption = [
     { label: "Customer Name", value: 0 },
@@ -1066,7 +1068,7 @@ const ApplicationManagement = () => {
           <span className="pro-head-badge">
             <FileText className="h-4 w-4" />
           </span>
-          Application Management
+          {t("applications.title")}
         </h3>
       </div>
       {/* {loader && <Loader />} */}
@@ -1099,33 +1101,33 @@ const ApplicationManagement = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title style={{ fontSize: "18px", fontWeight: 700 }}>
-            {manualActionType === "approve" ? "Approve Application" : "Reject Application"}
+            {manualActionType === "approve" ? t("applications.approveModalTitle") : t("applications.rejectModalTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             {manualActionType === "reject" && (
               <Form.Group className="mb-3">
-                <Form.Label style={{ fontSize: "14px", fontWeight: 500 }}>Rejection Reason</Form.Label>
+                <Form.Label style={{ fontSize: "14px", fontWeight: 500 }}>{t("applications.rejectionReason")}</Form.Label>
                 <Select
                   style={{ width: "100%" }}
                   value={manualRejectionReason}
                   onChange={(value) => setManualRejectionReason(value)}
                 >
-                  <Select.Option value="DBR_HIGH">DBR High</Select.Option>
-                  <Select.Option value="LOW_CREDIT_SCORE">Low Credit Score</Select.Option>
-                  <Select.Option value="INCOMPLETE_DOCS">Incomplete Documentation</Select.Option>
-                  <Select.Option value="OTHERS">Others</Select.Option>
+                  <Select.Option value="DBR_HIGH">{t("applications.reasonDbrHigh")}</Select.Option>
+                  <Select.Option value="LOW_CREDIT_SCORE">{t("applications.reasonLowCreditScore")}</Select.Option>
+                  <Select.Option value="INCOMPLETE_DOCS">{t("applications.reasonIncompleteDocs")}</Select.Option>
+                  <Select.Option value="OTHERS">{t("applications.reasonOthers")}</Select.Option>
                 </Select>
               </Form.Group>
             )}
             <Form.Group className="mb-3">
-              <Form.Label style={{ fontSize: "14px", fontWeight: 500 }}>Notes</Form.Label>
+              <Form.Label style={{ fontSize: "14px", fontWeight: 500 }}>{t("applications.notes")}</Form.Label>
               <Input.TextArea
                 rows={4}
                 value={manualNotes}
                 onChange={(e) => setManualNotes(e.target.value)}
-                placeholder="Enter notes here..."
+                placeholder={t("applications.notesPlaceholder")}
               />
             </Form.Group>
           </Form>
@@ -1135,7 +1137,7 @@ const ApplicationManagement = () => {
             onClick={() => setManualModal(false)}
             style={{ borderRadius: "2px" }}
           >
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button
             className="gradient-btn"
@@ -1143,7 +1145,7 @@ const ApplicationManagement = () => {
             onClick={submitManualAction}
             style={{ borderRadius: "2px" }}
           >
-            Submit
+            {t("common:submit")}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -1200,7 +1202,7 @@ const ApplicationManagement = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by application no, national ID, product, employer..."
+            placeholder={t("applications.searchPlaceholder")}
             value={searchValue}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             onChange={(e: any) => {
@@ -1240,10 +1242,10 @@ const ApplicationManagement = () => {
             onSelect={(k: any) => { setActiveTab(k); setPage(1); }}
             className="app-tabs"
           >
-            <Tab eventKey="AllApplication" title="All Application" />
-            <Tab eventKey="ApprovedApplication" title="Approved Application" />
-            <Tab eventKey="CancelledApplication" title="Cancelled Application" />
-            <Tab eventKey="PendingApplication" title="Pending Application" />
+            <Tab eventKey="AllApplication" title={t("applications.tabAll")} />
+            <Tab eventKey="ApprovedApplication" title={t("applications.tabApproved")} />
+            <Tab eventKey="CancelledApplication" title={t("applications.tabCancelled")} />
+            <Tab eventKey="PendingApplication" title={t("applications.tabPending")} />
           </Tabs>
         </div>
         <TableView
@@ -1264,7 +1266,7 @@ const ApplicationManagement = () => {
             className="d-flex justify-content-center py-5"
             style={{ color: "var(--destructive)" }}
           >
-            No data found
+            {t("common:noData")}
           </div>
         )}
       </div>
@@ -1284,7 +1286,7 @@ const ApplicationManagement = () => {
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">
             {" "}
-            Disburse Approved Amount
+            {t("applications.disburseTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
@@ -1293,7 +1295,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Application No
+                    {t("applications.colApplicationNo")}
                   </Form.Label>
                   <Form.Control
                     name="accountNo"
@@ -1307,7 +1309,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Product Name
+                    {t("field.productName")}
                   </Form.Label>
                   <Form.Control
                     name="accountNo"
@@ -1321,7 +1323,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Status
+                    {t("common:status")}
                   </Form.Label>
                   <Form.Control
                     name="company"
@@ -1335,7 +1337,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Application Key
+                    {t("applications.applicationKey")}
                   </Form.Label>
                   <Form.Control
                     name="branch"
@@ -1349,7 +1351,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Loan Id
+                    {t("applications.loanId")}
                   </Form.Label>
                   <Form.Control
                     name="id"
@@ -1363,7 +1365,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Tenure
+                    {t("applications.colTenure")}
                   </Form.Label>
                   <Form.Control
                     name="tenure"
@@ -1376,7 +1378,7 @@ const ApplicationManagement = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Disbursement Amount
+                    {t("applications.disbursementAmount")}
                   </Form.Label>
                   <Form.Control
                     name="loanAmount"
@@ -1394,17 +1396,17 @@ const ApplicationManagement = () => {
               </Col>
               <Col md={6} className="mb-3">
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Payment Method
+                  {t("applications.paymentMethod")}
                 </Form.Label>
                 <Select
-                  placeholder="Select Payment Method"
+                  placeholder={t("applications.selectPaymentMethod")}
                   className="w-100"
                   value={paymentMethod}
                   onChange={(value) => setPaymentMethod(value)}
                 >
-                  <option value="cheque">Cheque</option>
-                  <option value="online">Online Transaction</option>
-                  <option value="cash">Cash</option>
+                  <option value="cheque">{t("applications.cheque")}</option>
+                  <option value="online">{t("applications.onlineTransaction")}</option>
+                  <option value="cash">{t("applications.cash")}</option>
                 </Select>
               </Col>
             </Row>
@@ -1412,7 +1414,7 @@ const ApplicationManagement = () => {
               <Row>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Cheque Number
+                    {t("applications.chequeNumber")}
                   </Form.Label>
                   <Form.Control
                     name="chequeNumber"
@@ -1427,7 +1429,7 @@ const ApplicationManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Bank Name
+                    {t("field.bankName")}
                   </Form.Label>
                   <Form.Control
                     name="bankName"
@@ -1442,7 +1444,7 @@ const ApplicationManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Bank Account Number
+                    {t("applications.bankAccountNumber")}
                   </Form.Label>
                   <Form.Control
                     name="bankAccNumber"
@@ -1457,7 +1459,7 @@ const ApplicationManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Branch Code
+                    {t("field.branchCode")}
                   </Form.Label>
                   <Form.Control
                     name="branchCode"
@@ -1477,7 +1479,7 @@ const ApplicationManagement = () => {
               <Row>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Bank Name
+                    {t("field.bankName")}
                   </Form.Label>
                   <Form.Control
                     name="bankName"
@@ -1492,7 +1494,7 @@ const ApplicationManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Account Number
+                    {t("field.accountNumber")}
                   </Form.Label>
                   <Form.Control
                     name="bankAccNumber"
@@ -1507,7 +1509,7 @@ const ApplicationManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Transaction ID
+                    {t("applications.transactionId")}
                   </Form.Label>
                   <Form.Control
                     name="transactionId"
@@ -1527,7 +1529,7 @@ const ApplicationManagement = () => {
               <Row>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Amount
+                    {t("common:amount")}
                   </Form.Label>
                   <Form.Control
                     name="amountCash"
@@ -1544,7 +1546,7 @@ const ApplicationManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Receipt Number
+                    {t("applications.receiptNumber")}
                   </Form.Label>
                   <Form.Control
                     name="receiptNumber"
@@ -1575,7 +1577,7 @@ const ApplicationManagement = () => {
                   color: "var(--color-near-white)",
                 }}
               >
-                Save
+                {t("common:save")}
               </button>
             </div>
           </div>
@@ -1590,7 +1592,7 @@ const ApplicationManagement = () => {
         }}
       >
         <Modal.Header closeButton>
-          <Modal.Title className="modal-title"> Update Application</Modal.Title>
+          <Modal.Title className="modal-title"> {t("applications.updateTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
           <div className="px-4 mt-2 mb-4">
@@ -1598,7 +1600,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Account No
+                    {t("field.accountNo")}
                   </Form.Label>
                   <Form.Control
                     name="accountNo"
@@ -1617,7 +1619,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Customers
+                    {t("field.customer")}
                   </Form.Label>
                   <Select
                     value={customer}
@@ -1625,7 +1627,7 @@ const ApplicationManagement = () => {
                       setCustomer(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {businessOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -1642,7 +1644,7 @@ const ApplicationManagement = () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Kyb Id
+                      {t("field.kybId")}
                     </Form.Label>
                     <Select
                       value={formValues.kybId}
@@ -1653,7 +1655,7 @@ const ApplicationManagement = () => {
                         }));
                       }}
                       style={{ width: "100%" }}
-                      placeholder="Select Rate Loan Type"
+                      placeholder={t("placeholder.selectRateLoanType")}
                     >
                       {businessId?.map((option: any) => (
                         <Select.Option
@@ -1674,7 +1676,7 @@ const ApplicationManagement = () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Kyc Id
+                      {t("field.kycId")}
                     </Form.Label>
                     <Select
                       value={formValues.kycId}
@@ -1685,7 +1687,7 @@ const ApplicationManagement = () => {
                         }));
                       }}
                       style={{ width: "100%" }}
-                      placeholder="Select Rate Loan Type"
+                      placeholder={t("placeholder.selectRateLoanType")}
                     >
                       {individualId?.map((option: any) => (
                         <Select.Option value={option.customerId}>
@@ -1703,7 +1705,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Product Name
+                    {t("field.productName")}
                   </Form.Label>
                   <Select
                     value={formValues.productName}
@@ -1714,7 +1716,7 @@ const ApplicationManagement = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {prodId?.map((option: any) => (
                       <Select.Option value={option.productId}>
@@ -1740,7 +1742,7 @@ const ApplicationManagement = () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Company
+                      {t("field.company")}
                     </Form.Label>
                     <Form.Control
                       name="company"
@@ -1759,7 +1761,7 @@ const ApplicationManagement = () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Branch
+                      {t("field.branch")}
                     </Form.Label>
                     <Form.Control
                       name="branch"
@@ -1778,7 +1780,7 @@ const ApplicationManagement = () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Sub Unit
+                      {t("field.subUnit")}
                     </Form.Label>
                     <Form.Control
                       name="subUnit"
@@ -1796,7 +1798,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Is Variable Rate Loan
+                    {t("field.isVariableRateLoan")}
                   </Form.Label>
                   <Select
                     value={formValues.isVariableRateLoan}
@@ -1807,7 +1809,7 @@ const ApplicationManagement = () => {
                       }))
                     }
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {isVariableRateLoanOptions?.map((option) => (
                       <Select.Option value={option.value}>
@@ -1824,7 +1826,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Loan Amount
+                    {t("field.loanAmount")}
                   </Form.Label>
                   <Form.Control
                     name="loanAmount"
@@ -1868,7 +1870,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Tenure Type
+                    {t("field.tenureType")}
                   </Form.Label>
                   <Select
                     value={formValues.tenureType}
@@ -1896,7 +1898,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Interest Rate
+                    {t("field.interestRate")}
                   </Form.Label>
                   <Form.Control
                     name="interestRate"
@@ -1914,7 +1916,7 @@ const ApplicationManagement = () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Tenure Duration
+                    {t("field.tenureDuration")}
                   </Form.Label>
                   <Form.Control
                     name="tenureDuration"
@@ -1943,7 +1945,7 @@ const ApplicationManagement = () => {
                   width: "fit-content",
                 }}
               >
-                Save
+                {t("common:save")}
               </button>
             </div>
           </div>

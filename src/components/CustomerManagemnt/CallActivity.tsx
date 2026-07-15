@@ -28,8 +28,10 @@ import {
 import { color } from "echarts";
 import { themeStyle } from "../Config/Theme";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 
 const CallActivity = () => {
+  const { t } = useTranslation("customerManagement");
   const [editRowId, setEditRowId] = useState(null);
   const [callAction, setCallAction] = useState<any>();
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
@@ -130,10 +132,10 @@ const CallActivity = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -241,68 +243,68 @@ const CallActivity = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Date",
+      name: t("common:date"),
       selector: "Date",
       cell: (row: any) => row.date,
     },
     {
-      name: "Action",
+      name: t("callActivity.action"),
       selector: (row: { action: any }) => row.action,
       cell: (row: any) => row.action,
     },
     {
-      name: "Result",
+      name: t("callActivity.result"),
       selector: (row: { result: any }) => row.result,
       cell: (row: any) => row.result,
     },
     {
-      name: "Contact",
+      name: t("callActivity.contact"),
       selector: (row: { contact: any }) => row.contact,
       cell: (row: any) => row.contact,
     },
     {
-      name: "Reason",
+      name: t("callActivity.reason"),
       selector: (row: { reason: any }) => row.reason,
       cell: (row: any) => row.reason,
     },
     {
-      name: "Promise Date",
+      name: t("callActivity.promiseDate"),
       selector: (row: { promiseDate: any }) => row.promiseDate,
     },
     {
-      name: "Promise Amt",
+      name: t("callActivity.promiseAmtShort"),
       selector: (row: { promiseAmount: any }) => row.promiseAmount,
     },
     {
-      name: "Current Amount Due",
+      name: t("callActivity.currentAmountDue"),
       selector: (row: { currentAmountDue: any }) => row.currentAmountDue,
     },
     {
-      name: "Condition",
+      name: t("callActivity.condition"),
       selector: (row: { condition: any }) => row.condition,
     },
     {
-      name: "Appointment",
+      name: t("callActivity.appointment"),
       selector: (row: { appointment: any }) => row.appointment,
     },
     {
-      name: "Flow-Up Date",
+      name: t("callActivity.col.followUpDate"),
       selector: (row: { followUpDate: any }) => row.followUpDate,
     },
     {
-      name: "Time Zone",
+      name: t("callActivity.timeZone"),
       selector: (row: { timeZone: any }) => row.timeZone,
     },
     {
-      name: "Group Follow-Up",
+      name: t("callActivity.groupFollowUpShort"),
       selector: (row: { groupFollowUpDate: any }) => row.groupFollowUpDate,
     },
     {
-      name: "Comments",
+      name: t("callActivity.comments"),
       selector: (row: { comments: any }) => row.comments,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -316,7 +318,7 @@ const CallActivity = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -425,7 +427,7 @@ const CallActivity = () => {
               />
             </div>
             <div className="ps-1 d-flex align-items-center cursor-pointer">
-              Add
+              {t("common:add")}
             </div>
           </div>
         </div>
@@ -447,7 +449,7 @@ const CallActivity = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>Update Call Activity</h3>
+          <h3>{t("callActivity.updateTitle")}</h3>
         </ModalHeader>
 
         <Formik
@@ -481,7 +483,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallResultId"
                         className="mb-1 fs-14"
                       >
-                        Date
+                        {t("common:date")}
                       </label>
                       <Field
                         type="date"
@@ -502,7 +504,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallActionId"
                         className="mb-1 fs-14"
                       >
-                        Action
+                        {t("callActivity.action")}
                       </label>
                       <Field
                         as="select"
@@ -511,7 +513,7 @@ const CallActivity = () => {
                         name="outboundCallActionId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {callAction &&
                           callAction.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -530,7 +532,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallResultId"
                         className="mb-1 fs-14"
                       >
-                        Reasult
+                        {t("callActivity.result")}
                       </label>
                       <Field
                         as="select"
@@ -539,7 +541,7 @@ const CallActivity = () => {
                         name="outboundCallResultId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {allResult &&
                           allResult.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -558,10 +560,10 @@ const CallActivity = () => {
                         htmlFor="outboundCallReasonId"
                         className="mb-1 fs-14"
                       >
-                        Contact
+                        {t("callActivity.contact")}
                       </label>
                       <Field
-                        placeholder="contact"
+                        placeholder={t("callActivity.contact")}
                         id="contact"
                         name="contact"
                         className="form-control"
@@ -577,7 +579,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallReasonId"
                         className="mb-1 fs-14"
                       >
-                        Reason
+                        {t("callActivity.reason")}
                       </label>
                       <Field
                         as="select"
@@ -586,7 +588,7 @@ const CallActivity = () => {
                         name="outboundCallReasonId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {allReason &&
                           allReason.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -603,10 +605,10 @@ const CallActivity = () => {
 
                     <Col md={6} className="mb-2">
                       <label htmlFor="promiseDate" className="mb-1 fs-14">
-                        Promsie Date
+                        {t("callActivity.promiseDate")}
                       </label>
                       <Field
-                        placeholder="Promise Date"
+                        placeholder={t("callActivity.promiseDate")}
                         id="promiseDate"
                         type="date"
                         name="promiseDate"
@@ -620,10 +622,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="promiseAmount" className="mb-1 fs-14">
-                        Promise Amount
+                        {t("callActivity.promiseAmount")}
                       </label>
                       <Field
-                        placeholder="Promise Amount"
+                        placeholder={t("callActivity.promiseAmount")}
                         id="promiseAmount"
                         type="text"
                         name="promiseAmount"
@@ -637,10 +639,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="currentAmountDue" className="mb-1 fs-14">
-                        Current Amount Due
+                        {t("callActivity.currentAmountDue")}
                       </label>
                       <Field
-                        placeholder="Current Amount Due"
+                        placeholder={t("callActivity.currentAmountDue")}
                         id="currentAmountDue"
                         type="text"
                         name="currentAmountDue"
@@ -654,10 +656,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="condition" className="mb-1 fs-14">
-                        Condition
+                        {t("callActivity.condition")}
                       </label>
                       <Field
-                        placeholder="Condition"
+                        placeholder={t("callActivity.condition")}
                         id="condition"
                         as="select"
                         name="condition"
@@ -671,7 +673,7 @@ const CallActivity = () => {
                           })
                         }
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {enums.Condition.map((item: any) => (
                           <option key={item.value} value={item.value}>
                             {item.label}
@@ -686,10 +688,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="appointment" className="mb-1 fs-14">
-                        Appointment
+                        {t("callActivity.appointment")}
                       </label>
                       <Field
-                        placeholder="Appointment"
+                        placeholder={t("callActivity.appointment")}
                         id="appointment"
                         name="appointment"
                         className="form-control"
@@ -702,10 +704,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="followUpDate" className="mb-1 fs-14">
-                        Follow-Up Date
+                        {t("callActivity.followUpDate")}
                       </label>
                       <Field
-                        placeholder="Follow-Up Date"
+                        placeholder={t("callActivity.followUpDate")}
                         id="followUpDate"
                         type="date"
                         name="followUpDate"
@@ -719,7 +721,7 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="timeZone" className="mb-1 fs-14">
-                        Time Zone
+                        {t("callActivity.timeZone")}
                       </label>
                       <Field
                         as="select"
@@ -728,7 +730,7 @@ const CallActivity = () => {
                         name="timeZone"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {enums.TimeZone.map((item: any) => (
                           <option key={item.label} value={item.label}>
                             {item.label}
@@ -743,10 +745,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="groupFollowUpDate" className="mb-1 fs-14">
-                        Group Follow-Up Date
+                        {t("callActivity.groupFollowUpDate")}
                       </label>
                       <Field
-                        placeholder="Group Follow-Up Date"
+                        placeholder={t("callActivity.groupFollowUpDate")}
                         id="groupFollowUpDate"
                         type="date"
                         name="groupFollowUpDate"
@@ -760,10 +762,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="comments" className="mb-1 fs-14">
-                        Comments
+                        {t("callActivity.comments")}
                       </label>
                       <Field
-                        placeholder="Comments"
+                        placeholder={t("callActivity.comments")}
                         id="comments"
                         name="comments"
                         className="form-control"
@@ -777,7 +779,7 @@ const CallActivity = () => {
                   </Row>
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
-                      Update Call Activity
+                      {t("callActivity.updateTitle")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -794,7 +796,7 @@ const CallActivity = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>Call Activity</h3>
+          <h3>{t("callActivity.title")}</h3>
         </ModalHeader>
 
         <Formik
@@ -828,7 +830,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallResultId"
                         className="mb-1 fs-14"
                       >
-                        Date
+                        {t("common:date")}
                       </label>
                       <Field
                         type="date"
@@ -849,7 +851,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallActionId"
                         className="mb-1 fs-14"
                       >
-                        Action
+                        {t("callActivity.action")}
                       </label>
                       <Field
                         as="select"
@@ -858,7 +860,7 @@ const CallActivity = () => {
                         name="outboundCallActionId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {callAction &&
                           callAction.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -877,7 +879,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallResultId"
                         className="mb-1 fs-14"
                       >
-                        Reasult
+                        {t("callActivity.result")}
                       </label>
                       <Field
                         as="select"
@@ -886,7 +888,7 @@ const CallActivity = () => {
                         name="outboundCallResultId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {allResult &&
                           allResult.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -905,10 +907,10 @@ const CallActivity = () => {
                         htmlFor="outboundCallReasonId"
                         className="mb-1 fs-14"
                       >
-                        Contact
+                        {t("callActivity.contact")}
                       </label>
                       <Field
-                        placeholder="contact"
+                        placeholder={t("callActivity.contact")}
                         id="contact"
                         name="contact"
                         className="form-control"
@@ -924,7 +926,7 @@ const CallActivity = () => {
                         htmlFor="outboundCallReasonId"
                         className="mb-1 fs-14"
                       >
-                        Reason
+                        {t("callActivity.reason")}
                       </label>
                       <Field
                         as="select"
@@ -933,7 +935,7 @@ const CallActivity = () => {
                         name="outboundCallReasonId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {allReason &&
                           allReason.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -950,10 +952,10 @@ const CallActivity = () => {
 
                     <Col md={6} className="mb-2">
                       <label htmlFor="promiseDate" className="mb-1 fs-14">
-                        Promsie Date
+                        {t("callActivity.promiseDate")}
                       </label>
                       <Field
-                        placeholder="Promise Date"
+                        placeholder={t("callActivity.promiseDate")}
                         id="promiseDate"
                         type="date"
                         name="promiseDate"
@@ -967,10 +969,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="promiseAmount" className="mb-1 fs-14">
-                        Promise Amount
+                        {t("callActivity.promiseAmount")}
                       </label>
                       <Field
-                        placeholder="Promise Amount"
+                        placeholder={t("callActivity.promiseAmount")}
                         id="promiseAmount"
                         type="text"
                         name="promiseAmount"
@@ -984,10 +986,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="currentAmountDue" className="mb-1 fs-14">
-                        Current Amount Due
+                        {t("callActivity.currentAmountDue")}
                       </label>
                       <Field
-                        placeholder="Current Amount Due"
+                        placeholder={t("callActivity.currentAmountDue")}
                         id="currentAmountDue"
                         type="text"
                         name="currentAmountDue"
@@ -1001,10 +1003,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="condition" className="mb-1 fs-14">
-                        Condition
+                        {t("callActivity.condition")}
                       </label>
                       <Field
-                        placeholder="Condition"
+                        placeholder={t("callActivity.condition")}
                         id="condition"
                         as="select"
                         name="condition"
@@ -1018,7 +1020,7 @@ const CallActivity = () => {
                           })
                         }
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {enums.Condition.map((item: any) => (
                           <option key={item.value} value={item.value}>
                             {item.label}
@@ -1033,10 +1035,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="appointment" className="mb-1 fs-14">
-                        Appointment
+                        {t("callActivity.appointment")}
                       </label>
                       <Field
-                        placeholder="Appointment"
+                        placeholder={t("callActivity.appointment")}
                         id="appointment"
                         name="appointment"
                         className="form-control"
@@ -1049,10 +1051,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="followUpDate" className="mb-1 fs-14">
-                        Follow-Up Date
+                        {t("callActivity.followUpDate")}
                       </label>
                       <Field
-                        placeholder="Follow-Up Date"
+                        placeholder={t("callActivity.followUpDate")}
                         id="followUpDate"
                         type="date"
                         name="followUpDate"
@@ -1066,7 +1068,7 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="timeZone" className="mb-1 fs-14">
-                        Time Zone
+                        {t("callActivity.timeZone")}
                       </label>
                       <Field
                         as="select"
@@ -1075,7 +1077,7 @@ const CallActivity = () => {
                         name="timeZone"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("callActivity.selectType")} />
                         {enums.TimeZone.map((item: any) => (
                           <option key={item.label} value={item.label}>
                             {item.label}
@@ -1090,10 +1092,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="groupFollowUpDate" className="mb-1 fs-14">
-                        Group Follow-Up Date
+                        {t("callActivity.groupFollowUpDate")}
                       </label>
                       <Field
-                        placeholder="Group Follow-Up Date"
+                        placeholder={t("callActivity.groupFollowUpDate")}
                         id="groupFollowUpDate"
                         type="date"
                         name="groupFollowUpDate"
@@ -1107,10 +1109,10 @@ const CallActivity = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="comments" className="mb-1 fs-14">
-                        Comments
+                        {t("callActivity.comments")}
                       </label>
                       <Field
-                        placeholder="Comments"
+                        placeholder={t("callActivity.comments")}
                         id="comments"
                         name="comments"
                         className="form-control"
@@ -1125,7 +1127,7 @@ const CallActivity = () => {
 
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
-                      Add Call Activity
+                      {t("callActivity.submitAdd")}
                     </button>
                   </div>
                 </Modal.Body>

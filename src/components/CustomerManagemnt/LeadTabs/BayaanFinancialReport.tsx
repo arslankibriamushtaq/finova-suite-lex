@@ -4,6 +4,7 @@ import type React from "react"
 
 import { Table, Card, Layout } from "antd"
 import type { TableColumnsType } from "antd"
+import { useTranslation } from "react-i18next"
 
 const { Content } = Layout
 
@@ -33,6 +34,7 @@ interface IndicatorRow {
 }
 
 export default function BayaanFinancialReport() {
+  const { t } = useTranslation("customerManagement")
   // Financial data
   const financialData: FinancialRow[] = Array.from({ length: 10 }, (_, i) => ({
     key: `${i}`,
@@ -65,20 +67,20 @@ export default function BayaanFinancialReport() {
 
   const financialColumns: TableColumnsType<FinancialRow> = [
     {
-      title: "Item ↑↓",
+      title: `${t("bayaan.col.item")} ↑↓`,
       dataIndex: "item",
       key: "item",
       sorter: true,
     },
     {
-      title: "Date ↑↓",
+      title: `${t("common:date")} ↑↓`,
       dataIndex: "date",
       key: "date",
       align: "center",
       sorter: true,
     },
     {
-      title: "Amount ↑↓",
+      title: `${t("common:amount")} ↑↓`,
       dataIndex: "amount",
       key: "amount",
       align: "right",
@@ -89,25 +91,25 @@ export default function BayaanFinancialReport() {
   // Table columns for board members
   const boardColumns: TableColumnsType<BoardMemberRow> = [
     {
-      title: "Person / Company Name ↑↓",
+      title: `${t("bayaan.col.personCompanyName")} ↑↓`,
       dataIndex: "name",
       key: "name",
       sorter: true,
     },
     {
-      title: "Citizenship Code Description ↑↓",
+      title: `${t("bayaan.col.citizenshipCodeDescription")} ↑↓`,
       dataIndex: "citizenship",
       key: "citizenship",
       sorter: true,
     },
     {
-      title: "Role ↑↓",
+      title: `${t("bayaan.col.role")} ↑↓`,
       dataIndex: "role",
       key: "role",
       sorter: true,
     },
     {
-      title: "Partnership % ↑↓",
+      title: `${t("bayaan.col.partnershipPercent")} ↑↓`,
       dataIndex: "partnership",
       key: "partnership",
       align: "right",
@@ -118,41 +120,41 @@ export default function BayaanFinancialReport() {
   // Table columns for indicators
   const indicatorColumns: TableColumnsType<IndicatorRow> = [
     {
-      title: "Earning Per Share ↑↓",
+      title: `${t("bayaan.col.earningPerShare")} ↑↓`,
       dataIndex: "eps",
       key: "eps",
       sorter: true,
     },
     {
-      title: "Book Value Per Share ↑↓",
+      title: `${t("bayaan.col.bookValuePerShare")} ↑↓`,
       dataIndex: "bvps",
       key: "bvps",
       align: "center",
       sorter: true,
     },
     {
-      title: "Investment / Deposit % ↑↓",
+      title: `${t("bayaan.col.investmentDepositPercent")} ↑↓`,
       dataIndex: "investmentDeposit",
       key: "investmentDeposit",
       align: "center",
       sorter: true,
     },
     {
-      title: "Factoring / Deposit % ↑↓",
+      title: `${t("bayaan.col.factoringDepositPercent")} ↑↓`,
       dataIndex: "factoringDeposit",
       key: "factoringDeposit",
       align: "center",
       sorter: true,
     },
     {
-      title: "Return on Equity % ↑↓",
+      title: `${t("bayaan.col.returnOnEquityPercent")} ↑↓`,
       dataIndex: "roe",
       key: "roe",
       align: "center",
       sorter: true,
     },
     {
-      title: "Return on Assets % ↑↓",
+      title: `${t("bayaan.col.returnOnAssetsPercent")} ↑↓`,
       dataIndex: "roa",
       key: "roa",
       align: "center",
@@ -237,38 +239,38 @@ export default function BayaanFinancialReport() {
         {/* Company Information Section */}
         <Card style={companyInfoCardStyle}>
           <h2 style={{ textAlign:"left",fontSize: "16px", fontWeight: 700, marginBottom: "24px", color: "var(--foreground)" }}>
-            Company Information
+            {t("bayaan.section.companyInformation")}
           </h2>
 
           {/* Company Information Subsection */}
           <div style={subsectionStyle}>
-            <h3 style={sectionTitleStyle}>Company Information</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.companyInformation")}</h3>
             <div style={gridContainerStyle}>
               <div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Commercial Registration Number</span>
+                  <span style={labelStyle}>{t("bayaan.field.commercialRegistrationNumber")}</span>
                   <span style={valueStyle}>1743798589</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Address</span>
+                  <span style={labelStyle}>{t("bayaan.field.address")}</span>
                   <span style={valueStyle}>Riyadh, Al-Malaz District</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Nationality of Commercial Registration</span>
+                  <span style={labelStyle}>{t("bayaan.field.nationalityOfCr")}</span>
                   <span style={valueStyle}>Saudi Arabia</span>
                 </div>
               </div>
               <div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Zip Code</span>
+                  <span style={labelStyle}>{t("bayaan.field.zipCode")}</span>
                   <span style={valueStyle}>000140</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>City</span>
+                  <span style={labelStyle}>{t("bayaan.field.city")}</span>
                   <span style={valueStyle}>Riyadh</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Phone</span>
+                  <span style={labelStyle}>{t("common:phone")}</span>
                   <span style={valueStyle}>291510</span>
                 </div>
               </div>
@@ -277,37 +279,37 @@ export default function BayaanFinancialReport() {
 
           {/* General Information Subsection */}
           <div style={subsectionStyle}>
-            <h3 style={sectionTitleStyle}>General Information</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.generalInformation")}</h3>
             <div style={gridContainerStyle}>
               <div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Commercial Registration Type</span>
+                  <span style={labelStyle}>{t("bayaan.field.crType")}</span>
                   <span style={valueStyle}>Main CR</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Company Name</span>
+                  <span style={labelStyle}>{t("bayaan.field.companyName")}</span>
                   <span style={valueStyle}>Bank Albilad</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Legal Entity</span>
+                  <span style={labelStyle}>{t("bayaan.field.legalEntity")}</span>
                   <span style={valueStyle}>Individual Establishment</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Commercial Registration Expiry Date</span>
+                  <span style={labelStyle}>{t("bayaan.field.crExpiryDate")}</span>
                   <span style={valueStyle}>03-10-1447</span>
                 </div>
               </div>
               <div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Commercial Registration Number</span>
+                  <span style={labelStyle}>{t("bayaan.field.commercialRegistrationNumber")}</span>
                   <span style={valueStyle}>1743798589</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Commercial Registration Status</span>
+                  <span style={labelStyle}>{t("bayaan.field.crStatus")}</span>
                   <span style={valueStyle}>Active</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Date of Issuance of Commercial Registration</span>
+                  <span style={labelStyle}>{t("bayaan.field.crIssuanceDate")}</span>
                   <span style={valueStyle}>03-10-1426</span>
                 </div>
               </div>
@@ -316,29 +318,29 @@ export default function BayaanFinancialReport() {
 
           {/* Capital Information Subsection */}
           <div>
-            <h3 style={sectionTitleStyle}>Capital Information</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.capitalInformation")}</h3>
             <div style={gridContainerStyle}>
               <div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Credit Card</span>
+                  <span style={labelStyle}>{t("bayaan.field.creditCard")}</span>
                   <span style={valueStyle}>SAR</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Authorized Capital</span>
+                  <span style={labelStyle}>{t("bayaan.field.authorizedCapital")}</span>
                   <span style={valueStyle}>7,500,000,000</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Total Shares Number</span>
+                  <span style={labelStyle}>{t("bayaan.field.totalSharesNumber")}</span>
                   <span style={valueStyle}>750,000,000</span>
                 </div>
               </div>
               <div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Currency</span>
+                  <span style={labelStyle}>{t("bayaan.field.currency")}</span>
                   <span style={valueStyle}>Saudi Riyal</span>
                 </div>
                 <div style={fieldRowStyle}>
-                  <span style={labelStyle}>Paidup Capital</span>
+                  <span style={labelStyle}>{t("bayaan.field.paidupCapital")}</span>
                   <span style={valueStyle}>7,500,000,000</span>
                 </div>
               </div>
@@ -348,7 +350,7 @@ export default function BayaanFinancialReport() {
   {/* Financial Indicators & Board Section */}
         <Card style={companyInfoCardStyle}>
           <h2 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "24px", color: "var(--foreground)",textAlign:"left" }}>
-            Financial Indicators
+            {t("bayaan.section.financialIndicators")}
           </h2>
 
           {/* Financial Indicators - 2015 */}
@@ -378,7 +380,7 @@ export default function BayaanFinancialReport() {
                 textAlign:"left"
               }}
             >
-              Members of the Boards of Directors
+              {t("bayaan.section.boardMembers")}
             </h2>
             <Table
               columns={boardColumns}
@@ -404,12 +406,12 @@ export default function BayaanFinancialReport() {
               textAlign:"left"
             }}
           >
-            Financial Statements
+            {t("bayaan.section.financialStatements")}
           </h2>
 
           {/* Financial Positions */}
           <div style={tableContainerStyle}>
-            <h3 style={sectionTitleStyle}>Financial Positions</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.financialPositions")}</h3>
             <Table
               columns={financialColumns}
               dataSource={financialData}
@@ -423,7 +425,7 @@ export default function BayaanFinancialReport() {
 
           {/* Income Statement */}
           <div style={tableContainerStyle}>
-            <h3 style={sectionTitleStyle}>Income Statement</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.incomeStatement")}</h3>
             <Table
               columns={financialColumns}
               dataSource={financialData}
@@ -449,7 +451,7 @@ export default function BayaanFinancialReport() {
               textAlign:"left"
             }}
           >
-            Cash Flow Statement
+            {t("bayaan.section.cashFlowStatement")}
           </h2>
           <Table
             columns={financialColumns}
@@ -475,12 +477,12 @@ export default function BayaanFinancialReport() {
               textAlign:"left"
             }}
           >
-            Comprehensive Income
+            {t("bayaan.section.comprehensiveIncome")}
           </h2>
 
           {/* Comprehensive Income */}
           <div style={tableContainerStyle}>
-            <h3 style={sectionTitleStyle}>Comprehensive Income</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.comprehensiveIncome")}</h3>
             <Table
               columns={financialColumns}
               dataSource={financialData}
@@ -494,7 +496,7 @@ export default function BayaanFinancialReport() {
 
           {/* Changes in Equity */}
           <div style={tableContainerStyle}>
-            <h3 style={sectionTitleStyle}>Changes in Equity</h3>
+            <h3 style={sectionTitleStyle}>{t("bayaan.section.changesInEquity")}</h3>
             <Table
               columns={financialColumns}
               dataSource={financialData}

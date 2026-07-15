@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Select, Button, Typography, Switch } from "antd";
 import { ShieldCheck, Layers } from "lucide-react";
 import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions } from "../../redux/apis/apisCrudFactoring";
@@ -10,6 +11,7 @@ const { Option } = Select;
 const { Text } = Typography;
 
 const AssignPermissions: React.FC = () => {
+  const { t } = useTranslation("settings");
   const [selectedRole, setSelectedRole] = useState<string | undefined>(
     undefined
   );
@@ -96,14 +98,14 @@ const AssignPermissions: React.FC = () => {
   const handleDepartmentPermissions = async () => {
     try {
       if (!selectedRole) {
-        return toast.error("Please select a role.");
+        return toast.error(t("assignPermissions.toast.selectRole"));
       }
       const response = await syncRolePermissions(selectedRole, selectedPermissions || []);
       if (response) {
-        toast.success(response?.data?.message || "Permissions updated successfully.");
+        toast.success(response?.data?.message || t("assignPermissions.toast.updated"));
       }
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Failed to update permissions.");
+      toast.error(e?.response?.data?.message || t("assignPermissions.toast.updateFailed"));
     }
   };
 
@@ -227,20 +229,20 @@ const AssignPermissions: React.FC = () => {
           <span className="pro-head-badge">
             <ShieldCheck className="h-4 w-4" />
           </span>
-          Assign Permissions
+          {t("assignPermissions.title")}
         </h3>
         <p className="text-muted small mb-0 mt-1">
-          Select a role, then toggle the modules and permissions it should have access to.
+          {t("assignPermissions.subtitle")}
         </p>
       </div>
 
       {/* Role selector card */}
       <div className="pro-card p-3 mb-4">
         <Text style={{ display: "block", marginBottom: "8px", fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>
-          Role
+          {t("assignPermissions.role")}
         </Text>
         <Select
-          placeholder="Select a role"
+          placeholder={t("assignPermissions.selectRolePlaceholder")}
           style={{ width: "100%", maxWidth: "500px" }}
           onChange={handleRoleChange}
           value={selectedRole}
@@ -255,7 +257,7 @@ const AssignPermissions: React.FC = () => {
       </div>
 
       <h4 className="fw-bold text-dark" style={{ marginBottom: "16px", fontSize: "15px" }}>
-        Assign Permission to the Role
+        {t("assignPermissions.sectionTitle")}
       </h4>
 
       {/* Render all modules in a responsive grid */}
@@ -269,7 +271,9 @@ const AssignPermissions: React.FC = () => {
           <span className="fw-semibold" style={{ color: "var(--foreground)" }}>
             {selectedPermissions.length}
           </span>{" "}
-          permission{selectedPermissions.length === 1 ? "" : "s"} selected
+          {selectedPermissions.length === 1
+            ? t("assignPermissions.permissionSelected")
+            : t("assignPermissions.permissionsSelected")}
         </span>
         <Button
           type="primary"
@@ -278,7 +282,7 @@ const AssignPermissions: React.FC = () => {
             handleDepartmentPermissions();
           }}
         >
-          {hasExistingPermissions ? "Update" : "Assign"}
+          {hasExistingPermissions ? t("common:update") : t("assignPermissions.assign")}
         </Button>
       </div>
     </div>

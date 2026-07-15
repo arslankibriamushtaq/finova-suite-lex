@@ -26,7 +26,9 @@ import { Col, Modal, ModalHeader, Row } from "react-bootstrap";
 import * as Yup from "yup";
 import { themeStyle } from "../Config/Theme";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 const Promises = () => {
+  const { t } = useTranslation("customerManagement");
   const [AllPromises, setAllPromises] = useState<any>([]);
   const [modal, setModal] = useState(false);
   const [allReason, setAllReason] = useState<any>([]);
@@ -110,56 +112,56 @@ const Promises = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
   const Get_All_Promises_Header = [
     {
-      name: "Promise key",
+      name: t("promises.col.promiseKey"),
       selector: (row: { promiseKey: any }) => row.promiseKey,
     },
     {
-      name: "Loan Key",
+      name: t("promises.col.loanKey"),
       selector: (row: { laonKey: any }) => row.laonKey,
     },
     {
-      name: "Promise Amount",
+      name: t("promises.col.promiseAmount"),
       selector: (row: { promisedAmount: any }) => row.promisedAmount,
     },
     {
-      name: "Promise Date",
+      name: t("promises.col.promiseDate"),
       selector: (row: { promisedDate: any }) => row.promisedDate,
     },
     {
-      name: "Taken By",
+      name: t("promises.col.takenBy"),
       selector: (row: { takenBy: any }) => row.takenBy,
     },
     {
-      name: "Taken Date",
+      name: t("promises.col.takenDate"),
       selector: (row: { takenDate: any }) => row.takenDate,
     },
     {
-      name: "Due on Taken Date",
+      name: t("promises.col.dueOnTakenDate"),
       selector: (row: { dueOnTakenDate: any }) => row.dueOnTakenDate,
     },
     {
-      name: "Amount Collected",
+      name: t("promises.col.amountCollected"),
       selector: (row: { collectedAmount: any }) => row.collectedAmount,
     },
     {
-      name: "Broken Ind",
+      name: t("promises.col.brokenInd"),
       selector: (row: { isBrokenPromise: any }) => row.isBrokenPromise,
     },
     {
-      name: "Cancelled",
+      name: t("promises.col.cancelled"),
       selector: (row: { isCancelledPromise: any }) => row.isCancelledPromise,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -173,7 +175,7 @@ const Promises = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -270,35 +272,45 @@ const Promises = () => {
         takenDate: formatDate(item.takenDate),
         dueOnTakenDate: formatDate(item.dueOnTakenDate),
         collectedAmount: item.collectedAmount,
-        isBrokenPromise: item.isBrokenPromise ? "True" : "False",
-        isCancelledPromise: item.isCancelledPromise ? "True" : "False",
+        isBrokenPromise: item.isBrokenPromise ? t("common:yes") : t("common:no"),
+        isCancelledPromise: item.isCancelledPromise
+          ? t("common:yes")
+          : t("common:no"),
       };
     });
   const validationSchema = Yup.object().shape({
     promisedAmount: Yup.number()
-      .required("Promised Amount is required")
-      .positive("Amount must be positive")
-      .integer("Amount must be an integer"),
-    promisedDate: Yup.date().required("Promised Date is required").nullable(),
-    takenBy: Yup.string().required("Taken By is required"),
-    takenDate: Yup.date().required("Taken Date is required").nullable(),
+      .required(t("promises.validation.promisedAmountRequired"))
+      .positive(t("promises.validation.amountPositive"))
+      .integer(t("promises.validation.amountInteger")),
+    promisedDate: Yup.date()
+      .required(t("promises.validation.promisedDateRequired"))
+      .nullable(),
+    takenBy: Yup.string().required(t("promises.validation.takenByRequired")),
+    takenDate: Yup.date()
+      .required(t("promises.validation.takenDateRequired"))
+      .nullable(),
     dueOnTakenDate: Yup.date()
-      .required("Due On Taken Date is required")
+      .required(t("promises.validation.dueOnTakenDateRequired"))
       .nullable(),
     collectedAmount: Yup.number()
-      .required("Collected Amount is required")
-      .positive("Amount must be positive")
-      .integer("Amount must be an integer"),
+      .required(t("promises.validation.collectedAmountRequired"))
+      .positive(t("promises.validation.amountPositive"))
+      .integer(t("promises.validation.amountInteger")),
     isBrokenPromise: Yup.boolean().required(
-      "Broken Promise status is required"
+      t("promises.validation.brokenPromiseRequired")
     ),
     isCancelledPromise: Yup.boolean().required(
-      "Cancelled Promise status is required"
+      t("promises.validation.cancelledPromiseRequired")
     ),
-    contact: Yup.string().required("Contact is required"),
-    followupDate: Yup.date().required("Follow-up Date is required").nullable(),
-    comment: Yup.string().required("Comment is required"),
-    outboundCallReasonId: Yup.string().required("Reason is required"),
+    contact: Yup.string().required(t("promises.validation.contactRequired")),
+    followupDate: Yup.date()
+      .required(t("promises.validation.followupDateRequired"))
+      .nullable(),
+    comment: Yup.string().required(t("promises.validation.commentRequired")),
+    outboundCallReasonId: Yup.string().required(
+      t("promises.validation.reasonRequired")
+    ),
   });
   return (
     <>
@@ -325,7 +337,7 @@ const Promises = () => {
               />
             </div>
             <div className="ps-1 d-flex align-items-center cursor-pointer">
-              Add
+              {t("common:add")}
             </div>
           </div>
         </div>
@@ -345,7 +357,7 @@ const Promises = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>{updateCondition ? "Update" : "Add"} Promise</h3>
+          <h3>{updateCondition ? t("promises.updateTitle") : t("promises.addTitle")}</h3>
         </ModalHeader>
 
         <Formik
@@ -385,11 +397,11 @@ const Promises = () => {
                   <Row className="">
                     <Col md={6} className="mb-2">
                       <label htmlFor="promisedAmount" className="mb-1 fs-14">
-                        Promised Amount
+                        {t("promises.form.promisedAmount")}
                       </label>
                       <Field
                         type="number"
-                        placeholder="promisedAmount"
+                        placeholder={t("promises.form.promisedAmount")}
                         id="promisedAmount"
                         name="promisedAmount"
                         className="form-control"
@@ -403,10 +415,10 @@ const Promises = () => {
 
                     <Col md={6} className="mb-2">
                       <label htmlFor="promisedDate" className="mb-1 fs-14">
-                        Promised Date
+                        {t("promises.form.promisedDate")}
                       </label>
                       <Field
-                        placeholder="Promise Date"
+                        placeholder={t("promises.form.promisedDate")}
                         id="promisedDate"
                         type="date"
                         name="promisedDate"
@@ -423,10 +435,10 @@ const Promises = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-2">
                       <label htmlFor="isBrokenPromise" className="mb-1 fs-14">
-                        Broken Promise
+                        {t("promises.form.brokenPromise")}
                       </label>
                       <Field
-                        placeholder="isBrokenPromise"
+                        placeholder={t("promises.form.brokenPromise")}
                         as="select"
                         id="isBrokenPromise"
                         name="isBrokenPromise"
@@ -440,8 +452,8 @@ const Promises = () => {
                           })
                         }
                       >
-                        <option value={"true"} label="true" />
-                        <option value={"false"} label="false" />
+                        <option value={"true"} label={t("common:yes")} />
+                        <option value={"false"} label={t("common:no")} />
                       </Field>
                       <ErrorMessage
                         name="isBrokenPromise"
@@ -451,10 +463,10 @@ const Promises = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="takenBy" className="mb-1 fs-14">
-                        TakenBy
+                        {t("promises.form.takenBy")}
                       </label>
                       <Field
-                        placeholder="takenBy"
+                        placeholder={t("promises.form.takenBy")}
                         id="takenBy"
                         name="takenBy"
                         className="form-control"
@@ -470,11 +482,11 @@ const Promises = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-2">
                       <label htmlFor="takenDate" className="mb-1 fs-14">
-                        Taken Date
+                        {t("promises.form.takenDate")}
                       </label>
                       <Field
                         type="date"
-                        placeholder="takenDate"
+                        placeholder={t("promises.form.takenDate")}
                         id="takenDate"
                         name="takenDate"
                         className="form-control"
@@ -487,11 +499,11 @@ const Promises = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <label htmlFor="dueOnTakenDate" className="mb-1 fs-14">
-                        Due On Taken Date
+                        {t("promises.form.dueOnTakenDate")}
                       </label>
                       <Field
                         type="date"
-                        placeholder="dueOnTakenDate"
+                        placeholder={t("promises.form.dueOnTakenDate")}
                         id="dueOnTakenDate"
                         name="dueOnTakenDate"
                         className="form-control"
@@ -507,10 +519,10 @@ const Promises = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-2">
                       <label htmlFor="collectedAmount" className="mb-1 fs-14">
-                        Collected Amount
+                        {t("promises.form.collectedAmount")}
                       </label>
                       <Field
-                        placeholder="collectedAmount"
+                        placeholder={t("promises.form.collectedAmount")}
                         id="collectedAmount"
                         type="number"
                         name="collectedAmount"
@@ -527,10 +539,10 @@ const Promises = () => {
                         htmlFor="isCancelledPromise"
                         className="mb-1 fs-14"
                       >
-                        Collected Promise
+                        {t("promises.form.collectedPromise")}
                       </label>
                       <Field
-                        placeholder="isCancelledPromise"
+                        placeholder={t("promises.form.collectedPromise")}
                         id="isCancelledPromise"
                         as="select"
                         name="isCancelledPromise"
@@ -544,8 +556,8 @@ const Promises = () => {
                           })
                         }
                       >
-                        <option value={"true"} label="true" />
-                        <option value={"false"} label="false" />
+                        <option value={"true"} label={t("common:yes")} />
+                        <option value={"false"} label={t("common:no")} />
                       </Field>
                       <ErrorMessage
                         name="condition"
@@ -557,10 +569,10 @@ const Promises = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-2">
                       <label htmlFor="contact" className="mb-1 fs-14">
-                        Contact
+                        {t("promises.form.contact")}
                       </label>
                       <Field
-                        placeholder="contact"
+                        placeholder={t("promises.form.contact")}
                         id="contact"
                         type="text"
                         name="contact"
@@ -577,10 +589,10 @@ const Promises = () => {
                         htmlFor="isCancelledPromise"
                         className="mb-1 fs-14"
                       >
-                        Follow up Date
+                        {t("promises.form.followupDate")}
                       </label>
                       <Field
-                        placeholder="followupDate"
+                        placeholder={t("promises.form.followupDate")}
                         id="followupDate"
                         type="date"
                         name="followupDate"
@@ -597,10 +609,10 @@ const Promises = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-2">
                       <label htmlFor="comment" className="mb-1 fs-14">
-                        Comment
+                        {t("promises.form.comment")}
                       </label>
                       <Field
-                        placeholder="comment"
+                        placeholder={t("promises.form.comment")}
                         id="comment"
                         type="text"
                         name="comment"
@@ -617,16 +629,16 @@ const Promises = () => {
                         htmlFor="outboundCallReasonId"
                         className="mb-1 fs-14"
                       >
-                        Reason
+                        {t("promises.form.reason")}
                       </label>
                       <Field
                         as="select"
-                        placeholder="action"
+                        placeholder={t("promises.form.reason")}
                         id="outboundCallReasonId"
                         name="outboundCallReasonId"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("promises.form.selectType")} />
                         {allReason &&
                           allReason.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -644,11 +656,11 @@ const Promises = () => {
                   <Row>
                     <Col md={6} className="mb-2">
                       <label htmlFor="laonKey" className="mb-1 fs-14">
-                        Loan Key
+                        {t("promises.form.loanKey")}
                       </label>
                       <Field
                         as="select"
-                        placeholder="Select Loan ID"
+                        placeholder={t("promises.form.selectLoanId")}
                         id="laonKey"
                         name="laonKey"
                         className="form-control"
@@ -673,7 +685,7 @@ const Promises = () => {
                   </Row>
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
-                      {updateCondition ? "Update" : "Create"}
+                      {updateCondition ? t("common:update") : t("common:create")}
                     </button>
                   </div>
                 </Modal.Body>

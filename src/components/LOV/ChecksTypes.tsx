@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Button,
@@ -30,6 +31,7 @@ import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { usePermissions, CHECKS_TYPES_PERMISSIONS } from "../../hooks/useProductPermissions";
 const ChecksTypes = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -82,7 +84,7 @@ const ChecksTypes = () => {
           icon={<EditOutlined />}
           onClick={() => handleMenuClick("edit", row)}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
       )}
       {canDeleteCheck && (
@@ -91,7 +93,7 @@ const ChecksTypes = () => {
           icon={<DeleteOutlined />}
           onClick={() => handleMenuClick("delete", row)}
         >
-          Delete
+          {t("common:delete")}
         </Menu.Item>
       )}
     </Menu>
@@ -105,13 +107,13 @@ const ChecksTypes = () => {
     //   // width: "15%",
     // },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
        //width: "200px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -128,12 +130,12 @@ const ChecksTypes = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("shared.changeStatus"),
       cell: (row: any) => (
         <Switch
           className="red-switch"
@@ -166,7 +168,7 @@ const ChecksTypes = () => {
     },
     // Only include Action column if user has any action permission
     ...(hasAnyAction ? [{
-      name: "Action",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -179,7 +181,7 @@ const ChecksTypes = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -191,13 +193,13 @@ const ChecksTypes = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteCheckType(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("checksTypes.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("checksTypes.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("checksTypes.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -213,37 +215,37 @@ const ChecksTypes = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateCheckType(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("checksTypes.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
               name: "",
-              status: 0 
+              status: 0
              });
             getList();
-            return "Updated successfully";
+            return t("checksTypes.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("checksTypes.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createCheckType(body), {
-          loading: "Adding Check Type...",
+          loading: t("checksTypes.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
                 name: "",
-                status: 0 
+                status: 0
               });
             getList();
-            return "Check Type added successfully";
+            return t("checksTypes.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new type",
+          error: (err) => err?.message || t("checksTypes.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -287,7 +289,7 @@ const ChecksTypes = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -303,7 +305,7 @@ const ChecksTypes = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -322,7 +324,7 @@ const ChecksTypes = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -338,7 +340,7 @@ const ChecksTypes = () => {
                   });
                 }}
               >
-                Add New Record
+                {t("shared.addNewRecord")}
               </button>
             )}
           </div>
@@ -361,13 +363,13 @@ const ChecksTypes = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("checksTypes.modal.editRecordTitle") : t("shared.addNewRecord")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -377,7 +379,7 @@ const ChecksTypes = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -385,11 +387,11 @@ const ChecksTypes = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={12}>
-                <label className="fw-400">name</label>
+                <label className="fw-400">{t("common:name")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("checksTypes.ph.name")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -397,17 +399,17 @@ const ChecksTypes = () => {
                 />
                 </Col>
                 <Col className = "px-2" md={12}>
-                <label className="fw-400">Type</label>
+                <label className="fw-400">{t("common:type")}</label>
                 <Select
                   className="fs-6"
-                  placeholder="Select type"
+                  placeholder={t("checksTypes.ph.selectType")}
                   value={formData.status}
                   onChange={(e: any) =>
                     setFormData({ ...formData, status: e})
                   }
                 >
-                  <option value = {1}>True</option> 
-                  <option value = {0}>False</option>         
+                  <option value = {1}>{t("shared.true")}</option>
+                  <option value = {0}>{t("shared.false")}</option>
                 </Select>
                 </Col>
               </Row>
@@ -421,14 +423,14 @@ const ChecksTypes = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("checksTypes.modal.editRecordTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("checksTypes.modal.deleteRecordTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -437,17 +439,17 @@ const ChecksTypes = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("checksTypes.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("checksTypes.confirmAddBody")
+                : t("checksTypes.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

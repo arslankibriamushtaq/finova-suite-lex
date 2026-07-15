@@ -4,6 +4,7 @@ import { Button, Modal, Form } from 'antd';
 import TableView from '../TableView/TableView';
 import { formatDate } from '../../App';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 // Dummy data for temporary use
 const dummyContracts = [
@@ -24,6 +25,7 @@ const dummyContracts = [
 ];
 
 const ContractRequest = () => {
+  const { t } = useTranslation("customersB");
   const { id } = useParams();
   const location = useLocation();
   const applicationData = location.state?.application || {};
@@ -65,7 +67,7 @@ const ContractRequest = () => {
       setPage(1);
       setTotalPage(1);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to load contracts");
+      toast.error(error?.message || t("customersB:contract.loadFail"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -97,14 +99,14 @@ const ContractRequest = () => {
       // Simulate API call
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
-      toast.success("Contract approved successfully");
+      toast.success(t("customersB:contract.approveSuccess"));
       setShowConfirmModal(false);
       setSelectedContract(null);
       
       // Refresh the contracts list
       getContracts();
     } catch (error: any) {
-      toast.error(error?.message || "Failed to approve contract");
+      toast.error(error?.message || t("customersB:contract.approveFail"));
     }
   };
 
@@ -120,22 +122,22 @@ const ContractRequest = () => {
 
   const Contracts_Header = [
     {
-      name: "ID",
+      name: t("customersB:contract.id"),
       selector: (row: any) => row.id || "--",
       width: "5%",
     },
     {
-      name: "Invoice No",
+      name: t("customersB:contract.invoiceNo"),
       selector: (row: any) => row.invoiceNo || "--",
       width: "25%",
     },
     {
-      name: "Requested By",
+      name: t("customersB:contract.requestedBy"),
       selector: (row: any) => row.requestedBy || "N/A",
       width: "15%",
     },
     {
-      name: "Contract",
+      name: t("customersB:contract.contract"),
       cell: (row: any) => (
         <Button
           type="primary"
@@ -149,23 +151,23 @@ const ContractRequest = () => {
             padding: "4px 12px",
           }}
         >
-          Preview Contract
+          {t("customersB:contract.previewContract")}
         </Button>
       ),
       width: "15%",
     },
     {
-      name: "Request Date",
+      name: t("customersB:contract.requestDate"),
       selector: (row: any) => row.requestDate ? formatDate(row.requestDate) : "--",
       width: "10%",
     },
     {
-      name: "Updated Date",
+      name: t("customersB:contract.updatedDate"),
       selector: (row: any) => row.updatedDate ? formatDate(row.updatedDate) : "--",
       width: "10%",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -177,13 +179,13 @@ const ContractRequest = () => {
             fontSize: "12px",
           }}
         >
-          {row.status || "Requested"}
+          {row.status || t("customersB:contract.requested")}
         </span>
       ),
       width: "10%",
     },
     {
-      name: "Action",
+      name: t("customersB:contract.action"),
       cell: (row: any) => (
         <Button
           type="primary"
@@ -197,7 +199,7 @@ const ContractRequest = () => {
             padding: "4px 12px",
           }}
         >
-          Approve
+          {t("common:approve")}
         </Button>
       ),
       width: "10%",
@@ -209,7 +211,7 @@ const ContractRequest = () => {
       <div className="container-fluid px-4 p-2 mt-2">
         <div className="d-flex align-items-center mb-3">
           <h2 className="mb-0" style={{ fontSize: "24px", fontWeight: "600" }}>
-            Application#{applicationNumber} Approved Invoice Contracts
+            {t("customersB:contract.title", { number: applicationNumber })}
           </h2>
         </div>
         <div className="custom-table-wrapper border">
@@ -238,25 +240,25 @@ const ContractRequest = () => {
         }}
         className="custom-mod"
         style={{ maxWidth: "632px" }}
-        title="Approve Contract"
+        title={t("customersB:contract.approveContract")}
         footer={[
           <Button key="no" onClick={() => {
             setShowConfirmModal(false);
             setSelectedContract(null);
           }}>
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
             type="primary"
             onClick={handleApproveConfirmed}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
       >
         <Form>
-          Are you sure you want to approve this contract?
+          {t("customersB:contract.confirmApprove")}
         </Form>
       </Modal>
     </div>

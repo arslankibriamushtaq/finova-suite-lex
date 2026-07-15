@@ -1,16 +1,22 @@
 import { RouterProvider } from "react-router-dom";
 import { ConfigProvider } from "antd";
+import { DirectionProvider } from "@radix-ui/react-direction";
 
 import { router } from "./Routes/path";
 import toast, { Toaster } from "react-hot-toast";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./components/i18n";
+import { useLanguage } from "./hooks/use-language";
 import { useDispatch } from "react-redux";
 import { allState, getAllCountries, getAllRealations, getCities, getLanguage, getProducts } from "./redux/apis/apisCrudLms";
 import { setCities, setCountries, setLanguages, setProdId, setRefreshToken, setRelations, setStates, setToken } from "./redux/apis/apisSlice";
 const App = () => {
   // dispatch(authSlice.actions.setTheme( {themeStyle} ));
   const dispatch = useDispatch();
+  // Drive text direction for antd (ConfigProvider) and Radix (DirectionProvider)
+  // so dropdowns, selects, popovers, date-pickers and modals align/flip in RTL.
+  const { isRTL } = useLanguage();
+  const dir = isRTL ? "rtl" : "ltr";
   localStorage.setItem("tenantId", "980fb848-9a36-425e-4632-08dc7fb833c6");
 
   const getProductId = async () => {
@@ -100,6 +106,7 @@ const getStates = async () => {
         {/* Brand emerald (Sullis) for all antd controls — datepicker, select,
             switch, checkbox, radio, tabs, etc. */}
         <ConfigProvider
+          direction={dir}
           theme={{
             token: {
               colorPrimary: "#10b981",
@@ -122,7 +129,9 @@ const getStates = async () => {
         >
           {/* <Provider store={store}> */}
           {/* <PersistGate persistor={persistor}> */}
-          <RouterProvider router={router} />
+          <DirectionProvider dir={dir}>
+            <RouterProvider router={router} />
+          </DirectionProvider>
           {/* </PersistGate> */}
           {/* </Provider> */}
         </ConfigProvider>

@@ -1,6 +1,7 @@
 import { Button, Select, Card, Row, Col, Tag } from "antd";
 import TableView from "../TableView/TableView";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import ReactECharts from 'echarts-for-react';
 import { 
@@ -14,6 +15,7 @@ import { GetAccountBalance, getReconciliationStatus, getReconciliationAccounts, 
 import Loader from "../Loader/Loader";
 
 function ReconciliationDashboard() {
+  const { t } = useTranslation("reconciliation");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [ReconciliationStatus, setReconciliationStatus] = useState<any>();
   const [AccountBalance, setAccountBalance] = useState<any>();
@@ -97,14 +99,14 @@ function ReconciliationDashboard() {
         setErrorReportFrom(calculatedFrom);
         setErrorReportTo(calculatedTo);
       } else {
-        toast.error(response?.data?.notificationMessage || "Failed to fetch error report");
+        toast.error(response?.data?.notificationMessage || t("dashboard.toast.fetchErrorReportFailed"));
         setErrorReportData([]);
         setErrorReportTotal(0);
         setErrorReportFrom(0);
         setErrorReportTo(0);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Error fetching error report");
+      toast.error(error?.message || t("dashboard.toast.fetchErrorReportError"));
       setErrorReportData([]);
       setErrorReportTotal(0);
       setErrorReportFrom(0);
@@ -126,7 +128,7 @@ function ReconciliationDashboard() {
 
   const handleGetReconciliation = async () => {
     if (!selectedAccountNumber || !selectedAccountId) {
-      toast.error("Please select an account first");
+      toast.error(t("dashboard.toast.selectAccountFirst"));
       return;
     }
     
@@ -141,12 +143,12 @@ function ReconciliationDashboard() {
         await fetchAccountBalance();
         
         const selectedAccount = accounts.find(acc => acc.id === selectedAccountId);
-        toast.success(`Reconciliation completed for ${selectedAccount?.accountName || 'selected account'}`);
+        toast.success(t("dashboard.toast.reconciliationCompleted", { account: selectedAccount?.accountName || t("dashboard.selectedAccountFallback") }));
       } else {
-        toast.error("Failed to fetch reconciliation data");
+        toast.error(t("dashboard.toast.fetchReconciliationFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.message || "Error fetching reconciliation data");
+      toast.error(error?.message || t("dashboard.toast.fetchReconciliationError"));
     } finally {
       setLoadingReconciliation(false);
     }
@@ -176,14 +178,14 @@ function ReconciliationDashboard() {
     },
     legend: {
       bottom: 0,
-      data: ['Matched', 'Unmatched','Pending'],
+      data: [t('dashboard.chart.matched'), t('dashboard.chart.unmatched'), t('dashboard.chart.pending')],
       textStyle: {
         fontSize: 12
       }
     },
     series: [
       {
-        name: 'Transactions',
+        name: t('dashboard.chart.transactions'),
         type: 'pie',
         radius: ['40%', '70%'],
         center: ['50%', '45%'],
@@ -203,19 +205,19 @@ function ReconciliationDashboard() {
           show: false
         },
         data: [
-          { 
-            value: dataSource?.match || 0, 
-            name: 'Matched',
+          {
+            value: dataSource?.match || 0,
+            name: t('dashboard.chart.matched'),
             itemStyle: { color: ' #1963b9' } // green
           },
-          { 
-            value: dataSource?.unMatch || 0, 
-            name: 'Unmatched',
+          {
+            value: dataSource?.unMatch || 0,
+            name: t('dashboard.chart.unmatched'),
             itemStyle: { color: '#d35854' } // red
           },
-          { 
-            value: dataSource?.pending || 0, 
-            name: 'Pending',
+          {
+            value: dataSource?.pending || 0,
+            name: t('dashboard.chart.pending'),
             itemStyle: { color: '#F7CB73' } // yellow
           }
         ]
@@ -237,7 +239,7 @@ function ReconciliationDashboard() {
     },
     series: [
       {
-        name: 'Transactions',
+        name: t('dashboard.chart.transactions'),
         type: 'pie',
         radius: ['40%', '70%'],
         center: ['50%', '45%'],
@@ -322,7 +324,7 @@ function ReconciliationDashboard() {
     },
     series: [
       {
-        name: 'Transactions',
+        name: t('dashboard.chart.transactions'),
         type: 'bar',
         barWidth: '50%',
         data: [
@@ -353,7 +355,7 @@ function ReconciliationDashboard() {
     channel: item?.errorType || "-",
     amount: item?.amount ? `SAR ${item.amount.toLocaleString()}` : "-",
     dateTime: formatDate(item?.date),
-    status: item?.priority || "Unmatched",
+    status: item?.priority || t("dashboard.status.unmatched"),
     description: item?.description || "-",
     affectedAccount: item?.affectedAccount || "-",
     requiredAction: item?.requiredAction || "-",
@@ -362,36 +364,36 @@ function ReconciliationDashboard() {
   // TableView header configuration
   const errorReportHeader = [
     {
-      name: "Channel",
+      name: t("col.channel"),
       selector: (row: { channel: any }) => row.channel || "-",
       width: "20%",
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount || "-",
     },
     {
-      name: "Date/Time",
+      name: t("col.dateTime"),
       selector: (row: { dateTime: any }) => row.dateTime || "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <Tag color="error" style={{ borderRadius: '2px', fontSize: '11px' }}>
-          {row.status || "Unmatched"}
+          {row.status || t("dashboard.status.unmatched")}
         </Tag>
       ),
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: { description: any }) => row.description || "-",
     },
     {
-      name: "Affected Account",
+      name: t("col.affectedAccount"),
       selector: (row: { affectedAccount: any }) => row.affectedAccount || "-",
     },
     {
-      name: "Required Action",
+      name: t("col.requiredAction"),
       selector: (row: { requiredAction: any }) => row.requiredAction || "-",
       width: "20%",
     },
@@ -406,11 +408,11 @@ function ReconciliationDashboard() {
             <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
               <div style={{ flex: '1', minWidth: '250px' }}>
                 <label style={{ display: 'block', marginBottom: '8px', fontWeight: 500 }}>
-                  Select Account
+                  {t("dashboard.selectAccount")}
                 </label>
                 <Select
                   style={{ width: '100%' }}
-                  placeholder="Select an account"
+                  placeholder={t("dashboard.selectAccountPlaceholder")}
                   value={selectedAccountId || undefined}
                   onChange={handleAccountChange}
                   loading={skelitonLoading}
@@ -440,7 +442,7 @@ function ReconciliationDashboard() {
                     fontWeight: 500,
                   }}
                 >
-                  Get Reconciliation
+                  {t("dashboard.getReconciliation")}
                 </Button>
               </div>
             
@@ -474,7 +476,7 @@ function ReconciliationDashboard() {
                 <SyncOutlined style={{ color: '#AD8700', fontSize: '18px' }} />
               </div>
               <div>
-                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>Total Txns Today</p>
+                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>{t("dashboard.card.totalTxnsToday")}</p>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
                   {skelitonLoading ? <Loader/> : totalTransactions.toLocaleString()}
                 </h3>
@@ -505,7 +507,7 @@ function ReconciliationDashboard() {
                 <CheckCircleOutlined style={{ color: '#148E3F', fontSize: '18px' }} />
               </div>
               <div>
-                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>Matched Today</p>
+                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>{t("dashboard.card.matchedToday")}</p>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
                 {skelitonLoading ? <Loader/> : `${matchedCount.toLocaleString()}`}
                 </h3>
@@ -536,7 +538,7 @@ function ReconciliationDashboard() {
                 <CloseCircleOutlined style={{ color: '#C21F30', fontSize: '18px' }} />
               </div>
               <div>
-                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>Unmatched Today</p>
+                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>{t("dashboard.card.unmatchedToday")}</p>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
                 {skelitonLoading ? <Loader/> : `${unmatchedCount.toLocaleString()}`}
                 </h3>
@@ -567,7 +569,7 @@ function ReconciliationDashboard() {
                 <ExclamationCircleOutlined style={{ color: '#D14C74', fontSize: '18px' }} />
               </div>
               <div>
-                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>Pending Manual Reviews</p>
+                <p style={{ margin: 0, color: '#6c757d', fontSize: '12px' }}>{t("dashboard.card.pendingManualReviews")}</p>
                 <h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>
                 {skelitonLoading ? <Loader/> : pendingCount.toLocaleString()}
                 </h3>
@@ -582,7 +584,7 @@ function ReconciliationDashboard() {
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         {/* Donut Chart */}
         <Col xs={24} lg={12}>
-          <Card title="Reconciliation Status" style={{ borderRadius: '2px', height: '500px' }}>
+          <Card title={t("dashboard.chart.reconciliationStatus")} style={{ borderRadius: '2px', height: '500px' }}>
             <ReactECharts 
               option={donutChartOption} 
               style={{ height: '400px' }}
@@ -591,7 +593,7 @@ function ReconciliationDashboard() {
             </Card>
           </Col>
         <Col xs={24} lg={12}>
-          <Card title="Account Balance Distribution" style={{ borderRadius: '2px', height: '500px' }}>
+          <Card title={t("dashboard.chart.accountBalanceDistribution")} style={{ borderRadius: '2px', height: '500px' }}>
             <ReactECharts 
               option={accountBalanceChartOption} 
               style={{ height: '400px' }}
@@ -604,8 +606,8 @@ function ReconciliationDashboard() {
       </Row>
       <Row gutter={[16, 16]} style={{ marginBottom: '24px' }}>
         <Col xs={24}>
-          <Card 
-            title="Operation Expenses By Service Type" 
+          <Card
+            title={t("dashboard.chart.operationExpensesByServiceType")}
             style={{ 
               borderRadius: '2px', 
               backgroundColor: '#e9ecef',
@@ -622,8 +624,8 @@ function ReconciliationDashboard() {
           </Card>
         </Col>
       </Row>
-      <Card 
-        title="Last 10 unmatched" 
+      <Card
+        title={t("dashboard.card.last10Unmatched")}
         style={{ borderRadius: '2px' }}
         bodyStyle={{ padding: 0 }}
       >

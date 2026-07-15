@@ -1,4 +1,5 @@
 import { Checkbox, Input } from "antd";
+import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { getProductById } from "../../redux/apis/apisCrud";
 import { listPartners } from "../../redux/apis/apisCrudProductManagement";
@@ -8,6 +9,7 @@ import TableView from "../TableView/TableView";
 import { usePermissions, PRODUCT_PARTNERS_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const PartnerAffiliation = () => {
+  const { t } = useTranslation("productManagement2");
   // TODO: Re-enable when permission API is implemented
   // const { hasPermission } = usePermissions();
   // const canUpdatePartner = hasPermission(PRODUCT_PARTNERS_PERMISSIONS.UPDATE);
@@ -24,10 +26,10 @@ const [data, setData] = useState<any[]>([]);
 const [skelitonLoading, setSkelitonLoading] = useState(false);
 
   const columns = [
-    { name: "Partner Name (En)", selector: (row: any) => row.name_en, width: "30%" },
-    { name: "Partner Name (Ar)", selector: (row: any) => row.name_ar, width: "30%" },
+    { name: t("partnerAffiliation.partnerNameEn"), selector: (row: any) => row.name_en, width: "30%" },
+    { name: t("partnerAffiliation.partnerNameAr"), selector: (row: any) => row.name_ar, width: "30%" },
     {
-      name: "Affiliation",
+      name: t("partnerAffiliation.affiliation"),
       cell: (row: any, idx: number) => (
         <Checkbox
           checked={!!row.affiliated}
@@ -38,7 +40,7 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
       width: "20%",
     },
     {
-      name: "Commission (%)",
+      name: t("partnerAffiliation.commission"),
       cell: (row: any, idx: number) => (
         <Input
           type="number"
@@ -86,7 +88,7 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
       }));
       setPartners(normalized);
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Failed to load partners");
+      toast.error(e?.response?.data?.message || t("partnerAffiliation.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -105,7 +107,7 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
         setData(data);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load partners");
+      toast.error(error?.response?.data?.message || error?.message || t("partnerAffiliation.loadFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -133,7 +135,7 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
   return (
     <div className="service">
       <h1 className="pt-2 pb-3" style={{ fontSize: "16px", fontWeight: "bold" }}>
-        Partners Affiliation
+        {t("partnerAffiliation.title")}
       </h1>
       <TableView
         header={columns}
@@ -144,7 +146,7 @@ const [skelitonLoading, setSkelitonLoading] = useState(false);
       />
 
       <div className="d-flex justify-content-end mt-3">
-        <button className="theme-btn-next" disabled={loading}>Next</button>
+        <button className="theme-btn-next" disabled={loading}>{t("common:next")}</button>
       </div>
     </div>
   );

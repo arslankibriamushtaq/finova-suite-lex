@@ -13,6 +13,7 @@ import {
   Col,
 } from "antd";
 
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -33,6 +34,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const Sanction = () => {
+  const { t } = useTranslation("walletBlocks");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -74,14 +76,14 @@ const Sanction = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -94,22 +96,22 @@ const Sanction = () => {
     //   // width: "15%",
     // },
     {
-      name: "Name",
+      name: t("userBlock.col.name"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Product",
+      name: t("userBlock.col.product"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Language",
+      name: t("userBlock.col.language"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Status",
+      name: t("userBlock.col.status"),
       cell: (row: any) => (
         <Switch
           checked={row.status}
@@ -140,7 +142,7 @@ const Sanction = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("userBlock.col.action"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -153,7 +155,7 @@ const Sanction = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("userBlock.select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -165,13 +167,13 @@ const Sanction = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteCommodityType(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("userBlock.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("userBlock.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("userBlock.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -188,37 +190,37 @@ const Sanction = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateCommodityType(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("userBlock.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
               name: "",
-              status: 0 
+              status: 0
              });
             getList();
-            return "Updated successfully";
+            return t("userBlock.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("userBlock.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createCommodityType(body), {
-          loading: "Adding finance purpose...",
+          loading: t("userBlock.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
                 name: "",
-                status: 0 
+                status: 0
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("userBlock.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("userBlock.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -265,7 +267,7 @@ const Sanction = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("userBlock.filterOption.name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -281,7 +283,7 @@ const Sanction = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -300,7 +302,7 @@ const Sanction = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("userBlock.searchPlaceholder")}
               />
             </div>
 
@@ -309,13 +311,13 @@ const Sanction = () => {
               onClick={() => {
                 setShowModal(true);
                 setSelectedItem("add");
-                setFormData({ 
+                setFormData({
                   name: "",
-                  status: 0 
+                  status: 0
                 });
               }}
             >
-                Add New Contract Template
+                {t("userBlock.addNew")}
             </button>
           </div>
         </div>
@@ -337,13 +339,13 @@ const Sanction = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("userBlock.modal.editTitle") : t("userBlock.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -353,7 +355,7 @@ const Sanction = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -361,24 +363,24 @@ const Sanction = () => {
             <Form>
               <Row className="">
                 <Col className="px-2 py-2" md={24}>
-                <label className="fw-400">Name</label>
+                <label className="fw-400">{t("userBlock.form.name")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("userBlock.ph.name")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
                 />
                 </Col>
-               
+
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Product</label>
+                <label className="fw-400">{t("userBlock.form.product")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("userBlock.ph.name")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -386,11 +388,11 @@ const Sanction = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Language</label>
+                <label className="fw-400">{t("userBlock.form.language")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("userBlock.ph.name")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -399,7 +401,7 @@ const Sanction = () => {
                 </Col>
                 <Col className="px-2 py-2" md={24}>
                           <div className="editor-fixed">
-                            <label className="fw-400">Message</label>
+                            <label className="fw-400">{t("userBlock.form.message")}</label>
                 
                             <CKEditor
                               // @ts-ignore
@@ -447,14 +449,14 @@ const Sanction = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("userBlock.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("userBlock.modal.addTitle")
+              : t("userBlock.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -463,17 +465,17 @@ const Sanction = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("userBlock.confirm.update")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("userBlock.confirm.add")
+                : t("userBlock.confirm.delete")
             }`}
           </Form>
         </Modal>

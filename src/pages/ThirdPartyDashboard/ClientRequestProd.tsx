@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Select, DatePicker, Button, Dropdown, Menu } from "antd";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
@@ -12,6 +13,7 @@ import "react-loading-skeleton/dist/skeleton.css";
 const { Option } = Select;
 
 const ClientRequestProd = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
@@ -34,7 +36,7 @@ const ClientRequestProd = () => {
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="view" onClick={() => handleMenuClick("view", row)}>
-        View Details
+        {t("clientRequestProd.menu.viewDetails")}
       </Menu.Item>
     </Menu>
   );
@@ -184,7 +186,7 @@ const ClientRequestProd = () => {
           <span className="pro-head-badge">
             <History className="h-4 w-4" />
           </span>
-          Client Request Prod
+          {t("clientRequestProd.title")}
         </h3>
       </div>
 
@@ -192,7 +194,7 @@ const ClientRequestProd = () => {
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Select
-            placeholder="Select Client"
+            placeholder={t("clientRequestProd.placeholder.selectClient")}
             value={selectedClient || undefined}
             onChange={(value) => setSelectedClient(value || "")}
             style={{ flex: "1 1 200px", minWidth: 180, height: 40 }}
@@ -205,7 +207,7 @@ const ClientRequestProd = () => {
           </Select>
 
           <Select
-            placeholder="Select Service"
+            placeholder={t("clientRequestProd.placeholder.selectService")}
             allowClear
             value={selectedService || undefined}
             onChange={(value) => setSelectedService(value || "")}
@@ -219,14 +221,14 @@ const ClientRequestProd = () => {
           </Select>
 
           <DatePicker
-            placeholder="From"
+            placeholder={t("clientRequestProd.placeholder.from")}
             value={fromDate}
             onChange={(date) => setFromDate(date)}
             format="YYYY-MM-DD"
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t("clientRequestProd.placeholder.to")}
             value={toDate}
             onChange={(date) => setToDate(date)}
             format="YYYY-MM-DD"
@@ -238,7 +240,7 @@ const ClientRequestProd = () => {
             onClick={handleFilter}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Filter
+            {t("common:filter")}
           </button>
           <button
             type="button"
@@ -246,7 +248,7 @@ const ClientRequestProd = () => {
             onClick={handleReset}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Reset
+            {t("common:reset")}
           </button>
         </div>
       </div>
@@ -264,32 +266,32 @@ const ClientRequestProd = () => {
         >
           <div style={{ flex: "0 0 120px", padding: "12px 8px", textAlign: "left" }}>
             <span style={{ fontSize: "12px", fontWeight: "400", color: themeStyle?.table.headingColor || "#090909" }}>
-              NID
+              {t("clientRequestProd.col.nid")}
             </span>
           </div>
           <div style={{ flex: "1", padding: "12px 8px", textAlign: "left" }}>
             <span style={{ fontSize: "12px", fontWeight: "400", color: themeStyle?.table.headingColor || "#090909" }}>
-              Client Name
+              {t("clientRequestProd.col.clientName")}
             </span>
           </div>
           <div style={{ flex: "1", padding: "12px 8px", textAlign: "left" }}>
             <span style={{ fontSize: "12px", fontWeight: "400", color: themeStyle?.table.headingColor || "#090909" }}>
-              API Name
+              {t("clientRequestProd.col.apiName")}
             </span>
           </div>
           <div style={{ flex: "1", padding: "12px 8px", textAlign: "left" }}>
             <span style={{ fontSize: "12px", fontWeight: "400", color: themeStyle?.table.headingColor || "#090909" }}>
-              Request
+              {t("clientRequestProd.col.request")}
             </span>
           </div>
           <div style={{ flex: "1", padding: "12px 8px", textAlign: "left" }}>
             <span style={{ fontSize: "12px", fontWeight: "400", color: themeStyle?.table.headingColor || "#090909" }}>
-              Response
+              {t("clientRequestProd.col.response")}
             </span>
           </div>
           <div style={{ flex: "0 0 120px", padding: "12px 8px", textAlign: "center" }}>
             <span style={{ fontSize: "12px", fontWeight: "400", color: themeStyle?.table.headingColor || "#090909" }}>
-              Action
+              {t("clientRequestProd.col.action")}
             </span>
           </div>
         </div>
@@ -365,7 +367,7 @@ const ClientRequestProd = () => {
                       }}
                     >
                       {isExpanded(row.id, 'request') ? <UpOutlined /> : <DownOutlined />}
-                      <span>View Request</span>
+                      <span>{t("clientRequestProd.viewRequest")}</span>
                     </Button>
                   </div>
                   <div style={{ flex: "1", padding: "12px 8px" }}>
@@ -382,13 +384,13 @@ const ClientRequestProd = () => {
                       }}
                     >
                       {isExpanded(row.id, 'response') ? <UpOutlined /> : <DownOutlined />}
-                      <span>View Response</span>
+                      <span>{t("clientRequestProd.viewResponse")}</span>
                     </Button>
                   </div>
                   <div style={{ flex: "0 0 120px", padding: "12px 8px", textAlign: "center" }}>
                     <Dropdown overlay={menu(row)} trigger={["click"]}>
                       <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
-                        Select <DownOutlined />
+                        {t("clientRequestProd.select")} <DownOutlined />
                       </Button>
                     </Dropdown>
                   </div>
@@ -402,7 +404,7 @@ const ClientRequestProd = () => {
                       borderBottom: "1px solid var(--color-border-subtle)",
                     }}
                   >
-                    <div style={{ marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Request:</div>
+                    <div style={{ marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>{t("clientRequestProd.requestLabel")}</div>
                     <pre
                       style={{
                         margin: 0,
@@ -430,7 +432,7 @@ const ClientRequestProd = () => {
                       borderBottom: "1px solid var(--color-border-subtle)",
                     }}
                   >
-                    <div style={{ marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>Response:</div>
+                    <div style={{ marginBottom: "8px", fontWeight: "600", fontSize: "14px" }}>{t("clientRequestProd.responseLabel")}</div>
                     <pre
                       style={{
                         margin: 0,
@@ -454,7 +456,7 @@ const ClientRequestProd = () => {
           </div>
         ) : (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-subtle)" }}>
-            No data available
+            {t("common:noData")}
           </div>
         )}
 
@@ -472,7 +474,7 @@ const ClientRequestProd = () => {
           >
             <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
               <span style={{ fontSize: "14px" }}>
-                Showing {from} to {to} of {totalRows} entries
+                {t("clientRequestProd.pagination", { from, to, total: totalRows })}
               </span>
               <Select
                 value={pageSize}

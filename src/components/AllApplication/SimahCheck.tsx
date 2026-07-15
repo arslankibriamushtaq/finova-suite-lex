@@ -1,17 +1,19 @@
 import React, { useState } from "react";
 import { Button, Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 
 const SimahCheck = () => {
+  const { t } = useTranslation("allApplication");
   const [selectTab, setSelectedTab] = useState();
   const tapOptions = [
     {
-      title: "Consumer Inquiry",
+      title: t("simah.tab.consumerInquiry"),
       key: "ConsumerInquiry",
       folder: "",
     },
     {
-      title: "Upload Simah Consumer Document",
+      title: t("simah.tab.uploadConsumerDocument"),
       key: "UploadSimahConsumerDocument",
       folder: <DocumentGallery />,
     },
@@ -45,6 +47,7 @@ const SimahCheck = () => {
 export default SimahCheck;
 
 const DocumentGallery = () => {
+  const { t } = useTranslation("allApplication");
   const docs = Array(12).fill({
     name: "Document 1",
     date: "12/05/2024",
@@ -55,7 +58,7 @@ const DocumentGallery = () => {
       <div className="my-2">
         <div className="d-flex justify-content-end mb-3">
           <Button className="theme-btn-next  px-3 py-2 ">
-            Upload Document
+            {t("documents.upload")}
           </Button>
         </div>
         <div className="d-flex flex-wrap gap-3">

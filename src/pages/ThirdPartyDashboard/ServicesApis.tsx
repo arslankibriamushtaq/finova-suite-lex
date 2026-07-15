@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Select } from "antd";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
@@ -8,6 +9,7 @@ import Loader from "../../components/Loader/Loader";
 const { Option } = Select;
 
 const ServicesApis = () => {
+  const { t } = useTranslation("connector");
   const [skelitonLoading, setSkelitonLoading] = useState(true);
   const [data, setData] = useState<any>([]);
   const [services, setServices] = useState<any>([]);
@@ -21,30 +23,30 @@ const ServicesApis = () => {
 
   const ServiceApis_Headers = [
     {
-      name: "ID",
+      name: t("servicesApis.col.id"),
       selector: (row: { id: any }) => row.id,
       sortable: true,
       width: "100px",
     },
     {
-      name: "API Name",
+      name: t("servicesApis.col.apiName"),
       selector: (row: { apiName: any }) => row.apiName,
       sortable: true,
     },
     {
-      name: "URL",
+      name: t("servicesApis.col.url"),
       selector: (row: { url: any }) => row.url,
       sortable: true,
       width: "300px",
     },
     {
-      name: "Method",
+      name: t("servicesApis.col.method"),
       selector: (row: { method: any }) => row.method,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -55,7 +57,7 @@ const ServicesApis = () => {
             fontSize: "12px",
           }}
         >
-          {row.status === 1 ? "Active" : "Inactive"}
+          {row.status === 1 ? t("common:active") : t("common:inactive")}
         </span>
       ),
       sortable: true,
@@ -140,7 +142,7 @@ const ServicesApis = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch service APIs");
+      toast.error(error?.response?.data?.message || error?.message || t("servicesApis.toast.fetchFailed"));
       setSkelitonLoading(false);
     }
   };
@@ -158,14 +160,14 @@ const ServicesApis = () => {
     {skelitonLoading && <Loader />}
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Services API</h2>
+        <h2>{t("servicesApis.title")}</h2>
       </div>
-      
+
       <div className="mb-3">
-        <label style={{ marginBottom: "8px", display: "block" }}>Select Service:</label>
+        <label style={{ marginBottom: "8px", display: "block" }}>{t("servicesApis.selectServiceLabel")}</label>
         <Select
           style={{ width: "300px" }}
-          placeholder="Select a service"
+          placeholder={t("servicesApis.selectServicePlaceholder")}
           value={selectedServiceId}
           onChange={(value) => setSelectedServiceId(value)}
         >
@@ -195,7 +197,7 @@ const ServicesApis = () => {
 
       {!selectedServiceId && (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-subtle)" }}>
-          Please select a service to view its APIs
+          {t("servicesApis.empty")}
         </div>
       )}
     </div>

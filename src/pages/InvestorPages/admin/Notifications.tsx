@@ -275,21 +275,21 @@ export default function Notifications() {
               onClick={handleRefreshStatus}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw className="w-4 h-4 me-2" />
               Refresh Status
             </button>
             <button 
               onClick={handleExportLogs}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="w-4 h-4 me-2" />
               Export Logs
             </button>
             <button 
               onClick={() => setShowCreateModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 me-2" />
               Create Notification
             </button>
           </div>
@@ -352,7 +352,7 @@ export default function Notifications() {
             }`}
           >
             <div className="flex items-center">
-              <Bell className="w-4 h-4 mr-2" />
+              <Bell className="w-4 h-4 me-2" />
               Notifications
             </div>
           </button>
@@ -365,7 +365,7 @@ export default function Notifications() {
             }`}
           >
             <div className="flex items-center">
-              <MessageSquare className="w-4 h-4 mr-2" />
+              <MessageSquare className="w-4 h-4 me-2" />
               Templates
             </div>
           </button>
@@ -378,7 +378,7 @@ export default function Notifications() {
             }`}
           >
             <div className="flex items-center">
-              <Settings className="w-4 h-4 mr-2" />
+              <Settings className="w-4 h-4 me-2" />
               Settings
             </div>
           </button>
@@ -398,7 +398,7 @@ export default function Notifications() {
                   placeholder="Search notifications..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+                  className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
                 />
               </div>
               <select
@@ -424,7 +424,7 @@ export default function Notifications() {
                 <option value="Onboarding">Onboarding</option>
               </select>
               <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-                <Filter className="w-4 h-4 mr-2" />
+                <Filter className="w-4 h-4 me-2" />
                 More Filters
               </button>
             </div>
@@ -439,22 +439,22 @@ export default function Notifications() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Notification
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Type & Channel
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Recipients
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Sent Date
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Performance
                     </th>
                     <th className="relative px-6 py-3">
@@ -469,7 +469,7 @@ export default function Notifications() {
                       <tr key={notification.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <TypeIcon className="w-5 h-5 text-gray-400 mr-3" />
+                            <TypeIcon className="w-5 h-5 text-gray-400 me-3" />
                             <div>
                               <div className="text-sm font-medium text-gray-900">{notification.title}</div>
                               <div className="text-sm text-gray-500">{notification.category}</div>
@@ -484,7 +484,7 @@ export default function Notifications() {
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <div className="flex items-center">
-                            <Users className="w-4 h-4 text-gray-400 mr-1" />
+                            <Users className="w-4 h-4 text-gray-400 me-1" />
                             <span className="text-sm text-gray-900">{notification.recipients.toLocaleString()}</span>
                           </div>
                         </td>
@@ -506,7 +506,7 @@ export default function Notifications() {
                             <span className="text-sm text-gray-400">-</span>
                           )}
                         </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                           <div className="flex items-center space-x-2">
                             <button 
                               onClick={() => handleViewDetails(notification)}
@@ -566,7 +566,7 @@ export default function Notifications() {
               onClick={() => setShowCreateTemplateModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 me-2" />
               New Template
             </button>
           </div>
@@ -574,22 +574,22 @@ export default function Notifications() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Template Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Type
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Category
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Usage
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Last Modified
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Status
                   </th>
                   <th className="relative px-6 py-3">
@@ -605,9 +605,9 @@ export default function Notifications() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center text-sm text-gray-900">
-                        {template.type.includes('Email') && <Mail className="w-4 h-4 mr-1" />}
-                        {template.type.includes('SMS') && <MessageSquare className="w-4 h-4 mr-1" />}
-                        {template.type.includes('In-App') && <Bell className="w-4 h-4 mr-1" />}
+                        {template.type.includes('Email') && <Mail className="w-4 h-4 me-1" />}
+                        {template.type.includes('SMS') && <MessageSquare className="w-4 h-4 me-1" />}
+                        {template.type.includes('In-App') && <Bell className="w-4 h-4 me-1" />}
                         {template.type}
                       </div>
                     </td>
@@ -627,7 +627,7 @@ export default function Notifications() {
                         {template.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button 
                           onClick={() => handleViewTemplate(template)}
@@ -728,19 +728,19 @@ export default function Notifications() {
               <h4 className="text-md font-medium text-gray-900 mb-4">Default Preferences</h4>
               <div className="space-y-3">
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Send welcome emails to new investors</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Send transaction confirmations</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Send monthly statements</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                   <span className="text-sm text-gray-700">Send marketing communications</span>
                 </label>
               </div>
@@ -751,7 +751,7 @@ export default function Notifications() {
                 onClick={handleSaveSettings}
                 className="flex items-center px-6 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
               >
-                <Settings className="w-4 h-4 mr-2" />
+                <Settings className="w-4 h-4 me-2" />
                 Save Settings
               </button>
             </div>

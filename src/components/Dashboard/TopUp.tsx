@@ -7,7 +7,9 @@ import csv from "../../assets/images/print-csv.svg";
 import blackPrint from "../../assets/images/blac-print.png";
 import { Tabs } from "antd";
 import ChartSkeleton from "../ChartSkeleton";
+import { useTranslation } from "react-i18next";
 const TopUp = (props: any) => {
+  const { t } = useTranslation("dashboard");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [legends, setLegends] = useState<any>();
   const [activeTab, setActiveTab] = useState("numbers");
@@ -62,11 +64,11 @@ const TopUp = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Numbers", // Y-axis label
+      name: t("services.numbers"), // Y-axis label
     },
     series: [
       {
-        name: "Series 1", // Name for the first set of bars
+        name: t("appStatusChart.series1"), // Name for the first set of bars
         data: props?.dashboardData?.topups?.graph?.map((day) => day?.amount), // Data for the first set of bars
         type: "bar",
         barGap: "0%", // No gap between bars in different series
@@ -82,7 +84,7 @@ const TopUp = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -107,11 +109,11 @@ const TopUp = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Average", // Y-axis label
+      name: t("services.average"), // Y-axis label
     },
     series: [
       {
-        name: "Series 1", // Name for the first set of bars
+        name: t("appStatusChart.series1"), // Name for the first set of bars
         data: props?.dashboardData?.topups?.graph?.map((day) => day?.count), // Average data for the first set of bars
         type: "bar",
         barGap: "0%", // No gap between bars in different series
@@ -126,7 +128,7 @@ const TopUp = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -141,10 +143,10 @@ const TopUp = (props: any) => {
     },
   };
   const ticketsTab = [
-    { key: "Amount", label: "Amount", chartOptions: numbersBarChartOptions },
+    { key: "Amount", label: t("common:amount"), chartOptions: numbersBarChartOptions },
     {
       key: "Sales",
-      label: "No of Sales",
+      label: t("services.noOfSales"),
       chartOptions: averageBarChartOptions,
     },
   ];
@@ -161,7 +163,7 @@ const TopUp = (props: any) => {
           className="d-flex"
           style={{ justifyContent: "space-between", padding: "20px 15px" }}
         >
-          <h4>Top-up</h4>
+          <h4>{t("topup.title")}</h4>
           <div className="csv-print">
             <img
               src={blackPrint}
@@ -170,7 +172,7 @@ const TopUp = (props: any) => {
               height={15}
               style={{ cursor: "pointer" }} // Add pointer cursor
             />
-            Print CSV
+            {t("services.printCsv")}
           </div>
         </div>
 
@@ -187,7 +189,7 @@ const TopUp = (props: any) => {
           >
             <div className="ticket p-3">
               <label className="label-tag" style={{ position: "absolute" }}>
-                Top-up sale
+                {t("topup.label")}
               </label>
               <Tabs
                 defaultActiveKey="numbers"

@@ -10,10 +10,12 @@ import TableView from "../TableView/TableView";
 import { Activity_Loans_Header } from "../Config/TableHeaders";
 import { getAllRewards } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 import SkeletonLabel from "../SkeletonLabel";
 
 const AllRewards = () => {
+  const { t } = useTranslation("dashboard");
   const data1 = [
     {
       Id: "kajbdsf",
@@ -47,42 +49,42 @@ const AllRewards = () => {
   const [loading, setLoading] = useState(false);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("rewards.col.sr"),
       selector: (row: { user_id: any }) => row.user_id,
       sortable: true,
       width: "100px"
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: {  user_name: any }) => row.user_name,
       sortable: true,
       width: "150px"
     },
     {
-      name: "Min. Segment",
+      name: t("rewards.col.minSegment"),
       selector: (row: { user_min_segment: any }) => row.user_min_segment,
       sortable: true,
       width: "220px"
     },
     {
-      name: "Max. Segment",
+      name: t("rewards.col.maxSegment"),
       selector: (row: { user_max_segemnt: any }) => row.user_max_segemnt,
       sortable: true,
       width: "180px"
     },
     {
-      name: "Limit",
+      name: t("rewards.col.limit"),
       selector: (row: { user_limit: any }) => row.user_limit,
       sortable: true,
       width: "150px"
     },
     {
-      name: "Reset Time",
+      name: t("rewards.col.resetTime"),
       selector: (row: { user_reset_time: any }) => row.user_reset_time,
       sortable: true,
     },
     {
-      name: "Account Head",
+      name: t("rewards.col.accountHead"),
       selector: (row: { user_account_head_id: any }) => row.user_account_head_id,
       sortable: true,
     },
@@ -149,11 +151,11 @@ dashboardData?.map((item: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Avg Time", // Y-axis label
+      name: t("appStatusChart.yAxis.avgTime"), // Y-axis label
     },
     series: [
       {
-        name: "Series 1", // Name for the first line
+        name: t("appStatusChart.series1"), // Name for the first line
         data: [10, 20, 15, 25, 30, 22, 18], // Data for the first line
         type: "line",
         smooth: true, // Make the line curve smoothly
@@ -162,7 +164,7 @@ dashboardData?.map((item: any) => {
         },
       },
       {
-        name: "Series 2", // Name for the second line
+        name: t("rewards.series2"), // Name for the second line
         data: [5, 15, 10, 20, 25, 18, 12], // Data for the second line
         type: "line",
         smooth: true, // Make the line curve smoothly
@@ -175,7 +177,7 @@ dashboardData?.map((item: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -183,7 +185,7 @@ dashboardData?.map((item: any) => {
       },
     },
     legend: {
-      data: ["Series 1", "Series 2"], // Legend to differentiate the lines
+      data: [t("appStatusChart.series1"), t("rewards.series2")], // Legend to differentiate the lines
       left: "left", // Position the legend on the left
       bottom: "bottom", // Position the legend at the bottom
       orient: "horizontal", // Display the legend horizontally
@@ -276,7 +278,7 @@ dashboardData?.map((item: any) => {
       left: "center",
       top: "center",
       style: {
-        text: `Total Tickets\n${totalTickets}`, // Display "Total Tickets" and the value
+        text: `${t("rewards.totalTickets")}\n${totalTickets}`, // Display "Total Tickets" and the value
         fontSize: 12, // Font size for the text
         fontWeight: "bold",
         fill: "#333", // Text color
@@ -388,14 +390,14 @@ dashboardData?.map((item: any) => {
           >
             <div className="reward-amount">
                 <div style={{ margin: "20px" }}>
-                <label className="label-tag">Reward Amount Paid</label>
+                <label className="label-tag">{t("rewards.rewardAmountPaid")}</label>
                 <div>
                 <Select
                     options={options}
                     value={selectedOption}
                     onChange={handleChange}
                     styles={customStyles}
-                    placeholder="This Year"
+                    placeholder={t("rewards.thisYear")}
                     isSearchable // Enable search functionality
                     isClearable // Allow clearing the selected option
                     />
@@ -424,14 +426,14 @@ dashboardData?.map((item: any) => {
           >
             <div className="reward-amount">
                 <div style={{ margin: "20px" }}>
-                <label className="label-tag">Reward</label>
+                <label className="label-tag">{t("rewards.reward")}</label>
                 <div>
                 <Select
                     options={options}
                     value={selectedOption}
                     onChange={handleChange}
                     styles={customStyles}
-                    placeholder="This Year"
+                    placeholder={t("rewards.thisYear")}
                     isSearchable // Enable search functionality
                     isClearable // Allow clearing the selected option
                     />
@@ -455,7 +457,7 @@ dashboardData?.map((item: any) => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -473,17 +475,17 @@ dashboardData?.map((item: any) => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("pipeline.searchPlaceholder")}
             />
           </div>
 
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("btn.excel")}</button>
+          <button className="invoice-btn">{t("btn.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button
             className="theme-btn"
             onClick={() => setShowModal(true)}>
-            Add New Spin
+            {t("rewards.addNewSpin")}
           </button>
         </div>
       </div>
@@ -503,18 +505,18 @@ dashboardData?.map((item: any) => {
             />
       <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Complaint</Modal.Title>
+          <Modal.Title>{t("rewards.modal.title")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-2 custom-input-box">
-                  <Form.Label className="px-2 mt-2">Name</Form.Label>
+                  <Form.Label className="px-2 mt-2">{t("common:name")}</Form.Label>
                   <Form.Control
                     type="text"
                     className="custom-input"
-                    placeholder="Placeholder"
+                    placeholder={t("rewards.placeholder")}
                     name="name"
                     value={formData.name}
                     onChange={handleInputChange}
@@ -523,11 +525,11 @@ dashboardData?.map((item: any) => {
               </Col>
               <Col md={6}>
                 <Form.Group className="mb-2 custom-input-box">
-                  <Form.Label className="px-2 mt-2">Reset Time</Form.Label>
+                  <Form.Label className="px-2 mt-2">{t("rewards.col.resetTime")}</Form.Label>
                   <Form.Control
                     type="text"
                     className="custom-input"
-                    placeholder="Placeholder"
+                    placeholder={t("rewards.placeholder")}
                     name="user_reset_time"
                     value={formData.user_reset_time}
                     onChange={handleInputChange}
@@ -538,12 +540,12 @@ dashboardData?.map((item: any) => {
               <Row>
               <Col md={6}>
                 <Form.Group className="mb-2 custom-input-box">
-                  <Form.Label className="px-2 mt-2">Min. Segment</Form.Label>
+                  <Form.Label className="px-2 mt-2">{t("rewards.col.minSegment")}</Form.Label>
                   <Form.Control
                     /* as="textarea"
                     rows={2} */
                     className="custom-input"
-                    placeholder="Placeholder"
+                    placeholder={t("rewards.placeholder")}
                     name="user_reset_time"
                     value={formData.user_min_segment}
                     onChange={handleInputChange}
@@ -553,12 +555,12 @@ dashboardData?.map((item: any) => {
                 </Col>
                 <Col md={6}>
                 <Form.Group className="mb-2 custom-input-box">
-                  <Form.Label className="px-2 mt-2">Max. Segment</Form.Label>
+                  <Form.Label className="px-2 mt-2">{t("rewards.col.maxSegment")}</Form.Label>
                   <Form.Control
                     /* as="textarea"
                     rows={2} */
                     className="custom-input"
-                    placeholder="Placeholder"
+                    placeholder={t("rewards.placeholder")}
                     name="user_max_segemnt"
                     value={formData.user_max_segemnt}
                     onChange={handleInputChange}
@@ -569,12 +571,12 @@ dashboardData?.map((item: any) => {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-2 custom-input-box">
-                  <Form.Label className="px-2 mt-2">Limit</Form.Label>
+                  <Form.Label className="px-2 mt-2">{t("rewards.col.limit")}</Form.Label>
                   <Form.Control
                     /* as="textarea"
                     rows={2} */
                     className="custom-input"
-                    placeholder="Placeholder"
+                    placeholder={t("rewards.placeholder")}
                     name="Limit"
                     value={formData.user_limit}
                     onChange={handleInputChange}
@@ -583,12 +585,12 @@ dashboardData?.map((item: any) => {
               </Col>
               <Col md={6}>
                   <Form.Group className="mb-2 custom-input-box">
-                      <Form.Label className="px-2 mt-2">Account Limit</Form.Label>
+                      <Form.Label className="px-2 mt-2">{t("rewards.form.accountLimit")}</Form.Label>
                       <Form.Control
                         /* as="textarea"
                         rows={2} */
                         className="custom-input"
-                        placeholder="Placeholder"
+                        placeholder={t("rewards.placeholder")}
                         name="account_limit"
                         value={formData.account_limit}
                         onChange={handleInputChange}
@@ -599,12 +601,12 @@ dashboardData?.map((item: any) => {
             <Row>
               <Col md={6}>
                 <Form.Group className="mb-2 custom-input-box">
-                  <Form.Label className="px-2 mt-2">Limit</Form.Label>
+                  <Form.Label className="px-2 mt-2">{t("rewards.col.limit")}</Form.Label>
                   <Form.Control
                     /* as="textarea"
                     rows={2} */
                     className="custom-input"
-                    placeholder="Placeholder"
+                    placeholder={t("rewards.placeholder")}
                     name="Account Head"
                     value={formData.user_account_head_id}
                     onChange={handleInputChange}
@@ -613,12 +615,12 @@ dashboardData?.map((item: any) => {
               </Col>
               <Col md={6}>
                   <Form.Group className="mb-2 custom-input-box">
-                      <Form.Label className="px-2 mt-2">Type</Form.Label>
+                      <Form.Label className="px-2 mt-2">{t("common:type")}</Form.Label>
                       <Form.Control
                         /* as="textarea"
                         rows={2} */
                         className="custom-input"
-                        placeholder="Placeholder"
+                        placeholder={t("rewards.placeholder")}
                         name="type"
                         value={formData.type}
                         onChange={handleInputChange}
@@ -641,10 +643,10 @@ dashboardData?.map((item: any) => {
             type: '',
             account_limit : ''
           });}}>
-            Close
+            {t("common:close")}
           </Button>
           <Button className="theme-btn" onClick={handleSave}>
-            Add New Spin
+            {t("rewards.addNewSpin")}
           </Button>
         </Modal.Footer>
       </Modal>

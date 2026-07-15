@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { useTranslation } from "react-i18next"
 import { ArrowLeft, ArrowRight, Save, Plus, Trash2, XCircle, Clock, Settings, Zap, Eye } from "lucide-react"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
@@ -76,6 +77,7 @@ export default function ApprovalWorkflowsTab({
   applyTemplateFromPreview,
   errors = {},
 }: ApprovalWorkflowsTabProps) {
+  const { t } = useTranslation("productManagement2")
 
   useEffect(() => {
     getData();
@@ -94,25 +96,25 @@ export default function ApprovalWorkflowsTab({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Settings className="h-5 w-5" />
-            Approval Workflows
+            {t("workflows.title")}
           </CardTitle>
           <p className="text-muted-foreground">
-            Configure automated and manual approval scenarios for loan applications.
+            {t("workflows.subtitle")}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <Button onClick={() => addApprovalScenario("manual")} variant="outline" className="gap-2">
               <Clock className="h-4 w-4" />
-              Add Manual Approval
+              {t("workflows.addManual")}
             </Button>
             <Button onClick={() => addApprovalScenario("auto")} variant="outline" className="gap-2">
               <Zap className="h-4 w-4" />
-              Add Auto-Approval
+              {t("workflows.addAuto")}
             </Button>
             <Button onClick={() => addApprovalScenario("rejection")} variant="outline" className="gap-2">
               <XCircle className="h-4 w-4" />
-              Add Rejection Scenario
+              {t("workflows.addRejection")}
             </Button>
           </div>
 
@@ -265,24 +267,24 @@ export default function ApprovalWorkflowsTab({
                   {previewTemplate?.type === "manual" && <Clock className="h-5 w-5 text-orange-500" />}
                   {previewTemplate?.type === "auto" && <Zap className="h-5 w-5 text-green-500" />}
                   {previewTemplate?.type === "rejection" && <XCircle className="h-5 w-5 text-red-500" />}
-                  Template Preview: {previewTemplate?.template?.name}
+                  {t("workflows.templatePreview", { name: previewTemplate?.template?.name })}
                 </DialogTitle>
                 <DialogDescription>
-                  Review the template details before applying it to your workflow configuration.
+                  {t("workflows.previewDescription")}
                 </DialogDescription>
               </DialogHeader>
 
               {previewTemplate && (
                 <div className="space-y-6">
                   <div className="space-y-2">
-                    <h3 className="text-lg font-medium">Template Information</h3>
+                    <h3 className="text-lg font-medium">{t("workflows.templateInformation")}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-muted/50 rounded-lg">
                       <div>
-                        <Label className="text-sm font-medium">Template Name</Label>
+                        <Label className="text-sm font-medium">{t("workflows.templateName")}</Label>
                         <p className="text-sm">{previewTemplate.template.name}</p>
                       </div>
                       <div>
-                        <Label className="text-sm font-medium">Template Type</Label>
+                        <Label className="text-sm font-medium">{t("workflows.templateType")}</Label>
                         <Badge
                           variant={
                             previewTemplate.type === "auto"
@@ -291,13 +293,13 @@ export default function ApprovalWorkflowsTab({
                                 ? "destructive"
                                 : "secondary"
                           }
-                          className="ml-2"
+                          className="ms-2"
                         >
                           {previewTemplate.type.charAt(0).toUpperCase() + previewTemplate.type.slice(1)}
                         </Badge>
                       </div>
                       <div className="md:col-span-2">
-                        <Label className="text-sm font-medium">Description</Label>
+                        <Label className="text-sm font-medium">{t("common:description")}</Label>
                         <p className="text-sm text-muted-foreground">
                           {previewTemplate.template.description}
                         </p>
@@ -307,26 +309,26 @@ export default function ApprovalWorkflowsTab({
 
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">
-                      Conditions ({previewTemplate.template.conditions.length})
+                      {t("workflows.conditionsCount", { count: previewTemplate.template.conditions.length })}
                     </h3>
                     <div className="space-y-2">
                       {previewTemplate.template.conditions.map((condition: any, index: number) => (
                         <div key={index} className="p-3 border rounded-lg bg-background">
                           <div className="grid grid-cols-1 md:grid-cols-4 gap-2 text-sm">
                             <div>
-                              <Label className="text-xs font-medium text-muted-foreground">Field</Label>
+                              <Label className="text-xs font-medium text-muted-foreground">{t("workflows.field")}</Label>
                               <p className="font-medium">{getFieldDisplayName(condition.field)}</p>
                             </div>
                             <div>
-                              <Label className="text-xs font-medium text-muted-foreground">Operator</Label>
+                              <Label className="text-xs font-medium text-muted-foreground">{t("workflows.operator")}</Label>
                               <p className="font-medium">{condition.operator}</p>
                             </div>
                             <div>
-                              <Label className="text-xs font-medium text-muted-foreground">Value</Label>
+                              <Label className="text-xs font-medium text-muted-foreground">{t("workflows.value")}</Label>
                               <p className="font-medium">{condition.value}</p>
                             </div>
                             <div>
-                              <Label className="text-xs font-medium text-muted-foreground">Logic</Label>
+                              <Label className="text-xs font-medium text-muted-foreground">{t("workflows.logic")}</Label>
                               <Badge variant="outline" className="text-xs">
                                 {condition.logic}
                               </Badge>
@@ -339,19 +341,19 @@ export default function ApprovalWorkflowsTab({
 
                   <div className="space-y-4">
                     <h3 className="text-lg font-medium">
-                      Actions ({previewTemplate.template.actions.length})
+                      {t("workflows.actionsCount", { count: previewTemplate.template.actions.length })}
                     </h3>
                     <div className="space-y-2">
                       {previewTemplate.template.actions.map((action: any, index: number) => (
                         <div key={index} className="p-3 border rounded-lg bg-background">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                             <div>
-                              <Label className="text-xs font-medium text-muted-foreground">Action Type</Label>
+                              <Label className="text-xs font-medium text-muted-foreground">{t("workflows.actionType")}</Label>
                               <p className="font-medium">{action.type}</p>
                             </div>
                             <div>
                               <Label className="text-xs font-medium text-muted-foreground">
-                                Action Value
+                                {t("workflows.actionValue")}
                               </Label>
                               <p className="font-medium">{action.value}</p>
                             </div>
@@ -363,22 +365,19 @@ export default function ApprovalWorkflowsTab({
 
                   <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                     <h4 className="font-medium text-blue-900 mb-2">
-                      What happens when you apply this template?
+                      {t("workflows.whatHappensTitle")}
                     </h4>
                     <ul className="text-sm text-blue-800 space-y-1">
                       <li>
-                        • A new workflow scenario will be created with the name "
-                        {previewTemplate.template.name}"
+                        {t("workflows.whatHappens1", { name: previewTemplate.template.name })}
                       </li>
                       <li>
-                        • All {previewTemplate.template.conditions.length} conditions will be automatically
-                        configured
+                        {t("workflows.whatHappens2", { count: previewTemplate.template.conditions.length })}
                       </li>
                       <li>
-                        • All {previewTemplate.template.actions.length} actions will be set up and ready to
-                        use
+                        {t("workflows.whatHappens3", { count: previewTemplate.template.actions.length })}
                       </li>
-                      <li>• The workflow will be enabled by default and can be modified after creation</li>
+                      <li>{t("workflows.whatHappens4")}</li>
                     </ul>
                   </div>
                 </div>
@@ -386,11 +385,11 @@ export default function ApprovalWorkflowsTab({
 
               <DialogFooter>
                 <Button variant="outline" onClick={() => setIsPreviewOpen(false)}>
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
                 <Button onClick={applyTemplateFromPreview} className="gap-2">
                   <Plus className="h-4 w-4" />
-                  Apply Template
+                  {t("workflows.applyTemplate")}
                 </Button>
               </DialogFooter>
             </DialogContent>
@@ -400,13 +399,13 @@ export default function ApprovalWorkflowsTab({
             <div className="text-center py-8 text-muted-foreground">
               <Settings className="h-12 w-12 mx-auto mb-4 opacity-50" />
               <p>
-                No approval scenarios configured. Add scenarios manually or use pre-defined templates above.
+                {t("workflows.noScenarios")}
               </p>
             </div>
           ) : (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-medium">Configured Workflows</h3>
+                <h3 className="text-lg font-medium">{t("workflows.configuredWorkflows")}</h3>
                 <div className="flex gap-2">
                   {/* <Button
                     variant="outline"
@@ -474,11 +473,11 @@ export default function ApprovalWorkflowsTab({
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Scenario Name</Label>
+                        <Label>{t("workflows.scenarioName")}</Label>
                         <Input
                           value={scenario.name}
                           onChange={(e: any) => updateApprovalScenario(scenario.id, "name", e.target.value)}
-                          placeholder="Enter scenario name"
+                          placeholder={t("workflows.scenarioNamePlaceholder")}
                           className={scenarioErrors.scenario_name ? "border-red-500" : ""}
                         />
                         {scenarioErrors.scenario_name && (
@@ -486,7 +485,7 @@ export default function ApprovalWorkflowsTab({
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label>Priority</Label>
+                        <Label>{t("workflows.priority")}</Label>
                         <Input
                           type="number"
                           value={scenario.priority}
@@ -500,7 +499,7 @@ export default function ApprovalWorkflowsTab({
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Conditions</h4>
+                        <h4 className="font-medium">{t("workflows.conditions")}</h4>
                         <Button
                           size="sm"
                           variant="outline"
@@ -508,7 +507,7 @@ export default function ApprovalWorkflowsTab({
                           className="gap-2"
                         >
                           <Plus className="h-4 w-4" />
-                          Add Condition
+                          {t("workflows.addCondition")}
                         </Button>
                       </div>
 
@@ -539,7 +538,7 @@ export default function ApprovalWorkflowsTab({
                               }}
                             >
                               <SelectTrigger>
-                                <SelectValue placeholder="Field" />
+                                <SelectValue placeholder={t("workflows.field")} />
                               </SelectTrigger>
                               <SelectContent>
                                 {conditionFields.map((field) => (
@@ -568,7 +567,7 @@ export default function ApprovalWorkflowsTab({
                                 }}
                               >
                                 <SelectTrigger className={conditionError ? "border-red-500" : ""}>
-                                  <SelectValue placeholder="Operator" />
+                                  <SelectValue placeholder={t("workflows.operator")} />
                                 </SelectTrigger>
                                 <SelectContent>
                                   {conditionOperators.map((op) => (
@@ -584,7 +583,7 @@ export default function ApprovalWorkflowsTab({
                             </div>
 
                             <Input
-                              placeholder="Value"
+                              placeholder={t("workflows.value")}
                               value={condition.value}
                               onChange={(e) => {
                                 const updatedScenarios = formData.approval_scenarios.map((s: any) =>
@@ -652,7 +651,7 @@ export default function ApprovalWorkflowsTab({
 
                     <div className="space-y-4">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-medium">Actions</h4>
+                        <h4 className="font-medium">{t("workflows.actions")}</h4>
                         <Button
                           size="sm"
                           variant="outline"
@@ -660,7 +659,7 @@ export default function ApprovalWorkflowsTab({
                           className="gap-2"
                         >
                           <Plus className="h-4 w-4" />
-                          Add Action
+                          {t("workflows.addAction")}
                         </Button>
                       </div>
 
@@ -687,7 +686,7 @@ export default function ApprovalWorkflowsTab({
                             }}
                           >
                             <SelectTrigger>
-                              <SelectValue placeholder="Action Type" />
+                              <SelectValue placeholder={t("workflows.actionType")} />
                             </SelectTrigger>
                             <SelectContent>
                               {actionTypes.map((type) => (
@@ -699,7 +698,7 @@ export default function ApprovalWorkflowsTab({
                           </Select>
 
                           <Input
-                            placeholder="Action Value"
+                            placeholder={t("workflows.actionValue")}
                             value={action.value}
                             onChange={(e) => {
                               const updatedScenarios = formData.approval_scenarios.map((s: any) =>
@@ -718,7 +717,7 @@ export default function ApprovalWorkflowsTab({
 
                           <Input
                             type="number"
-                            placeholder="Delay (hours)"
+                            placeholder={t("workflows.delayHours")}
                             value={action.delay_hours || ""}
                             onChange={(e) => {
                               const updatedScenarios = formData.approval_scenarios.map((s: any) =>
@@ -771,10 +770,10 @@ export default function ApprovalWorkflowsTab({
       <div className="flex justify-between gap-3 pt-4">
         <Button variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </Button>
         <Button onClick={onNext} className="gap-2">
-          Next: Credit Scoring
+          {t("workflows.next")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

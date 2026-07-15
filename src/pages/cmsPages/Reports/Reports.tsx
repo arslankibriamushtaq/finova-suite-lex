@@ -5,7 +5,9 @@ import { getReports } from "../../../redux/apis/apisCrudCms";
 import {
   SearchOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 const Reports = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -38,39 +40,39 @@ const Reports = () => {
   }, [searchValue]);
   const Table_Headers = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       selector: (row: { srNo: string }) => row.srNo || "-",
     },
     {
-      name: "Complainer Name",
+      name: t("fields.complainerName"),
       selector: (row: { complainerName: string }) => row.complainerName || "-",
     },
     {
-      name: "Contact No",
+      name: t("fields.contactNo"),
       selector: (row: { contactNo: string }) => row.contactNo || "-",
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: { description: string }) => row.description || "-",
     },
     {
-      name: "Department",
+      name: t("fields.department"),
       selector: (row: { department: string }) => row.department || "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { status: string }) => row.status || "-",
     },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: { category: string }) => row.category || "-",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { createdAt: string }) => row.createdAt || "-",
     },
     {
-      name: "Escalations",
+      name: t("fields.escalations"),
       selector: (row: { escalations: string }) => row.escalations || "-",
     },
   ];
@@ -78,13 +80,13 @@ const Reports = () => {
   // Map status_id to readable status
   const getStatusName = (statusId: number): string => {
     const statusMap: { [key: number]: string } = {
-      1: "Open",
-      2: "In Progress",
-      3: "Resolved",
-      4: "Closed",
-      5: "Cancelled",
+      1: t("reports.status.open"),
+      2: t("reports.status.inProgress"),
+      3: t("reports.status.resolved"),
+      4: t("reports.status.closed"),
+      5: t("reports.status.cancelled"),
     };
-    return statusMap[statusId] || "Unknown";
+    return statusMap[statusId] || t("reports.status.unknown");
   };
 
   // Format date
@@ -144,7 +146,7 @@ const Reports = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h5 className="mb-0">Reports</h5>
+          <h5 className="mb-0">{t("reports.title")}</h5>
         </div>
         <div className="text-end">
 
@@ -154,10 +156,10 @@ const Reports = () => {
             //   setModal(true);
             // }}
           >
-            Export CSV
+            {t("reports.exportCsv")}
           </button>
           <Input
-            placeholder="Search reports"
+            placeholder={t("reports.searchReports")}
             value={searchValue}
             prefix={<SearchOutlined />} style={{ width: "300px", height: "33px", marginLeft: "10px" }}
             onChange={(e: any) => {

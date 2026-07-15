@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Plus, 
+import { useTranslation } from 'react-i18next';
+import {
+  Plus,
   Search, 
   Edit, 
   Trash2, 
@@ -24,6 +25,7 @@ import toast from 'react-hot-toast';
 import Loader from '../../../../components/Loader/Loader';
 
 export default function InitialInvestList() {
+  const { t } = useTranslation('investor');
   const [initialInvests, setInitialInvests] = useState<InitialInvest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,10 +55,10 @@ export default function InitialInvestList() {
         setTotalPages(response.pageInfo.totalPages);
         setTotalCount(response.pageInfo.totalCount);
       } else {
-        setError('Failed to fetch initial invests');
+        setError(t('iil.fetchFail'));
       }
     } catch (err) {
-      setError('Error fetching initial invests');
+      setError(t('iil.fetchError'));
 
     } finally {
       setLoading(false);
@@ -74,15 +76,15 @@ export default function InitialInvestList() {
       setFormLoading(true);
       const response = await createInitialInvest(formData);
       if (response.success) {
-        toast.success('Initial invest created successfully!');
+        toast.success(t('iil.createSuccess'));
         setShowCreateModal(false);
         setFormData({ minimumAmount: 0, maximumAmount: 0 });
         fetchInitialInvests();
       } else {
-        toast.error(response.notificationMessage || 'Failed to create initial invest');
+        toast.error(response.notificationMessage || t('iil.createFail'));
       }
     } catch (err) {
-      toast.error('Error creating initial invest');
+      toast.error(t('iil.createError'));
    
     } finally {
       setFormLoading(false);
@@ -104,15 +106,15 @@ export default function InitialInvestList() {
       
       const response = await updateInitialInvest(updateData);
       if (response.success) {
-        toast.success('Initial invest updated successfully!');
+        toast.success(t('iil.updateSuccess'));
         setShowEditModal(false);
         setFormData({ minimumAmount: 0, maximumAmount: 0 });
         fetchInitialInvests();
       } else {
-        toast.error(response.notificationMessage || 'Failed to update initial invest');
+        toast.error(response.notificationMessage || t('iil.updateFail'));
       }
     } catch (err) {
-      toast.error('Error updating initial invest');
+      toast.error(t('iil.updateError'));
       console.error('Error updating initial invest:', err);
     } finally {
       setFormLoading(false);
@@ -127,14 +129,14 @@ export default function InitialInvestList() {
       setFormLoading(true);
       const response = await deleteInitialInvestById(selectedInitialInvest.id);
       if (response.success) {
-        toast.success('Initial invest deleted successfully!');
+        toast.success(t('iil.deleteSuccess'));
         setShowDeleteModal(false);
         fetchInitialInvests();
       } else {
-        toast.error(response.notificationMessage || 'Failed to delete initial invest');
+        toast.error(response.notificationMessage || t('iil.deleteFail'));
       }
     } catch (err) {
-      toast.error('Error deleting initial invest');
+      toast.error(t('iil.deleteError'));
       console.error('Error deleting initial invest:', err);
     } finally {
       setFormLoading(false);
@@ -153,10 +155,10 @@ export default function InitialInvestList() {
         });
         setShowEditModal(true);
       } else {
-        toast.error('Failed to fetch initial invest details');
+        toast.error(t('iil.detailsFail'));
       }
     } catch (err) {
-      toast.error('Error fetching initial invest details');
+      toast.error(t('iil.detailsError'));
       console.error('Error fetching initial invest details:', err);
     }
   };
@@ -169,10 +171,10 @@ export default function InitialInvestList() {
         setSelectedInitialInvest(response.data);
         setShowViewModal(true);
       } else {
-        toast.error('Failed to fetch initial invest details');
+        toast.error(t('iil.detailsFail'));
       }
     } catch (err) {
-      toast.error('Error fetching initial invest details');
+      toast.error(t('iil.detailsError'));
       console.error('Error fetching initial invest details:', err);
     }
   };
@@ -218,7 +220,7 @@ export default function InitialInvestList() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader />
-        <span className="ml-2 text-gray-600">Loading initial invests...</span>
+        <span className="ms-2 text-gray-600">{t('iil.loading')}</span>
       </div>
     );
   }
@@ -231,7 +233,7 @@ export default function InitialInvestList() {
           onClick={fetchInitialInvests}
           className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
         >
-          Retry
+          {t('iil.retry')}
         </button>
       </div>
     );
@@ -242,15 +244,15 @@ export default function InitialInvestList() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Initial Invest Management</h1>
-          <p className="text-gray-600">Manage initial investment ranges</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('iil.title')}</h1>
+          <p className="text-gray-600">{t('iil.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Initial Invest
+          <Plus className="w-4 h-4 me-2" />
+          {t('iil.addBtn')}
         </button>
       </div>
 
@@ -261,15 +263,15 @@ export default function InitialInvestList() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by amount..."
+              placeholder={t('iil.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             />
           </div>
         </div>
         <div className="text-sm text-gray-600">
-          Showing {filteredInitialInvests.length} of {totalCount} initial invests
+          {t('iil.countLabel', { shown: filteredInitialInvests.length, total: totalCount })}
         </div>
       </div>
 
@@ -280,20 +282,20 @@ export default function InitialInvestList() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Minimum Amount
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('irl.col.minAmount')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Maximum Amount
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('irl.col.maxAmount')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('irl.col.created')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Updated
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('irl.col.updated')}
                   </th>
                   <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{t('common:actions')}</span>
                   </th>
                 </tr>
               </thead>
@@ -328,26 +330,26 @@ export default function InitialInvestList() {
                         minute: '2-digit'
                       })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button 
                           onClick={() => handleViewClick(initialInvest.id)}
-                          className="text-black hover:text-blue-900" 
-                          title="View Details"
+                          className="text-black hover:text-blue-900"
+                          title={t('irl.viewDetails')}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleEditClick(initialInvest.id)}
-                          className="text-yellow-600 hover:text-yellow-900" 
-                          title="Edit"
+                          className="text-yellow-600 hover:text-yellow-900"
+                          title={t('common:edit')}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDeleteClick(initialInvest)}
-                          className="text-red-600 hover:text-red-900" 
-                          title="Delete"
+                          className="text-red-600 hover:text-red-900"
+                          title={t('common:delete')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -368,21 +370,20 @@ export default function InitialInvestList() {
                   disabled={currentPage === 1}
                   className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  {t('common:previous')}
                 </button>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="ms-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  {t('common:next')}
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Showing page <span className="font-medium">{currentPage}</span> of{' '}
-                    <span className="font-medium">{totalPages}</span>
+                    {t('iil.showingPage', { current: currentPage, total: totalPages })}
                   </p>
                 </div>
                 <div>
@@ -415,7 +416,7 @@ export default function InitialInvestList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Create Initial Invest</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('iil.createTitle')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -427,7 +428,7 @@ export default function InitialInvestList() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Minimum Amount
+                  {t('irl.col.minAmount')}
                 </label>
                 <div className="relative">
                   <input
@@ -440,10 +441,10 @@ export default function InitialInvestList() {
                       minimumAmount: e.target.value ? Number(e.target.value) : 0
                     })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="Enter minimum amount"
+                    placeholder={t('iil.enterMin')}
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 text-sm font-medium">USD</span>
                   </div>
                 </div>
@@ -451,7 +452,7 @@ export default function InitialInvestList() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Maximum Amount
+                  {t('irl.col.maxAmount')}
                 </label>
                 <div className="relative">
                   <input
@@ -464,10 +465,10 @@ export default function InitialInvestList() {
                       maximumAmount: e.target.value ? Number(e.target.value) : 0
                     })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="Enter maximum amount"
+                    placeholder={t('iil.enterMax')}
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 text-sm font-medium">USD</span>
                   </div>
                 </div>
@@ -479,7 +480,7 @@ export default function InitialInvestList() {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="submit"
@@ -488,11 +489,11 @@ export default function InitialInvestList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Creating...
+                      <Loader2 className="w-4 h-4 animate-spin me-2" />
+                      {t('iil.creating')}
                     </div>
                   ) : (
-                    'Create Initial Invest'
+                    t('iil.createBtn')
                   )}
                 </button>
               </div>
@@ -506,7 +507,7 @@ export default function InitialInvestList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Edit Initial Invest</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('iil.editTitle')}</h3>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -518,7 +519,7 @@ export default function InitialInvestList() {
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Minimum Amount
+                  {t('irl.col.minAmount')}
                 </label>
                 <div className="relative">
                   <input
@@ -531,10 +532,10 @@ export default function InitialInvestList() {
                       minimumAmount: e.target.value ? Number(e.target.value) : 0
                     })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="Enter minimum amount"
+                    placeholder={t('iil.enterMin')}
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 text-sm font-medium">USD</span>
                   </div>
                 </div>
@@ -542,7 +543,7 @@ export default function InitialInvestList() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Maximum Amount
+                  {t('irl.col.maxAmount')}
                 </label>
                 <div className="relative">
                   <input
@@ -555,10 +556,10 @@ export default function InitialInvestList() {
                       maximumAmount: e.target.value ? Number(e.target.value) : 0
                     })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                    placeholder="Enter maximum amount"
+                    placeholder={t('iil.enterMax')}
                     required
                   />
-                  <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+                  <div className="absolute inset-y-0 right-0 pe-3 flex items-center pointer-events-none">
                     <span className="text-gray-500 text-sm font-medium">USD</span>
                   </div>
                 </div>
@@ -570,7 +571,7 @@ export default function InitialInvestList() {
                   onClick={() => setShowEditModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="submit"
@@ -579,11 +580,11 @@ export default function InitialInvestList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Updating...
+                      <Loader2 className="w-4 h-4 animate-spin me-2" />
+                      {t('iil.updating')}
                     </div>
                   ) : (
-                    'Update Initial Invest'
+                    t('iil.updateBtn')
                   )}
                 </button>
               </div>
@@ -597,7 +598,7 @@ export default function InitialInvestList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Initial Invest Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('iil.detailsTitle')}</h3>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -608,19 +609,19 @@ export default function InitialInvestList() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.label.id')}</label>
                 <p className="text-sm text-gray-900">{selectedInitialInvest.id}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.minAmount')}</label>
                 <p className="text-lg font-semibold text-green-600">{selectedInitialInvest.minimumAmount}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Maximum Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.col.maxAmount')}</label>
                 <p className="text-lg font-semibold text-black">{selectedInitialInvest.maximumAmount}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Created At</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:createdAt')}</label>
                 <p className="text-sm text-gray-900">
                   {new Date(selectedInitialInvest.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -633,7 +634,7 @@ export default function InitialInvestList() {
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Updated At</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:updatedAt')}</label>
                 <p className="text-sm text-gray-900">
                   {new Date(selectedInitialInvest.updatedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -652,7 +653,7 @@ export default function InitialInvestList() {
                 onClick={() => setShowViewModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
             </div>
           </div>
@@ -664,7 +665,7 @@ export default function InitialInvestList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Delete Initial Invest</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('iil.deleteTitle')}</h3>
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -675,11 +676,11 @@ export default function InitialInvestList() {
 
             <div className="mb-6">
               <p className="text-gray-600 mb-4">
-                Are you sure you want to delete this initial invest range?
+                {t('iil.deleteConfirm')}
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <p className="text-sm text-gray-700">
-                  <span className="font-medium">Range:</span> {selectedInitialInvest.minimumAmount} - {selectedInitialInvest.maximumAmount}
+                  <span className="font-medium">{t('iil.rangeLabel')}</span> {selectedInitialInvest.minimumAmount} - {selectedInitialInvest.maximumAmount}
                 </p>
               </div>
             </div>
@@ -689,7 +690,7 @@ export default function InitialInvestList() {
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={handleDelete}
@@ -698,11 +699,11 @@ export default function InitialInvestList() {
               >
                 {formLoading ? (
                   <div className="flex items-center">
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Deleting...
+                    <Loader2 className="w-4 h-4 animate-spin me-2" />
+                    {t('iil.deleting')}
                   </div>
                 ) : (
-                  'Delete Initial Invest'
+                  t('iil.deleteBtn')
                 )}
               </button>
             </div>

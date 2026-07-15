@@ -4,8 +4,10 @@ import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
 import TableView from "../TableView/TableView";
+import { useTranslation } from "react-i18next";
 
 const BayaanCreditReport = () => {
+  const { t } = useTranslation("dashboard");
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [creditData, setCreditData] = useState<any>(null);
@@ -28,11 +30,11 @@ const BayaanCreditReport = () => {
       if (response?.data?.success && response?.data?.data) {
         setCreditData(response.data.data);
       } else {
-        toast.error("Failed to load credit data");
+        toast.error(t("creditTab.toast.loadFailed"));
       }
     } catch (error: any) {
       console.error("API Error:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load credit data");
+      toast.error(error?.response?.data?.message || error?.message || t("creditTab.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -294,7 +296,7 @@ const BayaanCreditReport = () => {
   // Dynamically render all sections from API data
   const renderDynamicContent = () => {
     if (!creditData || typeof creditData !== 'object') {
-      return <p className="text-center">No data available</p>;
+      return <p className="text-center">{t("common:noData")}</p>;
     }
 
     return Object.entries(creditData).map(([key, value]: [string, any], index: number) => {
@@ -311,7 +313,7 @@ const BayaanCreditReport = () => {
             <div key={index}>
               <div className="px-4 mt-3" style={{ backgroundColor: "#F8F8F8" }}>
                 <h6 className="px-3 py-3" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                  Operations
+                  {t("nae.operations")}
                 </h6>
               </div>
               <div className="px-4 mt-4" style={{ backgroundColor: "#F8F8F8" }}>
@@ -330,7 +332,7 @@ const BayaanCreditReport = () => {
             <div key={index}>
               <div className="px-4">
                 <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                  Contact Data
+                  {t("nae.contactData")}
                 </h6>
               </div>
               {value.map((contact: any, idx: number) => {
@@ -369,7 +371,7 @@ const BayaanCreditReport = () => {
             <div key={index}>
               <div className="px-4">
                 <h6 className="px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                  Business Relations
+                  {t("nae.businessRelations")}
                 </h6>
               </div>
               <div className="px-4 mt-3" style={{ backgroundColor: "#F8F8F8" }}>
@@ -427,7 +429,7 @@ const BayaanCreditReport = () => {
     <div className="d-flex flex-column gap-2" style={{backgroundColor: "#FFF8", padding: "20px"}}>
       {/* Fetch New Record Button */}
       <div className="d-flex justify-content-end align-items-center mb-3">
-        <button className="theme-btn-next">Fetch New Record</button>
+        <button className="theme-btn-next">{t("bayaanReport.fetchNewRecord")}</button>
       </div>
 
       <div className="profile-sec mt-3 mb-3">
@@ -436,7 +438,7 @@ const BayaanCreditReport = () => {
             {/* Business Highlights Heading */}
             {/* <div className="px-4">
               <h6 className="px-3 py-3" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Business Highlights
+              {t("nae.businessHighlights")}
             </h6>
             </div> */}
 
@@ -445,23 +447,23 @@ const BayaanCreditReport = () => {
             {/* Business Highlights Heading */}
             <div className="px-4">
             <h6 className="px-3 py-3" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Business Highlights
+              {t("nae.businessHighlights")}
             </h6>
             </div>
 
             {/* Identification Section */}
-            {renderTwoColumnSection(identificationData, "Identification")}
+            {renderTwoColumnSection(identificationData, t("nae.identification"))}
 
             {/* Highlights Section */}
-            {renderTwoColumnSection(highlightsData, "Highlights")}
+            {renderTwoColumnSection(highlightsData, t("nae.highlights"))}
 
             {/* MAIN HQR Section */}
-            {renderTwoColumnSection(mainHQRData, "MAIN HQR")}
+            {renderTwoColumnSection(mainHQRData, t("nae.mainHqr"))}
 
             {/* Relevant Events Section */}
             <div className="p-4" style={{ backgroundColor: "#F8F8F8" }}>
             <h6 className="mb-3 px-3 py-3 mt-2" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Relevant Events
+              {t("nae.relevantEvents")}
             </h6>
             {relevantEventsData && (relevantEventsData.leftColumn?.length > 0 || relevantEventsData.rightColumn?.length > 0) ? (
               <div className="row">
@@ -500,7 +502,7 @@ const BayaanCreditReport = () => {
               </div>
             ) : (
               <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-                No data available
+                {t("common:noData")}
               </div>
             )}
             </div>
@@ -508,7 +510,7 @@ const BayaanCreditReport = () => {
             {/* Operations Heading */}
             <div className="px-4 mt-3" style={{ backgroundColor: "#F8F8F8" }}>
             <h6 className="px-3 py-3" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Operations
+              {t("nae.operations")}
             </h6>
             </div>
             {/* Branches Information Section */}
@@ -517,7 +519,7 @@ const BayaanCreditReport = () => {
                 className="p-3 mb-2"
                 style={{ backgroundColor: "#000000", color: "white", fontWeight: "600" }}
               >
-                Branches Information
+                {t("nae.branchesInformation")}
               </div>
 
               {branchesData.length > 0 ? (
@@ -564,7 +566,7 @@ const BayaanCreditReport = () => {
                 ))
               ) : (
                 <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-                  No branches information available
+                  {t("nae.noBranches")}
                 </div>
               )}
             </div>
@@ -572,28 +574,28 @@ const BayaanCreditReport = () => {
             {/* Subject Heading */}
             <div className="px-4 mt-2" style={{ backgroundColor: "#F8F8F8" }}>
             <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Subject
+              {t("nae.subject")}
             </h6>
             </div>
             {/* Subject Data from Contributors Section */}
-            {renderTwoColumnSection(subjectDataFromContributors, "Subject Data from Contributors")}
+            {renderTwoColumnSection(subjectDataFromContributors, t("nae.subjectData"))}
 
             {/* Addresses Data Heading */}
             <div className="px-4 mt-2" style={{ backgroundColor: "#F8F8F8" }}>
             <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Addresses Data
+              {t("bayaanCredit.addressesData")}
             </h6>
             </div>
             {/* Current-Traditional Address Section */}
-            {renderTwoColumnSection(currentTraditionalAddress, "Current-Traditional Address")}
+            {renderTwoColumnSection(currentTraditionalAddress, t("bayaanCredit.currentTraditionalAddress"))}
 
             {/* Historical-Traditional Address Section */}
-            {renderTwoColumnSection(historicalTraditionalAddress, "Historical-Traditional Address")}
+            {renderTwoColumnSection(historicalTraditionalAddress, t("bayaanCredit.historicalTraditionalAddress"))}
 
             {/* Contact Data Heading */}
             <div className="px-4">
             <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Contact Data
+              {t("nae.contactData")}
             </h6>
             </div>
             {contactData.length > 0 ? contactData.map((contact: any, idx: any) => {
@@ -645,33 +647,33 @@ const BayaanCreditReport = () => {
               );
             }) : (
               <div className="px-4 mt-3 p-3 text-center" style={{ backgroundColor: "#F8F8F8", color: "#6C6C6C" }}>
-                No data available
+                {t("common:noData")}
               </div>
             )}
 
             {/* Contracts Summary Heading */}
             <div className="px-4">
             <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              Contracts Summary
+              {t("nae.contractsSummary")}
             </h6>
             </div>
             {/* Key Values Section */}
-            {renderTwoColumnSection(keyValuesData, "Key Values")}
+            {renderTwoColumnSection(keyValuesData, t("nae.keyValues"))}
 
             {/* Summary by Category and Phase Section */}
-            {renderTable(summaryCategoryData, "Summary by Category and Phase")}
+            {renderTable(summaryCategoryData, t("nae.summaryByCategory"))}
 
             {/* Financial Summary Heading */}
             <div className="px-4 mt-2">
             <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "#000000", padding: "10px", color: "white" }}>
-              Financial Summary
+              {t("bayaanCredit.financialSummary")}
             </h6>
 
             {/* Services Section */}
             {servicesFinancialData.length > 0 && (
               <>
               <h6 className="mb-2 px-3 py-3 mt-4" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Services
+                {t("outgoingServices.title")}
               </h6>
               <div className="row mb-3">
                 {servicesFinancialData.map((item: any, idx: any) => {
@@ -715,7 +717,7 @@ const BayaanCreditReport = () => {
             {cardsFinancialData.length > 0 && (
               <>
               <h6 className="mb-2 px-3 py-3 mt-4" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Cards
+                {t("bayaanCredit.cards")}
               </h6>
               <div className="row mb-3">
                 {cardsFinancialData.map((item: any) => {
@@ -741,7 +743,7 @@ const BayaanCreditReport = () => {
             {installmentsFinancialData.length > 0 && (
               <>
               <h6 className="mb-2 px-3 py-3 mt-4" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Installments
+                {t("bayaanCredit.installments")}
               </h6>
               <div className="row mb-3">
                 {installmentsFinancialData.map((item: any) => {
@@ -767,7 +769,7 @@ const BayaanCreditReport = () => {
             {nonInstallmentsFinancialData.length > 0 && (
               <>
               <h6 className="mb-2 px-3 py-3 mt-4" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Non Installments
+                {t("bayaanCredit.nonInstallments")}
               </h6>
               <div className="row mb-3">
                 {nonInstallmentsFinancialData.map((item: any) => {
@@ -792,14 +794,14 @@ const BayaanCreditReport = () => {
             {/* CONTRACTS DETAILS Heading */}
             <div className="px-4 mt-3 mb-1">
             <h6 className="mb-2 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-              CONTRACTS DETAILS
+              {t("bayaanCredit.contractsDetails")}
             </h6>
             </div>
-            
+
             {/* All contract sections rendered dynamically */}
-            {renderTable(installmentsNotGrantedData, "Installments-Not Granted Contract")}
-            {renderTable(installmentsGrantedData, "Installments-Granted Contract")}
-            {renderTable(nonInstallmentsNotGrantedData, "Non Installments-Not Granted Contract")}
+            {renderTable(installmentsNotGrantedData, t("bayaanCredit.installmentsNotGranted"))}
+            {renderTable(installmentsGrantedData, t("bayaanCredit.installmentsGranted"))}
+            {renderTable(nonInstallmentsNotGrantedData, t("bayaanCredit.nonInstallmentsNotGranted"))}
           </div>
         </div>
       </div>

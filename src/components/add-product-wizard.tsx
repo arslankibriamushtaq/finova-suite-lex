@@ -1185,7 +1185,7 @@ export function AddProductWizard({ open, onOpenChange }: AddProductWizardProps) 
                                           onChange={(e) =>
                                             updateFeeSlab(slab.id, "profit_percentage", Number(e.target.value))
                                           }
-                                          className="w-20 pr-6"
+                                          className="w-20 pe-6"
                                           max="100"
                                           min="0"
                                         />

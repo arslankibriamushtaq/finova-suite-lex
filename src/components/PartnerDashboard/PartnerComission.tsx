@@ -3,9 +3,11 @@ import { Input, Select } from "antd";
 
 import TableView from "../TableView/TableView";
 import { getPartnerDashboardComission } from "../../redux/apis/apisCrud";
+import { useTranslation } from "react-i18next";
 import Loader from "../Loader/Loader";
 
 const PartnerComission = () => {
+  const { t } = useTranslation("partner");
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(true);
   const [partnerData, setPartnerData] = useState<any>([]);
@@ -43,40 +45,40 @@ const PartnerComission = () => {
   });
   const cardsData = [
     {
-      title: "Total Financing Amount",
+      title: t("dashComm.totalFinancingAmount"),
       value: `${totalFinancingAmount?.total_financing_amount || "-"}`,
     },
     {
-      title: "Total Comission Amount",
+      title: t("dashComm.totalComissionAmount"),
       value: `${totalFinancingAmount?.total_commission_amount || "-"}`,
     },
   ];
 
   const Activity_Loans_Header = [
     {
-      name: "Application No.",
+      name: t("col.applicationNo"),
       selector: (row: any) => row.applicationNumber,
     },
 
     {
-      name: "Customer Name",
+      name: t("col.customerName"),
       selector: (row: any) => row.customerName,
     },
     {
-      name: "Product",
+      name: t("col.product"),
       selector: (row: any) => row.duration,
     },
 
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: any) => row.amount,
     },
     {
-      name: "Comission",
+      name: t("col.comission"),
       selector: (row: any) => row.comission,
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: any) => row.date,
     },
   ];
@@ -122,16 +124,16 @@ const PartnerComission = () => {
             <div className="row mt-4">
               <div className="col-12 mb-2 d-flex justify-content-between">
                 <div className="col-5">
-                  <h3>All Applications</h3>
+                  <h3>{t("dashComm.allApplications")}</h3>
                 </div>
                 <div className="col-3">
-                  <Select 
-                    placeholder="All products" 
+                  <Select
+                    placeholder={t("filter.allProducts")}
                     className="form w-50"
                     value={selectedProduct || undefined}
                     onChange={(value) => setSelectedProduct(value)}
                     options={[
-                      { value: "", label: "All products" },
+                      { value: "", label: t("filter.allProducts") },
                       ...partnerData.map((product: any) => ({
                         value: product.id,
                         label: product.name_en
@@ -141,7 +143,7 @@ const PartnerComission = () => {
                 </div>
                 <div className="col-3 d-flex justify-content-end">
                   <Input
-                    placeholder="Search by Id,Name etc"
+                    placeholder={t("filter.searchByIdName")}
                     className="form-input w-50"
                   />
                 </div>

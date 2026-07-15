@@ -5,8 +5,10 @@ import { defaultLayoutPlugin } from "@react-pdf-viewer/default-layout";
 
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import "@react-pdf-viewer/default-layout/lib/styles/index.css";
+import { useTranslation } from "react-i18next";
 
 const PromissoryNoteInfo = ({ setSelectedTab }: any) => {
+  const { t } = useTranslation("partner");
   const [imageFile, setImageFile] = useState(null);
   const [pdfUrl, setPdfUrl] = useState(null);
   const defaultLayoutPluginInstance = defaultLayoutPlugin();
@@ -49,7 +51,7 @@ const PromissoryNoteInfo = ({ setSelectedTab }: any) => {
     if (file && file.type.startsWith("image/")) {
       setImageFile(file);
     } else {
-      alert("Please upload a valid image file (PNG or JPG).");
+      alert(t("epromissory.invalidImage"));
     }
   };
 

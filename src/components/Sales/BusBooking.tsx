@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Select } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 import {
   getBusBooking,
@@ -13,6 +14,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 const BusBooking = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -50,37 +52,37 @@ const BusBooking = () => {
   }, []);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "80px",
     },
 
     {
-      name: "TID",
+      name: t("sales.tid"),
       selector: (row: { trx_id: any }) => row.trx_id,
       sortable: true,
     },
     {
-      name: "Bus Service",
+      name: t("busBooking.busService"),
       selector: (row: { service_name: any }) => row.service_name,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
     },
     {
-      name: "From",
+      name: t("range.from"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
     },
     {
-      name: "To",
+      name: t("range.to"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
@@ -105,21 +107,21 @@ const BusBooking = () => {
     //   width: "170px",
     // },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount,
       sortable: true,
       width: "280px",
     },
 
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
       width: "380px",
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -136,7 +138,7 @@ const BusBooking = () => {
             cursor: row.status === "active" ? "pointer" : "default",
           }}
         >
-          {row.status === "completed" ? "paid" : "unpaid"}
+          {row.status === "completed" ? t("sales.paid") : t("sales.unpaid")}
         </div>
       ),
     },
@@ -168,18 +170,18 @@ const BusBooking = () => {
       const doc = new jsPDF();
   
       const tableColumn = [
-        "Sr:",
-        "TID",
-        "Bus Service",
-        "Name",
-        "From",
-        "To",
+        t("shared.sr"),
+        t("sales.tid"),
+        t("busBooking.busService"),
+        t("common:name"),
+        t("range.from"),
+        t("range.to"),
         // "Sender Account",
         // "Reciever Name",
         // "Reciever Account",
-        "Amount",
-        "Created At",
-        "Status",
+        t("common:amount"),
+        t("common:createdAt"),
+        t("common:status"),
       ];
   
       const tableRows = mappedData?.map((item: any) => [
@@ -194,7 +196,7 @@ const BusBooking = () => {
         // item.receiver_account,
         item.amount,
         item.created_at,
-        item.status === "completed" ? "Paid" : "Unpaid",
+        item.status === "completed" ? t("sales.paidCap") : t("sales.unpaidCap"),
       ]);
   
       autoTable(doc, {
@@ -213,7 +215,7 @@ const BusBooking = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             // onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
 
@@ -231,11 +233,11 @@ const BusBooking = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
             <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -243,9 +245,9 @@ const BusBooking = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-            <button className="invoice-btn">Print</button>
+            <button className="invoice-btn">{t("common:print")}</button>
           </div>
         </div>
 

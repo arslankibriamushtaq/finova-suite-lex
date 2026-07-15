@@ -1,4 +1,5 @@
 import { Plus, Trash2, DropletsIcon as DragHandleDots2Icon, ArrowRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
@@ -34,18 +35,19 @@ export default function ApplicationStepsTab({
   removeApplicationStep,
   updateApplicationStep,
 }: ApplicationStepsTabProps) {
+  const { t } = useTranslation("productManagement2")
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Application Steps</CardTitle>
-              <p className="mt-2 text-muted-foreground">Define the workflow steps for processing applications.</p>
+              <CardTitle>{t("appSteps.title")}</CardTitle>
+              <p className="mt-2 text-muted-foreground">{t("appSteps.subtitle")}</p>
             </div>
             <Button onClick={addApplicationStep} className="gap-2">
               <Plus className="h-4 w-4" />
-              Add Step
+              {t("appSteps.addStep")}
             </Button>
           </div>
         </CardHeader>
@@ -63,9 +65,9 @@ export default function ApplicationStepsTab({
                     <div className="flex-1 space-y-4">
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                          <Label>Step Title (English)</Label>
+                          <Label>{t("appSteps.titleEn")}</Label>
                           <Input
-                            placeholder="e.g., Document Verification"
+                            placeholder={t("appSteps.titleEnPlaceholder")}
                             value={step.title}
                             onChange={(e) => updateApplicationStep(step.id, "title", e.target.value)}
                             className={stepErrors.title_en ? "border-red-500" : ""}
@@ -75,9 +77,9 @@ export default function ApplicationStepsTab({
                           )}
                         </div>
                         <div className="space-y-2">
-                          <Label>Step Title (Arabic)</Label>
+                          <Label>{t("appSteps.titleAr")}</Label>
                           <Input
-                            placeholder="مثال: التحقق من الوثائق"
+                            placeholder={t("appSteps.titleArPlaceholder")}
                             value={step.title_ar}
                             onChange={(e) => updateApplicationStep(step.id, "title_ar", e.target.value)}
                             dir="rtl"
@@ -89,9 +91,9 @@ export default function ApplicationStepsTab({
                         </div>
                       </div>
                       <div className="space-y-2">
-                        <Label>Description</Label>
+                        <Label>{t("common:description")}</Label>
                         <Textarea
-                          placeholder="Describe what happens in this step..."
+                          placeholder={t("appSteps.descPlaceholder")}
                           value={step.description}
                           onChange={(e) => updateApplicationStep(step.id, "description", e.target.value)}
                           rows={2}
@@ -109,7 +111,7 @@ export default function ApplicationStepsTab({
                             onCheckedChange={(checked) => updateApplicationStep(step.id, "required", checked)}
                           />
                           <Label htmlFor={`required-${step.id}`} className="text-sm">
-                            Required Step
+                            {t("appSteps.requiredStep")}
                           </Label>
                         </div>
                         <Button
@@ -133,7 +135,7 @@ export default function ApplicationStepsTab({
       {/* Tab Navigation */}
       <div className="flex justify-end gap-3 pt-4">
         <Button onClick={onNext} className="gap-2">
-          Next: Terms & Conditions
+          {t("appSteps.next")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -25,6 +26,7 @@ import { Images } from "../../Config/Images";
 import TableView from "../../TableView/TableView";
 
 const SystemPreferences = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -59,18 +61,18 @@ const SystemPreferences = () => {
 
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
             width: "100px",
         },
         {
-            name: "Name",
+            name: t("common:name"),
             selector: (row: { name: any }) => row.name,
             sortable: true,
         },
         {
-            name: "Channels",
+            name: t("shared.channels"),
             cell: (row: { channelIds: any }) => (
                 <div style={{ maxWidth: "300px" }}>
                     {row.channelIds && row.channelIds.map((channelId: any, index: any) => {
@@ -94,12 +96,12 @@ const SystemPreferences = () => {
             sortable: true,
         },
         {
-            name: "Created At",
+            name: t("common:createdAt"),
             selector: (row: { createdAt: any }) => formatDate(row?.createdAt),
             sortable: true,
         },
         {
-            name: "Actions",
+            name: t("common:actions"),
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
                     <Button
@@ -113,7 +115,7 @@ const SystemPreferences = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -141,14 +143,14 @@ const SystemPreferences = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -193,11 +195,11 @@ const SystemPreferences = () => {
                 const channelsData = response.data.data || [];
                 setChannels(channelsData);
             } else {
-                toast.error((response?.data?.errors || "Unknown error"));
+                toast.error((response?.data?.errors || t("shared.somethingWentWrong")));
             }
         } catch (error: any) {
             console.error("Error fetching channels:", error);
-            toast.error("Failed to load channels: " + error.message);
+            toast.error(t("systemPrefs.toast.loadChannelsFailed") + error.message);
         } finally {
             setChannelsLoading(false);
         }
@@ -231,9 +233,9 @@ const SystemPreferences = () => {
                         channelIds: [],
                     });
                     await getList();
-                    return "System preference updated successfully!";
+                    return t("systemPrefs.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createSystemNotificationPreference(body);
@@ -244,17 +246,17 @@ const SystemPreferences = () => {
                         name: "",
                         channelIds: [],
                     });
-                    return "System preference added successfully!";
+                    return t("systemPrefs.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating System Preference..." : "Adding System Preference...",
+            loading: isEditing ? t("systemPrefs.toast.updating") : t("systemPrefs.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -266,16 +268,16 @@ const SystemPreferences = () => {
                     setIsDeleteModalVisible(false);
                     await getList();
                     setEditRowId(null);
-                    return "System preference deleted successfully!";
+                    return t("systemPrefs.toast.deleted");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to delete");
+                    throw new Error(response?.data?.errors || t("shared.failedDelete"));
                 }
             };
 
             toast.promise(deletePromise(), {
-                loading: "Deleting System Preference...",
+                loading: t("systemPrefs.toast.deleting"),
                 success: (msg) => msg,
-                error: (err) => err.message || "Something went wrong",
+                error: (err) => err.message || t("shared.somethingWentWrong"),
             });
         } catch (error: any) {
             toast.error(error.message);
@@ -310,7 +312,7 @@ const SystemPreferences = () => {
                     <Select
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
                     />
@@ -326,7 +328,7 @@ const SystemPreferences = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -342,7 +344,7 @@ const SystemPreferences = () => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New System Preference
+                            {t("systemPrefs.addNew")}
                         </button>
                     </div>
                 </div>
@@ -365,13 +367,13 @@ const SystemPreferences = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit System Preference" : "Add New System Preference"}
+                title={editRowId ? t("systemPrefs.editTitle") : t("systemPrefs.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -379,11 +381,11 @@ const SystemPreferences = () => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Name <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("common:name")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <input
                                     type="text"
                                     className="form-control custom-input"
-                                    placeholder="Enter preference name"
+                                    placeholder={t("systemPrefs.ph.name")}
                                     name="name"
                                     value={formData.name}
                                     onChange={(e: any) => setFormData({ ...formData, name: e?.target?.value })}
@@ -395,11 +397,11 @@ const SystemPreferences = () => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Channels <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.channels")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     mode="multiple"
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder={channelsLoading ? "Loading channels..." : "Select channels"}
+                                    placeholder={channelsLoading ? t("systemPrefs.ph.loadingChannels") : t("systemPrefs.ph.selectChannels")}
                                     loading={channelsLoading}
                                     value={formData.channelIds}
                                     onChange={(val: any) => setFormData({ ...formData, channelIds: val })}
@@ -416,7 +418,7 @@ const SystemPreferences = () => {
                                         </Select.Option>
                                     )) : (
                                         <Select.Option disabled value="no-channels">
-                                            {channelsLoading ? "Loading..." : "No channels available"}
+                                            {channelsLoading ? t("shared.loadingText") : t("systemPrefs.opt.noChannels")}
                                         </Select.Option>
                                     )}
                                 </Select>
@@ -431,10 +433,10 @@ const SystemPreferences = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                title={"Delete System Preference"}
+                title={t("systemPrefs.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -443,12 +445,12 @@ const SystemPreferences = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    Are you sure you want to delete this System Preference?
+                    {t("systemPrefs.delete.confirm")}
                 </Form>
             </Modal>
         </div>

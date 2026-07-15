@@ -14,7 +14,9 @@ import toast from "react-hot-toast";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Col, Modal, ModalHeader, Row } from "react-bootstrap";
 import { DownOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 const BusinessPreferences = () => {
+  const { t } = useTranslation("customersB");
   const [editRowId, setEditRowId] = useState(null);
   const [modal, setModal] = useState(false);
   const [allPreferences, setAllPreferences] = useState<any>();
@@ -36,38 +38,38 @@ const BusinessPreferences = () => {
   const button = [{ title: "add", onClick: handleClick }];
   const Get_All_Customer_Header = [
     {
-      name: "Relation Type",
+      name: t("customersB:preferences.relationType"),
       selector: (row: { relationShipType: any }) => row.relationShipType,
     },
 
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { phoneType: any }) => row.phoneType,
     },
 
     {
-      name: "Permission to Call",
+      name: t("customersB:preferences.permissionToCall"),
       cell: (row: { permissionToCall: boolean }) => row.permissionToCall,
     },
     {
-      name: "Time Zone",
+      name: t("customersB:preferences.timeZone"),
       selector: (row: { timeZone: any }) => row.timeZone,
     },
     {
-      name: "Best Day To Call",
+      name: t("customersB:preferences.bestDayToCall"),
       selector: (row: { bestDayToCall: any }) => row.bestDayToCall,
     },
     {
-      name: "Start Time",
+      name: t("customersB:preferences.startTime"),
       selector: (row: { startTime: any }) => row.startTime,
     },
     {
-      name: "End Time",
+      name: t("customersB:preferences.endTime"),
       selector: (row: { endTime: any }) => row.endTime,
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -81,7 +83,7 @@ const BusinessPreferences = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -108,10 +110,10 @@ const BusinessPreferences = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="delete" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -298,7 +300,7 @@ const BusinessPreferences = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>Add Customer/Business Preferences</h3>
+          <h3>{t("customersB:preferences.addTitle")}</h3>
         </ModalHeader>
 
         <Formik
@@ -327,7 +329,7 @@ const BusinessPreferences = () => {
                         htmlFor="relationId"
                         className="mb-1 customer-fs-fw"
                       >
-                        Relation Type
+                        {t("customersB:preferences.relationType")}
                       </label>
                       <Field
                         as="select"
@@ -344,7 +346,7 @@ const BusinessPreferences = () => {
                           })
                         }
                       >
-                        <option value="" label="Select relation" />
+                        <option value="" label={t("customersB:preferences.selectRelation")} />
                         {enums.RelationType.map((item: any) => (
                           <option
                             key={item.value}
@@ -364,7 +366,7 @@ const BusinessPreferences = () => {
                         htmlFor="relationId"
                         className="mb-1 customer-fs-fw"
                       >
-                        Best Day To Call
+                        {t("customersB:preferences.bestDayToCall")}
                       </label>
                       <Field
                         as="select"
@@ -381,7 +383,7 @@ const BusinessPreferences = () => {
                           })
                         }
                       >
-                        <option value="" label="Select bestDayToCall" />
+                        <option value="" label={t("customersB:preferences.selectBestDay")} />
                         {enums.WeekDays.map((item: any) => (
                           <option
                             key={item.value}
@@ -401,7 +403,7 @@ const BusinessPreferences = () => {
                         htmlFor="phone type"
                         className="mb-1 customer-fs-fw"
                       >
-                        Phone Type
+                        {t("customersB:preferences.phoneType")}
                       </label>
                       <Field
                         as="select"
@@ -418,7 +420,7 @@ const BusinessPreferences = () => {
                           })
                         }
                       >
-                        <option value="" label="Select phone type" />
+                        <option value="" label={t("customersB:preferences.selectPhoneType")} />
                         {enums.PhoneType.map((item: any) => (
                           <option
                             key={item.value}
@@ -436,7 +438,7 @@ const BusinessPreferences = () => {
 
                     <Col md={6} className="mt-2">
                       <label htmlFor="timeZone" className="mb-1 customer-fs-fw">
-                        Time Zone
+                        {t("customersB:preferences.timeZone")}
                       </label>
                       <Field
                         placeholder="Time Zone"
@@ -445,7 +447,7 @@ const BusinessPreferences = () => {
                         name="timeZone"
                         className="form-control"
                       >
-                        <option value="" label="Select Time Zone" />
+                        <option value="" label={t("customersB:preferences.selectTimeZone")} />
                         {enums.TimeZone.map((item) => (
                           <option key={item.value} value={item.value}>
                             {item.label}
@@ -464,7 +466,7 @@ const BusinessPreferences = () => {
                           htmlFor="StartTime"
                           className="mb-1 customer-fs-fw"
                         >
-                          Start Time
+                          {t("customersB:preferences.startTime")}
                         </label>
                         <Field
                           placeholder="Start Time"
@@ -484,7 +486,7 @@ const BusinessPreferences = () => {
                           htmlFor="endTime"
                           className="mb-1 customer-fs-fw"
                         >
-                          End Time
+                          {t("customersB:preferences.endTime")}
                         </label>
                         <Field
                           placeholder="End Time"
@@ -515,7 +517,7 @@ const BusinessPreferences = () => {
                             htmlFor="permissionToCall"
                             className="ms-2 customer-fs-fw"
                           >
-                            Permission to Call
+                            {t("customersB:preferences.permissionToCall")}
                           </label>
 
                           <Checkbox
@@ -531,7 +533,7 @@ const BusinessPreferences = () => {
                             htmlFor="permissionToText"
                             className="ms-2 customer-fs-fw"
                           >
-                            Permission to Text
+                            {t("customersB:preferences.permissionToText")}
                           </label>
                         </div>
                       </Col>
@@ -551,7 +553,7 @@ const BusinessPreferences = () => {
                           htmlFor="isEnabled"
                           className="ms-2 customer-fs-fw"
                         >
-                          Enabled
+                          {t("common:enabled")}
                         </label>
                       </div>
                     </Col>
@@ -559,7 +561,9 @@ const BusinessPreferences = () => {
 
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
-                      {editRowId ? "Update Preferences" : "Add Preferences"}
+                      {editRowId
+                        ? t("customersB:preferences.updatePreferences")
+                        : t("customersB:preferences.addPreferences")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -569,7 +573,7 @@ const BusinessPreferences = () => {
         </Formik>
       </Modal>
       <div className="cs-table p-2">
-        <DynamicHeaderStructure title={"Comments"} button={button} />
+        <DynamicHeaderStructure title={t("customersB:preferences.comments")} button={button} />
         <TableHeaderFilter />
         <TableView
           setPage={setPage}

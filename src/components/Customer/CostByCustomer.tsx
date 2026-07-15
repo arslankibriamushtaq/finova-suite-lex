@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { ArrowLeft, SaudiRiyal, Phone, Calendar, RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
@@ -40,6 +41,7 @@ const formatDateTime = (iso?: string) => {
 };
 
 const CostByCustomer = () => {
+  const { t } = useTranslation("customerManagement");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,7 +59,7 @@ const CostByCustomer = () => {
       const result = response?.data?.data || null;
       setReport(result);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch cost report");
+      toast.error(error?.response?.data?.message || t("costByCustomer.fetchError"));
       setReport(null);
     } finally {
       setIsLoading(false);
@@ -86,9 +88,9 @@ const CostByCustomer = () => {
           className="page-header-back gap-1"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t("common:back")}
         </Button>
-        <h3 className="page-header-title mb-0 fw-bold text-dark ps-0">Cost By Customer</h3>
+        <h3 className="page-header-title mb-0 fw-bold text-dark ps-0">{t("costByCustomer.title")}</h3>
       </div>
 
       {/* Filters card */}
@@ -102,15 +104,15 @@ const CostByCustomer = () => {
       >
         <div className="filter-row">
           <div className="filter-field">
-            <label className="filter-label">Environment</label>
+            <label className="filter-label">{t("costByCustomer.environment")}</label>
             <Select value={env} onValueChange={(v) => setEnv(v)}>
               <SelectTrigger className="filter-select-trigger">
-                <SelectValue placeholder="Select env" />
+                <SelectValue placeholder={t("costByCustomer.selectEnv")} />
               </SelectTrigger>
               <SelectContent>
                 {ENV_OPTIONS.map((o) => (
                   <SelectItem key={o.value} value={o.value}>
-                    {o.label}
+                    {t(`costByCustomer.env.${o.value}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -123,13 +125,13 @@ const CostByCustomer = () => {
             className="refresh-btn"
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("common:refresh")}
           </button>
         </div>
       </div>
 
       <div className="historical-note mb-3">
-        Costs shown reflect historical pricing at the time each call was made. Updating a provider API's cost only affects future calls — past calls keep the rate they were billed at.
+        {t("costByCustomer.historicalNote")}
       </div>
 
       {/* Totals cards */}
@@ -138,7 +140,7 @@ const CostByCustomer = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              Total Calls
+              {t("costByCustomer.totalCalls")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -155,7 +157,7 @@ const CostByCustomer = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <SaudiRiyal className="h-4 w-4" />
-              Total Cost
+              {t("costByCustomer.totalCost")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -175,7 +177,7 @@ const CostByCustomer = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              First Call
+              {t("costByCustomer.firstCall")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -192,7 +194,7 @@ const CostByCustomer = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Calendar className="h-4 w-4" />
-              Last Call
+              {t("costByCustomer.lastCall")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -210,15 +212,15 @@ const CostByCustomer = () => {
       {/* By Context Type */}
       <Card className="mb-3">
         <CardHeader>
-          <CardTitle className="text-base">By Context Type</CardTitle>
+          <CardTitle className="text-base">{t("costByCustomer.byContextType")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table className="cost-table">
             <TableHeader>
               <TableRow>
-                <TableHead>Context Type</TableHead>
-                <TableHead className="text-right">Call Count</TableHead>
-                <TableHead className="text-right">Total Cost ({currency})</TableHead>
+                <TableHead>{t("costByCustomer.contextType")}</TableHead>
+                <TableHead className="text-end">{t("costByCustomer.callCount")}</TableHead>
+                <TableHead className="text-end">{t("costByCustomer.totalCostWithCurrency", { currency })}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -231,15 +233,15 @@ const CostByCustomer = () => {
               ) : byContextType.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center text-muted-foreground">
-                    No data
+                    {t("common:noData")}
                   </TableCell>
                 </TableRow>
               ) : (
                 byContextType.map((row, idx) => (
                   <TableRow key={`${row.context_type}-${idx}`}>
                     <TableCell className="font-medium">{row.context_type || "-"}</TableCell>
-                    <TableCell className="text-right">{row.call_count ?? 0}</TableCell>
-                    <TableCell className="text-right">{formatNumber(row.total_cost, 4)}</TableCell>
+                    <TableCell className="text-end">{row.call_count ?? 0}</TableCell>
+                    <TableCell className="text-end">{formatNumber(row.total_cost, 4)}</TableCell>
                   </TableRow>
                 ))
               )}
@@ -251,15 +253,15 @@ const CostByCustomer = () => {
       {/* By Application */}
       <Card className="mb-3">
         <CardHeader>
-          <CardTitle className="text-base">By Application</CardTitle>
+          <CardTitle className="text-base">{t("costByCustomer.byApplication")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table className="cost-table">
             <TableHeader>
               <TableRow>
-                <TableHead>Application ID</TableHead>
-                <TableHead className="text-right">Call Count</TableHead>
-                <TableHead className="text-right">Total Cost ({currency})</TableHead>
+                <TableHead>{t("costByCustomer.applicationId")}</TableHead>
+                <TableHead className="text-end">{t("costByCustomer.callCount")}</TableHead>
+                <TableHead className="text-end">{t("costByCustomer.totalCostWithCurrency", { currency })}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -272,15 +274,15 @@ const CostByCustomer = () => {
               ) : byApplication.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center text-muted-foreground">
-                    No data
+                    {t("common:noData")}
                   </TableCell>
                 </TableRow>
               ) : (
                 byApplication.map((row, idx) => (
                   <TableRow key={`${row.application_id}-${idx}`}>
                     <TableCell className="font-monospace text-sm">{row.application_id || "-"}</TableCell>
-                    <TableCell className="text-right">{row.call_count ?? 0}</TableCell>
-                    <TableCell className="text-right">{formatNumber(row.total_cost, 4)}</TableCell>
+                    <TableCell className="text-end">{row.call_count ?? 0}</TableCell>
+                    <TableCell className="text-end">{formatNumber(row.total_cost, 4)}</TableCell>
                   </TableRow>
                 ))
               )}
@@ -292,15 +294,15 @@ const CostByCustomer = () => {
       {/* By API */}
       <Card className="mb-3">
         <CardHeader>
-          <CardTitle className="text-base">By API</CardTitle>
+          <CardTitle className="text-base">{t("costByCustomer.byApi")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table className="cost-table">
             <TableHeader>
               <TableRow>
-                <TableHead>API Code</TableHead>
-                <TableHead className="text-right">Call Count</TableHead>
-                <TableHead className="text-right">Total Cost ({currency})</TableHead>
+                <TableHead>{t("costByCustomer.apiCode")}</TableHead>
+                <TableHead className="text-end">{t("costByCustomer.callCount")}</TableHead>
+                <TableHead className="text-end">{t("costByCustomer.totalCostWithCurrency", { currency })}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -313,15 +315,15 @@ const CostByCustomer = () => {
               ) : byApi.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={3} className="text-center text-muted-foreground">
-                    No data
+                    {t("common:noData")}
                   </TableCell>
                 </TableRow>
               ) : (
                 byApi.map((row, idx) => (
                   <TableRow key={`${row.api_code}-${idx}`}>
                     <TableCell className="font-medium">{row.api_code || "-"}</TableCell>
-                    <TableCell className="text-right">{row.call_count ?? 0}</TableCell>
-                    <TableCell className="text-right">{formatNumber(row.total_cost, 4)}</TableCell>
+                    <TableCell className="text-end">{row.call_count ?? 0}</TableCell>
+                    <TableCell className="text-end">{formatNumber(row.total_cost, 4)}</TableCell>
                   </TableRow>
                 ))
               )}

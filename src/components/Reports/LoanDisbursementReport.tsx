@@ -6,8 +6,10 @@ import { Banknote } from "lucide-react";
 import { getLoanDisbursementReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const LoanDisbursementReport = () => {
+  const { t } = useTranslation("reports");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [reportData, setReportData] = useState<any[]>([]);
@@ -76,7 +78,7 @@ const LoanDisbursementReport = () => {
       );
     } catch (error: any) {
       console.error("Error fetching disbursement report:", error);
-      toast.error(error?.message || "Failed to fetch report");
+      toast.error(error?.message || t('loanDisbursement.toast.fetchError'));
       setReportData([]);
       setTotals(null);
     } finally {
@@ -129,36 +131,36 @@ const LoanDisbursementReport = () => {
 
   const columns = [
     {
-      name: "Application No",
+      name: t('loanDisbursement.col.applicationNo'),
       selector: (row: any) => row.applicationNumber || "-",
     },
     {
-      name: "Customer Name",
+      name: t('loanDisbursement.col.customerName'),
       selector: (row: any) => row.customerName || row.name || "-",
     },
     {
-      name: "Disbursement Date",
+      name: t('loanDisbursement.col.disbursementDate'),
       cell: (row: any) =>
         row.disbursementDate || row.date
           ? dayjs(row.disbursementDate || row.date).format("YYYY-MM-DD")
           : "-",
     },
     {
-      name: "Amount",
+      name: t('common:amount'),
       cell: (row: any) => (
         <b>{formatNumber(row.amount ?? row.disbursedAmount ?? 0)} SAR</b>
       ),
     },
     {
-      name: "Product",
+      name: t('loanDisbursement.col.product'),
       selector: (row: any) => row.productName || row.productCode || "-",
     },
     {
-      name: "Branch",
+      name: t('loanDisbursement.col.branch'),
       selector: (row: any) => row.branchName || row.branch || "-",
     },
     {
-      name: "Status",
+      name: t('common:status'),
       cell: (row: any) => (
         <span
           style={{
@@ -181,7 +183,7 @@ const LoanDisbursementReport = () => {
 
   const exportToCSV = () => {
     if (!filteredData.length) {
-      toast.error("No data available to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
     const headers = ["Application No", "Customer Name", "Date", "Amount", "Product", "Branch", "Status"];
@@ -220,7 +222,7 @@ const LoanDisbursementReport = () => {
           <span className="pro-head-badge">
             <Banknote className="h-4 w-4" />
           </span>
-          Loan Disbursement Report
+          {t('loanDisbursement.title')}
         </h3>
       </div>
 
@@ -228,14 +230,14 @@ const LoanDisbursementReport = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by application, customer, product, branch, status"
+          placeholder={t('loanDisbursement.searchPlaceholder')}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
         <DatePicker
-          placeholder="From"
+          placeholder={t('common:from')}
           value={fromDate}
           onChange={(d) => setFromDate(d)}
           format="YYYY-MM-DD"
@@ -243,7 +245,7 @@ const LoanDisbursementReport = () => {
           style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <DatePicker
-          placeholder="To"
+          placeholder={t('common:to')}
           value={toDate}
           onChange={(d) => setToDate(d)}
           format="YYYY-MM-DD"
@@ -257,7 +259,7 @@ const LoanDisbursementReport = () => {
           disabled={!filteredData.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t('action.exportCsv')}
         </button>
         </div>
       </div>
@@ -266,7 +268,7 @@ const LoanDisbursementReport = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={12}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Disbursed Amount</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanDisbursement.summary.totalDisbursedAmount')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalAmount)} SAR
               </div>
@@ -274,7 +276,7 @@ const LoanDisbursementReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={12}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Loan Count</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanDisbursement.summary.totalLoanCount')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalCount}
               </div>

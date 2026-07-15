@@ -220,7 +220,7 @@ const CostByApplication = () => {
                 <TableHead>Provider</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Created At</TableHead>
-                <TableHead className="text-right">API Cost</TableHead>
+                <TableHead className="text-end">API Cost</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -272,7 +272,7 @@ const CostByApplication = () => {
                         )}
                       </TableCell>
                       <TableCell>{formatDateTime(row.created_at)}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-end">
                         {row.api_cost != null ? `${formatNumber(row.api_cost, 4)} ${rowCurrency}` : "-"}
                       </TableCell>
                     </TableRow>

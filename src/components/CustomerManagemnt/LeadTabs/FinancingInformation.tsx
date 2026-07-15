@@ -1,41 +1,44 @@
 import React from "react";
 import { Row, Col, Card } from "antd";
+import { useTranslation } from "react-i18next";
 
 interface Field {
   label: string;
   value: string | number;
 }
 
-const leftColumn: Field[] = [
-  { label: "Date of Birth", value: "09-12-1987" },
-  { label: "National / Iqama Id", value: "1049966607" },
-  { label: "Email", value: "tuba.khan@customer.com" },
-  { label: "Duration", value: "06 Months" },
-  { label: "CR Number", value: "1743798589" },
-  { label: "Have you resided (31) days  during the current year in USA?", value: "No" },
-  { label: "Are you a tax resident of any country outside of Saudi Arabia?", value: "No" },
-  { label: "Balloon Payment", value: "20" },
-  { label: "IBAN Certificate", value: "Preview Document" },
-  { label: "Source Income", value: "Source 1" },
-  { label: "Zakat Certificate", value: "Preview Document" },
-  { label: "Purpose of Factoring", value: "Purpose 1" },
-];
-
-const rightColumn: Field[] = [
-  { label: "LEI", value: "1234" },
-  { label: "IBAN", value: "SA6567854357728193769000" },
-  { label: "Mobile Number", value: "966123456789" },
-  { label: "Are you born in the USA?", value: "No" },
-  { label: "Legal Form", value: "Company" },
-  { label: "Have you resided (183) days during the three-year period preceding in USA?", value: "No" },
-  { label: "Account Title", value: "Tuba Khan" },
-  { label: "Upfront Payment", value: "10" },
-  { label: "Insurance Vendor", value: "1" },
-  { label: "Are you a resident, a citizen or have a green card in the USA?", value: "No" },
-  { label: "Insurance Percentage", value: "10" },
-];
-
 const FinancingInformation: React.FC = () => {
+  const { t } = useTranslation("customerManagement");
+
+  const leftColumn: Field[] = [
+    { label: t("leadTabs.financingInformation.dateOfBirth"), value: "09-12-1987" },
+    { label: t("leadTabs.financingInformation.nationalIqamaId"), value: "1049966607" },
+    { label: t("common:email"), value: "tuba.khan@customer.com" },
+    { label: t("leadTabs.financingInformation.duration"), value: "06 Months" },
+    { label: t("leadTabs.financingInformation.crNumber"), value: "1743798589" },
+    { label: t("leadTabs.financingInformation.residedCurrentYearUsa"), value: "No" },
+    { label: t("leadTabs.financingInformation.taxResidentOutsideSaudi"), value: "No" },
+    { label: t("leadTabs.financingInformation.balloonPayment"), value: "20" },
+    { label: t("leadTabs.financingInformation.ibanCertificate"), value: "Preview Document" },
+    { label: t("leadTabs.financingInformation.sourceIncome"), value: "Source 1" },
+    { label: t("leadTabs.financingInformation.zakatCertificate"), value: "Preview Document" },
+    { label: t("leadTabs.financingInformation.purposeOfFactoring"), value: "Purpose 1" },
+  ];
+
+  const rightColumn: Field[] = [
+    { label: t("leadTabs.financingInformation.lei"), value: "1234" },
+    { label: t("leadTabs.financingInformation.iban"), value: "SA6567854357728193769000" },
+    { label: t("leadTabs.financingInformation.mobileNumber"), value: "966123456789" },
+    { label: t("leadTabs.financingInformation.bornInUsa"), value: "No" },
+    { label: t("leadTabs.financingInformation.legalForm"), value: "Company" },
+    { label: t("leadTabs.financingInformation.residedThreeYearUsa"), value: "No" },
+    { label: t("leadTabs.financingInformation.accountTitle"), value: "Tuba Khan" },
+    { label: t("leadTabs.financingInformation.upfrontPayment"), value: "10" },
+    { label: t("leadTabs.financingInformation.insuranceVendor"), value: "1" },
+    { label: t("leadTabs.financingInformation.residentCitizenGreenCardUsa"), value: "No" },
+    { label: t("leadTabs.financingInformation.insurancePercentage"), value: "10" },
+  ];
+
   return (
     <Card bordered={false} style={styles.card}>
       <Row gutter={24}>

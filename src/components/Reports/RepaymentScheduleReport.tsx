@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { getRepaymentScheduleReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const formatNumber = (n: any) => {
   if (n === null || n === undefined || n === "") return "-";
@@ -19,6 +20,7 @@ const formatNumber = (n: any) => {
 };
 
 const RepaymentScheduleReport = () => {
+  const { t } = useTranslation("reports");
   const [loans, setLoans] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -74,7 +76,7 @@ const RepaymentScheduleReport = () => {
 
       setLoans(combined);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch repayment schedule report");
+      toast.error(error?.message || t("repaymentSchedule.toast.fetchError"));
       setLoans([]);
     } finally {
       setLoading(false);
@@ -130,50 +132,50 @@ const RepaymentScheduleReport = () => {
 
   const columns = [
     {
-      name: "S No",
+      name: t("repaymentSchedule.col.sNo"),
       selector: (row: any) => row.Sr,
       width: "70px",
     },
     {
-      name: "Loan Account",
+      name: t("repaymentSchedule.col.loanAccount"),
       selector: (row: any) => row.loanAccountNumber,
       sortable: true,
     },
     {
-      name: "Customer",
+      name: t("repaymentSchedule.col.customer"),
       selector: (row: any) => row.customerName,
       sortable: true,
     },
     {
-      name: "Product",
+      name: t("repaymentSchedule.col.product"),
       selector: (row: any) => row.productName,
       sortable: true,
     },
     {
-      name: "Disbursed Principal",
+      name: t("repaymentSchedule.col.disbursedPrincipal"),
       selector: (row: any) => formatNumber(row.disbursedPrincipal),
       sortable: true,
       right: true,
     },
     {
-      name: "Total Profit",
+      name: t("repaymentSchedule.col.totalProfit"),
       selector: (row: any) => formatNumber(row.totalProfit),
       sortable: true,
       right: true,
     },
     {
-      name: "Total Payable",
+      name: t("repaymentSchedule.col.totalPayable"),
       selector: (row: any) => formatNumber(row.totalPayable),
       sortable: true,
       right: true,
     },
     {
-      name: "Tenure (Months)",
+      name: t("repaymentSchedule.col.tenureMonths"),
       selector: (row: any) => row.tenureMonths,
       sortable: true,
     },
     {
-      name: "Installments",
+      name: t("repaymentSchedule.col.installments"),
       selector: (row: any) => row.installmentsCount,
       sortable: true,
     },
@@ -181,7 +183,7 @@ const RepaymentScheduleReport = () => {
 
   const exportToCSV = () => {
     if (!filteredLoans.length) {
-      toast.error("No data to export");
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvHeaders = [
@@ -219,7 +221,7 @@ const RepaymentScheduleReport = () => {
           <span className="pro-head-badge">
             <CalendarDays className="h-4 w-4" />
           </span>
-          Repayment Schedule Report
+          {t("repaymentSchedule.title")}
         </h3>
       </div>
 
@@ -227,7 +229,7 @@ const RepaymentScheduleReport = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by loan account, customer, product"
+          placeholder={t("repaymentSchedule.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -240,7 +242,7 @@ const RepaymentScheduleReport = () => {
           disabled={!filteredLoans.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t("action.exportCsv")}
         </button>
         </div>
       </div>
@@ -248,7 +250,7 @@ const RepaymentScheduleReport = () => {
       <Row gutter={[16, 16]} className="mb-3">
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Total Loans</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.totalLoans")}</div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
               {totalRows.toLocaleString()}
             </div>
@@ -256,7 +258,7 @@ const RepaymentScheduleReport = () => {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Disbursed Principal</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.disbursedPrincipal")}</div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
               {formatNumber(visibleTotals.disbursedPrincipal)}{" "}
               <span style={{ fontSize: 14 }}>SAR</span>
@@ -265,7 +267,7 @@ const RepaymentScheduleReport = () => {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Total Profit</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.totalProfit")}</div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
               {formatNumber(visibleTotals.totalProfit)}{" "}
               <span style={{ fontSize: 14 }}>SAR</span>
@@ -274,7 +276,7 @@ const RepaymentScheduleReport = () => {
         </Col>
         <Col xs={24} sm={12} lg={6}>
           <div className="card-product p-4 text-dark h-100">
-            <div style={{ fontSize: 14, fontWeight: 600 }}>Total Payable</div>
+            <div style={{ fontSize: 14, fontWeight: 600 }}>{t("repaymentSchedule.summary.totalPayable")}</div>
             <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
               {formatNumber(visibleTotals.totalPayable)}{" "}
               <span style={{ fontSize: 14 }}>SAR</span>

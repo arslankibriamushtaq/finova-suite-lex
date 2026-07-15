@@ -13,10 +13,12 @@ import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 import { getRecentTickets, getStatusSummary } from "../../../redux/apis/apisCrudCms";
+import { useTranslation } from "react-i18next";
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
 const Dashboard = () => {
+  const { t } = useTranslation("cms");
   const [allRecentApplications, setRecentApplications] = useState<any>();
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -31,7 +33,7 @@ const Dashboard = () => {
   
   // Default card structure to show before API response
   const defaultCards = [
-    { title: "Total", icon: null, value: null },
+    { title: t("common:total"), icon: null, value: null },
     { title: "", icon: null, value: null },
     { title: "", icon: null, value: null },
     { title: "", icon: null, value: null },
@@ -91,7 +93,7 @@ const Dashboard = () => {
         // Add Total object at the beginning
         const finalData = [
           {
-            title: "Total",
+            title: t("common:total"),
             value: totalCount,
             icon: <img src={Images.totalCount} height={30}  alt="total" />,
             cardType: "default",
@@ -110,20 +112,20 @@ const Dashboard = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Ticket ID",
+      name: t("dashboard.ticketId"),
       selector: (row: { TicketID: any }) => row.TicketID || "-",
     },
-  
+
   {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: { Category: any }) => row.Category || "-",
     },
     {
-      name: "Priority",
+      name: t("fields.priority"),
       selector: (row: { Priority: any }) => row.Priority || "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { Status: any }) => row.Status || "-",
     },
   ];
@@ -171,7 +173,7 @@ const Dashboard = () => {
               className="d-flex align-items-center ms-2"
               style={{ fontWeight: "600", fontSize: "20px", color: "var(--foreground)" }}
             >
-              Overview
+              {t("dashboard.overview")}
             </div>
             <div className="d-flex align-items-center">
               <Radio.Group
@@ -180,16 +182,16 @@ const Dashboard = () => {
                 buttonStyle="solid"
                 style={{ marginRight: "16px" }}
               >
-                <Radio value="today">Today</Radio>
-                <Radio value="last-week">Last Week</Radio>
-                <Radio value="last-month">Last Month</Radio>
+                <Radio value="today">{t("dashboard.today")}</Radio>
+                <Radio value="last-week">{t("dashboard.lastWeek")}</Radio>
+                <Radio value="last-month">{t("dashboard.lastMonth")}</Radio>
               </Radio.Group>
 
               <div className="d-flex gap-1 p-2">
                 <DatePicker
                   className="date-picker"
                   style={{backgroundColor:'white' ,borderRadius:'32px'}}
-                  placeholder="From"
+                  placeholder={t("common:from")}
                   value={fromPicker}
                   onChange={(date) => {
                     setRadioValue("");
@@ -201,7 +203,7 @@ const Dashboard = () => {
                 <DatePicker
                   className="date-picker"
                   style={{backgroundColor:'white' ,borderRadius:'32px'}}
-                  placeholder="To"
+                  placeholder={t("common:to")}
                   value={toPicker}
                   onChange={(date) => {
                     setToPicker(date);
@@ -281,7 +283,7 @@ const Dashboard = () => {
           </div>
           <div className="col-12 mt-3">
             <Col>
-              <Card title="Complaints Monthly">
+              <Card title={t("dashboard.complaintsMonthly")}>
                 <FinanceBarChart/>
               </Card>
             </Col>
@@ -289,7 +291,7 @@ const Dashboard = () => {
           <div className="d-flex mt-3 col-12 gap-3">
             <div className="" style={{ flex: 8.8 }}>
               <Col>
-                <Card title="Department Wise Complaints Monthly">
+                <Card title={t("dashboard.departmentWiseComplaintsMonthly")}>
                   <BarChart />
                 </Card>
               </Col>
@@ -299,7 +301,7 @@ const Dashboard = () => {
        
           <div className="col-12">
             <div className="cs-table p-2">
-              <h6 className="mt-3 fw-600">Recent Application</h6>
+              <h6 className="mt-3 fw-600">{t("dashboard.recentApplication")}</h6>
               <TableView
                 setPage={setPage}
                 setPageSize={setPageSize}

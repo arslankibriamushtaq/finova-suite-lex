@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Input, Modal, Form, Switch } from "antd";
 import TableView from "../TableView/TableView";
 import {
@@ -10,6 +11,7 @@ import {
 import toast from "react-hot-toast";
 
 const DepartmentList = () => {
+  const { t } = useTranslation("adminMisc");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [totalRows, setTotalRows] = useState(0);
@@ -29,11 +31,11 @@ const DepartmentList = () => {
 
   const columns = [
     {
-      name: "Department Name",
+      name: t("dept.col.name"),
       selector: (row: any) => row.name,
     },
     {
-      name: "By Default",
+      name: t("dept.col.byDefault"),
       cell: (row: any) => (
         <span
           style={{
@@ -44,12 +46,12 @@ const DepartmentList = () => {
             color: "white",
           }}
         >
-          {row.by_default ? "Active" : "Inactive"}
+          {row.by_default ? t("common:active") : t("common:inactive")}
         </span>
       ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -60,12 +62,12 @@ const DepartmentList = () => {
             color: "white",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </span>
       ),
     },
     {
-      name: "Change Status",
+      name: t("dept.col.changeStatus"),
       cell: (row: any) => (
         <Switch
           checked={!!row.status}
@@ -74,7 +76,7 @@ const DepartmentList = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("dept.col.action"),
       cell: (row: any) =>
         row.by_default ? (
           <span></span>
@@ -86,7 +88,7 @@ const DepartmentList = () => {
             style={{ fontSize: "12px", borderRadius: "2px" }}
             onClick={() => handleSetDefault(row)}
           >
-            Set Default
+            {t("dept.setDefault")}
           </Button>
         ),
     },
@@ -120,13 +122,13 @@ const DepartmentList = () => {
     try {
       const res = await updateDefaultDepartment(row.id);
       if (res?.data?.success) {
-        toast.success(res.data.message || "Default department updated.");
+        toast.success(res.data.message || t("dept.toast.defaultUpdated"));
         fetchDepartments();
       } else {
-        toast.error(res?.data?.message || "Failed to set default.");
+        toast.error(res?.data?.message || t("dept.toast.setDefaultFailed"));
       }
     } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Something went wrong!";
+      const msg = error?.response?.data?.message || error?.message || t("dept.toast.somethingWentWrong");
       toast.error(msg);
     }
   };
@@ -139,13 +141,13 @@ const DepartmentList = () => {
       };
       const res = await updateDepartmenStatus(body);
       if (res?.data?.success) {
-        toast.success(res.data.message || "Status updated.");
+        toast.success(res.data.message || t("dept.toast.statusUpdated"));
         fetchDepartments();
       } else {
-        toast.error(res?.data?.message || "Failed to update status.");
+        toast.error(res?.data?.message || t("dept.toast.statusUpdateFailed"));
       }
     } catch (error: any) {
-      const msg = error?.response?.data?.message || error?.message || "Something went wrong!";
+      const msg = error?.response?.data?.message || error?.message || t("dept.toast.somethingWentWrong");
       toast.error(msg);
     }
   };
@@ -157,7 +159,7 @@ const DepartmentList = () => {
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      toast.error("Please enter department name.");
+      toast.error(t("dept.toast.enterName"));
       return;
     }
 
@@ -170,11 +172,11 @@ const DepartmentList = () => {
 
       const res = await storeDepartment(fd);
       if (res?.data?.success) {
-        toast.success(res.data.message || "Department added successfully.");
+        toast.success(res.data.message || t("dept.toast.addSuccess"));
         setShowModal(false);
         fetchDepartments();
       } else {
-        toast.error(res?.data?.message || "Failed to add department.");
+        toast.error(res?.data?.message || t("dept.toast.addFailed"));
       }
     } catch (error: any) {
       console.error("Error storing department:", error);
@@ -186,7 +188,7 @@ const DepartmentList = () => {
             if (typeof msg === "string") toast.error(msg);
           });
       } else {
-        toast.error(errData?.message || error?.message || "Something went wrong!");
+        toast.error(errData?.message || error?.message || t("dept.toast.somethingWentWrong"));
       }
     } finally {
       setSaving(false);
@@ -207,9 +209,9 @@ const DepartmentList = () => {
       style={{ background: "white", padding: "1rem", borderRadius: "2px" }}
     >
       <div className="d-flex mb-3 col-12 justify-content-between align-items-center">
-        <h5 style={{ fontWeight: 600, margin: 0 }}>Department</h5>
+        <h5 style={{ fontWeight: 600, margin: 0 }}>{t("dept.title")}</h5>
         <button className="theme-btn-next" onClick={handleOpenModal}>
-          Add Departments
+          {t("dept.addBtn")}
         </button>
       </div>
 
@@ -230,12 +232,12 @@ const DepartmentList = () => {
       <Modal
         className="custom-mod"
         style={{ maxWidth: "500px" }}
-        title="Add Department"
+        title={t("dept.modalTitle")}
         open={showModal}
         onCancel={() => setShowModal(false)}
         footer={[
           <Button key="cancel" onClick={() => setShowModal(false)}>
-            Cancel
+            {t("common:cancel")}
           </Button>,
           <Button
             key="save"
@@ -243,14 +245,14 @@ const DepartmentList = () => {
             loading={saving}
             onClick={handleSave}
           >
-            Save
+            {t("common:save")}
           </Button>,
         ]}
       >
         <Form layout="vertical">
-          <Form.Item label="Department Name" required>
+          <Form.Item label={t("dept.col.name")} required>
             <Input
-              placeholder="Enter department name"
+              placeholder={t("dept.form.namePlaceholder")}
               value={formData.name}
               onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
             />
@@ -261,14 +263,14 @@ const DepartmentList = () => {
                 checked={formData.by_default}
                 onChange={(checked) => setFormData((prev) => ({ ...prev, by_default: checked }))}
               />
-              <label style={{ fontWeight: 500 }}>Set Default</label>
+              <label style={{ fontWeight: 500 }}>{t("dept.setDefault")}</label>
             </div>
             <div className="d-flex align-items-center gap-2">
               <Switch
                 checked={formData.status}
                 onChange={(checked) => setFormData((prev) => ({ ...prev, status: checked }))}
               />
-              <label style={{ fontWeight: 500 }}>Status</label>
+              <label style={{ fontWeight: 500 }}>{t("common:status")}</label>
             </div>
           </div>
         </Form>

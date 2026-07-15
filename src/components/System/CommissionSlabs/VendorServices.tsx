@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Form, Input, Menu, Modal, Select } from "antd";
+import { useTranslation } from "react-i18next";
 import { FaFilter } from "react-icons/fa";
 import TableView from "../../TableView/TableView";
 import { Images } from "../../Config/Images";
@@ -18,6 +19,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const VendorServices = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [vendors, setVendors] = useState<any>([]);
@@ -45,7 +47,7 @@ const VendorServices = () => {
           await toast.promise(
             deleteVendorService(rowData?.id), // API call
             {
-              loading: "Deleting vendor service...",
+              loading: t("vendorServices.deleting"),
               success: (response) => {
                 if (response?.data?.success) {
                     setRefresh(!refresh);
@@ -54,13 +56,13 @@ const VendorServices = () => {
                   throw new Error(
                     response?.data?.errors?.[0] ||
                       response?.data?.message ||
-                      "Failed to deleting vendor service."
+                      t("vendorServices.deleteFailed")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while deleting the vendor service.",
+                t("vendorServices.deleteError"),
             }
           );
         
@@ -75,22 +77,22 @@ const VendorServices = () => {
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "Vendor Name",
+      name: t("vendorServices.vendorName"),
       selector: (row: { vendor_name: any }) => row.vendor_name,
       sortable: true,
     },
     {
-      name: "Service Name",
+      name: t("vendorServices.serviceName"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -105,7 +107,7 @@ const VendorServices = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -118,21 +120,21 @@ const VendorServices = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -241,7 +243,7 @@ const VendorServices = () => {
         await toast.promise(
           editVendorService(updateBody), // Pass the body with ID included
           {
-            loading: "Updating vendor service...",
+            loading: t("vendorServices.updating"),
             success: (response:any) => {
                 if (response?.data?.success){
                     setIsModalVisible(false);
@@ -254,20 +256,20 @@ const VendorServices = () => {
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
-                    "Failed to update vendor service."
+                    t("vendorServices.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating the vendor service.",
+              t("vendorServices.updateError"),
           }
         );
       } else {
         await toast.promise(
             createVendorService(formValues), // API call
           {
-            loading: "Adding vendor service...",
+            loading: t("vendorServices.adding"),
             success: (response) => {
               if (response?.data?.success) {
                 setIsModalVisible(false);
@@ -281,13 +283,13 @@ const VendorServices = () => {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.message ||
-                    "Failed to add vendor service."
+                    t("vendorServices.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding the vendor service.",
+              t("vendorServices.addError"),
           }
         );
       }
@@ -341,7 +343,7 @@ const VendorServices = () => {
         <Select
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
         />
@@ -357,12 +359,12 @@ const VendorServices = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
 
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -370,11 +372,11 @@ const VendorServices = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New Vendor Service
+            {t("vendorServices.addNew")}
           </button>
         </div>
       </div>
@@ -397,17 +399,17 @@ const VendorServices = () => {
         style={{ maxWidth: "732px" }}
         title={
           selectedItem === "edit"
-            ? "Edit vendor service"
-            : "Add New vendor service"
+            ? t("vendorServices.editTitle")
+            : t("vendorServices.addTitle")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button key="save" type="primary" disabled={isLoading} onClick={handleOk}>
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
@@ -416,7 +418,7 @@ const VendorServices = () => {
             <div className="d-flex flex-column w-100 gap-4 align-items-center">
             <Form.Item className="w-100 mb-0">
                 <div className="custom-input-container mb-0">
-                  <label className="input-label">Vendor Name</label>
+                  <label className="input-label">{t("vendorServices.vendorName")}</label>
                   <Select
                     value={formValues.vendor_id}
                     onChange={(value) => handleChange("vendor_id", value)}
@@ -436,9 +438,9 @@ const VendorServices = () => {
               </Form.Item>
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Service Name</label>
+                  <label className="input-label">{t("vendorServices.serviceName")}</label>
                   <Input
-                    placeholder="Enter service name"
+                    placeholder={t("vendorServices.servicePlaceholder")}
                     className="fs-6"
                     value={formValues.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -470,7 +472,7 @@ const VendorServices = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -485,7 +487,7 @@ const VendorServices = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -499,7 +501,7 @@ const VendorServices = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure want to delete this service?
+            {t("vendorServices.deleteConfirm")}
           </p>
         </div>
       </Modal>

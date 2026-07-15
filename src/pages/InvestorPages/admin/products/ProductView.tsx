@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Descriptions, Card, Button } from "antd";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -7,6 +8,7 @@ import { getProductById, Product } from "../../../../redux/apis/apisInvestor";
 import Loader from "../../../../components/Loader/Loader";
 
 const ProductView = () => {
+  const { t } = useTranslation("investor");
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
 
@@ -29,10 +31,10 @@ const ProductView = () => {
       if (response?.success) {
         setProductData(response.data || null);
       } else {
-        toast.error(response?.notificationMessage || "Failed to fetch product details");
+        toast.error(response?.notificationMessage || t("pv.fetchError"));
       }
     } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || "Failed to fetch product details");
+      toast.error(error?.notificationMessage || error?.message || t("pv.fetchError"));
     } finally {
       setLoading(false);
     }
@@ -40,13 +42,13 @@ const ProductView = () => {
 
   const getProductStatusText = (status: number) => {
     const statusMap: { [key: number]: string } = {
-      0: 'Active',
-      1: 'Inactive',
-      2: 'Closed',
-      3: 'Suspended',
-      4: 'Launching'
+      0: t('pv.status.active'),
+      1: t('pv.status.inactive'),
+      2: t('pv.status.closed'),
+      3: t('pv.status.suspended'),
+      4: t('pv.status.launching')
     };
-    return statusMap[status] || 'Unknown';
+    return statusMap[status] || t('pv.status.unknown');
   };
 
   const getProductStatusColor = (status: number) => {
@@ -75,13 +77,13 @@ const ProductView = () => {
       <div className="p-6">
         <Card>
           <div className="text-center py-8">
-            <p className="text-gray-500">Product not found</p>
+            <p className="text-gray-500">{t("pv.notFound")}</p>
             <Button
               type="primary"
               onClick={() => navigate('/InvestorDashboard/Products')}
               className="mt-4"
             >
-              Back to Products
+              {t("pv.backToList")}
             </Button>
           </div>
         </Card>
@@ -99,42 +101,42 @@ const ProductView = () => {
           onClick={() => navigate("/InvestorDashboard/Products")}
           className="mb-4"
         >
-          Back to Products
+          {t("pv.backToList")}
         </Button>
-        <h1 className="text-3xl font-bold text-gray-900">Product Details</h1>
+        <h1 className="text-3xl font-bold text-gray-900">{t("pv.detailsTitle")}</h1>
       </div>
 
       <Card>
         <Descriptions
-          title="Product Information"
+          title={t("pv.infoTitle")}
           bordered
           column={{ xxl: 2, xl: 2, lg: 2, md: 1, sm: 1, xs: 1 }}
         >
-          <Descriptions.Item label="Product ID">
+          <Descriptions.Item label={t("pv.label.id")}>
             <span className="text-sm">{productData.id}</span>
           </Descriptions.Item>
-          <Descriptions.Item label="Product Name">
+          <Descriptions.Item label={t("pv.label.name")}>
             <span className="font-semibold text-lg">{productData.name}</span>
           </Descriptions.Item>
-          <Descriptions.Item label="Product Type">
+          <Descriptions.Item label={t("pv.label.type")}>
             {productData.type || "-"}
           </Descriptions.Item>
-          <Descriptions.Item label="Product Code">
+          <Descriptions.Item label={t("pv.label.code")}>
             <span>{productData.code || "-"}</span>
           </Descriptions.Item>
-          <Descriptions.Item label="Description" span={2}>
+          <Descriptions.Item label={t("common:description")} span={2}>
             {productData.description || "-"}
           </Descriptions.Item>
-          <Descriptions.Item label="Expected Return">
+          <Descriptions.Item label={t("pv.label.expectedReturn")}>
             {productData.expectedReturn}%
           </Descriptions.Item>
-          <Descriptions.Item label="Minimum Investment">
+          <Descriptions.Item label={t("pv.label.minInvestment")}>
             {productData.minimumInvestment?.toLocaleString() || "0"} SAR
           </Descriptions.Item>
-          <Descriptions.Item label="Product Category">
+          <Descriptions.Item label={t("pv.label.category")}>
             {productData.productCategory || "-"}
           </Descriptions.Item>
-          <Descriptions.Item label="Product Status">
+          <Descriptions.Item label={t("pv.label.status")}>
             <span
               style={{
                 padding: "6px 12px",
@@ -147,19 +149,19 @@ const ProductView = () => {
               {getProductStatusText(productData.productStatus)}
             </span>
           </Descriptions.Item>
-          <Descriptions.Item label="Launch Date">
+          <Descriptions.Item label={t("pv.label.launchDate")}>
             {productData.launchDate ? new Date(productData.launchDate).toLocaleDateString() : "-"}
           </Descriptions.Item>
-          <Descriptions.Item label="Investment Duration">
-            {productData.investmentDuration ? `${productData.investmentDuration} months` : "-"}
+          <Descriptions.Item label={t("pv.label.duration")}>
+            {productData.investmentDuration ? t("pv.months", { value: productData.investmentDuration }) : "-"}
           </Descriptions.Item>
-          <Descriptions.Item label="Segment ID">
+          <Descriptions.Item label={t("pv.label.segmentId")}>
             <span className="text-sm">{productData.segmentId || "-"}</span>
           </Descriptions.Item>
-          <Descriptions.Item label="Created At">
+          <Descriptions.Item label={t("common:createdAt")}>
             {productData.createdAt ? new Date(productData.createdAt).toLocaleString() : "-"}
           </Descriptions.Item>
-          <Descriptions.Item label="Updated At">
+          <Descriptions.Item label={t("common:updatedAt")}>
             {productData.updatedAt ? new Date(productData.updatedAt).toLocaleString() : "-"}
           </Descriptions.Item>
         </Descriptions>

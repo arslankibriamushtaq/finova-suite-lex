@@ -4,6 +4,7 @@ import { RootState } from "../../redux/rootReducer";
 import { Activity_Loans_Header } from "../../components/Config/TableHeaders";
 import TableView from "../../components/TableView/TableView";
 import { DatePicker } from "antd";
+import { useTranslation } from "react-i18next";
 
 const data = [
   {
@@ -18,13 +19,14 @@ const data = [
 ];
 
 const ApplicationDocumentActivity = () => {
+  const { t } = useTranslation("allApplication");
   const checkReduxState = useSelector((state: RootState) => state.block.check);
   return (
     <>
       <div className="cs-table card">
         <div className="card-body">
           <div className="col-xl-12 col-12 d-flex align-items-center pb-3">
-            <h2 className="col-xl-6 col-12 fs-6 fw-bold">Activity Log</h2>
+            <h2 className="col-xl-6 col-12 fs-6 fw-bold">{t("activity.title")}</h2>
             <form
               action="search-bar"
               className="col-lg-6 col-12 d-flex justify-content-end pb-2"
@@ -32,7 +34,7 @@ const ApplicationDocumentActivity = () => {
               <div className="d-flex justify-content-between ">
                 <div className="d-grid">
                   <label htmlFor="" className="label-theme">
-                    From
+                    {t("common:from")}
                   </label>
                   <DatePicker
                     style={{
@@ -45,7 +47,7 @@ const ApplicationDocumentActivity = () => {
 
                 <div className="d-grid">
                   <label htmlFor="" className="label-theme">
-                    To
+                    {t("common:to")}
                   </label>
                   <DatePicker
                     style={{
@@ -58,7 +60,7 @@ const ApplicationDocumentActivity = () => {
             </form>
           </div>
           <h2 className="col-xl-6 col-12 fs-6 fw-bold">
-            Application# ALAN-9913715516
+            {t("activity.applicationNumber", { value: "ALAN-9913715516" })}
           </h2>
           <TableView header={Activity_Loans_Header} data={data} />
         </div>

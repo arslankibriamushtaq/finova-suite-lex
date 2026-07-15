@@ -12,8 +12,10 @@ import toast from "react-hot-toast";
 import TableHeaderFilter from "../TableHeaderFilter";
 import TableView from "../TableView/TableView";
 import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const ExcessPayment = () => {
+  const { t } = useTranslation("accountingLoans");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -63,21 +65,21 @@ const ExcessPayment = () => {
   };
 
   const validationSchema = Yup.object().shape({
-    accountNumber: Yup.string().required("Account Number is required"),
-    loanId: Yup.string().required("Loan ID is required"),
-    customerId: Yup.string().required("Customer ID is required"),
-    customerName: Yup.string().required("Customer name is required"),
-    checkNo: Yup.string().required("Check number is required"),
+    accountNumber: Yup.string().required(t("excess.val.accountNumberRequired")),
+    loanId: Yup.string().required(t("excess.val.loanIdRequired")),
+    customerId: Yup.string().required(t("excess.val.customerIdRequired")),
+    customerName: Yup.string().required(t("excess.val.customerNameRequired")),
+    checkNo: Yup.string().required(t("excess.val.checkNoRequired")),
     reversalAmount: Yup.number()
-      .required("Reversal amount is required")
-      .positive("Amount must be positive"),
-    date: Yup.string().required("Date is required"),
-    payerName: Yup.string().required("Payer name is required"),
-    bankName: Yup.string().required("Bank name is required"),
-    description: Yup.string().required("Description is required"),
-    reasonForReversal: Yup.string().required("Reason for reversal is required"),
-    createdBy: Yup.string().required("Created by is required"),
-    mailingAddress: Yup.string().required("Mailing address is required"),
+      .required(t("excess.val.reversalAmountRequired"))
+      .positive(t("excess.val.amountPositive")),
+    date: Yup.string().required(t("excess.val.dateRequired")),
+    payerName: Yup.string().required(t("excess.val.payerNameRequired")),
+    bankName: Yup.string().required(t("excess.val.bankNameRequired")),
+    description: Yup.string().required(t("excess.val.descriptionRequired")),
+    reasonForReversal: Yup.string().required(t("excess.val.reasonRequired")),
+    createdBy: Yup.string().required(t("excess.val.createdByRequired")),
+    mailingAddress: Yup.string().required(t("excess.val.mailingAddressRequired")),
   });
   const handleSubmit = async (formField: any) => {
     try {
@@ -121,77 +123,77 @@ const ExcessPayment = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => selectChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="delete" icon={<EyeOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
     </Menu>
   );
   const Call_Activity_Header = [
     {
-      name: "Account Number", // LoanID
+      name: t("excess.col.accountNumber"), // LoanID
       selector: "accountNumber",
       cell: (row: any) => row.accountNumber,
     },
     {
-      name: "ID", // customerId or id
+      name: t("excess.col.id"), // customerId or id
       selector: "id",
       cell: (row: any) => row.id,
     },
     {
-      name: "Name", // customerName
+      name: t("excess.col.name"), // customerName
       selector: "customerName",
       cell: (row: any) => row.customerName,
     },
     {
-      name: "Cheque No.", // checnkNo (assuming 'checnkNo' is a typo for 'chequeNo')
+      name: t("excess.col.chequeNo"), // checnkNo (assuming 'checnkNo' is a typo for 'chequeNo')
       selector: "checnkNo",
       cell: (row: any) => row.checnkNo,
     },
     {
-      name: "Reversal Amount", // reversalAmount
+      name: t("excess.col.reversalAmount"), // reversalAmount
       selector: "reversalAmount",
       cell: (row: any) => `SAR ${row.reversalAmount}`,
     },
     {
-      name: "Date", // date
+      name: t("excess.col.date"), // date
       selector: "date",
       cell: (row: any) => new Date(row.date).toLocaleDateString(),
     },
     {
-      name: "Payer Name", // payerName
+      name: t("excess.col.payerName"), // payerName
       selector: "payerName",
       cell: (row: any) => row.payerName,
     },
     {
-      name: "Bank Name", // bankName
+      name: t("excess.col.bankName"), // bankName
       selector: "bankName",
       cell: (row: any) => row.bankName,
     },
     {
-      name: "Description", // description
+      name: t("excess.col.description"), // description
       selector: "description",
       cell: (row: any) => row.description || "-------",
     },
     {
-      name: "Reason for Reversal", // reasonForReversal
+      name: t("excess.col.reasonForReversal"), // reasonForReversal
       selector: "reasonForReversal",
       cell: (row: any) => row.reasonForReversal,
     },
     {
-      name: "Created By", // createdBy
+      name: t("excess.col.createdBy"), // createdBy
       selector: "createdBy",
       cell: (row: any) => row.createdBy,
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button>
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -251,7 +253,7 @@ const ExcessPayment = () => {
                   setShow(true);
                 }}
               >
-                Refund Excess Payment
+                {t("excess.refund")}
               </button>
             </div>
           </div>
@@ -273,16 +275,16 @@ const ExcessPayment = () => {
           {({ handleChange, setFieldValue }) => (
             <Form>
               <div className="col-12 mt-3 border-bottom">
-                <h4>Payment Reversal</h4>
+                <h4>{t("excess.paymentReversal")}</h4>
                 <div className="col-7 mt-5 d-flex justify-content-start mb-5">
                   <div className="me-2 w-100">
-                    <label>accountNumber</label>
+                    <label>{t("excess.accountNumber")}</label>
                     <Field
                       name="accountNumber"
                       as={Input}
                       size="large"
                       className="mt-2"
-                      placeholder="Account Number"
+                      placeholder={t("excess.accountNumberPlaceholder")}
                       onChange={(e: any) => handleChangess(e, setFieldValue)}
                     />
                     <ErrorMessage
@@ -292,12 +294,12 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className="me-2 w-100">
-                    <label>Loan ID</label>
+                    <label>{t("excess.loanId")}</label>
 
                     <Select
                       size="large"
                       className="mt-2"
-                      placeholder="Loan ID"
+                      placeholder={t("excess.loanId")}
                       // value={formValues.applicationID}
                       // onChange={handleSelectChange}
                       onChange={(value) => {
@@ -327,16 +329,16 @@ const ExcessPayment = () => {
               </div>
 
               <div className="col-12 mt-3 border-bottom">
-                <h4>Customer Business/Details</h4>
+                <h4>{t("excess.customerDetails")}</h4>
                 <div className="col-7 mt-5 d-flex justify-content-start mb-5">
                   <div className="me-2 w-100">
-                    <label>ID</label>
+                    <label>{t("excess.id")}</label>
                     <Field
                       name="customerId"
                       size="large"
                       id="customerId"
                       className="mt-2 form-control"
-                      placeholder="Optional"
+                      placeholder={t("excess.optional")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -346,12 +348,12 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className="w-100 me-2">
-                    <label>Customer Name</label>
+                    <label>{t("excess.customerName")}</label>
                     <Field
                       name="customerName"
                       id="customerName"
                       className="form-control mt-2"
-                      placeholder="customer Name"
+                      placeholder={t("excess.customerNamePlaceholder")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -366,14 +368,14 @@ const ExcessPayment = () => {
               <div className="col-12 mt-5">
                 <div className="col-11 d-flex justify-content-start mb-5">
                   <div className="w-100 me-2">
-                    <label>Check Number</label>
+                    <label>{t("excess.checkNumber")}</label>
                     <Field
                       name="checnkNo"
                       id="checnkNo"
                       as={Input}
                       size="large"
                       className="mt-2"
-                      placeholder="Check Number"
+                      placeholder={t("excess.checkNumber")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -383,13 +385,13 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className=" me-2 w-100">
-                    <label>Reversal Amount</label>
+                    <label>{t("excess.reversalAmount")}</label>
                     <Field
                       name="reversalAmount"
                       id="reversalAmount"
                       type="number"
                       className="mt-2 form-control"
-                      placeholder="Reversal Amount"
+                      placeholder={t("excess.reversalAmount")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -399,13 +401,13 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className="w-100">
-                    <label>Date</label>
+                    <label>{t("excess.date")}</label>
                     <Field
                       name="date"
                       id="date"
                       type="date"
                       className="mt-2 form-control"
-                      placeholder="Date"
+                      placeholder={t("excess.date")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -420,12 +422,12 @@ const ExcessPayment = () => {
               <div className="col-12 mt-5">
                 <div className="col-11 d-flex justify-content-start mb-5">
                   <div className="w-100 me-2">
-                    <label>Payer Name</label>
+                    <label>{t("excess.payerName")}</label>
                     <Field
                       name="payerName"
                       id="payerName"
                       className="mt-2 form-control"
-                      placeholder="Payer Name"
+                      placeholder={t("excess.payerName")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -435,12 +437,12 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className="w-100 me-2">
-                    <label>Bank Name</label>
+                    <label>{t("excess.bankName")}</label>
                     <Field
                       name="bankName"
                       id="bankName"
                       className="mt-2 form-control"
-                      placeholder="bank Name"
+                      placeholder={t("excess.bankNamePlaceholder")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -450,12 +452,12 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className="w-100 ">
-                    <label>Description</label>
+                    <label>{t("excess.description")}</label>
                     <Field
                       name="description"
                       id="description"
                       className="mt-2 form-control"
-                      placeholder="Description"
+                      placeholder={t("excess.description")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -469,12 +471,12 @@ const ExcessPayment = () => {
               <div className="col-12 mt-5 ">
                 <div className="col-7 d-flex justify-content-between mb-5">
                   <div className="w-100 me-2">
-                    <label>Reason For Reversal</label>
+                    <label>{t("excess.reasonForReversal")}</label>
                     <Field
                       name="reasonForReversal"
                       ID="reasonForReversal"
                       className="mt-2 form-control"
-                      placeholder="Reason For Reversal"
+                      placeholder={t("excess.reasonForReversal")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -484,11 +486,11 @@ const ExcessPayment = () => {
                     />
                   </div>
                   <div className="w-100 ">
-                    <label>Created By</label>
+                    <label>{t("excess.createdBy")}</label>
                     <Field
                       name="createdBy"
                       className="mt-2 form-control"
-                      placeholder="Created By"
+                      placeholder={t("excess.createdBy")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -502,12 +504,12 @@ const ExcessPayment = () => {
               <div className="col-12 mt-5 border-bottom">
                 <div className="col-10 d-flex justify-content-between mb-5">
                   <div className="w-100">
-                    <label>Mailing Address</label>
+                    <label>{t("excess.mailingAddress")}</label>
                     <Field
                       name="mailingAddress"
                       id="mailingAddress"
                       className="mt-2 form-control"
-                      placeholder="optional"
+                      placeholder={t("excess.optional")}
                       onChange={handleChange}
                     />
                     <ErrorMessage
@@ -527,7 +529,7 @@ const ExcessPayment = () => {
 
                   //   }}
                 >
-                  Submit
+                  {t("common:submit")}
                 </button>
               </div>
             </Form>

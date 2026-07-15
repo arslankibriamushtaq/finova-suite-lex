@@ -1,14 +1,16 @@
 import { Checkbox } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function PartnerDisclaimer({ setSelectedTab }: any) {
+  const { t } = useTranslation("partner");
   return (
     <>
       <div className=" col-12 d-flex">
         <div className="disclaimer-sec mt-3 mb-3">
-          <h5>Disclaimer</h5>
+          <h5>{t("disclaimer.title")}</h5>
           <Checkbox checked className="mb-3" style={{ fontWeight: 400 }}>
-            I agreed and accepted the following disclaimer:
+            {t("disclaimer.agree")}
           </Checkbox>
           <div className="col-12 d-flex gap-3">
             <div className="col-6">

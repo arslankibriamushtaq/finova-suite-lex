@@ -2,6 +2,7 @@ import React from "react";
 import { Row, Col } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   stepNo: number;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const RequiredDocFields: React.FC<Props> = ({ stepNo, docFiles, onFileChange }) => {
+  const { t } = useTranslation("landingUser");
   const requiredDocuments = useSelector(
     (state: RootState) => state.block.requiredDocuments
   );
@@ -26,7 +28,7 @@ const RequiredDocFields: React.FC<Props> = ({ stepNo, docFiles, onFileChange }) 
         className="mb-3"
         style={{ color: "#1963b9", fontWeight: 600, fontSize: "16px" }}
       >
-        Required Documents
+        {t("docs.title")}
       </h5>
       <Row>
         {stepDocs.map((doc: any) => (
@@ -53,10 +55,10 @@ const RequiredDocFields: React.FC<Props> = ({ stepNo, docFiles, onFileChange }) 
                 className="btn btn-secondary btn-sm me-2"
                 style={{ cursor: "pointer" }}
               >
-                Choose File
+                {t("action.chooseFile")}
               </label>
               <span style={{ fontSize: "14px" }}>
-                {docFiles[doc.id]?.name || "No file chosen"}
+                {docFiles[doc.id]?.name || t("action.noFileChosen")}
               </span>
             </div>
           </Col>

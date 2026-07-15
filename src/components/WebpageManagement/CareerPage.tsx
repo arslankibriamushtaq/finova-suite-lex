@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const CareerPage = () => {
+  const { t } = useTranslation('webPages');
   const navigate = useNavigate();
   const [showEditButton, setShowEditButton] = useState(false);
 
@@ -37,7 +39,7 @@ const CareerPage = () => {
               margin: '0',
               fontWeight: 'normal'
             }}>
-              Career Page
+              {t('header.careerPage')}
             </h1>
           </div>
         </div>
@@ -99,7 +101,7 @@ const CareerPage = () => {
                     e.currentTarget.style.transform = 'scale(1)';
                   }}
                 >
-                  Edit Template
+                  {t('editTemplate')}
                 </button>
               </div>
             )}

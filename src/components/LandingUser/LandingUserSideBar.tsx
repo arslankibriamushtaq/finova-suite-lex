@@ -4,8 +4,10 @@ import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
 import { authSlice } from "../../redux/apis/apisSlice";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const LandingUserSideBar = () => {
+  const { t } = useTranslation("landingUser");
   const dispatch = useDispatch();
   const location = useLocation();
   const loading = false;
@@ -52,15 +54,15 @@ const LandingUserSideBar = () => {
   };
 
   const steps = [
-    { key: "partner", label: "Verification", icon: Images.productLogo },
-    { key: "Terms", label: "Terms & Condition", icon: Images.businessLogo },
-    { key: "businessdetails", label: "Business Info", icon: Images.paymentLogo },
-    { key: "otpVerification", label: "Email Verification", icon: Images.paymentLogo },
-    { key: "orbitSms", label: "Orbit SMS", icon: Images.paymentLogo },
-    { key: "ComplianceInfo", label: "Compliance Info", icon: Images.finishLogo },
-    { key: "factoringInfo", label: "Factoring Info", icon: Images.paymentLogo },
-    { key: "bankingInfo", label: "Docs & Bank Verification", icon: Images.paymentLogo },
-    { key: "finish", label: "Finish", icon: Images.paymentLogo },
+    { key: "partner", label: t("progress.verification"), icon: Images.productLogo },
+    { key: "Terms", label: t("progress.termsCondition"), icon: Images.businessLogo },
+    { key: "businessdetails", label: t("progress.businessInfo"), icon: Images.paymentLogo },
+    { key: "otpVerification", label: t("progress.emailVerification"), icon: Images.paymentLogo },
+    { key: "orbitSms", label: t("progress.orbitSms"), icon: Images.paymentLogo },
+    { key: "ComplianceInfo", label: t("progress.complianceInfo"), icon: Images.finishLogo },
+    { key: "factoringInfo", label: t("progress.factoringInfo"), icon: Images.paymentLogo },
+    { key: "bankingInfo", label: t("progress.docsBankVerification"), icon: Images.paymentLogo },
+    { key: "finish", label: t("progress.finish"), icon: Images.paymentLogo },
   ];
 
   return (

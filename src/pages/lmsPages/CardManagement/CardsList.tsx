@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -57,6 +58,7 @@ const ALL = "all";
 
 const CardsList = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("cardManagement");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -113,7 +115,7 @@ const CardsList = () => {
       setTotalRows(total);
       setTotalPage(Math.ceil(total / pageSize) || 1);
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Failed to fetch cards");
+      if (!error?.response?.data?.message) toast.error(t("list.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -130,7 +132,7 @@ const CardsList = () => {
       toast.success(successMsg);
       fetchData();
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Action failed");
+      if (!error?.response?.data?.message) toast.error(t("toast.actionFailed"));
     } finally {
       setActioningId(null);
     }
@@ -154,29 +156,29 @@ const CardsList = () => {
 
   const headers = [
     {
-      name: "Reference",
+      name: t("list.col.reference"),
       selector: (row: any) => row.cardReference || "-",
       sortable: true,
     },
     {
-      name: "Cardholder",
+      name: t("list.col.cardholder"),
       selector: (row: any) => row.cardholderName || "-",
       sortable: true,
     },
     {
-      name: "Type",
+      name: t("common:type"),
       cell: (row: any) => CARD_TYPE_LABELS[row.cardType] || prettyEnum(row.cardType),
     },
     {
-      name: "Tier",
+      name: t("list.col.tier"),
       cell: (row: any) => prettyEnum(row.tier),
     },
     {
-      name: "Masked PAN",
+      name: t("list.col.maskedPan"),
       selector: (row: any) => row.maskedPan || "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           className={`rounded-md px-2 py-0.5 text-xs font-medium ${cardStatusClasses(row.status)}`}
@@ -186,7 +188,7 @@ const CardsList = () => {
       ),
     },
     {
-      name: "Shipment",
+      name: t("list.col.shipment"),
       cell: (row: any) =>
         row.shipmentStatus ? (
           <span
@@ -201,7 +203,7 @@ const CardsList = () => {
         ),
     },
     {
-      name: "Action",
+      name: t("list.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -215,7 +217,7 @@ const CardsList = () => {
                 disabled={actioningId === row.id}
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -227,7 +229,7 @@ const CardsList = () => {
                 }}
               >
                 <Eye className="h-4 w-4" />
-                View details
+                {t("common:viewDetails")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -237,7 +239,7 @@ const CardsList = () => {
                 }}
               >
                 <Truck className="h-4 w-4" />
-                Tracking
+                {t("list.action.tracking")}
               </DropdownMenuItem>
 
               <DropdownMenuItem
@@ -247,7 +249,7 @@ const CardsList = () => {
                 }}
               >
                 <SlidersHorizontal className="h-4 w-4" />
-                Edit limits
+                {t("list.action.editLimits")}
               </DropdownMenuItem>
 
               {/* Soft freeze — a reversible hold (ACTIVE ⇄ FROZEN) */}
@@ -255,22 +257,22 @@ const CardsList = () => {
                 <DropdownMenuItem
                   onSelect={(e) => {
                     e.preventDefault();
-                    runAction(row.id, unfreezeAdminCard, "Card unfrozen");
+                    runAction(row.id, unfreezeAdminCard, t("list.toast.cardUnfrozen"));
                   }}
                 >
                   <Snowflake className="h-4 w-4" />
-                  Unfreeze
+                  {t("list.action.unfreeze")}
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
                   onSelect={(e) => {
                     e.preventDefault();
-                    runAction(row.id, freezeAdminCard, "Card frozen");
+                    runAction(row.id, freezeAdminCard, t("list.toast.cardFrozen"));
                   }}
                   disabled={row.status !== "ACTIVE"}
                 >
                   <Snowflake className="h-4 w-4" />
-                  Freeze
+                  {t("list.action.freeze")}
                 </DropdownMenuItem>
               )}
 
@@ -279,22 +281,22 @@ const CardsList = () => {
                 <DropdownMenuItem
                   onSelect={(e) => {
                     e.preventDefault();
-                    runAction(row.id, unblockAdminCard, "Card unblocked");
+                    runAction(row.id, unblockAdminCard, t("list.toast.cardUnblocked"));
                   }}
                 >
                   <ShieldCheck className="h-4 w-4" />
-                  Unblock
+                  {t("common:unblock")}
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
                   onSelect={(e) => {
                     e.preventDefault();
-                    runAction(row.id, blockAdminCard, "Card blocked");
+                    runAction(row.id, blockAdminCard, t("list.toast.cardBlocked"));
                   }}
                   disabled={row.status === "CANCELLED" || row.status === "EXPIRED"}
                 >
                   <Ban className="h-4 w-4" />
-                  Block
+                  {t("common:block")}
                 </DropdownMenuItem>
               )}
 
@@ -302,12 +304,12 @@ const CardsList = () => {
                 variant="destructive"
                 onSelect={(e) => {
                   e.preventDefault();
-                  runAction(row.id, cancelAdminCard, "Card cancelled");
+                  runAction(row.id, cancelAdminCard, t("list.toast.cardCancelled"));
                 }}
                 disabled={row.status === "CANCELLED"}
               >
                 <XCircle className="h-4 w-4" />
-                Cancel
+                {t("common:cancel")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -352,7 +354,7 @@ const CardsList = () => {
           <span className="pro-head-badge">
             <CreditCard className="h-4 w-4" />
           </span>
-          Cards
+          {t("list.title")}
         </h3>
       </div>
 
@@ -361,7 +363,7 @@ const CardsList = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search reference, name, PAN, tracking..."
+            placeholder={t("list.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
@@ -370,19 +372,19 @@ const CardsList = () => {
             }}
             style={{ flex: "1 1 240px", minWidth: 220, borderRadius: 2, height: 40 }}
           />
-          {filterSelect(statusFilter, setStatusFilter, "All Statuses", CARD_STATUSES)}
-          {filterSelect(typeFilter, setTypeFilter, "All Types", CARD_TYPES, CARD_TYPE_LABELS)}
-          {filterSelect(tierFilter, setTierFilter, "All Tiers", CARD_TIERS)}
+          {filterSelect(statusFilter, setStatusFilter, t("list.filter.allStatuses"), CARD_STATUSES)}
+          {filterSelect(typeFilter, setTypeFilter, t("list.filter.allTypes"), CARD_TYPES, CARD_TYPE_LABELS)}
+          {filterSelect(tierFilter, setTierFilter, t("list.filter.allTiers"), CARD_TIERS)}
           {filterSelect(
             shipmentFilter,
             setShipmentFilter,
-            "All Shipments",
+            t("list.filter.allShipments"),
             SHIPMENT_STATUSES,
             SHIPMENT_STATUS_LABELS
           )}
           {anyFilterActive && (
             <Button variant="outline" style={{ height: 40 }} onClick={resetFilters}>
-              Reset
+              {t("common:reset")}
             </Button>
           )}
           <Button
@@ -391,7 +393,7 @@ const CardsList = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0, marginLeft: "auto" }}
           >
             <Plus className="h-4 w-4" />
-            Add New Card
+            {t("list.addNewCard")}
           </Button>
         </div>
       </div>

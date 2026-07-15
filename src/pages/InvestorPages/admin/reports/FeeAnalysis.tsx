@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Download,
@@ -16,10 +17,10 @@ import {
 } from 'lucide-react';
 
 const feeStructure = [
-  { feeType: 'Management Fee', rate: '2.0%', basis: 'AUM', frequency: 'Quarterly', annual: true },
-  { feeType: 'Performance Fee', rate: '20.0%', basis: 'Net Profits', frequency: 'Annual', hurdle: '8%' },
-  { feeType: 'Administrative Fee', rate: '0.25%', basis: 'AUM', frequency: 'Monthly', annual: true },
-  { feeType: 'Custody Fee', rate: '0.15%', basis: 'AUM', frequency: 'Monthly', annual: true }
+  { feeType: 'fa.fee.management', rate: '2.0%', basis: 'fa.basis.aum', frequency: 'Quarterly', annual: true },
+  { feeType: 'fa.fee.performance', rate: '20.0%', basis: 'fa.basis.netProfits', frequency: 'Annual', hurdle: '8%' },
+  { feeType: 'fa.fee.administrative', rate: '0.25%', basis: 'fa.basis.aum', frequency: 'Monthly', annual: true },
+  { feeType: 'fa.fee.custody', rate: '0.15%', basis: 'fa.basis.aum', frequency: 'Monthly', annual: true }
 ];
 
 const quarterlyFees = [
@@ -67,7 +68,7 @@ const quarterlyFees = [
 
 const investorFeeAnalysis = [
   {
-    investorType: 'Institutional',
+    investorType: 'fa.itype.institutional',
     investors: 12,
     aum: 285000000,
     managementFeeRate: 1.75,
@@ -76,7 +77,7 @@ const investorFeeAnalysis = [
     feeYield: 1.45
   },
   {
-    investorType: 'High Net Worth',
+    investorType: 'fa.itype.hnw',
     investors: 45,
     aum: 165000000,
     managementFeeRate: 2.0,
@@ -85,7 +86,7 @@ const investorFeeAnalysis = [
     feeYield: 1.45
   },
   {
-    investorType: 'Family Office',
+    investorType: 'fa.itype.familyOffice',
     investors: 8,
     aum: 35000000,
     managementFeeRate: 1.5,
@@ -94,7 +95,7 @@ const investorFeeAnalysis = [
     feeYield: 1.5
   },
   {
-    investorType: 'Pension Fund',
+    investorType: 'fa.itype.pensionFund',
     investors: 3,
     aum: 15000000,
     managementFeeRate: 1.25,
@@ -105,10 +106,10 @@ const investorFeeAnalysis = [
 ];
 
 const feeComparison = [
-  { metric: 'Management Fee', industry: 1.85, portfolio: 2.0, variance: 0.15 },
-  { metric: 'Performance Fee', industry: 18.5, portfolio: 20.0, variance: 1.5 },
-  { metric: 'Total Expense Ratio', industry: 2.15, portfolio: 2.4, variance: 0.25 },
-  { metric: 'Administrative Costs', industry: 0.3, portfolio: 0.25, variance: -0.05 }
+  { metric: 'fa.metric.mgmtFee', industry: 1.85, portfolio: 2.0, variance: 0.15 },
+  { metric: 'fa.metric.perfFee', industry: 18.5, portfolio: 20.0, variance: 1.5 },
+  { metric: 'fa.metric.ter', industry: 2.15, portfolio: 2.4, variance: 0.25 },
+  { metric: 'fa.metric.adminCosts', industry: 0.3, portfolio: 0.25, variance: -0.05 }
 ];
 
 const monthlyBreakdown = [
@@ -127,6 +128,7 @@ const monthlyBreakdown = [
 ];
 
 export default function FeeAnalysis() {
+  const { t } = useTranslation('investor');
   const [selectedQuarter, setSelectedQuarter] = useState('Q4 2023');
   const [viewType, setViewType] = useState('summary');
 
@@ -157,26 +159,26 @@ export default function FeeAnalysis() {
               to="/admin/reports"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Reports
+              <ArrowLeft className="w-5 h-5 me-2" />
+              {t('pl.backToReports')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Fee Analysis</h1>
-              <p className="text-gray-600">Management and performance fee breakdown</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('fa.title')}</h1>
+              <p className="text-gray-600">{t('fa.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh Data
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('bc.refreshData')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Share className="w-4 h-4 mr-2" />
-              Share
+              <Share className="w-4 h-4 me-2" />
+              {t('pl.share')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-              <Download className="w-4 h-4 mr-2" />
-              Export PDF
+              <Download className="w-4 h-4 me-2" />
+              {t('pl.exportPdf')}
             </button>
           </div>
         </div>
@@ -185,15 +187,14 @@ export default function FeeAnalysis() {
       {/* Report Info */}
       <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-8">
         <div className="flex items-start">
-          <Info className="w-5 h-5 text-green-600 mr-3 mt-0.5" />
+          <Info className="w-5 h-5 text-green-600 me-3 mt-0.5" />
           <div>
-            <h3 className="text-sm font-medium text-green-900">Fee Analysis Report</h3>
+            <h3 className="text-sm font-medium text-green-900">{t('fa.infoTitle')}</h3>
             <p className="text-sm text-green-700 mt-1">
-              Comprehensive analysis of management fees, performance fees, and administrative costs. 
-              Includes benchmarking against industry standards and investor-specific fee structures.
+              {t('fa.infoBody')}
             </p>
             <p className="text-xs text-green-600 mt-2">
-              Reporting period: 2023 Annual | Generated: {new Date().toLocaleDateString()}
+              {t('fa.reportingPeriod', { date: new Date().toLocaleDateString() })}
             </p>
           </div>
         </div>
@@ -202,7 +203,7 @@ export default function FeeAnalysis() {
       {/* View Controls */}
       <div className="mb-6">
         <div className="flex items-center space-x-4">
-          <span className="text-sm font-medium text-gray-700">View:</span>
+          <span className="text-sm font-medium text-gray-700">{t('fa.viewLabel')}</span>
           {['summary', 'detailed', 'trends'].map((view) => (
             <button
               key={view}
@@ -213,7 +214,7 @@ export default function FeeAnalysis() {
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
-              {view.charAt(0).toUpperCase() + view.slice(1)}
+              {t(`fa.view.${view}`)}
             </button>
           ))}
         </div>
@@ -223,80 +224,80 @@ export default function FeeAnalysis() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Total Fees Q4 2023</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('fa.totalFeesQ4')}</h3>
             <DollarSign className="w-5 h-5 text-green-500" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-green-600">{formatCurrency(quarterlyFees[0].totalFees)}</p>
-            <p className="text-xs text-gray-500">+8.1% vs Q3</p>
-            <p className="text-xs text-gray-600">{((quarterlyFees[0].totalFees / quarterlyFees[0].aum) * 100 * 4).toFixed(2)}% annual rate</p>
+            <p className="text-xs text-gray-500">{t('fa.vsQ3')}</p>
+            <p className="text-xs text-gray-600">{t('fa.annualRate', { value: ((quarterlyFees[0].totalFees / quarterlyFees[0].aum) * 100 * 4).toFixed(2) })}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Management Fees</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('fa.managementFees')}</h3>
             <BarChart3 className="w-5 h-5 text-gray-700" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-black">{formatCurrency(quarterlyFees[0].managementFee)}</p>
-            <p className="text-xs text-gray-500">2.0% annual rate</p>
-            <p className="text-xs text-gray-600">{((quarterlyFees[0].managementFee / quarterlyFees[0].totalFees) * 100).toFixed(1)}% of total fees</p>
+            <p className="text-xs text-gray-500">{t('fa.mgmtRate')}</p>
+            <p className="text-xs text-gray-600">{t('fa.ofTotalFees', { value: ((quarterlyFees[0].managementFee / quarterlyFees[0].totalFees) * 100).toFixed(1) })}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Performance Fees</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('fa.performanceFees')}</h3>
             <TrendingUp className="w-5 h-5 text-purple-500" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-purple-600">{formatCurrency(quarterlyFees[0].performanceFee)}</p>
-            <p className="text-xs text-gray-500">20% of profits</p>
-            <p className="text-xs text-gray-600">{((quarterlyFees[0].performanceFee / quarterlyFees[0].totalFees) * 100).toFixed(1)}% of total fees</p>
+            <p className="text-xs text-gray-500">{t('fa.ofProfits')}</p>
+            <p className="text-xs text-gray-600">{t('fa.ofTotalFees', { value: ((quarterlyFees[0].performanceFee / quarterlyFees[0].totalFees) * 100).toFixed(1) })}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Average Fee Rate</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('fa.avgFeeRate')}</h3>
             <Calculator className="w-5 h-5 text-orange-500" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-orange-600">
               {((quarterlyFees[0].totalFees / quarterlyFees[0].aum) * 100 * 4).toFixed(2)}%
             </p>
-            <p className="text-xs text-gray-500">Annualized</p>
-            <p className="text-xs text-gray-600">All-in fee rate</p>
+            <p className="text-xs text-gray-500">{t('fa.annualized')}</p>
+            <p className="text-xs text-gray-600">{t('fa.allInRate')}</p>
           </div>
         </div>
       </div>
 
       {/* Fee Structure */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Current Fee Structure</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('fa.feeStructureTitle')}</h3>
         
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Fee Type</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Rate</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Basis</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Frequency</th>
-                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">Additional Info</th>
+                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase">{t('fa.col.feeType')}</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('fa.col.rate')}</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('fa.col.basis')}</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('fa.col.frequency')}</th>
+                <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase">{t('fa.col.additionalInfo')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {feeStructure.map((fee) => (
                 <tr key={fee.feeType}>
-                  <td className="px-4 py-4 text-sm font-medium text-gray-900">{fee.feeType}</td>
+                  <td className="px-4 py-4 text-sm font-medium text-gray-900">{t(fee.feeType)}</td>
                   <td className="px-4 py-4 text-sm text-center text-black font-medium">{fee.rate}</td>
-                  <td className="px-4 py-4 text-sm text-center text-gray-700">{fee.basis}</td>
-                  <td className="px-4 py-4 text-sm text-center text-gray-700">{fee.frequency}</td>
+                  <td className="px-4 py-4 text-sm text-center text-gray-700">{t(fee.basis)}</td>
+                  <td className="px-4 py-4 text-sm text-center text-gray-700">{t(`reports.freq.${fee.frequency}`)}</td>
                   <td className="px-4 py-4 text-sm text-center text-gray-700">
-                    {fee.annual && 'Annualized'}
-                    {fee.hurdle && `Hurdle: ${fee.hurdle}`}
+                    {fee.annual && t('fa.annualized')}
+                    {fee.hurdle && t('fa.hurdleInfo', { value: fee.hurdle })}
                   </td>
                 </tr>
               ))}
@@ -309,7 +310,7 @@ export default function FeeAnalysis() {
         {/* Quarterly Fee Trends */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Quarterly Fee Analysis</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('fa.quarterlyTitle')}</h3>
             <BarChart3 className="w-5 h-5 text-gray-400" />
           </div>
           
@@ -323,19 +324,19 @@ export default function FeeAnalysis() {
                 
                 <div className="grid grid-cols-2 gap-4 text-xs">
                   <div>
-                    <span className="text-gray-500 block">Management</span>
+                    <span className="text-gray-500 block">{t('fa.management')}</span>
                     <span className="font-medium text-black">{formatCurrency(quarter.managementFee)}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">Performance</span>
+                    <span className="text-gray-500 block">{t('fa.performance')}</span>
                     <span className="font-medium text-purple-600">{formatCurrency(quarter.performanceFee)}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">Admin + Custody</span>
+                    <span className="text-gray-500 block">{t('fa.adminCustody')}</span>
                     <span className="font-medium text-gray-700">{formatCurrency(quarter.adminFee + quarter.custodyFee)}</span>
                   </div>
                   <div>
-                    <span className="text-gray-500 block">AUM</span>
+                    <span className="text-gray-500 block">{t('fa.aum')}</span>
                     <span className="font-medium text-gray-700">{formatCurrency(quarter.aum)}</span>
                   </div>
                 </div>
@@ -364,7 +365,7 @@ export default function FeeAnalysis() {
         {/* Investor Type Analysis */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Fee Analysis by Investor Type</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('fa.investorTypeTitle')}</h3>
             <Users className="w-5 h-5 text-gray-400" />
           </div>
           
@@ -372,25 +373,25 @@ export default function FeeAnalysis() {
             <table className="min-w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">Type</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Count</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">AUM</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Mgmt Rate</th>
-                  <th className="px-3 py-2 text-right text-xs font-medium text-gray-500 uppercase">Total Fees</th>
+                  <th className="px-3 py-2 text-start text-xs font-medium text-gray-500 uppercase">{t('fa.col.type')}</th>
+                  <th className="px-3 py-2 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.count')}</th>
+                  <th className="px-3 py-2 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.aum')}</th>
+                  <th className="px-3 py-2 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.mgmtRate')}</th>
+                  <th className="px-3 py-2 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.totalFees')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {investorFeeAnalysis.map((investor) => (
                   <tr key={investor.investorType}>
-                    <td className="px-3 py-3 text-sm font-medium text-gray-900">{investor.investorType}</td>
-                    <td className="px-3 py-3 text-sm text-right text-gray-700">{investor.investors}</td>
-                    <td className="px-3 py-3 text-sm text-right text-gray-700">
+                    <td className="px-3 py-3 text-sm font-medium text-gray-900">{t(investor.investorType)}</td>
+                    <td className="px-3 py-3 text-sm text-end text-gray-700">{investor.investors}</td>
+                    <td className="px-3 py-3 text-sm text-end text-gray-700">
                       {formatCurrency(investor.aum)}
                     </td>
-                    <td className="px-3 py-3 text-sm text-right text-black">
+                    <td className="px-3 py-3 text-sm text-end text-black">
                       {formatPercentage(investor.managementFeeRate)}
                     </td>
-                    <td className="px-3 py-3 text-sm text-right font-medium text-green-600">
+                    <td className="px-3 py-3 text-sm text-end font-medium text-green-600">
                       {formatCurrency(investor.totalFeesQ4)}
                     </td>
                   </tr>
@@ -404,30 +405,30 @@ export default function FeeAnalysis() {
       {/* Industry Comparison */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Industry Benchmark Comparison</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('fa.industryTitle')}</h3>
           <PieChart className="w-5 h-5 text-gray-400" />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {feeComparison.map((comparison) => (
             <div key={comparison.metric} className="border border-gray-100 rounded-lg p-4">
-              <h4 className="text-sm font-medium text-gray-900 mb-3">{comparison.metric}</h4>
-              
+              <h4 className="text-sm font-medium text-gray-900 mb-3">{t(comparison.metric)}</h4>
+
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">Industry Avg</span>
+                  <span className="text-xs text-gray-500">{t('fa.industryAvg')}</span>
                   <span className="text-sm font-medium text-gray-700">
                     {formatPercentage(comparison.industry)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-500">Our Portfolio</span>
+                  <span className="text-xs text-gray-500">{t('fa.ourPortfolio')}</span>
                   <span className="text-sm font-medium text-black">
                     {formatPercentage(comparison.portfolio)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                  <span className="text-xs text-gray-500">Variance</span>
+                  <span className="text-xs text-gray-500">{t('fa.variance')}</span>
                   <span className={`text-sm font-medium ${getVarianceColor(comparison.variance)}`}>
                     {comparison.variance >= 0 ? '+' : ''}{formatPercentage(comparison.variance)}
                   </span>
@@ -440,29 +441,29 @@ export default function FeeAnalysis() {
 
       {/* Monthly Fee Breakdown */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Monthly Fee Breakdown (2023)</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('fa.monthlyTitle')}</h3>
         
         <div className="overflow-x-auto">
           <table className="min-w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Month</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Management</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Performance</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Admin</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Custody</th>
-                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+                <th className="px-4 py-3 text-start text-xs font-medium text-gray-500 uppercase">{t('fa.col.month')}</th>
+                <th className="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.management')}</th>
+                <th className="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.performance')}</th>
+                <th className="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.admin')}</th>
+                <th className="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.custody')}</th>
+                <th className="px-4 py-3 text-end text-xs font-medium text-gray-500 uppercase">{t('fa.col.total')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {monthlyBreakdown.slice(-6).map((month) => (
                 <tr key={month.month}>
                   <td className="px-4 py-4 text-sm font-medium text-gray-900">{month.month}</td>
-                  <td className="px-4 py-4 text-sm text-right text-black">{formatCurrency(month.management)}</td>
-                  <td className="px-4 py-4 text-sm text-right text-purple-600">{formatCurrency(month.performance)}</td>
-                  <td className="px-4 py-4 text-sm text-right text-gray-700">{formatCurrency(month.admin)}</td>
-                  <td className="px-4 py-4 text-sm text-right text-gray-700">{formatCurrency(month.custody)}</td>
-                  <td className="px-4 py-4 text-sm text-right font-bold text-green-600">{formatCurrency(month.total)}</td>
+                  <td className="px-4 py-4 text-sm text-end text-black">{formatCurrency(month.management)}</td>
+                  <td className="px-4 py-4 text-sm text-end text-purple-600">{formatCurrency(month.performance)}</td>
+                  <td className="px-4 py-4 text-sm text-end text-gray-700">{formatCurrency(month.admin)}</td>
+                  <td className="px-4 py-4 text-sm text-end text-gray-700">{formatCurrency(month.custody)}</td>
+                  <td className="px-4 py-4 text-sm text-end font-bold text-green-600">{formatCurrency(month.total)}</td>
                 </tr>
               ))}
             </tbody>
@@ -474,12 +475,12 @@ export default function FeeAnalysis() {
       <div className="bg-gray-50 rounded-lg p-4">
         <div className="flex items-center justify-between text-sm text-gray-600">
           <div>
-            <p>Generated on {new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}</p>
-            <p>Performance fees calculated based on high water mark methodology</p>
+            <p>{t('bc.generatedOn', { date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() })}</p>
+            <p>{t('fa.footerNote')}</p>
           </div>
-          <div className="text-right">
-            <p>Fee Management System v2.0</p>
-            <p>© 2024 Investment Management Platform</p>
+          <div className="text-end">
+            <p>{t('fa.systemVersion')}</p>
+            <p>{t('bc.copyright')}</p>
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Card, Row, Col, Select, DatePicker } from "antd";
 import { Bar, Line } from "react-chartjs-2";
 import {
@@ -30,6 +31,7 @@ ChartJS.register(
 );
 
 const ThirdPartyDashboard = () => {
+  const { t } = useTranslation("connector");
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
   const [clients, setClients] = useState<any>([]);
   const [serviceStats, setServiceStats] = useState<any>([]);
@@ -43,29 +45,29 @@ const ThirdPartyDashboard = () => {
 
   // Dynamic stats based on dashboard data
   const stats = [
-    { 
-      title: "Total Clients", 
-      value: dashboardData?.clients_count || "0", 
+    {
+      title: t("dashboard.stat.totalClients"),
+      value: dashboardData?.clients_count || "0",
       color: "var(--primary-foreground)" ,
       border: true
     },
     {
-      title: "No. of Requests",
+      title: t("dashboard.stat.requests"),
       value: dashboardData?.client_requests_count || "0",
       color: "var(--primary-foreground)",
       border: true
     },
     {
-      title: "Total Services",
+      title: t("dashboard.stat.totalServices"),
       value: dashboardData?.services_count || "0",
       color: "var(--primary-foreground)",
       border: true
     },
     {
-      title: "Total Users",
+      title: t("dashboard.stat.totalUsers"),
       value: dashboardData?.users || "0",
       color: "var(--primary-foreground)" ,
-      border: true 
+      border: true
     },
   ];
 
@@ -74,7 +76,7 @@ const ThirdPartyDashboard = () => {
     labels: dashboardData?.clientWiseRequests?.map((item: any) => item.clientName) || [],
     datasets: [
       {
-        label: "Requests",
+        label: t("dashboard.chart.requests"),
         data: clientStats?.clientWiseRequests?.map((item: any) => item.requestCount) || [],
         backgroundColor: "#5B9BD5",
       },
@@ -86,14 +88,14 @@ const ThirdPartyDashboard = () => {
     labels: dashboardData?.dailyStats?.map((item: any) => item.date) || [],
     datasets: [
       {
-        label: "Success Requests",
+        label: t("dashboard.chart.successRequests"),
         data: serviceStats?.success_percentage||[],
         backgroundColor: "var(--foreground)",
         borderColor: "var(--foreground)",
         tension: 0.4,
       },
       {
-        label: "Failed Requests",
+        label: t("dashboard.chart.failedRequests"),
         data: serviceStats?.failure_percentage||[],
         backgroundColor: "#FF6B9D",
         borderColor: "#FF6B9D",
@@ -202,9 +204,9 @@ useEffect(() => {
         {/* <h2 className="section-title">Overview</h2> */}
         <div className="d-flex justify-content-start gap-2">
           <div className="col-2 filter-item">
-            <label className="pb-1">Client</label>
+            <label className="pb-1">{t("dashboard.filter.client")}</label>
             <Select
-              placeholder="Select Client"
+              placeholder={t("dashboard.filter.selectClient")}
               value={selectedClient}
               onChange={(value) => setSelectedClient(value)}
               style={{ width: '100%',height: '32px' }}
@@ -217,7 +219,7 @@ useEffect(() => {
             </Select>
           </div>
           <div className="filter-item">
-            <label className="pb-1">From</label>
+            <label className="pb-1">{t("common:from")}</label>
             <DatePicker
               value={dateRange[0]}
               onChange={(date) => setDateRange([date, dateRange[1]])}
@@ -225,7 +227,7 @@ useEffect(() => {
             />
           </div>
           <div className="filter-item">
-            <label className="pb-1">To</label>
+            <label className="pb-1">{t("common:to")}</label>
             <DatePicker
               value={dateRange[1]}
               onChange={(date) => setDateRange([dateRange[0], date])}
@@ -262,7 +264,7 @@ useEffect(() => {
       <Row gutter={[16, 16]} className="charts-section">
         <Col xs={24} lg={12}>
           <Card className="chart-card">
-            <h3 className="chart-title">Client Wise Requests</h3>
+            <h3 className="chart-title">{t("dashboard.chart.clientWiseRequests")}</h3>
             <div className="chart-container">
               <Bar data={clientWiseData} options={chartOptions} />
             </div>
@@ -270,7 +272,7 @@ useEffect(() => {
         </Col>
         <Col xs={24} lg={12}>
           <Card className="chart-card">
-            <h3 className="chart-title">Success/Failed Requests against Services</h3>
+            <h3 className="chart-title">{t("dashboard.chart.successFailed")}</h3>
             <div className="chart-container">
               <Line data={successFailedData} options={chartOptions} />
             </div>

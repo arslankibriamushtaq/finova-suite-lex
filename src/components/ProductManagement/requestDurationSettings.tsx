@@ -1,5 +1,6 @@
 import { Button, Checkbox, Input, Select } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import { setProductData } from "../../redux/apis/apisSlice";
 import toast from "react-hot-toast";
 
 const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
+  const { t } = useTranslation("productManagement2");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -44,7 +46,7 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
             });
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load Request Duration data");
+          toast.error(error?.response?.data?.message || t("durationSettings.loadFailed"));
         }
       }
     };
@@ -87,12 +89,12 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
   return (
     <div>
       <h1 className="pt-2 pb-3" style={{ fontSize: "16px", fontWeight: "bold" }}>
-        Approve Submission Duration:
+        {t("durationSettings.approveSubmissionDuration")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Approved Factoring Application Gap (DAYS)
+            {t("durationSettings.approvedFactoringGap")}
           </label>
           <Input
             placeholder=""
@@ -104,15 +106,15 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
         </Col>
       </Row>
       <h1 className="pt-4 pb-3" style={{ fontSize: "16px", fontWeight: "bold" }}>
-        Application Auto Rejection Duration Settings:
+        {t("durationSettings.autoRejectionSettings")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Applied Application Idle Duration (DAYS)
+            {t("durationSettings.appliedIdleDuration")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value={formValues.application_idle_days_allowed}
             onChange={(e) => handleChange("application_idle_days_allowed", e.target.value)}
@@ -121,10 +123,10 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Applied Application Department Idle Duration (DAYS)
+            {t("durationSettings.appliedDeptIdleDuration")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value={formValues.department_idle_days_allowed}
             onChange={(e) => handleChange("department_idle_days_allowed", e.target.value)}
@@ -133,15 +135,15 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
         </Col>
       </Row>
       <h1 className="pt-4 pb-3" style={{ fontSize: "16px", fontWeight: "bold" }}>
-        API Request Durations:
+        {t("durationSettings.apiRequestDurations")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            BAYAN ME Financial Duration (DAYS)
+            {t("durationSettings.bayanMeFinancialDuration")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value={formValues.BAYAN_ME_FINANCIAL}
             onChange={(e) => handleChange("BAYAN_ME_FINANCIAL", e.target.value)}
@@ -150,10 +152,10 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            BAYAN Credit Duration (DAYS)
+            {t("durationSettings.bayanCreditDuration")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value={formValues.BAYAN_CREDIT}
             onChange={(e) => handleChange("BAYAN_CREDIT", e.target.value)}
@@ -164,10 +166,10 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            BAYAN NAE Duration (DAYS)
+            {t("durationSettings.bayanNaeDuration")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value={formValues.BAYAN_NAE}
             onChange={(e) => handleChange("BAYAN_NAE", e.target.value)}
@@ -176,10 +178,10 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            SIMAH Consumer Duration (DAYS)
+            {t("durationSettings.simahConsumerDuration")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value={formValues.SIMAH_CONSUMER}
             onChange={(e) => handleChange("SIMAH_CONSUMER", e.target.value)}
@@ -190,7 +192,7 @@ const DurationSettings = ( { readOnly = false,setActiveTab }:any) => {
       </Row>
       <Col className="d-flex justify-content-end">
           {!readOnly && (
-            <button className="theme-btn-next" onClick={handleSubmit}>Save</button>
+            <button className="theme-btn-next" onClick={handleSubmit}>{t("common:save")}</button>
           )}
         </Col>
     </div>

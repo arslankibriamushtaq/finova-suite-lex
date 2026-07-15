@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Menu, Modal, Select, Form, Input } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -17,6 +18,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const IncomeType = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [from, setFrom] = useState(0);
@@ -40,23 +42,23 @@ const IncomeType = () => {
       await toast.promise(
         deleteIncomeType(rowData?.id), // API call
         {
-          loading: "Deleting Income Type...",
+          loading: t("incomeType.deleting"),
           success: (response) => {
             if (response?.data?.success) {
               getAllRoles();
               setIsDeleteModalVisible(false);
-              return "Income Type deleted successfully";
+              return t("incomeType.deleteSuccess");
             } else {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.message ||
-                  "Failed to deleting Income Type."
+                  t("incomeType.deleteFailed")
               );
             }
           },
           error: (err) =>
             err?.message ||
-            "Something went wrong while deleting the Income Type.",
+            t("incomeType.deleteError"),
         }
       );
     } catch (error: any) {
@@ -94,34 +96,34 @@ const IncomeType = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       width: "15%",
       sortable: true,
     },
     {
-      name: "Name",
+      name: t("common:name"),
       width: "75%",
       selector: (row: { Name: any }) => row.Name,
       sortable: true,
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -136,7 +138,7 @@ const IncomeType = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -186,7 +188,7 @@ const IncomeType = () => {
     let validationErrors: Record<string, string> = {};
 
     if (!formValues.name) {
-      validationErrors.name = "Name is required";
+      validationErrors.name = t("incomeType.nameRequired");
     }
     setErrors(validationErrors);
 
@@ -206,29 +208,29 @@ const IncomeType = () => {
         await toast.promise(
           editIncomeType(updateBody), // Pass the body with ID included
           {
-            loading: "Updating income type...",
+            loading: t("incomeType.updating"),
             success: (response: any) => {
               if (response?.data?.success) {
                 getAllRoles();
                 setIsModalVisible(false);
-                return "Income Type updated successfully";
+                return t("incomeType.updateSuccess");
               } else {
                 throw new Error(
                   response?.response?.data?.errors?.[0] ||
-                    "Failed to update income type."
+                    t("incomeType.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating the income type.",
+              t("incomeType.updateError"),
           }
         );
       } else {
         await toast.promise(
           createIncomeType(formValues), // API call
           {
-            loading: "Adding Income Type...",
+            loading: t("incomeType.adding"),
             success: (response) => {
               if (response?.data?.success) {
                 setFormValues({
@@ -236,18 +238,18 @@ const IncomeType = () => {
                 });
                 getAllRoles();
                 setIsModalVisible(false);
-                return "New Income Type added successfully";
+                return t("incomeType.addSuccess");
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.message ||
-                    "Failed to Income Type."
+                    t("incomeType.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding the Income Type.",
+              t("incomeType.addError"),
           }
         );
       }
@@ -301,7 +303,7 @@ const IncomeType = () => {
         <Select
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -319,11 +321,11 @@ const IncomeType = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -331,11 +333,11 @@ const IncomeType = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button className="theme-btn" onClick={showModal}>
-            Add New Income Type
+            {t("incomeType.addNew")}
           </button>
         </div>
       </div>
@@ -356,14 +358,14 @@ const IncomeType = () => {
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={
-          selectedItem === "edit" ? "Edit Income Type" : "Add New Income Type"
+          selectedItem === "edit" ? t("incomeType.editTitle") : t("incomeType.addNew")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <div className="w-100">
             <Button key="close" onClick={handleCancel}>
-              Close
+              {t("common:close")}
             </Button>
             ,
             <button
@@ -372,7 +374,7 @@ const IncomeType = () => {
               disabled={isLoading}
               onClick={handleOk}
             >
-              {selectedItem === "edit" ? "Edit" : "Add"}
+              {selectedItem === "edit" ? t("common:edit") : t("common:add")}
             </button>
             ,
           </div>,
@@ -388,9 +390,9 @@ const IncomeType = () => {
                 className="w-100"
               >
                 <div>
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
-                    placeholder="Enter income type"
+                    placeholder={t("incomeType.placeholder")}
                     className="fs-6"
                     value={formValues.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -419,7 +421,7 @@ const IncomeType = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -434,7 +436,7 @@ const IncomeType = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -448,7 +450,7 @@ const IncomeType = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure you want to delete this Income Type?
+            {t("incomeType.deleteConfirm")}
           </p>
         </div>
       </Modal>

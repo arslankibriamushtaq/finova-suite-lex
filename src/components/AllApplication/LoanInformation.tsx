@@ -1,7 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Form, Card } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const LoanInformation = () => {
+  const { t } = useTranslation("allApplication");
   const loanAmountInfo = {
     requestedLoan1: "SR 500.00",
     costOfTerm: "SR 230.00",
@@ -21,7 +23,7 @@ const LoanInformation = () => {
   return (
     <div className="my-4 p-0">
     <div className="bordered-section mb-4 p-3">
-      <h5 className="fs-6 fw-600">Loan Amount Info</h5>
+      <h5 className="fs-6 fw-600">{t("loanInfo.amountTitle")}</h5>
       <Row>
         <Col md={6}>
           <h6 className="my-3 fs-6 fw-600">English</h6>
@@ -65,7 +67,7 @@ const LoanInformation = () => {
     </div>
 
     <div className="bordered-section p-3">
-      <h5 className="fs-6 fw-600">Loan Application Info</h5>
+      <h5 className="fs-6 fw-600">{t("loanInfo.applicationTitle")}</h5>
       <Row>
         <Col md={6}>
           <h6 className="my-3 fs-6 fw-600">English</h6>

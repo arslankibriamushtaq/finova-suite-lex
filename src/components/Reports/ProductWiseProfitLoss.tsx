@@ -8,7 +8,9 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const ProductWiseProfitLoss = () => {
+  const { t } = useTranslation("reports");
   const [modal, setModal] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
   const [editRowId, setEditRowId] = useState(null);
@@ -74,39 +76,39 @@ const ProductWiseProfitLoss = () => {
   }, [id, page, pageSize, fromDate]);
   const Call_Activity_Header = [
     {
-      name: "Product Name",
+      name: t('productWiseProfitLoss.col.productName'),
       cell: (row: { productName: any }) => row.productName,
     },
     {
-      name: "Active Loans",
+      name: t('productWiseProfitLoss.col.activeLoans'),
       selector: (row: { activeLoans: any }) => row.activeLoans,
     },
     {
-      name: "Closed Loans",
+      name: t('productWiseProfitLoss.col.closedLoans'),
       selector: (row: { closedLoans: any }) => row.closedLoans,
     },
     {
-      name: "Disbursed Amount",
+      name: t('productWiseProfitLoss.col.disbursedAmount'),
       selector: (row: { dispursedAmount: any }) => row.dispursedAmount,
     },
     {
-      name: "Principal Outstanding Amount",
+      name: t('productWiseProfitLoss.col.principalOutstandingAmount'),
       selector: (row: { principalOutstandingAmount: any }) => row.principalOutstandingAmount,
     },
     {
-      name: "Profit Accured",
+      name: t('productWiseProfitLoss.col.profitAccured'),
       selector: (row: { profitAccured: any }) => row.profitAccured,
     },
     {
-      name: "Profit Collected",
+      name: t('productWiseProfitLoss.col.profitCollected'),
       selector: (row: { profitCollected: any }) => row.profitCollected,
     },
     {
-      name: "Total Fee Collected",
+      name: t('productWiseProfitLoss.col.totalFeeCollected'),
       selector: (row: { totalFeeCollected: any }) => row.totalFeeCollected,
     },
     {
-      name: "Write Off Amount",
+      name: t('productWiseProfitLoss.col.writeOffAmount'),
       selector: (row: { writeOffAmount: any }) => row.writeOffAmount,
     },
   ];
@@ -159,31 +161,31 @@ const ProductWiseProfitLoss = () => {
     <>
       <div className="col-12">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Loan Disbursment Report</h3>
+          <h3 className="mb-0 fw-bold text-dark">{t('productWiseProfitLoss.title')}</h3>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
             {/* From Date */}
             <div className="col-md-4">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t('common:from')}
               </label>
               <DatePicker
                 onChange={(e: any) => {
                   handleFromDateChange(e);
                 }}
-                placeholder="Select From Date"
+                placeholder={t('filter.selectFromDate')}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-4">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t('common:to')}
               </label>
               <DatePicker
                 onChange={handleToDateChange}
-                placeholder="Select To Date"
+                placeholder={t('filter.selectToDate')}
               />
             </div>
 
@@ -200,7 +202,7 @@ const ProductWiseProfitLoss = () => {
                   setToDate("");
                 }}
               >
-                Clear
+                {t('common:clear')}
               </button>
             </div>
 
@@ -230,7 +232,7 @@ const ProductWiseProfitLoss = () => {
                 exportToCSV(allCallActivity, "OverDueLoans");
               }}
             >
-              Export CSV
+              {t('action.exportCsv')}
             </button>
           </div>
         </div>

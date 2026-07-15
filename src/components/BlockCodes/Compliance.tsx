@@ -1,9 +1,10 @@
 import { ClipboardCheck } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import BlockCodeBase from "./BlockCodeBase";
 
 const Compliance = () => {
-  return <BlockCodeBase type="COMPLIANCE" title="Compliance Block Codes" icon={ClipboardCheck} />;
+  const { t } = useTranslation("walletBlocks");
+  return <BlockCodeBase type="COMPLIANCE" title={t("blockCodes.title.compliance")} icon={ClipboardCheck} />;
 };
 
 export default Compliance;
-

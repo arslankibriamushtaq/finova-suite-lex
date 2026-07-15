@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import {
   PieChart,
   Pie,
@@ -13,6 +14,7 @@ import {
 const COLORS = ["#EB0D0D", "#000000"];
 
 const CustomPieChart = () => {
+  const { t } = useTranslation("dashboard");
   const [pieData, setPieData] = useState<any>();
   // const getCustomerPieDetail = async () => {
   //   try {
@@ -50,7 +52,7 @@ const CustomPieChart = () => {
             marginRight: 5,
           }}
         />
-        <span>Individual</span>
+        <span>{t("pie.individual")}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
@@ -61,7 +63,7 @@ const CustomPieChart = () => {
             marginRight: 5,
           }}
         />
-        <span>Business</span>
+        <span>{t("pie.business")}</span>
       </div>
     </div>
   );

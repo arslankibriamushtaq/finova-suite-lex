@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -30,6 +31,7 @@ import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 
 const WealthRanges = () => {
+  const { t } = useTranslation("lov");
   const navigate = useNavigate();
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
@@ -88,21 +90,21 @@ const WealthRanges = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -115,37 +117,37 @@ const WealthRanges = () => {
     //   // width: "15%",
     // },
     {
-      name: "Minimum Amount",
+      name: t("wealthRanges.col.minimumAmount"),
       selector: (row: { minimum_amount: any }) => row.minimum_amount,
       // sortable: true,
     },
      {
-      name: "Maximum Amount",
+      name: t("wealthRanges.col.maximumAmount"),
       selector: (row: { maximum_amount: any }) => row.maximum_amount,
       // sortable: true,
     },
      {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type,
       // sortable: true,
     },
      {
-      name: "Range",
+      name: t("wealthRanges.col.range"),
       selector: (row: { range: any }) => row.range,
       // sortable: true,
     },
      {
-      name: "Factors",
+      name: t("wealthRanges.col.factors"),
       selector: (row: { factors: any }) => row.factors,
       // sortable: true,
     },
     {
-      name: "Factor Weight",
+      name: t("wealthRanges.col.factorWeight"),
       selector: (row: { factor_weight: any }) => row.factor_weight,
       // sortable: true,
     },
     {
-        name: "Status",
+        name: t("common:status"),
         cell: (row: any) => (
           <div
             style={{
@@ -162,12 +164,12 @@ const WealthRanges = () => {
               cursor: row.status === 1 ? "pointer" : "default",
             }}
           >
-            {row.status == 1 || row.status === true ? "Active" : "Inactive"}
+            {row.status == 1 || row.status === true ? t("common:active") : t("common:inactive")}
           </div>
         ),
       },
       {
-        name: "Action",
+        name: t("common:actions"),
         width: "10%",
         cell: (row: any) => (
           <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -180,7 +182,7 @@ const WealthRanges = () => {
                 padding: "8px",
               }}
             >
-              Select 
+              {t("common:select")}
               <img src={arrowDown} alt="" />
             </Button>
           </Dropdown>
@@ -192,14 +194,14 @@ const WealthRanges = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteWealthRange(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("wealthRanges.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
           setDeleteTargetId(null);
-          return "Deleted successfully";
+          return t("wealthRanges.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("wealthRanges.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -220,7 +222,7 @@ const WealthRanges = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateWealthRange(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("wealthRanges.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -236,13 +238,13 @@ const WealthRanges = () => {
               status: false 
              });
             getList();
-            return "Updated successfully";
+            return t("wealthRanges.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("wealthRanges.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createWealthRange(body), {
-          loading: "Adding new wealth range...",
+          loading: t("wealthRanges.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -258,9 +260,9 @@ const WealthRanges = () => {
               status: false 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("wealthRanges.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("wealthRanges.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -342,8 +344,8 @@ const WealthRanges = () => {
         id: item?.id,
         Sr: index + 1,
         minimum_amount: item?.minimum_amount || "-",
-        maximum_amount: (item?.maximum_amount === 0 || item?.maximum_amount === "0" || Number(item?.maximum_amount) === 0) 
-          ? "Anything Above" 
+        maximum_amount: (item?.maximum_amount === 0 || item?.maximum_amount === "0" || Number(item?.maximum_amount) === 0)
+          ? t("wealthRanges.anythingAbove")
           : item?.maximum_amount || "-",
         type: item?.type || "-",
         range: item?.range || "-",
@@ -353,7 +355,7 @@ const WealthRanges = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -369,7 +371,7 @@ const WealthRanges = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -388,7 +390,7 @@ const WealthRanges = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -408,7 +410,7 @@ const WealthRanges = () => {
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -430,13 +432,13 @@ const WealthRanges = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Wealth Range" : "Add Wealth Range"
+            selectedItem === "edit" ? t("wealthRanges.modal.editTitle") : t("wealthRanges.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -446,7 +448,7 @@ const WealthRanges = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -454,10 +456,10 @@ const WealthRanges = () => {
             <Form>
               <Row className="">
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Type</label>
+                <label className="fw-400">{t("common:type")}</label>
                 <Select
                   className="fs-6 w-100"
-                  placeholder="Select Type"
+                  placeholder={t("wealthRanges.ph.selectType")}
                   value={formData.type || undefined}
                   onChange={(value: any) =>
                     setFormData({ ...formData, type: value })
@@ -471,11 +473,11 @@ const WealthRanges = () => {
                 </Select>
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Factors</label>
+                <label className="fw-400">{t("wealthRanges.label.factors")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Factors"
+                  placeholder={t("wealthRanges.ph.factors")}
                   value={formData.factors}
                   onChange={(e: any) =>
                     setFormData({ ...formData, factors: e.target.value })
@@ -483,11 +485,11 @@ const WealthRanges = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Range</label>
+                <label className="fw-400">{t("wealthRanges.label.range")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Range (e.g., 80000-100000)"
+                  placeholder={t("wealthRanges.ph.range")}
                   value={formData.range}
                   onChange={(e: any) =>
                     setFormData({ ...formData, range: e.target.value })
@@ -495,11 +497,11 @@ const WealthRanges = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Minimum Amount</label>
+                <label className="fw-400">{t("wealthRanges.label.minimumAmount")}</label>
                 <Input
                   type="number"
                   className="fs-6"
-                  placeholder="Enter Minimum Amount"
+                  placeholder={t("wealthRanges.ph.minimumAmount")}
                   value={formData.minimum_amount}
                   onChange={(e: any) =>
                     setFormData({ ...formData, minimum_amount: e.target.value })
@@ -507,11 +509,11 @@ const WealthRanges = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Maximum Amount</label>
+                <label className="fw-400">{t("wealthRanges.label.maximumAmount")}</label>
                 <Input
                   type="number"
                   className="fs-6"
-                  placeholder="Enter Maximum Amount"
+                  placeholder={t("wealthRanges.ph.maximumAmount")}
                   value={formData.maximum_amount}
                   onChange={(e: any) =>
                     setFormData({ ...formData, maximum_amount: e.target.value })
@@ -519,25 +521,25 @@ const WealthRanges = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Factor Weight</label>
+                <label className="fw-400">{t("wealthRanges.label.factorWeight")}</label>
                 <Input
                   type="number"
                   className="fs-6"
-                  placeholder="Enter Factor Weight"
+                  placeholder={t("wealthRanges.ph.factorWeight")}
                   value={formData.factor_weight}
                   onChange={(e: any) =>
                     setFormData({ ...formData, factor_weight: e.target.value })
                   }
                 />
                 </Col>
-                <Col md={12} >            
-                <Checkbox 
+                <Col md={12} >
+                <Checkbox
                   checked={formData.status}
                   onChange={(e: any) =>
                     setFormData({ ...formData, status: e.target.checked })
                   }
                 >
-                  Status
+                  {t("common:status")}
                 </Checkbox>
                 </Col>
               </Row>
@@ -551,14 +553,14 @@ const WealthRanges = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("wealthRanges.modal.editRecordTitle")
               : selectedItem === "add"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("wealthRanges.modal.deleteRecordTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -567,17 +569,17 @@ const WealthRanges = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("wealthRanges.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("wealthRanges.confirmAddBody")
+                : t("wealthRanges.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

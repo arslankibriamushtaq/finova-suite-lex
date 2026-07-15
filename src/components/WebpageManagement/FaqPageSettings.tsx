@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -47,7 +48,7 @@ const getFullImageUrl = (url: string, API_BASE_URL: string) => {
 };
 
 const FaqPageSettings = () => {
-  
+  const { t } = useTranslation('webPages');
   // UI States
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [editingFieldPath, setEditingFieldPath] = useState<any>('');
@@ -279,7 +280,7 @@ const FaqPageSettings = () => {
     fieldPath: string,
     value: any,
     fieldType: string,
-    placeholder: string = 'Enter value'
+    placeholder: string = t('field.enterValue')
   ) => {
     const isEditing = editingFieldPath === fieldPath;
 
@@ -430,7 +431,7 @@ const FaqPageSettings = () => {
           }
         } catch (error) {
           console.error('❌ Error uploading image:', error);
-          alert('Failed to upload image. Please try again.');
+          alert(t('toast.failedUploadImageRetry'));
         }
       }
     };
@@ -488,26 +489,26 @@ const FaqPageSettings = () => {
 
       if (response.status === 200) {
         // Show success toast
-        toast.success('FAQ page published successfully!');
+        toast.success(t('toast.faqPublished'));
         // Fetch updated data from API
         await fetchFaqData(locale);
       } else {
         const errorData = response.data?.message || 'Unknown error';
         console.error('❌ Publish failed:', errorData);
-        toast.error(`Failed to publish FAQ page: ${errorData}`);
+        toast.error(t('toast.failedPublishFaqDetail', { error: errorData }));
       }
     } catch (error) {
       console.error('❌ Publish error:', error);
       
-      toast.error('Failed to publish FAQ page');
+      toast.error(t('toast.failedPublishFaq'));
     } finally {
       setIsLoading(false);
     }
   };
 
   if (isLoading) return <Loader />;
-  if (error) return <div>Error: {error}</div>;
-  if (!faqData) return <div>No data available</div>;
+  if (error) return <div>{t('errorWithMessage', { message: error })}</div>;
+  if (!faqData) return <div>{t('state.noDataAvailableShort')}</div>;
 
   return (
     <div style={{ padding: '20px' }}>
@@ -515,7 +516,7 @@ const FaqPageSettings = () => {
       {/* Header with Language Switcher */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          FAQ Page
+          {t('header.faqPage')}
         </h2>
         {/* Language Switcher */}
         <div
@@ -549,7 +550,7 @@ const FaqPageSettings = () => {
 
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
         <div className="header-footer-settings__publish-text">
-          {isLoading ? 'Publishing...' : 'PUBLISH'}
+          {isLoading ? t('publishing') : t('publish')}
         </div>
       </div>
 
@@ -590,7 +591,7 @@ const FaqPageSettings = () => {
               e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
             }}
           >
-            {formValue.faq_hero?.hero_image?.url ? 'Change Hero Image' : 'Upload Hero Image'}
+            {formValue.faq_hero?.hero_image?.url ? t('changeHeroImage') : t('uploadHeroImage')}
           </button>
         </section>
 
@@ -882,7 +883,7 @@ const FaqPageSettings = () => {
                         `faq_list.faqs.${index}.question`,
                         faq.question,
                         'text',
-                        locale === 'ar' ? 'أدخل السؤال' : 'Enter question'
+                        t('field.enterQuestion')
                       )}
                     </span>
                   <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -961,7 +962,7 @@ const FaqPageSettings = () => {
                       `faq_list.faqs.${index}.answer`,
                       faq.answer,
                       'textarea',
-                      locale === 'ar' ? 'أدخل الإجابة' : 'Enter answer'
+                      t('field.enterAnswer')
                     )}
                   </div>
                 )}

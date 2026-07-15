@@ -1,24 +1,26 @@
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 function Compliclear() {
+  const { t } = useTranslation("customerManagement");
   const [selectTab, setSelectedTab] = useState<string>("SearchIndividual");
 
   const tabOptions = [
     {
-      title: "Search Individual",
+      title: t("leadTabs.supplierCompliclear.tab.searchIndividual"),
       key: "SearchIndividual",
     },
     {
-      title: "Search Entity",
+      title: t("leadTabs.supplierCompliclear.tab.searchEntity"),
       key: "SearchEntity",
     },
     {
-      title: "Get Client Risk Score",
+      title: t("leadTabs.supplierCompliclear.tab.getClientRiskScore"),
       key: "GetClientRiskScore",
     },
     {
-      title: "Approve Supplier Compliclear",
+      title: t("leadTabs.supplierCompliclear.tab.approveSupplierCompliclear"),
       key: "ApproveSupplierCompliclear",
     },
   ];
@@ -37,7 +39,7 @@ function Compliclear() {
           <Tab key={item.key} eventKey={item.key} title={item.title}>
             {selectTab === item.key && (
               <div style={{ padding: "20px", color: "var(--color-text-muted)", fontSize: "14px" }}>
-                No record found
+                {t("leadTabs.supplierCompliclear.noRecordFound")}
               </div>
             )}
           </Tab>

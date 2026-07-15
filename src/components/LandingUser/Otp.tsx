@@ -9,8 +9,10 @@ import { RootState } from "../../redux/rootReducer";
 import { setBusinessDetails } from "../../redux/apis/apisSlice";
 import { uploadStepDocuments } from "../../utils/uploadStepDocuments";
 import RequiredDocFields from "./RequiredDocFields";
+import { useTranslation } from "react-i18next";
 
 const OtpVerification = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -74,7 +76,7 @@ const OtpVerification = () => {
   };
   const handleVerifyOtp = async () => {
     if (!isComplete) {
-      toast.error("Please enter the 4-digit code");
+      toast.error(t("otpCommon.enterCode"));
       return;
     }
 
@@ -105,7 +107,7 @@ const OtpVerification = () => {
       setLoading(true);
       const res = await verifyOtp(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "OTP verification failed.");
+        toast.error(res?.data?.message || t("otpCommon.verifyFailed"));
         return;
       }
 
@@ -114,7 +116,7 @@ const OtpVerification = () => {
         dispatch(setBusinessDetails(businessFormData));
       }
 
-      toast.success(res?.data?.message || "OTP verified successfully.");
+      toast.success(res?.data?.message || t("otpCommon.verifiedSuccess"));
 
       // Upload dynamic required documents for this step
       const docsOk = await uploadStepDocuments(4, requiredDocuments, docFiles);
@@ -128,7 +130,7 @@ const OtpVerification = () => {
       };
       const smsRes = await orbitSmsOtp(smsBody);
       if (!smsRes?.data?.success) {
-        toast.error(smsRes?.data?.message || "Failed to send SMS OTP.");
+        toast.error(smsRes?.data?.message || t("otp.smsFailed"));
         return;
       }
 
@@ -141,7 +143,7 @@ const OtpVerification = () => {
       });
     } catch (err: any) {
       console.error(err);
-      toast.error(err?.response?.data?.message || err?.message || "Something went wrong!");
+      toast.error(err?.response?.data?.message || err?.message || t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -151,7 +153,7 @@ const OtpVerification = () => {
     <>
       <div className="d-flex justify-content-center p-4 mt-4">
         <div className="otp-card">
-          <h2 className="otp-title">Email Verification</h2>
+          <h2 className="otp-title">{t("otp.title")}</h2>
           <div className="d-flex justify-content-center">
             <img src={Images.otp} alt="" width={88} height={88} />
           </div>
@@ -203,7 +205,7 @@ const OtpVerification = () => {
             });
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
         <button
           className="step-buttons"
@@ -218,7 +220,7 @@ const OtpVerification = () => {
           }}
           onClick={handleVerifyOtp}
         >
-          {loading ? "Verifying..." : "Verify"}
+          {loading ? t("action.verifying") : t("action.verify")}
         </button>
       </div>
     </>

@@ -112,7 +112,7 @@ const MappingWizard: React.FC = () => {
                  <span className="text-[8px] font-black text-slate-300 uppercase">Map To</span>
               </div>
 
-              <div className="flex items-center gap-4 text-right">
+              <div className="flex items-center gap-4 text-end">
                 <span className="text-sm font-black text-slate-900">{m.target}</span>
                 <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                   <Database className="w-5 h-5" />

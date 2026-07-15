@@ -1,8 +1,10 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 import TableView from "../../components/TableView/TableView";
 
 const Approval = () => {
+  const { t } = useTranslation("allApplication");
   const data = [
     {
       Checks: "jhdbfs",
@@ -31,23 +33,23 @@ const Approval = () => {
   ];
   const Leads_Header = [
     {
-      name: "Checks",
+      name: t("approval.column.checks"),
       selector: (row: { Checks: any }) => row.Checks,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { Status: any }) => row.Status,
     },
     {
-      name: "Processed Date",
+      name: t("approval.column.processedDate"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Processed By",
+      name: t("approval.column.processedBy"),
       selector: (row: { ProcessedBy: any }) => row.ProcessedBy,
     },
     {
-      name: "Comment",
+      name: t("approval.column.comment"),
       selector: (row: { Comment: any }) => row.Comment,
     },
   ];

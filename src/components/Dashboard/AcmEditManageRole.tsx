@@ -12,8 +12,10 @@ import {
 } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const EditManageRole: React.FC = () => {
+  const { t } = useTranslation("dashboard");
   const [createAssignPermission, setCreateAssignPermission] = useState(false);
   const [selectedSubOptions, setSelectedSubOptions] = useState<any>({});
   const [roleId, setRoleId] = useState<any>("");
@@ -251,7 +253,7 @@ const handleAssignAllPermissions = (
           className=""
           style={{ fontSize: "16px", lineHeight: "16px", fontWeight: "600" }}
         >
-          Manage Permissions
+          {t("editAcmDept.managePermissions")}
         </div>
       </div>
       <div className="border-bottom pt-2"></div>
@@ -259,14 +261,14 @@ const handleAssignAllPermissions = (
         className="mt-4 mb-3 "
         style={{ fontSize: "18px", lineHeight: "12px", fontWeight: "500" }}
       >
-        Edit Role
+        {t("editAcmRole.editRole")}
       </div>
 
       <div className="d-flex gap-5 ">
         <div className="form-group form-label-groups col-md-6 d-grid">
-          Change Role Name
+          {t("editAcmRole.changeRoleName")}
           <Input
-            placeholder="Enter Name"
+            placeholder={t("editAcmDept.enterName")}
             className="p-2 mt-2"
             onChange={(e: any) => {
               setAddRoleName(e?.target?.value);
@@ -286,18 +288,18 @@ const handleAssignAllPermissions = (
             htmlFor="receiver"
             style={{ fontSize: "14px", fontWeight: "500" }}
           >
-            Active/InActive
+            {t("manageRoles.activeInactive")}
           </label>
         </div>
       </div>
       <div className="col-12  d-flex justify-content-between border-top p-2 ">
-        <h6 className="col-9 mt-2">Assign permissions</h6>
+        <h6 className="col-9 mt-2">{t("editAcmDept.assignPermissions")}</h6>
         <div
           className="col-3 d-flex justify-content-end"
           style={{ border: "1px solid black", borderRadius: "2px" }}
         >
           <div className="d-flex justify-content-between align-items-center p-1 mb-2">
-            <div className="me-5">Assign all permision</div>
+            <div className="me-5">{t("editAcmDept.assignAllPermission")}</div>
             <Switch
               checked={createAssignPermission}
               onChange={() => {
@@ -406,7 +408,7 @@ const handleAssignAllPermissions = (
             createAssignPermission ? createPermissions() : updatePermissions();
           }}
         >
-          {createAssignPermission ? "Save" : "Update"}
+          {createAssignPermission ? t("common:save") : t("common:update")}
         </button>
       </div>
     </div>

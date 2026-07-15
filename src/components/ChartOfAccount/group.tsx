@@ -12,7 +12,9 @@ import { getGroupLedger, addGroupLedger } from "../../redux/apis/apisCrud";
 import { Modal } from "react-bootstrap";
 import { Images } from "../Config/Images";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 const Group = () => {
+  const { t } = useTranslation("accountingLoans");
   const [searchValue, setSearchValue] = useState("");
 
   const [addGroupMod, setAddGroupMod] = useState(false);
@@ -26,7 +28,7 @@ const Group = () => {
 
   const customSearchInput = (
     <Input
-      placeholder="Search"
+      placeholder={t("common:search")}
       value={searchValue}
       prefix={<FaSearch />}
       onChange={(e) => setSearchValue(e.target.value)}
@@ -35,15 +37,15 @@ const Group = () => {
 
   const Account_Documents_List_Header = [
     {
-      name: "Group Name",
+      name: t("group.col.name"),
       selector: (row: { accountGroupName: any }) => row.accountGroupName,
     },
     {
-      name: "Group Type",
+      name: t("group.col.type"),
       selector: (row: { groupType: any }) => row.groupType,
     },
     {
-      name: "Parent Group",
+      name: t("group.col.parent"),
       selector: (row: { parentGroup: any }) => row.parentGroup || "N/A",
     },
   ];
@@ -93,7 +95,7 @@ const Group = () => {
         />
 
         <button className="theme-btn-next" onClick={() => setAddGroupMod(true)}>
-          + Add Group
+          {t("group.addGroup")}
         </button>
       </div>
 
@@ -119,6 +121,7 @@ const Group = () => {
 export default Group;
 
 function AddGroupModal({ modal, setModal, mappedData }) {
+  const { t } = useTranslation("accountingLoans");
   const [errors, setErrors] = useState([]);
 
   const [accountGroupName, setaccountGroupName] = useState(null);
@@ -153,15 +156,15 @@ function AddGroupModal({ modal, setModal, mappedData }) {
     await toast.promise(
       addGroupLedger(body), // The API call
       {
-        loading: "Adding group...", // Loading message
+        loading: t("group.toast.adding"), // Loading message
         success: (response) => {
           if (response?.data?.data) {
-            return "Group added successfully!";
+            return t("group.toast.addSuccess");
           } else {
-            throw new Error("Failed to add group.");
+            throw new Error(t("group.toast.addFailed"));
           }
         },
-        error: (err) => err?.message || "Something went wrong!",
+        error: (err) => err?.message || t("group.toast.genericError"),
       }
     );
   };
@@ -170,7 +173,7 @@ function AddGroupModal({ modal, setModal, mappedData }) {
   return (
     <Modal show={modal} centered size="lg">
       <Modal.Header>
-        <Modal.Title className="modal-title">Add Group</Modal.Title>
+        <Modal.Title className="modal-title">{t("group.addTitle")}</Modal.Title>
         <div className="cursor-pointer" onClick={() => setModal(false)}>
           <img src={Images.closeBtn} alt="" />
         </div>
@@ -179,7 +182,7 @@ function AddGroupModal({ modal, setModal, mappedData }) {
         <form className="container" onSubmit={(e) => addGroup(e)}>
           <div className="row py-2">
             <div className="col">
-              <div className="py-2">Account Group Name</div>
+              <div className="py-2">{t("group.accountGroupName")}</div>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -189,12 +192,12 @@ function AddGroupModal({ modal, setModal, mappedData }) {
               {errors.includes("accountGroupName") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
 
             <div className="col">
-              <div className="py-2">Narration</div>
+              <div className="py-2">{t("group.narration")}</div>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -204,14 +207,14 @@ function AddGroupModal({ modal, setModal, mappedData }) {
               {errors.includes("narration") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
           </div>
 
           <div className="row py-2">
             <div className="col">
-              <div className="py-2">Set as Default?</div>
+              <div className="py-2">{t("group.setDefault")}</div>
               <Checkbox
                 className="w-fit p-2"
                 value={isDefault}
@@ -220,12 +223,12 @@ function AddGroupModal({ modal, setModal, mappedData }) {
               {errors.includes("isDefault") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
 
             <div className="col">
-              <div className="py-2">Nature</div>
+              <div className="py-2">{t("group.nature")}</div>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -235,14 +238,14 @@ function AddGroupModal({ modal, setModal, mappedData }) {
               {errors.includes("nature") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
           </div>
 
           <div className="row py-2">
             <div className="col">
-              <div className="py-2">Affect Gross Profit</div>
+              <div className="py-2">{t("group.affectGrossProfit")}</div>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -252,12 +255,12 @@ function AddGroupModal({ modal, setModal, mappedData }) {
               {errors.includes("affectGrossProfit") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
 
             <div className="col">
-              <div className="py-2">Modified By</div>
+              <div className="py-2">{t("group.modifiedBy")}</div>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -267,46 +270,46 @@ function AddGroupModal({ modal, setModal, mappedData }) {
               {errors.includes("modifyBy") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
           </div>
 
           <div className="row py-2">
             <div className="col">
-              <div className="py-2">Group Type</div>
+              <div className="py-2">{t("group.groupType")}</div>
               <Select value={groupType} onChange={setgroupType}>
-                <Select.Option value="0">Liabilities</Select.Option>
-                <Select.Option value="1">Assets</Select.Option>
-                <Select.Option value="2">Income</Select.Option>
-                <Select.Option value="3">Expenses</Select.Option>
+                <Select.Option value="0">{t("group.typeLiabilities")}</Select.Option>
+                <Select.Option value="1">{t("group.typeAssets")}</Select.Option>
+                <Select.Option value="2">{t("group.typeIncome")}</Select.Option>
+                <Select.Option value="3">{t("group.typeExpenses")}</Select.Option>
               </Select>
               {errors.includes("") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
 
             <div className="col">
-              <div className="py-2">Parent Group</div>
+              <div className="py-2">{t("group.parentGroup")}</div>
               <Select value={parentGroup} onChange={setparentGroup}>
                 {mappedData?.length ? (
                   mappedData?.map((group: any, index: any) => (
                     <Select.Option key={index} value="0">
-                      {group?.accountGroupName || "Name"}
+                      {group?.accountGroupName || t("group.name")}
                     </Select.Option>
                   ))
                 ) : (
                   <Select.Option value="" className="text-center p-3" disabled>
-                    No Groups found!
+                    {t("group.noGroups")}
                   </Select.Option>
                 )}
               </Select>
               {errors.includes("") ? (
                 <div className="pt-1 text-danger fs-12"></div>
               ) : (
-                <div className="pt-1 group-fs">No Error</div>
+                <div className="pt-1 group-fs">{t("group.noError")}</div>
               )}
             </div>
           </div>
@@ -316,7 +319,7 @@ function AddGroupModal({ modal, setModal, mappedData }) {
             className="theme-btn-next"
             onClick={() => setModal(false)}
           >
-            Add Group
+            {t("group.addBtn")}
           </button>
         </form>
       </Modal.Body>

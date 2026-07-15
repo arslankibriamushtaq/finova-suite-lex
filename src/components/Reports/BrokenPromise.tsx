@@ -8,7 +8,9 @@ import {
 } from "../../redux/apis/apisCrud";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const BrokenPromise = () => {
+  const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
@@ -53,7 +55,7 @@ const BrokenPromise = () => {
         remaingAmount: item.remaingAmount ? item.remaingAmount : "-",
         date: formatDate(item.date ? item.date : "_"),
         iqamaId: item.iqamaId ? item.iqamaId : "-",
-        status: "Due",
+        status: t("brokenPromise.statusDue"),
         applicationNum: item.applicationNum ? item.applicationNum : "-",
       };
     });
@@ -64,31 +66,31 @@ const BrokenPromise = () => {
   }, [id, page, pageSize, fromDate]);
   const Call_Activity_Header = [
     {
-      name: "Customer",
+      name: t("brokenPromise.col.customer"),
       cell: (row: any) => row.customerName,
     },
     {
-      name: "Loan Amount",
+      name: t("brokenPromise.col.loanAmount"),
       selector: (row: { loanAmount: any }) => row.loanAmount,
     },
     {
-      name: "Overdue Amount",
+      name: t("brokenPromise.col.overdueAmount"),
       selector: (row: { remaingAmount: any }) => row.remaingAmount,
     },
     {
-      name: "Payable Status",
+      name: t("brokenPromise.col.payableStatus"),
       selector: (row: { status: any }) => row.status,
     },
     {
-      name: "Iqama ID",
+      name: t("brokenPromise.col.iqamaId"),
       selector: (row: { iqamaId: any }) => row.iqamaId,
     },
     {
-      name: "Loan Application No.",
+      name: t("brokenPromise.col.loanApplicationNo"),
       selector: (row: { applicationNum: any }) => row.applicationNum,
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { date: any }) => row.date,
     },
   ];
@@ -142,7 +144,7 @@ const BrokenPromise = () => {
       <div className="col-12">
         <div className="d-flex justify-content-between align-items-center">
           <div className="col-10">
-            <h5 className="mb-0">Overdue Loan</h5>
+            <h5 className="mb-0">{t("brokenPromise.title")}</h5>
           </div>
           {/* <div className="col-2 text-end">
             <button
@@ -160,24 +162,24 @@ const BrokenPromise = () => {
             {/* From Date */}
             <div className="col-md-4">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t("common:from")}
               </label>
               <DatePicker
                 onChange={(e: any) => {
                   handleFromDateChange(e);
                 }}
-                placeholder="Select From Date"
+                placeholder={t("brokenPromise.selectFromDate")}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-4">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t("common:to")}
               </label>
               <DatePicker
                 onChange={handleToDateChange}
-                placeholder="Select To Date"
+                placeholder={t("brokenPromise.selectToDate")}
               />
             </div>
 
@@ -194,7 +196,7 @@ const BrokenPromise = () => {
                   setToDate("");
                 }}
               >
-                Clear
+                {t("common:clear")}
               </button>
             </div>
 
@@ -224,7 +226,7 @@ const BrokenPromise = () => {
                 exportToCSV(allCallActivity, "OverDueLoans");
               }}
             >
-              Export CSV
+              {t("action.exportCsv")}
             </button>
           </div>
         </div>

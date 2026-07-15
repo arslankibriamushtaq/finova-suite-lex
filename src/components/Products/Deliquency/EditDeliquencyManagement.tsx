@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import EditEarlySettlement from "./EditEarlySettlement";
 import EditDue from "./EditDue";
@@ -8,12 +9,13 @@ import EditWriteOff from "./EditWrireOff";
 import EditBrokenPromisses from "./EditBrokenPromisses";
 
 const EditDeliquencyManagement = ({ tabs, productId }) => {
+  const { t } = useTranslation("productManagement2");
   localStorage.setItem("tabs", "EarlySettlement");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState(getTabs);
   const tapOptions = [
     {
-      title: "Early Settlement",
+      title: t("delinquency.tab.earlySettlement"),
       key: "EarlySettlement",
       folder: (
         <EditEarlySettlement
@@ -23,12 +25,12 @@ const EditDeliquencyManagement = ({ tabs, productId }) => {
       ),
     },
     {
-      title: "Due Loan",
+      title: t("delinquency.tab.dueLoan"),
       key: "DueLoan",
       folder: <EditDue productId={productId} setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "Late Payment",
+      title: t("delinquency.tab.latePayment"),
       key: "LatePayment",
       folder: (
         <EditLatePayment
@@ -38,7 +40,7 @@ const EditDeliquencyManagement = ({ tabs, productId }) => {
       ),
     },
     {
-      title: "Non-Performing Loan",
+      title: t("delinquency.tab.nonPerforming"),
       key: "Non-PerformingLoan",
       folder: (
         <EditNonPerforming
@@ -48,14 +50,14 @@ const EditDeliquencyManagement = ({ tabs, productId }) => {
       ),
     },
     {
-      title: "Write-offs",
+      title: t("delinquency.tab.writeOffs"),
       key: "Write-offs",
       folder: (
         <EditWriteOff productId={productId} setSelectedTab={setSelectedTab} />
       ),
     },
     {
-      title: "Broken Promises",
+      title: t("delinquency.tab.brokenPromises"),
       key: "BrokenPromises",
       folder: (
         <EditBrokenPromisses

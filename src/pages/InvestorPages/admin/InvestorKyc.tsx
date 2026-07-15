@@ -130,14 +130,14 @@ export default function InvestorKyc() {
           </div>
           <div className="flex items-center space-x-3">
             <button className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 flex items-center">
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="w-4 h-4 me-2" />
               Export
             </button>
             <Link
               to="/admin/investors/new"
               className="px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800 flex items-center"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 me-2" />
               Add Investor
             </Link>
           </div>
@@ -155,7 +155,7 @@ export default function InvestorKyc() {
                 placeholder="Search investors..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+                className="w-full ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -181,22 +181,22 @@ export default function InvestorKyc() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Investor
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Contact
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   National ID
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   KYC Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Documents
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Actions
                 </th>
               </tr>
@@ -219,7 +219,7 @@ export default function InvestorKyc() {
                   <tr key={investor.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
                           <span className="text-sm font-medium text-gray-700">
                             {investor.firstNameInEnglish?.charAt(0)}{investor.lastNameInEnglish?.charAt(0)}
                           </span>
@@ -237,7 +237,7 @@ export default function InvestorKyc() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{investor.email}</div>
                       <div className="text-sm text-gray-500 flex items-center">
-                        <Phone className="w-3 h-3 mr-1" />
+                        <Phone className="w-3 h-3 me-1" />
                         {investor.phone}
                       </div>
                     </td>
@@ -247,14 +247,14 @@ export default function InvestorKyc() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         {getStatusIcon(investor.kycStatus)}
-                        <span className={`ml-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(investor.kycStatus)}`}>
+                        <span className={`ms-2 inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(investor.kycStatus)}`}>
                           {investor.kycStatus || 'Pending'}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       <div className="flex items-center">
-                        <FileText className="w-4 h-4 mr-1" />
+                        <FileText className="w-4 h-4 me-1" />
                         {investor.kycDocuments?.length || 0} documents
                       </div>
                     </td>
@@ -264,15 +264,15 @@ export default function InvestorKyc() {
                           to={`/admin/investors/kyc-documents/${investor.id}`}
                           className="text-black hover:text-blue-900 flex items-center"
                         >
-                          <Eye className="w-4 h-4 mr-1" />
+                          <Eye className="w-4 h-4 me-1" />
                           View
                         </Link>
                         <button className="text-gray-600 hover:text-gray-900 flex items-center">
-                          <Edit className="w-4 h-4 mr-1" />
+                          <Edit className="w-4 h-4 me-1" />
                           Edit
                         </button>
                         <button className="text-red-600 hover:text-red-900 flex items-center">
-                          <Trash2 className="w-4 h-4 mr-1" />
+                          <Trash2 className="w-4 h-4 me-1" />
                           Delete
                         </button>
                       </div>

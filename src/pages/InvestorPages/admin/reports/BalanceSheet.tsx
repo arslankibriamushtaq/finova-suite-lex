@@ -18,6 +18,7 @@ import {
   Printer
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const balanceSheetData = {
   asOfDate: '2024-01-31',
@@ -72,6 +73,7 @@ const previousPeriod = {
 };
 
 export default function BalanceSheet() {
+  const { t } = useTranslation('investor');
   const [selectedPeriod, setSelectedPeriod] = useState('current');
   const [viewMode, setViewMode] = useState('detailed');
 
@@ -93,15 +95,15 @@ export default function BalanceSheet() {
   };
 
   const handleExport = () => {
-    alert('Balance sheet exported successfully!');
+    alert(t('bs.exportSuccess'));
   };
 
   const handlePrint = () => {
-    alert('Balance sheet sent to printer!');
+    alert(t('bs.printSuccess'));
   };
 
   const handleEmail = () => {
-    alert('Balance sheet emailed successfully!');
+    alert(t('bs.emailSuccess'));
   };
 
   return (
@@ -114,39 +116,39 @@ export default function BalanceSheet() {
               to="/admin/reports"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Reports
+              <ArrowLeft className="w-4 h-4 me-2" />
+              {t('pl.backToReports')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Balance Sheet</h1>
-              <p className="text-gray-600">Assets, liabilities, and equity as of {balanceSheetData.asOfDate}</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('bs.title')}</h1>
+              <p className="text-gray-600">{t('bs.subtitle', { date: balanceSheetData.asOfDate })}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('common:refresh')}
             </button>
-            <button 
+            <button
               onClick={handlePrint}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Printer className="w-4 h-4 mr-2" />
-              Print
+              <Printer className="w-4 h-4 me-2" />
+              {t('pl.print')}
             </button>
-            <button 
+            <button
               onClick={handleEmail}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Mail className="w-4 h-4 mr-2" />
-              Email
+              <Mail className="w-4 h-4 me-2" />
+              {t('reports.emailReports')}
             </button>
-            <button 
+            <button
               onClick={handleExport}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export
+              <Download className="w-4 h-4 me-2" />
+              {t('common:export')}
             </button>
           </div>
         </div>
@@ -162,7 +164,7 @@ export default function BalanceSheet() {
                 viewMode === 'detailed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              Detailed
+              {t('bs.view.detailed')}
             </button>
             <button
               onClick={() => setViewMode('summary')}
@@ -170,42 +172,42 @@ export default function BalanceSheet() {
                 viewMode === 'summary' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              Summary
+              {t('bs.view.summary')}
             </button>
           </div>
           <select className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-            <option value="current">Current Period</option>
-            <option value="comparison">Period Comparison</option>
-            <option value="historical">Historical View</option>
+            <option value="current">{t('bs.period.current')}</option>
+            <option value="comparison">{t('bs.period.comparison')}</option>
+            <option value="historical">{t('bs.period.historical')}</option>
           </select>
         </div>
         <div className="text-sm text-gray-500">
-          Generated on {new Date().toLocaleDateString()}
+          {t('bs.generatedOn', { date: new Date().toLocaleDateString() })}
         </div>
       </div>
 
       {/* Balance Sheet */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Balance Sheet</h3>
-          <p className="text-sm text-gray-600">As of {balanceSheetData.asOfDate}</p>
+          <h3 className="text-lg font-semibold text-gray-900">{t('bs.title')}</h3>
+          <p className="text-sm text-gray-600">{t('bs.asOf', { date: balanceSheetData.asOfDate })}</p>
         </div>
 
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Account
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('bs.col.account')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Current Period
+                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('bs.col.currentPeriod')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Previous Period
+                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('bs.col.previousPeriod')}
                 </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Change
+                <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('bs.col.change')}
                 </th>
               </tr>
             </thead>
@@ -214,17 +216,17 @@ export default function BalanceSheet() {
               <tr className="bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <Building className="w-5 h-5 text-black mr-2" />
-                    <span className="text-sm font-bold text-blue-900">ASSETS</span>
+                    <Building className="w-5 h-5 text-black me-2" />
+                    <span className="text-sm font-bold text-blue-900">{t('bs.row.assets')}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-blue-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-blue-900">
                   {formatCurrency(balanceSheetData.assets.totalAssets)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalAssets)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm">
                   {(() => {
                     const change = getChange(balanceSheetData.assets.totalAssets, previousPeriod.totalAssets);
                     return (
@@ -232,9 +234,9 @@ export default function BalanceSheet() {
                         change.type === 'positive' ? 'text-green-600' : 'text-red-600'
                       }`}>
                         {change.type === 'positive' ? (
-                          <TrendingUp className="w-4 h-4 mr-1" />
+                          <TrendingUp className="w-4 h-4 me-1" />
                         ) : (
-                          <TrendingDown className="w-4 h-4 mr-1" />
+                          <TrendingDown className="w-4 h-4 me-1" />
                         )}
                         {Math.abs(change.value).toFixed(1)}%
                       </div>
@@ -246,15 +248,15 @@ export default function BalanceSheet() {
               {/* Current Assets */}
               <tr className="bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-semibold text-gray-700 ml-4">Current Assets</span>
+                  <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.currentAssets')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
                   {formatCurrency(balanceSheetData.assets.currentAssets.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(24200000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +5.7%
                 </td>
               </tr>
@@ -263,43 +265,43 @@ export default function BalanceSheet() {
                 <>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Cash and Cash Equivalents</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.cashEquivalents')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.assets.currentAssets.cash + balanceSheetData.assets.currentAssets.cashEquivalents)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(19800000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                       +7.3%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Accounts Receivable</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.accountsReceivable')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.assets.currentAssets.accountsReceivable)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(2950000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                       +8.5%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Other Current Assets</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.otherCurrentAssets')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.assets.currentAssets.prepaidExpenses + balanceSheetData.assets.currentAssets.otherCurrentAssets)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(1450000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       -22.1%
                     </td>
                   </tr>
@@ -309,15 +311,15 @@ export default function BalanceSheet() {
               {/* Non-Current Assets */}
               <tr className="bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-semibold text-gray-700 ml-4">Non-Current Assets</span>
+                  <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.nonCurrentAssets')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
                   {formatCurrency(balanceSheetData.assets.nonCurrentAssets.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(251030000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +5.4%
                 </td>
               </tr>
@@ -326,43 +328,43 @@ export default function BalanceSheet() {
                 <>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Investments</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.investments')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.assets.nonCurrentAssets.investments)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(232500000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                       +5.4%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Property & Equipment</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.propertyEquipment')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.assets.nonCurrentAssets.propertyEquipment)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(14800000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                       +5.4%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Other Assets</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.otherAssets')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.assets.nonCurrentAssets.intangibleAssets + balanceSheetData.assets.nonCurrentAssets.otherAssets)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(3730000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                       +7.3%
                     </td>
                   </tr>
@@ -373,17 +375,17 @@ export default function BalanceSheet() {
               <tr className="bg-red-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <CreditCard className="w-5 h-5 text-red-600 mr-2" />
-                    <span className="text-sm font-bold text-red-900">LIABILITIES</span>
+                    <CreditCard className="w-5 h-5 text-red-600 me-2" />
+                    <span className="text-sm font-bold text-red-900">{t('bs.row.liabilities')}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-red-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-red-900">
                   {formatCurrency(balanceSheetData.liabilities.totalLiabilities)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalLiabilities)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +3.0%
                 </td>
               </tr>
@@ -391,15 +393,15 @@ export default function BalanceSheet() {
               {/* Current Liabilities */}
               <tr className="bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-semibold text-gray-700 ml-4">Current Liabilities</span>
+                  <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.currentLiabilities')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
                   {formatCurrency(balanceSheetData.liabilities.currentLiabilities.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(9200000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +7.9%
                 </td>
               </tr>
@@ -407,15 +409,15 @@ export default function BalanceSheet() {
               {/* Non-Current Liabilities */}
               <tr className="bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-semibold text-gray-700 ml-4">Non-Current Liabilities</span>
+                  <span className="text-sm font-semibold text-gray-700 ms-4">{t('bs.row.nonCurrentLiabilities')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-semibold text-gray-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-semibold text-gray-900">
                   {formatCurrency(balanceSheetData.liabilities.nonCurrentLiabilities.total)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(29750000)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +1.5%
                 </td>
               </tr>
@@ -424,17 +426,17 @@ export default function BalanceSheet() {
               <tr className="bg-green-50">
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <Banknote className="w-5 h-5 text-green-600 mr-2" />
-                    <span className="text-sm font-bold text-green-900">EQUITY</span>
+                    <Banknote className="w-5 h-5 text-green-600 me-2" />
+                    <span className="text-sm font-bold text-green-900">{t('bs.row.equity')}</span>
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-green-900">
                   {formatCurrency(balanceSheetData.equity.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +5.8%
                 </td>
               </tr>
@@ -443,43 +445,43 @@ export default function BalanceSheet() {
                 <>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Paid-in Capital</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.paidInCapital')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.equity.paidInCapital)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(150000000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       0.0%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Retained Earnings</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.retainedEarnings')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.equity.retainedEarnings)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(81280000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                       +16.9%
                     </td>
                   </tr>
                   <tr>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="text-sm text-gray-600 ml-8">Accumulated Other Comprehensive Income</span>
+                      <span className="text-sm text-gray-600 ms-8">{t('bs.row.accumulatedOCI')}</span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(balanceSheetData.equity.accumulatedOCI)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       {formatCurrency(5000000)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                       0.0%
                     </td>
                   </tr>
@@ -489,15 +491,15 @@ export default function BalanceSheet() {
               {/* Verification Row */}
               <tr className="bg-gray-100 border-t-2 border-gray-700">
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-bold text-blue-900">LIABILITIES + EQUITY</span>
+                  <span className="text-sm font-bold text-blue-900">{t('bs.row.liabilitiesEquity')}</span>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-blue-900">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-blue-900">
                   {formatCurrency(balanceSheetData.liabilities.totalLiabilities + balanceSheetData.equity.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                   {formatCurrency(previousPeriod.totalLiabilities + previousPeriod.totalEquity)}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                   +5.4%
                 </td>
               </tr>
@@ -508,12 +510,12 @@ export default function BalanceSheet() {
 
       {/* Notes */}
       <div className="mt-6 bg-gray-50 rounded-lg p-6">
-        <h4 className="text-sm font-semibold text-gray-900 mb-3">Notes:</h4>
+        <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('bs.notes')}</h4>
         <div className="text-sm text-gray-600 space-y-2">
-          <p>• All amounts are presented in USD and rounded to the nearest thousand.</p>
-          <p>• Investments are marked to market as of the balance sheet date.</p>
-          <p>• Property & Equipment is presented net of accumulated depreciation.</p>
-          <p>• The balance sheet balances with total assets equaling total liabilities plus equity.</p>
+          <p>• {t('bs.note1')}</p>
+          <p>• {t('bs.note2')}</p>
+          <p>• {t('bs.note3')}</p>
+          <p>• {t('bs.note4')}</p>
         </div>
       </div>
     </div>

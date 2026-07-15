@@ -4,6 +4,7 @@ import { addProductDocument, editProductDocument, removeProductDocument } from "
 import { useLocation } from "react-router-dom";
 import TableView from "../TableView/TableView";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Pencil, Trash2, Check, X, ChevronDown } from "lucide-react";
 import {
   DropdownMenu,
@@ -20,6 +21,7 @@ import { Switch } from "../ui/switch";
 import { useSelector } from "react-redux";
 import { usePermissions, DOCUMENT_PERMISSIONS } from "../../hooks/useProductPermissions";
 const RequiredDoc = ({setSelectedTab}:any) => {
+  const { t } = useTranslation("productManagement2");
   const [isLoading, setIsLoading] = useState(false);
   const [documents, setDocuments] = useState<any[]>([]);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -62,13 +64,13 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   const canApproveModule = () => true;
   const canRejectAsApprover = () => true;
   const headers = [
-    { name: "Name (En)", selector: (row: any) => row.nameEn, },
-    { name: "Name (Ar)", selector: (row: any) => row.nameAr, },
-    { name: "Document Type", selector: (row: any) => row.documentType, },
-    { name: "Version", selector: (row: any) => row.fileVersion || "-" },
-    { name: "Created By", selector: (row: any) => row.createdByName || "-" },
+    { name: t("requiredDoc.nameEn"), selector: (row: any) => row.nameEn, },
+    { name: t("requiredDoc.nameAr"), selector: (row: any) => row.nameAr, },
+    { name: t("requiredDoc.documentType"), selector: (row: any) => row.documentType, },
+    { name: t("requiredDoc.version"), selector: (row: any) => row.fileVersion || "-" },
+    { name: t("requiredDoc.createdBy"), selector: (row: any) => row.createdByName || "-" },
     {
-      name: "Required",
+      name: t("requiredDoc.required"),
       cell: (row: any) => (
         <div
           style={{
@@ -78,12 +80,12 @@ const RequiredDoc = ({setSelectedTab}:any) => {
             color: "var(--primary-foreground)",
           }}
         >
-          {row.required ? "Yes" : "No"}
+          {row.required ? t("common:yes") : t("common:no")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => {
         if (!hasAnyActionPermission()) {
           return "-";
@@ -93,7 +95,7 @@ const RequiredDoc = ({setSelectedTab}:any) => {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
-                Select <ChevronDown className="h-4 w-4" />
+                {t("list.select")} <ChevronDown className="h-4 w-4" />
               </UIButton>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -120,22 +122,22 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   const getMenuItems = (row: any) => {
     const items: { key: string; label: string; icon: React.ReactNode; onClick?: () => void; danger?: boolean }[] = [];
     if (canUpdate(DOCUMENT_PERMISSIONS)) {
-      items.push({ key: "edit", label: "Edit", icon: <Pencil className="h-4 w-4" />, onClick: () => openEdit(row) });
+      items.push({ key: "edit", label: t("common:edit"), icon: <Pencil className="h-4 w-4" />, onClick: () => openEdit(row) });
     }
     if (canRemove(DOCUMENT_PERMISSIONS)) {
-      items.push({ key: "delete", label: "Delete", icon: <Trash2 className="h-4 w-4" />, onClick: () => removeDoc(row.id) });
+      items.push({ key: "delete", label: t("common:delete"), icon: <Trash2 className="h-4 w-4" />, onClick: () => removeDoc(row.id) });
     }
     if (canVerifyModule(DOCUMENT_PERMISSIONS)) {
-      items.push({ key: "verify", label: "Verify", icon: <Check className="h-4 w-4" />, onClick: () => console.log("Verify", row.id) });
+      items.push({ key: "verify", label: t("action.verify"), icon: <Check className="h-4 w-4" />, onClick: () => console.log("Verify", row.id) });
     }
     if (canRejectAsChecker(DOCUMENT_PERMISSIONS)) {
-      items.push({ key: "checker-reject", label: "Reject (Checker)", icon: <X className="h-4 w-4" />, onClick: () => console.log("Checker Reject", row.id), danger: true });
+      items.push({ key: "checker-reject", label: t("requiredDoc.rejectChecker"), icon: <X className="h-4 w-4" />, onClick: () => console.log("Checker Reject", row.id), danger: true });
     }
     if (canApproveModule(DOCUMENT_PERMISSIONS)) {
-      items.push({ key: "approve", label: "Approve", icon: <Check className="h-4 w-4" />, onClick: () => console.log("Approve", row.id) });
+      items.push({ key: "approve", label: t("common:approve"), icon: <Check className="h-4 w-4" />, onClick: () => console.log("Approve", row.id) });
     }
     if (canRejectAsApprover(DOCUMENT_PERMISSIONS)) {
-      items.push({ key: "approver-reject", label: "Reject (Approver)", icon: <X className="h-4 w-4" />, onClick: () => console.log("Approver Reject", row.id), danger: true });
+      items.push({ key: "approver-reject", label: t("requiredDoc.rejectApprover"), icon: <X className="h-4 w-4" />, onClick: () => console.log("Approver Reject", row.id), danger: true });
     }
     return items;
   };
@@ -170,13 +172,13 @@ const RequiredDoc = ({setSelectedTab}:any) => {
     try {
       const response = await removeProductDocument(productId, String(id));
       if (response?.data?.message === "success") {
-        toast.success("Document removed successfully");
+        toast.success(t("requiredDoc.removed"));
         loadDocuments();
       } else {
-        toast.error(response?.data?.message || "Failed to remove document");
+        toast.error(response?.data?.message || t("requiredDoc.removeFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to remove document");
+      toast.error(error?.response?.data?.message || t("requiredDoc.removeFailed"));
     }
   };
 
@@ -204,11 +206,11 @@ const RequiredDoc = ({setSelectedTab}:any) => {
 
   const handleSave = async () => {
     if (!formValues.nameEn || !formValues.nameAr) {
-      toast.error("Please fill Name (En) and Name (Ar)");
+      toast.error(t("requiredDoc.fillNames"));
       return;
     }
     if (!productId) {
-      toast.error("Product ID not found");
+      toast.error(t("requiredDoc.productIdNotFound"));
       return;
     }
 
@@ -229,16 +231,16 @@ const RequiredDoc = ({setSelectedTab}:any) => {
         : addProductDocument(productId, body);
 
       await toast.promise(apiCall, {
-        loading: editingId ? "Updating Document..." : "Adding Document...",
+        loading: editingId ? t("requiredDoc.updating") : t("requiredDoc.adding"),
         success: (response: any) => {
           setIsModalVisible(false);
           setFormValues(initialFormValues);
           setEditingId(null);
           loadDocuments();
-          return response?.data?.message || "Document saved successfully";
+          return response?.data?.message || t("requiredDoc.saved");
         },
         error: (err) => {
-          return err?.response?.data?.message || "Failed to save document";
+          return err?.response?.data?.message || t("requiredDoc.saveFailed");
         },
       });
     } catch (error) {
@@ -272,18 +274,18 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   return (
     <div className="service">
       <h1 className="pt-2 pb-3" style={{ fontSize: "16px", fontWeight: "bold" }}>
-        Required Documents
+        {t("requiredDoc.title")}
       </h1>
       <div className="d-flex justify-content-end mb-3 gap-2">
         <Input
-          placeholder="Search By Name"
+          placeholder={t("requiredDoc.searchByName")}
           className="w-[220px]"
           value={searchTerm}
           onChange={(e) => handleSearch(e.target.value)}
         />
         {canCreate(DOCUMENT_PERMISSIONS) && (
           <UIButton className="theme-btn-next" onClick={() => { setSelectedItem("add"); setEditingId(null); setFormValues(initialFormValues); setIsModalVisible(true); }}>
-            Add New Document
+            {t("requiredDoc.addNewDocument")}
           </UIButton>
         )}
       </div>
@@ -291,54 +293,54 @@ const RequiredDoc = ({setSelectedTab}:any) => {
       <Dialog open={isModalVisible} onOpenChange={setIsModalVisible}>
         <DialogContent className="max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{editingId ? "Edit Document" : "Add Document"}</DialogTitle>
+            <DialogTitle>{editingId ? t("requiredDoc.editDocument") : t("requiredDoc.addDocument")}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4">
             <div className="space-y-2">
-              <Label>Name (En)</Label>
+              <Label>{t("requiredDoc.nameEn")}</Label>
               <Input
-                placeholder="Document Name in English"
+                placeholder={t("requiredDoc.nameEnPlaceholder")}
                 value={formValues.nameEn}
                 onChange={(e) => setFormValues({ ...formValues, nameEn: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label style={{ textAlign: "right", display: "block" }}>الاسم (عربي)</Label>
+              <Label style={{ textAlign: "right", display: "block" }}>{t("requiredDoc.nameAr")}</Label>
               <Input
-                placeholder="اسم المستند بالعربي"
+                placeholder={t("requiredDoc.nameArPlaceholder")}
                 value={formValues.nameAr}
                 onChange={(e) => setFormValues({ ...formValues, nameAr: e.target.value })}
                 dir="rtl"
               />
             </div>
             <div className="space-y-2">
-              <Label>Document Type</Label>
+              <Label>{t("requiredDoc.documentType")}</Label>
               <Select
                 value={formValues.documentType || ""}
                 onValueChange={(val) => setFormValues({ ...formValues, documentType: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select type" />
+                  <SelectValue placeholder={t("requiredDoc.selectType")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="TEMPLATE">Template</SelectItem>
-                  <SelectItem value="UPLOAD">Upload</SelectItem>
-                  <SelectItem value="GENERATED">Generated</SelectItem>
+                  <SelectItem value="TEMPLATE">{t("requiredDoc.typeTemplate")}</SelectItem>
+                  <SelectItem value="UPLOAD">{t("requiredDoc.typeUpload")}</SelectItem>
+                  <SelectItem value="GENERATED">{t("requiredDoc.typeGenerated")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>File Version</Label>
+              <Label>{t("requiredDoc.fileVersion")}</Label>
               <Input
-                placeholder="e.g. v1"
+                placeholder={t("requiredDoc.fileVersionPlaceholder")}
                 value={formValues.fileVersion}
                 onChange={(e) => setFormValues({ ...formValues, fileVersion: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Created By</Label>
+              <Label>{t("requiredDoc.createdBy")}</Label>
               <Input
-                placeholder="Creator name"
+                placeholder={t("requiredDoc.createdByPlaceholder")}
                 value={formValues.createdByName}
                 onChange={(e) => setFormValues({ ...formValues, createdByName: e.target.value })}
               />
@@ -349,13 +351,13 @@ const RequiredDoc = ({setSelectedTab}:any) => {
                   checked={formValues.required}
                   onCheckedChange={(checked) => setFormValues({ ...formValues, required: checked })}
                 />
-                <span>Required</span>
+                <span>{t("requiredDoc.required")}</span>
               </div>
             </div>
           </div>
           <DialogFooter>
-            <UIButton variant="outline" onClick={() => setIsModalVisible(false)}>Cancel</UIButton>
-            <UIButton className="theme-btn-next" onClick={handleSave}>Save</UIButton>
+            <UIButton variant="outline" onClick={() => setIsModalVisible(false)}>{t("common:cancel")}</UIButton>
+            <UIButton className="theme-btn-next" onClick={handleSave}>{t("common:save")}</UIButton>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -375,7 +377,7 @@ const RequiredDoc = ({setSelectedTab}:any) => {
       />
 
       <div className="d-flex justify-content-end mt-3">
-        <UIButton className="theme-btn-next">Next</UIButton>
+        <UIButton className="theme-btn-next">{t("common:next")}</UIButton>
       </div>
     </div>
   );

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Button, Dropdown, Menu, Select, Switch } from "antd";
 import TableView from "../../../components/TableView/TableView";
 import BuisnessModal from "../../../components/Customers/Modals/BuisnessModal";
@@ -20,6 +21,7 @@ import { useSelector } from "react-redux";
 import { setProdId } from "../../../redux/apis/apisSlice";
 import { RootState } from "../../../redux/rootReducer";
 const OtherFee: any = () => {
+  const { t } = useTranslation("loanManagement");
   const [customerValue, setCustomerValue] = useState("individuals");
   const [buisnessForm, setBusinessForm] = useState(false);
   const [editRowId, setEditRowId] = useState(null);
@@ -343,7 +345,7 @@ const OtherFee: any = () => {
   const menu: any = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
 
       {/* <Menu.Item key="edit" icon={<EditOutlined />}>
@@ -366,7 +368,7 @@ const OtherFee: any = () => {
     //     ),
     // },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -379,7 +381,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Operation Name",
+      name: t("field.operationName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -393,7 +395,7 @@ const OtherFee: any = () => {
       width: "150px",
     },
     {
-      name: "Product Name",
+      name: t("field.productName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -406,7 +408,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Fee Type",
+      name: t("field.feeType"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -415,17 +417,17 @@ const OtherFee: any = () => {
             onChange={handleInputChange}
           />
         ) : row.feeType == 1 ? (
-          "Fixed"
+          t("otherFee.feeFixed")
         ) : row.feeType == 2 ? (
-          "Fixed Slab"
+          t("otherFee.feeFixedSlab")
         ) : row.feeType == 3 ? (
-          "Percentage"
+          t("otherFee.feePercentage")
         ) : (
-          "Percentage Slab"
+          t("otherFee.feePercentageSlab")
         ),
     },
     {
-      name: "Applicability",
+      name: t("otherFee.colApplicability"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -438,7 +440,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Effective Date",
+      name: t("field.effectiveDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -451,7 +453,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Expiry Date",
+      name: t("field.expiryDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -464,7 +466,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Created By",
+      name: t("otherFee.colCreatedBy"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -477,7 +479,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Created Date",
+      name: t("otherFee.colCreatedDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -490,7 +492,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Updated By",
+      name: t("otherFee.colUpdatedBy"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -504,7 +506,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Updated Date",
+      name: t("otherFee.colUpdatedDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -517,7 +519,7 @@ const OtherFee: any = () => {
         ),
     },
     {
-      name: "Active Status",
+      name: t("otherFee.colActiveStatus"),
       width: "150px",
       cell: (row: any) => (
         <div>
@@ -531,7 +533,7 @@ const OtherFee: any = () => {
     },
 
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -543,7 +545,7 @@ const OtherFee: any = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -557,11 +559,13 @@ const OtherFee: any = () => {
         productId: getBussinessCategoryById(item?.fee?.productID),
         productName: item?.fee?.productName,
         transactionCategory:
-          item?.fee?.transactionCategory == 1 ? "Monetory" : "Non Monetory",
+          item?.fee?.transactionCategory == 1
+            ? t("otherFee.monetory")
+            : t("otherFee.nonMonetory"),
         applicationKey: item.fee.operationName,
         feeType: item?.fee?.feeType,
         // feeApplicability: item?.fee?.feeApplicability,
-        feeApplicability: "One Time",
+        feeApplicability: t("otherFee.oneTime"),
         effectiveDate: item?.fee?.effectiveDate,
         expiryDate: item.fee.expiryDate,
         createdBy: item?.fee?.createdBy,
@@ -573,14 +577,14 @@ const OtherFee: any = () => {
     });
 
   const feeTypeOption = [
-    { label: "Fixed", value: "fixed" },
-    { label: "Fixed Slab", value: "fixedSlab" },
-    { label: "Percentage", value: "percentage" },
-    { label: "Percentage Slab", value: "percentageSlab" },
+    { label: t("otherFee.feeFixed"), value: "fixed" },
+    { label: t("otherFee.feeFixedSlab"), value: "fixedSlab" },
+    { label: t("otherFee.feePercentage"), value: "percentage" },
+    { label: t("otherFee.feePercentageSlab"), value: "percentageSlab" },
   ];
   const categoryOption = [
-    { label: "Monetory", value: "monetory" },
-    { label: "Non-Monetory", value: "nonMonetory" },
+    { label: t("otherFee.monetory"), value: "monetory" },
+    { label: t("otherFee.nonMonetory"), value: "nonMonetory" },
   ];
   const applicableOption = [
     { label: "One-Time", value: "oneTime" },
@@ -625,19 +629,19 @@ const OtherFee: any = () => {
       !newSlab.value ||
       (newSlab.max !== "Above" && !newSlab.max)
     ) {
-      setError("Please fill all fields.");
+      setError(t("otherFee.errFillAll"));
       return;
     }
     if (isNaN(min) || isNaN(value) || (max !== "Above" && isNaN(max))) {
-      setError("Minimum, Maximum, and value must be numbers.");
+      setError(t("otherFee.errNumbers"));
       return;
     }
     if (slabs.length > 0 && !isEditing && min <= lastSlab.max) {
-      setError(`Minimum value must be greater than ${lastSlab.max}`);
+      setError(t("otherFee.errMinGreater", { value: lastSlab.max }));
       return;
     }
     if (max !== "Above" && max <= min) {
-      setError("Maximum value must be greater than Minimum value.");
+      setError(t("otherFee.errMaxGreater"));
       return;
     }
 
@@ -687,19 +691,19 @@ const OtherFee: any = () => {
       !newPercentage.value ||
       (newPercentage.max !== "Above" && !newPercentage.max)
     ) {
-      setErrorPercentage("Please fill all fields.");
+      setErrorPercentage(t("otherFee.errFillAll"));
       return;
     }
     if (isNaN(min) || isNaN(value) || (max !== "Above" && isNaN(max))) {
-      setErrorPercentage("Minimum, Maximum, and Percentage must be numbers.");
+      setErrorPercentage(t("otherFee.errPercentNumbers"));
       return;
     }
     if (percentageData.length > 0 && !isEditing && min <= lastSlab.max) {
-      setErrorPercentage(`Minimum value must be greater than ${lastSlab.max}`);
+      setErrorPercentage(t("otherFee.errMinGreater", { value: lastSlab.max }));
       return;
     }
     if (max !== "Above" && max <= min) {
-      setErrorPercentage("Maximum value must be greater than Minimum value.");
+      setErrorPercentage(t("otherFee.errMaxGreater"));
       return;
     }
 
@@ -736,7 +740,7 @@ const OtherFee: any = () => {
     <div className="service other-fee-page">
       {loader && <Loader />}
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Other Fees / Value</h3>
+        <h3 className="mb-0 fw-bold text-dark">{t("otherFee.title")}</h3>
       </div>
 
       {/* Filters card */}
@@ -757,7 +761,7 @@ const OtherFee: any = () => {
               setFormValues({});
             }}
           >
-            Add Fee
+            {t("otherFee.addFee")}
           </Button>
         </div>
       </div>
@@ -800,7 +804,7 @@ const OtherFee: any = () => {
         backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title className="modal-title"> Other Fee/value</Modal.Title>
+          <Modal.Title className="modal-title"> {t("otherFee.modalCreateTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
           <div className="px-4 mb-4">
@@ -831,7 +835,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Category
+                    {t("common:category")}
                   </Form.Label>
                   <Select
                     value={category}
@@ -839,7 +843,7 @@ const OtherFee: any = () => {
                       setCategory(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {categoryOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -855,7 +859,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Product Name
+                    {t("field.productName")}
                   </Form.Label>
                   <Select
                     value={formValues.productName}
@@ -866,7 +870,7 @@ const OtherFee: any = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Product Name"
+                    placeholder={t("placeholder.selectProductName")}
                   >
                     {category != "monetory" && (
                       <Select.Option value="all">
@@ -878,7 +882,7 @@ const OtherFee: any = () => {
                             }));
                           }}
                         >
-                          All Products
+                          {t("otherFee.allProducts")}
                         </div>
                       </Select.Option>
                     )}
@@ -905,7 +909,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Operation Name
+                    {t("field.operationName")}
                   </Form.Label>
                   <Select
                     value={formValues.operationName}
@@ -916,7 +920,7 @@ const OtherFee: any = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {categoryData?.map((option: any) => (
                       <Select.Option value={option.id}>
@@ -941,7 +945,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Fee Type
+                    {t("field.feeType")}
                   </Form.Label>
                   <Select
                     value={selectFeeType}
@@ -949,7 +953,7 @@ const OtherFee: any = () => {
                       setSelectFeeType(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Fee Type"
+                    placeholder={t("placeholder.selectFeeType")}
                   >
                     {feeTypeOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -965,7 +969,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Effective Date
+                    {t("field.effectiveDate")}
                   </Form.Label>
                   <Form.Control
                     name="effectiveDate"
@@ -978,7 +982,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Expiry Date
+                    {t("field.expiryDate")}
                   </Form.Label>
                   <Form.Control
                     name="expiryDate"
@@ -996,14 +1000,14 @@ const OtherFee: any = () => {
                 <Col md={6} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Enter Fee Amount
+                      {t("placeholder.enterFeeAmount")}
                     </Form.Label>
                     <Form.Control
                       name="amount"
                       type="number"
                       value={formValues.amount}
                       onChange={handleInputChange}
-                      placeholder="Enter Fee Amount"
+                      placeholder={t("placeholder.enterFeeAmount")}
                     // isInvalid={!!errors.company}
                     />
                     <Form.Control.Feedback type="invalid">
@@ -1016,7 +1020,7 @@ const OtherFee: any = () => {
                 <Col md={6} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Enter Fee Percentage
+                      {t("otherFee.enterFeePercentage")}
                     </Form.Label>
                     <Form.Control
                       name="percentage"
@@ -1037,7 +1041,7 @@ const OtherFee: any = () => {
                     type="checkbox"
                     id="taxCheckbox"
                     className="d-flex align-items-center gap-2"
-                    label="Tax"
+                    label={t("field.tax")}
                     checked={taxChecked}
                     onChange={(e) => setTaxChecked(e.target.checked)}
                     style={{ fontSize: "14px", fontWeight: "600" }}
@@ -1049,14 +1053,14 @@ const OtherFee: any = () => {
                 <Col md={6} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Tax Amount
+                      {t("field.taxAmount")}
                     </Form.Label>
                     <Form.Control
                       type="number"
                       name="taxAmount"
                       value={taxAmount}
                       onChange={(e) => setTaxAmount(e.target.value)} // Update tax amount
-                      placeholder="Enter Tax Amount"
+                      placeholder={t("placeholder.enterTaxAmount")}
                     />
                   </Form.Group>
                 </Col>
@@ -1101,11 +1105,11 @@ const OtherFee: any = () => {
                           fontWeight: "600",
                         }}
                       >
-                        <th style={{ padding: "15px" }}>Slab Name</th>
-                        <th>Minimum</th>
-                        <th>Maximum</th>
-                        <th>Fixed value</th>
-                        <th>Action</th>
+                        <th style={{ padding: "15px" }}>{t("otherFee.slabName")}</th>
+                        <th>{t("otherFee.minimum")}</th>
+                        <th>{t("otherFee.maximum")}</th>
+                        <th>{t("otherFee.fixedValue")}</th>
+                        <th>{t("applications.colAction")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1138,7 +1142,7 @@ const OtherFee: any = () => {
                         cursor: "pointer",
                       }}
                     >
-                      ADD NEW SLAB
+                      {t("otherFee.addNewSlab")}
                     </span>
                   </div>
                   <hr />
@@ -1156,11 +1160,11 @@ const OtherFee: any = () => {
                           fontWeight: "600",
                         }}
                       >
-                        <th style={{ padding: "15px" }}>Slab Name</th>
-                        <th>Minimum</th>
-                        <th>Maximum</th>
-                        <th>Percentage</th>
-                        <th>Action</th>
+                        <th style={{ padding: "15px" }}>{t("otherFee.slabName")}</th>
+                        <th>{t("otherFee.minimum")}</th>
+                        <th>{t("otherFee.maximum")}</th>
+                        <th>{t("otherFee.percentage")}</th>
+                        <th>{t("applications.colAction")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1195,7 +1199,7 @@ const OtherFee: any = () => {
                         cursor: "pointer",
                       }}
                     >
-                      ADD NEW SLAB
+                      {t("otherFee.addNewSlab")}
                     </span>
                   </div>
                   <hr />
@@ -1217,7 +1221,7 @@ const OtherFee: any = () => {
     color: "#FCFCFC"
   }} */
               >
-                Save
+                {t("common:save")}
               </Button>
             </div>
           </div>
@@ -1235,7 +1239,7 @@ const OtherFee: any = () => {
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">
             {" "}
-            Edit Other Fee/value
+            {t("otherFee.modalEditTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
@@ -1244,7 +1248,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Category
+                    {t("common:category")}
                   </Form.Label>
                   <Select
                     value={category}
@@ -1252,7 +1256,7 @@ const OtherFee: any = () => {
                       setCategory(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {categoryOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -1268,7 +1272,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Product Name
+                    {t("field.productName")}
                   </Form.Label>
                   <Select
                     value={
@@ -1283,7 +1287,7 @@ const OtherFee: any = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {category != "monetory" && (
                       <Select.Option value="all">
@@ -1295,7 +1299,7 @@ const OtherFee: any = () => {
                             }));
                           }}
                         >
-                          All Products
+                          {t("otherFee.allProducts")}
                         </div>
                       </Select.Option>
                     )}
@@ -1322,7 +1326,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Operation Name
+                    {t("field.operationName")}
                   </Form.Label>
                   <Select
                     value={formValues.operationName}
@@ -1333,7 +1337,7 @@ const OtherFee: any = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {categoryData?.map((option: any) => (
                       <Select.Option value={option.id}>
@@ -1358,7 +1362,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Fee Type
+                    {t("field.feeType")}
                   </Form.Label>
                   <Select
                     value={selectFeeType}
@@ -1366,7 +1370,7 @@ const OtherFee: any = () => {
                       setSelectFeeType(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Fee Type"
+                    placeholder={t("placeholder.selectFeeType")}
                   >
                     {feeTypeOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -1390,7 +1394,7 @@ const OtherFee: any = () => {
                       setSelectApplicable(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("placeholder.selectRateLoanType")}
                   >
                     {applicableOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -1407,7 +1411,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Effective Date
+                    {t("field.effectiveDate")}
                   </Form.Label>
                   <Form.Control
                     name="effectiveDate"
@@ -1424,7 +1428,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Expiry Date
+                    {t("field.expiryDate")}
                   </Form.Label>
                   <Form.Control
                     name="expiryDate"
@@ -1442,7 +1446,7 @@ const OtherFee: any = () => {
                 <Col md={6} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Enter Fee Amount
+                      {t("placeholder.enterFeeAmount")}
                     </Form.Label>
                     <Form.Control
                       name="amount"
@@ -1461,7 +1465,7 @@ const OtherFee: any = () => {
                 <Col md={6} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Enter Fee Percentage
+                      {t("otherFee.enterFeePercentage")}
                     </Form.Label>
                     <Form.Control
                       name="percentage"
@@ -1482,7 +1486,7 @@ const OtherFee: any = () => {
                     type="checkbox"
                     id="taxCheckbox"
                     className="d-flex align-items-center gap-2"
-                    label="Tax"
+                    label={t("field.tax")}
                     checked={formValues.taxChecked}
                     onChange={(e) =>
                       setFormValues((prevValues: any) => ({
@@ -1499,14 +1503,14 @@ const OtherFee: any = () => {
                 <Col md={6} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Tax Amount
+                      {t("field.taxAmount")}
                     </Form.Label>
                     <Form.Control
                       type="number"
                       name="taxAmount"
                       value={formValues.taxAmount}
                       onChange={handleInputChange} // Update tax amount
-                      placeholder="Enter Tax Amount"
+                      placeholder={t("placeholder.enterTaxAmount")}
                     />
                   </Form.Group>
                 </Col>
@@ -1552,11 +1556,11 @@ const OtherFee: any = () => {
                           fontWeight: "600",
                         }}
                       >
-                        <th style={{ padding: "15px" }}>Slab Name</th>
-                        <th>Minimum</th>
-                        <th>Maximum</th>
-                        <th>Fixed value</th>
-                        <th>Action</th>
+                        <th style={{ padding: "15px" }}>{t("otherFee.slabName")}</th>
+                        <th>{t("otherFee.minimum")}</th>
+                        <th>{t("otherFee.maximum")}</th>
+                        <th>{t("otherFee.fixedValue")}</th>
+                        <th>{t("applications.colAction")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1589,7 +1593,7 @@ const OtherFee: any = () => {
                         cursor: "pointer",
                       }}
                     >
-                      ADD NEW SLAB
+                      {t("otherFee.addNewSlab")}
                     </span>
                   </div>
                   <hr />
@@ -1607,11 +1611,11 @@ const OtherFee: any = () => {
                           fontWeight: "600",
                         }}
                       >
-                        <th style={{ padding: "15px" }}>Slab Name</th>
-                        <th>Minimum</th>
-                        <th>Maximum</th>
-                        <th>Percentage</th>
-                        <th>Action</th>
+                        <th style={{ padding: "15px" }}>{t("otherFee.slabName")}</th>
+                        <th>{t("otherFee.minimum")}</th>
+                        <th>{t("otherFee.maximum")}</th>
+                        <th>{t("otherFee.percentage")}</th>
+                        <th>{t("applications.colAction")}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1646,7 +1650,7 @@ const OtherFee: any = () => {
                         cursor: "pointer",
                       }}
                     >
-                      ADD NEW SLAB
+                      {t("otherFee.addNewSlab")}
                     </span>
                   </div>
                   <hr />
@@ -1669,7 +1673,7 @@ const OtherFee: any = () => {
     color: "#FCFCFC"
   }} */
               >
-                Save
+                {t("common:save")}
               </Button>
             </div>
           </div>
@@ -1685,7 +1689,7 @@ const OtherFee: any = () => {
         backdrop="static"
       >
         <Modal.Header closeButton>
-          <Modal.Title className="modal-title">Add New Slab</Modal.Title>
+          <Modal.Title className="modal-title">{t("otherFee.addNewSlabTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
           <div className="px-4 mt-2 mb-4">
@@ -1694,7 +1698,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Slab Name:
+                    {t("otherFee.slabNameColon")}
                   </Form.Label>
                   <Form.Control
                     name="slabName"
@@ -1707,7 +1711,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Minimum:
+                    {t("otherFee.minimumColon")}
                   </Form.Label>
                   <Form.Control
                     name="min"
@@ -1720,7 +1724,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Maximum:
+                    {t("otherFee.maximumColon")}
                   </Form.Label>
                   <Form.Control
                     name="max"
@@ -1733,7 +1737,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Fixed value:
+                    {t("otherFee.fixedValueColon")}
                   </Form.Label>
                   <Form.Control
                     name="value"
@@ -1758,7 +1762,7 @@ const OtherFee: any = () => {
                   width: "fit-content",
                 }}
               >
-                Save
+                {t("common:save")}
               </button>
             </div>
           </div>
@@ -1775,7 +1779,7 @@ const OtherFee: any = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">
-            Add New Percentage Slab
+            {t("otherFee.addNewPercentageSlabTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
@@ -1787,7 +1791,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Slab Name:
+                    {t("otherFee.slabNameColon")}
                   </Form.Label>
                   <Form.Control
                     name="slabName"
@@ -1800,7 +1804,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Minimum:
+                    {t("otherFee.minimumColon")}
                   </Form.Label>
                   <Form.Control
                     name="min"
@@ -1813,7 +1817,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Maximum:
+                    {t("otherFee.maximumColon")}
                   </Form.Label>
                   <Form.Control
                     name="max"
@@ -1826,7 +1830,7 @@ const OtherFee: any = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Percentage:
+                    {t("otherFee.percentageColon")}
                   </Form.Label>
                   <Form.Control
                     name="value"
@@ -1853,7 +1857,7 @@ const OtherFee: any = () => {
                   border: "none",
                 }}
               >
-                Save
+                {t("common:save")}
               </button>
             </div>
           </div>

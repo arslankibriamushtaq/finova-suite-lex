@@ -16,6 +16,7 @@ import {
   ArrowLeft
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface Document {
   id: string;
@@ -28,6 +29,7 @@ interface Document {
 }
 
 export default function KycDocuments() {
+  const { t } = useTranslation('investor');
   const { investorId } = useParams<{ investorId: string }>();
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
@@ -38,7 +40,7 @@ export default function KycDocuments() {
     name: 'John Doe',
     email: 'john.doe@example.com',
     phone: '+1 234 567 8900',
-    type: 'Individual',
+    type: t('kycd.typeIndividual'),
     status: 'KYC Pending',
     createdAt: '2024-01-15'
   };
@@ -48,8 +50,8 @@ export default function KycDocuments() {
     const mockDocuments: Document[] = [
       {
         id: '1',
-        name: 'National ID Card',
-        type: 'Identity Document',
+        name: t('kycd.doc.nationalId'),
+        type: t('kycd.docType.identity'),
         status: 'pending',
         uploadedAt: '2024-01-15T10:30:00Z',
         size: '2.5 MB',
@@ -57,8 +59,8 @@ export default function KycDocuments() {
       },
       {
         id: '2',
-        name: 'Passport',
-        type: 'Identity Document',
+        name: t('kycd.doc.passport'),
+        type: t('kycd.docType.identity'),
         status: 'approved',
         uploadedAt: '2024-01-15T11:15:00Z',
         size: '1.8 MB',
@@ -66,8 +68,8 @@ export default function KycDocuments() {
       },
       {
         id: '3',
-        name: 'Proof of Address',
-        type: 'Address Verification',
+        name: t('kycd.doc.addressProof'),
+        type: t('kycd.docType.address'),
         status: 'rejected',
         uploadedAt: '2024-01-15T12:00:00Z',
         size: '1.2 MB',
@@ -75,8 +77,8 @@ export default function KycDocuments() {
       },
       {
         id: '4',
-        name: 'Bank Statement',
-        type: 'Financial Document',
+        name: t('kycd.doc.bankStatement'),
+        type: t('kycd.docType.financial'),
         status: 'pending',
         uploadedAt: '2024-01-15T14:30:00Z',
         size: '3.1 MB',
@@ -97,7 +99,7 @@ export default function KycDocuments() {
         const newDocument: Document = {
           id: Date.now().toString(),
           name: files[0].name,
-          type: 'Uploaded Document',
+          type: t('kycd.docType.uploaded'),
           status: 'pending',
           uploadedAt: new Date().toISOString(),
           size: `${(files[0].size / 1024 / 1024).toFixed(1)} MB`,
@@ -139,7 +141,7 @@ export default function KycDocuments() {
     return (
       <div className="p-8">
         <div className="flex items-center justify-center h-64">
-          <div className="text-gray-500">Loading documents...</div>
+          <div className="text-gray-500">{t('kycd.loading')}</div>
         </div>
       </div>
     );
@@ -155,12 +157,12 @@ export default function KycDocuments() {
               to="/admin/investors" 
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Investors
+              <ArrowLeft className="w-5 h-5 me-2" />
+              {t('kycd.backToInvestors')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">KYC Documents</h1>
-              <p className="text-gray-600">Manage KYC documents for investor verification</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('kycd.title')}</h1>
+              <p className="text-gray-600">{t('kycd.subtitle')}</p>
             </div>
           </div>
         </div>
@@ -177,27 +179,27 @@ export default function KycDocuments() {
               <h3 className="text-lg font-semibold text-gray-900">{investorData.name}</h3>
               <div className="flex items-center space-x-4 text-sm text-gray-500">
                 <div className="flex items-center">
-                  <Mail className="w-4 h-4 mr-1" />
+                  <Mail className="w-4 h-4 me-1" />
                   {investorData.email}
                 </div>
                 <div className="flex items-center">
-                  <Phone className="w-4 h-4 mr-1" />
+                  <Phone className="w-4 h-4 me-1" />
                   {investorData.phone}
                 </div>
                 <div className="flex items-center">
-                  <Calendar className="w-4 h-4 mr-1" />
+                  <Calendar className="w-4 h-4 me-1" />
                   {new Date(investorData.createdAt).toLocaleDateString()}
                 </div>
               </div>
             </div>
           </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">Investor Type</div>
+          <div className="text-end">
+            <div className="text-sm text-gray-500">{t('kycd.investorType')}</div>
             <div className="font-medium text-gray-900">{investorData.type}</div>
             <div className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mt-2 ${
               investorData.status === 'KYC Pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-800'
             }`}>
-              {investorData.status}
+              {t('kycd.statusKycPending')}
             </div>
           </div>
         </div>
@@ -205,12 +207,12 @@ export default function KycDocuments() {
 
       {/* Upload Section */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Upload Documents</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('kycd.uploadTitle')}</h3>
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
           <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
           <div className="text-gray-600 mb-4">
-            <p className="text-lg font-medium">Upload KYC Documents</p>
-            <p className="text-sm">Drag and drop files here, or click to select files</p>
+            <p className="text-lg font-medium">{t('kycd.uploadHeading')}</p>
+            <p className="text-sm">{t('kycd.uploadHint')}</p>
           </div>
           <input
             type="file"
@@ -227,7 +229,7 @@ export default function KycDocuments() {
               uploading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
           >
-            {uploading ? 'Uploading...' : 'Select Files'}
+            {uploading ? t('kycd.uploading') : t('kycd.selectFiles')}
           </label>
         </div>
       </div>
@@ -235,29 +237,29 @@ export default function KycDocuments() {
       {/* Documents List */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Documents ({documents.length})</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('kycd.documentsCount', { count: documents.length })}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Document
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('kycd.col.document')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Size
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('kycd.col.size')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Uploaded
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('kycd.col.uploaded')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:actions')}
                 </th>
               </tr>
             </thead>
@@ -266,7 +268,7 @@ export default function KycDocuments() {
                 <tr key={document.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <FileText className="w-8 h-8 text-gray-400 mr-3" />
+                      <FileText className="w-8 h-8 text-gray-400 me-3" />
                       <div>
                         <div className="text-sm font-medium text-gray-900">{document.name}</div>
                         <div className="text-sm text-gray-500">ID: {document.id}</div>
@@ -279,8 +281,8 @@ export default function KycDocuments() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {getStatusIcon(document.status)}
-                      <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
-                        {document.status.charAt(0).toUpperCase() + document.status.slice(1)}
+                      <span className={`ms-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(document.status)}`}>
+                        {t(`kycd.status.${document.status}`)}
                       </span>
                     </div>
                   </td>
@@ -290,26 +292,26 @@ export default function KycDocuments() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(document.uploadedAt).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button
                         onClick={() => window.open(document.url, '_blank')}
                         className="text-black hover:text-blue-900"
-                        title="View Document"
+                        title={t('kycd.viewDocument')}
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => window.open(document.url, '_blank')}
                         className="text-green-600 hover:text-green-900"
-                        title="Download Document"
+                        title={t('kycd.downloadDocument')}
                       >
                         <Download className="w-4 h-4" />
                       </button>
                       <button
                         onClick={() => handleDeleteDocument(document.id)}
                         className="text-red-600 hover:text-red-900"
-                        title="Delete Document"
+                        title={t('kycd.deleteDocument')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>

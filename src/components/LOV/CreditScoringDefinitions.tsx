@@ -33,8 +33,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useTranslation } from "react-i18next";
 
 const CreditScoringDefinitions = () => {
+  const { t } = useTranslation("lov");
   const [isLoading, setIsLoading] = useState(false);
   const [definitions, setDefinitions] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -129,7 +131,7 @@ const CreditScoringDefinitions = () => {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Failed to fetch credit scoring definitions"
+        error?.response?.data?.message || t("creditScoringDefinitions.toast.fetchFailed")
       );
       console.error("Error fetching definitions:", error);
     } finally {
@@ -164,15 +166,15 @@ const CreditScoringDefinitions = () => {
 
   const handleCreateSubmit = async () => {
     if (!createFormData.fieldKey.trim()) {
-      toast.error("Field Key is required");
+      toast.error(t("creditScoringDefinitions.validation.fieldKey"));
       return;
     }
     if (!createFormData.nameEn.trim()) {
-      toast.error("English Name is required");
+      toast.error(t("creditScoringDefinitions.validation.nameEn"));
       return;
     }
     if (!createFormData.nameAr.trim()) {
-      toast.error("Arabic Name is required");
+      toast.error(t("creditScoringDefinitions.validation.nameAr"));
       return;
     }
 
@@ -180,16 +182,16 @@ const CreditScoringDefinitions = () => {
       setIsCreating(true);
       const response = await createCreditScoringFieldDefinition(createFormData);
       if (response?.data?.success || response?.status === 201) {
-        toast.success(response?.data?.message || "Field definition created successfully");
+        toast.success(response?.data?.message || t("creditScoringDefinitions.toast.created"));
         closeCreateModal();
         fetchDefinitions();
       } else {
-        toast.error(response?.data?.message || "Failed to create field definition");
+        toast.error(response?.data?.message || t("creditScoringDefinitions.toast.createFailed"));
       }
     } catch (error: any) {
       console.error("Error creating definition:", error);
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to create field definition"
+        error?.response?.data?.message || error?.message || t("creditScoringDefinitions.toast.createFailed")
       );
     } finally {
       setIsCreating(false);
@@ -225,15 +227,15 @@ const CreditScoringDefinitions = () => {
 
   const handleEditSubmit = async () => {
     if (!editFormData.fieldKey.trim()) {
-      toast.error("Field Key is required");
+      toast.error(t("creditScoringDefinitions.validation.fieldKey"));
       return;
     }
     if (!editFormData.nameEn.trim()) {
-      toast.error("English Name is required");
+      toast.error(t("creditScoringDefinitions.validation.nameEn"));
       return;
     }
     if (!editFormData.nameAr.trim()) {
-      toast.error("Arabic Name is required");
+      toast.error(t("creditScoringDefinitions.validation.nameAr"));
       return;
     }
 
@@ -244,7 +246,7 @@ const CreditScoringDefinitions = () => {
         editFormData
       );
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Field definition updated successfully");
+        toast.success(response?.data?.message || t("creditScoringDefinitions.toast.updated"));
         setDefinitions((prev: any[]) =>
           prev.map((item) =>
             item.id === selectedDefinition.id
@@ -254,12 +256,12 @@ const CreditScoringDefinitions = () => {
         );
         closeEditModal();
       } else {
-        toast.error(response?.data?.message || "Failed to update field definition");
+        toast.error(response?.data?.message || t("creditScoringDefinitions.toast.updateFailed"));
       }
     } catch (error: any) {
       console.error("Error updating definition:", error);
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to update field definition"
+        error?.response?.data?.message || error?.message || t("creditScoringDefinitions.toast.updateFailed")
       );
     } finally {
       setIsEditing(false);
@@ -279,7 +281,7 @@ const CreditScoringDefinitions = () => {
 
   const handleDeleteConfirm = async () => {
     if (!selectedForDelete) {
-      toast.error("Definition not selected");
+      toast.error(t("creditScoringDefinitions.toast.notSelected"));
       return;
     }
 
@@ -287,16 +289,16 @@ const CreditScoringDefinitions = () => {
       setIsDeletingItem(true);
       const response = await deleteCreditScoringFieldDefinition(selectedForDelete.id);
       if (response?.data?.success || response?.status === 200 || response?.status === 204) {
-        toast.success(response?.data?.message || "Field definition deleted successfully");
+        toast.success(response?.data?.message || t("creditScoringDefinitions.toast.deleted"));
         setDefinitions((prev: any[]) => prev.filter((item) => item.id !== selectedForDelete.id));
         closeDeleteModal();
       } else {
-        toast.error(response?.data?.message || "Failed to delete field definition");
+        toast.error(response?.data?.message || t("creditScoringDefinitions.toast.deleteFailed"));
       }
     } catch (error: any) {
       console.error("Error deleting definition:", error);
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to delete field definition"
+        error?.response?.data?.message || error?.message || t("creditScoringDefinitions.toast.deleteFailed")
       );
     } finally {
       setIsDeletingItem(false);
@@ -306,22 +308,22 @@ const CreditScoringDefinitions = () => {
 
   const tableHeaders = [
     {
-      name: "Field Key",
+      name: t("creditScoringDefinitions.col.fieldKey"),
       selector: (row: any) => row.fieldKey || "-",
       sortable: true,
     },
     {
-      name: "Name (EN)",
+      name: t("creditScoringDefinitions.col.nameEn"),
       selector: (row: any) => row.nameEn || "-",
       sortable: true,
     },
     {
-      name: "Name (AR)",
+      name: t("creditScoringDefinitions.col.nameAr"),
       selector: (row: any) => row.nameAr || "-",
       sortable: true,
     },
     {
-      name: "Data Type",
+      name: t("creditScoringDefinitions.col.dataType"),
       cell: (row: any) => (
         <span className="inline-block px-2 py-1 bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-100 rounded text-xs font-medium">
           {row.dataType || "-"}
@@ -330,29 +332,29 @@ const CreditScoringDefinitions = () => {
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span className={`inline-block px-2 py-1 rounded text-xs font-medium ${row.active
             ? "bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-100"
             : "bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-100"
           }`}>
-          {row.active ? "Active" : "Inactive"}
+          {row.active ? t("common:active") : t("common:inactive")}
         </span>
       ),
       sortable: true,
     },
     {
-      name: "Sort Order",
+      name: t("creditScoringDefinitions.col.sortOrder"),
       selector: (row: any) => row.sortOrder || "-",
       sortable: true,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="outline" className="gap-1">
-              Select <ChevronDown className="h-4 w-4" />
+              {t("common:select")} <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
@@ -361,14 +363,14 @@ const CreditScoringDefinitions = () => {
               className="cursor-pointer gap-2"
             >
               <Edit2 className="h-4 w-4" />
-              <span>Edit</span>
+              <span>{t("common:edit")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={() => openDeleteModal(row)}
               className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
             >
               <Trash2 className="h-4 w-4" />
-              <span>Delete</span>
+              <span>{t("common:delete")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -385,7 +387,7 @@ const CreditScoringDefinitions = () => {
           <span className="pro-head-badge">
             <ListChecks className="h-4 w-4" />
           </span>
-          Credit Scoring Field Definitions
+          {t("creditScoringDefinitions.title")}
         </h3>
       </div>
 
@@ -396,7 +398,7 @@ const CreditScoringDefinitions = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by key or name"
+            placeholder={t("creditScoringDefinitions.ph.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
@@ -411,7 +413,7 @@ const CreditScoringDefinitions = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="w-4 h-4" />
-            Create
+            {t("common:create")}
           </Button>
         </div>
       </div>
@@ -440,60 +442,60 @@ const CreditScoringDefinitions = () => {
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Create Field Definition</DialogTitle>
+              <DialogTitle>{t("creditScoringDefinitions.modal.createTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="create-fieldKey">Field Key</Label>
+                <Label htmlFor="create-fieldKey">{t("creditScoringDefinitions.label.fieldKey")}</Label>
                 <Input
                   id="create-fieldKey"
                   value={createFormData.fieldKey}
                   onChange={(e) => setCreateFormData({ ...createFormData, fieldKey: e.target.value })}
-                  placeholder="e.g., INCOME_SCORE"
+                  placeholder={t("creditScoringDefinitions.ph.fieldKey")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="create-nameEn">Name (English)</Label>
+                <Label htmlFor="create-nameEn">{t("creditScoringDefinitions.label.nameEn")}</Label>
                 <Input
                   id="create-nameEn"
                   value={createFormData.nameEn}
                   onChange={(e) => setCreateFormData({ ...createFormData, nameEn: e.target.value })}
-                  placeholder="e.g., Income Score"
+                  placeholder={t("creditScoringDefinitions.ph.nameEn")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="create-nameAr">Name (Arabic)</Label>
+                <Label htmlFor="create-nameAr">{t("creditScoringDefinitions.label.nameAr")}</Label>
                 <Input
                   id="create-nameAr"
                   value={createFormData.nameAr}
                   onChange={(e) => setCreateFormData({ ...createFormData, nameAr: e.target.value })}
-                  placeholder="e.g., درجة الدخل"
+                  placeholder={t("creditScoringDefinitions.ph.nameAr")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="create-dataType">Data Type</Label>
+                <Label htmlFor="create-dataType">{t("creditScoringDefinitions.label.dataType")}</Label>
                 <Select value={createFormData.dataType} onValueChange={(value) => setCreateFormData({ ...createFormData, dataType: value })}>
                   <SelectTrigger id="create-dataType" className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="STRING">String</SelectItem>
-                    <SelectItem value="NUMERIC">Numeric</SelectItem>
-                    <SelectItem value="BOOLEAN">Boolean</SelectItem>
+                    <SelectItem value="STRING">{t("creditScoringDefinitions.dataType.string")}</SelectItem>
+                    <SelectItem value="NUMERIC">{t("creditScoringDefinitions.dataType.numeric")}</SelectItem>
+                    <SelectItem value="BOOLEAN">{t("creditScoringDefinitions.dataType.boolean")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="create-sortOrder">Sort Order</Label>
+                <Label htmlFor="create-sortOrder">{t("creditScoringDefinitions.label.sortOrder")}</Label>
                 <Input
                   id="create-sortOrder"
                   type="number"
                   value={createFormData.sortOrder}
                   onChange={(e) => setCreateFormData({ ...createFormData, sortOrder: parseInt(e.target.value) || 0 })}
-                  placeholder="e.g., 50"
+                  placeholder={t("creditScoringDefinitions.ph.sortOrder")}
                   className="mt-1"
                 />
               </div>
@@ -505,12 +507,12 @@ const CreditScoringDefinitions = () => {
                   onChange={(e) => setCreateFormData({ ...createFormData, active: e.target.checked })}
                   className="rounded border-input"
                 />
-                <Label htmlFor="create-active" className="font-normal cursor-pointer">Active</Label>
+                <Label htmlFor="create-active" className="font-normal cursor-pointer">{t("common:active")}</Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateSubmit} disabled={isCreating}>{isCreating ? "Creating..." : "Create"}</Button>
+              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>{t("common:cancel")}</Button>
+              <Button onClick={handleCreateSubmit} disabled={isCreating}>{isCreating ? t("creditScoringDefinitions.creating") : t("common:create")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -519,61 +521,61 @@ const CreditScoringDefinitions = () => {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Edit Field Definition</DialogTitle>
+              <DialogTitle>{t("creditScoringDefinitions.modal.editTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="edit-fieldKey">Field Key</Label>
+                <Label htmlFor="edit-fieldKey">{t("creditScoringDefinitions.label.fieldKey")}</Label>
                 <Input
                   id="edit-fieldKey"
                   value={editFormData.fieldKey}
                   onChange={(e) => setEditFormData({ ...editFormData, fieldKey: e.target.value })}
-                  placeholder="e.g., INCOME_SCORE"
+                  placeholder={t("creditScoringDefinitions.ph.fieldKey")}
                   className="mt-1"
                   disabled
                 />
               </div>
               <div>
-                <Label htmlFor="edit-nameEn">Name (English)</Label>
+                <Label htmlFor="edit-nameEn">{t("creditScoringDefinitions.label.nameEn")}</Label>
                 <Input
                   id="edit-nameEn"
                   value={editFormData.nameEn}
                   onChange={(e) => setEditFormData({ ...editFormData, nameEn: e.target.value })}
-                  placeholder="e.g., Income Score"
+                  placeholder={t("creditScoringDefinitions.ph.nameEn")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-nameAr">Name (Arabic)</Label>
+                <Label htmlFor="edit-nameAr">{t("creditScoringDefinitions.label.nameAr")}</Label>
                 <Input
                   id="edit-nameAr"
                   value={editFormData.nameAr}
                   onChange={(e) => setEditFormData({ ...editFormData, nameAr: e.target.value })}
-                  placeholder="e.g., درجة الدخل"
+                  placeholder={t("creditScoringDefinitions.ph.nameAr")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-dataType">Data Type</Label>
+                <Label htmlFor="edit-dataType">{t("creditScoringDefinitions.label.dataType")}</Label>
                 <Select value={editFormData.dataType} onValueChange={(value) => setEditFormData({ ...editFormData, dataType: value })}>
                   <SelectTrigger id="edit-dataType" className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="STRING">String</SelectItem>
-                    <SelectItem value="NUMERIC">Numeric</SelectItem>
-                    <SelectItem value="BOOLEAN">Boolean</SelectItem>
+                    <SelectItem value="STRING">{t("creditScoringDefinitions.dataType.string")}</SelectItem>
+                    <SelectItem value="NUMERIC">{t("creditScoringDefinitions.dataType.numeric")}</SelectItem>
+                    <SelectItem value="BOOLEAN">{t("creditScoringDefinitions.dataType.boolean")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit-sortOrder">Sort Order</Label>
+                <Label htmlFor="edit-sortOrder">{t("creditScoringDefinitions.label.sortOrder")}</Label>
                 <Input
                   id="edit-sortOrder"
                   type="number"
                   value={editFormData.sortOrder}
                   onChange={(e) => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) || 0 })}
-                  placeholder="e.g., 50"
+                  placeholder={t("creditScoringDefinitions.ph.sortOrder")}
                   className="mt-1"
                 />
               </div>
@@ -585,12 +587,12 @@ const CreditScoringDefinitions = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, active: e.target.checked })}
                   className="rounded border-input"
                 />
-                <Label htmlFor="edit-active" className="font-normal cursor-pointer">Active</Label>
+                <Label htmlFor="edit-active" className="font-normal cursor-pointer">{t("common:active")}</Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
-              <Button onClick={handleEditSubmit} disabled={isEditing}>{isEditing ? "updating..." : "Update"}</Button>
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>{t("common:cancel")}</Button>
+              <Button onClick={handleEditSubmit} disabled={isEditing}>{isEditing ? t("creditScoringDefinitions.updating") : t("common:update")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -599,19 +601,19 @@ const CreditScoringDefinitions = () => {
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
           <DialogContent className="max-w-sm">
             <DialogHeader>
-              <DialogTitle className="text-red-600 dark:text-red-400">Delete Field Definition</DialogTitle>
+              <DialogTitle className="text-red-600 dark:text-red-400">{t("creditScoringDefinitions.modal.deleteTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              <p className="text-sm text-foreground">Are you sure you want to delete this field definition?</p>
+              <p className="text-sm text-foreground">{t("creditScoringDefinitions.confirmDeleteBody")}</p>
               <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded p-3">
-                <p className="text-sm font-medium text-red-900 dark:text-red-100">Field Key: {selectedForDelete?.fieldKey}</p>
+                <p className="text-sm font-medium text-red-900 dark:text-red-100">{t("creditScoringDefinitions.fieldKeyLabel", { value: selectedForDelete?.fieldKey })}</p>
               </div>
-              <p className="text-xs text-muted-foreground">This action cannot be undone.</p>
+              <p className="text-xs text-muted-foreground">{t("creditScoringDefinitions.actionUndone")}</p>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>{t("common:cancel")}</Button>
               <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isDeletingItem}>
-                {isDeletingItem ? "Deleting..." : "Delete"}
+                {isDeletingItem ? t("creditScoringDefinitions.deleting") : t("common:delete")}
               </Button>
             </DialogFooter>
           </DialogContent>

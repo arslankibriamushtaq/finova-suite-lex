@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Block codes data
 const blockCodesData = [
@@ -30,6 +31,7 @@ const blockCodesData = [
 ];
 
 const PepBlockCodes = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -97,13 +99,13 @@ const PepBlockCodes = () => {
   
   const Activity_Loans_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       cell: (row: { name: any }) => row.name,
       sortable: true,
       width: "200px",
     },
     {
-      name: "ID",
+      name: t("pepBlockCodes.col.id"),
       cell: (row: any) => (
         <MaskedValue value={row.nid} showToggle={true} unmaskedCount={4} />
       ),
@@ -111,25 +113,25 @@ const PepBlockCodes = () => {
       sortable: true,
     },
     {
-      name: "CIF",
+      name: t("pepBlockCodes.col.cif"),
       selector: (row: { cif: any }) => row.cif || "-",
       sortable: true,
       width: "220px",
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { email: any }) => row.email,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Partner",
+      name: t("pepBlockCodes.col.partner"),
       selector: (row: { partner: any }) => row.partner || "-",
       sortable: true,
     },
@@ -160,7 +162,7 @@ const PepBlockCodes = () => {
       width: "200px",
     }, */
     {
-      name: "Is Blocked",
+      name: t("pepBlockCodes.col.isBlocked"),
       selector: (row: { is_blocked: any }) => row.is_blocked,
       sortable: true,
       cell: (row: any) => (
@@ -176,12 +178,12 @@ const PepBlockCodes = () => {
             display: "inline-block",
           }}
         >
-          {row.is_blocked ? "Blocked" : "Unblocked"}
+          {row.is_blocked ? t("pepBlockCodes.blocked") : t("pepBlockCodes.unblocked")}
         </span>
       ),
     },
     {
-      name:"Date",
+      name: t("common:date"),
       sortable: true,
       cell: (row: any) => (
         <div>
@@ -190,7 +192,7 @@ const PepBlockCodes = () => {
       ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => {
         const getStatusColor = (status: string) => {
           switch (status?.toLowerCase()) {
@@ -211,12 +213,12 @@ const PepBlockCodes = () => {
           switch (status?.toLowerCase()) {
             case "approved":
             case "approved":
-              return "Approved";
+              return t("common:approved");
             case "reject":
             case "rejected":
-              return "Rejected";
+              return t("common:rejected");
             case "pending":
-              return "Pending";
+              return t("common:pending");
             default:
               return status || "-";
           }
@@ -240,12 +242,12 @@ const PepBlockCodes = () => {
       },
     },
     {
-      name:"Comments",
+      name: t("pepBlockCodes.col.comments"),
       cell: (row: { comment: any }) => row.comment || "-",
       sortable: true,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -260,7 +262,7 @@ const PepBlockCodes = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -273,21 +275,21 @@ const PepBlockCodes = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
       <Menu.Item
         key="change"
         icon={<SyncOutlined />}
         onClick={() => handleMenuClick("change", row)}
       >
-        Change Status
+        {t("pepBlockCodes.changeStatus")}
       </Menu.Item>
       <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
         onClick={() => handleMenuClick("changeRisk", row)}
       >
-        Change Risk
+        {t("pepBlockCodes.changeRisk")}
       </Menu.Item>
       {/* <Menu.Item
         key="logout"
@@ -386,12 +388,12 @@ const PepBlockCodes = () => {
   // Handle block selected codes
   const handleBlockSelected = async () => {
     if (!currentUserId) {
-      toast.error("User ID not found");
+      toast.error(t("pepBlockCodes.userIdNotFound"));
       return;
     }
 
     if (selectedBlockCodes.length === 0) {
-      toast.error("Please select at least one block code");
+      toast.error(t("pepBlockCodes.selectAtLeastOne"));
       return;
     }
 
@@ -410,7 +412,7 @@ const PepBlockCodes = () => {
             selectedBlockCodes.includes(code.id) ? { ...code, blocked: true } : code
           )
         );
-        toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been blocked`);
+        toast.success(response?.data?.message || t("pepBlockCodes.blockedCount", { count: selectedBlockCodes.length }));
         setSelectedBlockCodes([]);
         
         // Refresh the leads list to get updated data
@@ -431,23 +433,23 @@ const PepBlockCodes = () => {
           console.error("Error refreshing block codes:", error);
         }
       } else {
-        toast.error(response?.data?.message || "Failed to block codes");
+        toast.error(response?.data?.message || t("pepBlockCodes.failedToBlock"));
       }
     } catch (error: any) {
       console.error("Error blocking codes:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to block codes");
+      toast.error(error?.response?.data?.message || error?.message || t("pepBlockCodes.failedToBlock"));
     }
   };
 
   // Handle unblock selected codes
   const handleUnblockSelected = async () => {
     if (!currentUserId) {
-      toast.error("User ID not found");
+      toast.error(t("pepBlockCodes.userIdNotFound"));
       return;
     }
 
     if (selectedBlockCodes.length === 0) {
-      toast.error("Please select at least one block code");
+      toast.error(t("pepBlockCodes.selectAtLeastOne"));
       return;
     }
 
@@ -466,7 +468,7 @@ const PepBlockCodes = () => {
             selectedBlockCodes.includes(code.id) ? { ...code, blocked: false } : code
           )
         );
-        toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been unblocked`);
+        toast.success(response?.data?.message || t("pepBlockCodes.unblockedCount", { count: selectedBlockCodes.length }));
         setSelectedBlockCodes([]);
         
         // Refresh the leads list to get updated data
@@ -487,11 +489,11 @@ const PepBlockCodes = () => {
           console.error("Error refreshing block codes:", error);
         }
       } else {
-        toast.error(response?.data?.message || "Failed to unblock codes");
+        toast.error(response?.data?.message || t("pepBlockCodes.failedToUnblock"));
       }
     } catch (error: any) {
       console.error("Error unblocking codes:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to unblock codes");
+      toast.error(error?.response?.data?.message || error?.message || t("pepBlockCodes.failedToUnblock"));
     }
   };
 
@@ -514,7 +516,7 @@ const PepBlockCodes = () => {
   // Handle status change
   const handleStatusChange = async () => {
     if (!selectedUserForStatusChange || !newStatus) {
-      toast.error("Please select a status");
+      toast.error(t("pepBlockCodes.pleaseSelectStatus"));
       return;
     }
 
@@ -526,16 +528,16 @@ const PepBlockCodes = () => {
       });
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || `Status changed to ${newStatus} successfully`);
+        toast.success(response?.data?.message || t("pepBlockCodes.statusChangedSuccess", { status: newStatus }));
         handleChangeStatusModalClose();
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change status");
+        toast.error(response?.data?.message || t("pepBlockCodes.failedToChangeStatus"));
       }
     } catch (error: any) {
       console.error("Error changing status:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change status");
+      toast.error(error?.response?.data?.message || error?.message || t("pepBlockCodes.failedToChangeStatus"));
     } finally {
       setIsChangingStatus(false);
     }
@@ -552,7 +554,7 @@ const PepBlockCodes = () => {
   // Handle risk change
   const handleRiskChange = async () => {
     if (!selectedUserForRiskChange || !newRisk) {
-      toast.error("Please select a risk level");
+      toast.error(t("pepBlockCodes.pleaseSelectRisk"));
       return;
     }
 
@@ -561,16 +563,16 @@ const PepBlockCodes = () => {
       const response = await updateKycRisk(selectedUserForRiskChange.id, newRisk);
 
       if (response?.status >= 200 && response?.status < 300) {
-        toast.success(response?.data?.message || `Risk changed to ${newRisk} successfully`);
+        toast.success(response?.data?.message || t("pepBlockCodes.riskChangedSuccess", { risk: newRisk }));
         handleChangeRiskModalClose();
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change risk");
+        toast.error(response?.data?.message || t("pepBlockCodes.failedToChangeRisk"));
       }
     } catch (error: any) {
       console.error("Error changing risk:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change risk");
+      toast.error(error?.response?.data?.message || error?.message || t("pepBlockCodes.failedToChangeRisk"));
     } finally {
       setIsChangingRisk(false);
     }
@@ -630,11 +632,11 @@ const PepBlockCodes = () => {
     });
     const exportCSV = async () => {
       try {
-        toast.loading("Exporting PEP customers...", { id: "export-pep-customers" });
+        toast.loading(t("pepBlockCodes.exportingCustomers"), { id: "export-pep-customers" });
         const response = await exportPepCustomers();
-        
+
         if (!response || !response.data) {
-          throw new Error("Failed to download file");
+          throw new Error(t("pepBlockCodes.failedToDownload"));
         }
         
         // Convert server response to a Blob (binary file)
@@ -676,13 +678,13 @@ const PepBlockCodes = () => {
         link.remove();
         window.URL.revokeObjectURL(url);
         
-        toast.success("PEP customers exported successfully", { id: "export-pep-customers" });
+        toast.success(t("pepBlockCodes.exportSuccess"), { id: "export-pep-customers" });
       } catch (error: any) {
         console.error("Export error:", error);
         toast.error(
-          error?.response?.data?.message || 
-          error?.message || 
-          "Failed to export PEP customers",
+          error?.response?.data?.message ||
+          error?.message ||
+          t("pepBlockCodes.failedToExport"),
           { id: "export-pep-customers" }
         );
       }
@@ -704,14 +706,14 @@ const PepBlockCodes = () => {
 
         <Select
           style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Status"
+          placeholder={t("common:status")}
           allowClear
           value={status || undefined}
           onChange={(value) => setStatus(value || '')}
           suffixIcon={<FaFilter />}
         >
-          <Select.Option value="active">Active</Select.Option>
-          <Select.Option value="inactive">Inactive</Select.Option>
+          <Select.Option value="active">{t("common:active")}</Select.Option>
+          <Select.Option value="inactive">{t("common:inactive")}</Select.Option>
         </Select>
 
         <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
@@ -725,7 +727,7 @@ const PepBlockCodes = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("pepBlockCodes.searchPlaceholder")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -737,7 +739,7 @@ const PepBlockCodes = () => {
             >
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t("common:from")}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -751,7 +753,7 @@ const PepBlockCodes = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t("common:to")}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -768,8 +770,8 @@ const PepBlockCodes = () => {
             </div>
           </div>
             <button className="theme-btn-next" onClick={exportCSV}>
-              Export CSV
-          </button> 
+              {t("pepBlockCodes.exportCsv")}
+          </button>
         </div>
       </div>
 
@@ -789,7 +791,7 @@ const PepBlockCodes = () => {
 
       {/* Block Codes Management Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Manage Block Codes for User</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("pepBlockCodes.manageBlockCodesTitle")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
         footer={null}
@@ -808,7 +810,7 @@ const PepBlockCodes = () => {
               gap: "20px"
             }}>
               <PulseLoading size="lg" />
-              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>{t("pepBlockCodes.loadingBlockCodes")}</p>
             </div>
           ) : (
             <>
@@ -820,14 +822,14 @@ const PepBlockCodes = () => {
                 marginBottom: "20px",
                 padding: "10px 0"
               }}>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>Block Code Selection</h3>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>{t("pepBlockCodes.blockCodeSelection")}</h3>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Button
                     type="primary"
                     style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }}
                     onClick={handleSelectAll}
                   >
-                    ✓ Select All
+                    ✓ {t("common:selectAll")}
                   </Button>
                   <Button
                     style={{
@@ -837,7 +839,7 @@ const PepBlockCodes = () => {
                     }}
                     onClick={handleDeselectAll}
                   >
-                    ⊘ Deselect All
+                    ⊘ {t("pepBlockCodes.deselectAll")}
                   </Button>
                 </div>
               </div>
@@ -876,7 +878,7 @@ const PepBlockCodes = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Block Code
+                    {t("pepBlockCodes.blockCode")}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -884,7 +886,7 @@ const PepBlockCodes = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Type
+                    {t("common:type")}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -892,7 +894,7 @@ const PepBlockCodes = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Action
+                    {t("pepBlockCodes.action")}
                   </th>
                 </tr>
               </thead>
@@ -950,7 +952,7 @@ const PepBlockCodes = () => {
                         alignItems: "center",
                         gap: "6px"
                       }}>
-                        {code.blocked ? "⊘" : "✓"} {code.blocked ? "Blocked" : "Active"}
+                        {code.blocked ? "⊘" : "✓"} {code.blocked ? t("pepBlockCodes.blocked") : t("common:active")}
                       </button>
                     </td>
                   </tr>
@@ -977,7 +979,7 @@ const PepBlockCodes = () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)"
               }}
             >
-              ⊘ Block Selected
+              ⊘ {t("pepBlockCodes.blockSelected")}
             </Button>
             <Button
               type="primary"
@@ -988,7 +990,7 @@ const PepBlockCodes = () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning-gold)"
               }}
             >
-              ⊙ Unblock Selected
+              ⊙ {t("pepBlockCodes.unblockSelected")}
             </Button>
           </div>
 
@@ -1008,7 +1010,7 @@ const PepBlockCodes = () => {
                     color: "white"
                   }}
                 >
-                  Close
+                  {t("common:close")}
                 </Button>
               </div>
             </>
@@ -1018,7 +1020,7 @@ const PepBlockCodes = () => {
 
       {/* Change Status Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Status</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("pepBlockCodes.changeStatusTitle")}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
         footer={null}
@@ -1029,10 +1031,10 @@ const PepBlockCodes = () => {
           {selectedUserForStatusChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("pepBlockCodes.userName")}</p>
                 <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForStatusChange.name || "-"}</p>
-                
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Status:</p>
+
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("pepBlockCodes.currentStatus")}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -1053,24 +1055,24 @@ const PepBlockCodes = () => {
                     }}
                   >
                     {selectedUserForStatusChange.status?.toLowerCase() === "approved" || selectedUserForStatusChange.status?.toLowerCase() === "approved"
-                      ? "Approved"
+                      ? t("common:approved")
                       : selectedUserForStatusChange.status?.toLowerCase() === "reject" || selectedUserForStatusChange.status?.toLowerCase() === "rejected"
-                      ? "Rejected"
+                      ? t("common:rejected")
                       : selectedUserForStatusChange.status?.toLowerCase() === "pending"
-                      ? "Pending"
+                      ? t("common:pending")
                       : selectedUserForStatusChange.status || "-"}
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Status:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("pepBlockCodes.newStatus")}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newStatus}
                   onChange={(value) => setNewStatus(value)}
-                  placeholder="Select Status"
+                  placeholder={t("pepBlockCodes.selectStatus")}
                 >
-                  <Select.Option value="approved">Approved</Select.Option>
-                  <Select.Option value="rejected">Reject</Select.Option>
+                  <Select.Option value="approved">{t("common:approved")}</Select.Option>
+                  <Select.Option value="rejected">{t("common:reject")}</Select.Option>
                   {/* <Select.Option value="pending">Pending</Select.Option> */}
                 </Select>
               </div>
@@ -1088,16 +1090,16 @@ const PepBlockCodes = () => {
                   disabled={isChangingStatus}
                className="invoice-btn"
                 >
-                  Cancel
+                  {t("common:cancel")}
                 </button>
                 <button
-            
+
                   onClick={handleStatusChange}
-                
+
                   disabled={!newStatus || newStatus.toLowerCase() === selectedUserForStatusChange.status?.toLowerCase()}
               className="theme-btn"
                 >
-                  {isChangingStatus ? "Changing..." : "Change Status"}
+                  {isChangingStatus ? t("pepBlockCodes.changing") : t("pepBlockCodes.changeStatus")}
                 </button>
               </div>
             </>
@@ -1107,7 +1109,7 @@ const PepBlockCodes = () => {
 
       {/* Change Risk Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Risk</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("pepBlockCodes.changeRiskTitle")}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}
         footer={null}
@@ -1118,10 +1120,10 @@ const PepBlockCodes = () => {
           {selectedUserForRiskChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("pepBlockCodes.userName")}</p>
                 <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForRiskChange.name || "-"}</p>
-                
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Risk:</p>
+
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("pepBlockCodes.currentRisk")}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -1138,17 +1140,17 @@ const PepBlockCodes = () => {
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Risk:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("pepBlockCodes.newRisk")}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newRisk}
                   onChange={(value) => setNewRisk(value)}
-                  placeholder="Select Risk Level"
+                  placeholder={t("pepBlockCodes.selectRiskLevel")}
                 >
-                  <Select.Option value="high">High</Select.Option>
-                  <Select.Option value="low">Low</Select.Option>
-                  <Select.Option value="medium">Medium</Select.Option>
-                  <Select.Option value="pep">PEP</Select.Option>
+                  <Select.Option value="high">{t("pepBlockCodes.riskHigh")}</Select.Option>
+                  <Select.Option value="low">{t("pepBlockCodes.riskLow")}</Select.Option>
+                  <Select.Option value="medium">{t("pepBlockCodes.riskMedium")}</Select.Option>
+                  <Select.Option value="pep">{t("pepBlockCodes.riskPep")}</Select.Option>
                 </Select>
               </div>
 
@@ -1165,16 +1167,16 @@ const PepBlockCodes = () => {
                   disabled={isChangingRisk}
               className="invoice-btn"
                 >
-                  Cancel
+                  {t("common:cancel")}
                 </button>
                 <button
-                
+
                   onClick={handleRiskChange}
-               
+
                   disabled={!newRisk || newRisk === selectedUserForRiskChange.risk_status}
                className="theme-btn"
                 >
-                  {isChangingRisk ? "Changing..." : "Change Risk"}
+                  {isChangingRisk ? t("pepBlockCodes.changing") : t("pepBlockCodes.changeRisk")}
                 </button>
               </div>
             </>

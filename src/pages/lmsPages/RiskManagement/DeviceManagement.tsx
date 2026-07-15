@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -35,6 +36,7 @@ import { Textarea } from "../../../components/ui/textarea";
 import { Input } from "../../../components/ui/input";
 
 const DeviceManagement = () => {
+  const { t } = useTranslation("riskManagement");
   const [activeTab, setActiveTab] = useState<"all" | "blocked">("all");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -136,7 +138,7 @@ const DeviceManagement = () => {
       }
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || "Failed to fetch devices"
+        error?.response?.data?.message || t("device.toast.fetchFailed")
       );
     } finally {
       setIsLoading(false);
@@ -145,8 +147,8 @@ const DeviceManagement = () => {
 
   const handleAddDevice = async () => {
     const errors: Record<string, string> = {};
-    if (!addDeviceId.trim()) errors.deviceId = "Device ID is required";
-    if (!addDeviceReason.trim()) errors.reason = "Reason is required";
+    if (!addDeviceId.trim()) errors.deviceId = t("device.validation.deviceIdRequired");
+    if (!addDeviceReason.trim()) errors.reason = t("device.validation.reasonRequired");
     if (Object.keys(errors).length) { setAddDeviceErrors(errors); return; }
     try {
       setIsAddingDevice(true);
@@ -156,7 +158,7 @@ const DeviceManagement = () => {
         ...(addDeviceBlockCodeId ? { blockCodeId: addDeviceBlockCodeId } : {}),
       });
       if (response?.data?.success || response?.status === 200 || response?.status === 201) {
-        toast.success(response?.data?.message || "Device blocked successfully");
+        toast.success(response?.data?.message || t("device.toast.blockSuccess"));
         setIsAddDeviceModalOpen(false);
         setAddDeviceId("");
         setAddDeviceReason("");
@@ -164,10 +166,10 @@ const DeviceManagement = () => {
         setAddDeviceErrors({});
         fetchDevicesData();
       } else {
-        toast.error(response?.data?.message || "Failed to block device");
+        toast.error(response?.data?.message || t("device.toast.blockFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to block device");
+      toast.error(error?.response?.data?.message || error?.message || t("device.toast.blockFailed"));
     } finally {
       setIsAddingDevice(false);
     }
@@ -213,12 +215,12 @@ const DeviceManagement = () => {
   // Handler to submit block request
   const handleBlockDevice = async () => {
     if (!selectedDeviceForBlock) {
-      toast.error("Device not selected");
+      toast.error(t("device.toast.deviceNotSelected"));
       return;
     }
 
     if (!blockReason.trim()) {
-      toast.error("Please provide a reason for blocking the device");
+      toast.error(t("device.toast.reasonRequiredBlock"));
       return;
     }
 
@@ -231,17 +233,17 @@ const DeviceManagement = () => {
       });
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Device blocked successfully");
+        toast.success(response?.data?.message || t("device.toast.blockSuccess"));
         closeBlockModal();
         // Refresh the devices list
         fetchDevicesData();
       } else {
-        toast.error(response?.data?.message || "Failed to block device");
+        toast.error(response?.data?.message || t("device.toast.blockFailed"));
       }
     } catch (error: any) {
       console.error("Error blocking device:", error);
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to block device"
+        error?.response?.data?.message || error?.message || t("device.toast.blockFailed")
       );
     } finally {
       setIsBlockingDevice(false);
@@ -264,7 +266,7 @@ const DeviceManagement = () => {
   // Handler to submit unblock request
   const handleUnblockDevice = async () => {
     if (!selectedDeviceForUnblock) {
-      toast.error("Device not selected");
+      toast.error(t("device.toast.deviceNotSelected"));
       return;
     }
 
@@ -273,17 +275,17 @@ const DeviceManagement = () => {
       const response = await unblockDevice(selectedDeviceForUnblock.deviceId);
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Device unblocked successfully");
+        toast.success(response?.data?.message || t("device.toast.unblockSuccess"));
         closeUnblockModal();
         // Refresh the devices list
         fetchDevicesData();
       } else {
-        toast.error(response?.data?.message || "Failed to unblock device");
+        toast.error(response?.data?.message || t("device.toast.unblockFailed"));
       }
     } catch (error: any) {
       console.error("Error unblocking device:", error);
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to unblock device"
+        error?.response?.data?.message || error?.message || t("device.toast.unblockFailed")
       );
     } finally {
       setIsUnblockingDevice(false);
@@ -306,7 +308,7 @@ const DeviceManagement = () => {
   // Handler to submit delete request
   const handleDeleteDevice = async () => {
     if (!selectedDeviceForDelete) {
-      toast.error("Device not selected");
+      toast.error(t("device.toast.deviceNotSelected"));
       return;
     }
 
@@ -315,17 +317,17 @@ const DeviceManagement = () => {
       const response = await deleteDevice(selectedDeviceForDelete.deviceId);
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Device deleted successfully");
+        toast.success(response?.data?.message || t("device.toast.deleteSuccess"));
         closeDeleteModal();
         // Refresh the devices list
         fetchDevicesData();
       } else {
-        toast.error(response?.data?.message || "Failed to delete device");
+        toast.error(response?.data?.message || t("device.toast.deleteFailed"));
       }
     } catch (error: any) {
       console.error("Error deleting device:", error);
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to delete device"
+        error?.response?.data?.message || error?.message || t("device.toast.deleteFailed")
       );
     } finally {
       setIsDeletingDevice(false);
@@ -337,13 +339,13 @@ const DeviceManagement = () => {
 
   const allDevicesHeaders = [
     {
-      name: "Device ID",
+      name: t("device.col.deviceId"),
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Fingerprint",
+      name: t("device.col.fingerprint"),
       cell: (row: any) => (
         <span className="font-mono text-xs text-muted-foreground cursor-help" title={row.deviceFingerprint}>
           {row.deviceFingerprint|| "-"}
@@ -352,34 +354,34 @@ const DeviceManagement = () => {
       width: "350",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <Badge className={row.blocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-green-100 text-green-700 hover:bg-green-100"}>
-          {row.blocked ? "Blocked" : "Active"}
+          {row.blocked ? t("device.badge.blocked") : t("common:active")}
         </Badge>
       ),
       width: "100px",
     },
     {
-      name: "Total Attempts",
+      name: t("device.col.totalAttempts"),
       cell: (row: any) => (
         <Badge variant="outline">{row.totalAttempts ?? row.attemptCount ?? 0}</Badge>
       ),
       width: "120px",
     },
     {
-      name: "First Seen",
+      name: t("device.col.firstSeen"),
       cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.firstSeenAt)}</span>,
       width: "160px",
     },
     {
-      name: "Last Seen",
+      name: t("device.col.lastSeen"),
       cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
       sortable: true,
       width: "160px",
     },
     {
-      name: "Block Code",
+      name: t("device.col.blockCode"),
       cell: (row: any) => {
         const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCode || null) : (row.blockCode || null);
         return code ? (
@@ -393,7 +395,7 @@ const DeviceManagement = () => {
       width: "130px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -406,7 +408,7 @@ const DeviceManagement = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("device.action.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -416,7 +418,7 @@ const DeviceManagement = () => {
                   onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
                   className="cursor-pointer gap-2"
                 >
-                  <span>View Associations ({row.nidAssociations.length})</span>
+                  <span>{t("device.action.viewAssociations", { count: row.nidAssociations.length })}</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -425,14 +427,14 @@ const DeviceManagement = () => {
                 className="cursor-pointer gap-2"
               >
                 <Lock className="h-4 w-4" />
-                <span>Block Device</span>
+                <span>{t("device.action.blockDevice")}</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => openDeleteModal(row)}
                 className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
               >
                 <Trash2 className="h-4 w-4" />
-                <span>Delete Device</span>
+                <span>{t("device.action.deleteDevice")}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -446,13 +448,13 @@ const DeviceManagement = () => {
 
   const blockedDevicesHeaders = [
     {
-      name: "Device ID",
+      name: t("device.col.deviceId"),
       selector: (row: any) => row.deviceId || "-",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Block Source",
+      name: t("device.col.blockSource"),
       cell: (row: any) => (
         <Badge variant="destructive" className="text-xs" title={row.blockSource}>
           {row.blockSource || "MANUAL"}
@@ -461,7 +463,7 @@ const DeviceManagement = () => {
       width: "250px",
     },
     {
-      name: "Block Type",
+      name: t("device.col.blockType"),
       cell: (row: any) => (
         <Badge
           className={`text-xs ${
@@ -476,21 +478,21 @@ const DeviceManagement = () => {
       width: "130px",
     },
     {
-      name: "Admin Blocked",
+      name: t("device.col.adminBlocked"),
       cell: (row: any) => (
         <Badge className={row.adminBlocked ? "bg-red-100 text-red-700 hover:bg-red-100" : "bg-gray-100 text-gray-600 hover:bg-gray-100"}>
-          {row.adminBlocked ? "Yes" : "No"}
+          {row.adminBlocked ? t("common:yes") : t("common:no")}
         </Badge>
       ),
       width: "120px",
     },
     {
-      name: "Total Attempts",
+      name: t("device.col.totalAttempts"),
       cell: (row: any) => <Badge variant="outline">{row.totalAttempts ?? 0}</Badge>,
       width: "200px",
     },
     {
-      name: "Block Reason",
+      name: t("device.col.blockReason"),
       cell: (row: any) => (
         <span className="text-sm text-muted-foreground" title={row.blockReason || ""}>
           {row.blockReason || "-"}
@@ -499,17 +501,17 @@ const DeviceManagement = () => {
       width: "160px",
     },
     {
-      name: "First Seen",
+      name: t("device.col.firstSeen"),
       cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.firstSeenAt)}</span>,
       width: "160px",
     },
     {
-      name: "Last Seen",
+      name: t("device.col.lastSeen"),
       cell: (row: any) => <span className="text-sm text-muted-foreground">{formatDate(row.lastSeenAt)}</span>,
       width: "160px",
     },
     {
-      name: "Block Code",
+      name: t("device.col.blockCode"),
       cell: (row: any) => {
         const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCode || null) : (row.blockCode || null);
         return code ? (
@@ -523,7 +525,7 @@ const DeviceManagement = () => {
       width: "130px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -536,7 +538,7 @@ const DeviceManagement = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("device.action.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -546,7 +548,7 @@ const DeviceManagement = () => {
                   onClick={() => { setSelectedDeviceForNids(row); setIsNidModalOpen(true); }}
                   className="cursor-pointer gap-2"
                 >
-                  <span>View Associations ({row.nidAssociations.length})</span>
+                  <span>{t("device.action.viewAssociations", { count: row.nidAssociations.length })}</span>
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -554,14 +556,14 @@ const DeviceManagement = () => {
                 className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
               >
                 <Unlock className="h-4 w-4" />
-                <span>Unblock Device</span>
+                <span>{t("device.action.unblockDevice")}</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => openDeleteModal(row)}
                 className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
               >
                 <Trash2 className="h-4 w-4" />
-                <span>Delete Device</span>
+                <span>{t("device.action.deleteDevice")}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -583,7 +585,7 @@ const DeviceManagement = () => {
           <span className="pro-head-badge">
             <Smartphone className="h-4 w-4" />
           </span>
-          Device Management
+          {t("device.title")}
         </h3>
       </div>
 
@@ -592,7 +594,7 @@ const DeviceManagement = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by Device ID, Fingerprint, Block Source..."
+            placeholder={t("device.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -606,7 +608,7 @@ const DeviceManagement = () => {
             style={{ flexShrink: 0, height: 40, whiteSpace: "nowrap" }}
           >
             <RefreshCw className="w-4 h-4" />
-            {isLoading ? "Loading..." : "Refresh"}
+            {isLoading ? t("common:loading") : t("common:refresh")}
           </Button>
         </div>
       </div>
@@ -679,10 +681,10 @@ const DeviceManagement = () => {
           <div className="device-tabs-row">
             <TabsList className="device-tabs-list">
               <TabsTrigger value="all" className="device-tabs-trigger">
-                All Devices
+                {t("device.tab.all")}
               </TabsTrigger>
               <TabsTrigger value="blocked" className="device-tabs-trigger">
-                Blocked Devices
+                {t("device.tab.blocked")}
               </TabsTrigger>
             </TabsList>
             <Button
@@ -691,7 +693,7 @@ const DeviceManagement = () => {
               style={{ flexShrink: 0, height: 40, alignSelf: "center", marginBottom: 8 }}
             >
               <Plus className="w-4 h-4" />
-              Block Device
+              {t("device.addButton")}
             </Button>
           </div>
 
@@ -744,18 +746,18 @@ const DeviceManagement = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
-              Block Device
+              {t("device.blockModal.title")}
             </DialogTitle>
             {selectedDeviceForBlock && (
               <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
-                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForBlock.deviceId}</span>
+                {t("device.deviceIdColon")} <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForBlock.deviceId}</span>
               </DialogDescription>
             )}
           </DialogHeader>
           <div className="space-y-3 mt-1">
-            <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Reason for Blocking *</label>
+            <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t("device.blockModal.reasonLabel")}</label>
             <Textarea
-              placeholder="e.g. Identity farming detected — multiple NIDs from same device"
+              placeholder={t("device.reasonPlaceholder")}
               value={blockReason}
               onChange={(e) => setBlockReason(e.target.value)}
               className="resize-none placeholder:text-muted-foreground"
@@ -764,17 +766,17 @@ const DeviceManagement = () => {
             />
             <p className="text-xs" style={{ color: "var(--muted-foreground)" }}>{blockReason.length}/500</p>
             <div className="space-y-1">
-              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Block Code (optional)</label>
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t("device.blockCodeOptionalLabel")}</label>
               <Select
                 value={blockModalBlockCodeId || "none"}
                 onValueChange={(val) => setBlockModalBlockCodeId(val === "none" ? "" : val)}
                 disabled={isBlockingDevice}
               >
                 <SelectTrigger style={{ background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}>
-                  <SelectValue placeholder="Select block code (optional)" />
+                  <SelectValue placeholder={t("device.blockCodePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="none">{t("common:none")}</SelectItem>
                   {blockCodes.map((bc: any) => (
                     <SelectItem key={bc.id} value={String(bc.id)}>
                       {bc.code}{bc.description ? ` — ${bc.description}` : ""}
@@ -786,11 +788,11 @@ const DeviceManagement = () => {
           </div>
           <DialogFooter className="gap-2 mt-2">
             <Button variant="outline" onClick={closeBlockModal} disabled={isBlockingDevice}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleBlockDevice} disabled={isBlockingDevice || !blockReason.trim()} className="gap-2">
               <Lock className="w-4 h-4" />
-              {isBlockingDevice ? "Blocking..." : "Block Device"}
+              {isBlockingDevice ? t("device.block.blocking") : t("device.block.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -802,28 +804,28 @@ const DeviceManagement = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Unlock className="w-5 h-5" style={{ color: "var(--color-status-green)" }} />
-              Unblock Device
+              {t("device.unblockModal.title")}
             </DialogTitle>
             {selectedDeviceForUnblock && (
               <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
-                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForUnblock.deviceId}</span>
+                {t("device.deviceIdColon")} <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForUnblock.deviceId}</span>
               </DialogDescription>
             )}
           </DialogHeader>
           <div className="py-3">
             <div className="p-3 rounded-lg" style={{ background: "var(--color-status-amber)", opacity: 0.9 }}>
               <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
-                ⚠️ Are you sure you want to unblock this device? Users will be able to use it again.
+                {t("device.unblockModal.warning")}
               </p>
             </div>
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={closeUnblockModal} disabled={isUnblockingDevice}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleUnblockDevice} disabled={isUnblockingDevice} className="gap-2">
               <Unlock className="w-4 h-4" />
-              {isUnblockingDevice ? "Unblocking..." : "Unblock Device"}
+              {isUnblockingDevice ? t("device.unblock.unblocking") : t("device.unblock.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -835,17 +837,17 @@ const DeviceManagement = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
-              Block Device
+              {t("device.addModal.title")}
             </DialogTitle>
             <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
-              Enter the Device ID and reason to manually block a device.
+              {t("device.addModal.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 mt-1">
             <div className="space-y-1">
-              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Device ID *</label>
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t("device.addModal.deviceIdLabel")}</label>
               <Input
-                placeholder="e.g. AP3A.240905.015.A2"
+                placeholder={t("device.addModal.deviceIdPlaceholder")}
                 value={addDeviceId}
                 onChange={(e) => { setAddDeviceId(e.target.value); if (addDeviceErrors.deviceId) setAddDeviceErrors((p) => ({ ...p, deviceId: "" })); }}
                 className="placeholder:text-muted-foreground"
@@ -855,9 +857,9 @@ const DeviceManagement = () => {
               {addDeviceErrors.deviceId && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.deviceId}</p>}
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Reason *</label>
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t("device.addModal.reasonLabel")}</label>
               <Textarea
-                placeholder="e.g. Identity farming detected — multiple NIDs from same device"
+                placeholder={t("device.reasonPlaceholder")}
                 value={addDeviceReason}
                 onChange={(e) => { setAddDeviceReason(e.target.value); if (addDeviceErrors.reason) setAddDeviceErrors((p) => ({ ...p, reason: "" })); }}
                 className="resize-none placeholder:text-muted-foreground"
@@ -867,17 +869,17 @@ const DeviceManagement = () => {
               {addDeviceErrors.reason && <p className="text-xs" style={{ color: "var(--color-status-coral)" }}>{addDeviceErrors.reason}</p>}
             </div>
             <div className="space-y-1">
-              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>Block Code (optional)</label>
+              <label className="text-sm font-semibold" style={{ color: "var(--foreground)" }}>{t("device.blockCodeOptionalLabel")}</label>
               <Select
                 value={addDeviceBlockCodeId || "none"}
                 onValueChange={(val) => setAddDeviceBlockCodeId(val === "none" ? "" : val)}
                 disabled={isAddingDevice}
               >
                 <SelectTrigger style={{ background: "var(--input)", color: "var(--foreground)", borderColor: "var(--border)" }}>
-                  <SelectValue placeholder="Select block code (optional)" />
+                  <SelectValue placeholder={t("device.blockCodePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="none">{t("common:none")}</SelectItem>
                   {blockCodes.map((bc: any) => (
                     <SelectItem key={bc.id} value={String(bc.id)}>
                       {bc.code}{bc.description ? ` — ${bc.description}` : ""}
@@ -889,11 +891,11 @@ const DeviceManagement = () => {
           </div>
           <DialogFooter className="gap-2 mt-2">
             <Button variant="outline" onClick={() => setIsAddDeviceModalOpen(false)} disabled={isAddingDevice}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleAddDevice} disabled={isAddingDevice} className="gap-2">
               <Lock className="w-4 h-4" />
-              {isAddingDevice ? "Blocking..." : "Block Device"}
+              {isAddingDevice ? t("device.block.blocking") : t("device.block.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -903,11 +905,11 @@ const DeviceManagement = () => {
       <Dialog open={isNidModalOpen} onOpenChange={setIsNidModalOpen}>
         <DialogContent className="max-h-[80vh] overflow-hidden flex flex-col" style={{ width: "min(95vw, 900px)", maxWidth: "900px" }}>
           <DialogHeader>
-            <DialogTitle className="text-base">NID/Mobile Associations</DialogTitle>
+            <DialogTitle className="text-base">{t("device.nidModal.title")}</DialogTitle>
             <DialogDescription className="text-xs">
-              Device: <span className="font-mono font-medium text-foreground">{selectedDeviceForNids?.deviceId}</span>
+              {t("device.nidModal.deviceColon")} <span className="font-mono font-medium text-foreground">{selectedDeviceForNids?.deviceId}</span>
               {selectedDeviceForNids?.blockSource && (
-                <Badge variant="destructive" className="ml-2 text-xs">{selectedDeviceForNids.blockSource}</Badge>
+                <Badge variant="destructive" className="ms-2 text-xs">{selectedDeviceForNids.blockSource}</Badge>
               )}
             </DialogDescription>
           </DialogHeader>
@@ -916,14 +918,14 @@ const DeviceManagement = () => {
               <table className="text-sm border-collapse" style={{ minWidth: "700px", width: "100%" }}>
                 <thead>
                   <tr className="border-b border-border bg-muted/50">
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">#</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">NID</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">NID Hash</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Mobile</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Attempts</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">First Seen</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Last Seen</th>
-                    <th className="text-left px-3 py-2 text-xs font-semibold text-muted-foreground">Action</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">#</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.nid")}</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.nidHash")}</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.mobile")}</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.attempts")}</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.firstSeen")}</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.lastSeen")}</th>
+                    <th className="text-start px-3 py-2 text-xs font-semibold text-muted-foreground">{t("device.nidModal.col.action")}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -969,7 +971,7 @@ const DeviceManagement = () => {
                           style={{ background: "var(--color-status-coral)", color: "var(--primary-foreground)", borderColor: "transparent" }}
                         >
                           <Lock className="w-3 h-3" />
-                          Block
+                          {t("device.nidModal.block")}
                         </button>
                       </td>
                     </tr>
@@ -977,11 +979,11 @@ const DeviceManagement = () => {
                 </tbody>
               </table>
             ) : (
-              <p className="text-sm text-muted-foreground text-center py-8">No NID associations found</p>
+              <p className="text-sm text-muted-foreground text-center py-8">{t("device.nidModal.empty")}</p>
             )}
           </div>
           <DialogFooter className="mt-4">
-            <Button variant="outline" onClick={() => setIsNidModalOpen(false)}>Close</Button>
+            <Button variant="outline" onClick={() => setIsNidModalOpen(false)}>{t("common:close")}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -992,28 +994,28 @@ const DeviceManagement = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Trash2 className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
-              Delete Device
+              {t("device.deleteModal.title")}
             </DialogTitle>
             {selectedDeviceForDelete && (
               <DialogDescription style={{ color: "var(--muted-foreground)", fontSize: 13 }}>
-                Device ID: <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForDelete.deviceId}</span>
+                {t("device.deviceIdColon")} <span className="font-mono font-medium" style={{ color: "var(--foreground)" }}>{selectedDeviceForDelete.deviceId}</span>
               </DialogDescription>
             )}
           </DialogHeader>
           <div className="py-3">
             <div className="p-3 rounded-lg" style={{ background: "var(--color-status-coral)", opacity: 0.9 }}>
               <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
-                ⚠️ This action cannot be undone. The device will be permanently deleted.
+                {t("device.deleteModal.warning")}
               </p>
             </div>
           </div>
           <DialogFooter className="gap-2">
             <Button variant="outline" onClick={closeDeleteModal} disabled={isDeletingDevice}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDeleteDevice} disabled={isDeletingDevice} className="gap-2">
               <Trash2 className="w-4 h-4" />
-              {isDeletingDevice ? "Deleting..." : "Delete Device"}
+              {isDeletingDevice ? t("device.delete.deleting") : t("device.delete.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

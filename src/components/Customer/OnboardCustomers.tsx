@@ -18,8 +18,10 @@ import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { usePermissions, ONBOARD_CUSTOMERS_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { useTranslation } from "react-i18next";
 
 const OnboardCustomers = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -71,7 +73,7 @@ const OnboardCustomers = () => {
       await toast.promise(
         allCustomerStatusChange(body), // The promise to track
         {
-          loading: "Changing Status...", // Loading state message
+          loading: t("onboardCustomers.toast.changingStatus"), // Loading state message
           success: (res) => {
             if (res?.data?.success) {
               setIsModalVisible(false);
@@ -83,7 +85,7 @@ const OnboardCustomers = () => {
           },
           error: (err) => {
             console.error("Error occurred:", err);
-            return err?.message || "Something went wrong!";
+            return err?.message || t("common:somethingWentWrong");
           },
         }
       );
@@ -108,14 +110,14 @@ const OnboardCustomers = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Change Status
+        {t("onboardCustomers.changeStatus")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
       {canResendEmail && (
         <Menu.Item
@@ -123,7 +125,7 @@ const OnboardCustomers = () => {
           icon={<MailOutlined />}
           onClick={() => handleMenuClick("resend", row)}
         >
-          Resend Login Email
+          {t("onboardCustomers.menu.resendEmail")}
         </Menu.Item>
       )}
     </Menu>
@@ -131,7 +133,7 @@ const OnboardCustomers = () => {
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("onboardCustomers.col.sr"),
       // selector: (row: { Id: any }) => row.Id,
       sortable: true,
       cell: (row: any) => (
@@ -146,19 +148,19 @@ const OnboardCustomers = () => {
       width: "80px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "230px",
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
     },
 
     {
-      name: "Cnic",
+      name: t("onboardCustomers.col.cnic"),
       cell: (row: any) => (
         <MaskedValue value={row.cnic} showToggle={false} unmaskedCount={4} />
       ),
@@ -166,7 +168,7 @@ const OnboardCustomers = () => {
       sortable: true,
     },
     {
-      name: "Total Balance",
+      name: t("onboardCustomers.col.totalBalance"),
       cell: (row: any) => (
         <MaskedValue value={row.accountBalance} showToggle={true} unmaskedCount={0} />
       ),
@@ -174,18 +176,18 @@ const OnboardCustomers = () => {
       sortable: true,
     },
     {
-      name: "Register Date",
+      name: t("onboardCustomers.col.registerDate"),
       selector: (row: { UpdatedBy: any }) => row.UpdatedBy,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { accountType: any }) => row.accountType,
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -201,12 +203,12 @@ const OnboardCustomers = () => {
             cursor: row.accountStatus === "active" ? "pointer" : "default",
           }}
         >
-          {row.accountStatus == "active" ? "Active" : "Inactive"}
+          {row.accountStatus == "active" ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -221,7 +223,7 @@ const OnboardCustomers = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("onboardCustomers.select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -275,13 +277,13 @@ const OnboardCustomers = () => {
 
       <Modal
         className="custom-mod"
-        title={selectedItem === "edit" ? "Change Status" : "Enter Your Details"}
+        title={selectedItem === "edit" ? t("onboardCustomers.changeStatus") : t("onboardCustomers.modal.detailsTitle")}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
           <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button
             key="save"
@@ -292,14 +294,14 @@ const OnboardCustomers = () => {
                 : handleOk();
             }}
           >
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
         <div className={selectedItem === "edit" ? "cust-drop" : "Ente-details"}>
           {selectedItem === "edit" ? (
             <>
-              <label>Status</label>
+              <label>{t("common:status")}</label>
               <Select
                 defaultValue={rowData?.accountStatus}
                 value={rowData?.accountStatus}
@@ -311,25 +313,25 @@ const OnboardCustomers = () => {
                   });
                 }}
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="pending">Pending</option>
+                <option value="active">{t("common:active")}</option>
+                <option value="inactive">{t("common:inactive")}</option>
+                <option value="pending">{t("common:pending")}</option>
               </Select>
-              <p className="edit-mod">Edit modal content</p>
+              <p className="edit-mod">{t("onboardCustomers.modal.editContent")}</p>
             </>
           ) : (
             <>
               <Form>
                 <Form.Item name="username">
                   <div className="custom-input-container">
-                    <label className="input-label">Username</label>
-                    <Input placeholder="Enter your username" />
+                    <label className="input-label">{t("onboardCustomers.form.username")}</label>
+                    <Input placeholder={t("onboardCustomers.form.usernamePlaceholder")} />
                   </div>
                 </Form.Item>
                 <Form.Item name="password">
                   <div className="custom-input-container">
-                    <label className="input-label">Password</label>
-                    <Input.Password placeholder="Enter your password" />
+                    <label className="input-label">{t("onboardCustomers.form.password")}</label>
+                    <Input.Password placeholder={t("onboardCustomers.form.passwordPlaceholder")} />
                   </div>
                 </Form.Item>
               </Form>

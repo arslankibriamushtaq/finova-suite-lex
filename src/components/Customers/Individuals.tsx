@@ -20,7 +20,9 @@ import {
 import "../../assets/scss/custom.scss";
 import { Modal, ModalBody, ModalHeader } from "react-bootstrap";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 const Individuals = () => {
+  const { t } = useTranslation("customersB");
   const [searchValue, setSearchValue] = useState("");
   const [editRowId, setEditRowId] = useState(null);
   const [editFormData, setEditFormData] = useState<any>({});
@@ -78,19 +80,19 @@ const Individuals = () => {
         Update Customer Name
       </Menu.Item> */}
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<EyeOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item key="timeLine" icon={<ClockCircleOutlined />}>
-        Account TimeLine
+        {t("customersB:individuals.accountTimeline")}
       </Menu.Item>
     </Menu>
   );
   const customSearchInput = (
     <Input
-      placeholder="Search Customers"
+      placeholder={t("customersB:individuals.searchCustomers")}
       value={searchValue}
       prefix={<FaSearchengin />}
       onChange={(e: any) => setSearchValue(e.target.value)}
@@ -126,7 +128,7 @@ const Individuals = () => {
     //   frozen: frozenColumns.includes("Individual ID"),
     // },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -140,7 +142,7 @@ const Individuals = () => {
       frozen: frozenColumns.includes("Name"),
     },
     {
-      name: "Relation",
+      name: t("customersB:individuals.relation"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -154,7 +156,7 @@ const Individuals = () => {
       frozen: frozenColumns.includes("Relation"),
     },
     {
-      name: "SSN",
+      name: t("customersB:individuals.ssn"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -167,7 +169,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "National ID",
+      name: t("customersB:individuals.nationalId"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -180,7 +182,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "NID Issue Date",
+      name: t("customersB:individuals.nidIssueDate"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -193,7 +195,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "NID Expiry",
+      name: t("customersB:individuals.nidExpiry"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -206,7 +208,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "DOB",
+      name: t("customersB:individuals.dob"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -219,7 +221,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "Gender",
+      name: t("customersB:individuals.gender"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -232,7 +234,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -245,7 +247,7 @@ const Individuals = () => {
         ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: any) =>
         editRowId === row.CustomerID ? (
           <Input
@@ -269,7 +271,7 @@ const Individuals = () => {
             cursor: row.status ? "pointer" : "default",
           }}
         >
-          {row.status  ? "Active" : "Inactive"}
+          {row.status  ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
@@ -288,7 +290,7 @@ const Individuals = () => {
     //   ),
     // },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -301,7 +303,7 @@ const Individuals = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -428,7 +430,7 @@ const Individuals = () => {
       setUpdatedId("");
       setUpdatedName("");
     } catch (error: any) {
-      toast.error("Something went wrong!");
+      toast.error(t("customersB:toast.somethingWentWrong"));
       // setLoader(false);
     }
   };
@@ -454,23 +456,23 @@ const Individuals = () => {
       individualCustomer();
     } catch (error: any) {
       // toast.error(error?.message);
-      toast.error("Something went wrong!");
+      toast.error(t("customersB:toast.somethingWentWrong"));
       // setLoader(false);
     }
   };
   const applicableOption = [
-    { label: "Name", value: 0 },
-    { label: "Email", value: 1 },
-    { label: "NID", value: 3 },
-    { label: "LoanId", value: 4 },
-    { label: "InvoiceId", value: 5 },
-    { label: "ApplicationId", value: 6 },
-    { label: "ApplicationNo", value: 7 },
+    { label: t("common:name"), value: 0 },
+    { label: t("common:email"), value: 1 },
+    { label: t("customersB:searchType.nid"), value: 3 },
+    { label: t("customersB:searchType.loanId"), value: 4 },
+    { label: t("customersB:searchType.invoiceId"), value: 5 },
+    { label: t("customersB:searchType.applicationId"), value: 6 },
+    { label: t("customersB:searchType.applicationNo"), value: 7 },
     // { label: "ProductName", value: 8 },
-    { label: "Invoice No", value: 12 },
+    { label: t("customersB:searchType.invoiceNo"), value: 12 },
     // { label: "LegalName", value: 9 },
     // { label: "TaxId", value: 10 },
-    { label: "None", value: 11 },
+    { label: t("common:none"), value: 11 },
   ];
   return (
     <>
@@ -481,7 +483,7 @@ const Individuals = () => {
             className="d-flex align-items-center col-6 justify-content-between mt-1"
             style={{ fontSize: "18px", fontWeight: "Bold" }}
           >
-            Individuals
+            {t("customersB:individuals.title")}
           </div>
           <div className="col-6 d-flex justify-content-end">
             <span className="pe-3">
@@ -491,7 +493,7 @@ const Individuals = () => {
                   setSelectApplicable(e);
                 }}
                 style={{ width: "100%", minWidth: "100px", height: "33px" }}
-                placeholder="Search Type"
+                placeholder={t("customersB:searchType.placeholder")}
               >
                 {applicableOption?.map((option) => (
                   <Select.Option value={option.value}>
@@ -502,7 +504,7 @@ const Individuals = () => {
             </span>
             <span className="pe-2">
               <Input
-                placeholder="Search"
+                placeholder={t("common:search")}
                 value={searchValue}
                 prefix={<SearchOutlined />}
                 onChange={(e: any) => {
@@ -532,7 +534,7 @@ const Individuals = () => {
           />
           {allCustomer?.length == 0 && (
             <div className="d-flex justify-content-center mt-5 bg-red">
-              No data found
+              {t("customersB:general.noDataFound")}
             </div>
           )}
         </div>
@@ -548,17 +550,17 @@ const Individuals = () => {
         }}
       >
         <ModalHeader className="customer-fs-fw" closeButton>
-          Update Customer Name
+          {t("customersB:business.updateCustomerName")}
         </ModalHeader>
 
         <ModalBody className="modal-body-scroll">
           <div className="col-12 row">
             <div className="col-6">
-              <label className="d-flex mb-2 customer-fs-fw">Customer ID</label>
+              <label className="d-flex mb-2 customer-fs-fw">{t("customersB:business.customerId")}</label>
               <Input name="id" value={updatedId.split("-")[0]} disabled />
             </div>
             <div className="col-6">
-              <label className="d-flex mb-2 customer-fs-fw">Enter Name</label>
+              <label className="d-flex mb-2 customer-fs-fw">{t("customersB:business.enterName")}</label>
               <Input
                 name="name"
                 value={updatedName}
@@ -571,7 +573,7 @@ const Individuals = () => {
                 className="theme-btn-next"
                 onClick={() => handleUpdateName()}
               >
-                Update
+                {t("common:update")}
               </button>
             </div>
           </div>

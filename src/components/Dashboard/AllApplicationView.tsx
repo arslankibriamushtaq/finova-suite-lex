@@ -15,8 +15,10 @@ import Document from "./ApplicationDetailsTabs/Document";
 import ReschedulingDocuments from "./ApplicationDetailsTabs/ReschedulingDocuments";
 import { getApplicationFullDetail, getApplicationByNumber } from "../../redux/apis/apisLendingService";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const AllApplicationView = () => {
+  const { t } = useTranslation("financing");
   localStorage.setItem("tabs", "PersonalInformation");
   const getTabs = localStorage.getItem("tabs");
   const location = useLocation();
@@ -104,52 +106,52 @@ const AllApplicationView = () => {
 
   const tapOptions = [
     {
-      title: "Personal Information",
+      title: t("tabs.personalInformation"),
       key: "PersonalInformation",
       folder: <PersonalInformation fullDetail={fullDetail} />,
     },
     {
-      title: "Loan Information",
+      title: t("tabs.loanInformation"),
       key: "LoanInformation",
       folder: <LoanInformation applicationData={rowData} fullDetail={fullDetail} />,
     },
     {
-      title: "Employment & Salary Details",
+      title: t("tabs.employmentSalaryDetails"),
       key: "SalaryInformation",
       folder: <SalaryDetails fullDetail={fullDetail} />,
     },
     {
-      title: "Document",
+      title: t("tabs.document"),
       key: "Document",
       folder: <Document fullDetail={fullDetail} />,
     },
     {
-      title: "Simah Check",
+      title: t("tabs.simahCheck"),
       key: "SimahCheckTab",
       folder: <SimahCheckTab fullDetail={fullDetail} />,
     },
     {
-      title: "Open Banking Check",
+      title: t("tabs.openBankingCheck"),
       key: "BayaanCheck",
       folder: <BayaanCheck fullDetail={fullDetail} />,
     },
     {
-      title: "Compilance Check",
+      title: t("tabs.complianceCheck"),
       key: "compilanceCheck",
       folder: <CompilanceCheck setSelectedTab={setSelectedTab} fullDetail={fullDetail} />,
     },
     {
-      title: "Credit Check",
+      title: t("tabs.creditCheck"),
       key: "creditCheck",
       folder: <CreditCheck setSelectedTab={setSelectedTab} fullDetail={fullDetail} />,
     },
     {
-      title: "Approval",
+      title: t("tabs.approval"),
       key: "approval",
       folder: <ApplicationApproval fullDetail={fullDetail} />,
     },
     {
-      title: "Rescheduling Request",
+      title: t("tabs.reschedulingRequest"),
       key: "reschedulingDocuments",
       folder: <ReschedulingDocuments fullDetail={fullDetail} />,
     },

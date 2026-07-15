@@ -1,7 +1,9 @@
 import React from "react";
 import { Container, Row, Col, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const ComplianceCheck = () => {
+  const { t } = useTranslation("allApplication");
   const questions = [
     {
       en: "Are you simah default",
@@ -48,7 +50,7 @@ const ComplianceCheck = () => {
   return (
     <div className="my-4 p-0">
       <div className="bordered-section p-3">
-        <h5 className="fs-6 fw-600 mb-3">Compliance Questions</h5>
+        <h5 className="fs-6 fw-600 mb-3">{t("compliance.title")}</h5>
         <Row>
           <Col md={6}>
             <h6 className="fs-6 fw-600 mb-3">English</h6>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -39,6 +40,7 @@ interface ParamEntry {
 }
 
 const FraudRuleManagement = () => {
+  const { t } = useTranslation("riskManagement");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -127,7 +129,7 @@ const FraudRuleManagement = () => {
         setTotalPage(Math.ceil((Array.isArray(list) ? list.length : 0) / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch fraud rules");
+      toast.error(error?.response?.data?.message || t("fraudRule.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -139,14 +141,14 @@ const FraudRuleManagement = () => {
     try {
       if (isActive) {
         await disableFraudRule(ruleId);
-        toast.success(`Rule ${ruleId} disabled`);
+        toast.success(t("fraudRule.toast.ruleDisabled", { ruleId }));
       } else {
         await enableFraudRule(ruleId);
-        toast.success(`Rule ${ruleId} enabled`);
+        toast.success(t("fraudRule.toast.ruleEnabled", { ruleId }));
       }
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update rule status");
+      toast.error(error?.response?.data?.message || t("fraudRule.toast.statusFailed"));
     }
   };
 
@@ -191,11 +193,11 @@ const FraudRuleManagement = () => {
         }));
 
       await updateFraudRuleParameters(ruleId, paramsArray);
-      toast.success("Parameters updated successfully");
+      toast.success(t("fraudRule.toast.paramsSuccess"));
       setShowEditModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update parameters");
+      toast.error(error?.response?.data?.message || t("fraudRule.toast.paramsFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -225,11 +227,11 @@ const FraudRuleManagement = () => {
     try {
       setIsAssigning(true);
       await assignBlockCodeToFraudRule(ruleId, selectedBlockCodeId);
-      toast.success("Block code assigned successfully");
+      toast.success(t("fraudRule.toast.assignSuccess"));
       setShowAssignModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to assign block code");
+      toast.error(error?.response?.data?.message || t("fraudRule.toast.assignFailed"));
     } finally {
       setIsAssigning(false);
     }
@@ -248,42 +250,42 @@ const FraudRuleManagement = () => {
 
   const headers = [
     {
-      name: "Rule ID",
+      name: t("fraudRule.col.ruleId"),
       selector: (row: any) => row.ruleId || "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) => row.scenarioName || "-",
       sortable: true,
     },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: any) => row.category || "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Priority",
+      name: t("fraudRule.col.priority"),
       selector: (row: any) => row.priority ?? "-",
       sortable: true,
       width: "100px",
     },
     {
-      name: "Decision",
+      name: t("fraudRule.col.decision"),
       selector: (row: any) => row.defaultAction || "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Detection Logic",
+      name: t("fraudRule.col.detectionLogic"),
       selector: (row: any) => row.detectionLogic || "-",
       sortable: true,
       wrap: true,
     },
     {
-      name: "Assigned Block Code",
+      name: t("fraudRule.col.assignedBlockCode"),
       cell: (row: any) => {
         const code = (row.blockCodeId ? blockCodeMap[row.blockCodeId] : null) ?? row.blockCode?.code ?? null;
         return code ? (
@@ -297,7 +299,7 @@ const FraudRuleManagement = () => {
       width: "200px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div className="flex items-center gap-2">
           <Switch
@@ -312,7 +314,7 @@ const FraudRuleManagement = () => {
       width: "160px",
     },
     {
-      name: "Action",
+      name: t("fraudRule.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -325,7 +327,7 @@ const FraudRuleManagement = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("fraudRule.action.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -337,7 +339,7 @@ const FraudRuleManagement = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit Parameters
+                {t("fraudRule.action.editParameters")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {
@@ -346,7 +348,7 @@ const FraudRuleManagement = () => {
                 }}
               >
                 <Link2 className="h-4 w-4" />
-                Assign Block Code
+                {t("fraudRule.action.assignBlockCode")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -363,7 +365,7 @@ const FraudRuleManagement = () => {
           <span className="pro-head-badge">
             <ShieldAlert className="h-4 w-4" />
           </span>
-          Fraud Rule Management
+          {t("fraudRule.title")}
         </h3>
       </div>
 
@@ -371,7 +373,7 @@ const FraudRuleManagement = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
-          placeholder="Search by rule ID, name, category, or status"
+          placeholder={t("fraudRule.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -401,7 +403,7 @@ const FraudRuleManagement = () => {
       <Dialog open={showEditModal} onOpenChange={(open) => !open && closeModal()}>
         <DialogContent className="sm:max-w-[700px] max-h-[80vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Rule Parameters</DialogTitle>
+            <DialogTitle>{t("fraudRule.editModal.title")}</DialogTitle>
           </DialogHeader>
 
           {selectedRule && (
@@ -414,10 +416,10 @@ const FraudRuleManagement = () => {
 
           <div>
             <div className="flex items-center justify-between mb-2">
-              <Label className="font-semibold">Parameters</Label>
+              <Label className="font-semibold">{t("fraudRule.params.label")}</Label>
               <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addParam}>
                 <Plus className="h-3 w-3" />
-                Add Parameter
+                {t("fraudRule.params.add")}
               </Button>
             </div>
             <div className="space-y-3 max-h-[400px] overflow-y-auto">
@@ -425,25 +427,25 @@ const FraudRuleManagement = () => {
                 <div key={index} className="p-3 border rounded bg-muted/30 space-y-2">
                   <div className="flex items-center gap-2">
                     <div className="flex-1 space-y-1">
-                      <Label className="text-xs">Key</Label>
+                      <Label className="text-xs">{t("fraudRule.params.key")}</Label>
                       <Input
-                        placeholder="e.g. distance_km"
+                        placeholder={t("fraudRule.params.keyPlaceholder")}
                         value={param.key}
                         onChange={(e) => updateParam(index, "key", e.target.value)}
                       />
                     </div>
                     <div className="flex-1 space-y-1">
-                      <Label className="text-xs">Value</Label>
+                      <Label className="text-xs">{t("fraudRule.params.value")}</Label>
                       <Input
-                        placeholder="e.g. 200"
+                        placeholder={t("fraudRule.params.valuePlaceholder")}
                         value={param.value}
                         onChange={(e) => updateParam(index, "value", e.target.value)}
                       />
                     </div>
                     <div className="w-[100px] space-y-1">
-                      <Label className="text-xs">Data Type</Label>
+                      <Label className="text-xs">{t("fraudRule.params.dataType")}</Label>
                       <Input
-                        placeholder="INT"
+                        placeholder={t("fraudRule.params.dataTypePlaceholder")}
                         value={param.dataType}
                         onChange={(e) => updateParam(index, "dataType", e.target.value)}
                       />
@@ -463,9 +465,9 @@ const FraudRuleManagement = () => {
                     )}
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs">Description</Label>
+                    <Label className="text-xs">{t("common:description")}</Label>
                     <Input
-                      placeholder="Parameter description"
+                      placeholder={t("fraudRule.params.descriptionPlaceholder")}
                       value={param.description}
                       onChange={(e) => updateParam(index, "description", e.target.value)}
                     />
@@ -477,10 +479,10 @@ const FraudRuleManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={closeModal} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSaveParams} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Update"}
+              {isSaving ? t("fraudRule.save.saving") : t("common:update")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -490,7 +492,7 @@ const FraudRuleManagement = () => {
       <Dialog open={showAssignModal} onOpenChange={(open) => !open && closeAssignModal()}>
         <DialogContent className="sm:max-w-[480px]">
           <DialogHeader>
-            <DialogTitle>Assign Block Code</DialogTitle>
+            <DialogTitle>{t("fraudRule.assignModal.title")}</DialogTitle>
           </DialogHeader>
 
           {assignTarget && (
@@ -502,13 +504,13 @@ const FraudRuleManagement = () => {
           )}
 
           <div className="space-y-1">
-            <Label className="font-semibold">Block Code</Label>
+            <Label className="font-semibold">{t("fraudRule.blockCodeLabel")}</Label>
             <Select
               value={selectedBlockCodeId || ""}
               onValueChange={(val) => setSelectedBlockCodeId(val)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a block code" />
+                <SelectValue placeholder={t("fraudRule.assign.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {blockCodes.map((bc: any) => (
@@ -522,10 +524,10 @@ const FraudRuleManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={closeAssignModal} disabled={isAssigning}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSaveAssign} disabled={isAssigning || !selectedBlockCodeId}>
-              {isAssigning ? "Assigning..." : "Assign"}
+              {isAssigning ? t("fraudRule.assign.assigning") : t("fraudRule.assign.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

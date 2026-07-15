@@ -9,6 +9,7 @@ import "react-vertical-timeline-component/style.min.css";
 import { getLoanTimeLineDetail } from "../../redux/apis/apisCrudLms";
 import { useParams } from "react-router-dom";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 // const events = [
 //   {
@@ -152,6 +153,7 @@ import Loader from "../Loader/Loader";
 // ];
 
 const LoanTimeline = () => {
+  const { t } = useTranslation("customersB");
   const id = useParams();
   const [data, setData] = useState<any>();
   const [loader, setLoader] = useState<any>();
@@ -242,17 +244,17 @@ const LoanTimeline = () => {
             className="d-flex align-items-center col-5"
             style={{ fontWeight: "bold" }}
           >
-            Timeline
+            {t("customersB:timeline.title")}
           </div>
           <div className="d-flex align-items-center col-7 justify-content-end gap-2 ">
             <div className="month-picker-container w-100">
               <label className="" htmlFor="">
-                Select Month
+                {t("customersB:timeline.selectMonth")}
               </label>
               <DatePicker size="large" picker="month" onChange={onChange} />
             </div>
             <div className="month-picker-container w-100">
-              <label htmlFor="">Select Year</label>
+              <label htmlFor="">{t("customersB:timeline.selectYear")}</label>
               <DatePicker
                 picker="year"
                 size="large"
@@ -261,7 +263,7 @@ const LoanTimeline = () => {
               />
             </div>
             <div className="month-picker-container w-100">
-              <label htmlFor="">From </label>
+              <label htmlFor="">{t("common:from")} </label>
               <DatePicker
                 size="large"
                 onChange={(e: any) => (date: any, dateString: string) => {
@@ -269,7 +271,7 @@ const LoanTimeline = () => {
               />
             </div>
             <div className="month-picker-container w-100">
-              <label htmlFor="">To</label>
+              <label htmlFor="">{t("common:to")}</label>
               <DatePicker
                 size="large"
                 onChange={(e: any) => (date: any, dateString: string) => {
@@ -370,7 +372,7 @@ const LoanTimeline = () => {
                   </h4>
                   {event?.eventType == 4 && (
                     <div className="mt-1" style={{ fontSize: "12px" }}>
-                      <span className="customer-fs-fw">TID:</span>
+                      <span className="customer-fs-fw">{t("customersB:timeline.tid")}</span>
                       C12657
                     </div>
                   )}
@@ -379,7 +381,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw">Invoice ID:</span>
+                      <span className="customer-fs-fw">{t("customersB:timeline.invoiceId")}</span>
                       {event.itemNumber}
                     </div>
                   )}
@@ -388,7 +390,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw">Invoice ID:</span>
+                      <span className="customer-fs-fw">{t("customersB:timeline.invoiceId")}</span>
                       {event.itemNumber}
                     </div>
                   )}
@@ -397,7 +399,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw">Invoice ID:</span>
+                      <span className="customer-fs-fw">{t("customersB:timeline.invoiceId")}</span>
                       {event.itemNumber}
                     </div>
                   )}
@@ -406,7 +408,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw">Invoice ID:</span>
+                      <span className="customer-fs-fw">{t("customersB:timeline.invoiceId")}</span>
                       {event.itemNumber}
                     </div>
                   )}
@@ -417,7 +419,7 @@ const LoanTimeline = () => {
                           className="mt-1"
                           style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                         >
-                          <span className="customer-fs-fw">Invoice ID:</span>
+                          <span className="customer-fs-fw">{t("customersB:timeline.invoiceId")}</span>
 
                           {event.itemNumber}
                         </div>
@@ -427,8 +429,8 @@ const LoanTimeline = () => {
                         >
                           <span className="customer-fs-fw">
                             {event.propertyName === "Cheque"
-                              ? "Cheque No:"
-                              : "TID:"}
+                              ? t("customersB:timeline.chequeNo")
+                              : t("customersB:timeline.tid")}
                           </span>
                           {event.tid}
                         </div>
@@ -440,7 +442,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw"> PID:</span>
+                      <span className="customer-fs-fw"> {t("customersB:timeline.pid")}</span>
                       P12657
                     </div>
                   )}
@@ -449,7 +451,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw"> PID:</span>
+                      <span className="customer-fs-fw"> {t("customersB:timeline.pid")}</span>
                       P12657
                     </div>
                   )}
@@ -458,7 +460,7 @@ const LoanTimeline = () => {
                       className="mt-1"
                       style={{ fontSize: "12px", whiteSpace: "nowrap" }}
                     >
-                      <span className="customer-fs-fw"> PID:</span>
+                      <span className="customer-fs-fw"> {t("customersB:timeline.pid")}</span>
                       P12657
                     </div>
                   )}
@@ -470,7 +472,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -482,7 +484,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2 mt-2"
                     >
-                      Duration:{" "}
+                      {t("customersB:timeline.duration")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -495,7 +497,7 @@ const LoanTimeline = () => {
                 {event?.eventType == 1 && (
                   <>
                     <span style={{ fontSize: "12px" }}>
-                      Valuation {event?.amount}
+                      {t("customersB:timeline.valuation")} {event?.amount}
                     </span>
                     <div className="mt-2" style={{ fontSize: "12px" }}>
                       {`${event?.content}`}
@@ -508,7 +510,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -520,7 +522,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2 mt-2"
                     >
-                      Duration:{" "}
+                      {t("customersB:timeline.duration")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -533,7 +535,7 @@ const LoanTimeline = () => {
                 {event?.eventType == 3 && (
                   <>
                     <span style={{ fontSize: "12px" }}>
-                      {event?.numOfInstallments} Installments
+                      {t("customersB:timeline.installments", { count: event?.numOfInstallments })}
                     </span>
                     {/* <div className="mt-2" style={{ fontSize: "12px" }}>
                       {`${event?.content}`}
@@ -546,7 +548,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -565,7 +567,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -577,7 +579,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2 mt-2"
                     >
-                      Duration:{" "}
+                      {t("customersB:timeline.duration")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -594,7 +596,7 @@ const LoanTimeline = () => {
                         style={{ fontSize: "14px", fontWeight: "bold" }}
                         className="pe-2"
                       >
-                        Via:
+                        {t("customersB:timeline.via")}
                       </span>{" "}
                       {event?.propertyName}
                     </h4>
@@ -602,7 +604,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -621,7 +623,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -640,7 +642,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -659,7 +661,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -678,7 +680,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -698,7 +700,7 @@ const LoanTimeline = () => {
                         style={{ fontSize: "14px", fontWeight: "bold" }}
                         className="pe-2"
                       >
-                        Due Date:
+                        {t("customersB:timeline.dueDate")}
                       </span>{" "}
                       {event?.oldValue}
                     </h4>
@@ -707,7 +709,7 @@ const LoanTimeline = () => {
                         style={{ fontSize: "14px", fontWeight: "bold" }}
                         className="pe-2"
                       >
-                        Requested Due Date:
+                        {t("customersB:timeline.requestedDueDate")}
                       </span>{" "}
                       {event?.newValue}
                     </h4>
@@ -715,7 +717,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}
@@ -735,7 +737,7 @@ const LoanTimeline = () => {
                         style={{ fontSize: "14px", fontWeight: "bold" }}
                         className="pe-2"
                       >
-                        Current Fee Charges:
+                        {t("customersB:timeline.currentFeeCharges")}
                       </span>{" "}
                       {event?.oldValue}
                     </h4>
@@ -744,7 +746,7 @@ const LoanTimeline = () => {
                         style={{ fontSize: "14px", fontWeight: "bold" }}
                         className="pe-2"
                       >
-                        Requested Fee Charges:
+                        {t("customersB:timeline.requestedFeeCharges")}
                       </span>{" "}
                       {event?.newValue}
                     </h4>
@@ -752,7 +754,7 @@ const LoanTimeline = () => {
                       style={{ fontSize: "14px", fontWeight: "bold" }}
                       className="pe-2"
                     >
-                      Amount:{" "}
+                      {t("customersB:timeline.amount")}{" "}
                       <span
                         className="mt-2"
                         style={{ fontSize: "12px", fontWeight: "400" }}

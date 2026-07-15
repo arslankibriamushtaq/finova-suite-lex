@@ -3,8 +3,10 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 
 const Finish = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
 
 
@@ -32,7 +34,7 @@ const Finish = () => {
                     fontWeight: "500",
                   }}
                 >
-                  Thank you, Your application has been submitted. We will get back to you soon.
+                  {t("finish.message")}
                 </div>
               </div>
             </div>

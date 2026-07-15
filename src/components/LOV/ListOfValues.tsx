@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -33,6 +34,7 @@ import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 
 const ListOfValues = () => {
+  const { t } = useTranslation("lov");
   const navigate = useNavigate();
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
@@ -84,21 +86,21 @@ const ListOfValues = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -111,27 +113,27 @@ const ListOfValues = () => {
     //   // width: "15%",
     // },
     {
-      name: "Title",
+      name: t("listOfValues.col.title"),
       selector: (row: { title: any }) => row.title,
       // sortable: true,
     },
      {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type,
       // sortable: true,
     },
      {
-      name: "Factors",
+      name: t("listOfValues.col.factors"),
       selector: (row: { factors: any }) => row.factors,
       // sortable: true,
     },
     {
-      name: "Factor Weight",
+      name: t("listOfValues.col.factorWeight"),
       selector: (row: { factor_weight: any }) => row.factor_weight,
       // sortable: true,
     },
     {
-        name: "Status",
+        name: t("common:status"),
         cell: (row: any) => (
           <div
             style={{
@@ -148,12 +150,12 @@ const ListOfValues = () => {
               cursor: row.status === 1 ? "pointer" : "default",
             }}
           >
-            {row.status == 1 || row.status === true ? "Active" : "Inactive"}
+            {row.status == 1 || row.status === true ? t("common:active") : t("common:inactive")}
           </div>
         ),
       },
       {
-        name: "Change Status",
+        name: t("shared.changeStatus"),
         cell: (row: any) => (
           <Switch
             className="red-switch"
@@ -184,7 +186,7 @@ const ListOfValues = () => {
         ),
       },
       {
-        name: "Action",
+        name: t("common:actions"),
         width: "10%",
         cell: (row: any) => (
           <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -197,7 +199,7 @@ const ListOfValues = () => {
                 padding: "8px",
               }}
             >
-              Select 
+              {t("common:select")}
               <img src={arrowDown} alt="" />
             </Button>
           </Dropdown>
@@ -209,14 +211,14 @@ const ListOfValues = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteListOfValues(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("listOfValues.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
           setDeleteTargetId(null);
-          return "Deleted successfully";
+          return t("listOfValues.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("listOfValues.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -234,7 +236,7 @@ const ListOfValues = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateListOfValue(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("listOfValues.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -247,13 +249,13 @@ const ListOfValues = () => {
               status: false 
              });
             getList();
-            return "Updated successfully";
+            return t("listOfValues.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("listOfValues.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createListOfValue(body), {
-          loading: "Adding new profession...",
+          loading: t("listOfValues.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -266,9 +268,9 @@ const ListOfValues = () => {
               status: false 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("listOfValues.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("listOfValues.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -315,7 +317,7 @@ const ListOfValues = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -331,7 +333,7 @@ const ListOfValues = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -350,7 +352,7 @@ const ListOfValues = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -367,7 +369,7 @@ const ListOfValues = () => {
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -389,13 +391,13 @@ const ListOfValues = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Profession Value" : "Add Profession Value"
+            selectedItem === "edit" ? t("listOfValues.modal.editTitle") : t("listOfValues.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -405,7 +407,7 @@ const ListOfValues = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -413,11 +415,11 @@ const ListOfValues = () => {
             <Form>
               <Row className="">
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Title</label>
+                <label className="fw-400">{t("listOfValues.label.title")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Title"
+                  placeholder={t("listOfValues.ph.title")}
                   value={formData.title}
                   onChange={(e: any) =>
                     setFormData({ ...formData, title: e.target.value })
@@ -425,11 +427,11 @@ const ListOfValues = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Type</label>
+                <label className="fw-400">{t("common:type")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Type"
+                  placeholder={t("listOfValues.ph.type")}
                   value={formData.type}
                   onChange={(e: any) =>
                     setFormData({ ...formData, type: e.target.value })
@@ -437,25 +439,25 @@ const ListOfValues = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Factor Weight</label>
+                <label className="fw-400">{t("listOfValues.label.factorWeight")}</label>
                 <Input
                   type="number"
                   className="fs-6"
-                  placeholder="Enter Factor Weight"
+                  placeholder={t("listOfValues.ph.factorWeight")}
                   value={formData.factor_weight}
                   onChange={(e: any) =>
                     setFormData({ ...formData, factor_weight: e.target.value })
                   }
                 />
                 </Col>
-                <Col md={12} >            
-                <Checkbox 
+                <Col md={12} >
+                <Checkbox
                   checked={formData.status}
                   onChange={(e: any) =>
                     setFormData({ ...formData, status: e.target.checked })
                   }
                 >
-                  Status
+                  {t("common:status")}
                 </Checkbox>
                 </Col>
               </Row>
@@ -469,14 +471,14 @@ const ListOfValues = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("listOfValues.modal.editRecordTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("listOfValues.modal.deleteRecordTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -485,17 +487,17 @@ const ListOfValues = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("listOfValues.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("listOfValues.confirmAddBody")
+                : t("listOfValues.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

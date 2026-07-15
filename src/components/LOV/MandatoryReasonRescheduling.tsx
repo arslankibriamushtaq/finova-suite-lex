@@ -1,11 +1,13 @@
 import { SetStateAction, useEffect, useState, useRef } from "react";
 import { Select } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { getLOVsByType } from "../../redux/apis/apisCrud";
 
 const MandatoryReasonRescheduling = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -18,25 +20,25 @@ const MandatoryReasonRescheduling = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Title",
+      name: t("mandatoryReasonRescheduling.col.title"),
       selector: (row: { title: any }) => row.title || "-",
       width: "400px",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type || "-",
       width: "300px",
     },
     {
-      name: "Factor Weight",
+      name: t("mandatoryReasonRescheduling.col.factorWeight"),
       selector: (row: { factor_weight: any }) => row.factor_weight ?? "-",
     },
     {
-      name: "Factors",
+      name: t("mandatoryReasonRescheduling.col.factors"),
       selector: (row: { factors: any }) => row.factors ?? "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -53,7 +55,7 @@ const MandatoryReasonRescheduling = () => {
             cursor: row.status === true ? "pointer" : "default",
           }}
         >
-          {row.status === true ? "Active" : "Inactive"}
+          {row.status === true ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
@@ -125,7 +127,7 @@ const MandatoryReasonRescheduling = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     console.log("Selected:", value);
   };
@@ -141,7 +143,7 @@ const MandatoryReasonRescheduling = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -160,7 +162,7 @@ const MandatoryReasonRescheduling = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
           </div>

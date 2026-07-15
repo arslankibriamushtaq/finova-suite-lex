@@ -1,5 +1,14 @@
+import { useTranslation } from "react-i18next"
 import { useRouter } from "../../lib/router"
 import { cn } from "../../lib/utils"
+
+const TAB_LABEL_KEYS: Record<ProductCreateEditTabId, string> = {
+  "basic-info": "createTabs.basicInfo",
+  "commodity-info": "createTabs.commodityInfo",
+  settings: "createTabs.settings",
+  "partner-affiliation": "createTabs.partnerAffiliation",
+  "required-documents": "createTabs.requiredDocuments",
+}
 
 export type ProductCreateEditTabId =
   | "basic-info"
@@ -28,6 +37,7 @@ export default function ProductCreateEditTabs({
   className,
 }: ProductCreateEditTabsProps) {
   const router = useRouter()
+  const { t } = useTranslation("productManagement2")
 
   const buildPath = (path: string) => {
     if (productId) {
@@ -73,7 +83,7 @@ export default function ProductCreateEditTabs({
             >
               {i + 1}
             </span>
-            {tab.label}
+            {t(TAB_LABEL_KEYS[tab.id])}
             {isActive && (
               <span className="absolute inset-x-3 -bottom-px h-0.5 rounded-full bg-emerald-500" />
             )}

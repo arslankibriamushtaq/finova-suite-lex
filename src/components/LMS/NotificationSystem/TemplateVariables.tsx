@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -24,7 +25,7 @@ import { Images } from "../../Config/Images";
 import TableView from "../../TableView/TableView";
 
 const TemplateVariables = () => {
-    
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -61,33 +62,33 @@ const TemplateVariables = () => {
 
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
             width: "100px",
         },
         {
-            name: "Template",
+            name: t("shared.template"),
             selector: (row: { templateName: any }) => row.templateName,
             sortable: true,
         },
         {
-            name: "Variable Name",
+            name: t("shared.variableName"),
             selector: (row: { variableName: any }) => row.variableName,
             sortable: true,
         },
         {
-            name: "Default Value",
+            name: t("shared.defaultValue"),
             selector: (row: { defaultValue: any }) => row.defaultValue,
             sortable: true,
         },
         {
-            name: "Created At",
+            name: t("common:createdAt"),
             selector: (row: { createdAt: any }) => formatDate(row?.createdAt),
             sortable: true,
         },
         {
-            name: "Actions",
+            name: t("common:actions"),
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
                     <Button
@@ -101,7 +102,7 @@ const TemplateVariables = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -130,14 +131,14 @@ const TemplateVariables = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -174,13 +175,13 @@ const TemplateVariables = () => {
                 setTotalRows(mappedData?.length || 0);
             } else {
                 console.error("Template variables API failed:", response?.data);
-                toast.error("Failed to load template variables: " + (response?.data?.message || "Unknown error"));
+                toast.error(t("templateVars.toast.loadFailed") + (response?.data?.message || t("shared.somethingWentWrong")));
                 setDashboardData([]);
                 setTotalRows(0);
             }
         } catch (error: any) {
             console.error("Error fetching template variables:", error);
-            toast.error("Error: " + error?.message);
+            toast.error(t("templateVars.toast.errorPrefix") + error?.message);
             setDashboardData([]);
             setTotalRows(0);
         } finally {
@@ -244,9 +245,9 @@ const TemplateVariables = () => {
                         defaultValue: "",
                     });
                     await getList();
-                    return "Template variable updated successfully!";
+                    return t("templateVars.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createTemplateVariable(body);
@@ -258,17 +259,17 @@ const TemplateVariables = () => {
                         variableName: "",
                         defaultValue: "",
                     });
-                    return "Template variable added successfully!";
+                    return t("templateVars.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating Template Variable..." : "Adding Template Variable...",
+            loading: isEditing ? t("templateVars.toast.updating") : t("templateVars.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -280,16 +281,16 @@ const TemplateVariables = () => {
                     setIsDeleteModalVisible(false);
                     await getList();
                     setEditRowId(null);
-                    return "Template variable deleted successfully!";
+                    return t("templateVars.toast.deleted");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to delete");
+                    throw new Error(response?.data?.errors || t("shared.failedDelete"));
                 }
             };
 
             toast.promise(deletePromise(), {
-                loading: "Deleting Template Variable...",
+                loading: t("templateVars.toast.deleting"),
                 success: (msg) => msg,
-                error: (err) => err.message || "Something went wrong",
+                error: (err) => err.message || t("shared.somethingWentWrong"),
             });
         } catch (error: any) {
             toast.error(error.message);
@@ -324,7 +325,7 @@ const TemplateVariables = () => {
                     <Select
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
                     />
@@ -340,7 +341,7 @@ const TemplateVariables = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -358,7 +359,7 @@ const TemplateVariables = () => {
                             }}
                             disabled={!selectedTemplateId}
                         >
-                            Add New Template Variable
+                            {t("templateVars.addNew")}
                         </button>
                     </div>
                 </div>
@@ -369,10 +370,10 @@ const TemplateVariables = () => {
                 <Row>
                     <Col md={6}>
                         <Form.Group className="mb-2 custom-input-box select-custom">
-                            <Form.Label className="px-2 mt-2">Select Template <span style={{ color: "red" }}>*</span></Form.Label>
+                            <Form.Label className="px-2 mt-2">{t("templateVars.selectTemplateLabel")} <span style={{ color: "red" }}>*</span></Form.Label>
                             <Select
                                 style={{ width: "100%", height: "40px" }}
-                                placeholder={templatesLoading ? "Loading templates..." : "Select a template to view variables"}
+                                placeholder={templatesLoading ? t("templateVars.ph.loadingTemplates") : t("templateVars.ph.selectTemplateView")}
                                 loading={templatesLoading}
                                 value={selectedTemplateId}
                                 onChange={(val: string) => {
@@ -393,7 +394,7 @@ const TemplateVariables = () => {
                                     </Select.Option>
                                 )) : (
                                     <Select.Option disabled value="no-templates">
-                                        {templatesLoading ? "Loading..." : "No templates available"}
+                                        {templatesLoading ? t("shared.loadingText") : t("templateVars.opt.noTemplates")}
                                     </Select.Option>
                                 )}
                             </Select>
@@ -420,13 +421,13 @@ const TemplateVariables = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit Template Variable" : "Add New Template Variable"}
+                title={editRowId ? t("templateVars.editTitle") : t("templateVars.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -434,10 +435,10 @@ const TemplateVariables = () => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Template <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.template")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder={templatesLoading ? "Loading templates..." : "Select template"}
+                                    placeholder={templatesLoading ? t("templateVars.ph.loadingTemplates") : t("templateVars.ph.selectTemplate")}
                                     loading={templatesLoading}
                                     value={formData.templateId}
                                     onChange={(val: string) => setFormData({ ...formData, templateId: val })}
@@ -465,11 +466,11 @@ const TemplateVariables = () => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Variable Name <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.variableName")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <input
                                     type="text"
                                     className="form-control custom-input"
-                                    placeholder="Enter variable name (e.g., userName)"
+                                    placeholder={t("templateVars.ph.variableName")}
                                     name="variableName"
                                     value={formData.variableName}
                                     onChange={(e: any) => setFormData({ ...formData, variableName: e?.target?.value })}
@@ -481,11 +482,11 @@ const TemplateVariables = () => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Default Value <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.defaultValue")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <input
                                     type="text"
                                     className="form-control custom-input"
-                                    placeholder="Enter default value"
+                                    placeholder={t("templateVars.ph.defaultValue")}
                                     name="defaultValue"
                                     value={formData.defaultValue}
                                     onChange={(e: any) => setFormData({ ...formData, defaultValue: e?.target?.value })}
@@ -501,10 +502,10 @@ const TemplateVariables = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                title={"Delete Template Variable"}
+                title={t("templateVars.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -513,12 +514,12 @@ const TemplateVariables = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    Are you sure you want to delete this Template Variable?
+                    {t("templateVars.delete.confirm")}
                 </Form>
             </Modal>
         </div>

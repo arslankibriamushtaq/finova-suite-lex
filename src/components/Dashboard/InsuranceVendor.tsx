@@ -31,7 +31,9 @@ import PhoneInput from "react-phone-input-2";
 import axios from "axios";
 import { store } from "../../redux/store";
 import { usePermissions, VENDOR_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { useTranslation } from "react-i18next";
 const InsuranceVendor = () => {
+  const { t } = useTranslation("financing");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -78,23 +80,23 @@ const InsuranceVendor = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Name (En)",
+      name: t("iv.nameEn"),
       selector: (row: { name_en: any }) => row.name_en,
       sortable: true,
     },
     {
-      name: "Name (Ar)",
+      name: t("iv.nameAr"),
       selector: (row: { name_ar: any }) => row.name_ar,
       sortable: true,
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { email: any }) => row.email,
       sortable: true,
       width: "300px",
     },
     {
-      name: "Logo",
+      name: t("iv.logo"),
       key: "logo",
       selector: (row: { logo: string }) => (
         <img
@@ -106,7 +108,7 @@ const InsuranceVendor = () => {
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -123,13 +125,13 @@ const InsuranceVendor = () => {
             cursor: row.status === "active" ? "pointer" : "default",
           }}
         >
-          {row.status == "Active" ? "Active" : "Inactive"}
+          {row.status == "Active" ? t("common:active") : t("common:inactive")}
         </div>
       ),
       sortable: true,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -144,7 +146,7 @@ const InsuranceVendor = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -158,7 +160,7 @@ const InsuranceVendor = () => {
           icon={<EyeOutlined />}
           onClick={() => handleMenuClick("view", row)}
         >
-          View Details
+          {t("common:viewDetails")}
         </Menu.Item>
       )}
       {canEditVendor && (
@@ -167,7 +169,7 @@ const InsuranceVendor = () => {
           icon={<EditFilled />}
           onClick={() => handleMenuClick("edit", row)}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
       )}
       {canDeleteVendor && (
@@ -176,7 +178,7 @@ const InsuranceVendor = () => {
           icon={<DeleteFilled />}
           onClick={() => handleMenuClick("delete", row)}
         >
-          Delete
+          {t("common:delete")}
         </Menu.Item>
       )}
     </Menu>
@@ -226,7 +228,7 @@ const InsuranceVendor = () => {
           }
         ),
         {
-          loading: "Updating Vendor...",
+          loading: t("iv.updatingVendor"),
           success: (res) => {
             if (res?.data?.success) {
               setShowModal(false);
@@ -242,11 +244,11 @@ const InsuranceVendor = () => {
               throw new Error(res?.data?.message || "Unknown error");
             }
           },
-          error: (err) => err?.message || "Something went wrong!",
+          error: (err) => err?.message || t("iv.somethingWentWrong"),
         }
       );
     } catch (error: any) {
-      toast.error(error?.message || "Failed to update vendor");
+      toast.error(error?.message || t("iv.updateVendorFailed"));
     }
   };
 
@@ -360,7 +362,7 @@ const InsuranceVendor = () => {
           }
         ),
         {
-          loading: "Adding Vendor...",
+          loading: t("iv.addingVendor"),
           success: (res) => {
             if (res?.data?.data?.message) {
               toast.success(res?.data?.data?.message);
@@ -373,7 +375,7 @@ const InsuranceVendor = () => {
           },
           error: (err) => {
             console.error("Error occurred:", err);
-            return err?.message || "Something went wrong!";
+            return err?.message || t("iv.somethingWentWrong");
           },
         }
       );
@@ -389,7 +391,7 @@ const InsuranceVendor = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -407,7 +409,7 @@ const InsuranceVendor = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("filter.searchPlaceholder")}
             />
           </div>
           <div className="d-flex align-items-center">
@@ -417,7 +419,7 @@ const InsuranceVendor = () => {
             >
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t("common:from")}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -431,7 +433,7 @@ const InsuranceVendor = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t("common:to")}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -455,7 +457,7 @@ const InsuranceVendor = () => {
                 setFormData({});
               }}
             >
-              Add Vendor
+              {t("iv.addVendor")}
             </button>
           )}
           {/* <button
@@ -486,12 +488,12 @@ const InsuranceVendor = () => {
       <Modal
         className="custom-mod"
         style={{ maxWidth: "732px" }}
-        title={selectedItem === "edit" ? "Edit Vendor" : "Add Vendor"}
+        title={selectedItem === "edit" ? t("iv.editVendor") : t("iv.addVendor")}
         visible={showModal}
         onCancel={() => setShowModal(false)}
         footer={[
           <Button key="close" onClick={() => setShowModal(false)}>
-            Cancel
+            {t("common:cancel")}
           </Button>,
           !isViewOnly && (
             <Button
@@ -505,7 +507,7 @@ const InsuranceVendor = () => {
                 }
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>
           ),
         ]}
@@ -514,11 +516,11 @@ const InsuranceVendor = () => {
           <Form>
             <div className="d-flex col-12 gap-2 mb-2">
               <div className="col-6">
-                <label className="fw-400">Name (En)</label>
+                <label className="fw-400">{t("iv.nameEn")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter English Name"
+                  placeholder={t("iv.enterEnglishName")}
                   value={formData.name_en}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name_en: e.target.value })
@@ -527,11 +529,11 @@ const InsuranceVendor = () => {
                 />
               </div>
               <div className="col-6">
-                <label className="fw-400">Name (Ar)</label>
+                <label className="fw-400">{t("iv.nameAr")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Arabic Name"
+                  placeholder={t("iv.enterArabicName")}
                   value={formData.name_ar}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name_ar: e.target.value })
@@ -543,11 +545,11 @@ const InsuranceVendor = () => {
 
             <div className="d-flex col-12 gap-2 mb-2">
               <div className="col-6">
-                <label className="fw-400">Vendor Email</label>
+                <label className="fw-400">{t("iv.vendorEmail")}</label>
                 <Input
                   type="email"
                   className="fs-6"
-                  placeholder="Enter Email"
+                  placeholder={t("iv.enterEmail")}
                   value={formData.email}
                   onChange={(e: any) =>
                     setFormData({ ...formData, email: e.target.value })
@@ -556,7 +558,7 @@ const InsuranceVendor = () => {
                 />
               </div>
               <div className="col-6">
-                <label className="fw-400">Phone Number</label>
+                <label className="fw-400">{t("iv.phoneNumber")}</label>
                 <PhoneInput
                   country={"pk"}
                   value={formData.phone}
@@ -570,7 +572,7 @@ const InsuranceVendor = () => {
 
             <div className="d-flex col-12 gap-2">
               <div className="col-6">
-                <label className="fw-400">Upload Logo</label>
+                <label className="fw-400">{t("iv.uploadLogo")}</label>
                 <Input
                   type="file"
                   className="fs-6"
@@ -585,7 +587,7 @@ const InsuranceVendor = () => {
                     width={50}
                     height={50}
                     style={{ objectFit: "contain", marginTop: 8 }}
-                    alt="Logo preview"
+                    alt={t("iv.logoPreview")}
                   />
                 ) : null}
               </div>
@@ -599,7 +601,7 @@ const InsuranceVendor = () => {
                   disabled={isViewOnly}
                 />
 
-                <label className="fw-400 ms-3">Status Change</label>
+                <label className="fw-400 ms-3">{t("iv.statusChange")}</label>
               </div>
             </div>
           </Form>

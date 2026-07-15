@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ShieldCheck } from "lucide-react";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
@@ -17,6 +18,7 @@ import {
 } from "../../../redux/apis/apisRiskManagement";
 
 const InternalChecksConfig = () => {
+  const { t } = useTranslation("riskManagement");
   const [isLoading, setIsLoading] = useState(false);
   const [configs, setConfigs] = useState<any[]>([]);
   const [blockCodes, setBlockCodes] = useState<any[]>([]);
@@ -47,7 +49,7 @@ const InternalChecksConfig = () => {
         : [];
       setConfigs(list);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch configs");
+      toast.error(error?.response?.data?.message || t("internalChecks.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -61,10 +63,12 @@ const InternalChecksConfig = () => {
         prev.map((c) => (c.id === config.id ? { ...c, active: !c.active } : c))
       );
       toast.success(
-        `${config.displayName} ${!config.active ? "enabled" : "disabled"}`
+        !config.active
+          ? t("internalChecks.toast.enabled", { name: config.displayName })
+          : t("internalChecks.toast.disabled", { name: config.displayName })
       );
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update");
+      toast.error(error?.response?.data?.message || t("internalChecks.toast.updateFailed"));
     } finally {
       setUpdatingId(null);
     }
@@ -78,9 +82,9 @@ const InternalChecksConfig = () => {
       setConfigs((prev) =>
         prev.map((c) => (c.id === config.id ? { ...c, blockCodeId } : c))
       );
-      toast.success("Block code updated");
+      toast.success(t("internalChecks.toast.blockCodeUpdated"));
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update block code");
+      toast.error(error?.response?.data?.message || t("internalChecks.toast.blockCodeFailed"));
     } finally {
       setUpdatingId(null);
     }
@@ -93,18 +97,18 @@ const InternalChecksConfig = () => {
       width: "60px",
     },
     {
-      name: "Check Name",
+      name: t("internalChecks.col.checkName"),
       selector: (row: any) => row.displayName || row.checkName || "-",
       sortable: true,
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: any) => row.description || "-",
       sortable: false,
       wrap: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isBusy = updatingId === row.id;
         return (
@@ -115,7 +119,7 @@ const InternalChecksConfig = () => {
               disabled={isBusy}
             />
             <span className={`status-pill ${row.active ? "active" : "inactive"}`}>
-              {row.active ? "Enabled" : "Disabled"}
+              {row.active ? t("common:enabled") : t("common:disabled")}
             </span>
           </div>
         );
@@ -123,7 +127,7 @@ const InternalChecksConfig = () => {
       width: "180px",
     },
     {
-      name: "Block Code on Fail",
+      name: t("internalChecks.col.blockCodeOnFail"),
       cell: (row: any) => {
         const isBusy = updatingId === row.id;
         const currentVal = row.blockCodeId ? String(row.blockCodeId) : "none";
@@ -134,10 +138,10 @@ const InternalChecksConfig = () => {
             disabled={isBusy}
           >
             <SelectTrigger className="h-8 text-xs w-[180px]">
-              <SelectValue placeholder="None" />
+              <SelectValue placeholder={t("common:none")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="none">None</SelectItem>
+              <SelectItem value="none">{t("common:none")}</SelectItem>
               {blockCodes.map((bc: any) => (
                 <SelectItem key={bc.id} value={String(bc.id)}>
                   {bc.code}
@@ -159,7 +163,7 @@ const InternalChecksConfig = () => {
           <span className="pro-head-badge">
             <ShieldCheck className="h-4 w-4" />
           </span>
-          Internal Checks Configuration
+          {t("internalChecks.title")}
         </h3>
       </div>
 

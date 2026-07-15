@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { applicationApprovalChecks } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   applicationNo?: string;
@@ -9,18 +10,19 @@ interface Props {
 }
 
 function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
+  const { t } = useTranslation("dashboard");
   const [comment, setComment] = useState("");
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
 
   const handleApprove = async () => {
     if (!comment.trim()) {
-      toast.error("Please enter a comment");
+      toast.error(t("compliance.toast.enterComment"));
       return;
     }
 
     if (!applicationNo) {
-      toast.error("Missing application number");
+      toast.error(t("compliance.toast.missingAppNo"));
       return;
     }
 
@@ -36,14 +38,14 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
       const response = await applicationApprovalChecks(body);
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Credit approved successfully!");
+        toast.success(response?.data?.message || t("approveCredit.toast.approved"));
         setComment("");
         if (onUpdate) onUpdate();
       } else {
-        toast.error(response?.data?.message || "Failed to approve credit");
+        toast.error(response?.data?.message || t("approveCredit.toast.approveFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to approve credit");
+      toast.error(error?.response?.data?.message || error?.message || t("approveCredit.toast.approveFailed"));
     } finally {
       setApproving(false);
     }
@@ -51,12 +53,12 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
 
   const handleReject = async () => {
     if (!comment.trim()) {
-      toast.error("Please enter a comment");
+      toast.error(t("compliance.toast.enterComment"));
       return;
     }
 
     if (!applicationNo) {
-      toast.error("Missing application number");
+      toast.error(t("compliance.toast.missingAppNo"));
       return;
     }
 
@@ -72,14 +74,14 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
       const response = await applicationApprovalChecks(body);
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Credit rejected successfully!");
+        toast.success(response?.data?.message || t("approveCredit.toast.rejected"));
         setComment("");
         if (onUpdate) onUpdate();
       } else {
-        toast.error(response?.data?.message || "Failed to reject credit");
+        toast.error(response?.data?.message || t("approveCredit.toast.rejectFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to reject credit");
+      toast.error(error?.response?.data?.message || error?.message || t("approveCredit.toast.rejectFailed"));
     } finally {
       setRejecting(false);
     }
@@ -100,7 +102,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                     className="d-flex justify-content-between align-items-center mt-2 mb-3 pb-2"
                     style={{ borderBottom: "1px solid #CFCFCF" }}
                   >
-                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>Processor</p>
+                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>{t("approval.processor")}</p>
                     <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                       {creditHistory?.processor || "--"}
                     </span>
@@ -109,7 +111,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                     className="d-flex justify-content-between align-items-center mt-2 mb-3 pb-2"
                     style={{ borderBottom: "1px solid #CFCFCF" }}
                   >
-                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>Application Status</p>
+                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>{t("approval.applicationStatus")}</p>
                     <span
                       style={{
                         fontWeight: "600",
@@ -128,7 +130,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                     className="d-flex justify-content-between align-items-center mt-2 mb-3 pb-2"
                     style={{ borderBottom: "1px solid #CFCFCF" }}
                   >
-                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>Processed Date</p>
+                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>{t("approval.processedDate")}</p>
                     <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                       {creditHistory?.processed_date
                         ? new Date(creditHistory.processed_date).toLocaleString()
@@ -139,7 +141,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                     className="d-flex justify-content-between align-items-center mt-2 mb-3 pb-2"
                     style={{ borderBottom: "1px solid #CFCFCF" }}
                   >
-                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>Comment</p>
+                    <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>{t("approval.comment")}</p>
                     <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                       {creditHistory?.app_comment || "--"}
                     </span>
@@ -159,13 +161,13 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                       display: "block",
                     }}
                   >
-                    Comment Box
+                    {t("approval.commentBox")}
                   </label>
                   <textarea
                     id="comment"
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    placeholder="Write comment here"
+                    placeholder={t("approval.writeComment")}
                     className="form-control"
                     style={{
                       minHeight: "100px",
@@ -184,7 +186,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                     disabled={rejecting || approving}
                     style={{ backgroundColor: "#000000" }}
                   >
-                    {rejecting ? "Rejecting..." : "Reject"}
+                    {rejecting ? t("approval.rejecting") : t("common:reject")}
                   </button>
                   <button
                     className="theme-btn-next"
@@ -192,7 +194,7 @@ function ApproveCreditInfo({ applicationNo, creditHistory, onUpdate }: Props) {
                     disabled={rejecting || approving}
                     style={{ backgroundColor: "#dc0000" }}
                   >
-                    {approving ? "Approving..." : "Approve"}
+                    {approving ? t("approval.approving") : t("common:approve")}
                   </button>
                 </div>
               </>

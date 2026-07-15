@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { RefreshCw, Eye, ChevronDown, Users } from "lucide-react";
@@ -27,19 +28,28 @@ import {
 } from "../../../redux/apis/apisUniversalOnboarding";
 
 const STATUS_OPTIONS = [
-  { value: "ALL", label: "All Statuses" },
-  { value: "IN_PROGRESS", label: "In Progress" },
-  { value: "COMPLETED", label: "Completed" },
-  { value: "PENDING", label: "Pending" },
-  { value: "ABANDONED", label: "Abandoned" },
-  { value: "FAILED", label: "Failed" },
+  { value: "ALL", labelKey: "onboarding.status.all" },
+  { value: "IN_PROGRESS", labelKey: "onboarding.status.inProgress" },
+  { value: "COMPLETED", labelKey: "onboarding.status.completed" },
+  { value: "PENDING", labelKey: "onboarding.status.pending" },
+  { value: "ABANDONED", labelKey: "onboarding.status.abandoned" },
+  { value: "FAILED", labelKey: "onboarding.status.failed" },
 ];
 
 const FLOW_OPTIONS = [
-  { value: "ALL", label: "All Flows" },
-  { value: "LOCAL", label: "Local" },
-  { value: "FOREIGN", label: "Foreign" },
+  { value: "ALL", labelKey: "onboarding.flow.all" },
+  { value: "LOCAL", labelKey: "onboarding.flow.local" },
+  { value: "FOREIGN", labelKey: "onboarding.flow.foreign" },
 ];
+
+// API status enum → translation key (customerManagement namespace).
+const STATUS_LABEL_KEY: Record<string, string> = {
+  IN_PROGRESS: "onboarding.status.inProgress",
+  COMPLETED: "onboarding.status.completed",
+  PENDING: "onboarding.status.pending",
+  ABANDONED: "onboarding.status.abandoned",
+  FAILED: "onboarding.status.failed",
+};
 
 const STATUS_BADGE: Record<string, string> = {
   IN_PROGRESS:
@@ -128,6 +138,7 @@ const ProgressCell = ({ row }: { row: OnboardingSession }) => {
 
 const OnboardingUsers = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("customerManagement");
 
   const [data, setData] = useState<OnboardingSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -178,7 +189,7 @@ const OnboardingUsers = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load onboarding users"
+        error?.response?.data?.message || t("onboarding.toast.loadFailed")
       );
       setData([]);
       setTotalRows(0);
@@ -213,7 +224,7 @@ const OnboardingUsers = () => {
   const openDetail = (row: OnboardingSession) => {
     const wf = getWorkflowId(row);
     if (!wf) {
-      toast.error("No workflow id available for this session");
+      toast.error(t("onboarding.toast.noWorkflow"));
       return;
     }
     navigate(`/LOS/CustomerManagement/OnboardingUsers/${encodeURIComponent(wf)}`);
@@ -221,7 +232,7 @@ const OnboardingUsers = () => {
 
   const headers = [
     {
-      name: "User",
+      name: t("onboarding.col.user"),
       cell: (row: OnboardingSession) => {
         const name = getName(row);
         const contact = getContact(row);
@@ -237,14 +248,14 @@ const OnboardingUsers = () => {
       width: "220px",
     },
     {
-      name: "Flow",
+      name: t("onboarding.col.flow"),
       cell: (row: OnboardingSession) => (
         <span className="text-sm text-foreground">{getFlow(row)}</span>
       ),
       width: "120px",
     },
     {
-      name: "Current Step",
+      name: t("onboarding.col.currentStep"),
       cell: (row: OnboardingSession) => (
         <span className="text-sm text-foreground" title={getCurrentStep(row)}>
           {getCurrentStep(row)}
@@ -253,25 +264,29 @@ const OnboardingUsers = () => {
       width: "200px",
     },
     {
-      name: "Progress",
+      name: t("onboarding.col.progress"),
       cell: (row: OnboardingSession) => <ProgressCell row={row} />,
       width: "150px",
     },
     {
-      name: "Status",
+      name: t("onboarding.col.status"),
       cell: (row: OnboardingSession) => (
         <span
           className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
             STATUS_BADGE[row.status || ""] || "bg-muted text-foreground"
           }`}
         >
-          {row.status || "-"}
+          {row.status
+            ? STATUS_LABEL_KEY[row.status]
+              ? t(STATUS_LABEL_KEY[row.status])
+              : row.status
+            : "-"}
         </span>
       ),
       width: "130px",
     },
     {
-      name: "Started",
+      name: t("onboarding.col.started"),
       cell: (row: OnboardingSession) => (
         <span className="text-sm text-muted-foreground">
           {formatDate(row.startedAt || row.createdAt)}
@@ -280,14 +295,14 @@ const OnboardingUsers = () => {
       width: "170px",
     },
     {
-      name: "Last Updated",
+      name: t("onboarding.col.lastUpdated"),
       cell: (row: OnboardingSession) => (
         <span className="text-sm text-muted-foreground">{formatDate(row.updatedAt)}</span>
       ),
       width: "170px",
     },
     {
-      name: "Actions",
+      name: t("onboarding.col.actions"),
       cell: (row: OnboardingSession) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -297,7 +312,7 @@ const OnboardingUsers = () => {
               style={{ backgroundColor: "var(--color-action)" }}
               onClick={(e) => e.stopPropagation()}
             >
-              Select
+              {t("onboarding.action.select")}
               <ChevronDown className="h-3.5 w-3.5" />
             </Button>
           </DropdownMenuTrigger>
@@ -310,7 +325,7 @@ const OnboardingUsers = () => {
               }}
             >
               <Eye className="h-3.5 w-3.5" />
-              View Details
+              {t("onboarding.action.viewDetails")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -328,7 +343,7 @@ const OnboardingUsers = () => {
           <span className="pro-head-badge">
             <Users className="h-4 w-4" />
           </span>
-          Onboarding Users
+          {t("onboarding.title")}
         </h3>
       </div>
 
@@ -337,7 +352,7 @@ const OnboardingUsers = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search name, email, phone…"
+            placeholder={t("onboarding.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -352,12 +367,12 @@ const OnboardingUsers = () => {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Flow" />
+                <SelectValue placeholder={t("onboarding.filter.flow")} />
               </SelectTrigger>
               <SelectContent>
                 {FLOW_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -372,12 +387,12 @@ const OnboardingUsers = () => {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t("onboarding.filter.status")} />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -385,7 +400,7 @@ const OnboardingUsers = () => {
           </div>
           <Button variant="outline" className="gap-2" onClick={loadSessions} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("common:refresh")}
           </Button>
         </div>
       </div>

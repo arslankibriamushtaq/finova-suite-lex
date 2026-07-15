@@ -9,10 +9,12 @@ import html2canvas from "html2canvas";
 import { Images } from "../Config/Images";
 import axios from "../../utils/axios";
 import { themeStyle } from "../Config/Theme";
+import { useTranslation } from "react-i18next";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 function LateInvoice() {
+  const { t } = useTranslation("accountingLoans");
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewImage, setPreviewImage] = useState("");
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -48,7 +50,7 @@ function LateInvoice() {
 
   const uploadButton = (
     <button style={{ border: 0, background: "none" }} type="button">
-      <div style={{ marginTop: 8 }}>Upload</div>
+      <div style={{ marginTop: 8 }}>{t("lateInvoice.upload")}</div>
     </button>
   );
 
@@ -120,7 +122,7 @@ function LateInvoice() {
         <div className="col-12 d-flex">
           <div className="col-6">
             {" "}
-            <h5>Invoice View </h5>
+            <h5>{t("lateInvoice.title")} </h5>
           </div>
           <div className="col-6 d-flex justify-content-end">
             <Button
@@ -129,7 +131,7 @@ function LateInvoice() {
               style={{ background: "var(--primary)" }}
               onClick={downloadPDF}
             >
-              Download
+              {t("lateInvoice.download")}
             </Button>
           </div>
         </div>
@@ -137,7 +139,7 @@ function LateInvoice() {
           <div className="col-12 d-flex mt-5 ">
             <div className="col-8">
               <label className="mb-2" style={{ fontSize: "1rem" }}>
-                Invoice No.
+                {t("lateInvoice.invoiceNo")}
               </label>
 
               <div className="col-4">
@@ -195,7 +197,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  From
+                  {t("lateInvoice.from")}
                 </label>
                 <span className="">{invoiceData?.from}</span>
               </div>
@@ -206,7 +208,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Billing To
+                  {t("lateInvoice.billingTo")}
                 </label>
                 <span className="">{invoiceData?.billingTo}</span>
               </div>
@@ -220,7 +222,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Payment Term
+                  {t("lateInvoice.paymentTerm")}
                 </label>
                 <span className="">{invoiceData?.paymentTerms}</span>
               </div>
@@ -231,7 +233,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Ship To
+                  {t("lateInvoice.shipTo")}
                 </label>
                 <span className="">{invoiceData?.shipTo}</span>
               </div>
@@ -244,7 +246,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  PO Number
+                  {t("lateInvoice.poNumber")}
                 </label>
                 <span className="">{invoiceData?.poNumber}</span>
               </div>
@@ -255,7 +257,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Due Date
+                  {t("lateInvoice.dueDate")}
                 </label>
                 <span className="">{formatDate(invoiceData?.dueDate)}</span>
                 {/* <DatePickerComponent givenDate={invoiceData?.dueDate} /> */}
@@ -270,7 +272,7 @@ function LateInvoice() {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Penalty Amount
+                  {t("lateInvoice.penaltyAmount")}
                 </label>
                 <input
                   type="number"
@@ -288,7 +290,7 @@ function LateInvoice() {
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
-                <label style={{ fontWeight: "bold" }}>Date</label>
+                <label style={{ fontWeight: "bold" }}>{t("lateInvoice.date")}</label>
                 <span>
                 {new Date().toISOString().slice(0, 10)}
                 </span>
@@ -306,7 +308,7 @@ function LateInvoice() {
                   fontWeight: "700",
                 }}
               >
-                Item
+                {t("lateInvoice.item")}
               </div>
               <div
                 className="mb-2 p-3 col-6"
@@ -316,7 +318,7 @@ function LateInvoice() {
                   fontWeight: "700",
                 }}
               >
-                Amount
+                {t("lateInvoice.amount")}
               </div>
             </div>
             {/* Data Fields Section */}
@@ -325,7 +327,7 @@ function LateInvoice() {
                 <div className="col-6">
                   <Input
                     name="item"
-                    placeholder="Item"
+                    placeholder={t("lateInvoice.item")}
                     size="large"
                     value={field.item}
                     style={{
@@ -341,7 +343,7 @@ function LateInvoice() {
                 <div className="col-6">
                   <Input
                     name="price"
-                    placeholder="Price"
+                    placeholder={t("lateInvoice.price")}
                     size="large"
                     value={field.amount}
                     style={{
@@ -364,7 +366,7 @@ function LateInvoice() {
             }}
           >
             <div className="col-6" style={{ fontWeight: 600 }}>
-              Sub Total
+              {t("lateInvoice.subTotal")}
             </div>
             <div
               className="col-6 d-flex justify-content-end font-bold"
@@ -384,7 +386,7 @@ function LateInvoice() {
                     borderRight: "1px solid var(--border)",
                   }}
                 >
-                  <label style={{ fontWeight: "bold" }}>Tax(%)</label>
+                  <label style={{ fontWeight: "bold" }}>{t("lateInvoice.tax")}</label>
                   <span>{invoiceData?.tax}</span>
                 </div>
               </div>
@@ -397,7 +399,7 @@ function LateInvoice() {
                   }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
-                    Shipping
+                    {t("lateInvoice.shipping")}
                   </label>
                   <span className="">{invoiceData?.shipping}</span>
                 </div>
@@ -408,7 +410,7 @@ function LateInvoice() {
                   style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
-                    Discount(%)
+                    {t("lateInvoice.discount")}
                   </label>
                   <span className="">{invoiceData?.discount}</span>
                 </div>
@@ -423,11 +425,11 @@ function LateInvoice() {
                 background: "var(--color-info-bg)",
               }}
             >
-              <label style={{ fontWeight: 600 }}>Note</label>
+              <label style={{ fontWeight: 600 }}>{t("lateInvoice.note")}</label>
               <div className="mt-2">
                 <div style={{ lineHeight: "1.5rem" }}>
                   {invoiceData?.notes ||
-                    "Please ensure your payment is submitted by the due date listed on this invoice. Contact our customer support if you have questions, need assistance, or wish to review your account details"}
+                    t("lateInvoice.defaultNote")}
                 </div>
               </div>
             </div>
@@ -438,7 +440,7 @@ function LateInvoice() {
                   themeStyle.gradientBackgroundColor,
               }}
             >
-              <label style={{ fontWeight: 500 }}>Total</label>
+              <label style={{ fontWeight: 500 }}>{t("lateInvoice.total")}</label>
               <div
                 className=" font-bold"
                 style={{

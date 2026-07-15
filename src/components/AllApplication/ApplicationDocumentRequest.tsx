@@ -1,34 +1,36 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const ApplicationDocumentRequest = () => {
+  const { t } = useTranslation("allApplication");
   return (
     <>
       <div className="card">
         <div className="card-body">
           <div className="col-xl-12 col-12 d-flex align-items-center pb-3">
             <h2 className="col-xl-6 col-12 fs-6 fw-bold">
-              Please select documents required for this application:
+              {t("docRequest.selectPrompt")}
             </h2>
             <div className="col-xl-6 col-12 d-flex justify-content-end align-items-center">
-              <div className="theme-btn mt-1">View All Documents</div>
+              <div className="theme-btn mt-1">{t("docRequest.viewAllDocuments")}</div>
             </div>
           </div>
           <div className="row">
             <div className="col-md-3">
               <div className="d-flex pb-2">
                 <input className="col-2" type="checkbox" />
-                <div className="col-10">Commodity Contract</div>
+                <div className="col-10">{t("docRequest.commodityContract")}</div>
               </div>
             </div>
             <div className="col-md-3">
               <div className="d-flex pb-2">
                 <input className="col-2" type="checkbox" />
-                <div className="col-10">US Passport</div>
+                <div className="col-10">{t("docRequest.usPassport")}</div>
               </div>
             </div>
           </div>
           <div className=" d-flex justify-content-end align-items-center">
-            <div className="theme-btn mt-4">Request Now</div>
+            <div className="theme-btn mt-4">{t("docRequest.requestNow")}</div>
           </div>
         </div>
       </div>

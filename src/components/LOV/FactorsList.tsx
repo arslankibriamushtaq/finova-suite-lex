@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { getFactors } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 
 const FactorsList = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -15,24 +17,24 @@ const FactorsList = () => {
 
   const Factors_Header = [
     {
-      name: "ID",
+      name: t("factorsList.col.id"),
       selector: (row: { id: any }) => row.id || "-",
       sortable: true,
       width: "80px",
     },
     {
-      name: "Factors",
+      name: t("factorsList.col.factors"),
       selector: (row: { factors: any }) => row.factors || "-",
       sortable: true,
     },
     {
-      name: "Factor Weight",
+      name: t("factorsList.col.factorWeight"),
       selector: (row: { factor_weight: any }) => row.factor_weight ?? "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -50,13 +52,13 @@ const FactorsList = () => {
             fontWeight: "500",
           }}
         >
-          {row.status === true ? "Active" : "Inactive"}
+          {row.status === true ? t("common:active") : t("common:inactive")}
         </div>
       ),
       width: "120px",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       cell: (row: any) =>
         row.created_at
           ? new Date(row.created_at).toLocaleDateString()
@@ -65,7 +67,7 @@ const FactorsList = () => {
       width: "150px",
     },
     {
-      name: "Updated At",
+      name: t("common:updatedAt"),
       cell: (row: any) =>
         row.updated_at
           ? new Date(row.updated_at).toLocaleDateString()
@@ -103,7 +105,7 @@ const FactorsList = () => {
         
         setData(factorsData);
       } else {
-        toast.error(response?.data?.message || "Failed to fetch factors");
+        toast.error(response?.data?.message || t("factorsList.toast.fetchFailed"));
         setData([]);
         setTotalRows(0);
         setFrom(0);
@@ -112,7 +114,7 @@ const FactorsList = () => {
       }
     } catch (error: any) {
       console.error("Error fetching factors:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch factors");
+      toast.error(error?.response?.data?.message || error?.message || t("factorsList.toast.fetchFailed"));
       setData([]);
       setTotalRows(0);
       setFrom(0);

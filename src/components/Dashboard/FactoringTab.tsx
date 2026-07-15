@@ -2,17 +2,19 @@ import React, { useState } from "react";
 import FactoringInformation from "./FactoringInformation";
 import { Tab, Tabs } from "react-bootstrap";
 import FactoringApproval from "./FactoringApproval";
+import { useTranslation } from "react-i18next";
 
 function FactoringTab({ setActiveTab }: any) {
+  const { t } = useTranslation("dashboard");
   const [active, setActive] = useState("FinancingInformation");
   const tabOptions = [
     {
-      title: "Financing Information",
+      title: t("factoringTab.tab.financingInfo"),
       key: "FinancingInformation",
       component: <FactoringInformation setActiveTab={setActiveTab} />,
     },
     {
-      title: "Financing Approval",
+      title: t("factoringTab.tab.financingApproval"),
       key: "FinancingApproval",
       component: <FactoringApproval setActiveTab={setActiveTab} />,
     },

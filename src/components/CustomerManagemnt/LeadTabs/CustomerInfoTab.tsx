@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -13,6 +14,7 @@ import EnvConfig from "../../ProductManagement/envConfiguration";
 import DurationSettings from "../../ProductManagement/requestDurationSettings";
 
 const CustomerInfo = ({setActiveTab}:any) => {
+  const { t } = useTranslation("customerManagement");
   localStorage.setItem("tabs", "ApplicationSteps");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
@@ -44,7 +46,7 @@ const CustomerInfo = ({setActiveTab}:any) => {
             dispatch(setProductData(response.data.data));
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load product data");
+          toast.error(error?.response?.data?.message || t("customerInfo.toast.loadFailed"));
         }
       }
     };
@@ -53,32 +55,32 @@ const CustomerInfo = ({setActiveTab}:any) => {
 
   const tapOptions = [
     {
-      title: "Application Steps",
+      title: t("customerInfo.tab.applicationSteps"),
       key: "ApplicationSteps",
       folder: <SettingProductAppliation setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Terms and Conditions",
+      title: t("customerInfo.tab.termsAndConditions"),
       key: "TermsAndConditions",
       folder: <SettingsTermsConditions setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Fee Settings",
+      title: t("customerInfo.tab.feeSettings"),
       key: "FeeSettings",
       folder: <FeeSettings setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Fee Slabs",
+      title: t("customerInfo.tab.feeSlabs"),
       key: "AdminFeeSlabs",
       folder: <AdminFeeSlabs setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Environment Configuration",
+      title: t("customerInfo.tab.envConfig"),
       key: "EnvConfig",
       folder: <EnvConfig setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Request Duration Settings",
+      title: t("customerInfo.tab.durationSettings"),
       key: "DurationSettings",
       folder: <DurationSettings setActiveTab={setActiveTab} setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },

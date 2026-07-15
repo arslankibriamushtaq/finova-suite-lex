@@ -17,6 +17,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const formatLabel = (value?: string | null) =>
   value ? value.replace(/_/g, " ") : "-";
@@ -114,6 +115,7 @@ const SectionTitle = ({ title }: { title: string }) => (
 );
 
 const RescheduleHistory = () => {
+  const { t } = useTranslation("loanManagement");
   const [data, setData] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -141,7 +143,7 @@ const RescheduleHistory = () => {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to fetch reschedule history"
+          t("reschedule.fetchFailed")
       );
     } finally {
       setSkelitonLoading(false);
@@ -157,7 +159,7 @@ const RescheduleHistory = () => {
 
   const handleSubmit = async () => {
     if (!approvalNotes.trim()) {
-      toast.error("Notes are required");
+      toast.error(t("reschedule.notesRequired"));
       return;
     }
 
@@ -167,10 +169,10 @@ const RescheduleHistory = () => {
       setActionLoading(selectedRescheduleId);
       if (modalAction === "approve") {
         await approveReschedule(applicationId, selectedRescheduleId, body);
-        toast.success("Reschedule approved successfully");
+        toast.success(t("reschedule.approvedSuccess"));
       } else {
         await rejectReschedule(applicationId, selectedRescheduleId, body);
-        toast.success("Reschedule rejected successfully");
+        toast.success(t("reschedule.rejectedSuccess"));
       }
       setShowModal(false);
       fetchReschedules();
@@ -201,7 +203,7 @@ const RescheduleHistory = () => {
         icon={<EyeOutlined />}
         onClick={() => setDetailsRow(row)}
       >
-        Details
+        {t("common:details")}
       </Menu.Item>
       <Menu.Item
         key="approve"
@@ -211,7 +213,7 @@ const RescheduleHistory = () => {
           actionLoading === row.rescheduleId || isFinalStatus(row.status)
         }
       >
-        Approve
+        {t("common:approve")}
       </Menu.Item>
       <Menu.Item
         key="reject"
@@ -221,40 +223,40 @@ const RescheduleHistory = () => {
           actionLoading === row.rescheduleId || isFinalStatus(row.status)
         }
       >
-        Reject
+        {t("common:reject")}
       </Menu.Item>
     </Menu>
   );
 
   const columns = [
     {
-      name: "Loan Number",
+      name: t("reschedule.colLoanNumber"),
       selector: (row: any) => row.loanNumber || "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Reschedule Type",
+      name: t("reschedule.colRescheduleType"),
       selector: (row: any) => formatLabel(row.rescheduleType),
       sortable: true,
       width: "180px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => <StatusPill status={row.status} />,
       width: "130px",
     },
     {
-      name: "Principal",
+      name: t("reschedule.colPrincipal"),
       selector: (row: any) => formatCurrency(row.principalAmount),
       sortable: true,
       width: "150px",
     },
     {
-      name: "Before (Tenure / Installment / Maturity)",
+      name: t("reschedule.colBefore"),
       cell: (row: any) => (
         <div style={{ fontSize: 12, lineHeight: 1.5 }}>
-          <div>{row.before?.tenureMonths ?? "-"} mo</div>
+          <div>{row.before?.tenureMonths ?? "-"} {t("reschedule.monthsShort")}</div>
           <div>{formatCurrency(row.before?.installmentAmount)}</div>
           <div>{formatDate(row.before?.maturityDate)}</div>
         </div>
@@ -262,10 +264,10 @@ const RescheduleHistory = () => {
       width: "250px",
     },
     {
-      name: "After (Tenure / Installment / Maturity)",
+      name: t("reschedule.colAfter"),
       cell: (row: any) => (
         <div style={{ fontSize: 12, lineHeight: 1.5 }}>
-          <div>{row.after?.tenureMonths ?? "-"} mo</div>
+          <div>{row.after?.tenureMonths ?? "-"} {t("reschedule.monthsShort")}</div>
           <div>{formatCurrency(row.after?.installmentAmount)}</div>
           <div>{formatDate(row.after?.maturityDate)}</div>
         </div>
@@ -273,13 +275,13 @@ const RescheduleHistory = () => {
       width: "250px",
     },
     {
-      name: "Requested At",
+      name: t("reschedule.colRequestedAt"),
       selector: (row: any) => formatDate(row.timeline?.requestedAt),
       sortable: true,
       width: "140px",
     },
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -292,7 +294,7 @@ const RescheduleHistory = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -341,14 +343,14 @@ const RescheduleHistory = () => {
           <span className="pro-head-badge">
             <History className="h-4 w-4" />
           </span>
-          Reschedule History
+          {t("reschedule.title")}
         </h3>
       </div>
 
       <div className="d-flex flex-wrap align-items-center gap-2 mb-3">
         <AntInput
           allowClear
-          placeholder="Search by loan number, type, status, justification"
+          placeholder={t("reschedule.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -375,7 +377,7 @@ const RescheduleHistory = () => {
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>
-            {modalAction === "approve" ? "Approve" : "Reject"} Reschedule
+            {modalAction === "approve" ? t("reschedule.approveTitle") : t("reschedule.rejectTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -383,15 +385,15 @@ const RescheduleHistory = () => {
             <Row>
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label>Notes</Form.Label>
+                  <Form.Label>{t("reschedule.notes")}</Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={1}
                     className="pt-2"
                     placeholder={
                       modalAction === "approve"
-                        ? "e.g. Approved after reviewing customer payment history"
-                        : "e.g. Reason for rejection"
+                        ? t("reschedule.approvePlaceholder")
+                        : t("reschedule.rejectPlaceholder")
                     }
                     value={approvalNotes}
                     onChange={(e) => setApprovalNotes(e.target.value)}
@@ -402,7 +404,7 @@ const RescheduleHistory = () => {
           </Form>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={() => setShowModal(false)}>Cancel</Button>
+          <Button onClick={() => setShowModal(false)}>{t("common:cancel")}</Button>
           <Button
             type="primary"
             loading={!!actionLoading}
@@ -418,7 +420,7 @@ const RescheduleHistory = () => {
                 : { backgroundColor: "#dc3545", borderColor: "#dc3545" }
             }
           >
-            {modalAction === "approve" ? "Approve" : "Reject"}
+            {modalAction === "approve" ? t("common:approve") : t("common:reject")}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -432,34 +434,34 @@ const RescheduleHistory = () => {
         scrollable
       >
         <Modal.Header closeButton>
-          <Modal.Title>Reschedule Details</Modal.Title>
+          <Modal.Title>{t("reschedule.detailsTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {detailsRow && (
             <div>
-              <SectionTitle title="Basic Information" />
+              <SectionTitle title={t("reschedule.sectionBasicInfo")} />
               <Row>
                 <Col md={6}>
                   <InfoRow
-                    label="Loan Number"
+                    label={t("reschedule.colLoanNumber")}
                     value={detailsRow.loanNumber || "-"}
                   />
                   <InfoRow
-                    label="Reschedule Type"
+                    label={t("reschedule.colRescheduleType")}
                     value={formatLabel(detailsRow.rescheduleType)}
                   />
                   <InfoRow
-                    label="Status"
+                    label={t("common:status")}
                     value={<StatusPill status={detailsRow.status} />}
                   />
                 </Col>
                 <Col md={6}>
                   <InfoRow
-                    label="Principal Amount"
+                    label={t("reschedule.principalAmount")}
                     value={formatCurrency(detailsRow.principalAmount)}
                   />
                   <InfoRow
-                    label="Reschedule ID"
+                    label={t("reschedule.rescheduleId")}
                     value={
                       <span style={{ fontSize: 11 }}>
                         {detailsRow.rescheduleId || "-"}
@@ -467,7 +469,7 @@ const RescheduleHistory = () => {
                     }
                   />
                   <InfoRow
-                    label="Loan ID"
+                    label={t("reschedule.loanIdLabel")}
                     value={
                       <span style={{ fontSize: 11 }}>
                         {detailsRow.loanId || "-"}
@@ -484,24 +486,24 @@ const RescheduleHistory = () => {
                 detailsRow.writeOffAmount != null ||
                 detailsRow.profitWaiverAmount != null) && (
                 <>
-                  <SectionTitle title="Specifics" />
+                  <SectionTitle title={t("reschedule.sectionSpecifics")} />
                   <Row>
                     <Col md={6}>
                       {detailsRow.extensionMonths != null && (
                         <InfoRow
-                          label="Extension Months"
-                          value={`${detailsRow.extensionMonths} months`}
+                          label={t("reschedule.extensionMonths")}
+                          value={t("reschedule.monthsSuffix", { count: detailsRow.extensionMonths })}
                         />
                       )}
                       {detailsRow.holidayMonths != null && (
                         <InfoRow
-                          label="Holiday Months"
-                          value={`${detailsRow.holidayMonths} months`}
+                          label={t("reschedule.holidayMonths")}
+                          value={t("reschedule.monthsSuffix", { count: detailsRow.holidayMonths })}
                         />
                       )}
                       {detailsRow.requestedSkipMonth && (
                         <InfoRow
-                          label="Requested Skip Month"
+                          label={t("reschedule.requestedSkipMonth")}
                           value={formatDate(detailsRow.requestedSkipMonth)}
                         />
                       )}
@@ -509,19 +511,19 @@ const RescheduleHistory = () => {
                     <Col md={6}>
                       {detailsRow.newProfitRate != null && (
                         <InfoRow
-                          label="New Profit Rate"
+                          label={t("reschedule.newProfitRate")}
                           value={`${detailsRow.newProfitRate}%`}
                         />
                       )}
                       {detailsRow.writeOffAmount != null && (
                         <InfoRow
-                          label="Write-off Amount"
+                          label={t("reschedule.writeOffAmount")}
                           value={formatCurrency(detailsRow.writeOffAmount)}
                         />
                       )}
                       {detailsRow.profitWaiverAmount != null && (
                         <InfoRow
-                          label="Profit Waiver"
+                          label={t("reschedule.profitWaiver")}
                           value={formatCurrency(detailsRow.profitWaiverAmount)}
                         />
                       )}
@@ -532,7 +534,7 @@ const RescheduleHistory = () => {
 
               {detailsRow.details && (
                 <>
-                  <SectionTitle title="Details" />
+                  <SectionTitle title={t("reschedule.sectionDetails")} />
                   <div
                     style={{
                       padding: 12,
@@ -550,23 +552,23 @@ const RescheduleHistory = () => {
 
               {(detailsRow.justification || detailsRow.rejectionReason) && (
                 <>
-                  <SectionTitle title="Justification & Reason" />
+                  <SectionTitle title={t("reschedule.sectionJustification")} />
                   {detailsRow.justification && (
                     <InfoRow
-                      label="Justification"
+                      label={t("reschedule.justification")}
                       value={detailsRow.justification}
                     />
                   )}
                   {detailsRow.rejectionReason && (
                     <InfoRow
-                      label="Rejection Reason"
+                      label={t("reschedule.rejectionReason")}
                       value={detailsRow.rejectionReason}
                     />
                   )}
                 </>
               )}
 
-              <SectionTitle title="Before vs After" />
+              <SectionTitle title={t("reschedule.sectionBeforeAfter")} />
               <div style={{ overflowX: "auto" }}>
                 <table
                   style={{
@@ -577,14 +579,14 @@ const RescheduleHistory = () => {
                 >
                   <thead>
                     <tr style={{ background: "var(--muted)" }}>
-                      <th style={{ padding: 10, textAlign: "left" }}>Field</th>
-                      <th style={{ padding: 10, textAlign: "left" }}>Before</th>
-                      <th style={{ padding: 10, textAlign: "left" }}>After</th>
+                      <th style={{ padding: 10, textAlign: "left" }}>{t("reschedule.tblField")}</th>
+                      <th style={{ padding: 10, textAlign: "left" }}>{t("reschedule.tblBefore")}</th>
+                      <th style={{ padding: 10, textAlign: "left" }}>{t("reschedule.tblAfter")}</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: 10 }}>Tenure (months)</td>
+                      <td style={{ padding: 10 }}>{t("reschedule.rowTenure")}</td>
                       <td style={{ padding: 10 }}>
                         {detailsRow.before?.tenureMonths ?? "-"}
                       </td>
@@ -593,7 +595,7 @@ const RescheduleHistory = () => {
                       </td>
                     </tr>
                     <tr style={{ borderBottom: "1px solid var(--border)" }}>
-                      <td style={{ padding: 10 }}>Installment Amount</td>
+                      <td style={{ padding: 10 }}>{t("reschedule.rowInstallment")}</td>
                       <td style={{ padding: 10 }}>
                         {formatCurrency(detailsRow.before?.installmentAmount)}
                       </td>
@@ -602,7 +604,7 @@ const RescheduleHistory = () => {
                       </td>
                     </tr>
                     <tr>
-                      <td style={{ padding: 10 }}>Maturity Date</td>
+                      <td style={{ padding: 10 }}>{t("reschedule.rowMaturity")}</td>
                       <td style={{ padding: 10 }}>
                         {formatDate(detailsRow.before?.maturityDate)}
                       </td>
@@ -614,43 +616,43 @@ const RescheduleHistory = () => {
                 </table>
               </div>
 
-              <SectionTitle title="Timeline" />
+              <SectionTitle title={t("reschedule.sectionTimeline")} />
               <Row>
                 <Col md={6}>
                   <InfoRow
-                    label="Requested At"
+                    label={t("reschedule.requestedAt")}
                     value={formatDateTime(detailsRow.timeline?.requestedAt)}
                   />
                   <InfoRow
-                    label="Approved At"
+                    label={t("reschedule.approvedAt")}
                     value={formatDateTime(detailsRow.timeline?.approvedAt)}
                   />
                   <InfoRow
-                    label="Applied At"
+                    label={t("reschedule.appliedAt")}
                     value={formatDateTime(detailsRow.timeline?.appliedAt)}
                   />
                 </Col>
                 <Col md={6}>
                   <InfoRow
-                    label="Rejected At"
+                    label={t("reschedule.rejectedAt")}
                     value={formatDateTime(detailsRow.timeline?.rejectedAt)}
                   />
                   <InfoRow
-                    label="Cancelled At"
+                    label={t("reschedule.cancelledAt")}
                     value={formatDateTime(detailsRow.timeline?.cancelledAt)}
                   />
                 </Col>
               </Row>
 
-              <SectionTitle title="Approver" />
+              <SectionTitle title={t("reschedule.sectionApprover")} />
               <Row>
                 <Col md={6}>
                   <InfoRow
-                    label="Approver Role"
+                    label={t("reschedule.approverRole")}
                     value={formatLabel(detailsRow.approver?.approverRole)}
                   />
                   <InfoRow
-                    label="Approver ID"
+                    label={t("reschedule.approverId")}
                     value={
                       <span style={{ fontSize: 11 }}>
                         {detailsRow.approver?.approverId || "-"}
@@ -660,21 +662,21 @@ const RescheduleHistory = () => {
                 </Col>
                 <Col md={6}>
                   <InfoRow
-                    label="Approval Notes"
+                    label={t("reschedule.approvalNotes")}
                     value={detailsRow.approver?.approvalNotes || "-"}
                   />
                 </Col>
               </Row>
 
-              <SectionTitle title="Sync Status" />
+              <SectionTitle title={t("reschedule.sectionSyncStatus")} />
               <Row>
                 <Col md={6}>
                   <InfoRow
-                    label="Fineract Synced"
-                    value={detailsRow.sync?.fineractSynced ? "Yes" : "No"}
+                    label={t("reschedule.fineractSynced")}
+                    value={detailsRow.sync?.fineractSynced ? t("common:yes") : t("common:no")}
                   />
                   <InfoRow
-                    label="Fineract Reschedule ID"
+                    label={t("reschedule.fineractRescheduleId")}
                     value={
                       <span style={{ fontSize: 11 }}>
                         {detailsRow.sync?.fineractRescheduleId || "-"}
@@ -684,8 +686,8 @@ const RescheduleHistory = () => {
                 </Col>
                 <Col md={6}>
                   <InfoRow
-                    label="GL Posted"
-                    value={detailsRow.sync?.glPosted ? "Yes" : "No"}
+                    label={t("reschedule.glPosted")}
+                    value={detailsRow.sync?.glPosted ? t("common:yes") : t("common:no")}
                   />
                 </Col>
               </Row>
@@ -702,7 +704,7 @@ const RescheduleHistory = () => {
               color: "var(--background)",
             }}
           >
-            Close
+            {t("common:close")}
           </Button>
         </Modal.Footer>
       </Modal>

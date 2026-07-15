@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../../ui/button"
 import { Label } from "../../ui/label"
 import { Textarea } from "../../ui/textarea"
@@ -19,18 +20,19 @@ export default function TermsConditionsTab({
   onPrevious,
   errors = {},
 }: TermsConditionsTabProps) {
+  const { t } = useTranslation("productManagement2")
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Terms & Conditions</CardTitle>
-          <p className="text-muted-foreground">Define the legal terms and conditions for this product.</p>
+          <CardTitle>{t("terms.title")}</CardTitle>
+          <p className="text-muted-foreground">{t("terms.subtitle")}</p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label>Terms & Conditions (English)</Label>
+            <Label>{t("terms.labelEn")}</Label>
             <Textarea
-              placeholder="Enter the terms and conditions in English..."
+              placeholder={t("terms.placeholderEn")}
               value={formData.terms_conditions_en}
               onChange={(e) => updateFormData("terms_conditions_en", e.target.value)}
               rows={10}
@@ -41,9 +43,9 @@ export default function TermsConditionsTab({
             )}
           </div>
           <div className="space-y-2">
-            <Label>Terms & Conditions (Arabic)</Label>
+            <Label>{t("terms.labelAr")}</Label>
             <Textarea
-              placeholder="أدخل الشروط والأحكام باللغة العربية..."
+              placeholder={t("terms.placeholderAr")}
               value={formData.terms_conditions_ar}
               onChange={(e) => updateFormData("terms_conditions_ar", e.target.value)}
               rows={10}
@@ -61,10 +63,10 @@ export default function TermsConditionsTab({
       <div className="flex justify-between gap-3 pt-4">
         <Button variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </Button>
         <Button onClick={onNext} className="gap-2">
-          Next: Fee Settings
+          {t("terms.next")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

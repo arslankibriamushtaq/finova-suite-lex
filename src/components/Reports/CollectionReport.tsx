@@ -4,8 +4,10 @@ import { HandCoins } from "lucide-react";
 import { getCollectionsReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const CollectionReport = () => {
+  const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -32,7 +34,7 @@ const CollectionReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching collection report:", error);
-      toast.error(error?.message || "Failed to fetch collection report");
+      toast.error(error?.message || t('collection.toast.fetchError'));
       setTotals(null);
     } finally {
       setLoading(false);
@@ -48,7 +50,7 @@ const CollectionReport = () => {
 
   const exportToCSV = () => {
     if (!totals) {
-      toast.error("No data available to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
 
@@ -81,14 +83,14 @@ const CollectionReport = () => {
           <span className="pro-head-badge">
             <HandCoins className="h-4 w-4" />
           </span>
-          Collection Report
+          {t('collection.title')}
         </h3>
       </div>
 
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <DatePicker
-            placeholder="From"
+            placeholder={t('common:from')}
             value={fromDate}
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
@@ -96,7 +98,7 @@ const CollectionReport = () => {
             style={{ flex: "1 1 240px", minWidth: 200, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t('common:to')}
             value={toDate}
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
@@ -110,7 +112,7 @@ const CollectionReport = () => {
             disabled={loading}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {loading ? "Loading..." : "Refresh"}
+            {loading ? t('common:loading') : t('common:refresh')}
           </button>
           <button
             type="button"
@@ -119,7 +121,7 @@ const CollectionReport = () => {
             disabled={!totals}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t('action.exportCsv')}
           </button>
         </div>
       </div>
@@ -128,7 +130,7 @@ const CollectionReport = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Collected</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('collection.summary.totalCollected')}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}
@@ -139,7 +141,7 @@ const CollectionReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>On-Time Rate</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('collection.summary.onTimeRate')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.onTimeRate ?? 0}%
               </div>
@@ -147,7 +149,7 @@ const CollectionReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Collection Count</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('collection.summary.collectionCount')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.collectionCount ?? 0}
               </div>
@@ -157,7 +159,7 @@ const CollectionReport = () => {
       ) : (
         !loading && (
           <div className="text-center py-5 text-muted">
-            No collection data available for the selected range.
+            {t('collection.noDataRange')}
           </div>
         )
       )}

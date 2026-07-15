@@ -8,7 +8,9 @@ import toast from "react-hot-toast";
 
 import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 const KycKyb = () => {
+  const { t } = useTranslation("customersB");
   const [searchValue, setSearchValue] = useState("");
   const [editRowId, setEditRowId] = useState(null);
   const [value, setValue] = useState();
@@ -54,16 +56,16 @@ const KycKyb = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="delete" icon={<EyeOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item key="logs" icon={<EyeOutlined />}>
-        Account Logs
+        {t("customersB:kyc.accountLogs")}
       </Menu.Item>
     </Menu>
   );
   const customSearchInput = (
     <Input
-      placeholder="Search Customers"
+      placeholder={t("customersB:kyc.searchCustomers")}
       value={searchValue}
       prefix={<FaSearchengin />}
       onChange={(e: any) => setSearchValue(e.target.value)}
@@ -91,7 +93,7 @@ const KycKyb = () => {
     //   frozen: frozenColumns.includes("Customer ID"),
     // },
     {
-      name: "KYC ID",
+      name: t("customersB:kyc.kycId"),
       selector: (row: any) =>
         editRowId === row.KycId ? (
           <Input
@@ -109,7 +111,7 @@ const KycKyb = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "KYB ID",
+      name: t("customersB:kyc.kybId"),
       selector: (row: any) =>
         editRowId === row.KybId ? (
           <Input
@@ -127,7 +129,7 @@ const KycKyb = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Channel ID",
+      name: t("customersB:kyc.channelId"),
       selector: (row: any) =>
         editRowId === row.ChannelId ? (
           <Input
@@ -145,7 +147,7 @@ const KycKyb = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Account ID",
+      name: t("customersB:kyc.accountId"),
       selector: (row: any) =>
         editRowId === row.AccountId ? (
           <Input
@@ -163,7 +165,7 @@ const KycKyb = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -176,7 +178,7 @@ const KycKyb = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -259,7 +261,7 @@ const KycKyb = () => {
       {loading && <Loader />}
       <div>
         <div className="col-11 mb-4 ">
-          <h3>KYC / KYB</h3>
+          <h3>{t("customersB:kyc.title")}</h3>
         </div>
         <div className="col-12">
           {/* <TableHeaderFilter
@@ -282,7 +284,7 @@ const KycKyb = () => {
           />
           {allCustomer?.length == 0 && (
             <div className="d-flex justify-content-center mt-5 bg-red">
-              No data found
+              {t("customersB:general.noDataFound")}
             </div>
           )}
         </div>

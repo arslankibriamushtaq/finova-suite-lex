@@ -14,8 +14,10 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { getAllProducts } from "../../redux/apis/apisCrudProductManagement";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const AccountMapping = () => {
+  const { t } = useTranslation("accountingLoans");
   const [loading, setLoading] = useState<boolean>(false);
   const [customerData, setCustomerData] = useState<any[]>([]);
   const [selectedAccounts, setSelectedAccounts] = useState<any>({});
@@ -61,7 +63,7 @@ const AccountMapping = () => {
         setProdId(productsRes.data.data);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to load data");
+      toast.error(error?.message || t("mapping.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ const AccountMapping = () => {
         setChangedFields({});
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to load mapping data");
+      toast.error(error?.message || t("mapping.toast.loadMappingFailed"));
       setSelectedAccounts({});
       setSelectedFields([]);
       setAssignedFieldsData([]);
@@ -142,7 +144,7 @@ const AccountMapping = () => {
 
   const saveSelectedAccounts = async () => {
     if (!formValues.productID) {
-      toast.error("Please select a product");
+      toast.error(t("mapping.toast.selectProduct"));
       return;
     }
     
@@ -151,11 +153,11 @@ const AccountMapping = () => {
       const payload = { fieldKeys: selectedFields };
       const res = await SaveChartOfAccounts(formValues.productID, payload);
       if (res) {
-        toast.success(res?.data?.notificationMessage || "Accounts saved successfully");
+        toast.success(res?.data?.notificationMessage || t("mapping.toast.savedSuccess"));
         getChartOfAccountsData(formValues.productID);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to save accounts");
+      toast.error(error?.message || t("mapping.toast.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -163,7 +165,7 @@ const AccountMapping = () => {
 
   const mapAccounts = async () => {
     if (!formValues.productID) {
-      toast.error("Please select a product");
+      toast.error(t("mapping.toast.selectProduct"));
       return;
     }
     
@@ -190,7 +192,7 @@ const AccountMapping = () => {
       // Call API
       const res = await MapLedgerAccount(formValues.productID, payload);
       if (res) {
-        toast.success(res?.data?.notificationMessage || "Mapped successfully");
+        toast.success(res?.data?.notificationMessage || t("mapping.toast.mappedSuccess"));
       }
       
       setChangedFields({});
@@ -234,7 +236,7 @@ const AccountMapping = () => {
           <span className="pro-head-badge">
             <SlidersHorizontal className="h-4 w-4" />
           </span>
-          Chart of Account Configuration
+          {t("mapping.title")}
         </h3>
       </div>
       <div className="coa-card">
@@ -254,7 +256,7 @@ const AccountMapping = () => {
             <Col md={4} className="mb-3 pt-2">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Select Product
+                  {t("mapping.selectProduct")}
                 </Form.Label>
                 <Select
                   showSearch
@@ -269,7 +271,7 @@ const AccountMapping = () => {
                     getChartOfAccountsData(value);
                   }}
                   style={{ width: "100%" }}
-                  placeholder="Select Product"
+                  placeholder={t("mapping.selectProduct")}
                   filterOption={(input, option: any) =>
                     option?.children?.toLowerCase().includes(input.toLowerCase())
                   }
@@ -290,10 +292,10 @@ const AccountMapping = () => {
             onSelect={(k: any) => setActiveTab(k)}
             className="mb-3"
           >
-            <Tab eventKey="assign" title="Assign Accounts">
+            <Tab eventKey="assign" title={t("mapping.tabAssign")}>
               <div className="py-2">
                 <h4 style={{ fontSize: "16px", fontWeight: "600" }}>
-                  Assign Accounts to Product
+                  {t("mapping.assignHeading")}
                 </h4>
                 <Row className="mb-3">
                   {dynamicFields.sort((a, b) => a.displayOrder - b.displayOrder).map((field: any) => (
@@ -320,7 +322,7 @@ const AccountMapping = () => {
                   ))}
                   {dynamicFields.length === 0 && (
                     <Col className="pt-3 text-muted">
-                      No active fields available.
+                      {t("mapping.noActiveFields")}
                     </Col>
                   )}
                 </Row>
@@ -331,16 +333,16 @@ const AccountMapping = () => {
                     onClick={saveSelectedAccounts}
                     disabled={!formValues.productID}
                   >
-                    Save
+                    {t("common:save")}
                   </Button>
                 </div>
               </div>
             </Tab>
 
-            <Tab eventKey="map" title="Map Ledger Accounts">
+            <Tab eventKey="map" title={t("mapping.tabMap")}>
               <div className="py-2">
                 <h4 style={{ fontSize: "16px", fontWeight: "600" }}>
-                  Chart of Account Mapping
+                  {t("mapping.mapHeading")}
                 </h4>
                 <Row className="mb-3">
                   {assignedFieldsData.map((field: any) => (
@@ -376,7 +378,7 @@ const AccountMapping = () => {
                   ))}
                   {assignedFieldsData.length === 0 && (
                     <Col className="pt-3 text-muted">
-                      No accounts assigned for this product. Please assign them in the first tab.
+                      {t("mapping.noAssigned")}
                     </Col>
                   )}
                 </Row>
@@ -387,7 +389,7 @@ const AccountMapping = () => {
                     onClick={mapAccounts}
                     disabled={Object.keys(changedFields).length === 0 || !formValues.productID}
                   >
-                    Save Mapping
+                    {t("mapping.saveMapping")}
                   </Button>
                 </div>
               </div>

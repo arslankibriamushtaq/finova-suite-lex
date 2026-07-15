@@ -6,7 +6,9 @@ import arrowDown from "../../assets/images/arrow-down.png";
 import ApplicationsTabs from "./ApplicationTabs";
 import { getCustomerDashboard, getCustomerInvoices } from "../../redux/apis/apisCrud";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 const DashboardCustomer = () => {
+  const { t } = useTranslation("customersB");
   const [dashboardData, setDashboardData] = useState<any>({});
   const [invoices, setInvoices] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -25,19 +27,19 @@ const DashboardCustomer = () => {
   }
   const producer = [
     {
-      title: "Invoices",
+      title: t("customersB:dashboard.invoices"),
       value: dashboardData?.invoice_count,
-      data: `You have added ${dashboardData?.invoice_count} invoices.`
+      data: t("customersB:dashboard.invoicesAddedMsg", { count: dashboardData?.invoice_count })
     },
     {
-      title: "Funding",
+      title: t("customersB:dashboard.funding"),
       value: dashboardData?.invoices_sum,
-      data: `You have received ${dashboardData?.invoices_sum}.`
+      data: t("customersB:dashboard.fundingReceivedMsg", { amount: dashboardData?.invoices_sum })
     },
     {
-      title: "Account Status",
-      value: "Verified",
-      data: "Your account is verified."
+      title: t("customersB:dashboard.accountStatus"),
+      value: t("customersB:dashboard.verified"),
+      data: t("customersB:dashboard.accountVerifiedMsg")
     },
   ];
   useEffect(() => {
@@ -55,23 +57,23 @@ const DashboardCustomer = () => {
   }
   const Activity_Loans_Header = [
     {
-      name: "Debtor",
+      name: t("customersB:dashboard.debtor"),
       selector: (row: any) => row.Sr,
     },
     {
-      name: "Invoice#",
+      name: t("customersB:dashboard.invoiceNo"),
       selector: (row: any) => row.applicationNumber,
     },
     {
-      name: "Invoice Date",
+      name: t("customersB:dashboard.invoiceDate"),
       selector: (row: any) => row.product,
     },
     {
-      name: "Due Date",
+      name: t("customersB:dashboard.dueDate"),
       selector: (row: any) => row.customerName,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: any) => row.duration,
     },
   ];
@@ -155,9 +157,9 @@ const DashboardCustomer = () => {
           <div className="d-flex px-2 mt-4 w-100">
             <div className="col-6 p-2 custom-table-wrapper border">
               <div className="d-flex align-items-center justify-content-between mb-2 mt-1">
-                <label className="mb-0">Invoices</label>
+                <label className="mb-0">{t("customersB:dashboard.invoices")}</label>
                 <button className="see-more" style={{ marginTop: "0px" }}>
-                  View All
+                  {t("customersB:dashboard.viewAll")}
                 </button>
               </div>
               <TableView header={Activity_Loans_Header} data={mappedInvoices}
@@ -175,9 +177,9 @@ const DashboardCustomer = () => {
 
             <div className="col-6 p-2 custom-table-wrapper border">
               <div className="d-flex align-items-center justify-content-between mb-2 mt-1">
-                <label className="mb-0">Applications</label>
+                <label className="mb-0">{t("customersB:dashboard.applications")}</label>
                 <button className="see-more" style={{ marginTop: "0px" }}>
-                  View All
+                  {t("customersB:dashboard.viewAll")}
                 </button>
               </div>
               <ApplicationsTabs

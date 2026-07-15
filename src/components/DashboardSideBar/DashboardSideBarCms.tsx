@@ -3,13 +3,35 @@ import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Images } from "../Config/Images";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
 import { link } from "fs";
 import { getPermissionsByRolename } from "../../redux/apis/apisCrudLms";
- 
+
+// Map each English sidebar label (kept as the item's stable identity, used for
+// permission filtering / active-state logic) to its translation key so labels
+// are translated only at render time without altering any logic.
+const SIDEBAR_LABEL_KEYS: Record<string, string> = {
+  Dashboard: "dashboard",
+  "All Tickets": "allTickets",
+  Tickets: "tickets",
+  "My Tickets": "myTickets",
+  Reports: "reports",
+  Priorities: "priorities",
+  Categories: "categories",
+  "Sub Categories": "subCategories",
+  Escalation: "escalation",
+  Customers: "customers",
+  Logs: "logs",
+  LOS: "los",
+};
+
 const DasbhboardSidebarCms = () => {
+  const { t } = useTranslation("sidebar");
+  const tr = (label?: string) =>
+    label && SIDEBAR_LABEL_KEYS[label] ? t(SIDEBAR_LABEL_KEYS[label]) : label;
   const dispatch = useDispatch();
   const location = useLocation();
   const pathname = location.pathname;
@@ -210,7 +232,7 @@ const DasbhboardSidebarCms = () => {
             height={16}
           />
         }
-        label={item.label}
+        label={tr(item.label)}
         defaultOpen={item.active}
         onClick={() => setActiveBar(item.label)}
         onMouseEnter={() => setHoveredItem(item.label)}
@@ -223,7 +245,7 @@ const DasbhboardSidebarCms = () => {
           return hasNestedMenu ? (
             <SubMenu
               key={subIndex}
-              label={submenuItem.label}
+              label={tr(submenuItem.label)}
               style={{ fontSize: "12px" }}
               defaultOpen={submenuItem.active}
             >
@@ -253,7 +275,7 @@ const DasbhboardSidebarCms = () => {
                     }}
                     className={nestedItem.active ? "active" : ""}
                   >
-                    {nestedItem.label}
+                    {tr(nestedItem.label)}
                   </MenuItem>
                 </Link>
               ))}
@@ -284,7 +306,7 @@ const DasbhboardSidebarCms = () => {
                 }}
                 className={submenuItem.active ? "active" : ""}
               >
-                {submenuItem.label}
+                {tr(submenuItem.label)}
               </MenuItem>
             </Link>
           );
@@ -364,10 +386,10 @@ const DasbhboardSidebarCms = () => {
                           />
                         }
                       >
-                        {item.label}
+                        {tr(item.label)}
                       </MenuItem>
                     </Link>
-                
+
                 </div>
               )}
             </React.Fragment>

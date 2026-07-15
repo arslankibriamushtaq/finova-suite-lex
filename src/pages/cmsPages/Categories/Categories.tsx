@@ -9,7 +9,9 @@ import {
   DownOutlined,
 } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 const Categories = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -47,26 +49,26 @@ const Categories = () => {
   }, [searchValue]);
   const getAllReportsReport = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       width: "40%",
 
       selector: (row: { srNo: string }) => row.srNo || "-",
     },
     {
-      name: "Category Name",
+      name: t("categories.categoryName"),
       width: "40%",
 
       selector: (row: { categoryName: string }) => row.categoryName || "-",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown menu={{ items: menu(row) }} trigger={["click"]}>
           <Button
             className="gradient-btn"
             type="primary"
           >
-            Select <DownOutlined />
+            {t("fields.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -76,13 +78,13 @@ const Categories = () => {
   {
     key: "edit",
     icon: <EditOutlined />,
-    label: "Edit",
+    label: t("common:edit"),
     onClick: () => handleMenuClick("edit", row),
   },
   {
     key: "delete",
     icon: <DeleteOutlined />,
-    label: "Delete",
+    label: t("common:delete"),
     onClick: () => handleMenuClick("delete", row),
   }
   ];
@@ -118,7 +120,7 @@ const Categories = () => {
     try {
       if (isEditMode) {
         await toast.promise(updateCategory(selectedCategory?.id, body), {
-          loading: "Updating...",
+          loading: t("toast.updating"),
           success: (response: any) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -126,11 +128,11 @@ const Categories = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to update",
+          error: (err) => (err?.response?.data?.message) || t("toast.failedUpdate"),
         });
       } else {
         await toast.promise(createCategory(body), {
-          loading: "Adding category...",
+          loading: t("categories.toast.adding"),
           success: (response) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -138,7 +140,7 @@ const Categories = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to add new category",
+          error: (err) => (err?.response?.data?.message) || t("categories.toast.failedAdd"),
         });
       }
     } catch (error) {
@@ -149,7 +151,7 @@ const Categories = () => {
   const handleDelete = async () => {
     try {
       await toast.promise(deleteCategory(selectedCategory?.id), {
-        loading: "Deleting...",
+        loading: t("toast.deleting"),
         success: (response: any) => {
           if (response?.data?.success) {
             setIsDeleteModal(false);
@@ -157,7 +159,7 @@ const Categories = () => {
           }
           return response?.data?.message;
         },
-        error: (err) => (err?.response?.data?.message) || "Failed to delete",
+        error: (err) => (err?.response?.data?.message) || t("toast.failedDelete"),
       });
     } catch (error) {
       console.error("Failed to delete category:", error);
@@ -198,11 +200,11 @@ const Categories = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h5 className="mb-0">Categories</h5>
+          <h5 className="mb-0">{t("categories.title")}</h5>
         </div>
         <div className="text-end">
           <Input
-            placeholder="Search by name"
+            placeholder={t("fields.searchByName")}
             value={searchValue}
             prefix={<SearchOutlined />} style={{ width: "300px", height: "33px", marginRight: "10px" }}
             onChange={(e: any) => {
@@ -215,7 +217,7 @@ const Categories = () => {
               setAddCategoryModal(true);
             }}
           >
-            Add New Category
+            {t("categories.addNew")}
           </button>
 
         </div>
@@ -244,7 +246,7 @@ const Categories = () => {
         maskClosable={false}
         title={
           <span style={{ fontSize: "16px", fontWeight: 600 }}>
-            {isEditMode ? "Edit Category" : "Add Category"}
+            {isEditMode ? t("categories.editModalTitle") : t("categories.addModalTitle")}
           </span>
         }
         footer={null}
@@ -260,10 +262,10 @@ const Categories = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Category Name
+              {t("categories.categoryName")}
             </label>
             <Input
-              placeholder="Enter category name"
+              placeholder={t("categories.enterCategoryName")}
               value={categoryName}
               onChange={(e) => setCategoryName(e.target.value)}
               style={{ height: "40px" }}
@@ -293,7 +295,7 @@ const Categories = () => {
                 fontWeight: 500,
               }}
             >
-              Close
+              {t("common:close")}
             </button>
             <button
               onClick={handleSave}
@@ -308,7 +310,7 @@ const Categories = () => {
                 fontWeight: 500,
               }}
             >
-              Save
+              {t("common:save")}
             </button>
           </div>
         </div>
@@ -318,14 +320,14 @@ const Categories = () => {
         onCancel={handleCloseDeleteModal}
         centered
         maskClosable={false}
-        title="Delete Category"
+        title={t("categories.deleteModalTitle")}
         footer={null}
       >
         <div style={{ padding: "20px 0" }}>
-          <p>Are you sure you want to delete this Category?</p>
+          <p>{t("categories.deleteConfirm")}</p>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "30px" }}>
-            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
-            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
+            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>{t("common:cancel")}</Button>
+            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>{t("common:delete")}</Button>
           </div>
         </div>
       </Modal>

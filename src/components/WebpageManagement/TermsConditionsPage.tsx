@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TermsConditions from '../WebPages/TermsConditions';
 
 const TermsConditionsPage: React.FC = () => {
+  const { t } = useTranslation('webPages');
   const [showEditOption, setShowEditOption] = useState(false);
   const navigate = useNavigate();
 
@@ -51,7 +53,7 @@ const TermsConditionsPage: React.FC = () => {
               transition: 'all 0.3s ease'
             }}
           >
-            Edit Template
+            {t('editTemplate')}
           </div>
         </div>
       )}

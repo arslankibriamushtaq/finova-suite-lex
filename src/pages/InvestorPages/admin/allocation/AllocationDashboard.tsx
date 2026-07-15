@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Play,
@@ -32,18 +33,18 @@ const kpiData = {
 
 // Mock data for allocation by risk band
 const allocationByRisk = [
-  { riskBand: 'Low Risk', amount: 3200000000, percentage: 37.6, color: 'bg-green-500' },
-  { riskBand: 'Medium Risk', amount: 3800000000, percentage: 44.7, color: 'bg-yellow-500' },
-  { riskBand: 'High Risk', amount: 1500000000, percentage: 17.7, color: 'bg-red-500' }
+  { riskBand: 'ad.riskBand.low', amount: 3200000000, percentage: 37.6, color: 'bg-green-500' },
+  { riskBand: 'ad.riskBand.medium', amount: 3800000000, percentage: 44.7, color: 'bg-yellow-500' },
+  { riskBand: 'ad.riskBand.high', amount: 1500000000, percentage: 17.7, color: 'bg-red-500' }
 ];
 
 // Mock data for exposure heatmap
 const exposureHeatmap = [
-  { product: 'POS Loans', lowRisk: 45, mediumRisk: 35, highRisk: 20 },
-  { product: 'Auto Loans', lowRisk: 60, mediumRisk: 30, highRisk: 10 },
-  { product: 'MSME Loans', lowRisk: 25, mediumRisk: 45, highRisk: 30 },
-  { product: 'Real Estate', lowRisk: 40, mediumRisk: 40, highRisk: 20 },
-  { product: 'Consumer Loans', lowRisk: 30, mediumRisk: 50, highRisk: 20 }
+  { product: 'ad.product.pos', lowRisk: 45, mediumRisk: 35, highRisk: 20 },
+  { product: 'ad.product.auto', lowRisk: 60, mediumRisk: 30, highRisk: 10 },
+  { product: 'ad.product.msme', lowRisk: 25, mediumRisk: 45, highRisk: 30 },
+  { product: 'ad.product.realEstate', lowRisk: 40, mediumRisk: 40, highRisk: 20 },
+  { product: 'ad.product.consumer', lowRisk: 30, mediumRisk: 50, highRisk: 20 }
 ];
 
 // Mock data for recent activities
@@ -83,6 +84,7 @@ const recentActivities = [
 ];
 
 export default function AllocationDashboard() {
+  const { t } = useTranslation('investor');
   const [refreshing, setRefreshing] = useState(false);
 
   const formatCurrency = (amount: number) => {
@@ -117,11 +119,11 @@ export default function AllocationDashboard() {
 
   const getActivityTypeLabel = (type: string) => {
     switch (type) {
-      case 'strategy_executed': return 'Strategy Executed';
-      case 'allocation_limit_exceeded': return 'Limit Exceeded';
-      case 'simulation_completed': return 'Simulation Complete';
-      case 'manual_override': return 'Manual Override';
-      default: return 'Unknown Activity';
+      case 'strategy_executed': return t('ad.activity.strategyExecuted');
+      case 'allocation_limit_exceeded': return t('ad.activity.limitExceeded');
+      case 'simulation_completed': return t('ad.activity.simulationComplete');
+      case 'manual_override': return t('ad.activity.manualOverride');
+      default: return t('ad.activity.unknown');
     }
   };
 
@@ -138,8 +140,8 @@ export default function AllocationDashboard() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Allocation Engine</h1>
-            <p className="text-gray-600">Automated investment allocation strategies and monitoring</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('ad.title')}</h1>
+            <p className="text-gray-600">{t('ad.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
@@ -147,15 +149,15 @@ export default function AllocationDashboard() {
               disabled={refreshing}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
-              <RefreshCw className={`w-4 h-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
-              Refresh Data
+              <RefreshCw className={`w-4 h-4 me-2 ${refreshing ? 'animate-spin' : ''}`} />
+              {t('dashboard.refreshData')}
             </button>
             <Link
               to="/admin/allocation/audit"
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              View Audit Logs
+              <FileText className="w-4 h-4 me-2" />
+              {t('ad.viewAuditLogs')}
             </Link>
           </div>
         </div>
@@ -165,43 +167,43 @@ export default function AllocationDashboard() {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Active Strategies</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('ad.activeStrategies')}</h3>
             <Zap className="w-5 h-5 text-gray-700" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-black">{kpiData.activeStrategies}</p>
-            <p className="text-xs text-gray-500">Currently running</p>
-            <p className="text-xs text-green-600">+2 this month</p>
+            <p className="text-xs text-gray-500">{t('ad.currentlyRunning')}</p>
+            <p className="text-xs text-green-600">{t('ad.plus2ThisMonth')}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Total Allocated</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('ad.totalAllocated')}</h3>
             <DollarSign className="w-5 h-5 text-green-500" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-green-600">{formatCurrency(kpiData.totalAllocated)}</p>
-            <p className="text-xs text-gray-500">Across all strategies</p>
-            <p className="text-xs text-green-600">+12.5% this quarter</p>
+            <p className="text-xs text-gray-500">{t('ad.acrossStrategies')}</p>
+            <p className="text-xs text-green-600">{t('ad.plus12Quarter')}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Avg Investor Exposure</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('ad.avgExposure')}</h3>
             <Target className="w-5 h-5 text-purple-500" />
           </div>
           <div className="space-y-2">
             <p className="text-2xl font-bold text-purple-600">{formatPercentage(kpiData.avgInvestorExposure)}</p>
-            <p className="text-xs text-gray-500">Portfolio allocation</p>
-            <p className="text-xs text-gray-600">Within target range</p>
+            <p className="text-xs text-gray-500">{t('ad.portfolioAllocation')}</p>
+            <p className="text-xs text-gray-600">{t('ad.withinTarget')}</p>
           </div>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium text-gray-900">Latest Simulation</h3>
+            <h3 className="text-sm font-medium text-gray-900">{t('ad.latestSimulation')}</h3>
             {kpiData.lastSimulationStatus === 'success' ? (
               <CheckCircle className="w-5 h-5 text-green-500" />
             ) : (
@@ -210,27 +212,27 @@ export default function AllocationDashboard() {
           </div>
           <div className="space-y-2">
             <p className={`text-2xl font-bold ${kpiData.lastSimulationStatus === 'success' ? 'text-green-600' : 'text-red-600'}`}>
-              {kpiData.lastSimulationStatus === 'success' ? 'Success' : 'Failed'}
+              {kpiData.lastSimulationStatus === 'success' ? t('ad.success') : t('ad.failed')}
             </p>
             <p className="text-xs text-gray-500">
               {new Date(kpiData.lastSimulationTime).toLocaleTimeString()}
             </p>
-            <p className="text-xs text-black">View details →</p>
+            <p className="text-xs text-black">{t('ad.viewDetails')}</p>
           </div>
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Quick Actions</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('reports.quickActions')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Link
             to="/admin/allocation/strategies/new"
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
           >
             <div className="flex items-center">
-              <Plus className="w-5 h-5 text-black mr-3" />
-              <span className="text-sm font-medium text-gray-900">Create Strategy</span>
+              <Plus className="w-5 h-5 text-black me-3" />
+              <span className="text-sm font-medium text-gray-900">{t('ad.createStrategy')}</span>
             </div>
             <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-black" />
           </Link>
@@ -240,8 +242,8 @@ export default function AllocationDashboard() {
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
           >
             <div className="flex items-center">
-              <Play className="w-5 h-5 text-green-600 mr-3" />
-              <span className="text-sm font-medium text-gray-900">Run Global Simulation</span>
+              <Play className="w-5 h-5 text-green-600 me-3" />
+              <span className="text-sm font-medium text-gray-900">{t('ad.runGlobalSim')}</span>
             </div>
             <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-green-600" />
           </button>
@@ -251,8 +253,8 @@ export default function AllocationDashboard() {
             className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors group"
           >
             <div className="flex items-center">
-              <FileText className="w-5 h-5 text-purple-600 mr-3" />
-              <span className="text-sm font-medium text-gray-900">View Audit Logs</span>
+              <FileText className="w-5 h-5 text-purple-600 me-3" />
+              <span className="text-sm font-medium text-gray-900">{t('ad.viewAuditLogs')}</span>
             </div>
             <ArrowUpRight className="w-4 h-4 text-gray-400 group-hover:text-purple-600" />
           </Link>
@@ -263,7 +265,7 @@ export default function AllocationDashboard() {
         {/* Current Allocation by Risk Band */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Allocation by Risk Band</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('ad.allocationByRisk')}</h3>
             <PieChart className="w-5 h-5 text-gray-400" />
           </div>
           
@@ -271,7 +273,7 @@ export default function AllocationDashboard() {
             {allocationByRisk.map((item) => (
               <div key={item.riskBand} className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium text-gray-900">{item.riskBand}</span>
+                  <span className="text-sm font-medium text-gray-900">{t(item.riskBand)}</span>
                   <span className="text-sm font-medium text-gray-900">{formatPercentage(item.percentage)}</span>
                 </div>
                 <div className="flex items-center justify-between text-xs text-gray-500">
@@ -289,7 +291,7 @@ export default function AllocationDashboard() {
 
           <div className="mt-6 pt-4 border-t border-gray-200">
             <div className="flex items-center justify-between text-sm">
-              <span className="font-medium text-gray-900">Total Allocated</span>
+              <span className="font-medium text-gray-900">{t('ad.totalAllocated')}</span>
               <span className="font-bold text-black">{formatCurrency(kpiData.totalAllocated)}</span>
             </div>
           </div>
@@ -298,21 +300,21 @@ export default function AllocationDashboard() {
         {/* Exposure Heatmap */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="text-lg font-semibold text-gray-900">Exposure Heatmap</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('ad.exposureHeatmap')}</h3>
             <BarChart3 className="w-5 h-5 text-gray-400" />
           </div>
           
           <div className="space-y-3">
             <div className="grid grid-cols-4 gap-2 text-xs font-medium text-gray-500 uppercase tracking-wider">
-              <span>Product</span>
-              <span className="text-center">Low Risk</span>
-              <span className="text-center">Med Risk</span>
-              <span className="text-center">High Risk</span>
+              <span>{t('ad.col.product')}</span>
+              <span className="text-center">{t('ad.col.lowRisk')}</span>
+              <span className="text-center">{t('ad.col.medRisk')}</span>
+              <span className="text-center">{t('ad.col.highRisk')}</span>
             </div>
             
             {exposureHeatmap.map((row) => (
               <div key={row.product} className="grid grid-cols-4 gap-2 items-center">
-                <span className="text-sm font-medium text-gray-900">{row.product}</span>
+                <span className="text-sm font-medium text-gray-900">{t(row.product)}</span>
                 <div className="text-center">
                   <div className={`inline-block px-2 py-1 rounded text-xs font-medium text-white ${getHeatmapColor(row.lowRisk)}`}>
                     {row.lowRisk}%
@@ -333,7 +335,7 @@ export default function AllocationDashboard() {
           </div>
 
           <div className="mt-4 flex items-center justify-between text-xs text-gray-500">
-            <span>Exposure levels: Low (0-15%) | Medium (15-30%) | High (30-50%) | Critical (50%+)</span>
+            <span>{t('ad.exposureLegend')}</span>
           </div>
         </div>
       </div>
@@ -341,12 +343,12 @@ export default function AllocationDashboard() {
       {/* Recent Activities */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Activities</h3>
-          <Link 
+          <h3 className="text-lg font-semibold text-gray-900">{t('ad.recentActivities')}</h3>
+          <Link
             to="/admin/allocation/audit"
             className="text-sm text-black hover:text-gray-800"
           >
-            View All
+            {t('reports.viewAll')}
           </Link>
         </div>
         
@@ -363,7 +365,7 @@ export default function AllocationDashboard() {
                   </div>
                 </div>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <div className="text-sm font-medium text-gray-900">{formatCurrency(activity.amount)}</div>
                 <div className={`text-xs ${
                   activity.status === 'success' ? 'text-green-600' :
@@ -371,7 +373,7 @@ export default function AllocationDashboard() {
                   activity.status === 'manual' ? 'text-black' :
                   'text-red-600'
                 }`}>
-                  {activity.status.charAt(0).toUpperCase() + activity.status.slice(1)}
+                  {t(`ad.status.${activity.status}`)}
                 </div>
               </div>
             </div>

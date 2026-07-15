@@ -4,8 +4,10 @@ import { useParams, useNavigate } from "react-router-dom";
 import { Button, Spin, Image } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import { formatDate } from "../../../App";
+import { useTranslation } from "react-i18next";
 
 const TicketDetails = () => {
+  const { t } = useTranslation("cms");
   const { id } = useParams();
   const navigate = useNavigate();
   const [ticketDetails, setTicketDetails] = useState<any>(null);
@@ -64,7 +66,7 @@ const TicketDetails = () => {
             border: "1px solid var(--color-border-light)",
           }}
         />
-        <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>Details</h1>
+        <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>{t("common:details")}</h1>
       </div>
 
       {/* Customer Detail Section */}
@@ -77,7 +79,7 @@ const TicketDetails = () => {
           backgroundColor: "var(--background)",
         }}
       >
-        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Customer Detail</h2>
+        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>{t("ticketDetails.customerDetail")}</h2>
         <div
           style={{
             display: "grid",
@@ -85,15 +87,15 @@ const TicketDetails = () => {
             gap: "16px",
           }}
         >
-          <InfoRowGrid label="Complainer Name" value={ticketDetails?.customer?.name} />
-          <InfoRowGrid label="Email" value={ticketDetails?.customer?.email} />
-          <InfoRowGrid label="Contact No" value={ticketDetails?.customer?.contact_no} />
-          <InfoRowGrid label="Country" value={ticketDetails?.customer?.country || "---"} />
-          <InfoRowGrid label="Iqama No" value={ticketDetails?.customer?.iqama_no || "---"} />
-          <InfoRowGrid label="Registration Date" value={ticketDetails?.customer?.created_at ? formatDate(ticketDetails.customer.created_at) : "---"} />
-          <InfoRowGrid label="Company Name" value={ticketDetails?.customer?.company_name || "---"} />
-          <InfoRowGrid label="Complain type" value={ticketDetails?.category?.title || "---"} />
-          <InfoRowGrid label="DOB" value={ticketDetails?.customer?.dob || "---"} />
+          <InfoRowGrid label={t("fields.complainerName")} value={ticketDetails?.customer?.name} />
+          <InfoRowGrid label={t("common:email")} value={ticketDetails?.customer?.email} />
+          <InfoRowGrid label={t("fields.contactNo")} value={ticketDetails?.customer?.contact_no} />
+          <InfoRowGrid label={t("ticketDetails.country")} value={ticketDetails?.customer?.country || "---"} />
+          <InfoRowGrid label={t("ticketDetails.iqamaNo")} value={ticketDetails?.customer?.iqama_no || "---"} />
+          <InfoRowGrid label={t("ticketDetails.registrationDate")} value={ticketDetails?.customer?.created_at ? formatDate(ticketDetails.customer.created_at) : "---"} />
+          <InfoRowGrid label={t("ticketDetails.companyName")} value={ticketDetails?.customer?.company_name || "---"} />
+          <InfoRowGrid label={t("ticketDetails.complainType")} value={ticketDetails?.category?.title || "---"} />
+          <InfoRowGrid label={t("ticketDetails.dob")} value={ticketDetails?.customer?.dob || "---"} />
         </div>
       </div>
 
@@ -107,7 +109,7 @@ const TicketDetails = () => {
           backgroundColor: "var(--background)",
         }}
       >
-        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Customer Loan Info</h2>
+        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>{t("ticketDetails.customerLoanInfo")}</h2>
         <div
           style={{
             display: "grid",
@@ -116,12 +118,12 @@ const TicketDetails = () => {
             alignItems: "center",
           }}
         >
-          <InfoRowGrid label="Loan Application Number" value={ticketDetails?.customer?.loan_application_number || "---"} />
-          <InfoRowGrid label="Loan Amount" value={ticketDetails?.customer?.loan_amount || "---"} />
+          <InfoRowGrid label={t("ticketDetails.loanApplicationNumber")} value={ticketDetails?.customer?.loan_application_number || "---"} />
+          <InfoRowGrid label={t("ticketDetails.loanAmount")} value={ticketDetails?.customer?.loan_amount || "---"} />
           <div>
-            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "4px" }}>Check Invoices</div>
+            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "4px" }}>{t("ticketDetails.checkInvoices")}</div>
             <Button type="primary" style={{ backgroundColor: "#4A90E2", borderColor: "#4A90E2" }}>
-              View Invoices
+              {t("ticketDetails.viewInvoices")}
             </Button>
           </div>
         </div>
@@ -137,7 +139,7 @@ const TicketDetails = () => {
           backgroundColor: "var(--background)",
         }}
       >
-        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Ticket Created By</h2>
+        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>{t("ticketDetails.ticketCreatedBy")}</h2>
         <div
           style={{
             display: "grid",
@@ -145,15 +147,15 @@ const TicketDetails = () => {
             gap: "16px",
           }}
         >
-          <InfoRowGrid label="Name" value={ticketDetails?.created_by?.name} />
-          <InfoRowGrid label="Email" value={ticketDetails?.created_by?.email || "---"} />
-          <InfoRowGrid label="Contact No" value={ticketDetails?.created_by?.contact_no || "---"} />
-          <InfoRowGrid label="Country" value={ticketDetails?.created_by?.country || "---"} />
-          <InfoRowGrid label="Iqama No" value={ticketDetails?.created_by?.iqama_no || "---"} />
-          <InfoRowGrid label="Registration Date" value={ticketDetails?.created_by?.created_at ? formatDate(ticketDetails.created_by.created_at) : "---"} />
-          <InfoRowGrid label="Company Name" value={ticketDetails?.company?.name || "---"} />
-          <InfoRowGrid label="Complain type" value={ticketDetails?.category?.title || "---"} />
-          <InfoRowGrid label="Ticket created at" value={formatDate(ticketDetails?.created_at)} />
+          <InfoRowGrid label={t("common:name")} value={ticketDetails?.created_by?.name} />
+          <InfoRowGrid label={t("common:email")} value={ticketDetails?.created_by?.email || "---"} />
+          <InfoRowGrid label={t("fields.contactNo")} value={ticketDetails?.created_by?.contact_no || "---"} />
+          <InfoRowGrid label={t("ticketDetails.country")} value={ticketDetails?.created_by?.country || "---"} />
+          <InfoRowGrid label={t("ticketDetails.iqamaNo")} value={ticketDetails?.created_by?.iqama_no || "---"} />
+          <InfoRowGrid label={t("ticketDetails.registrationDate")} value={ticketDetails?.created_by?.created_at ? formatDate(ticketDetails.created_by.created_at) : "---"} />
+          <InfoRowGrid label={t("ticketDetails.companyName")} value={ticketDetails?.company?.name || "---"} />
+          <InfoRowGrid label={t("ticketDetails.complainType")} value={ticketDetails?.category?.title || "---"} />
+          <InfoRowGrid label={t("ticketDetails.ticketCreatedAt")} value={formatDate(ticketDetails?.created_at)} />
         </div>
       </div>
 
@@ -167,7 +169,7 @@ const TicketDetails = () => {
           backgroundColor: "var(--background)",
         }}
       >
-        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>Ticket Details</h2>
+        <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "20px",textAlign:"left" }}>{t("ticketDetails.ticketDetails")}</h2>
         <div
           style={{
             display: "grid",
@@ -177,14 +179,14 @@ const TicketDetails = () => {
           }}
         >
           <div>
-            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>Images</div>
+            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>{t("ticketDetails.images")}</div>
             {ticketDetails?.images && ticketDetails.images.length > 0 ? (
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 {ticketDetails.images.map((image: any, index: number) => (
                   <Image
                     key={index}
                     src={image.url || image}
-                    alt={`Ticket image ${index + 1}`}
+                    alt={t("ticketDetails.imageAlt", { number: index + 1 })}
                     width={100}
                     height={100}
                     style={{ objectFit: "cover", borderRadius: "2px" }}
@@ -192,16 +194,16 @@ const TicketDetails = () => {
                 ))}
               </div>
             ) : (
-              <div style={{ fontSize: "14px", color: "var(--color-text-subtle)" }}>No images available</div>
+              <div style={{ fontSize: "14px", color: "var(--color-text-subtle)" }}>{t("ticketDetails.noImages")}</div>
             )}
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>Description</div>
-            <div style={{ fontSize: "14px" }}>{ticketDetails?.description || "No description available"}</div>
+            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>{t("common:description")}</div>
+            <div style={{ fontSize: "14px" }}>{ticketDetails?.description || t("ticketDetails.noDescription")}</div>
           </div>
           <div>
-            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>User Feedback</div>
-            <div style={{ fontSize: "14px" }}>{ticketDetails?.user_feedback || "Ticket is not rated yet."}</div>
+            <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>{t("ticketDetails.userFeedback")}</div>
+            <div style={{ fontSize: "14px" }}>{ticketDetails?.user_feedback || t("ticketDetails.notRated")}</div>
           </div>
         </div>
       </div>
@@ -227,7 +229,7 @@ const TicketDetails = () => {
             display: "inline-block",
           }}
         >
-          Escalation History
+          {t("ticketDetails.escalationHistory")}
         </h2>
         <div
           style={{
@@ -246,9 +248,9 @@ const TicketDetails = () => {
               fontSize: "14px",
             }}
           >
-            Comments
+            {t("ticketDetails.comments")}
           </div>
-          <div style={{ padding: "16px", fontWeight: 600, fontSize: "14px" }}>Ticket Escalated At</div>
+          <div style={{ padding: "16px", fontWeight: 600, fontSize: "14px" }}>{t("ticketDetails.escalatedAt")}</div>
           {ticketDetails?.escalation_histories && ticketDetails.escalation_histories.length > 0 ? (
             ticketDetails.escalation_histories.map((history: any, index: number) => (
               <>
@@ -261,7 +263,7 @@ const TicketDetails = () => {
                     fontSize: "14px",
                   }}
                 >
-                  {history.comment || "No Comment Available"}
+                  {history.comment || t("ticketDetails.noComment")}
                 </div>
                 <div
                   key={`date-${index}`}
@@ -285,7 +287,7 @@ const TicketDetails = () => {
                   fontSize: "14px",
                 }}
               >
-                No Comment Available
+                {t("ticketDetails.noComment")}
               </div>
               <div
                 style={{

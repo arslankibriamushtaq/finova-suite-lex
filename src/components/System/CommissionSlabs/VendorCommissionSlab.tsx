@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Menu, Select, Modal, Input, Form } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../../Config/Images";
@@ -25,6 +26,7 @@ import toast from "react-hot-toast";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import { genTypeStyle } from "antd/es/alert/style";
 const VendorComissionSlab = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -52,7 +54,7 @@ const VendorComissionSlab = () => {
       await toast.promise(
         deleteVendorCommissionSlab(rowData?.id), // API call
         {
-          loading: "Deleting Vendor Commission Slab...",
+          loading: t("commissionSlab.deleting"),
           success: (response) => {
             if (response?.data?.success) {
               setIsDeleteModalVisible(false);
@@ -62,13 +64,13 @@ const VendorComissionSlab = () => {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.notificationMessage ||
-                  "Failed to deleting Vendor Commission Slab"
+                  t("commissionSlab.deleteFailed")
               );
             }
           },
           error: (err) =>
             err?.message ||
-            "Something went wrong while deleting the Vendor Commission Slab",
+            t("commissionSlab.deleteError"),
         }
       );
     } catch (error: any) {
@@ -118,7 +120,7 @@ const VendorComissionSlab = () => {
   };
   const getListCommission = (id: any) => {
     const entry: any = vendorList?.find((entry: any) => entry.id === id);
-    return entry ? entry.name : "ID not found";
+    return entry ? entry.name : t("shared.idNotFound");
   };
   useEffect(() => {
     getVendorCommisionType();
@@ -126,40 +128,40 @@ const VendorComissionSlab = () => {
   }, [page, pageSize]);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "180px",
     },
 
     {
-      name: "Vendor Commission",
+      name: t("commissionSlab.vendorCommission"),
       selector: (row: { vendor_commission_id: any }) =>
         row.vendor_commission_id,
       sortable: true,
       width: "200px",
     },
     {
-      name: "From",
+      name: t("range.from"),
       selector: (row: { from: any }) => row.from,
       sortable: true,
       width: "280px",
     },
     {
-      name: "To",
+      name: t("range.to"),
       selector: (row: { to: any }) => row.to,
       sortable: true,
       width: "280px",
     },
     {
-      name: "Commission",
+      name: t("commissionSlab.commission"),
       selector: (row: { commission: any }) => row.commission,
       sortable: true,
       width: "200px",
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -174,7 +176,7 @@ const VendorComissionSlab = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -187,14 +189,14 @@ const VendorComissionSlab = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -284,7 +286,7 @@ const VendorComissionSlab = () => {
         await toast.promise(
           editVendorCommissionSlab(updateBody), // Pass the body with ID included
           {
-            loading: "Updating Vendor Commission Slab...",
+            loading: t("commissionSlab.updating"),
             success: (response: any) => {
               if (response?.data?.success) {
                 setIsModalVisible(false);
@@ -293,20 +295,20 @@ const VendorComissionSlab = () => {
               } else {
                 throw new Error(
                   response?.response?.data?.errors?.[0] ||
-                    "Failed to update Vendor Commission Slab"
+                    t("commissionSlab.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating theVendor Commission Slab.",
+              t("commissionSlab.updateError"),
           }
         );
       } else {
         await toast.promise(
           createVendorCommissionSlab(formValues), // API call
           {
-            loading: "Adding Vendor Commission Slab...",
+            loading: t("commissionSlab.adding"),
             success: (response) => {
               if (response?.data?.success) {
                 // toast.success("Vendor Commission Slab Added Successfully");
@@ -319,18 +321,18 @@ const VendorComissionSlab = () => {
 
                 setIsModalVisible(false);
                 getVendorCommisionData();
-                return "Vendor Commission Slab Added Successfully";
+                return t("commissionSlab.addSuccess");
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.notificationMessage ||
-                    "Failed to add Vendor Commission Slab."
+                    t("commissionSlab.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding Vendor Commission Slab.",
+              t("commissionSlab.addError"),
           }
         );
       }
@@ -361,7 +363,7 @@ const VendorComissionSlab = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -379,14 +381,14 @@ const VendorComissionSlab = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("shared.excel")}</button>
+          <button className="invoice-btn">{t("shared.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New Vendor Commission Type
+            {t("commissionSlab.addNew")}
           </button>
         </div>
       </div>
@@ -409,14 +411,14 @@ const VendorComissionSlab = () => {
         style={{ maxWidth: "732px" }}
         title={
           selectedItem === "edit"
-            ? "Edit Vendor Commission Type"
-            : "Add New Vendor Commission Type"
+            ? t("commissionSlab.editTitle")
+            : t("commissionSlab.addTitle")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button
             key="save"
@@ -424,7 +426,7 @@ const VendorComissionSlab = () => {
             disabled={isLoading}
             onClick={handleOk}
           >
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
@@ -435,7 +437,7 @@ const VendorComissionSlab = () => {
               <Form.Item className="w-100">
                 <div className="custom-input-container">
                   <label className="input-label">
-                    Select Vendor Commission Type
+                    {t("commissionSlab.selectType")}
                   </label>
                   <Select
                     value={formValues.vendor_commission_id}
@@ -458,9 +460,9 @@ const VendorComissionSlab = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">From</label>
+                  <label className="input-label">{t("range.from")}</label>
                   <Input
-                    placeholder="Enter From"
+                    placeholder={t("commissionSlab.fromPlaceholder")}
                     className="fs-6"
                     value={formValues.from}
                     onChange={(e) => handleChange("from", e.target.value)}
@@ -469,9 +471,9 @@ const VendorComissionSlab = () => {
               </Form.Item>
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">To</label>
+                  <label className="input-label">{t("range.to")}</label>
                   <Input
-                    placeholder="Enter To"
+                    placeholder={t("commissionSlab.toPlaceholder")}
                     className="fs-6"
                     value={formValues.to}
                     onChange={(e) => handleChange("to", e.target.value)}
@@ -483,9 +485,9 @@ const VendorComissionSlab = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Commission</label>
+                  <label className="input-label">{t("commissionSlab.commission")}</label>
                   <Input
-                    placeholder="Enter Commission"
+                    placeholder={t("commissionSlab.commissionPlaceholder")}
                     className="fs-6"
                     value={formValues.commission}
                     onChange={(e) => handleChange("commission", e.target.value)}
@@ -514,7 +516,7 @@ const VendorComissionSlab = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -529,7 +531,7 @@ const VendorComissionSlab = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -543,7 +545,7 @@ const VendorComissionSlab = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure want to delete this Vendor Commission Slab?
+            {t("commissionSlab.deleteConfirm")}
           </p>
         </div>
       </Modal>

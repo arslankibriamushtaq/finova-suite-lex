@@ -23,8 +23,10 @@ import toast from "react-hot-toast";
 import styled from "styled-components";
 import { useLocation } from "react-router-dom";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const AcmEmployess = () => {
+  const { t } = useTranslation("dashboard");
   const checkReduxState = useSelector((state: RootState) => state.block.check);
   const [addDialog, setAddDialog] = useState(false);
   const [updateDialog, setUpdateDialog] = useState(false);
@@ -197,23 +199,23 @@ const AcmEmployess = () => {
   ];
   const Departments_Header = [
     {
-      name: "User Name",
+      name: t("manageRoles.userName"),
       selector: (row: { userName: any }) => row.userName,
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { email: any }) => row.email,
     },
     {
-      name: "Department",
+      name: t("acmEmp.department"),
       selector: (row: { department: any }) => row.department,
     },
     {
-      name: "Employee Role",
+      name: t("acmEmp.employeeRole"),
       selector: (row: { role: any }) => row.role,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { status: any }) => row.status,
       cell: (row: any) => (
         <div
@@ -228,18 +230,18 @@ const AcmEmployess = () => {
             cursor: row.status === "Active" ? "pointer" : "default",
           }}
         >
-          {row.status ? "Active" : "InActive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
 
     {
-      name: "Action",
+      name: t("manageRoles.action"),
       selector: (row: { Action: any }) => row.Action,
       cell: (row: any) => (
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Select
+            {t("common:select")}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -256,7 +258,11 @@ const AcmEmployess = () => {
                       <img src={item.img} alt="" />
                     </div> */}
 
-                    {item.label}
+                    {item.label === "Edit"
+                      ? t("common:edit")
+                      : item.label === "Delete"
+                      ? t("common:delete")
+                      : t("acmEmp.sendLoginEmail")}
                   </div>
                 </>
               </Dropdown.Item>
@@ -347,11 +353,11 @@ const AcmEmployess = () => {
   // };
   const validationSchema = Yup.object().shape({
     email: Yup.string()
-      .email("Please enter email in proper format e.g. johndoes@hotmail.com")
-      .required("Please enter email"),
-    userName: Yup.string().required("Field is required"),
-    phone: Yup.string().required("Field is required"),
-    address: Yup.string().required("Field is required"),
+      .email(t("acmEmp.validation.emailFormat"))
+      .required(t("acmEmp.validation.emailRequired")),
+    userName: Yup.string().required(t("acmEmp.validation.fieldRequired")),
+    phone: Yup.string().required(t("acmEmp.validation.fieldRequired")),
+    address: Yup.string().required(t("acmEmp.validation.fieldRequired")),
   });
   return (
     <>
@@ -359,7 +365,7 @@ const AcmEmployess = () => {
       <div className="cs-table">
         <div className="col-lg-12 col-12 d-flex align-items-center pb-3">
           <h2 className="col-lg-4 col-12 fs-6 fw-bold d-flex justify-content-start">
-            Employees
+            {t("acmEmp.title")}
           </h2>
           <div className="col-lg-8 col-12 d-flex justify-content-end align-items-center">
             {/* <Select
@@ -371,7 +377,7 @@ const AcmEmployess = () => {
             <div className="d-flex">
               <input
                 type="text"
-                placeholder="Type here"
+                placeholder={t("manageRoles.typeHere")}
                 className="search-icon form-control search-bar"
                 value={searchValue}
                 onChange={onSearchHandle}
@@ -383,7 +389,7 @@ const AcmEmployess = () => {
               }}
               className="theme-btn-next"
             >
-              Add New Employee
+              {t("acmEmp.addNewEmployee")}
             </div>
           </div>
         </div>
@@ -391,7 +397,7 @@ const AcmEmployess = () => {
       </div>
       <Modal show={addDialog} onHide={() => setAddDialog(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Add New Employee</Modal.Title>
+          <Modal.Title>{t("acmEmp.addNewEmployee")}</Modal.Title>
         </Modal.Header>
         <Formik
           initialValues={{
@@ -414,12 +420,12 @@ const AcmEmployess = () => {
                   <div className="col-md-12 row ">
                     <div className=" col-md-6">
                       <label className="pb-2" htmlFor="title">
-                        User Name
+                        {t("manageRoles.userName")}
                       </label>
                       <Field
                         className="form-control col-6"
                         type="text"
-                        placeholder="User Name"
+                        placeholder={t("manageRoles.userName")}
                         name="userName"
                         id="userName"
                         autoComplete="off"
@@ -435,11 +441,11 @@ const AcmEmployess = () => {
                     </div>
                     <div className=" col-md-6">
                       <label className="pb-2" htmlFor="titleArabic">
-                        User Email
+                        {t("acmEmp.userEmail")}
                       </label>
                       <Field
                         type="text"
-                        placeholder="User Email"
+                        placeholder={t("acmEmp.userEmail")}
                         id="email"
                         name="email"
                         className="form-control"
@@ -475,11 +481,11 @@ const AcmEmployess = () => {
                     </div> */}
                     <div className=" col-md-6">
                       <label className="pb-2" htmlFor="phone">
-                        Phone
+                        {t("common:phone")}
                       </label>
                       <Field
                         type="text"
-                        placeholder="Phone"
+                        placeholder={t("common:phone")}
                         id="phone"
                         name="phone"
                         className="form-control"
@@ -495,12 +501,12 @@ const AcmEmployess = () => {
                     </div>
                     <div className=" col-md-6">
                       <label className="pb-2" htmlFor="address">
-                        Address
+                        {t("acmEmp.address")}
                       </label>
                       <Field
                         className="form-control col-6"
                         type="text"
-                        placeholder="Address"
+                        placeholder={t("acmEmp.address")}
                         name="address"
                         id="address"
                         autoComplete="off"
@@ -515,7 +521,7 @@ const AcmEmployess = () => {
                   <div className="col-md-12 row mt-3">
                     <div className=" d-grid col-md-6">
                       <label className="" htmlFor="dob">
-                        DOB
+                        {t("acmEmp.dob")}
                       </label>
                       <DatePicker
                         onChange={(date: any) => {
@@ -531,7 +537,7 @@ const AcmEmployess = () => {
                     </div>
                     <div className=" d-grid col-md-6">
                       <label className="pb-2" htmlFor="receiver">
-                        Assign Role
+                        {t("acmEmp.assignRole")}
                       </label>
                       <Select
                         style={{ height: "38px" }}
@@ -556,7 +562,7 @@ const AcmEmployess = () => {
                   <div className="col-md-12 row pt-3">
                     <div className=" d-grid col-md-6">
                       <label className="pb-2" htmlFor="status">
-                        Assign Department
+                        {t("acmEmp.assignDepartment")}
                       </label>
                       <Select
                         style={{ height: "38px" }}
@@ -601,7 +607,7 @@ const AcmEmployess = () => {
                         htmlFor="receiver"
                         style={{ fontSize: "14px", fontWeight: "500" }}
                       >
-                        Enable 2 Step Verification
+                        {t("acmEmp.enable2Step")}
                       </label>
 
                       <ErrorMessage
@@ -622,7 +628,7 @@ const AcmEmployess = () => {
                         htmlFor="receiver"
                         style={{ fontSize: "14px", fontWeight: "500" }}
                       >
-                        Status
+                        {t("common:status")}
                       </label>
 
                       <ErrorMessage
@@ -639,7 +645,7 @@ const AcmEmployess = () => {
                       className="theme-btn-next col-3 mt-3 button-margin d-flex justify-content-center"
                       type="submit"
                     >
-                      Add Employee
+                      {t("acmEmp.addEmployee")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -656,7 +662,7 @@ const AcmEmployess = () => {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Edit Employee Details</Modal.Title>
+          <Modal.Title>{t("acmEmp.editEmployeeDetails")}</Modal.Title>
         </Modal.Header>
         <Formik
           initialValues={{
@@ -681,12 +687,12 @@ const AcmEmployess = () => {
                   <div className="col-md-12 row ">
                     <div className=" col-md-6">
                       <label className="pb-2" htmlFor="title">
-                        User Name
+                        {t("manageRoles.userName")}
                       </label>
                       <Field
                         className="form-control col-6"
                         type="text"
-                        placeholder="User Name"
+                        placeholder={t("manageRoles.userName")}
                         name="userName"
                         id="userName"
                         autoComplete="off"
@@ -702,11 +708,11 @@ const AcmEmployess = () => {
                     </div>
                     <div className="form-group new_password form-label-group col-md-6">
                       <label className="pb-2" htmlFor="titleArabic">
-                        User Email
+                        {t("acmEmp.userEmail")}
                       </label>
                       <Field
                         type="text"
-                        placeholder="User Email"
+                        placeholder={t("acmEmp.userEmail")}
                         id="email"
                         name="email"
                         className="form-control"
@@ -742,11 +748,11 @@ const AcmEmployess = () => {
                   </div> */}
                     <div className="form-group new_password form-label-group col-md-6">
                       <label className="pb-2" htmlFor="templateNameArabic">
-                        Phone
+                        {t("common:phone")}
                       </label>
                       <Field
                         type="text"
-                        placeholder="Phone"
+                        placeholder={t("common:phone")}
                         id="phone"
                         name="phone"
                         className="form-control"
@@ -762,12 +768,12 @@ const AcmEmployess = () => {
                     </div>
                     <div className=" col-md-6">
                       <label className="pb-2" htmlFor="address">
-                        Address
+                        {t("acmEmp.address")}
                       </label>
                       <Field
                         className="form-control col-6"
                         type="text"
-                        placeholder="Address"
+                        placeholder={t("acmEmp.address")}
                         name="address"
                         id="address"
                         autoComplete="off"
@@ -782,7 +788,7 @@ const AcmEmployess = () => {
                   <div className="col-md-12 row pt-3">
                     <div className="form-group new_password form-label-group d-grid col-md-6">
                       <label className="" htmlFor="dob">
-                        DOB
+                        {t("acmEmp.dob")}
                       </label>
                       <DatePicker
                         onChange={(date: any) => {
@@ -798,7 +804,7 @@ const AcmEmployess = () => {
                     </div>
                     <div className=" d-grid col-md-6">
                       <label className="pb-2" htmlFor="receiver">
-                        Assign Role
+                        {t("acmEmp.assignRole")}
                       </label>
                       <Select
                         style={{ height: "38px" }}
@@ -823,7 +829,7 @@ const AcmEmployess = () => {
                   <div className="col-md-12 row pt-3">
                     <div className=" d-grid col-md-6">
                       <label className="pb-2" htmlFor="status">
-                        Assign Department
+                        {t("acmEmp.assignDepartment")}
                       </label>
                       <Select
                         style={{ height: "38px" }}
@@ -864,7 +870,7 @@ const AcmEmployess = () => {
                         htmlFor="receiver"
                         style={{ fontSize: "14px", fontWeight: "500" }}
                       >
-                        Enable 2 Step Verification
+                        {t("acmEmp.enable2Step")}
                       </label>
 
                       <ErrorMessage
@@ -885,7 +891,7 @@ const AcmEmployess = () => {
                         htmlFor="receiver"
                         style={{ fontSize: "14px", fontWeight: "500" }}
                       >
-                        Status
+                        {t("common:status")}
                       </label>
 
                       <ErrorMessage
@@ -902,7 +908,7 @@ const AcmEmployess = () => {
                       className="theme-btn col-3 mt-3 button-margin d-flex justify-content-center"
                       type="submit"
                     >
-                      Save Changes
+                      {t("common:saveChanges")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -931,7 +937,7 @@ const AcmEmployess = () => {
             style={{ fontSize: "20px", fontWeight: "600", lineHeight: "20px" }}
             className="text-center pt-3"
           >
-            <div> Are you sure?</div>
+            <div>{t("common:areYouSure")}</div>
           </div>
 
           <div
@@ -939,8 +945,7 @@ const AcmEmployess = () => {
             className="text-center d-flex justify-content-center pt-3"
           >
             <div className="col-10">
-              This action cannot be undone. All values associated with this
-              record will be lost.
+              {t("acmEmp.deleteWarning")}
             </div>
           </div>
           <div className="pt-3">
@@ -955,7 +960,7 @@ const AcmEmployess = () => {
                 deleteRow(rowData.id);
               }}
             >
-              Delete Record
+              {t("acmEmp.deleteRecord")}
             </button>
           </div>
           <div className="d-flex justify-content-center">
@@ -968,7 +973,7 @@ const AcmEmployess = () => {
               //   handleVerifyOtp();
               // }}
             >
-              Cancel
+              {t("common:cancel")}
             </button>
           </div>
         </Modal.Body>

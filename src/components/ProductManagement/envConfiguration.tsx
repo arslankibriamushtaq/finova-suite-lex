@@ -1,5 +1,6 @@
 import { Input } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 
 import toast from "react-hot-toast";
@@ -9,6 +10,7 @@ import { useSelector } from "react-redux";
 
 
 function EnvConfig({ readOnly = false }: any) {
+const { t } = useTranslation("productManagement2");
 const[envData,setEnvData]=useState<any>()
   const location = useLocation();
   const product = useSelector((s: any) => s.block.productData);
@@ -107,7 +109,7 @@ const[envData,setEnvData]=useState<any>()
   
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load Request Duration data");
+          toast.error(error?.response?.data?.message || t("durationSettings.loadFailed"));
         }
       }
     };
@@ -196,7 +198,7 @@ const[envData,setEnvData]=useState<any>()
     try{
       const res = await saveVerificationMethods(body);
       if(res?.data?.success){
-        toast.success(res?.data?.message || "Saved successfully");
+        toast.success(res?.data?.message || t("common:savedSuccessfully"));
       }
     }catch(err:any){
       console.error("Save error:", err);
@@ -207,9 +209,9 @@ const[envData,setEnvData]=useState<any>()
         const errorMessages = Object.keys(errors).map(key => 
           `${key}: ${errors[key].join(', ')}`
         ).join('\n');
-        toast.error(`Validation failed:\n${errorMessages}`);
+        toast.error(`${t("basicInfo.validationFailed")}:\n${errorMessages}`);
       } else {
-        toast.error(err?.response?.data?.message || "Failed to save");
+        toast.error(err?.response?.data?.message || t("delinquency.failedToSave"));
       }
     }
   }
@@ -251,12 +253,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Kyc Citizen Info
+        {t("verification.kycCitizenInfo")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
             placeholder=""
@@ -268,7 +270,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
             placeholder=""
@@ -283,7 +285,7 @@ const[envData,setEnvData]=useState<any>()
         <Col md={6}>
         
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
             className="fs-6"
@@ -294,7 +296,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
             className="fs-6"
@@ -308,12 +310,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Username
+            {t("verification.username")}
           </label>
           <Input
             className="fs-6"
@@ -324,7 +326,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Password
+            {t("verification.password")}
           </label>
           <Input
             className="fs-6"
@@ -337,7 +339,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Request URL
+            {t("verification.requestUrl")}
           </label>
           <Input
             className="fs-6"
@@ -352,7 +354,7 @@ const[envData,setEnvData]=useState<any>()
           className="pt-4 pb-3"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          Parameters
+          {t("verification.parameters")}
         </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
@@ -380,12 +382,12 @@ const[envData,setEnvData]=useState<any>()
           className="pt-2 pb-3"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          Kyc Citizen Address
+          {t("verification.kycCitizenAddress")}
         </h1>
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Base URL
+              {t("verification.baseUrl")}
             </label>
             <Input
               className="fs-6"
@@ -396,7 +398,7 @@ const[envData,setEnvData]=useState<any>()
           </Col>
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              End Point
+              {t("verification.endPoint")}
             </label>
             <Input
               className="fs-6"
@@ -409,7 +411,7 @@ const[envData,setEnvData]=useState<any>()
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Environment
+              {t("verification.environment")}
             </label>
             <Input
               className="fs-6"
@@ -420,7 +422,7 @@ const[envData,setEnvData]=useState<any>()
           </Col>
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Method
+              {t("verification.method")}
             </label>
             <Input
               className="fs-6"
@@ -434,12 +436,12 @@ const[envData,setEnvData]=useState<any>()
           className="pt-4 pb-3"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          Credentials
+          {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Username
+              {t("verification.username")}
             </label>
             <Input
               className="fs-6"
@@ -450,7 +452,7 @@ const[envData,setEnvData]=useState<any>()
           </Col>
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Password
+              {t("verification.password")}
             </label>
             <Input
               className="fs-6"
@@ -463,7 +465,7 @@ const[envData,setEnvData]=useState<any>()
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Request URL
+              {t("verification.requestUrl")}
             </label>
             <Input
               className="fs-6"
@@ -478,7 +480,7 @@ const[envData,setEnvData]=useState<any>()
             className="pt-4 pb-3"
             style={{ fontSize: "16px", fontWeight: "bold" }}
           >
-            Parameters
+            {t("verification.parameters")}
           </h1>
           <Col md={6}>
             {/* <label className="mb-1" style={{ fontWeight: 400 }}>
@@ -522,12 +524,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Mobile Verification
+        {t("verification.mobileVerification")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -539,7 +541,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -553,7 +555,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -565,7 +567,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -580,12 +582,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            App Id
+            {t("verification.appId")}
           </label>
           <Input
           
@@ -597,7 +599,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            App Key
+            {t("verification.appKey")}
           </label>
           <Input
           
@@ -611,7 +613,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Service Key
+            {t("verification.serviceKey")}
           </label>
           <Input
           
@@ -623,7 +625,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Organization Number
+            {t("verification.organizationNumber")}
           </label>
           <Input
           
@@ -639,7 +641,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
@@ -676,7 +678,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -688,7 +690,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -702,7 +704,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -714,7 +716,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -729,12 +731,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            API Key
+            {t("verification.apiKey")}
           </label>
           <Input
           
@@ -750,7 +752,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
@@ -770,12 +772,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Get Manager
+        {t("verification.getManager")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -787,7 +789,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -801,7 +803,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -813,7 +815,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -828,12 +830,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            API Key
+            {t("verification.apiKey")}
           </label>
           <Input
           
@@ -849,7 +851,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
@@ -886,7 +888,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -898,7 +900,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -912,7 +914,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -924,7 +926,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -939,12 +941,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                ID
+                {t("verification.id")}
             </label>
             <Input
               
@@ -956,7 +958,7 @@ const[envData,setEnvData]=useState<any>()
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Domain
+                {t("verification.domain")}
             </label>
             <Input
               
@@ -970,7 +972,7 @@ const[envData,setEnvData]=useState<any>()
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Password
+                {t("verification.password")}
             </label>
             <Input
               
@@ -986,7 +988,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           <Input
@@ -1015,7 +1017,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -1027,7 +1029,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -1041,7 +1043,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -1053,7 +1055,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -1068,12 +1070,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                ID
+                {t("verification.id")}
             </label>
             <Input
               
@@ -1085,7 +1087,7 @@ const[envData,setEnvData]=useState<any>()
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Domain
+                {t("verification.domain")}
             </label>
             <Input
               
@@ -1099,7 +1101,7 @@ const[envData,setEnvData]=useState<any>()
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Password
+                {t("verification.password")}
             </label>
             <Input
               
@@ -1115,7 +1117,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           <Input
@@ -1136,7 +1138,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -1148,7 +1150,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -1162,7 +1164,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -1174,7 +1176,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -1189,12 +1191,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                ID
+                {t("verification.id")}
             </label>
             <Input
               
@@ -1206,7 +1208,7 @@ const[envData,setEnvData]=useState<any>()
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Domain
+                {t("verification.domain")}
             </label>
             <Input
               
@@ -1220,7 +1222,7 @@ const[envData,setEnvData]=useState<any>()
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Password
+                {t("verification.password")}
             </label>
             <Input
               
@@ -1235,7 +1237,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-        Parameters
+        {t("verification.parameters")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
@@ -1276,7 +1278,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -1288,7 +1290,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -1302,7 +1304,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -1314,7 +1316,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -1329,7 +1331,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
@@ -1346,7 +1348,7 @@ const[envData,setEnvData]=useState<any>()
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Authorization
+                {t("verification.authorization")}
             </label>
             <Input
               
@@ -1361,7 +1363,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
@@ -1421,7 +1423,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
           
@@ -1433,7 +1435,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
           
@@ -1447,7 +1449,7 @@ const[envData,setEnvData]=useState<any>()
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
           
@@ -1459,7 +1461,7 @@ const[envData,setEnvData]=useState<any>()
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
           
@@ -1474,12 +1476,12 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Client ID
+                {t("verification.clientId")}
             </label>
             <Input
               
@@ -1491,7 +1493,7 @@ const[envData,setEnvData]=useState<any>()
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Client Authorization
+                {t("verification.clientAuthorization")}
             </label>
             <Input
               
@@ -1506,7 +1508,7 @@ const[envData,setEnvData]=useState<any>()
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
@@ -1520,7 +1522,7 @@ const[envData,setEnvData]=useState<any>()
     </div>
     {!readOnly && (
       <div className="d-flex justify-content-end mt-3">
-        <button className="theme-btn-next" onClick={handleSave}>Save</button>
+        <button className="theme-btn-next" onClick={handleSave}>{t("common:save")}</button>
       </div>
     )}
     </>

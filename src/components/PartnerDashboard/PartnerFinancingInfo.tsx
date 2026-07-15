@@ -1,9 +1,11 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PartnerFinancingInfo = ({ setSelectedTab }: any) => {
+  const { t } = useTranslation("partner");
   const detailSections = [
     {
-      heading: "Financing Amount Info:",
+      heading: t("financingInfo.amountInfoHeading"),
       align: "start",
       details: [
         { label: "Application Number", value: "FVAN-2560297671" },

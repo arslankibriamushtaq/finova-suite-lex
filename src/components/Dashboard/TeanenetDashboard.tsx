@@ -10,8 +10,10 @@ import "react-multi-carousel/lib/styles.css";
 import { Images } from "../Config/Images";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Dashboard = () => {
+  const { t } = useTranslation("dashboard");
   const navigate = useNavigate();
   const [Mbtn, setMbtn] = useState(false);
   const responsive = {
@@ -35,34 +37,34 @@ const Dashboard = () => {
   };
   const cardData = [
     {
-      title: "100% Secure",
+      title: t("teanenet.card.secure"),
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
       img: Images.Secure,
-      link: "Learn More",
+      link: t("teanenet.learnMore"),
     },
     {
-      title: "Auto Update",
+      title: t("teanenet.card.autoUpdate"),
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
       img: Images.update,
-      link: "Learn More",
+      link: t("teanenet.learnMore"),
     },
     {
-      title: "Account Isolation",
+      title: t("teanenet.card.accountIsolation"),
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
       img: Images.update,
-      link: "Learn More",
+      link: t("teanenet.learnMore"),
     },
     {
-      title: "Auto Update",
+      title: t("teanenet.card.autoUpdate"),
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
       img: Images.update,
-      link: "Learn More",
+      link: t("teanenet.learnMore"),
     },
     {
-      title: "Auto Update",
+      title: t("teanenet.card.autoUpdate"),
       body: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc vulputate libero et velit interdum, ac aliquet odio mattis.",
       img: Images.update,
-      link: "Learn More",
+      link: t("teanenet.learnMore"),
     },
   ];
   const pricingCard = [
@@ -145,10 +147,10 @@ const Dashboard = () => {
         <div className="d-flex justify-content-center text-center ">
           <div className="col-8 text-white">
             <h1 className="" style={{ fontSize: "64px", textAlign: "start" }}>
-              The starting point of a winning customer experience
+              {t("teanenet.hero.title")}
             </h1>
             <p style={{ fontSize: "24px" }}>
-              Unlock your potential with our Suite of SaaS Solutions
+              {t("teanenet.hero.subtitle")}
             </p>
             <button
               style={{
@@ -162,7 +164,7 @@ const Dashboard = () => {
                 navigate("/teanenetflow/product");
               }}
             >
-              Subscribe Today And Start Landing
+              {t("teanenet.hero.cta")}
               <span>
                 <img className="ms-2" src={playIcon} alt="" />
               </span>
@@ -174,7 +176,7 @@ const Dashboard = () => {
         <div className="col-11 d-flex">
           <div className="col-6">
             <h1 style={{ fontSize: "32px" }}>
-              Empowering Businesses Worldwide with Seamless SaaS Solutions
+              {t("teanenet.empowering")}
             </h1>
             <p style={{ lineHeight: "1.5" }}>
               Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
@@ -190,7 +192,7 @@ const Dashboard = () => {
               luctus enim egestas, ac scelerisque ante pulvinar. Donec ut
               rhoncus ex.
             </p>
-            <Button variant="danger">Read More</Button>
+            <Button variant="danger">{t("teanenet.readMore")}</Button>
           </div>
           <div className="login-container">
             <div className="circle circle-one"></div>
@@ -208,13 +210,10 @@ const Dashboard = () => {
               className="d-flex justify-content-center"
               style={{ fontSize: "40px" }}
             >
-              Our Products
+              {t("teanenet.ourProducts")}
             </h1>
             <p style={{ fontSize: "19px", textAlign: "center" }}>
-              Explore our comprehensive suite of financing products crafted to
-              suit various financial needs. From flexible payment options to
-              competitive rates, our diverse range of products ensures financial
-              support that empowers your goals
+              {t("teanenet.productsDesc")}
             </p>
           </div>
         </div>
@@ -237,7 +236,7 @@ const Dashboard = () => {
                   <li>Lorem ipsum dolor sit amet consectetur.</li>
                 </ol>
                 <div className="col-5 d-flex">
-                  <Button className="demo-button">Book a Demo</Button>
+                  <Button className="demo-button">{t("teanenet.bookDemo")}</Button>
                 </div>
               </div>
               <div className="card card-1">
@@ -254,7 +253,7 @@ const Dashboard = () => {
                   <li>Lorem ipsum dolor sit amet consectetur.</li>
                 </ol>
                 <div className="col-5 d-flex">
-                  <Button className="demo-button">Book a Demo</Button>
+                  <Button className="demo-button">{t("teanenet.bookDemo")}</Button>
                 </div>
               </div>
               <div className="card card-2">
@@ -271,7 +270,7 @@ const Dashboard = () => {
                   <li>Lorem ipsum dolor sit amet consectetur.</li>
                 </ol>
                 <div className="col-5 d-flex">
-                  <Button className="demo-button">Book a Demo</Button>
+                  <Button className="demo-button">{t("teanenet.bookDemo")}</Button>
                 </div>
               </div>
             </div>
@@ -292,7 +291,7 @@ const Dashboard = () => {
           <div className="col-12 d-flex">
             <img src={borderline} alt="" />
 
-            <h1 className="ps-2">Why Choose Us</h1>
+            <h1 className="ps-2">{t("teanenet.whyChooseUs")}</h1>
           </div>
           <div className="col-9 d-flex justify-content-center ps-5">
             Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc
@@ -358,7 +357,7 @@ const Dashboard = () => {
           <div className="col-11 mt-5  d-flex justify-content-center">
             <div className="col-8  ">
               <h1 className="d-flex justify-content-center">
-                Our Pricing plan
+                {t("teanenet.pricingPlan")}
               </h1>
               <div style={{ lineHeight: "1.5rem", textAlign: "center" }}>
                 Lorem ipsum dolor sit amet consectetur adipisicing elit. Rerum,
@@ -379,7 +378,7 @@ const Dashboard = () => {
                   }}
                   onClick={() => setMbtn(false)}
                 >
-                  Monthly
+                  {t("teanenet.monthly")}
                 </div>
                 <div
                   className="p-3"
@@ -393,7 +392,7 @@ const Dashboard = () => {
                   }}
                   onClick={() => setMbtn(true)}
                 >
-                  Yearly
+                  {t("teanenet.yearly")}
                 </div>
               </div>
             </div>
@@ -559,7 +558,7 @@ const Dashboard = () => {
                               style={{ color: "white" }}
                             >
                               {" "}
-                              Subscribe Now {"->"}
+                              {t("teanenet.subscribeNow")} {"->"}
                             </Link>
                           </li>
                         </div>
@@ -617,7 +616,7 @@ const Dashboard = () => {
                         {los.PackagePrice}
                       </div>
                     </div>
-                    <div className="tag-image">Recommended</div>
+                    <div className="tag-image">{t("teanenet.recommended")}</div>
                   </div>
                   <div className="circle-bg d-flex justify-content-center mt-4">
                     <div className="image-wrap">
@@ -726,7 +725,7 @@ const Dashboard = () => {
                               style={{ color: "white" }}
                             >
                               {" "}
-                              Subscribe Now {"->"}
+                              {t("teanenet.subscribeNow")} {"->"}
                             </Link>
                           </li>
                         </div>
@@ -891,7 +890,7 @@ const Dashboard = () => {
                               style={{ color: "white", listStyle: "none" }}
                             >
                               {" "}
-                              Subscribe Now {"->"}
+                              {t("teanenet.subscribeNow")} {"->"}
                             </Link>
                           </li>
                         </div>
@@ -911,19 +910,17 @@ const Dashboard = () => {
         <div className="col-10 d-flex justify-content-center">
           <div className="col-6">
             <h1 style={{ color: "red", fontSize: "32px" }}>
-              Join Our Newsletter
+              {t("teanenet.newsletter.title")}
             </h1>
             <div>
-              Subscribe to our newsletter to receive exclusive offers, latest{" "}
-              <br />
-              news and updates
+              {t("teanenet.newsletter.subtitle")}
             </div>
           </div>
           <div className="col-6 d-flex justify-content-end align-items-center">
             <div className="d-flex align-items-center gap-2">
               <input
                 type="email"
-                placeholder="Email Address"
+                placeholder={t("teanenet.newsletter.emailPlaceholder")}
                 style={{
                   width: "370px",
                   padding: "7px",
@@ -937,7 +934,7 @@ const Dashboard = () => {
                   borderRadius: "2px",
                 }}
               >
-                Subscribe
+                {t("teanenet.newsletter.subscribe")}
               </Button>
             </div>
           </div>
@@ -946,8 +943,7 @@ const Dashboard = () => {
       <div className="col-12 d-flex justify-content-center footer-img">
         <div className="col-10 d-flex justify-content-center text-white align-items-center">
           <h1 className="text-center los-p">
-            Experience Seamless Integration of LOS, LMS, and Onboarding Modules
-            for Optimal Performance
+            {t("teanenet.footer")}
           </h1>
         </div>
       </div>

@@ -9,7 +9,9 @@ import blackPrint from "../../assets/images/blac-print.png";
 import SkeletonLabel from "../SkeletonLabel";
 import { NumberFormatter } from "../../utils/const.utils";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 const DashboardOnboardingInfo = (props: any) => {
+  const { t } = useTranslation("dashboard");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const chartRef: any = useRef(null);
 
@@ -68,8 +70,8 @@ const DashboardOnboardingInfo = (props: any) => {
         return `
           <div>
             <strong>${params.name}</strong><br />
-            Value: ${params.value}<br />
-            Percentage: ${params.percent}%
+            ${t("onboarding.tooltipValue")}: ${params.value}<br />
+            ${t("onboarding.tooltipPercentage")}: ${params.percent}%
             <div style="width: 200px; height: 100px; margin-top: 10px;">
               <ReactECharts
                 option={barChartOption}
@@ -85,7 +87,7 @@ const DashboardOnboardingInfo = (props: any) => {
       left: "center",
       top: "center",
       style: {
-        text: `Total \n${props?.dashboardData?.onboarding?.pie_graph?.total||"0"}`, // Display "Total Tickets" and the value
+        text: `${t("onboarding.total")} \n${props?.dashboardData?.onboarding?.pie_graph?.total||"0"}`, // Display "Total Tickets" and the value
         fontSize: 12, // Font size for the text
         fontWeight: "bold",
         fill: "#333", // Text color
@@ -101,7 +103,7 @@ const DashboardOnboardingInfo = (props: any) => {
       <div className="dash-onboarding col-12 gap-3">
         <div className="d-flex" style={{ justifyContent: "space-between" }}>
           <h4>
-            Onboardings <span className="on-view">View More</span>
+            {t("onboarding.title")} <span className="on-view">{t("onboarding.viewMore")}</span>
           </h4>
           <div className="csv-print"   style={{ cursor: "pointer" }}   onClick={() => {
               exportUserGraphStatsToCSV(props?.dashboardData?.onboarding?.user_stats,"avg_type", "Dashboard-Onboarding");
@@ -114,7 +116,7 @@ const DashboardOnboardingInfo = (props: any) => {
               height={15}
              // Add pointer cursor
             />
-            Print CSV
+            {t("services.printCsv")}
           </div>
         </div>
         <div className="row">
@@ -123,7 +125,7 @@ const DashboardOnboardingInfo = (props: any) => {
               <div className="col-md-12">
                 <div className="in-out-fund onboard-cash">
                   <div className="onboarding-stats">
-                    <span>Avg Onboarding Time</span>
+                    <span>{t("onboarding.avgOnboardingTime")}</span>
                     <label>
                       {props?.loading ? (
                         <SkeletonLabel /> // Show the skeleton loader while loading
@@ -133,7 +135,7 @@ const DashboardOnboardingInfo = (props: any) => {
                             props?.dashboardData?.onboarding?.total_stats
                               ?.avg_time
                           }{" "}
-                          <span>sec</span>
+                          <span>{t("onboarding.sec")}</span>
                         </>
                       )}
                     </label>
@@ -145,7 +147,7 @@ const DashboardOnboardingInfo = (props: any) => {
                 <div className="row">
                   <div className="col-md-7">
                     <div className="stats-values">
-                      <span>Total Onboardings Volume</span>
+                      <span>{t("onboarding.totalVolume")}</span>
 
                       <label>
                         {" "}
@@ -209,7 +211,7 @@ const DashboardOnboardingInfo = (props: any) => {
                       <img src={circle} alt="" width={16} height={16} />
                     </div>
                     <div className="avg-time">
-                      <span className="lite-h5">Avg Time</span>
+                      <span className="lite-h5">{t("onboarding.avgTime")}</span>
                       <label>
                         {props?.loading ? (
                           <SkeletonLabel /> // Show the skeleton loader while loading
@@ -219,7 +221,7 @@ const DashboardOnboardingInfo = (props: any) => {
                               props?.dashboardData?.onboarding?.user_stats[1]
                                 ?.avg_time
                             )}{" "}
-                            sec
+                            {t("onboarding.sec")}
                           </>
                         )}
                       </label>
@@ -245,7 +247,7 @@ const DashboardOnboardingInfo = (props: any) => {
                             props?.dashboardData?.onboarding?.user_stats[2]
                               ?.total
                           )}{" "}
-                          sec
+                          {t("onboarding.sec")}
                         </>
                       )}
                     </label>
@@ -262,7 +264,7 @@ const DashboardOnboardingInfo = (props: any) => {
                       <img src={circle} alt="" width={16} height={16} />
                     </div>
                     <div className="avg-time">
-                      <span className="lite-h5">Avg Time</span>
+                      <span className="lite-h5">{t("onboarding.avgTime")}</span>
                       <label>
                         {" "}
                         {props?.loading ? (
@@ -273,7 +275,7 @@ const DashboardOnboardingInfo = (props: any) => {
                               props?.dashboardData?.onboarding?.user_stats[2]
                                 ?.avg_time
                             )}{" "}
-                            sec
+                            {t("onboarding.sec")}
                           </>
                         )}
                       </label>
@@ -315,7 +317,7 @@ const DashboardOnboardingInfo = (props: any) => {
                       <img src={circle} alt="" width={16} height={16} />
                     </div>
                     <div className="avg-time">
-                      <span className="lite-h5">Avg Time</span>
+                      <span className="lite-h5">{t("onboarding.avgTime")}</span>
                       <label>
                         {" "}
                         {props?.loading ? (
@@ -326,7 +328,7 @@ const DashboardOnboardingInfo = (props: any) => {
                               props?.dashboardData?.onboarding?.user_stats[3]
                                 ?.avg_time
                             )}{" "}
-                            sec
+                            {t("onboarding.sec")}
                           </>
                         )}
                       </label>
@@ -369,7 +371,7 @@ const DashboardOnboardingInfo = (props: any) => {
                     </div>
 
                     <div className="avg-time">
-                      <span className="lite-h5">Avg Time</span>
+                      <span className="lite-h5">{t("onboarding.avgTime")}</span>
                       <label>
                         {" "}
                         {props?.loading ? (
@@ -380,7 +382,7 @@ const DashboardOnboardingInfo = (props: any) => {
                               props?.dashboardData?.onboarding?.user_stats[0]
                                 ?.avg_time
                             )}{" "}
-                            sec
+                            {t("onboarding.sec")}
                           </>
                         )}
                       </label>

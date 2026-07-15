@@ -7,6 +7,7 @@ import { getTrialBalanceReport } from "../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const formatAmount = (n: number | string | undefined | null) =>
   Number(n || 0).toLocaleString(undefined, {
@@ -15,6 +16,7 @@ const formatAmount = (n: number | string | undefined | null) =>
   });
 
 const TrialBalance = () => {
+  const { t } = useTranslation("reports");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -62,7 +64,7 @@ const TrialBalance = () => {
       }
     } catch (error: any) {
       console.error("Error fetching trial balance:", error);
-      toast.error(error?.message || "Failed to fetch trial balance");
+      toast.error(error?.message || t('trialBalance.toast.fetchError'));
       setAccounts([]);
       setTotals({ totalDebits: 0, totalCredits: 0, difference: 0 });
     } finally {
@@ -109,35 +111,35 @@ const TrialBalance = () => {
 
   const columns = [
     {
-      name: "S No",
+      name: t('trialBalance.col.sNo'),
       selector: (row: any) => row.Sr,
       sortable: true,
       width: "70px",
     },
     {
-      name: "Account Code",
+      name: t('trialBalance.col.accountCode'),
       selector: (row: any) => row.accountCode,
       sortable: true,
     },
     {
-      name: "Account Name",
+      name: t('trialBalance.col.accountName'),
       selector: (row: any) => row.accountName,
       sortable: true,
       wrap: true,
     },
     {
-      name: "Account Type",
+      name: t('trialBalance.col.accountType'),
       selector: (row: any) => row.accountType,
       sortable: true,
     },
     {
-      name: "Debit Balance",
+      name: t('trialBalance.col.debitBalance'),
       selector: (row: any) => `${formatAmount(row.debitBalance)} SAR`,
       sortable: true,
       right: true,
     },
     {
-      name: "Credit Balance",
+      name: t('trialBalance.col.creditBalance'),
       selector: (row: any) => `${formatAmount(row.creditBalance)} SAR`,
       sortable: true,
       right: true,
@@ -146,7 +148,7 @@ const TrialBalance = () => {
 
   const exportToCSV = () => {
     if (!filteredAccounts || filteredAccounts.length === 0) {
-      toast.error("No data available to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
     const headers = [
@@ -186,7 +188,7 @@ const TrialBalance = () => {
             <span className="pro-head-badge">
               <Scale className="h-4 w-4" />
             </span>
-            Trial Balance
+            {t('trialBalance.title')}
           </h3>
         </div>
 
@@ -194,7 +196,7 @@ const TrialBalance = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by account code, name, or type"
+            placeholder={t('trialBalance.searchPlaceholder')}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -204,7 +206,7 @@ const TrialBalance = () => {
             value={date}
             onChange={(d) => setDate(d)}
             format="YYYY-MM-DD"
-            placeholder="As of date"
+            placeholder={t('filter.asOfDate')}
             style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 2, height: 40 }}
           />
           <button
@@ -214,7 +216,7 @@ const TrialBalance = () => {
             disabled={!filteredAccounts.length}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t('action.exportCsv')}
           </button>
         </div>
       </div>
@@ -222,7 +224,7 @@ const TrialBalance = () => {
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Total Debits</div>
+              <div style={{ fontSize: 14 }}>{t('trialBalance.summary.totalDebits')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.totalDebits)}{" "}
                 <span style={{ fontSize: 14 }}>SAR</span>
@@ -231,7 +233,7 @@ const TrialBalance = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Total Credits</div>
+              <div style={{ fontSize: 14 }}>{t('trialBalance.summary.totalCredits')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.totalCredits)}{" "}
                 <span style={{ fontSize: 14 }}>SAR</span>
@@ -240,7 +242,7 @@ const TrialBalance = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Difference</div>
+              <div style={{ fontSize: 14 }}>{t('trialBalance.summary.difference')}</div>
               <div
                 style={{
                   fontSize: 22,

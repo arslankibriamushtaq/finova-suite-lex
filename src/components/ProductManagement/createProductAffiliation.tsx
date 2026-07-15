@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { useTranslation } from "react-i18next"
 import { useRouter, useSearchParams } from "../../lib/router"
 import { ArrowLeft, ArrowRight, Plus, Users, Package, X } from "lucide-react"
 import { Input } from "../ui/input"
@@ -25,6 +26,7 @@ import ProductCreateEditTabs from "./ProductCreateEditTabs"
 
 export default function CreateProductAffiliation() {
   const { isRTL } = useLanguage()
+  const { t } = useTranslation("productManagement2")
   const router = useRouter()
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -59,7 +61,7 @@ export default function CreateProductAffiliation() {
   useEffect(() => {
     const effectiveProductId = productIdFromUrl || sessionStorage.getItem("productId")
     if (!effectiveProductId) {
-      toast.error("Product ID not found. Please start from Basic Information.")
+      toast.error(t("createDocs.startFromBasicInfo"))
       router.push("/Los/ProductManagement/Create/BasicInfo")
     }
   }, [productIdFromUrl])
@@ -89,7 +91,7 @@ export default function CreateProductAffiliation() {
   const handleAddPartner = async () => {
     try {
       if (!newPartner.partnerCode || !newPartner.nameEn || !newPartner.nameAr || !newPartner.email || !newPartner.phone || !newPartner.contactPerson) {
-        toast.error("Please fill all required fields");
+        toast.error(t("delinquency.fillAllRequired"));
         return;
       }
 
@@ -98,12 +100,12 @@ export default function CreateProductAffiliation() {
       const response = await createPartnerAdmin(newPartner);
 
       if (response?.data?.message === "success") {
-        toast.success("Partner added successfully");
+        toast.success(t("partnerCreate.partnerAdded"));
         setIsAddDialogOpen(false);
         resetForm();
         getPartnersData();
       } else {
-        toast.error(response?.data?.message || "Failed to add partner");
+        toast.error(response?.data?.message || t("partnerCreate.addPartnerFailed"));
       }
     } catch (error: any) {
       const errors = error?.response?.data?.errors || {};
@@ -119,7 +121,7 @@ export default function CreateProductAffiliation() {
         setFieldErrors(errorMessages);
         toast.error(Object.values(errorMessages)[0]);
       } else {
-        toast.error(error?.response?.data?.message || "Failed to add partner");
+        toast.error(error?.response?.data?.message || t("partnerCreate.addPartnerFailed"));
       }
     } finally {
       setIsLoading(false);
@@ -163,13 +165,13 @@ export default function CreateProductAffiliation() {
             item.id === partnerId ? { ...item, status: newStatus === "Active" ? "ACTIVE" : "INACTIVE" } : item
           )
         );
-        toast.success("Partner status updated successfully");
+        toast.success(t("partnerCreate.statusUpdated"));
       } else {
-        toast.error(response?.data?.message || "Failed to update partner status");
+        toast.error(response?.data?.message || t("partnerCreate.statusUpdateFailed"));
       }
     } catch (error: any) {
       console.error("Error updating partner status:", error);
-      toast.error(error?.response?.data?.message || "Failed to update partner status");
+      toast.error(error?.response?.data?.message || t("partnerCreate.statusUpdateFailed"));
     }
   };
 
@@ -183,44 +185,44 @@ export default function CreateProductAffiliation() {
 
   const Activity_Loans_Header = [
   {
-    name: "Name (En)",
+    name: t("requiredDoc.nameEn"),
     selector: (row: { name_en: any }) => row.name_en,
     sortable: true,
     width: "180px",
   },
   {
-    name: "Name (Ar)",
+    name: t("requiredDoc.nameAr"),
     selector: (row: { name_ar: any }) => row.name_ar,
     sortable: true,
     width: "180px",
   },
   {
-    name: "Email",
+    name: t("common:email"),
     selector: (row: { email: any }) => row.email,
     sortable: true,
     width: "220px",
   },
   {
-    name: "Phone",
+    name: t("common:phone"),
     selector: (row: { phone: any }) => row.phone,
     sortable: true,
     width: "160px",
   },
   {
-    name: "Contact Person",
+    name: t("partnerCreate.contactPerson"),
     selector: (row: { contactPerson: any }) => row.contactPerson,
     sortable: true,
     width: "180px",
   },
   {
-    name: "Logo",
+    name: t("partnerCreate.logo"),
     cell: (row: any) => (
       row.logo ? <img src={row.logo} alt="logo" style={{ width: "30px", height: "30px" }} /> : "-"
     ),
     width: "80px",
   },
   {
-    name: "Status",
+    name: t("common:status"),
     cell: (row: any) => (
       <Switch
         checked={row.status === "Active"}
@@ -230,7 +232,7 @@ export default function CreateProductAffiliation() {
     width: "100px",
   },
   {
-    name: "Action",
+    name: t("createDocs.actionHeader"),
     cell: (row: any) => (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -238,14 +240,14 @@ export default function CreateProductAffiliation() {
             className="gradient-btn text-xs rounded py-2 px-2 gap-1"
             variant="outline"
           >
-            Action
+            {t("createDocs.actionHeader")}
             <ChevronDown className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuItem onSelect={() => handleMenuClick("edit", row)}>
             <Pencil className="h-4 w-4" />
-            Edit
+            {t("common:edit")}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -270,13 +272,13 @@ export default function CreateProductAffiliation() {
         setTo(partnersData.length || 0);
         setPage(1);
         setTotalPage(Math.ceil(partnersData.length / pageSize) || 1);
-        toast.success(response?.data?.message || "Partners fetched successfully");
+        toast.success(response?.data?.message || t("partnerCreate.fetched"));
       } else {
-        toast.error(response?.data?.message || "Failed to fetch partners");
+        toast.error(response?.data?.message || t("partnerCreate.fetchFailed"));
       }
     } catch (error: any) {
       console.error("Error fetching partners:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch partners");
+      toast.error(error?.response?.data?.message || t("partnerCreate.fetchFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -306,7 +308,7 @@ export default function CreateProductAffiliation() {
               <div className={`flex items-center gap-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
                 <Button variant="ghost" size="sm" onClick={() => router.push("/Los/ProductManagement")} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Products
+                  {t("createCategories.backToProducts")}
                 </Button>
               </div>
             </div>
@@ -314,7 +316,7 @@ export default function CreateProductAffiliation() {
               <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Package className="h-4 w-4" />
               </span>
-              Edit Product
+              {t("createDocs.editProduct")}
             </h1>
             <ProductCreateEditTabs
               activeTab="partner-affiliation"
@@ -333,10 +335,10 @@ export default function CreateProductAffiliation() {
                 <div>
                   <CardTitle className="text-xl flex items-center gap-2">
                     <Users className="h-5 w-5" />
-                    Partner Management
+                    {t("partnerCreate.partnerManagement")}
                   </CardTitle>
                   <p className="text-muted-foreground mt-1">
-                    Configure partner affiliations and commission structures for this product.
+                    {t("partnerCreate.partnerManagementDesc")}
                   </p>
                 </div>
                 <Dialog open={isAddDialogOpen} onOpenChange={(open) => {
@@ -348,19 +350,19 @@ export default function CreateProductAffiliation() {
                   <DialogTrigger asChild>
                     <Button className="gap-2">
                       <Plus className="h-4 w-4" />
-                      Add Partner
+                      {t("partnerCreate.addPartner")}
                     </Button>
                   </DialogTrigger>
                   <DialogContent style={{ maxWidth: "36rem" }} className="max-w-2xl max-h-[90vh] overflow-y-auto">
                     <DialogHeader>
-                      <DialogTitle>Add New Partner</DialogTitle>
+                      <DialogTitle>{t("partnerCreate.addNewPartner")}</DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-2 gap-4 py-4">
                       {/* Partner Code */}
                       <div className="space-y-2">
-                        <Label>Partner Code</Label>
+                        <Label>{t("partnerCreate.partnerCode")}</Label>
                         <Input
-                          placeholder="e.g. PTR-001"
+                          placeholder={t("partnerCreate.partnerCodePlaceholder")}
                           value={newPartner.partnerCode}
                           onChange={(e) => handleInputChange("partnerCode", e.target.value)}
                           className={fieldErrors.partnerCode ? "border-red-500" : ""}
@@ -372,9 +374,9 @@ export default function CreateProductAffiliation() {
 
                       {/* Contact Person */}
                       <div className="space-y-2">
-                        <Label>Contact Person</Label>
+                        <Label>{t("partnerCreate.contactPerson")}</Label>
                         <Input
-                          placeholder="Contact Person"
+                          placeholder={t("partnerCreate.contactPerson")}
                           value={newPartner.contactPerson}
                           onChange={(e) => handleInputChange("contactPerson", e.target.value)}
                           className={fieldErrors.contactPerson ? "border-red-500" : ""}
@@ -386,9 +388,9 @@ export default function CreateProductAffiliation() {
 
                       {/* Name (En) */}
                       <div className="space-y-2">
-                        <Label>Name (En)</Label>
+                        <Label>{t("requiredDoc.nameEn")}</Label>
                         <Input
-                          placeholder="Name in English"
+                          placeholder={t("partnerCreate.nameEnPlaceholder")}
                           value={newPartner.nameEn}
                           onChange={(e) => handleInputChange("nameEn", e.target.value)}
                           className={fieldErrors.nameEn ? "border-red-500" : ""}
@@ -400,9 +402,9 @@ export default function CreateProductAffiliation() {
 
                       {/* Name (Ar) */}
                       <div className="space-y-2">
-                        <Label style={{ textAlign: "right", display: "block" }}>الاسم (عربي)</Label>
+                        <Label style={{ textAlign: "right", display: "block" }}>{t("requiredDoc.nameAr")}</Label>
                         <Input
-                          placeholder="الاسم بالعربي"
+                          placeholder={t("partnerCreate.nameArPlaceholder")}
                           value={newPartner.nameAr}
                           onChange={(e) => handleInputChange("nameAr", e.target.value)}
                           dir="rtl"
@@ -415,10 +417,10 @@ export default function CreateProductAffiliation() {
 
                       {/* Email */}
                       <div className="space-y-2">
-                        <Label>Email</Label>
+                        <Label>{t("common:email")}</Label>
                         <Input
                           type="email"
-                          placeholder="Partner Email"
+                          placeholder={t("partnerCreate.partnerEmail")}
                           value={newPartner.email}
                           onChange={(e) => handleInputChange("email", e.target.value)}
                           className={fieldErrors.email ? "border-red-500" : ""}
@@ -430,9 +432,9 @@ export default function CreateProductAffiliation() {
 
                       {/* Phone */}
                       <div className="space-y-2">
-                        <Label>Phone</Label>
+                        <Label>{t("common:phone")}</Label>
                         <Input
-                          placeholder="+966112345678"
+                          placeholder={t("partnerCreate.phonePlaceholder")}
                           value={newPartner.phone}
                           onChange={(e) => handleInputChange("phone", e.target.value)}
                           className={fieldErrors.phone ? "border-red-500" : ""}
@@ -447,10 +449,10 @@ export default function CreateProductAffiliation() {
                         setIsAddDialogOpen(false);
                         resetForm();
                       }}>
-                        Cancel
+                        {t("common:cancel")}
                       </Button>
                       <Button onClick={handleAddPartner} disabled={isLoading}>
-                        {isLoading ? "Saving..." : "Add Partner"}
+                        {isLoading ? t("creditScoring.saving") : t("partnerCreate.addPartner")}
                       </Button>
                     </div>
                   </DialogContent>
@@ -467,7 +469,7 @@ export default function CreateProductAffiliation() {
                       placeholder="Search partners..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10"
+                      className="ps-10"
                     />
                   </div>
                 </div>
@@ -605,17 +607,17 @@ export default function CreateProductAffiliation() {
                 </Button> */}
                 <Button variant="outline" onClick={() => router.push("/products/create")} className="gap-2">
                   <X className="h-4 w-4" />
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
               </div>
 
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={handlePrevious} className="gap-2 bg-transparent">
                   <ArrowLeft className="h-4 w-4" />
-                  Previous
+                  {t("common:previous")}
                 </Button>
                 <Button onClick={handleNext} disabled={isLoading} className="gap-2">
-                  {isLoading ? "Saving..." : "Next: Documents"}
+                  {isLoading ? t("creditScoring.saving") : t("partnerCreate.nextDocuments")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>

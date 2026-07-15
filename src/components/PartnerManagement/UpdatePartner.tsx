@@ -2,12 +2,14 @@ import { useState, useEffect, useRef } from "react";
 import { Input, Select, Switch } from "antd";
 import { getPartnerById, updatePartner } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Loader from "../Loader/Loader";
 
 const { Option } = Select;
 
 const UpdatePartner = () => {
+  const { t } = useTranslation("partner");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const partnerId = searchParams.get("id");
@@ -80,14 +82,14 @@ const UpdatePartner = () => {
           setFaviconPreview(partner.favicon);
         }
 
-        toast.success("Partner data loaded successfully");
+        toast.success(t("toast.partnerLoaded"));
       } else {
-        toast.error(response?.data?.message || "Failed to fetch partner data");
+        toast.error(response?.data?.message || t("toast.partnerFetchFailed"));
         navigate("/LOS/PartnerManagement/PartnersList");
       }
     } catch (error: any) {
       console.error("Error fetching partner data:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch partner data");
+      toast.error(error?.response?.data?.message || t("toast.partnerFetchFailed"));
       navigate("/LOS/PartnerManagement/PartnersList");
     } finally {
       setLoading(false);
@@ -103,19 +105,19 @@ const UpdatePartner = () => {
       // Validation - Check all required fields
       if (!formData.name_en || !formData.name_ar || !formData.email || 
           !formData.contact_no || !formData.country_id || !formData.secret_key) {
-        toast.error("Please fill all required fields");
+        toast.error(t("toast.fillRequired"));
         return;
       }
 
       // Email validation
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(formData.email)) {
-        toast.error("Please enter a valid email address");
+        toast.error(t("toast.invalidEmail"));
         return;
       }
 
       if (!partnerId) {
-        toast.error("Partner ID is missing");
+        toast.error(t("toast.partnerIdMissing"));
         return;
       }
 
@@ -160,10 +162,10 @@ const UpdatePartner = () => {
       const response = await updatePartner(partnerId, submitData);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "Partner updated successfully");
+        toast.success(response?.data?.message || t("toast.partnerUpdated"));
         navigate("/LOS/PartnerManagement/PartnersList");
       } else {
-        toast.error(response?.data?.message || "Failed to update partner");
+        toast.error(response?.data?.message || t("toast.partnerUpdateFailed"));
       }
     } catch (error: any) {
       console.error("Error updating partner:", error);
@@ -182,7 +184,7 @@ const UpdatePartner = () => {
         });
       } else {
         // Display general error message
-        toast.error(error?.response?.data?.message || "Failed to update partner");
+        toast.error(error?.response?.data?.message || t("toast.partnerUpdateFailed"));
       }
     } finally {
       setLoading(false);
@@ -200,9 +202,9 @@ const UpdatePartner = () => {
       <div className="row">
         {/* Name */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Name</label>
+          <label className="form-label">{t("common:name")}</label>
           <Input
-            placeholder="Name"
+            placeholder={t("form.namePlaceholder")}
             value={formData.name_en}
             onChange={(e) => handleInputChange("name_en", e.target.value)}
             style={{ height: "40px" }}
@@ -224,10 +226,10 @@ const UpdatePartner = () => {
 
         {/* Partner Email */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Partner Email</label>
+          <label className="form-label">{t("form.partnerEmail")}</label>
           <Input
             type="email"
-            placeholder="Partner Email"
+            placeholder={t("form.partnerEmail")}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             style={{ height: "40px" }}
@@ -236,10 +238,10 @@ const UpdatePartner = () => {
 
         {/* Contact No */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Contact No.</label>
+          <label className="form-label">{t("form.contactNo")}</label>
           <Input
             addonBefore="+966"
-            placeholder="Contact No"
+            placeholder={t("form.contactNoPlaceholder")}
             value={formData.contact_no}
             onChange={(e) => handleInputChange("contact_no", e.target.value)}
             style={{ height: "40px" }}
@@ -248,13 +250,13 @@ const UpdatePartner = () => {
 
         {/* Country */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Country</label>
+          <label className="form-label">{t("form.country")}</label>
           <Select
             value={formData.country_id}
             onChange={(value) => handleInputChange("country_id", value)}
             style={{ width: "100%" }}
           >
-            <Option value="1">Saudi Arabia</Option>
+            <Option value="1">{t("form.saudiArabia")}</Option>
             {/* <Option value="2">UAE</Option>
             <Option value="3">Kuwait</Option> */}
           </Select>
@@ -262,7 +264,7 @@ const UpdatePartner = () => {
 
         {/* Choose Brand Color */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Brand Color</label>
+          <label className="form-label">{t("form.chooseBrandColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -280,9 +282,9 @@ const UpdatePartner = () => {
 
         {/* Affiliation URL */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Affiliation URL</label>
+          <label className="form-label">{t("form.affiliationUrl")}</label>
           <Input
-            placeholder="Affiliation URL"
+            placeholder={t("form.affiliationUrl")}
             value={formData.affiliation_url}
             onChange={(e) => handleInputChange("affiliation_url", e.target.value)}
             style={{ height: "40px" }}
@@ -291,9 +293,9 @@ const UpdatePartner = () => {
 
         {/* Affiliation Code */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Affiliation Code</label>
+          <label className="form-label">{t("form.affiliationCode")}</label>
           <Input
-            placeholder="Affiliation Code"
+            placeholder={t("form.affiliationCode")}
             value={formData.affiliation_code}
             onChange={(e) => handleInputChange("affiliation_code", e.target.value)}
             style={{ height: "40px" }}
@@ -302,7 +304,7 @@ const UpdatePartner = () => {
 
         {/* Logo */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Logo</label>
+          <label className="form-label">{t("form.logo")}</label>
           <div style={{ position: "relative" }}>
             <input
               ref={logoInputRef}
@@ -350,7 +352,7 @@ const UpdatePartner = () => {
                   padding: 0,
                   zIndex: 10,
                 }}
-                title="Remove logo"
+                title={t("form.removeLogo")}
               >
                 ×
               </button>
@@ -363,7 +365,7 @@ const UpdatePartner = () => {
                 width={150}
                 height={150}
                 style={{ objectFit: "contain" }}
-                alt="Logo preview"
+                alt={t("form.logoPreview")}
               />
             </div>
           ) : null}
@@ -371,7 +373,7 @@ const UpdatePartner = () => {
 
         {/* Favicon */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Favicon</label>
+          <label className="form-label">{t("form.favicon")}</label>
           <div style={{ position: "relative" }}>
             <input
               ref={faviconInputRef}
@@ -419,7 +421,7 @@ const UpdatePartner = () => {
                   padding: 0,
                   zIndex: 10,
                 }}
-                title="Remove favicon"
+                title={t("form.removeFavicon")}
               >
                 ×
               </button>
@@ -432,7 +434,7 @@ const UpdatePartner = () => {
                 width={150}
                 height={150}
                 style={{ objectFit: "contain" }}
-                alt="Favicon preview"
+                alt={t("form.faviconPreview")}
               />
             </div>
           ) : null}
@@ -440,9 +442,9 @@ const UpdatePartner = () => {
 
         {/* API Secret Key */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">API Secret Key</label>
+          <label className="form-label">{t("form.apiSecretKey")}</label>
           <Input
-            placeholder="Auto-generated key"
+            placeholder={t("form.autoGeneratedKey")}
             value={formData.secret_key}
             onChange={(e) => handleInputChange("secret_key", e.target.value)}
             style={{ height: "40px", backgroundColor: "var(--color-surface-subtle)" }}
@@ -452,7 +454,7 @@ const UpdatePartner = () => {
 
         {/* Revenue Verification Method */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Revenue Verification Method</label>
+          <label className="form-label">{t("form.revenueVerificationMethod")}</label>
           <Select
             value={formData.revenue_verification_method}
             onChange={(value) => {
@@ -465,10 +467,10 @@ const UpdatePartner = () => {
             }}
             style={{ width: "100%" }}
           >
-            <Option value="Manual">Manual</Option>
-            <Option value="Verify_Through_Api">Verify Through Api</Option>
-            <Option value="Email_Triggering">Email Triggering</Option>
-            <Option value="Both_Api_Email">Both(Verify Through Api & Email Triggering)</Option>
+            <Option value="Manual">{t("form.manual")}</Option>
+            <Option value="Verify_Through_Api">{t("form.verifyThroughApi")}</Option>
+            <Option value="Email_Triggering">{t("form.emailTriggering")}</Option>
+            <Option value="Both_Api_Email">{t("form.bothApiEmail")}</Option>
           </Select>
         </div>
 
@@ -477,18 +479,18 @@ const UpdatePartner = () => {
           formData.revenue_verification_method === "Both_Api_Email") && (
           <>
             <div className="col-md-6 mb-3">
-              <label className="form-label">Get Revenue URL</label>
+              <label className="form-label">{t("form.getRevenueUrl")}</label>
               <Input
-                placeholder="Get Revenue URL"
+                placeholder={t("form.getRevenueUrl")}
                 value={formData.get_revenue_url}
                 onChange={(e) => handleInputChange("get_revenue_url", e.target.value)}
                 style={{ height: "40px" }}
               />
             </div>
             <div className="col-md-6 mb-3">
-              <label className="form-label">Get Revenue Secret Key</label>
+              <label className="form-label">{t("form.getRevenueSecretKey")}</label>
               <Input
-                placeholder="Get Revenue Secret Key"
+                placeholder={t("form.getRevenueSecretKey")}
                 value={formData.get_revenue_secret_key}
                 onChange={(e) => handleInputChange("get_revenue_secret_key", e.target.value)}
                 style={{ height: "40px" }}
@@ -505,7 +507,7 @@ const UpdatePartner = () => {
               onChange={(checked) => handleInputChange("enable_api", checked)}
               className="red-switch"
             />
-            <label className="form-label mb-0">Enable API</label>
+            <label className="form-label mb-0">{t("form.enableApi")}</label>
           </div>
         </div>
 
@@ -517,7 +519,7 @@ const UpdatePartner = () => {
               onChange={(checked) => handleInputChange("status", checked)}
               className="red-switch"
             />
-            <label className="form-label mb-0">Status</label>
+            <label className="form-label mb-0">{t("common:status")}</label>
           </div>
         </div>
 
@@ -529,7 +531,7 @@ const UpdatePartner = () => {
             //checked={formData.send_details_via_mail}
             onChange={(checked) => handleInputChange("send_details_via_mail", checked)}
             />
-            <label className="form-label mb-0">Send Details Via Mail</label>
+            <label className="form-label mb-0">{t("form.sendDetailsViaMail")}</label>
           </div>
         </div>
       </div>
@@ -541,7 +543,7 @@ const UpdatePartner = () => {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "Updating..." : "Update"}
+          {loading ? t("form.updating") : t("common:update")}
         </button>
       </div>
     </div>

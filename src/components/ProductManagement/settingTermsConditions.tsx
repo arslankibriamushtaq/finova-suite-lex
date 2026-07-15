@@ -3,12 +3,14 @@ import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 import {  Col, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSelector, useDispatch } from "react-redux";
 import { Input } from "antd";
 import { TermsAndConditions, getProductById } from "../../redux/apis/apisCrud";
 import { useLocation } from "react-router-dom";
 
 const SettingsTermsConditions = ({ readOnly = false,setSelectedTab}:any) => {
+  const { t } = useTranslation("productManagement2");
   const location = useLocation();
   const dispatch = useDispatch();
   const product = useSelector((s: any) => s.block.productData);
@@ -36,7 +38,7 @@ const SettingsTermsConditions = ({ readOnly = false,setSelectedTab}:any) => {
             }));
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load terms and conditions data");
+          toast.error(error?.response?.data?.message || t("settingTerms.loadFailed"));
         }
       } else {
         // Fallback to Redux data if no productId
@@ -126,10 +128,10 @@ const SettingsTermsConditions = ({ readOnly = false,setSelectedTab}:any) => {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 01
+              {t("settingTerms.step01")}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("settingTerms.selectPartner")}
               className="fs-6"
               value={formValues.email}
               onChange={(e) => handleChange("email", e.target.value)}
@@ -141,10 +143,10 @@ const SettingsTermsConditions = ({ readOnly = false,setSelectedTab}:any) => {
               className="d-flex justify-content-start mb-1"
               style={{ fontWeight: 400 }}
             >
-              Contact
+              {t("settingTerms.contact")}
             </label>
             <Input
-              placeholder="Enter Contact Number"
+              placeholder={t("settingTerms.enterContactNumber")}
               className="fs-6"
               value={formValues.phone_number}
               onChange={(e) => handleChange("phone_number", e.target.value)}
@@ -236,7 +238,7 @@ const SettingsTermsConditions = ({ readOnly = false,setSelectedTab}:any) => {
         </div> */}
         {!readOnly && (
           <div className="d-flex justify-content-end">
-            <button className="theme-btn-next" onClick={handleSubmit}>Submit Terms</button>
+            <button className="theme-btn-next" onClick={handleSubmit}>{t("settingTerms.submitTerms")}</button>
           </div>
         )}
       </>

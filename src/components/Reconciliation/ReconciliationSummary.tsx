@@ -1,5 +1,6 @@
 import { Button, DatePicker, Form, Select, Card,  Table, Tag, Tabs } from "antd";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { 
@@ -11,6 +12,7 @@ import SummaryReport from "./SummaryReport";
 const { TabPane } = Tabs;
 
 function ReconciliationSummary() {
+  const { t } = useTranslation("reconciliation");
   const [loading, setLoading] = useState(false);
   
   const [formValues, setFormValues] = useState({
@@ -80,7 +82,7 @@ function ReconciliationSummary() {
     setLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
-      toast.success("Report generated successfully!");
+      toast.success(t("summary.toast.reportGenerated"));
     } finally {
       setLoading(false);
     }
@@ -233,7 +235,7 @@ function ReconciliationSummary() {
 
           <Form.Item className="w-48 modal-date-pickr mb-0">
             <div className="custom-input-container">
-              <label className="input-label">Date Range</label>
+              <label className="input-label">{t("summary.dateRange")}</label>
               <DatePicker.RangePicker
                 style={{ width: "100%" ,height:"41px"}}
                 value={formValues.dateRange as any}
@@ -261,16 +263,16 @@ function ReconciliationSummary() {
 
           <Form.Item className="w-48 mb-0">
             <div className="custom-input-container">
-              <label className="input-label">Status</label>
+              <label className="input-label">{t("common:status")}</label>
               <Select
                 style={{ width: "100%" ,height:"55px"}}
                 value={formValues.status}
                 onChange={(value) => setFormValues(prev => ({ ...prev, status: value }))}
               >
-                <Select.Option value="">All Status</Select.Option>
-                <Select.Option value="matched">Matched</Select.Option>
-                <Select.Option value="unmatched">Unmatched</Select.Option>
-                <Select.Option value="pending">Pending</Select.Option>
+                <Select.Option value="">{t("summary.allStatus")}</Select.Option>
+                <Select.Option value="matched">{t("col.matched")}</Select.Option>
+                <Select.Option value="unmatched">{t("col.unmatched")}</Select.Option>
+                <Select.Option value="pending">{t("common:pending")}</Select.Option>
               </Select>
             </div>
           </Form.Item>
@@ -281,9 +283,9 @@ function ReconciliationSummary() {
       {/* Reports Tabs */}
       <Card>
         <Tabs defaultActiveKey="summary">
-          <TabPane tab="Summary Report" key="summary">
+          <TabPane tab={t("summary.tabSummaryReport")} key="summary">
             <div className="d-flex justify-content-between align-items-center mb-3">
-              <h6 className="mb-0">Daily Reconciliation Summary</h6>
+              <h6 className="mb-0">{t("summary.dailyReconciliationSummary")}</h6>
             </div>
             
             {/* <Table

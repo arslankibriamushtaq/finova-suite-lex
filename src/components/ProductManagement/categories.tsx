@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
@@ -6,6 +7,7 @@ import { Checkbox } from "antd";
 import { getProductCategorie, getProductCategories, updateProductCategory } from "../../redux/apis/apisCrud";
 
 const Categories = () => {
+  const { t } = useTranslation("productManagement2");
   const [categoriesData, setCategoriesData] = useState<any>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   
@@ -16,19 +18,19 @@ const Categories = () => {
 
   const Categories_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
 
       sortable: true,
     },
     {
-      name: "Slug",
+      name: t("categories.slug"),
       selector: (row: { slug: any }) => row.slug,
 
       sortable: true,
     },
     {
-      name: "Affiliation",
+      name: t("categories.affiliation"),
       cell: (row: any) => (
         <Checkbox
           checked={row.affiliation}
@@ -53,7 +55,7 @@ const Categories = () => {
       const selectedCategory = categoriesData.find((category: any) => category.affiliation);
       
       if (!selectedCategory) {
-        toast.error("Please select at least one category");
+        toast.error(t("categories.selectAtLeastOne"));
         return;
       }
 
@@ -65,15 +67,15 @@ const Categories = () => {
       const response = await updateProductCategory(productId, updateData);
       
       if (response?.data?.message === "success") {
-        toast.success("Categories updated successfully");
+        toast.success(t("categories.updated"));
         // Optionally refresh the data
         fetchCategories();
       } else {
-        toast.error(response?.data?.message || "Failed to update categories");
+        toast.error(response?.data?.message || t("categories.updateFailed"));
       }
-      
+
     } catch (error: any) {
-      toast.error(error?.message || "Failed to update categories");
+      toast.error(error?.message || t("categories.updateFailed"));
     }
   };
 
@@ -91,15 +93,15 @@ const Categories = () => {
           affiliation: false // Default to false, will be updated when user toggles
         }));
         setCategoriesData(categoriesWithAffiliation);
-        toast.success("Categories fetched successfully");
+        toast.success(t("categories.fetched"));
       } else {
-        toast.error(response?.data?.message || "Failed to fetch categories");
+        toast.error(response?.data?.message || t("categories.fetchFailed"));
       }
-      
+
       setCategoriesLoading(false);
-      
+
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch categories");
+      toast.error(error?.message || t("categories.fetchFailed"));
       setCategoriesLoading(false);
     }
   };
@@ -113,7 +115,7 @@ const Categories = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>Categories</h4>
+        <h4>{t("categories.title")}</h4>
       </div>
       <TableView
         header={Categories_Header}
@@ -134,7 +136,7 @@ const Categories = () => {
           className="btn btn-danger"
           onClick={handleUpdateCategories}
         >
-          Update
+          {t("common:update")}
         </button>
       </div>
     </div>

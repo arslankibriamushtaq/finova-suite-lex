@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -69,6 +70,7 @@ const emptyForm = {
 };
 
 const CardProducts = () => {
+  const { t } = useTranslation("cardManagement");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -107,7 +109,7 @@ const CardProducts = () => {
         : [];
       setData(list);
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Failed to fetch card products");
+      if (!error?.response?.data?.message) toast.error(t("products.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -156,9 +158,9 @@ const CardProducts = () => {
   };
 
   const handleSave = async () => {
-    if (!form.code.trim()) return toast.error("Code is required");
-    if (!form.displayName.trim()) return toast.error("Display name is required");
-    if (!form.cardType) return toast.error("Card type is required");
+    if (!form.code.trim()) return toast.error(t("products.toast.codeRequired"));
+    if (!form.displayName.trim()) return toast.error(t("products.toast.displayNameRequired"));
+    if (!form.cardType) return toast.error(t("validation.cardTypeRequired"));
 
     const body: any = {
       code: form.code.trim(),
@@ -189,16 +191,20 @@ const CardProducts = () => {
       setIsSaving(true);
       if (modalMode === "edit" && currentItemId) {
         await updateAdminCardProduct(currentItemId, body);
-        toast.success("Product updated successfully");
+        toast.success(t("products.toast.updated"));
       } else {
         await createAdminCardProduct(body);
-        toast.success("Product created successfully");
+        toast.success(t("products.toast.created"));
       }
       setShowFormModal(false);
       fetchData();
     } catch (error: any) {
       if (!error?.response?.data?.message)
-        toast.error(`Failed to ${modalMode === "edit" ? "update" : "create"} product`);
+        toast.error(
+          modalMode === "edit"
+            ? t("products.toast.updateFailed")
+            : t("products.toast.createFailed")
+        );
     } finally {
       setIsSaving(false);
     }
@@ -209,14 +215,14 @@ const CardProducts = () => {
       setActioningId(row.id);
       if (row.active) {
         await deactivateAdminCardProduct(row.id);
-        toast.success("Product deactivated");
+        toast.success(t("products.toast.deactivated"));
       } else {
         await activateAdminCardProduct(row.id);
-        toast.success("Product activated");
+        toast.success(t("products.toast.activated"));
       }
       fetchData();
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Action failed");
+      if (!error?.response?.data?.message) toast.error(t("toast.actionFailed"));
     } finally {
       setActioningId(null);
     }
@@ -227,11 +233,11 @@ const CardProducts = () => {
     try {
       setIsDeleting(true);
       await deleteAdminCardProduct(deleteTarget.id);
-      toast.success("Product deleted successfully");
+      toast.success(t("products.toast.deleted"));
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Failed to delete product");
+      if (!error?.response?.data?.message) toast.error(t("products.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -251,32 +257,32 @@ const CardProducts = () => {
   const totalPage = Math.ceil(filtered.length / pageSize) || 1;
 
   const headers = [
-    { name: "Display Name", selector: (row: any) => row.displayName || "-", sortable: true },
-    { name: "Code", selector: (row: any) => row.code || "-", sortable: true },
+    { name: t("products.col.displayName"), selector: (row: any) => row.displayName || "-", sortable: true },
+    { name: t("products.col.code"), selector: (row: any) => row.code || "-", sortable: true },
     {
-      name: "Card Type",
+      name: t("products.col.cardType"),
       cell: (row: any) => CARD_TYPE_LABELS[row.cardType] || prettyEnum(row.cardType),
     },
     {
-      name: "BIN",
+      name: t("products.col.bin"),
       cell: (row: any) => row.binPrefix || "-",
       width: "80px",
     },
     {
-      name: "Tiers",
+      name: t("products.col.tiers"),
       cell: (row: any) =>
         Array.isArray(row.availableTiers) && row.availableTiers.length
-          ? row.availableTiers.map((t: string) => prettyEnum(t)).join(", ")
+          ? row.availableTiers.map((tier: string) => prettyEnum(tier)).join(", ")
           : "-",
     },
     {
-      name: "Default Limits",
+      name: t("products.col.defaultLimits"),
       cell: (row: any) =>
         `${row.defaultDailyLimit ?? "-"} / ${row.defaultMonthlyLimit ?? "-"}`,
     },
-    { name: "Order", selector: (row: any) => row.sortOrder ?? "-", sortable: true, width: "90px" },
+    { name: t("products.col.order"), selector: (row: any) => row.sortOrder ?? "-", sortable: true, width: "90px" },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           className={`rounded-md px-2 py-0.5 text-xs font-medium ${
@@ -285,13 +291,13 @@ const CardProducts = () => {
               : "bg-gray-100 text-gray-600 border border-gray-200"
           }`}
         >
-          {row.active ? "Active" : "Inactive"}
+          {row.active ? t("common:active") : t("common:inactive")}
         </span>
       ),
       width: "110px",
     },
     {
-      name: "Action",
+      name: t("products.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -305,7 +311,7 @@ const CardProducts = () => {
                 disabled={actioningId === row.id}
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -317,7 +323,7 @@ const CardProducts = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {
@@ -328,12 +334,12 @@ const CardProducts = () => {
                 {row.active ? (
                   <>
                     <PowerOff className="h-4 w-4" />
-                    Deactivate
+                    {t("common:deactivate")}
                   </>
                 ) : (
                   <>
                     <Power className="h-4 w-4" />
-                    Activate
+                    {t("common:activate")}
                   </>
                 )}
               </DropdownMenuItem>
@@ -345,7 +351,7 @@ const CardProducts = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -362,7 +368,7 @@ const CardProducts = () => {
           <span className="pro-head-badge">
             <Layers className="h-4 w-4" />
           </span>
-          Card Products
+          {t("products.title")}
         </h3>
       </div>
 
@@ -370,7 +376,7 @@ const CardProducts = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by name, code or type"
+            placeholder={t("products.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
@@ -385,7 +391,7 @@ const CardProducts = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0, marginLeft: "auto" }}
           >
             <Plus className="h-4 w-4" />
-            Add Product
+            {t("products.addProduct")}
           </Button>
         </div>
       </div>
@@ -433,25 +439,25 @@ const CardProducts = () => {
             }
           `}</style>
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Product" : "Add New Product"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? t("products.dialog.editTitle") : t("products.dialog.addTitle")}</DialogTitle>
             <DialogDescription>
-              Active products appear in the customer "choose a card" catalog, ordered by sort order.
+              {t("products.dialog.description")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Code *</Label>
+                <Label>{t("products.field.code")}</Label>
                 <Input
-                  placeholder="e.g. VIRTUAL_STUDENT"
+                  placeholder={t("products.placeholder.code")}
                   value={form.code}
                   onChange={(e) => setField("code", e.target.value)}
                   disabled={modalMode === "edit"}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Card Type *</Label>
+                <Label>{t("products.field.cardType")}</Label>
                 <Select value={form.cardType} onValueChange={(v) => setField("cardType", v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -466,15 +472,15 @@ const CardProducts = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Display Name *</Label>
+                <Label>{t("products.field.displayName")}</Label>
                 <Input
-                  placeholder="Student Virtual Card"
+                  placeholder={t("products.placeholder.displayName")}
                   value={form.displayName}
                   onChange={(e) => setField("displayName", e.target.value)}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Category</Label>
+                <Label>{t("common:category")}</Label>
                 <Input
                   placeholder="DEBIT"
                   value={form.category}
@@ -482,15 +488,15 @@ const CardProducts = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>BIN Prefix</Label>
+                <Label>{t("products.field.binPrefix")}</Label>
                 <Input
-                  placeholder="e.g. 48"
+                  placeholder={t("products.placeholder.binPrefix")}
                   value={form.binPrefix}
                   onChange={(e) => setField("binPrefix", e.target.value.replace(/[^0-9]/g, ""))}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Tier</Label>
+                <Label>{t("products.field.tier")}</Label>
                 <Select value={form.tier} onValueChange={(v) => setField("tier", v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -505,16 +511,16 @@ const CardProducts = () => {
                 </Select>
               </div>
               <div className="space-y-2 md:col-span-2">
-                <Label>Description</Label>
+                <Label>{t("common:description")}</Label>
                 <Input
-                  placeholder="Zero-fee virtual card for students"
+                  placeholder={t("products.placeholder.description")}
                   value={form.description}
                   onChange={(e) => setField("description", e.target.value)}
                 />
               </div>
 
               <div className="space-y-2">
-                <Label>Default Daily Limit</Label>
+                <Label>{t("products.field.defaultDailyLimit")}</Label>
                 <Input
                   type="number"
                   placeholder="5000"
@@ -523,7 +529,7 @@ const CardProducts = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Default Monthly Limit</Label>
+                <Label>{t("products.field.defaultMonthlyLimit")}</Label>
                 <Input
                   type="number"
                   placeholder="50000"
@@ -532,7 +538,7 @@ const CardProducts = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Currency</Label>
+                <Label>{t("products.field.currency")}</Label>
                 <Input
                   placeholder="CAD"
                   value={form.currency}
@@ -540,7 +546,7 @@ const CardProducts = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Sort Order</Label>
+                <Label>{t("products.field.sortOrder")}</Label>
                 <Input
                   type="number"
                   value={form.sortOrder}
@@ -550,7 +556,7 @@ const CardProducts = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Available Tiers</Label>
+              <Label>{t("products.field.availableTiers")}</Label>
               <div className="flex flex-wrap gap-4">
                 {CARD_TIERS.map((tier) => (
                   <label key={tier} className="flex items-center gap-3 cursor-pointer">
@@ -565,10 +571,10 @@ const CardProducts = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Features (one per line)</Label>
+              <Label>{t("products.field.features")}</Label>
               <textarea
                 className="flex min-h-[80px] w-full rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                placeholder={"No fees\nStudent rewards"}
+                placeholder={t("products.placeholder.features")}
                 value={form.features}
                 onChange={(e) => setField("features", e.target.value)}
               />
@@ -580,45 +586,45 @@ const CardProducts = () => {
                   checked={form.instantIssue}
                   onCheckedChange={(c) => setField("instantIssue", !!c)}
                 />
-                <span className="text-sm">Instant issue</span>
+                <span className="text-sm">{t("products.check.instantIssue")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.requiresShipping}
                   onCheckedChange={(c) => setField("requiresShipping", !!c)}
                 />
-                <span className="text-sm">Requires shipping</span>
+                <span className="text-sm">{t("products.check.requiresShipping")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.requiresActivation}
                   onCheckedChange={(c) => setField("requiresActivation", !!c)}
                 />
-                <span className="text-sm">Requires activation</span>
+                <span className="text-sm">{t("products.check.requiresActivation")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.contactlessSupported}
                   onCheckedChange={(c) => setField("contactlessSupported", !!c)}
                 />
-                <span className="text-sm">Contactless</span>
+                <span className="text-sm">{t("products.check.contactless")}</span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
                 <Checkbox
                   checked={form.physicalOrderable}
                   onCheckedChange={(c) => setField("physicalOrderable", !!c)}
                 />
-                <span className="text-sm">Physical orderable</span>
+                <span className="text-sm">{t("products.check.physicalOrderable")}</span>
               </label>
             </div>
           </div>
 
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+              {isSaving ? t("action.saving") : modalMode === "edit" ? t("common:update") : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -628,21 +634,21 @@ const CardProducts = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Product</DialogTitle>
+            <DialogTitle>{t("products.deleteDialog.title")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
+            {t("products.deleteDialog.confirmPrefix")}{" "}
             <span className="font-medium text-foreground">
               {deleteTarget?.displayName || deleteTarget?.code}
             </span>
-            ? This action cannot be undone.
+            {t("products.deleteDialog.confirmSuffix")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("action.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

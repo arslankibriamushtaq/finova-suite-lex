@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bell,
   Plus,
@@ -70,6 +71,9 @@ const priorityColor = (p: string) => {
 };
 
 const NotificationOrchestrator: React.FC = () => {
+  const { t } = useTranslation("notifications");
+  const priorityOptionsL = PRIORITY_OPTIONS.map((o) => ({ value: o.value, label: t(`orch.priority.${o.value}`) }));
+  const channelOptionsL = CHANNEL_OPTIONS.map((o) => ({ value: o.value, label: t(`orch.channelOpt.${o.value}`) }));
   const [activeTab, setActiveTab] = useState<"rules" | "preferences">("rules");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -174,7 +178,7 @@ const NotificationOrchestrator: React.FC = () => {
   const handleSaveRule = async () => {
     const { ruleName, ruleCode, eventType, channel, novuTemplateId } = rulePayload;
     if (!ruleName || !ruleCode || !eventType || !channel || !novuTemplateId) {
-      return toast.error("Please fill all required fields");
+      return toast.error(t("orch.toast.fillRequired"));
     }
 
     try {
@@ -182,15 +186,15 @@ const NotificationOrchestrator: React.FC = () => {
       const payload = { ...rulePayload, tenantId: TENANT_ID };
       if (editingRule) {
         await updateNotificationRule(editingRule.id, payload);
-        toast.success("Rule updated");
+        toast.success(t("orch.toast.ruleUpdated"));
       } else {
         await createNotificationRule(payload);
-        toast.success("Rule created");
+        toast.success(t("orch.toast.ruleCreated"));
       }
       setIsRuleModalOpen(false);
       fetchRulesData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save rule");
+      toast.error(error?.response?.data?.message || t("orch.toast.saveFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -201,24 +205,24 @@ const NotificationOrchestrator: React.FC = () => {
     try {
       setIsDeleting(true);
       await deleteNotificationRule(deleteTarget.id);
-      toast.success("Rule deleted");
+      toast.success(t("orch.toast.ruleDeleted"));
       setDeleteTarget(null);
       fetchRulesData();
     } catch {
-      toast.error("Failed to delete rule");
+      toast.error(t("orch.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
   };
 
   const fetchPreferences = async () => {
-    if (!customerId.trim()) return toast.error("Please enter a customer ID");
+    if (!customerId.trim()) return toast.error(t("orch.toast.enterCustomerId"));
     try {
       setIsLoading(true);
       const res = await getCustomerPreferences(customerId.trim());    
       setPreferences(res.data?.data || null);
     } catch {
-      toast.error("No preferences found for this customer");
+      toast.error(t("orch.toast.noPreferences"));
       setPreferences(null);
     } finally {
       setIsLoading(false);
@@ -254,21 +258,21 @@ const NotificationOrchestrator: React.FC = () => {
         icon={<EditOutlined />}
         onClick={() => openEditModal(rule)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => setDeleteTarget(rule)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
 
   const ruleColumns = [
     {
-      name: "Orchestration Rule",
+      name: t("orch.col.rule"),
       selector: (row: any) => row.ruleName,
       cell: (row: any) => (
         <div>
@@ -287,13 +291,13 @@ const NotificationOrchestrator: React.FC = () => {
       wrap: true,
     },
     {
-      name: "Event Context",
+      name: t("orch.col.eventContext"),
       cell: (row: any) => (
         <span className="no-context-chip">{row.eventType || "-"}</span>
       ),
     },
     {
-      name: "Channel Path",
+      name: t("orch.col.channelPath"),
       cell: (row: any) => (
         <div className="d-flex align-items-center gap-2">
           <span className="no-channel-icon">{channelIcon(row.channel)}</span>
@@ -304,7 +308,7 @@ const NotificationOrchestrator: React.FC = () => {
       ),
     },
     {
-      name: "Priority",
+      name: t("orch.col.priority"),
       cell: (row: any) => (
         <span
           className="no-priority-pill"
@@ -313,17 +317,17 @@ const NotificationOrchestrator: React.FC = () => {
             color: "var(--primary-foreground)",
           }}
         >
-          {row.priority || "NORMAL"}
+          {t(`orch.priority.${(row.priority || "NORMAL")}`)}
         </span>
       ),
     },
     {
-      name: "Active",
+      name: t("common:active"),
       center: true,
       cell: (row: any) => <Switch checked={!!row.active} size="small" />,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={ruleActionMenu(row)} trigger={["click"]}>
           <AntButton
@@ -337,7 +341,7 @@ const NotificationOrchestrator: React.FC = () => {
               gap: 6,
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </AntButton>
         </Dropdown>
       ),
@@ -351,20 +355,20 @@ const NotificationOrchestrator: React.FC = () => {
           <span className="no-head-badge">
             <Activity className="h-4 w-4" />
           </span>
-          Notification Rules
+          {t("orch.title")}
         </h3>
         <p className="text-muted small mb-0 mt-1">
-          Configure smart routing logic, map event triggers to Novu templates, and manage multi-channel delivery priorities.
+          {t("orch.subtitle")}
         </p>
       </div>
 
       <div className="stat-row mb-3">
         <div className="stat-tile">
-          <div className="stat-label">Total Rules</div>
+          <div className="stat-label">{t("orch.stat.totalRules")}</div>
           <div className="stat-value">{routingRules.length}</div>
         </div>
         <div className="stat-tile">
-          <div className="stat-label">System Health</div>
+          <div className="stat-label">{t("orch.stat.systemHealth")}</div>
           <div className="stat-value" style={{ color: "var(--color-success)" }}>99%</div>
         </div>
       </div>
@@ -373,10 +377,10 @@ const NotificationOrchestrator: React.FC = () => {
         <div className="no-tabs-row">
           <TabsList className="no-tabs-list">
             <TabsTrigger value="rules" className="no-tabs-trigger">
-              <Settings className="h-4 w-4" /> Routing Engine
+              <Settings className="h-4 w-4" /> {t("orch.tab.routingEngine")}
             </TabsTrigger>
             <TabsTrigger value="preferences" className="no-tabs-trigger">
-              <Smartphone className="h-4 w-4" /> User Preference Sync
+              <Smartphone className="h-4 w-4" /> {t("orch.tab.userPrefSync")}
             </TabsTrigger>
           </TabsList>
         </div>
@@ -388,7 +392,7 @@ const NotificationOrchestrator: React.FC = () => {
             <div className="d-flex flex-nowrap align-items-center gap-2 w-100" style={{ overflow: "visible" }}>
               <AntInput
                 allowClear
-                placeholder="Filter orchestration rules..."
+                placeholder={t("orch.filterPh")}
                 prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
@@ -400,8 +404,8 @@ const NotificationOrchestrator: React.FC = () => {
                 popupClassName="no-select-popup"
                 style={{ width: 180, height: 40, flexShrink: 0 }}
                 options={[
-                  { value: "ALL", label: "All Channels" },
-                  ...CHANNEL_OPTIONS,
+                  { value: "ALL", label: t("orch.allChannels") },
+                  ...channelOptionsL,
                 ]}
               />
               <Button
@@ -410,7 +414,7 @@ const NotificationOrchestrator: React.FC = () => {
                 style={{ height: 40, borderRadius: 2, flexShrink: 0, whiteSpace: "nowrap" }}
               >
                 <Plus className="h-4 w-4" />
-                Create New Rule
+                {t("orch.createNewRule")}
               </Button>
             </div>
           </div>
@@ -443,7 +447,7 @@ const NotificationOrchestrator: React.FC = () => {
             <div className="d-flex flex-wrap align-items-center gap-2 w-100">
               <AntInput
                 allowClear
-                placeholder="Enter customer ID..."
+                placeholder={t("orch.customerIdPh")}
                 prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
                 value={customerId}
                 onChange={(e) => setCustomerId(e.target.value)}
@@ -454,7 +458,7 @@ const NotificationOrchestrator: React.FC = () => {
                 onClick={fetchPreferences}
                 style={{ height: 40, borderRadius: 2 }}
               >
-                Lookup
+                {t("orch.lookup")}
               </Button>
             </div>
           </div>
@@ -470,7 +474,7 @@ const NotificationOrchestrator: React.FC = () => {
                   {preferences.customerId?.charAt(0).toUpperCase() || "C"}
                 </div>
                 <div>
-                  <div className="text-muted small" style={{ letterSpacing: 0.4, textTransform: "uppercase" }}>Customer ID</div>
+                  <div className="text-muted small" style={{ letterSpacing: 0.4, textTransform: "uppercase" }}>{t("orch.customerId")}</div>
                   <div className="font-monospace" style={{ fontSize: 13, color: "var(--foreground)" }}>
                     {preferences.customerId}
                   </div>
@@ -478,9 +482,9 @@ const NotificationOrchestrator: React.FC = () => {
               </div>
               <div className="d-flex flex-column gap-2">
                 {[
-                  { label: "SMS Gateway", icon: MessageSquare, key: "smsEnabled" },
-                  { label: "Email Server", icon: Mail, key: "emailEnabled" },
-                  { label: "Push Notifications", icon: Bell, key: "pushEnabled" },
+                  { label: t("orch.pref.smsGateway"), icon: MessageSquare, key: "smsEnabled" },
+                  { label: t("orch.pref.emailServer"), icon: Mail, key: "emailEnabled" },
+                  { label: t("orch.pref.pushNotifications"), icon: Bell, key: "pushEnabled" },
                 ].map((channel) => (
                   <div key={channel.key} className="no-pref-row">
                     <div className="d-flex align-items-center gap-3">
@@ -495,7 +499,7 @@ const NotificationOrchestrator: React.FC = () => {
                         const newPrefs = { ...preferences, [channel.key]: checked };
                         setPreferences(newPrefs);
                         updateCustomerPreferences({ customerId, ...newPrefs });
-                        toast.success(`${channel.label} preference updated`);
+                        toast.success(t("orch.prefUpdated", { label: channel.label }));
                       }}
                     />
                   </div>
@@ -504,7 +508,7 @@ const NotificationOrchestrator: React.FC = () => {
             </div>
           ) : (
             <div className="no-card p-5 text-center text-muted">
-              Enter a customer ID and click <strong>Lookup</strong> to view their preferences.
+              {t("orch.hintPre")}<strong>{t("orch.lookup")}</strong>{t("orch.hintPost")}
             </div>
           )}
         </TabsContent>
@@ -519,29 +523,29 @@ const NotificationOrchestrator: React.FC = () => {
         className="no-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>{editingRule ? "Update Routing Rule" : "Create New Routing Rule"}</Modal.Title>
+          <Modal.Title>{editingRule ? t("orch.modal.editTitle") : t("orch.modal.addTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Rule Name *</Form.Label>
+                  <Form.Label>{t("orch.label.ruleName")}</Form.Label>
                   <Form.Control
                     type="text"
                     value={rulePayload.ruleName}
                     onChange={(e) => setRulePayload({ ...rulePayload, ruleName: e.target.value })}
-                    placeholder="e.g. Auth OTP via SMS"
+                    placeholder={t("orch.ph.ruleName")}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Event Type *</Form.Label>
+                  <Form.Label>{t("orch.label.eventType")}</Form.Label>
                   <AntSelect
                     showSearch
                     value={rulePayload.eventType || undefined}
-                    placeholder="Select trigger event"
+                    placeholder={t("orch.ph.eventType")}
                     onChange={(v) => setRulePayload({ ...rulePayload, eventType: v })}
                     className="no-form-select"
                     popupClassName="no-select-popup"
@@ -560,25 +564,25 @@ const NotificationOrchestrator: React.FC = () => {
             <Row className="mb-3">
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Delivery Channel *</Form.Label>
+                  <Form.Label>{t("orch.label.channel")}</Form.Label>
                   <AntSelect
                     value={rulePayload.channel}
                     onChange={(v) => setRulePayload({ ...rulePayload, channel: v })}
                     className="no-form-select"
                     popupClassName="no-select-popup"
                     style={{ width: "100%" }}
-                    options={CHANNEL_OPTIONS}
+                    options={channelOptionsL}
                   />
                 </Form.Group>
               </Col>
               <Col md={6}>
                 <Form.Group>
-                  <Form.Label>Rule Code (auto)</Form.Label>
+                  <Form.Label>{t("orch.label.ruleCode")}</Form.Label>
                   <Form.Control
                     type="text"
                     value={rulePayload.ruleCode}
                     readOnly
-                    placeholder="Generated from event + channel"
+                    placeholder={t("orch.ph.ruleCode")}
                     className="font-monospace"
                   />
                 </Form.Group>
@@ -587,11 +591,11 @@ const NotificationOrchestrator: React.FC = () => {
             <Row className="mb-3">
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label>Novu Template *</Form.Label>
+                  <Form.Label>{t("orch.label.novuTemplate")}</Form.Label>
                   <AntSelect
                     showSearch
                     value={rulePayload.novuTemplateId || undefined}
-                    placeholder="Search Novu templates..."
+                    placeholder={t("orch.ph.novuTemplate")}
                     onChange={(v) => setRulePayload({ ...rulePayload, novuTemplateId: v })}
                     className="no-form-select"
                     popupClassName="no-select-popup"
@@ -610,13 +614,13 @@ const NotificationOrchestrator: React.FC = () => {
             <Row className="mb-3">
               <Col md={12}>
                 <Form.Group>
-                  <Form.Label>Priority</Form.Label>
+                  <Form.Label>{t("orch.label.priority")}</Form.Label>
                   <Radio.Group
                     value={rulePayload.priority}
                     onChange={(e) => setRulePayload({ ...rulePayload, priority: e.target.value })}
                     optionType="button"
                     buttonStyle="solid"
-                    options={PRIORITY_OPTIONS}
+                    options={priorityOptionsL}
                     className="no-priority-group"
                   />
                 </Form.Group>
@@ -626,9 +630,9 @@ const NotificationOrchestrator: React.FC = () => {
             <div className="no-warning-box">
               <AlertTriangle className="no-warning-icon" />
               <div className="no-warning-text">
-                <div className="no-warning-title">Heads up</div>
+                <div className="no-warning-title">{t("orch.warn.title")}</div>
                 <div className="no-warning-body">
-                  Saved rules go live on the gateway immediately. Double-check the channel and template — wrong mappings can drop critical notifications.
+                  {t("orch.warn.body")}
                 </div>
               </div>
             </div>
@@ -641,10 +645,10 @@ const NotificationOrchestrator: React.FC = () => {
             className="no-btn-cancel"
             disabled={isLoading}
           >
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button onClick={handleSaveRule} disabled={isLoading} className="uo-btn-black">
-            {isLoading ? "Saving..." : editingRule ? "Update Rule" : "Create Rule"}
+            {isLoading ? t("shared.saving") : editingRule ? t("orch.btn.updateRule") : t("orch.btn.createRule")}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -657,18 +661,18 @@ const NotificationOrchestrator: React.FC = () => {
         className="no-modal"
       >
         <Modal.Header closeButton>
-          <Modal.Title>Delete Routing Rule</Modal.Title>
+          <Modal.Title>{t("orch.delete.title")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Are you sure you want to delete{" "}
-          <strong>{deleteTarget?.ruleName || deleteTarget?.ruleCode}</strong>? This action cannot be undone.
+          {t("orch.delete.confirmPre")}
+          <strong>{deleteTarget?.ruleName || deleteTarget?.ruleCode}</strong>{t("orch.delete.confirmPost")}
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline" onClick={() => setDeleteTarget(null)} className="no-btn-cancel" disabled={isDeleting}>
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-            {isDeleting ? "Deleting..." : "Delete"}
+            {isDeleting ? t("shared.deleting") : t("common:delete")}
           </Button>
         </Modal.Footer>
       </Modal>

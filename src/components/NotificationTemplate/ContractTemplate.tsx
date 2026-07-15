@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -27,6 +28,7 @@ import { CKEditor } from "@ckeditor/ckeditor5-react";
 import ClassicEditor from "@ckeditor/ckeditor5-build-classic";
 
 const ContractTemplate = () => {
+  const { t } = useTranslation("notifications");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +72,7 @@ const ContractTemplate = () => {
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch contract templates");
+      toast.error(error?.response?.data?.message || t("contract.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -144,15 +146,15 @@ const ContractTemplate = () => {
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      toast.error("Name is required");
+      toast.error(t("contract.toast.nameRequired"));
       return;
     }
     if (!formData.productId) {
-      toast.error("Please select a product");
+      toast.error(t("contract.toast.selectProduct"));
       return;
     }
     if (!formData.typeId) {
-      toast.error("Please select a template type");
+      toast.error(t("contract.toast.selectType"));
       return;
     }
 
@@ -169,16 +171,16 @@ const ContractTemplate = () => {
 
       if (modalMode === "edit" && currentItemId) {
         await updateContractTemplate(currentItemId, body);
-        toast.success("Updated successfully");
+        toast.success(t("common:updatedSuccessfully"));
       } else {
         await createContractTemplate(body);
-        toast.success("Created successfully");
+        toast.success(t("contract.toast.created"));
       }
       setShowFormModal(false);
       resetForm();
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+      toast.error(error?.response?.data?.message || (modalMode === "edit" ? t("contract.toast.updateFailed") : t("contract.toast.createFailed")));
     } finally {
       setIsSaving(false);
     }
@@ -189,11 +191,11 @@ const ContractTemplate = () => {
     try {
       setIsDeleting(true);
       await deleteContractTemplate(deleteTarget.id);
-      toast.success("Deleted successfully");
+      toast.success(t("common:deletedSuccessfully"));
       setDeleteTarget(null);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
+      toast.error(error?.response?.data?.message || t("contract.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -211,35 +213,35 @@ const ContractTemplate = () => {
 
   const headers = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) => row.name || "-",
       sortable: true,
     },
     {
-      name: "Product",
+      name: t("shared.product"),
       selector: (row: any) => getProductName(row.productId || row.product_id),
       sortable: true,
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) => getTypeName(row.typeId || row.type_id),
       sortable: true,
     },
     {
-      name: "Language",
-      selector: (row: any) => (row.language === "ar" ? "Arabic" : "English"),
+      name: t("shared.language"),
+      selector: (row: any) => (row.language === "ar" ? t("shared.arabic") : t("shared.english")),
       sortable: true,
       width: "100px",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) =>
         row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
       width: "130px",
     },
     {
-      name: "Action",
+      name: t("shared.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -252,7 +254,7 @@ const ContractTemplate = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -264,7 +266,7 @@ const ContractTemplate = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -274,7 +276,7 @@ const ContractTemplate = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -287,7 +289,7 @@ const ContractTemplate = () => {
   return (
     <div className="service contract-template-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Contract Templates</h3>
+        <h3 className="mb-0 fw-bold text-dark">{t("contract.title")}</h3>
       </div>
 
       {/* Filters card */}
@@ -302,7 +304,7 @@ const ContractTemplate = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by name, product, or type"
+            placeholder={t("contract.searchPh")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -314,7 +316,7 @@ const ContractTemplate = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="h-4 w-4" />
-            Add New Contract Template
+            {t("contract.addNew")}
           </Button>
         </div>
       </div>
@@ -357,14 +359,14 @@ const ContractTemplate = () => {
         <DialogContent className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {modalMode === "edit" ? "Edit Contract Template" : "Add New Contract Template"}
+              {modalMode === "edit" ? t("contract.editTitle") : t("contract.addNew")}
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
+              <Label>{t("common:name")} *</Label>
               <Input
-                placeholder="e.g. Murabaha Financing Agreement"
+                placeholder={t("contract.ph.name")}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
@@ -372,13 +374,13 @@ const ContractTemplate = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Product *</Label>
+                <Label>{t("shared.product")} *</Label>
                 <Select
                   value={formData.productId || undefined}
                   onValueChange={(val) => setFormData({ ...formData, productId: val })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select product" />
+                    <SelectValue placeholder={t("shared.selectProduct")} />
                   </SelectTrigger>
                   <SelectContent>
                     {products.map((product: any) => (
@@ -391,13 +393,13 @@ const ContractTemplate = () => {
               </div>
 
               <div className="space-y-2">
-                <Label>Template Type *</Label>
+                <Label>{t("shared.templateType")} *</Label>
                 <Select
                   value={formData.typeId || undefined}
                   onValueChange={(val) => setFormData({ ...formData, typeId: val })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select template type" />
+                    <SelectValue placeholder={t("shared.selectTemplateType")} />
                   </SelectTrigger>
                   <SelectContent>
                     {templateTypes.map((tt: any) => (
@@ -409,7 +411,7 @@ const ContractTemplate = () => {
                 </Select>
               </div>
             <div className="space-y-2">
-              <Label>Language</Label>
+              <Label>{t("shared.language")}</Label>
               <Select
                 value={selectedLanguage}
                 onValueChange={(val: "en" | "ar") => setSelectedLanguage(val)}
@@ -418,14 +420,14 @@ const ContractTemplate = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="ar">Arabic</SelectItem>
+                  <SelectItem value="en">{t("shared.english")}</SelectItem>
+                  <SelectItem value="ar">{t("shared.arabic")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             </div>
             <div className="space-y-2">
-              <Label>Message ({selectedLanguage === "en" ? "English" : "Arabic"})</Label>
+              <Label>{t("contract.messageLabel", { lang: selectedLanguage === "en" ? t("shared.english") : t("shared.arabic") })}</Label>
               <div
                 className="editor-fixed"
                 style={{ direction: selectedLanguage === "ar" ? "rtl" : "ltr" }}
@@ -479,10 +481,10 @@ const ContractTemplate = () => {
               }}
               disabled={isSaving}
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+              {isSaving ? t("shared.saving") : modalMode === "edit" ? t("common:update") : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -492,19 +494,19 @@ const ContractTemplate = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Contract Template</DialogTitle>
+            <DialogTitle>{t("contract.delete.title")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
-            <span className="font-medium text-foreground">{deleteTarget?.name}</span>?
-            This action cannot be undone.
+            {t("contract.delete.confirmPre")}
+            <span className="font-medium text-foreground">{deleteTarget?.name}</span>
+            {t("contract.delete.confirmPost")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("shared.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

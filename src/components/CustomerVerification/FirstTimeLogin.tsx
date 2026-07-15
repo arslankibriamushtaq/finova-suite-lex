@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 
 const FirstTimeLogin = () => {
+  const { t } = useTranslation("customersB");
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -20,11 +22,11 @@ const FirstTimeLogin = () => {
 
   // Password requirements validation
   const passwordRequirements = [
-    { label: "8-16 characters", met: formData.newPassword.length >= 8 && formData.newPassword.length <= 16 },
-    { label: "At least one uppercase letter (A-Z)", met: /[A-Z]/.test(formData.newPassword) },
-    { label: "At least one lowercase letter (a-z)", met: /[a-z]/.test(formData.newPassword) },
-    { label: "At least one number (0-9)", met: /[0-9]/.test(formData.newPassword) },
-    { label: "At least one special character (-_!@#$%^&*())", met: /[-_!@#$%^&*()]/.test(formData.newPassword) },
+    { label: t("customersB:firstLogin.req8to16"), met: formData.newPassword.length >= 8 && formData.newPassword.length <= 16 },
+    { label: t("customersB:firstLogin.reqUppercase"), met: /[A-Z]/.test(formData.newPassword) },
+    { label: t("customersB:firstLogin.reqLowercase"), met: /[a-z]/.test(formData.newPassword) },
+    { label: t("customersB:firstLogin.reqNumber"), met: /[0-9]/.test(formData.newPassword) },
+    { label: t("customersB:firstLogin.reqSpecial"), met: /[-_!@#$%^&*()]/.test(formData.newPassword) },
   ];
 
   const allRequirementsMet = passwordRequirements.every((req) => req.met);
@@ -50,15 +52,15 @@ const FirstTimeLogin = () => {
     };
 
     if (!formData.newPassword) {
-      newErrors.newPassword = "Password is required";
+      newErrors.newPassword = t("customersB:firstLogin.passwordRequired");
     } else if (!allRequirementsMet) {
-      newErrors.newPassword = "Password does not meet all requirements";
+      newErrors.newPassword = t("customersB:firstLogin.passwordNotMet");
     }
 
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
+      newErrors.confirmPassword = t("customersB:firstLogin.confirmRequired");
     } else if (formData.newPassword !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
+      newErrors.confirmPassword = t("customersB:firstLogin.passwordsNoMatch");
     }
 
     setErrors(newErrors);
@@ -87,7 +89,7 @@ const FirstTimeLogin = () => {
       console.error("Error setting password:", error);
       setErrors({
         ...errors,
-        newPassword: "Failed to set password. Please try again.",
+        newPassword: t("customersB:firstLogin.setFail"),
       });
     } finally {
       setIsLoading(false);
@@ -135,7 +137,7 @@ const FirstTimeLogin = () => {
               marginBottom: "8px",
             }}
           >
-            FIRST TIME LOGIN
+            {t("customersB:firstLogin.title")}
           </h1>
           <p
             style={{
@@ -143,7 +145,7 @@ const FirstTimeLogin = () => {
               color: "#666666",
             }}
           >
-            Create your new password.
+            {t("customersB:firstLogin.subtitle")}
           </p>
         </div>
 
@@ -160,7 +162,7 @@ const FirstTimeLogin = () => {
                 marginBottom: "8px",
               }}
             >
-              New Password
+              {t("customersB:firstLogin.newPassword")}
             </label>
             <div style={{ position: "relative" }}>
               <input
@@ -168,7 +170,7 @@ const FirstTimeLogin = () => {
                 name="newPassword"
                 value={formData.newPassword}
                 onChange={handleInputChange}
-                placeholder="Enter new password"
+                placeholder={t("customersB:firstLogin.enterNewPassword")}
                 style={{
                   width: "100%",
                   padding: "12px 40px 12px 16px",
@@ -240,7 +242,7 @@ const FirstTimeLogin = () => {
                 marginBottom: "12px",
               }}
             >
-              Password Requirements:
+              {t("customersB:firstLogin.requirementsTitle")}
             </p>
             <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
               {passwordRequirements.map((requirement, index) => (
@@ -288,7 +290,7 @@ const FirstTimeLogin = () => {
                 marginBottom: "8px",
               }}
             >
-              Confirm Password
+              {t("customersB:firstLogin.confirmPassword")}
             </label>
             <div style={{ position: "relative" }}>
               <input
@@ -296,7 +298,7 @@ const FirstTimeLogin = () => {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                placeholder="Confirm your password"
+                placeholder={t("customersB:firstLogin.confirmYourPassword")}
                 style={{
                   width: "100%",
                   padding: "12px 40px 12px 16px",
@@ -378,7 +380,7 @@ const FirstTimeLogin = () => {
               }
             }}
           >
-            {isLoading ? "Setting Password..." : "SET PASSWORD"}
+            {isLoading ? t("customersB:firstLogin.settingPassword") : t("customersB:firstLogin.setPassword")}
           </button>
         </form>
       </div>

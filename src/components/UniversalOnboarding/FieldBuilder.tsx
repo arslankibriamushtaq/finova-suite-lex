@@ -114,7 +114,7 @@ const FieldBuilder: React.FC<FieldBuilderProps> = ({ selectedStep }) => {
              Import JSON
           </Button>
           <Button className="bg-blue-600 hover:bg-blue-500 text-white rounded-2xl h-12 px-8 font-black shadow-xl shadow-blue-100 transition-all hover:scale-105 active:scale-95">
-            <Plus className="w-5 h-5 mr-2" />
+            <Plus className="w-5 h-5 me-2" />
             Append Field
           </Button>
         </div>
@@ -127,7 +127,7 @@ const FieldBuilder: React.FC<FieldBuilderProps> = ({ selectedStep }) => {
               <TableHead className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Field Details</TableHead>
               <TableHead className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Security & Req</TableHead>
               <TableHead className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">External Action</TableHead>
-              <TableHead className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Control</TableHead>
+              <TableHead className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-end">Control</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -239,7 +239,7 @@ const FieldBuilder: React.FC<FieldBuilderProps> = ({ selectedStep }) => {
                    )}
                 </TableCell>
 
-                <TableCell className="px-8 py-8 text-right">
+                <TableCell className="px-8 py-8 text-end">
                    <div className="flex justify-end gap-2 opacity-20 group-hover:opacity-100 transition-opacity">
                       <Button variant="ghost" size="icon" className="rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50 transition-all border border-transparent hover:border-slate-100">
                         <Settings className="w-5 h-5" />

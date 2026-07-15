@@ -1,8 +1,10 @@
 import React from "react";
 import { Button, Container } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 
 const DocumentGallery = () => {
+  const { t } = useTranslation("allApplication");
   const docs = Array(12).fill({
     name: "Document 1",
     date: "12/05/2024",
@@ -17,7 +19,7 @@ const DocumentGallery = () => {
         <div className="my-4 p-3">
           <div className="d-flex justify-content-end mb-3">
             <Button className="theme-btn-next  px-3 py-2 ">
-              Upload Document
+              {t("documents.upload")}
             </Button>
           </div>
           <div className="d-flex flex-wrap gap-3">

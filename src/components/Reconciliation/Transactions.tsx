@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { GetAllTransactionLogs } from "../../redux/apis/apisCrudLms";
@@ -6,6 +7,7 @@ import { DatePicker } from "antd";
 import dayjs from "dayjs";
 
 const Transactions = () => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -88,48 +90,48 @@ const Transactions = () => {
   }, [page, pageSize, toDate, fromDate]);
   const Call_Activity_Header = [
     {
-      name: "Transaction ID",
+      name: t("col.transactionId"),
       cell: (row: any) => row?.transactionId || "-",
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row?.Date || "-",
     },
     {
-      name: "Description",
+      name: t("common:description"),
       selector: (row: { description: any }) => row.description || "-",
     },
     {
-      name: "Transaction Type",
+      name: t("col.transactionType"),
       selector: (row: { transactionType: any }) => row.transactionType || "-",
       width: "200px",
     },
     {
-      name: "Debit Account",
+      name: t("col.debitAccount"),
       selector: (row: { debitAccount: any }) => row.debitAccount || "-",
     },
     {
-      name: "Credit Account",
+      name: t("col.creditAccount"),
       selector: (row: { creditAccount: any }) => row.creditAccount || "-",
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount || "-",
     },
     {
-      name: "Transfer Number",
+      name: t("col.transferNumber"),
       selector: (row: { transferNumber: any }) => row.transferNumber || "-",
     },
     {
-      name: "Customer ID",
+      name: t("col.customerId"),
       cell: (row: any) => row.customerId || "-",
     },
     {
-      name: "Notes",
+      name: t("col.notes"),
       selector: (row: { notes: any }) => row.notes || "-",
     },
     {
-      name: "Reconciliation Status",
+      name: t("col.reconciliationStatus"),
       selector: (row: { reconciliationStatus: any }) =>
         row.reconciliationStatus || "-",
     },
@@ -138,10 +140,10 @@ const Transactions = () => {
   return (
     <>
       <div className="d-flex align-items-center justify-content-end gap-1 p-2">
-        <strong>Selected Dates: </strong>
+        <strong>{t("filters.selectedDates")}</strong>
         <DatePicker
           className="date-picker"
-          placeholder="From"
+          placeholder={t("common:from")}
           value={fromPicker}
           onChange={(date) => {
             setFromPicker(date);
@@ -151,7 +153,7 @@ const Transactions = () => {
 
         <DatePicker
           className="date-picker"
-          placeholder="To"
+          placeholder={t("common:to")}
           value={toPicker}
           onChange={(date) => {
             setToPicker(date);

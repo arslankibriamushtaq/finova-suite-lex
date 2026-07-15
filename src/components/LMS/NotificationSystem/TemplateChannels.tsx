@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -20,6 +21,7 @@ import TableView from "../../TableView/TableView";
 
 
 const TemplateChannels = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -66,42 +68,42 @@ const formatDate = (dateString: any) => {
   }
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
             width: "100px",
         },
-        
+
         {
-            name: "Channel",
+            name: t("shared.channel"),
             selector: (row: { channelId: any }) => getChannelNameById(row?.channelId),
             sortable: true,
         },
         {
-            name: "Language",
+            name: t("shared.language"),
             selector: (row: { languageId: any }) => getLanguageNameById(row?.languageId),
             sortable: true,
         },
         {
-            name: "Subject Template",
+            name: t("shared.subjectTemplate"),
             selector: (row: { subjectTemplate: any }) => row.subjectTemplate,
             sortable: true,
             width: "250px",
         },
         {
-            name: "Template",
+            name: t("shared.template"),
             selector: (row: { templateId: any }) => getTemplateNameById(row?.templateId),
             sortable: true,
             width: "250px",
         },
         {
-            name: "Body Template",
+            name: t("shared.bodyTemplate"),
             cell: (row: { bodyTemplate: any }) => row.bodyTemplate,
             sortable: true,
             width: "300px",
         },
         {
-            name: "In-App Options",
+            name: t("templateChannels.col.inAppOptions"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -112,13 +114,13 @@ const formatDate = (dateString: any) => {
                         color: "white",
                     }}
                 >
-                    {row.inAppOptions ? "Yes" : "No"}
+                    {row.inAppOptions ? t("common:yes") : t("common:no")}
                 </div>
             ),
             width: "100px",
         },
         {
-            name: "Active",
+            name: t("common:active"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -129,13 +131,13 @@ const formatDate = (dateString: any) => {
                         color: "white",
                     }}
                 >
-                    {row.active ? "Active" : "Inactive"}
+                    {row.active ? t("common:active") : t("common:inactive")}
                 </div>
             ),
             width: "130px",
         },
         {
-            name: "Created At",
+            name: t("common:createdAt"),
             selector: (row: { createdAt: any }) => formatDate(row?.createdAt),
             sortable: true,
         },
@@ -167,14 +169,14 @@ const formatDate = (dateString: any) => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -271,9 +273,9 @@ const formatDate = (dateString: any) => {
                         defaultValue: "",
                     });
                     await getList();
-                    return "Template updated successfully!";
+                    return t("templates.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createTemplateChannels(body);
@@ -292,17 +294,17 @@ const formatDate = (dateString: any) => {
                         variableName: "",
                         defaultValue: "",
                     });
-                    return "Template added successfully!";
+                    return t("templates.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating Template..." : "Adding Template...",
+            loading: isEditing ? t("templates.toast.updating") : t("templates.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -314,16 +316,16 @@ const formatDate = (dateString: any) => {
                      setIsDeleteModalVisible(false);
                      await getList();
                      setEditRowId(null);
-                     return "Template deleted successfully!";
+                     return t("templates.toast.deleted");
                  } else {
-                     throw new Error(response?.data?.errors || "Failed to delete");
+                     throw new Error(response?.data?.errors || t("shared.failedDelete"));
                  }
              };
 
              toast.promise(deletePromise(), {
-                 loading: "Deleting Template...",
+                 loading: t("templates.toast.deleting"),
                  success: (msg) => msg,
-                 error: (err) => err.message || "Something went wrong",
+                 error: (err) => err.message || t("shared.somethingWentWrong"),
              });
          } catch (error: any) {
              toast.error(error.message);
@@ -356,7 +358,7 @@ const formatDate = (dateString: any) => {
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
                         // onChange={handleChange}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
 
@@ -374,7 +376,7 @@ const formatDate = (dateString: any) => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -398,7 +400,7 @@ const formatDate = (dateString: any) => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New Template
+                            {t("templateChannels.addNew")}
                         </button>
                     </div>
                 </div>
@@ -421,13 +423,13 @@ const formatDate = (dateString: any) => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit Template" : "Add New Template"}
+                title={editRowId ? t("templateChannels.editTitle") : t("templateChannels.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -435,10 +437,10 @@ const formatDate = (dateString: any) => {
                     <Row>
                         <Col md={12}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                    <Form.Label className="px-2 mt-2">Channel <span style={{ color: "red" }}>*</span></Form.Label>
+                                    <Form.Label className="px-2 mt-2">{t("shared.channel")} <span style={{ color: "red" }}>*</span></Form.Label>
                                     <Select
                                         style={{ width: "100%", height: "40px" }}
-                                        placeholder="Select channel"
+                                        placeholder={t("shared.selectChannel")}
                                         value={formData.channelId || undefined}
                                         onChange={(val: string) => setFormData({ ...formData, channelId: val })}
                                     >
@@ -455,10 +457,10 @@ const formatDate = (dateString: any) => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Language <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.language")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select language"
+                                    placeholder={t("shared.selectLanguage")}
                                     value={formData.languageId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, languageId: val })}
                                 >
@@ -472,10 +474,10 @@ const formatDate = (dateString: any) => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Template <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.template")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select template"
+                                    placeholder={t("templateVars.ph.selectTemplate")}
                                     value={formData.templateId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, templateId: val })}
                                 >
@@ -492,7 +494,7 @@ const formatDate = (dateString: any) => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Subject Template</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.subjectTemplate")}</Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
@@ -505,7 +507,7 @@ const formatDate = (dateString: any) => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Body Template</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.bodyTemplate")}</Form.Label>
                                 <Input
                                     className="custom-input"
                                     placeholder="Hello {{userName}}, welcome to our platform!"
@@ -519,28 +521,28 @@ const formatDate = (dateString: any) => {
                     <Row>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">In-App Options?</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("shared.inAppOptionsQ")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) => setFormData({ ...formData, inAppOptions: e.target.value })}
                                         value={formData.inAppOptions}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
                         </Col>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">Active?</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("shared.activeQ")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) => setFormData({ ...formData, active: e.target.value })}
                                         value={formData.active}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
@@ -556,10 +558,10 @@ const formatDate = (dateString: any) => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                 title={"Delete Template"}
+                 title={t("templates.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -568,13 +570,12 @@ const formatDate = (dateString: any) => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    {`
-               Are you sure you want to delete this Template?`}
+                    {t("templates.delete.confirm")}
                 </Form>
             </Modal>
         </div>

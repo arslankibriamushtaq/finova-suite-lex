@@ -30,8 +30,10 @@ import { DeleteOutlined, EditOutlined, CheckCircleOutlined, CloseCircleOutlined,
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { usePermissions, useWorkflowActions, SOURCE_OF_REVENUE_PERMISSIONS, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions";
+import { useTranslation } from "react-i18next";
 
 const RevenueSource = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -120,7 +122,7 @@ const RevenueSource = () => {
           icon={<EditOutlined />}
           onClick={() => handleMenuClick("edit", row)}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
       )}
       {canVerifySOR && (
@@ -129,7 +131,7 @@ const RevenueSource = () => {
           icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
-          Verify
+          {t("revenueSource.action.verify")}
         </Menu.Item>
       )}
       {canCheckerRejectSOR && (
@@ -138,7 +140,7 @@ const RevenueSource = () => {
           icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
-          Reject (Checker)
+          {t("revenueSource.action.rejectChecker")}
         </Menu.Item>
       )}
       {canApproveSOR && (
@@ -147,7 +149,7 @@ const RevenueSource = () => {
           icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
-          Approve
+          {t("common:approve")}
         </Menu.Item>
       )}
       {canApproverRejectSOR && (
@@ -156,7 +158,7 @@ const RevenueSource = () => {
           icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
-          Reject (Approver)
+          {t("revenueSource.action.rejectApprover")}
         </Menu.Item>
       )}
       {canDeleteSOR && (
@@ -165,7 +167,7 @@ const RevenueSource = () => {
           icon={<DeleteOutlined />}
           onClick={() => handleMenuClick("delete", row)}
         >
-          Delete
+          {t("common:delete")}
         </Menu.Item>
       )}
     </Menu>
@@ -179,13 +181,13 @@ const RevenueSource = () => {
     //   // width: "15%",
     // },
     {
-      name: "Title",
+      name: t("revenueSource.col.title"),
       selector: (row: { title: any }) => row.title,
       // sortable: true,
       // width: "75%",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -202,12 +204,12 @@ const RevenueSource = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("shared.changeStatus"),
       cell: (row: any) => (
         <Switch
           className="red-switch"
@@ -240,7 +242,7 @@ const RevenueSource = () => {
     },
     // Only include Action column if user has any action permission
     ...(hasAnyAction ? [{
-      name: "Action",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -253,7 +255,7 @@ const RevenueSource = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -265,13 +267,13 @@ const RevenueSource = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteSourceOfRevenue(deleteTargetId), {
-        loading: "Deleting Source...",
+        loading: t("revenueSource.toast.deleting"),
         success: (response) => {
           getSources();
           setShowConfirmModal(false);
-          return "Source deleted successfully";
+          return t("revenueSource.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("revenueSource.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -288,7 +290,7 @@ const RevenueSource = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateSourceOfRevenue(currentSourceId, body), {
-          loading: "Updating source...",
+          loading: t("revenueSource.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -300,13 +302,13 @@ const RevenueSource = () => {
               status: 0 
              });
             getSources();
-            return "Source updated successfully";
+            return t("revenueSource.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update source",
+          error: (err) => err?.message || t("revenueSource.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createSourceOfRevenue(body), {
-          loading: "Adding source...",
+          loading: t("revenueSource.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -318,9 +320,9 @@ const RevenueSource = () => {
                 status: 0 
               });
             getSources();
-            return "Source added successfully";
+            return t("revenueSource.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("revenueSource.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -394,7 +396,7 @@ const RevenueSource = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -413,7 +415,7 @@ const RevenueSource = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -430,7 +432,7 @@ const RevenueSource = () => {
                   });
                 }}
               >
-                Add New Record
+                {t("shared.addNewRecord")}
               </button>
             )}
           </div>
@@ -454,13 +456,13 @@ const RevenueSource = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("revenueSource.modal.editTitle") : t("shared.addNewRecord")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -470,7 +472,7 @@ const RevenueSource = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -478,11 +480,11 @@ const RevenueSource = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={12}>
-                <label className="fw-400">Title</label>
+                <label className="fw-400">{t("revenueSource.label.title")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter title"
+                  placeholder={t("revenueSource.ph.title")}
                   value={formData.title}
                   onChange={(e: any) =>
                     setFormData({ ...formData, title: e.target.value })
@@ -490,10 +492,10 @@ const RevenueSource = () => {
                 />
                 </Col>
                 <Col className = "px-2" md={12}>
-                <label className="fw-400">Product</label>
+                <label className="fw-400">{t("revenueSource.label.product")}</label>
                 <Select
                   className="fs-6"
-                  placeholder="Enter title"
+                  placeholder={t("revenueSource.ph.title")}
                   value={formData.product_id}
                   onChange={(e: any) =>
                     setFormData({ ...formData, product_id: e})
@@ -517,14 +519,14 @@ const RevenueSource = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("revenueSource.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("revenueSource.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -533,17 +535,17 @@ const RevenueSource = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("revenueSource.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("revenueSource.confirmAddBody")
+                : t("revenueSource.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

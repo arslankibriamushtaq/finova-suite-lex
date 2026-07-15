@@ -12,6 +12,7 @@ import TableHeaderFilter from "../TableHeaderFilter";
 import axios from "../../utils/axios";
 import type { GetProp, UploadFile, UploadProps } from "antd";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
@@ -54,6 +55,7 @@ type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 // ];
 
 const AllDocuments = () => {
+  const { t } = useTranslation("customerManagement");
   const [searchValue, setSearchValue] = useState("");
   const [addCustomerModal, setAddCustomerModal] = useState(false);
   const [individualModal, setIndividualModal] = useState(false);
@@ -81,7 +83,7 @@ const AllDocuments = () => {
   async function getDocumentsByAccNo() {
     try {
       if (targetAccountNo.length < 3) {
-        toast.error("No account number provided!");
+        toast.error(t("accountDocuments.noAccountNumber"));
         return;
       }
       await axios
@@ -194,7 +196,7 @@ const AllDocuments = () => {
 
   const customSearchInput = (
     <Input
-      placeholder="Search"
+      placeholder={t("common:search")}
       value={searchValue}
       prefix={<FaSearch />}
       onChange={(e) => setSearchValue(e.target.value)}
@@ -203,7 +205,7 @@ const AllDocuments = () => {
 
   const Account_Documents_List_Header = [
     {
-      name: "File Name",
+      name: t("accountDocuments.fileName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -216,7 +218,7 @@ const AllDocuments = () => {
         ),
     },
     {
-      name: "Document Type",
+      name: t("accountDocuments.col.documentType"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -242,7 +244,7 @@ const AllDocuments = () => {
     //     ),
     // },
     {
-      name: "Account No.",
+      name: t("accountDocuments.col.accountNo"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -255,7 +257,7 @@ const AllDocuments = () => {
         ),
     },
     {
-      name: "Application ID",
+      name: t("accountDocuments.col.applicationId"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -281,7 +283,7 @@ const AllDocuments = () => {
     //     ),
     // },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -290,13 +292,13 @@ const AllDocuments = () => {
             onChange={handleInputChange}
           />
         ) : row.status ? (
-          "Approved"
+          t("accountDocuments.approved")
         ) : (
-          "Unapproved"
+          t("accountDocuments.unapproved")
         ),
     },
     {
-      name: "Tracking No",
+      name: t("accountDocuments.col.trackingNo"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -309,7 +311,7 @@ const AllDocuments = () => {
         ),
     },
     {
-      name: "Docket No",
+      name: t("accountDocuments.col.docketNo"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -335,7 +337,7 @@ const AllDocuments = () => {
     //     ),
     // },
     {
-      name: "Received Date",
+      name: t("accountDocuments.col.receivedDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -348,7 +350,7 @@ const AllDocuments = () => {
         ),
     },
     {
-      name: "Effective Date",
+      name: t("accountDocuments.col.effectiveDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -361,7 +363,7 @@ const AllDocuments = () => {
         ),
     },
     {
-      name: "Expiry Date",
+      name: t("accountDocuments.col.expiryDate"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -374,7 +376,7 @@ const AllDocuments = () => {
         ),
     },
     {
-      name: "Comment",
+      name: t("accountDocuments.col.comment"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -449,21 +451,21 @@ const AllDocuments = () => {
         size="lg"
       >
         <Modal.Header closeButton>
-          <Modal.Title className="modal-title">Upload Document</Modal.Title>
+          <Modal.Title className="modal-title">{t("accountDocuments.uploadDocument")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <form onSubmit={() => {}}>
             <Form.Group controlId={``}>
               <>
-                <Form.Label className="mt-2">File Name</Form.Label>
+                <Form.Label className="mt-2">{t("accountDocuments.fileName")}</Form.Label>
                 <Form.Control
                   type={"text"}
-                  placeholder={"Enter file name"}
+                  placeholder={t("accountDocuments.enterFileName")}
                   onChange={() => {}}
                 />
               </>
               <>
-                <Form.Label className="mt-2">Select File Type</Form.Label>
+                <Form.Label className="mt-2">{t("accountDocuments.selectFileType")}</Form.Label>
                 <Select onChange={() => {}} style={{ width: "100%" }}>
                   {docTypes?.map((doc, index) => (
                     <Select.Option key={index} value={index + 1}>
@@ -473,11 +475,11 @@ const AllDocuments = () => {
                 </Select>
               </>
               <>
-                <Form.Label className="mt-2">Select Application ID</Form.Label>
+                <Form.Label className="mt-2">{t("accountDocuments.selectApplicationId")}</Form.Label>
                 <Select onChange={() => {}} style={{ width: "100%" }}>
                   {appIdsList?.map((appId, index) => (
                     <Select.Option key={index} value={index + 1}>
-                      Option
+                      {t("accountDocuments.option")}
                     </Select.Option>
                   ))}
                 </Select>
@@ -495,16 +497,16 @@ const AllDocuments = () => {
                 backgroundColor: "var(--color-danger-action)",
               }}
             >
-              Save
+              {t("common:save")}
             </Button>
           </div>
         </Modal.Body>
       </Modal>
 
       <div className="d-flex flex-column mt-4">
-        <h1 style={{ fontSize: "22px" }}>Document Maintenance</h1>
+        <h1 style={{ fontSize: "22px" }}>{t("accountDocuments.documentMaintenance")}</h1>
         <div className="mt-3" style={{ fontWeight: 600 }}>
-          Action
+          {t("accountDocuments.action")}
         </div>
         <div className="d-flex my-3">
           <Radio.Group
@@ -512,25 +514,25 @@ const AllDocuments = () => {
             onChange={(val) => setFilesOption(val.target.value)}
             className="ms-3"
           >
-            <Radio value="none">None</Radio>
-            <Radio value="copy">Copy Document</Radio>
-            <Radio value="move">Move Document</Radio>
-            <Radio value="attach">Attach Document</Radio>
+            <Radio value="none">{t("common:none")}</Radio>
+            <Radio value="copy">{t("accountDocuments.copyDocument")}</Radio>
+            <Radio value="move">{t("accountDocuments.moveDocument")}</Radio>
+            <Radio value="attach">{t("accountDocuments.attachDocument")}</Radio>
           </Radio.Group>
         </div>
 
         {filesOption == "attach" ? (
           <>
             <div className="mt-3">
-              <span style={{ fontWeight: "bold" }}>Select Document</span>
+              <span style={{ fontWeight: "bold" }}>{t("accountDocuments.selectDocument")}</span>
               <div className="d-flex mt-2">
                 <Upload {...props}>
                   <Button className="application-btn" type="primary">
-                    Select File
+                    {t("accountDocuments.selectFile")}
                   </Button>
                 </Upload>
                 <span className="ms-3" style={{ color: "red" }}>
-                  {uploadedDoc.length} document(s) uploaded
+                  {t("accountDocuments.documentsUploaded", { count: uploadedDoc.length })}
                 </span>
               </div>
             </div>
@@ -540,14 +542,14 @@ const AllDocuments = () => {
               onClick={() => setShowModal(true)}
               style={{ border: "none" }}
             >
-              Upload Documents
+              {t("accountDocuments.uploadDocuments")}
             </Button>
           </>
         ) : (
           <>
             <div className="d-flex gap-2">
               <div>
-                <p className="mt-2 mb-1">Select</p>
+                <p className="mt-2 mb-1">{t("common:select")}</p>
                 <Select
                   defaultValue={"customer"}
                   value={targetTypeOption}
@@ -556,15 +558,15 @@ const AllDocuments = () => {
                   }}
                   style={{ width: "270px" }}
                 >
-                  <Select.Option value={"customer"}>Customer</Select.Option>
-                  <Select.Option value={"company"}>Company</Select.Option>
+                  <Select.Option value={"customer"}>{t("accountDocuments.customer")}</Select.Option>
+                  <Select.Option value={"company"}>{t("accountDocuments.company")}</Select.Option>
                 </Select>
               </div>
               <div>
-                <p className="mt-2 mb-1 fs-sm">Account Number</p>
+                <p className="mt-2 mb-1 fs-sm">{t("accountDocuments.accountNumber")}</p>
                 <Input
                   type={"text"}
-                  placeholder={"Enter account number"}
+                  placeholder={t("accountDocuments.enterAccountNumber")}
                   value={targetAccountNo}
                   onChange={(val) => {
                     setTargetAccountNo(val.target.value);
@@ -582,7 +584,7 @@ const AllDocuments = () => {
                 //backgroundColor: "#EB0D0D",
               }}
             >
-              View Documents
+              {t("accountDocuments.viewDocuments")}
             </button>
           </>
         )}
@@ -594,7 +596,7 @@ const AllDocuments = () => {
             className="d-flex align-items-center justify-content-between mt-4"
             style={{ fontSize: "15px", fontWeight: "Bold" }}
           >
-            Document Details
+            {t("accountDocuments.documentDetails")}
           </div>
 
           {data && data.length > 0 && (
@@ -627,7 +629,7 @@ const AllDocuments = () => {
 
           {data && data.length < 1 && (
             <>
-              <h5 className="text-center my-4">No Customer ID selected!</h5>
+              <h5 className="text-center my-4">{t("accountDocuments.noCustomerSelected")}</h5>
             </>
           )}
 

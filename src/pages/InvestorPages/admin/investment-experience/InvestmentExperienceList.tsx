@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Plus, 
+import { useTranslation } from 'react-i18next';
+import {
+  Plus,
   Search, 
   Edit, 
   Trash2, 
@@ -25,6 +26,7 @@ import toast from 'react-hot-toast';
 import Loader from '../../../../components/Loader/Loader';
 
 export default function InvestmentExperienceList() {
+  const { t } = useTranslation('investor');
   const [investmentExperiences, setInvestmentExperiences] = useState<InvestmentExperience[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -53,10 +55,10 @@ export default function InvestmentExperienceList() {
         setTotalPages(response.pageInfo.totalPages);
         setTotalCount(response.pageInfo.totalCount);
       } else {
-        setError('Failed to fetch investment experiences');
+        setError(t('ixp.fetchFail'));
       }
     } catch (err) {
-      setError('Error fetching investment experiences');
+      setError(t('ixp.fetchError'));
       console.error('Error fetching investment experiences:', err);
     } finally {
       setLoading(false);
@@ -74,15 +76,15 @@ export default function InvestmentExperienceList() {
       setFormLoading(true);
       const response = await createInvestmentExperience(formData);
       if (response.success) {
-        toast.success('Investment experience created successfully!');
+        toast.success(t('ixp.createSuccess'));
         setShowCreateModal(false);
         setFormData({ experience: '' });
         fetchInvestmentExperiences();
       } else {
-        toast.error(response.notificationMessage || 'Failed to create investment experience');
+        toast.error(response.notificationMessage || t('ixp.createFail'));
       }
     } catch (err) {
-      toast.error('Error creating investment experience');
+      toast.error(t('ixp.createError'));
       console.error('Error creating investment experience:', err);
     } finally {
       setFormLoading(false);
@@ -103,15 +105,15 @@ export default function InvestmentExperienceList() {
       
       const response = await updateInvestmentExperience(updateData);
       if (response.success) {
-        toast.success('Investment experience updated successfully!');
+        toast.success(t('ixp.updateSuccess'));
         setShowEditModal(false);
         setFormData({ experience: '' });
         fetchInvestmentExperiences();
       } else {
-        toast.error(response.notificationMessage || 'Failed to update investment experience');
+        toast.error(response.notificationMessage || t('ixp.updateFail'));
       }
     } catch (err) {
-      toast.error('Error updating investment experience');
+      toast.error(t('ixp.updateError'));
       console.error('Error updating investment experience:', err);
     } finally {
       setFormLoading(false);
@@ -126,14 +128,14 @@ export default function InvestmentExperienceList() {
       setFormLoading(true);
       const response = await deleteInvestmentExperienceById(selectedInvestmentExperience.id);
       if (response.success) {
-        toast.success('Investment experience deleted successfully!');
+        toast.success(t('ixp.deleteSuccess'));
         setShowDeleteModal(false);
         fetchInvestmentExperiences();
       } else {
-        toast.error(response.notificationMessage || 'Failed to delete investment experience');
+        toast.error(response.notificationMessage || t('ixp.deleteFail'));
       }
     } catch (err) {
-      toast.error('Error deleting investment experience');
+      toast.error(t('ixp.deleteError'));
       console.error('Error deleting investment experience:', err);
     } finally {
       setFormLoading(false);
@@ -151,10 +153,10 @@ export default function InvestmentExperienceList() {
         });
         setShowEditModal(true);
       } else {
-        toast.error('Failed to fetch investment experience details');
+        toast.error(t('ixp.detailsFail'));
       }
     } catch (err) {
-      toast.error('Error fetching investment experience details');
+      toast.error(t('ixp.detailsError'));
       console.error('Error fetching investment experience details:', err);
     }
   };
@@ -167,10 +169,10 @@ export default function InvestmentExperienceList() {
         setSelectedInvestmentExperience(response.data);
         setShowViewModal(true);
       } else {
-        toast.error('Failed to fetch investment experience details');
+        toast.error(t('ixp.detailsFail'));
       }
     } catch (err) {
-      toast.error('Error fetching investment experience details');
+      toast.error(t('ixp.detailsError'));
       console.error('Error fetching investment experience details:', err);
     }
   };
@@ -215,7 +217,7 @@ export default function InvestmentExperienceList() {
     return (
       <div className="flex items-center justify-center h-64">
         <Loader />
-        <span className="ml-2 text-gray-600">Loading investment experiences...</span>
+        <span className="ms-2 text-gray-600">{t('ixp.loading')}</span>
       </div>
     );
   }
@@ -228,7 +230,7 @@ export default function InvestmentExperienceList() {
           onClick={fetchInvestmentExperiences}
           className="mt-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
         >
-          Retry
+          {t('iil.retry')}
         </button>
       </div>
     );
@@ -239,15 +241,15 @@ export default function InvestmentExperienceList() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Investment Experience Management</h1>
-          <p className="text-gray-600">Manage investment experience levels</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('ixp.title')}</h1>
+          <p className="text-gray-600">{t('ixp.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Investment Experience
+          <Plus className="w-4 h-4 me-2" />
+          {t('ixp.addBtn')}
         </button>
       </div>
 
@@ -258,15 +260,15 @@ export default function InvestmentExperienceList() {
             <Search className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Search by experience..."
+              placeholder={t('ixp.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
+              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             />
           </div>
         </div>
         <div className="text-sm text-gray-600">
-          Showing {filteredInvestmentExperiences.length} of {totalCount} investment experiences
+          {t('ixp.countLabel', { shown: filteredInvestmentExperiences.length, total: totalCount })}
         </div>
       </div>
 
@@ -277,17 +279,17 @@ export default function InvestmentExperienceList() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Experience
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('ixp.col.experience')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Created
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('irl.col.created')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Updated
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('irl.col.updated')}
                   </th>
                   <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{t('common:actions')}</span>
                   </th>
                 </tr>
               </thead>
@@ -296,7 +298,7 @@ export default function InvestmentExperienceList() {
                   <tr key={investmentExperience.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Briefcase className="w-5 h-5 text-gray-700 mr-3" />
+                        <Briefcase className="w-5 h-5 text-gray-700 me-3" />
                         <span className="text-sm font-medium text-gray-900">
                           {investmentExperience.experience}
                         </span>
@@ -320,26 +322,26 @@ export default function InvestmentExperienceList() {
                         minute: '2-digit'
                       })}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button 
                           onClick={() => handleViewClick(investmentExperience.id)}
-                          className="text-black hover:text-blue-900" 
-                          title="View Details"
+                          className="text-black hover:text-blue-900"
+                          title={t('irl.viewDetails')}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleEditClick(investmentExperience.id)}
-                          className="text-yellow-600 hover:text-yellow-900" 
-                          title="Edit"
+                          className="text-yellow-600 hover:text-yellow-900"
+                          title={t('common:edit')}
                         >
                           <Edit className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDeleteClick(investmentExperience)}
-                          className="text-red-600 hover:text-red-900" 
-                          title="Delete"
+                          className="text-red-600 hover:text-red-900"
+                          title={t('common:delete')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -360,21 +362,20 @@ export default function InvestmentExperienceList() {
                   disabled={currentPage === 1}
                   className="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Previous
+                  {t('common:previous')}
                 </button>
                 <button
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === totalPages}
-                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="ms-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  Next
+                  {t('common:next')}
                 </button>
               </div>
               <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm text-gray-700">
-                    Showing page <span className="font-medium">{currentPage}</span> of{' '}
-                    <span className="font-medium">{totalPages}</span>
+                    {t('iil.showingPage', { current: currentPage, total: totalPages })}
                   </p>
                 </div>
                 <div>
@@ -407,7 +408,7 @@ export default function InvestmentExperienceList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Create Investment Experience</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ixp.createTitle')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -419,7 +420,7 @@ export default function InvestmentExperienceList() {
             <form onSubmit={handleCreate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Experience Level
+                  {t('ixp.experienceLevel')}
                 </label>
                 <input
                   type="text"
@@ -429,7 +430,7 @@ export default function InvestmentExperienceList() {
                     experience: e.target.value
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                  placeholder="Enter experience level (e.g., Beginner, Intermediate, Advanced)"
+                  placeholder={t('ixp.enterExperience')}
                   required
                 />
               </div>
@@ -440,7 +441,7 @@ export default function InvestmentExperienceList() {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="submit"
@@ -449,11 +450,11 @@ export default function InvestmentExperienceList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Creating...
+                      <Loader2 className="w-4 h-4 animate-spin me-2" />
+                      {t('ixp.creating')}
                     </div>
                   ) : (
-                    'Create Investment Experience'
+                    t('ixp.createBtn')
                   )}
                 </button>
               </div>
@@ -467,7 +468,7 @@ export default function InvestmentExperienceList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Edit Investment Experience</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ixp.editTitle')}</h3>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -479,7 +480,7 @@ export default function InvestmentExperienceList() {
             <form onSubmit={handleUpdate} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Experience Level
+                  {t('ixp.experienceLevel')}
                 </label>
                 <input
                   type="text"
@@ -489,7 +490,7 @@ export default function InvestmentExperienceList() {
                     experience: e.target.value
                   })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900 font-medium"
-                  placeholder="Enter experience level (e.g., Beginner, Intermediate, Advanced)"
+                  placeholder={t('ixp.enterExperience')}
                   required
                 />
               </div>
@@ -500,7 +501,7 @@ export default function InvestmentExperienceList() {
                   onClick={() => setShowEditModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="submit"
@@ -509,11 +510,11 @@ export default function InvestmentExperienceList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Updating...
+                      <Loader2 className="w-4 h-4 animate-spin me-2" />
+                      {t('ixp.updating')}
                     </div>
                   ) : (
-                    'Update Investment Experience'
+                    t('ixp.updateBtn')
                   )}
                 </button>
               </div>
@@ -527,7 +528,7 @@ export default function InvestmentExperienceList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Investment Experience Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ixp.detailsTitle')}</h3>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -538,18 +539,18 @@ export default function InvestmentExperienceList() {
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('irl.label.id')}</label>
                 <p className="text-sm text-gray-900">{selectedInvestmentExperience.id}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Experience Level</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ixp.experienceLevel')}</label>
                 <div className="flex items-center">
-                  <Briefcase className="w-5 h-5 text-gray-700 mr-2" />
+                  <Briefcase className="w-5 h-5 text-gray-700 me-2" />
                   <p className="text-lg font-semibold text-gray-900">{selectedInvestmentExperience.experience}</p>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Created At</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:createdAt')}</label>
                 <p className="text-sm text-gray-900">
                   {new Date(selectedInvestmentExperience.createdAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -562,7 +563,7 @@ export default function InvestmentExperienceList() {
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Updated At</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:updatedAt')}</label>
                 <p className="text-sm text-gray-900">
                   {new Date(selectedInvestmentExperience.updatedAt).toLocaleDateString('en-US', {
                     year: 'numeric',
@@ -581,7 +582,7 @@ export default function InvestmentExperienceList() {
                 onClick={() => setShowViewModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
             </div>
           </div>
@@ -593,7 +594,7 @@ export default function InvestmentExperienceList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Delete Investment Experience</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ixp.deleteTitle')}</h3>
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -604,13 +605,13 @@ export default function InvestmentExperienceList() {
 
             <div className="mb-6">
               <p className="text-gray-600 mb-4">
-                Are you sure you want to delete this investment experience?
+                {t('ixp.deleteConfirm')}
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <Briefcase className="w-5 h-5 text-gray-700 mr-2" />
+                  <Briefcase className="w-5 h-5 text-gray-700 me-2" />
                   <p className="text-sm text-gray-700">
-                    <span className="font-medium">Experience:</span> {selectedInvestmentExperience.experience}
+                    <span className="font-medium">{t('ixp.experienceLabel')}</span> {selectedInvestmentExperience.experience}
                   </p>
                 </div>
               </div>
@@ -621,7 +622,7 @@ export default function InvestmentExperienceList() {
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={handleDelete}
@@ -630,11 +631,11 @@ export default function InvestmentExperienceList() {
               >
                 {formLoading ? (
                   <div className="flex items-center">
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Deleting...
+                    <Loader2 className="w-4 h-4 animate-spin me-2" />
+                    {t('ixp.deleting')}
                   </div>
                 ) : (
-                  'Delete Investment Experience'
+                  t('ixp.deleteBtn')
                 )}
               </button>
             </div>

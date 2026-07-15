@@ -103,9 +103,9 @@ export default function ControlCenter() {
                 stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
               }`}>
                 {stat.changeType === 'increase' ? (
-                  <TrendingUp className="w-4 h-4 mr-1" />
+                  <TrendingUp className="w-4 h-4 me-1" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 mr-1" />
+                  <TrendingDown className="w-4 h-4 me-1" />
                 )}
                 {stat.change}
               </div>
@@ -135,7 +135,7 @@ export default function ControlCenter() {
                   )}
                   <span className="font-medium text-gray-900">{system.name}</span>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <div className={`text-sm font-medium ${
                     system.status === 'operational' ? 'text-green-600' : 
                     system.status === 'maintenance' ? 'text-yellow-600' : 'text-red-600'
@@ -175,19 +175,19 @@ export default function ControlCenter() {
         <h2 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <button className="flex items-center justify-center px-4 py-3 bg-gray-50 text-gray-800 rounded-lg hover:bg-gray-100 transition-colors">
-            <Users className="w-5 h-5 mr-2" />
+            <Users className="w-5 h-5 me-2" />
             Add Investor
           </button>
           <button className="flex items-center justify-center px-4 py-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
-            <Activity className="w-5 h-5 mr-2" />
+            <Activity className="w-5 h-5 me-2" />
             Create Product
           </button>
           <button className="flex items-center justify-center px-4 py-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors">
-            <TrendingUp className="w-5 h-5 mr-2" />
+            <TrendingUp className="w-5 h-5 me-2" />
             Generate Report
           </button>
           <button className="flex items-center justify-center px-4 py-3 bg-orange-50 text-orange-700 rounded-lg hover:bg-orange-100 transition-colors">
-            <AlertTriangle className="w-5 h-5 mr-2" />
+            <AlertTriangle className="w-5 h-5 me-2" />
             Review Alerts
           </button>
         </div>

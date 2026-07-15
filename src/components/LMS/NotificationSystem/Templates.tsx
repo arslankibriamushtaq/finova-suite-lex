@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -20,6 +21,7 @@ import TableView from "../../TableView/TableView";
 
 
 const Templates = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -53,23 +55,23 @@ const Templates = () => {
   
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
         },
         {
-            name: "Name",
+            name: t("common:name"),
             selector: (row: { name: any }) => row.name,
             sortable: true,
         },
         {
-            name: "System Notification Pref Id",
+            name: t("templates.col.systemNotificationPrefId"),
             selector: (row: { systemNotificationPrefId: any }) => getSystemNotificationPrefsById(row?.systemNotificationPrefId),
             sortable: true,
             wrap: true,
         },
         {
-            name: "Active",
+            name: t("common:active"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -80,14 +82,14 @@ const Templates = () => {
                         color: "white",
                     }}
                 >
-                    {row.active ? "Active" : "Inactive"}
+                    {row.active ? t("common:active") : t("common:inactive")}
                 </div>
             ),
             width: "130px",
         },
 
         {
-            name: "Actions",
+            name: t("common:actions"),
 
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -102,7 +104,7 @@ const Templates = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -137,14 +139,14 @@ const Templates = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -253,9 +255,9 @@ const Templates = () => {
                         defaultValue: "",
                     });
                     await getList();
-                    return "Template updated successfully!";
+                    return t("templates.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createTemplates(body);
@@ -274,17 +276,17 @@ const Templates = () => {
                         variableName: "",
                         defaultValue: "",
                     });
-                    return "Template added successfully!";
+                    return t("templates.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating Template..." : "Adding Template...",
+            loading: isEditing ? t("templates.toast.updating") : t("templates.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -296,16 +298,16 @@ const Templates = () => {
                      setIsDeleteModalVisible(false);
                      await getList();
                      setEditRowId(null);
-                     return "Template deleted successfully!";
+                     return t("templates.toast.deleted");
                  } else {
-                     throw new Error(response?.data?.errors || "Failed to delete");
+                     throw new Error(response?.data?.errors || t("shared.failedDelete"));
                  }
              };
 
              toast.promise(deletePromise(), {
-                 loading: "Deleting Template...",
+                 loading: t("templates.toast.deleting"),
                  success: (msg) => msg,
-                 error: (err) => err.message || "Something went wrong",
+                 error: (err) => err.message || t("shared.somethingWentWrong"),
              });
          } catch (error: any) {
              toast.error(error.message);
@@ -338,7 +340,7 @@ const Templates = () => {
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
                         // onChange={handleChange}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
 
@@ -356,7 +358,7 @@ const Templates = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -380,7 +382,7 @@ const Templates = () => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New Template
+                            {t("templates.addNew")}
                         </button>
                     </div>
                 </div>
@@ -403,13 +405,13 @@ const Templates = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit Template" : "Add New Template"}
+                title={editRowId ? t("templates.editTitle") : t("templates.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -417,11 +419,11 @@ const Templates = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Name <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("common:name")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter template name"
+                                    placeholder={t("templates.ph.name")}
                                     name="name"
                                     value={formData.name}
                                     onChange={(e: any) => {
@@ -435,10 +437,10 @@ const Templates = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">System Notification Pref Id <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("templates.col.systemNotificationPrefId")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select system notification pref"
+                                    placeholder={t("templates.ph.systemNotificationPref")}
                                     value={formData.systemNotificationPrefId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, systemNotificationPrefId: val })}
                                 >
@@ -455,10 +457,10 @@ const Templates = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Language <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.language")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select language"
+                                    placeholder={t("shared.selectLanguage")}
                                     value={formData.languageId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, languageId: val })}
                                 >
@@ -472,10 +474,10 @@ const Templates = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Channel <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.channel")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select channel"
+                                    placeholder={t("shared.selectChannel")}
                                     value={formData.channelId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, channelId: val })}
                                 >
@@ -492,7 +494,7 @@ const Templates = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Subject Template</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.subjectTemplate")}</Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
@@ -505,7 +507,7 @@ const Templates = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Body Template</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.bodyTemplate")}</Form.Label>
                                 <Input
                                     className="custom-input"
                                     placeholder="Hello {{userName}}, welcome to our platform!"
@@ -519,28 +521,28 @@ const Templates = () => {
                     <Row>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">In-App Options?</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("shared.inAppOptionsQ")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) => setFormData({ ...formData, inAppOptions: e.target.value })}
                                         value={formData.inAppOptions}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
                         </Col>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">Active?</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("shared.activeQ")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) => setFormData({ ...formData, active: e.target.value })}
                                         value={formData.active}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
@@ -550,7 +552,7 @@ const Templates = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Variable Name</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.variableName")}</Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
@@ -562,7 +564,7 @@ const Templates = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Default Value</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.defaultValue")}</Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
@@ -581,10 +583,10 @@ const Templates = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                 title={"Delete Template"}
+                 title={t("templates.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -593,13 +595,12 @@ const Templates = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    {`
-               Are you sure you want to delete this Template?`}
+                    {t("templates.delete.confirm")}
                 </Form>
             </Modal>
         </div>

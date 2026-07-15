@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Form, Input, Switch, Select, Row, Col, Card } from "antd";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -8,6 +9,7 @@ import { getCountries } from "../../redux/apis/apisCrud";
 const { Option } = Select;
 
 const AddEditClientAdmin = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const { clientId, id } = useParams<{ clientId: string; id?: string }>();
   const formClientId = clientId ? parseInt(clientId) : 0;
@@ -57,7 +59,7 @@ const AddEditClientAdmin = () => {
       }
       setLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch admin data");
+      toast.error(error?.response?.data?.message || t("addEditClientAdmin.toast.fetchFailed"));
       setLoading(false);
     }
   };
@@ -80,15 +82,15 @@ const AddEditClientAdmin = () => {
       if (isEditMode && id) {
         payload.client_admin_id = parseInt(id);
         await updateClientAdmin(payload);
-        toast.success("Client admin updated successfully");
+        toast.success(t("addEditClientAdmin.toast.updateSuccess"));
       } else {
         await createClientAdmin(formClientId, payload);
-        toast.success("Client admin created successfully");
+        toast.success(t("addEditClientAdmin.toast.createSuccess"));
       }
       navigate(`/ThirdPartyManagement/Clients/${formClientId}/Admins`);
       setLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${isEditMode ? "update" : "create"} client admin`);
+      toast.error(error?.response?.data?.message || (isEditMode ? t("addEditClientAdmin.toast.updateFailed") : t("addEditClientAdmin.toast.createFailed")));
       setLoading(false);
     }
   };
@@ -96,9 +98,9 @@ const AddEditClientAdmin = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>{isEditMode ? "Edit Client Admin" : "Add Client Admin"}</h2>
+        <h2>{isEditMode ? t("addEditClientAdmin.titleEdit") : t("addEditClientAdmin.titleAdd")}</h2>
         <Button onClick={() => navigate(`/ThirdPartyManagement/Clients/${formClientId}/Admins`)}>
-          Cancel
+          {t("common:cancel")}
         </Button>
       </div>
 
@@ -123,45 +125,45 @@ const AddEditClientAdmin = () => {
           <Row gutter={[16, 16]}>
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Name"
+                label={t("addEditClientAdmin.form.name")}
                 name="name"
-                rules={[{ required: true, message: "Please enter name" }]}
+                rules={[{ required: true, message: t("addEditClientAdmin.validation.nameRequired") }]}
                 style={{ marginBottom: 8 }}
               >
-                <Input className="form-control" placeholder="Enter name" />
+                <Input className="form-control" placeholder={t("addEditClientAdmin.form.namePlaceholder")} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Email"
+                label={t("addEditClientAdmin.form.email")}
                 name="email"
                 rules={[
-                  { required: true, message: "Please enter email" },
-                  { type: "email", message: "Please enter a valid email" },
+                  { required: true, message: t("addEditClientAdmin.validation.emailRequired") },
+                  { type: "email", message: t("addEditClientAdmin.validation.emailValid") },
                 ]}
                 style={{ marginBottom: 8 }}
               >
-                <Input className="form-control" placeholder="Enter email address" />
+                <Input className="form-control" placeholder={t("addEditClientAdmin.form.emailPlaceholder")} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Phone"
+                label={t("addEditClientAdmin.form.phone")}
                 name="phone"
-                rules={[{ required: true, message: "Please enter phone number" }]}
+                rules={[{ required: true, message: t("addEditClientAdmin.validation.phoneRequired") }]}
                 style={{ marginBottom: 8 }}
               >
-                <Input className="form-control" placeholder="Enter phone number" />
+                <Input className="form-control" placeholder={t("addEditClientAdmin.form.phonePlaceholder")} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Date of Birth"
+                label={t("addEditClientAdmin.form.dob")}
                 name="dob"
-                rules={[{ required: true, message: "Please enter date of birth" }]}
+                rules={[{ required: true, message: t("addEditClientAdmin.validation.dobRequired") }]}
                 style={{ marginBottom: 8 }}
               >
                 <Input type="date" className="form-control" />
@@ -170,36 +172,36 @@ const AddEditClientAdmin = () => {
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Address"
+                label={t("addEditClientAdmin.form.address")}
                 name="address"
-                rules={[{ required: true, message: "Please enter address" }]}
+                rules={[{ required: true, message: t("addEditClientAdmin.validation.addressRequired") }]}
                 style={{ marginBottom: 8 }}
               >
-                <Input className="form-control" placeholder="Enter address" />
+                <Input className="form-control" placeholder={t("addEditClientAdmin.form.addressPlaceholder")} />
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Country"
+                label={t("addEditClientAdmin.form.country")}
                 name="country_id"
-                rules={[{ required: true, message: "Please select country" }]}
+                rules={[{ required: true, message: t("addEditClientAdmin.validation.countryRequired") }]}
                 style={{ marginBottom: 8 }}
               >
-                <Select  placeholder="Select country" allowClear showSearch>
+                <Select  placeholder={t("addEditClientAdmin.form.countryPlaceholder")} allowClear showSearch>
                   {/* {countries && Array.isArray(countries) && countries.map((country: any) => (
                     <Option key={country.id} value={country.id}>
                       {country.country_name || country.name}
                     </Option>
                   ))} */}
-                  <Option value="1">Saudi Arabia</Option>
+                  <Option value="1">{t("addEditClientAdmin.option.saudiArabia")}</Option>
                 </Select>
               </Form.Item>
             </Col>
 
             <Col xs={24} sm={12}>
               <Form.Item
-                label="Status"
+                label={t("addEditClientAdmin.form.status")}
                 name="status"
                 valuePropName="checked"
                 style={{ marginBottom: 8 }}
@@ -218,7 +220,7 @@ const AddEditClientAdmin = () => {
                 size="large"
                 style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
               >
-                {isEditMode ? "Update Admin" : "Create Admin"}
+                {isEditMode ? t("addEditClientAdmin.updateAdmin") : t("addEditClientAdmin.createAdmin")}
               </Button>
             </Col>
           </Row>

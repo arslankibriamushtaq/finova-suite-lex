@@ -5,8 +5,10 @@ import { createGlobalStyle } from "styled-components";
 import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
 // import SuperAdmin from "./SuperAdmin";
+import { useTranslation } from "react-i18next";
 
 const LandingSubHeader = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
   const [showSuperAdmin, setShowSuperAdmin] = useState(false);
@@ -49,7 +51,7 @@ const LandingSubHeader = () => {
               }}
               className="col-3 d-flex justify-content-center simple-text"
             >
-              Home
+              {t("nav.home")}
             </div>
             <div
               style={{
@@ -60,7 +62,7 @@ const LandingSubHeader = () => {
               }}
               className="col-3 d-flex justify-content-center"
             >
-              Products
+              {t("nav.products")}
             </div>
           </div>
           <div className="col-4 d-flex justify-content-start align-items-center">
@@ -73,7 +75,7 @@ const LandingSubHeader = () => {
               }}
               className="col-5 d-flex justify-content-center simple-text"
             >
-              Products Guide
+              {t("nav.productsGuide")}
             </div>
             <div
               style={{
@@ -84,7 +86,7 @@ const LandingSubHeader = () => {
               }}
               className="col-3 d-flex justify-content-center"
             >
-              Packages
+              {t("nav.packages")}
             </div>
             <div
               style={{
@@ -99,7 +101,7 @@ const LandingSubHeader = () => {
                 navigate("/login");
               }}
             >
-              Sign In
+              {t("nav.signIn")}
             </div>
           </div>
         </div>

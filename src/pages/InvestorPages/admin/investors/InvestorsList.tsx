@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Plus as PlusIcon, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getInvestorDashboard, getAllCountries, getAllKycInvestors, getAllKybInvestors, createBusinessShare, Country, InvestorKyc, InvestorKyb } from '../../../../redux/apis/apisInvestor';
 
 import { 
@@ -29,6 +30,20 @@ import toast from 'react-hot-toast';
 
 export default function InvestorsList() {
   const navigate = useNavigate();
+  const { t } = useTranslation('investor');
+  const tLevel = (v: number) => {
+    const m: Record<number, string> = { 0: 'ils.lvl.beginner', 1: 'ils.lvl.intermediate', 2: 'ils.lvl.advanced', 3: 'ils.lvl.premium' };
+    return t(m[v] || 'ils.lvl.unknown');
+  };
+  const tEmployment = (v: number) => {
+    const m: Record<number, string> = { 0: 'ils.emp.employed', 1: 'ils.emp.selfEmployed', 2: 'ils.emp.businessOwner', 3: 'ils.emp.retired' };
+    return t(m[v] || 'ils.lvl.unknown');
+  };
+  const tDesigCell = (v: number) => {
+    const m: Record<number, string> = { 0: 'ils.desig.ceo', 1: 'ils.desig.cfo', 2: 'ils.desig.director', 3: 'ils.desig.manager' };
+    return t(m[v] || 'ils.desig.unknown');
+  };
+  const tVerification = (v: number) => t(v === 0 ? 'ilst.kyc.pending' : v === 1 ? 'ilst.kyc.verified' : 'ilst.kyc.rejected');
   const [sortBy, setSortBy] = useState('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [selectedInvestor, setSelectedInvestor] = useState<any>(null);
@@ -174,7 +189,7 @@ export default function InvestorsList() {
       const result = await response.json();
       
       if (result.success) {
-        toast.success('Link sent successfully to investor!');
+        toast.success(t('ils.toast.linkSent'));
         // Close modal and reset form on success
         setShowCreateModal(false);
         resetFormData();
@@ -182,11 +197,11 @@ export default function InvestorsList() {
         // Refresh the dashboard data
         window.location.reload();
       } else {
-        toast.error(result.notificationMessage || 'Failed to send link. Please try again.');
+        toast.error(result.notificationMessage || t('ils.toast.linkFailed'));
       }
     } catch (error) {
-    
-      toast.error('Error sending link. Please try again.');
+
+      toast.error(t('ils.toast.linkError'));
     }
   };
   // Reset form data function
@@ -246,7 +261,7 @@ export default function InvestorsList() {
         }
       } catch (err) {
         console.error('Error fetching investor dashboard data:', err);
-        setError('Failed to load investor dashboard data. Please try again.');
+        setError(t('ils.err.dashboard'));
       } finally {
         setLoading(false);
       }
@@ -267,11 +282,11 @@ export default function InvestorsList() {
           // toast.success('Countries loaded successfully!');
         } else {
           console.error('Failed to fetch countries:', result.notificationMessage);
-          toast.error('Failed to load countries');
+          toast.error(t('ils.toast.countriesFailed'));
         }
       } catch (err) {
         console.error('Error fetching countries:', err);
-        toast.error('Error loading countries');
+        toast.error(t('ils.toast.countriesError'));
       } finally {
         setCountriesLoading(false);
       }
@@ -288,14 +303,14 @@ export default function InvestorsList() {
       
       if (result.success) {
         setKycInvestors(result.data);
-        toast.success(result.notificationMessage || 'Individual investors loaded successfully!');
+        toast.success(result.notificationMessage || t('ils.toast.individualLoaded'));
       } else {
         console.error('Failed to fetch KYC investors:', result.notificationMessage);
-        toast.error('Failed to load individual investors');
+        toast.error(t('ils.toast.individualFailed'));
       }
     } catch (err) {
       console.error('Error fetching KYC investors:', err);
-      toast.error('Error loading individual investors');
+      toast.error(t('ils.toast.individualError'));
     } finally {
       setKycLoading(false);
     }
@@ -309,14 +324,14 @@ export default function InvestorsList() {
       
       if (result.success) {
         setKybInvestors(result.data);
-        toast.success('Business investors loaded successfully!');
+        toast.success(t('ils.toast.businessLoaded'));
       } else {
         console.error('Failed to fetch KYB investors:', result.notificationMessage);
-        toast.error('Failed to load business investors');
+        toast.error(t('ils.toast.businessFailed'));
       }
     } catch (err) {
       console.error('Error fetching KYB investors:', err);
-      toast.error('Error loading business investors');
+      toast.error(t('ils.toast.businessError'));
     } finally {
       setKybLoading(false);
     }
@@ -450,7 +465,7 @@ export default function InvestorsList() {
               
               if (!kybId) {
                 console.error('KYB ID not found in result:', result);
-                toast.error('KYB ID not found. Cannot create shareholders.');
+                toast.error(t('ils.toast.kybIdNotFound'));
                 setFormLoading(false);
                 return;
               }
@@ -471,19 +486,19 @@ export default function InvestorsList() {
               const shareResult = await createBusinessShare({ businessShares });
               
               if (shareResult.success) {
-                toast.success(result.notificationMessage || 'Business investor and shareholders created successfully!');
+                toast.success(result.notificationMessage || t('ils.toast.businessSharesCreated'));
               } else {
-                toast.error('Business investor created but failed to create shareholders: ' + (shareResult.notificationMessage || 'Unknown error'));
+                toast.error(t('ils.toast.sharesFailed', { error: shareResult.notificationMessage || t('ils.unknownError') }));
               }
             } catch (shareError) {
               console.error('Error creating business shares:', shareError);
-              toast.error('Business investor created but failed to create shareholders');
+              toast.error(t('ils.toast.sharesFailedNoMsg'));
             }
           } else {
             // Individual investor or business without shareholders
-            const successMessage = selectedInvestorType === 'business' 
-              ? 'Business investor created successfully!'
-              : 'Individual investor created successfully!';
+            const successMessage = selectedInvestorType === 'business'
+              ? t('ils.toast.businessCreated')
+              : t('ils.toast.individualCreated');
             toast.success(result.notificationMessage || successMessage);
           }
           
@@ -491,15 +506,15 @@ export default function InvestorsList() {
           // Don't close modal yet, show send link button
         } else {
           const errorMessage = selectedInvestorType === 'business'
-            ? 'Failed to create business investor'
-            : 'Failed to create individual investor';
+            ? t('ils.toast.businessCreateFailed')
+            : t('ils.toast.individualCreateFailed');
           console.error('Failed to create investor:', result.notificationMessage);
           toast.error(result.notificationMessage || errorMessage);
         }
     } catch (error) {
       const errorMessage = selectedInvestorType === 'business'
-        ? 'Error creating business investor'
-        : 'Error creating individual investor';
+        ? t('ils.toast.businessCreateError')
+        : t('ils.toast.individualCreateError');
       console.error('Error creating investor:', error);
       toast.error(errorMessage);
     } finally {
@@ -524,7 +539,7 @@ export default function InvestorsList() {
     if (investorId) {
       navigate(`/InvestorDashboard/Investors/kyc-kyb-detail/${investorId}?type=${investorType}`);
     } else {
-      toast.error('Investor ID not found');
+      toast.error(t('ils.toast.investorIdNotFound'));
     }
   };
 
@@ -549,7 +564,7 @@ export default function InvestorsList() {
 
 
   const confirmDeleteInvestor = () => {
-    alert(`Investor ${selectedInvestor?.name} deleted successfully!`);
+    alert(t('ilst.alert.deleted', { name: selectedInvestor?.name }));
     setShowDeleteModal(false);
     setSelectedInvestor(null);
   };
@@ -557,11 +572,11 @@ export default function InvestorsList() {
 
 
   const handleExportData = () => {
-    alert('Investor data exported successfully!');
+    alert(t('ilst.alert.exported'));
   };
 
   const handleImportData = () => {
-    alert('Import data functionality initiated');
+    alert(t('ilst.alert.importInitiated'));
   };
 
 
@@ -571,30 +586,30 @@ export default function InvestorsList() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Investors</h1>
-            <p className="text-gray-600">Manage and oversee all investor accounts</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('ilst.title')}</h1>
+            <p className="text-gray-600">{t('ilst.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
               onClick={handleImportData}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Upload className="w-4 h-4 mr-2" />
-              Import
+              <Upload className="w-4 h-4 me-2" />
+              {t('ilst.import')}
             </button>
             <button 
               onClick={handleExportData}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
+              <Download className="w-4 h-4 me-2" />
+              {t('ilst.exportData')}
             </button>
             <button 
               onClick={() => setShowTypeSelectionModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Investor
+              <Plus className="w-4 h-4 me-2" />
+              {t('ilst.addInvestor')}
             </button>
           </div>
         </div>
@@ -604,7 +619,7 @@ export default function InvestorsList() {
       {error && (
         <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
           <div className="flex items-center">
-            <AlertTriangle className="w-5 h-5 text-red-500 mr-2" />
+            <AlertTriangle className="w-5 h-5 text-red-500 me-2" />
             <p className="text-red-700">{error}</p>
           </div>
         </div>
@@ -615,12 +630,12 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Investors</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.totalInvestors')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {loading ? '...' : dashboardData?.totalInvestors || '0'}
               </p>
               <p className="text-xs text-green-600 mt-1">
-                {dashboardData?.monthlyChangeInInvestors >= 0 ? '+' : ''}{dashboardData?.monthlyChangeInInvestors || 0}% this month
+                {t('ils.pctThisMonth', { value: `${dashboardData?.monthlyChangeInInvestors >= 0 ? '+' : ''}${dashboardData?.monthlyChangeInInvestors || 0}` })}
               </p>
             </div>
             <UserCheck className="w-8 h-8 text-gray-700" />
@@ -629,12 +644,12 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Active Investors</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.activeInvestors')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {loading ? '...' : dashboardData?.activeInvestors || '0'}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                {dashboardData?.activeInvestorPercentage || 0}% of total
+                {t('ils.pctOfTotal', { value: dashboardData?.activeInvestorPercentage || 0 })}
               </p>
             </div>
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -643,12 +658,12 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total AUM</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.totalAum')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {loading ? '...' : `SAR ${dashboardData?.totalAum || 0}`}
               </p>
               <p className="text-xs text-green-600 mt-1">
-                {dashboardData?.quaterlyChangeInAum >= 0 ? '+' : ''}{dashboardData?.quaterlyChangeInAum || 0}% this quarter
+                {t('ils.pctThisQuarter', { value: `${dashboardData?.quaterlyChangeInAum >= 0 ? '+' : ''}${dashboardData?.quaterlyChangeInAum || 0}` })}
               </p>
             </div>
           
@@ -657,11 +672,11 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Pending KYC</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.pendingKyc')}</p>
               <p className="text-2xl font-bold text-gray-900">
                 {loading ? '...' : dashboardData?.pendingKyc || '0'}
               </p>
-              <p className="text-xs text-yellow-600 mt-1">Requires review</p>
+              <p className="text-xs text-yellow-600 mt-1">{t('ilst.stat.requiresReview')}</p>
             </div>
             <AlertTriangle className="w-8 h-8 text-yellow-500" />
           </div>
@@ -680,7 +695,7 @@ export default function InvestorsList() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Individual Investors
+              {t('ils.tab.individual')}
             </button>
             <button
               onClick={() => setActiveTab('business')}
@@ -690,7 +705,7 @@ export default function InvestorsList() {
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              Business Investors
+              {t('ils.tab.business')}
           </button>
           </nav>
         </div>
@@ -703,30 +718,30 @@ export default function InvestorsList() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead style={{ backgroundColor: 'var(--color-surface-mint)' }}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  Investor
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                  {t('ilst.col.investor')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  Type
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                  {t('common:type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {activeTab === 'individual' ? 'Investor Level' : 'Company Info'}
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                  {activeTab === 'individual' ? t('ils.col.investorLevel') : t('ils.col.companyInfo')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {activeTab === 'individual' ? 'National ID' : 'CR Number'}
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                  {activeTab === 'individual' ? t('ils.col.nationalId') : t('ils.col.crNumber')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  {activeTab === 'individual' ? 'Email' : 'Designation'}
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                  {activeTab === 'individual' ? t('ils.col.email') : t('ils.col.designation')}
                 </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                Address
+              <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                {t('ils.col.address')}
               </th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-              Verification Status
+            <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+              {t('ils.col.verificationStatus')}
             </th>
-              
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
-                  Actions
+
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-900 uppercase tracking-wider" style={{ backgroundColor: 'var(--color-surface-mint)', color: 'var(--theme-heading-text-color)' }}>
+                  {t('common:actions')}
                 </th>
               </tr>
             </thead>
@@ -735,13 +750,13 @@ export default function InvestorsList() {
                 kycLoading ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      Loading individual investors...
+                      {t('ils.loadingIndividual')}
                     </td>
                   </tr>
                 ) : kycInvestors.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      No individual investors found
+                      {t('ils.noIndividual')}
                     </td>
                   </tr>
                 ) : (
@@ -749,7 +764,7 @@ export default function InvestorsList() {
                 <tr key={investor.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
                         <span className="text-sm font-medium text-gray-700">
                           {investor.firstNameInEnglish.charAt(0)}{investor.lastNameInEnglish.charAt(0)}
                         </span>
@@ -759,11 +774,11 @@ export default function InvestorsList() {
                           {investor.firstNameInEnglish} {investor.lastNameInEnglish}
                         </div>
                         <div className="text-sm text-gray-500 flex items-center">
-                          <Mail className="w-3 h-3 mr-1" />
+                          <Mail className="w-3 h-3 me-1" />
                           {investor.email}
                         </div>
                         <div className="text-sm text-gray-500 flex items-center">
-                          <Phone className="w-3 h-3 mr-1" />
+                          <Phone className="w-3 h-3 me-1" />
                           {investor.phone}
                         </div>
                       </div>
@@ -771,7 +786,7 @@ export default function InvestorsList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <span className="text-sm text-gray-900 font-medium">Individual</span>
+                      <span className="text-sm text-gray-900 font-medium">{t('ilst.type.individual')}</span>
                       <div className="mt-1">
                         {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                           KYC Verified
@@ -782,38 +797,18 @@ export default function InvestorsList() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
                       <div className="text-sm font-medium text-gray-900">
-                       Level: {
-                              investor.investorLevel === 0
-                                ? 'Beginner'
-                                : investor.investorLevel === 1
-                                ? 'Intermediate'
-                                : investor.investorLevel === 2
-                                ? 'Advanced'
-                                : investor.investorLevel === 3
-                                ? 'Premium'
-                                : 'Unknown'
-                            }
+                       {t('ils.levelLabel', { level: tLevel(investor.investorLevel) })}
 
                       </div>
                       <div className="text-sm text-gray-500">
-                      Employment: {
-                            investor.employmentStatus === 0
-                          ? 'Employed'
-                          : investor.employmentStatus === 1
-                          ? 'Self-Employed'
-                          : investor.employmentStatus === 2
-                          ? 'Business Owner'
-                          : investor.employmentStatus === 3
-                          ? 'Retired'
-                          : 'Unknown'
-                      }
+                      {t('ils.employmentLabel', { status: tEmployment(investor.employmentStatus) })}
 
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      {/* <Shield className="w-4 h-4 text-gray-700 mr-1" /> */}
+                      {/* <Shield className="w-4 h-4 text-gray-700 me-1" /> */}
                       <span className="text-sm font-medium text-black">
                         {investor.nationalId}
                       </span>
@@ -837,11 +832,7 @@ export default function InvestorsList() {
                         ? "bg-green-100 text-green-800"
                         : "bg-red-100 text-red-800"
                     }`}>
-                      {investor.verificationStatus === 0
-                          ? "Pending"
-                          : investor.verificationStatus === 1
-                          ? "Verified"
-                          : "Rejected"}
+                      {tVerification(investor.verificationStatus)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -849,14 +840,14 @@ export default function InvestorsList() {
                       <button 
                         onClick={() => handleViewInvestor(investor)}
                         className="text-black hover:text-blue-900" 
-                        title="View Details"
+                        title={t('ilst.action.viewDetails')}
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleViewDocuments(investor)}
                         className="text-purple-600 hover:text-purple-900" 
-                        title="View Documents"
+                        title={t('ilst.action.viewDocuments')}
                       >
                         <FileText className="w-4 h-4" />
                       </button>
@@ -869,13 +860,13 @@ export default function InvestorsList() {
                 kybLoading ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      Loading business investors...
+                      {t('ils.loadingBusiness')}
                     </td>
                   </tr>
                 ) : kybInvestors.length === 0 ? (
                   <tr>
                     <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
-                      No business investors found
+                      {t('ils.noBusiness')}
                     </td>
                   </tr>
                 ) : (
@@ -883,7 +874,7 @@ export default function InvestorsList() {
                     <tr key={investor.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
                             <span className="text-sm font-medium text-gray-700">
                               {investor.firstNameInEnglish.charAt(0)}{investor.lastNameInEnglish.charAt(0)}
                             </span>
@@ -893,11 +884,11 @@ export default function InvestorsList() {
                               {investor.firstNameInEnglish} {investor.lastNameInEnglish}
                             </div>
                             <div className="text-sm text-gray-500 flex items-center">
-                              <Mail className="w-3 h-3 mr-1" />
+                              <Mail className="w-3 h-3 me-1" />
                               {investor.email}
                             </div>
                             <div className="text-sm text-gray-500 flex items-center">
-                              <Phone className="w-3 h-3 mr-1" />
+                              <Phone className="w-3 h-3 me-1" />
                               {investor.phone}
                             </div>
                           </div>
@@ -905,7 +896,7 @@ export default function InvestorsList() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <span className="text-sm text-gray-900 font-medium">Business</span>
+                          <span className="text-sm text-gray-900 font-medium">{t('ils.business')}</span>
                           <div className="mt-1">
                             {/* <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                               KYB Verified
@@ -925,22 +916,15 @@ export default function InvestorsList() {
                       
                          
                           <div className="text-sm text-gray-500">
-                            CR: {investor.crNumber}
+                            {t('ils.crLabel', { value: investor.crNumber })}
                           </div>
                       
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          {/* <Building className="w-4 h-4 text-purple-500 mr-1" /> */}
+                          {/* <Building className="w-4 h-4 text-purple-500 me-1" /> */}
                           <span className="text-sm font-medium text-purple-600">
-                                                    {
-                            investor.employeeDesignation === 0 ? 'CEO' :
-                            investor.employeeDesignation === 1 ? 'CFO' :
-                            investor.employeeDesignation === 2 ? 'Director' :
-                            investor.employeeDesignation === 3 ? 'Manager' :
-                       
-                            'Unknown'
-                          }
+                                                    {tDesigCell(investor.employeeDesignation)}
 
                           </span>
                         </div>
@@ -958,16 +942,12 @@ export default function InvestorsList() {
                             ? "bg-green-100 text-green-800"
                             : "bg-red-100 text-red-800"
                         }`}>
-                          {investor.verificationStatus === 0
-                        ? "Pending"
-                        : investor.verificationStatus === 1
-                        ? "Verified"
-                        : "Rejected"}
+                          {tVerification(investor.verificationStatus)}
                         </span>
                       </td>
                       {/* <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center text-sm text-gray-500">
-                          <Calendar className="w-3 h-3 mr-1" />
+                          <Calendar className="w-3 h-3 me-1" />
                           {new Date(investor.createdAt).toLocaleDateString()}
                         </div>
                       </td> */}
@@ -976,14 +956,14 @@ export default function InvestorsList() {
                           <button
                             onClick={() => handleViewInvestor(investor)}
                             className="text-black hover:text-blue-900"
-                            title="View Details"
+                            title={t('ilst.action.viewDetails')}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleViewDocuments(investor)}
                             className="text-purple-600 hover:text-purple-900"
-                            title="View Documents"
+                            title={t('ilst.action.viewDocuments')}
                           >
                             <FileText className="w-4 h-4" />
                           </button>
@@ -1001,7 +981,9 @@ export default function InvestorsList() {
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, activeTab === 'individual' ? kycInvestors.length : kybInvestors.length)} of {activeTab === 'individual' ? kycInvestors.length : kybInvestors.length} {activeTab === 'individual' ? 'individual' : 'business'} investors
+          {activeTab === 'individual'
+            ? t('ils.showingIndividual', { start: ((currentPage - 1) * itemsPerPage) + 1, end: Math.min(currentPage * itemsPerPage, kycInvestors.length), total: kycInvestors.length })
+            : t('ils.showingBusiness', { start: ((currentPage - 1) * itemsPerPage) + 1, end: Math.min(currentPage * itemsPerPage, kybInvestors.length), total: kybInvestors.length })}
         </div>
         <div className="flex items-center space-x-2">
           <button 
@@ -1009,7 +991,7 @@ export default function InvestorsList() {
             disabled={currentPage === 1}
             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Previous
+            {t('common:previous')}
           </button>
           
           {/* Page numbers */}
@@ -1032,7 +1014,7 @@ export default function InvestorsList() {
             disabled={currentPage === getTotalPages()}
             className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Next
+            {t('common:next')}
           </button>
         </div>
       </div>
@@ -1042,7 +1024,7 @@ export default function InvestorsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Select Investor Type</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ils.selectType')}</h3>
               <button
                 onClick={() => setShowTypeSelectionModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -1052,7 +1034,7 @@ export default function InvestorsList() {
             </div>
 
             <div className="space-y-4">
-              <p className="text-gray-600 mb-4">Choose the type of investor you want to add:</p>
+              <p className="text-gray-600 mb-4">{t('ils.chooseType')}</p>
               
               <div className="space-y-3">
                 <button
@@ -1085,11 +1067,11 @@ export default function InvestorsList() {
                           const countriesResult = await getAllCountries(1, 100);
                           if (countriesResult.success) {
                             setCountries(countriesResult.data);
-                            toast.success('Countries loaded successfully!');
+                            toast.success(t('ils.toast.countriesLoaded'));
                           }
                         } catch (err) {
                           console.error('Error fetching countries:', err);
-                          toast.error('Error loading countries');
+                          toast.error(t('ils.toast.countriesError'));
                         }
                         
                         // Reset form data but keep the investor ID
@@ -1130,19 +1112,19 @@ export default function InvestorsList() {
                         });
                       } else {
                         console.error('Failed to create investor:', result.notificationMessage);
-                        toast.error(result.notificationMessage || 'Failed to create investor');
+                        toast.error(result.notificationMessage || t('ils.toast.createFailed'));
                       }
                     } catch (error) {
                       console.error('Error creating investor:', error);
                     }
                   }}
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-gray-700 hover:bg-gray-50 transition-colors text-left"
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-gray-700 hover:bg-gray-50 transition-colors text-start"
                 >
                   <div className="flex items-center">
-                    <User className="w-8 h-8 text-gray-700 mr-4" />
+                    <User className="w-8 h-8 text-gray-700 me-4" />
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900">Individual</h4>
-                      <p className="text-sm text-gray-600">Personal investor account</p>
+                      <h4 className="text-lg font-semibold text-gray-900">{t('ilst.type.individual')}</h4>
+                      <p className="text-sm text-gray-600">{t('ils.individualDesc')}</p>
                     </div>
                   </div>
                 </button>
@@ -1176,11 +1158,11 @@ export default function InvestorsList() {
                           const countriesResult = await getAllCountries(1, 100);
                           if (countriesResult.success) {
                             setCountries(countriesResult.data);
-                            toast.success('Countries loaded successfully!');
+                            toast.success(t('ils.toast.countriesLoaded'));
                           }
                         } catch (err) {
                           console.error('Error fetching countries:', err);
-                          toast.error('Error loading countries');
+                          toast.error(t('ils.toast.countriesError'));
                         }
                         
                         // Reset form data but keep the investor ID
@@ -1221,19 +1203,19 @@ export default function InvestorsList() {
                         });
                       } else {
                         console.error('Failed to create investor:', result.notificationMessage);
-                        toast.error(result.notificationMessage || 'Failed to create investor');
+                        toast.error(result.notificationMessage || t('ils.toast.createFailed'));
                       }
                     } catch (error) {
                       console.error('Error creating investor:', error);
                     }
                   }}
-                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-gray-700 hover:bg-gray-50 transition-colors text-left"
+                  className="w-full p-4 border-2 border-gray-200 rounded-lg hover:border-gray-700 hover:bg-gray-50 transition-colors text-start"
                 >
                   <div className="flex items-center">
-                    <Building className="w-8 h-8 text-green-500 mr-4" />
+                    <Building className="w-8 h-8 text-green-500 me-4" />
                     <div>
-                      <h4 className="text-lg font-semibold text-gray-900">Business</h4>
-                      <p className="text-sm text-gray-600">Corporate or business entity</p>
+                      <h4 className="text-lg font-semibold text-gray-900">{t('ils.business')}</h4>
+                      <p className="text-sm text-gray-600">{t('ils.businessDesc')}</p>
                     </div>
                   </div>
                 </button>
@@ -1245,7 +1227,7 @@ export default function InvestorsList() {
                 onClick={() => setShowTypeSelectionModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
             </div>
           </div>
@@ -1258,7 +1240,7 @@ export default function InvestorsList() {
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-gray-900">
-                Add New {selectedInvestorType === 'individual' ? 'Individual' : 'Business'} Investor
+                {t('ils.createTitle', { type: selectedInvestorType === 'individual' ? t('ilst.type.individual') : t('ils.business') })}
               </h3>
               <button
                 onClick={() => {
@@ -1274,10 +1256,10 @@ export default function InvestorsList() {
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">First Name (English) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.firstNameEn')}</label>
                   <input
                     type="text"
-                    placeholder="Enter first name in English"
+                    placeholder={t('ils.ph.firstNameEn')}
                     value={formData.firstNameInEnglish}
                     onChange={(e) => setFormData({ ...formData, firstNameInEnglish: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1285,10 +1267,10 @@ export default function InvestorsList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Name (English) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.lastNameEn')}</label>
                   <input
                     type="text"
-                    placeholder="Enter last name in English"
+                    placeholder={t('ils.ph.lastNameEn')}
                     value={formData.lastNameInEnglish}
                     onChange={(e) => setFormData({ ...formData, lastNameInEnglish: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1299,20 +1281,20 @@ export default function InvestorsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">First Name (Arabic)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.firstNameAr')}</label>
                   <input
                     type="text"
-                    placeholder="Enter first name in Arabic"
+                    placeholder={t('ils.ph.firstNameAr')}
                     value={formData.firstNameInArabic}
                     onChange={(e) => setFormData({ ...formData, firstNameInArabic: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Last Name (Arabic)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.lastNameAr')}</label>
                   <input
                     type="text"
-                    placeholder="Enter last name in Arabic"
+                    placeholder={t('ils.ph.lastNameAr')}
                     value={formData.lastNameInArabic}
                     onChange={(e) => setFormData({ ...formData, lastNameInArabic: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1322,10 +1304,10 @@ export default function InvestorsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">ID / Passport Number *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.idPassport')}</label>
                   <input
                     type="text"
-                    placeholder="Enter ID or Passport Number"
+                    placeholder={t('ils.ph.idPassport')}
                     value={formData.nationalId}
                     onChange={(e) => setFormData({ ...formData, nationalId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1333,14 +1315,14 @@ export default function InvestorsList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Issuing Authority *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.issuingAuthority')}</label>
                   <select
                     value={formData.IssuanceCountryId}
                     onChange={(e) => setFormData({ ...formData, IssuanceCountryId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                     required
                   >
-                    <option value="">Select Issuing Authority</option>
+                    <option value="">{t('ils.selectIssuingAuthority')}</option>
                     {countries.map((country: any) => (
                       <option key={country.id} value={country.id}>
                         {country.name}
@@ -1352,7 +1334,7 @@ export default function InvestorsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Date of Birth *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.dateOfBirth')}</label>
                   <input
                     type="date"
                     value={formData.dateOfBirth}
@@ -1362,10 +1344,10 @@ export default function InvestorsList() {
                   />
                 </div>
                 <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Address *</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.address')}</label>
                 <input
                   type="text"
-                  placeholder="Enter address"
+                  placeholder={t('ils.ph.address')}
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1377,10 +1359,10 @@ export default function InvestorsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.phone')}</label>
                   <input
                     type="tel"
-                    placeholder="Enter phone number"
+                    placeholder={t('ils.ph.phone')}
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1388,10 +1370,10 @@ export default function InvestorsList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.email')}</label>
                   <input
                     type="email"
-                    placeholder="Enter email address"
+                    placeholder={t('ils.ph.email')}
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1403,7 +1385,7 @@ export default function InvestorsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.country')}</label>
                   <select
                     value={formData.countryId}
                     onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
@@ -1411,7 +1393,7 @@ export default function InvestorsList() {
                     required
                     disabled={countriesLoading}
                   >
-                    <option value="">Select a country</option>
+                    <option value="">{t('ils.selectCountry')}</option>
                     {countries.map((country) => (
                       <option key={country.id} value={country.id}>
                         {country.name} 
@@ -1419,7 +1401,7 @@ export default function InvestorsList() {
                     ))}
                   </select>
                   {countriesLoading && (
-                    <p className="text-sm text-gray-500 mt-1">Loading countries...</p>
+                    <p className="text-sm text-gray-500 mt-1">{t('ils.loadingCountries')}</p>
                   )}
                 </div>
                 {/* <div>
@@ -1436,16 +1418,16 @@ export default function InvestorsList() {
                   </select>
                 </div> */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Employment Status</label>
-                  <select 
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.employmentStatus')}</label>
+                  <select
                     value={formData.employmentStatus}
                     onChange={(e) => setFormData({ ...formData, employmentStatus: Number(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                   >
-                    <option value="0">Employed</option>
-                    <option value="1">Self-Employed</option>
-                    <option value="2">BusinessOwner</option>
-                    <option value="3">Retired</option>
+                    <option value="0">{t('ils.emp.employed')}</option>
+                    <option value="1">{t('ils.emp.selfEmployed')}</option>
+                    <option value="2">{t('ils.emp.businessOwner')}</option>
+                    <option value="3">{t('ils.emp.retired')}</option>
      
                   </select>
                 </div>
@@ -1472,7 +1454,7 @@ export default function InvestorsList() {
                     type="checkbox" 
                     checked={formData.twoFactorEnabled}
                     onChange={(e) => setFormData({ ...formData, twoFactorEnabled: e.target.checked })}
-                    className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" 
+                    className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" 
                   />
                   <span className="text-sm text-gray-700">Two Factor Authentication Enabled</span>
                 </label>
@@ -1482,28 +1464,28 @@ export default function InvestorsList() {
               {selectedInvestorType === 'business' && (
                 <>
                   <div className="border-t pt-6 mt-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Business Information</h4>
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">{t('ils.businessInfo')}</h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Employee Designation</label>
-                        <select 
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.employeeDesignation')}</label>
+                        <select
                           value={formData.employeeDesignation}
                           onChange={(e) => setFormData({ ...formData, employeeDesignation: Number(e.target.value) })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                         >
-                          <option value="0">CEO</option>
-                          <option value="1">Director</option>
-                          <option value="2">Manager</option>
-                          <option value="3">Employee</option>
-                          <option value="4">Other</option>
+                          <option value="0">{t('ils.desig.ceo')}</option>
+                          <option value="1">{t('ils.desig.director')}</option>
+                          <option value="2">{t('ils.desig.manager')}</option>
+                          <option value="3">{t('ils.desig.employee')}</option>
+                          <option value="4">{t('ils.desig.other')}</option>
                   </select>
                 </div>
                 <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Company Name *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.companyName')}</label>
                   <input
                     type="text"
-                          placeholder="Enter company name"
+                          placeholder={t('ils.ph.companyName')}
                           value={formData.companyName}
                           onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1514,10 +1496,10 @@ export default function InvestorsList() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Company Email *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.companyEmail')}</label>
                 <input
                           type="email"
-                          placeholder="Enter company email"
+                          placeholder={t('ils.ph.companyEmail')}
                           value={formData.companyEmail}
                           onChange={(e) => setFormData({ ...formData, companyEmail: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1525,10 +1507,10 @@ export default function InvestorsList() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Company Website</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.companyWebsite')}</label>
                         <input
                           type="url"
-                          placeholder="Enter company website"
+                          placeholder={t('ils.ph.companyWebsite')}
                           value={formData.companyWebsite}
                           onChange={(e) => setFormData({ ...formData, companyWebsite: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1537,10 +1519,10 @@ export default function InvestorsList() {
               </div>
 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="mt-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Company Address *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.companyAddress')}</label>
                       <input
                         type="text"
-                        placeholder="Enter company address"
+                        placeholder={t('ils.ph.companyAddress')}
                         value={formData.companyAddress}
                         onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1548,10 +1530,10 @@ export default function InvestorsList() {
                       />
                     </div>
                     <div className='mt-4'>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.city')}</label>
                         <input
                           type="text"
-                          placeholder="Enter city"
+                          placeholder={t('ils.ph.city')}
                           value={formData.city}
                           onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1560,10 +1542,10 @@ export default function InvestorsList() {
 </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
               <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">CR Number *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.crNumber')}</label>
                         <input
                           type="text"
-                          placeholder="Enter CR number"
+                          placeholder={t('ils.ph.crNumber')}
                           value={formData.crNumber}
                           onChange={(e) => setFormData({ ...formData, crNumber: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1571,7 +1553,7 @@ export default function InvestorsList() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Incorporation Date *</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.incorporationDate')}</label>
                         <input
                           type="date"
                           value={formData.incorporationDate}
@@ -1584,7 +1566,7 @@ export default function InvestorsList() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.expiryDate')}</label>
                         <input
                           type="date"
                           value={formData.expiryDate}
@@ -1593,11 +1575,11 @@ export default function InvestorsList() {
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Paid-Up Capital</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.paidUpCapital')}</label>
                         <input
                           type="number"
                           step="0.01"
-                          placeholder="Enter paid-up capital"
+                          placeholder={t('ils.ph.paidUpCapital')}
                           value={formData.paidUpCapital}
                           onChange={(e) => setFormData({ ...formData, paidUpCapital: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1607,21 +1589,21 @@ export default function InvestorsList() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Share Value</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.shareValue')}</label>
                         <input
                           type="number"
                           step="0.01"
-                          placeholder="Enter share value"
+                          placeholder={t('ils.ph.shareValue')}
                           value={formData.shareValue}
                           onChange={(e) => setFormData({ ...formData, shareValue: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.state')}</label>
                         <input
                           type="text"
-                          placeholder="Enter state"
+                          placeholder={t('ils.ph.state')}
                           value={formData.state}
                           onChange={(e) => setFormData({ ...formData, state: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1631,10 +1613,10 @@ export default function InvestorsList() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       <div className=''>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">Address Line 2</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.addressLine2')}</label>
                         <input
                           type="text"
-                          placeholder="Enter address line 2"
+                          placeholder={t('ils.ph.addressLine2')}
                           value={formData.addressLine2}
                           onChange={(e) => setFormData({ ...formData, addressLine2: e.target.value })}
                           className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
@@ -1642,7 +1624,7 @@ export default function InvestorsList() {
                       </div>
          
                       <div className="">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">Country *</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.country')}</label>
                       <select
                         value={formData.countryId}
                         onChange={(e) => setFormData({ ...formData, countryId: e.target.value })}
@@ -1650,7 +1632,7 @@ export default function InvestorsList() {
                         required
                         disabled={countriesLoading}
                       >
-                        <option value="">Select a country</option>
+                        <option value="">{t('ils.selectCountry')}</option>
                         {countries.map((country) => (
                           <option key={country.id} value={country.id}>
                             {country.name} ({country.code})
@@ -1658,7 +1640,7 @@ export default function InvestorsList() {
                         ))}
                       </select>
                       {countriesLoading && (
-                        <p className="text-sm text-gray-500 mt-1">Loading countries...</p>
+                        <p className="text-sm text-gray-500 mt-1">{t('ils.loadingCountries')}</p>
                       )}
                     </div>
                     </div>
@@ -1666,7 +1648,7 @@ export default function InvestorsList() {
                     {/* Shareholders Section */}
                     <div className="border-t pt-6 mt-6">
                       <div className="flex items-center justify-between mb-4">
-                        <h4 className="text-lg font-semibold text-gray-900">Shareholders</h4>
+                        <h4 className="text-lg font-semibold text-gray-900">{t('ils.shareholders')}</h4>
                         <button
                           type="button"
                           onClick={() => {
@@ -1688,15 +1670,15 @@ export default function InvestorsList() {
                           }}
                           className="flex items-center px-3 py-2 bg-black text-white rounded-lg hover:bg-gray-800 text-sm"
                         >
-                          <PlusIcon className="w-4 h-4 mr-2" />
-                          Add Shareholder
+                          <PlusIcon className="w-4 h-4 me-2" />
+                          {t('ils.addShareholder')}
                         </button>
                       </div>
 
                       {formData.shareholders.map((shareholder, index) => (
                         <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4">
                           <div className="flex items-center justify-between mb-4">
-                            <h5 className="text-md font-medium text-gray-700">Shareholder {index + 1}</h5>
+                            <h5 className="text-md font-medium text-gray-700">{t('ils.shareholderN', { n: index + 1 })}</h5>
                             <button
                               type="button"
                               onClick={() => {
@@ -1711,10 +1693,10 @@ export default function InvestorsList() {
 
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Full Name of Shareholder *</label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.shareholderFullName')}</label>
                               <input
                                 type="text"
-                                placeholder="Enter full name"
+                                placeholder={t('ils.ph.fullName')}
                                 value={shareholder.fullName}
                                 onChange={(e) => {
                                   const newShareholders = [...formData.shareholders];
@@ -1726,10 +1708,10 @@ export default function InvestorsList() {
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">ID / Passport Number *</label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.idPassport')}</label>
                               <input
                                 type="text"
-                                placeholder="Enter ID or Passport Number"
+                                placeholder={t('ils.ph.idPassport')}
                                 value={shareholder.idPassportNumber}
                                 onChange={(e) => {
                                   const newShareholders = [...formData.shareholders];
@@ -1741,11 +1723,11 @@ export default function InvestorsList() {
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Shares Percentage *</label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.sharesPercentage')}</label>
                               <input
                                 type="number"
                                 step="0.01"
-                                placeholder="Enter shares percentage"
+                                placeholder={t('ils.ph.sharesPercentage')}
                                 value={shareholder.sharesPercentage}
                                 onChange={(e) => {
                                   const newShareholders = [...formData.shareholders];
@@ -1757,7 +1739,7 @@ export default function InvestorsList() {
                               />
                             </div>
                             <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-2">Nationality *</label>
+                              <label className="block text-sm font-medium text-gray-700 mb-2">{t('ils.field.nationality')}</label>
                               <select
                                 value={shareholder.nationality}
                                 onChange={(e) => {
@@ -1768,7 +1750,7 @@ export default function InvestorsList() {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-gray-900"
                                 required
                               >
-                                <option value="">Select Nationality</option>
+                                <option value="">{t('ils.selectNationality')}</option>
                                 {countries.map((country: any) => (
                                   <option key={country.id} value={country.id}>
                                     {country.name}
@@ -1786,10 +1768,10 @@ export default function InvestorsList() {
                                     newShareholders[index].isPEP = e.target.checked;
                                     setFormData({ ...formData, shareholders: newShareholders });
                                   }}
-                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#10B981] focus:ring-offset-0 mr-2 accent-[#10B981]"
+                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#10B981] focus:ring-offset-0 me-2 accent-[#10B981]"
                                   style={{ accentColor: '#10B981' }}
                                 />
-                                <span className="text-sm text-gray-700">Is PEP?</span>
+                                <span className="text-sm text-gray-700">{t('ils.isPep')}</span>
                               </label>
                               <label className="flex items-center">
                                 <input
@@ -1800,10 +1782,10 @@ export default function InvestorsList() {
                                     newShareholders[index].isDirector = e.target.checked;
                                     setFormData({ ...formData, shareholders: newShareholders });
                                   }}
-                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#10B981] focus:ring-offset-0 mr-2 accent-[#10B981]"
+                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#10B981] focus:ring-offset-0 me-2 accent-[#10B981]"
                                   style={{ accentColor: '#10B981' }}
                                 />
-                                <span className="text-sm text-gray-700">Is Director?</span>
+                                <span className="text-sm text-gray-700">{t('ils.isDirector')}</span>
                               </label>
                               <label className="flex items-center">
                                 <input
@@ -1814,10 +1796,10 @@ export default function InvestorsList() {
                                     newShareholders[index].isManager = e.target.checked;
                                     setFormData({ ...formData, shareholders: newShareholders });
                                   }}
-                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#10B981] focus:ring-offset-0 mr-2 accent-[#10B981]"
+                                  className="rounded border-gray-300 text-black focus:ring-2 focus:ring-[#10B981] focus:ring-offset-0 me-2 accent-[#10B981]"
                                   style={{ accentColor: '#10B981' }}
                                 />
-                                <span className="text-sm text-gray-700">Is Manager?</span>
+                                <span className="text-sm text-gray-700">{t('ils.isManager')}</span>
                               </label>
                             </div>
                           </div>
@@ -1825,7 +1807,7 @@ export default function InvestorsList() {
                       ))}
 
                       {formData.shareholders.length === 0 && (
-                        <p className="text-sm text-gray-500 text-center py-4">No shareholders added. Click "Add Shareholder" to add one.</p>
+                        <p className="text-sm text-gray-500 text-center py-4">{t('ils.noShareholders')}</p>
                       )}
                     </div>
 
@@ -1845,7 +1827,7 @@ export default function InvestorsList() {
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type={showSendLink ? "button" : "submit"}
@@ -1855,13 +1837,13 @@ export default function InvestorsList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                      Creating...
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2"></div>
+                      {t('ils.creating')}
                     </div>
                   ) : showSendLink ? (
-                    'Send Link'
+                    t('ils.sendLink')
                   ) : (
-                    'Create Investor'
+                    t('ils.createInvestor')
                   )}
                 </button>
               </div>
@@ -1875,7 +1857,7 @@ export default function InvestorsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Investor Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ilst.viewTitle')}</h3>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -1887,74 +1869,74 @@ export default function InvestorsList() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.name')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.email')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.email}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.phone')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.phone}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:type')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.type}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:status')}</label>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedInvestor.status)}`}>
                     {selectedInvestor.status}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">KYC Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.kycStatus')}</label>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getKycStatusColor(selectedInvestor.kycStatus)}`}>
                     {selectedInvestor.kycStatus}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Risk Profile</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.riskProfile')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.riskProfile}</p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Investment</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.totalInvestment')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedInvestor.totalInvestment)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Value</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.portfolioValue')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedInvestor.portfolioValue)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Unrealized Gains</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.unrealizedGains')}</label>
                   <p className="text-sm text-green-600">{formatCurrency(selectedInvestor.unrealizedGains)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Onboarding Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.onboardingDate')}</label>
                   <p className="text-sm text-gray-900">{new Date(selectedInvestor.onboardingDate).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Activity</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.lastActivity')}</label>
                   <p className="text-sm text-gray-900">{new Date(selectedInvestor.lastActivity).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.country')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.country}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Accredited Investor</label>
-                  <p className="text-sm text-gray-900">{selectedInvestor.accreditedInvestor ? 'Yes' : 'No'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.accredited')}</label>
+                  <p className="text-sm text-gray-900">{selectedInvestor.accreditedInvestor ? t('common:yes') : t('common:no')}</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.tags')}</label>
                 <div className="flex flex-wrap gap-1">
                   {selectedInvestor?.tags?.map((tag: string, index: number) => (
                     <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
@@ -1965,25 +1947,25 @@ export default function InvestorsList() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Allocation</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.portfolioAllocation')}</label>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="text-lg font-semibold text-gray-900">{selectedInvestor?.portfolioAllocation?.equity}%</div>
-                    <div className="text-sm text-gray-500">Equity</div>
+                    <div className="text-sm text-gray-500">{t('ilst.label.equity')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-semibold text-gray-900">{selectedInvestor?.portfolioAllocation?.bonds}%</div>
-                    <div className="text-sm text-gray-500">Bonds</div>
+                    <div className="text-sm text-gray-500">{t('ilst.label.bonds')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-semibold text-gray-900">{selectedInvestor?.portfolioAllocation?.alternatives}%</div>
-                    <div className="text-sm text-gray-500">Alternatives</div>
+                    <div className="text-sm text-gray-500">{t('ilst.label.alternatives')}</div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.field.notes')}</label>
                 <p className="text-sm text-gray-900">{selectedInvestor?.notes}</p>
               </div>
             </div>
@@ -1993,7 +1975,7 @@ export default function InvestorsList() {
                 onClick={() => setShowViewModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
               <button
                 onClick={() => {
@@ -2002,7 +1984,7 @@ export default function InvestorsList() {
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
               >
-                Edit Investor
+                {t('ilst.action.editInvestor')}
               </button>
             </div>
           </div>
@@ -2014,7 +1996,7 @@ export default function InvestorsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete Investor</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('ilst.deleteTitle')}</h3>
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -2025,7 +2007,7 @@ export default function InvestorsList() {
 
             <div className="mb-6">
               <p className="text-sm text-gray-600">
-                Are you sure you want to delete <strong>{selectedInvestor.name}</strong>? This action cannot be undone and will remove all associated data.
+                {t('ilst.deletePrefix')}<strong>{selectedInvestor.name}</strong>{t('ilst.deleteSuffix')}
               </p>
             </div>
 
@@ -2034,13 +2016,13 @@ export default function InvestorsList() {
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={confirmDeleteInvestor}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700"
               >
-                Delete Investor
+                {t('ilst.action.deleteInvestor')}
               </button>
             </div>
           </div>

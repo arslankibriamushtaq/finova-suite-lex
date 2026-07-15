@@ -6,15 +6,17 @@ import CommodityInfo from "../ProductManagement/commodityInformation";
 import Settings from "../ProductManagement/settings";
 import PartnerAffiliation from "../ProductManagement/partnerAffiliation";
 import RequiredDoc from "../ProductManagement/requiredDoc";
+import { useTranslation } from "react-i18next";
 
 const PartnerManagementTabs = () => {
+  const { t } = useTranslation("financing");
   localStorage.setItem("tabs", "BasicInformation");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
 
   const tapOptions = [
     {
-      title: "Basic Information ",
+      title: t("pmTabs.basicInformation"),
       key: "BasicInformation",
       folder: <AddProduct setSelectedTab={setSelectedTab} />,
     },
@@ -24,7 +26,7 @@ const PartnerManagementTabs = () => {
     //   folder: <CommodityInfo setSelectedTab={setSelectedTab} />,
     // },
     {
-      title: "Settings",
+      title: t("pmTabs.settings"),
       key: "Settings",
       folder: <Settings setActiveTab={setSelectedTab} />,
     },
@@ -34,7 +36,7 @@ const PartnerManagementTabs = () => {
     //   folder: <PartnerAffiliation setSelectedTab={setSelectedTab} />,
     // },
     {
-      title: "Required Doc",
+      title: t("pmTabs.requiredDoc"),
       key: "RequiredDoc",
       folder: <RequiredDoc setSelectedTab={setSelectedTab} />,
     },

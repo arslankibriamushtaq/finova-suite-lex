@@ -7,6 +7,7 @@ import { Button, Dropdown, Menu } from 'antd';
 import arrowDown from "../../assets/images/arrow-down.png";
 import { CheckCircleOutlined, UploadOutlined, FileTextOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Dummy data for temporary use
 const dummyApplications = [
@@ -33,6 +34,7 @@ const dummyApplications = [
 ];
 
 const CustomerApplications = () => {
+    const { t } = useTranslation("customersB");
     const navigate = useNavigate();
     const [applications, setApplications] = useState<any>([]);
     const [page, setPage] = useState(1);
@@ -85,47 +87,47 @@ const CustomerApplications = () => {
 
     const Applications_Header = [
         {
-            name: "Application No",
+            name: t("customersB:applications.applicationNo"),
             selector: (row: any) => row.applicationNumber || "--",
             width: "11%",
         },
         {
-            name: "Product",
+            name: t("customersB:applications.product"),
             selector: (row: any) => row.product || "--",
             width: "10%",
         },
         {
-            name: "Customer Name",
+            name: t("customersB:applications.customerName"),
             selector: (row: any) => row.customerName || "--",
             width: "10%",
         },
         {
-            name: "Factoring Tenure",
+            name: t("customersB:applications.factoringTenure"),
             selector: (row: any) => row.factoringTenure || "--",
             width: "7%",
         },
         {
-            name: "Department",
+            name: t("customersB:applications.department"),
             selector: (row: any) => row.department || "--",
             width: "7%",
         },
         {
-            name: "Factoring Type",
+            name: t("customersB:applications.factoringType"),
             selector: (row: any) => row.factoringType || "--",
             width: "8%",
         },
         {
-            name: "Factoring Amount",
+            name: t("customersB:applications.factoringAmount"),
             selector: (row: any) => row.factoringAmount || "--",
             width: "9%",
         },
         {
-            name: "Application Date",
+            name: t("customersB:applications.applicationDate"),
             selector: (row: any) => row.applicationDate ? formatDate(row.applicationDate) : "--",
             width: "9%",
         },
         {
-            name: "Parent Status",
+            name: t("customersB:applications.parentStatus"),
             cell: (row: any) => (
                 <span
                     style={{
@@ -143,7 +145,7 @@ const CustomerApplications = () => {
             width: "10%",
         },
         {
-            name: "Status",
+            name: t("common:status"),
             cell: (row: any) => (
                 <span
                     style={{
@@ -161,7 +163,7 @@ const CustomerApplications = () => {
             width: "10%",
         },
         {
-            name: "Action",
+            name: t("customersB:applications.action"),
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
                     <Button
@@ -175,7 +177,7 @@ const CustomerApplications = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Action <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
+                        {t("customersB:applications.action")} <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
                     </Button>
                 </Dropdown>
             ),
@@ -189,21 +191,21 @@ const CustomerApplications = () => {
                 icon={<CheckCircleOutlined />}
                 onClick={() => handleMenuClick("complete", row)}
             >
-                Complete Application
+                {t("customersB:applications.completeApplication")}
             </Menu.Item>
             <Menu.Item
                 key="upload"
                 icon={<UploadOutlined />}
                 onClick={() => handleMenuClick("upload", row)}
             >
-                Upload Documents
+                {t("customersB:applications.uploadDocuments")}
             </Menu.Item>
             <Menu.Item
                 key="contract"
                 icon={<FileTextOutlined />}
                 onClick={() => handleMenuClick("contract", row)}
             >
-                Contract Request
+                {t("customersB:applications.contractRequest")}
             </Menu.Item>
         </Menu>
     );
@@ -232,7 +234,7 @@ const CustomerApplications = () => {
             <div className="container-fluid px-4 p-2 mt-2">
                 <div className="d-flex align-items-center mb-3">
                     <h2 className="mb-0" style={{ fontSize: "24px", fontWeight: "600" }}>
-                        My Applications
+                        {t("customersB:applications.title")}
                     </h2>
                 </div>
                 <div className="custom-table-wrapper border">

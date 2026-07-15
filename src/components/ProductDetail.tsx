@@ -351,7 +351,7 @@ const ProductDetail = () => {
         </div>
         <Modal.Body className="">
           <div className="d-flex">
-            <div className="pr-1 col-6 px-2">
+            <div className="pe-1 col-6 px-2">
               <div className="plan-one">
                 <div className="inner-block">
                   <div className="frame d-flex justify-content-center">
@@ -526,7 +526,7 @@ const ProductDetail = () => {
                 </div>
               </div>
             </div>
-            <div className="pr-1 col-6 px-2">
+            <div className="pe-1 col-6 px-2">
               <div className="plan-one">
                 <div className="inner-block">
                   <div className="frame d-flex justify-content-center">

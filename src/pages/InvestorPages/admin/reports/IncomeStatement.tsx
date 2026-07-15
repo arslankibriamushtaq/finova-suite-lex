@@ -16,6 +16,7 @@ import {
   Eye
 } from 'lucide-react';
 import { cn } from '../../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const incomeData = {
   period: 'Year Ended December 31, 2023',
@@ -55,6 +56,7 @@ const quarterlyData = [
 ];
 
 export default function IncomeStatement() {
+  const { t } = useTranslation('investor');
   const [selectedPeriod, setSelectedPeriod] = useState('annual');
   const [viewMode, setViewMode] = useState('detailed');
 
@@ -76,15 +78,15 @@ export default function IncomeStatement() {
   };
 
   const handleExport = () => {
-    alert('Income statement exported successfully!');
+    alert(t('is.exportSuccess'));
   };
 
   const handlePrint = () => {
-    alert('Income statement sent to printer!');
+    alert(t('is.printSuccess'));
   };
 
   const handleEmail = () => {
-    alert('Income statement emailed successfully!');
+    alert(t('is.emailSuccess'));
   };
 
   return (
@@ -97,39 +99,39 @@ export default function IncomeStatement() {
               to="/admin/reports"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Reports
+              <ArrowLeft className="w-4 h-4 me-2" />
+              {t('pl.backToReports')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Income Statement</h1>
-              <p className="text-gray-600">Revenue, expenses, and net income for {incomeData.period}</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('is.title')}</h1>
+              <p className="text-gray-600">{t('is.subtitle', { period: t('is.period2023') })}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('common:refresh')}
             </button>
-            <button 
+            <button
               onClick={handlePrint}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Printer className="w-4 h-4 mr-2" />
-              Print
+              <Printer className="w-4 h-4 me-2" />
+              {t('pl.print')}
             </button>
-            <button 
+            <button
               onClick={handleEmail}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Mail className="w-4 h-4 mr-2" />
-              Email
+              <Mail className="w-4 h-4 me-2" />
+              {t('reports.emailReports')}
             </button>
-            <button 
+            <button
               onClick={handleExport}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export
+              <Download className="w-4 h-4 me-2" />
+              {t('common:export')}
             </button>
           </div>
         </div>
@@ -145,7 +147,7 @@ export default function IncomeStatement() {
                 selectedPeriod === 'annual' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              Annual
+              {t('is.annual')}
             </button>
             <button
               onClick={() => setSelectedPeriod('quarterly')}
@@ -153,7 +155,7 @@ export default function IncomeStatement() {
                 selectedPeriod === 'quarterly' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              Quarterly
+              {t('is.quarterly')}
             </button>
           </div>
           <div className="flex items-center bg-gray-100 rounded-lg p-1">
@@ -163,7 +165,7 @@ export default function IncomeStatement() {
                 viewMode === 'detailed' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              Detailed
+              {t('bs.view.detailed')}
             </button>
             <button
               onClick={() => setViewMode('summary')}
@@ -171,12 +173,12 @@ export default function IncomeStatement() {
                 viewMode === 'summary' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500'
               }`}
             >
-              Summary
+              {t('bs.view.summary')}
             </button>
           </div>
         </div>
         <div className="text-sm text-gray-500">
-          Generated on {new Date().toLocaleDateString()}
+          {t('bs.generatedOn', { date: new Date().toLocaleDateString() })}
         </div>
       </div>
 
@@ -186,25 +188,25 @@ export default function IncomeStatement() {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900">Income Statement</h3>
-                <p className="text-sm text-gray-600">{incomeData.period}</p>
+                <h3 className="text-lg font-semibold text-gray-900">{t('is.title')}</h3>
+                <p className="text-sm text-gray-600">{t('is.period2023')}</p>
               </div>
 
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Account
+                      <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {t('bs.col.account')}
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
                         2023
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
                         2022
                       </th>
-                      <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Change
+                      <th className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        {t('bs.col.change')}
                       </th>
                     </tr>
                   </thead>
@@ -213,17 +215,17 @@ export default function IncomeStatement() {
                     <tr className="bg-green-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <DollarSign className="w-5 h-5 text-green-600 mr-2" />
-                          <span className="text-sm font-bold text-green-900">REVENUE</span>
+                          <DollarSign className="w-5 h-5 text-green-600 me-2" />
+                          <span className="text-sm font-bold text-green-900">{t('is.row.revenue')}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-green-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-green-900">
                         {formatCurrency(incomeData.revenue.totalRevenue)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                         {formatCurrency(previousYear.totalRevenue)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm">
                         {(() => {
                           const change = getChange(incomeData.revenue.totalRevenue, previousYear.totalRevenue);
                           return (
@@ -231,9 +233,9 @@ export default function IncomeStatement() {
                               change.type === 'positive' ? 'text-green-600' : 'text-red-600'
                             }`}>
                               {change.type === 'positive' ? (
-                                <TrendingUp className="w-4 h-4 mr-1" />
+                                <TrendingUp className="w-4 h-4 me-1" />
                               ) : (
-                                <TrendingDown className="w-4 h-4 mr-1" />
+                                <TrendingDown className="w-4 h-4 me-1" />
                               )}
                               {Math.abs(change.value).toFixed(1)}%
                             </div>
@@ -246,43 +248,43 @@ export default function IncomeStatement() {
                       <>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Management Fees</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.managementFees')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             {formatCurrency(incomeData.revenue.managementFees)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             {formatCurrency(25800000)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                             +10.5%
                           </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Performance Fees</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.performanceFees')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             {formatCurrency(incomeData.revenue.performanceFees)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             {formatCurrency(11200000)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                             +13.8%
                           </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Other Income</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.otherIncome')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             {formatCurrency(incomeData.revenue.otherIncome)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             {formatCurrency(1200000)}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                             +4.2%
                           </td>
                         </tr>
@@ -293,17 +295,17 @@ export default function IncomeStatement() {
                     <tr className="bg-red-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <BarChart3 className="w-5 h-5 text-red-600 mr-2" />
-                          <span className="text-sm font-bold text-red-900">EXPENSES</span>
+                          <BarChart3 className="w-5 h-5 text-red-600 me-2" />
+                          <span className="text-sm font-bold text-red-900">{t('is.row.expenses')}</span>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-red-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-red-900">
                         ({formatCurrency(incomeData.expenses.totalExpenses)})
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                         ({formatCurrency(previousYear.totalExpenses)})
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                         +9.7%
                       </td>
                     </tr>
@@ -312,71 +314,71 @@ export default function IncomeStatement() {
                       <>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Compensation & Benefits</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.compensation')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             ({formatCurrency(incomeData.expenses.compensation)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             ({formatCurrency(16800000)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +10.1%
                           </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">General & Administrative</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.generalAdmin')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             ({formatCurrency(incomeData.expenses.generalAdmin)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             ({formatCurrency(4300000)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +11.6%
                           </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Professional Fees</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.professionalFees')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             ({formatCurrency(incomeData.expenses.professionalFees)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             ({formatCurrency(1950000)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +7.7%
                           </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Technology</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.technology')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             ({formatCurrency(incomeData.expenses.technology)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             ({formatCurrency(1750000)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                             +11.4%
                           </td>
                         </tr>
                         <tr>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className="text-sm text-gray-600 ml-8">Other Expenses</span>
+                            <span className="text-sm text-gray-600 ms-8">{t('is.row.otherExpenses')}</span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                             ({formatCurrency(incomeData.expenses.marketing + incomeData.expenses.other)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                             ({formatCurrency(2000000)})
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-green-600">
+                          <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-green-600">
                             +2.5%
                           </td>
                         </tr>
@@ -386,15 +388,15 @@ export default function IncomeStatement() {
                     {/* NET INCOME */}
                     <tr className="bg-gray-50 border-t-2 border-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-bold text-blue-900">NET INCOME</span>
+                        <span className="text-sm font-bold text-blue-900">{t('is.row.netIncome')}</span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-blue-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-blue-900">
                         {formatCurrency(incomeData.netIncome)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-500">
                         {formatCurrency(previousYear.netIncome)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm">
                         {(() => {
                           const change = getChange(incomeData.netIncome, previousYear.netIncome);
                           return (
@@ -402,9 +404,9 @@ export default function IncomeStatement() {
                               change.type === 'positive' ? 'text-green-600' : 'text-red-600'
                             }`}>
                               {change.type === 'positive' ? (
-                                <TrendingUp className="w-4 h-4 mr-1" />
+                                <TrendingUp className="w-4 h-4 me-1" />
                               ) : (
-                                <TrendingDown className="w-4 h-4 mr-1" />
+                                <TrendingDown className="w-4 h-4 me-1" />
                               )}
                               {Math.abs(change.value).toFixed(1)}%
                             </div>
@@ -421,11 +423,11 @@ export default function IncomeStatement() {
           {/* Key Metrics */}
           <div className="space-y-6">
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Metrics</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('is.keyMetrics')}</h3>
               <div className="space-y-4">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Net Profit Margin</span>
+                    <span className="text-sm text-gray-600">{t('is.netProfitMargin')}</span>
                     <span className="text-sm font-semibold text-gray-900">30.8%</span>
                   </div>
                   <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
@@ -435,7 +437,7 @@ export default function IncomeStatement() {
 
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">EBITDA Margin</span>
+                    <span className="text-sm text-gray-600">{t('is.ebitdaMargin')}</span>
                     <span className="text-sm font-semibold text-gray-900">35.9%</span>
                   </div>
                   <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
@@ -445,14 +447,14 @@ export default function IncomeStatement() {
 
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Revenue Growth</span>
+                    <span className="text-sm text-gray-600">{t('is.revenueGrowth')}</span>
                     <span className="text-sm font-semibold text-green-600">+11.3%</span>
                   </div>
                 </div>
 
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Expense Ratio</span>
+                    <span className="text-sm text-gray-600">{t('is.expenseRatio')}</span>
                     <span className="text-sm font-semibold text-gray-900">69.2%</span>
                   </div>
                 </div>
@@ -460,10 +462,10 @@ export default function IncomeStatement() {
             </div>
 
             <div className="bg-white rounded-lg border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Revenue Breakdown</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('is.revenueBreakdown')}</h3>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Management Fees</span>
+                  <span className="text-sm text-gray-600">{t('is.row.managementFees')}</span>
                   <span className="text-sm font-semibold text-gray-900">67.1%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -471,7 +473,7 @@ export default function IncomeStatement() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Performance Fees</span>
+                  <span className="text-sm text-gray-600">{t('is.row.performanceFees')}</span>
                   <span className="text-sm font-semibold text-gray-900">30.0%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -479,7 +481,7 @@ export default function IncomeStatement() {
                 </div>
 
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Other Income</span>
+                  <span className="text-sm text-gray-600">{t('is.row.otherIncome')}</span>
                   <span className="text-sm font-semibold text-gray-900">2.9%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -492,19 +494,19 @@ export default function IncomeStatement() {
       ) : (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Quarterly Income Statement</h3>
-            <p className="text-sm text-gray-600">2023 Quarterly Performance</p>
+            <h3 className="text-lg font-semibold text-gray-900">{t('is.quarterlyTitle')}</h3>
+            <p className="text-sm text-gray-600">{t('is.quarterlySubtitle')}</p>
           </div>
 
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Metric
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('is.col.metric')}
                   </th>
                   {quarterlyData.map((quarter) => (
-                    <th key={quarter.quarter} className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th key={quarter.quarter} className="px-6 py-3 text-end text-xs font-medium text-gray-500 uppercase tracking-wider">
                       {quarter.quarter}
                     </th>
                   ))}
@@ -513,30 +515,30 @@ export default function IncomeStatement() {
               <tbody className="bg-white divide-y divide-gray-200">
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Revenue
+                    {t('is.revenueLabel')}
                   </td>
                   {quarterlyData.map((quarter) => (
-                    <td key={quarter.quarter} className="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-900">
+                    <td key={quarter.quarter} className="px-6 py-4 whitespace-nowrap text-end text-sm text-gray-900">
                       {formatCurrency(quarter.revenue)}
                     </td>
                   ))}
                 </tr>
                 <tr>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    Expenses
+                    {t('is.expensesLabel')}
                   </td>
                   {quarterlyData.map((quarter) => (
-                    <td key={quarter.quarter} className="px-6 py-4 whitespace-nowrap text-right text-sm text-red-600">
+                    <td key={quarter.quarter} className="px-6 py-4 whitespace-nowrap text-end text-sm text-red-600">
                       ({formatCurrency(quarter.expenses)})
                     </td>
                   ))}
                 </tr>
                 <tr className="bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-bold text-blue-900">
-                    Net Income
+                    {t('is.netIncomeLabel')}
                   </td>
                   {quarterlyData.map((quarter) => (
-                    <td key={quarter.quarter} className="px-6 py-4 whitespace-nowrap text-right text-sm font-bold text-blue-900">
+                    <td key={quarter.quarter} className="px-6 py-4 whitespace-nowrap text-end text-sm font-bold text-blue-900">
                       {formatCurrency(quarter.netIncome)}
                     </td>
                   ))}
@@ -549,12 +551,12 @@ export default function IncomeStatement() {
 
       {/* Notes */}
       <div className="mt-6 bg-gray-50 rounded-lg p-6">
-        <h4 className="text-sm font-semibold text-gray-900 mb-3">Notes:</h4>
+        <h4 className="text-sm font-semibold text-gray-900 mb-3">{t('bs.notes')}</h4>
         <div className="text-sm text-gray-600 space-y-2">
-          <p>• All amounts are presented in USD and rounded to the nearest thousand.</p>
-          <p>• Revenue recognition follows the accrual basis of accounting.</p>
-          <p>• Performance fees are recognized when earned and determinable.</p>
-          <p>• Year-over-year comparisons show percentage changes from the previous year.</p>
+          <p>• {t('is.note1')}</p>
+          <p>• {t('is.note2')}</p>
+          <p>• {t('is.note3')}</p>
+          <p>• {t('is.note4')}</p>
         </div>
       </div>
     </div>

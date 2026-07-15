@@ -1,29 +1,31 @@
 import React from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 
 const PartnerInvoice = () => {
+  const { t } = useTranslation("partner");
   const invoiceNumber = useParams();
 
   const Activity_Loans_Header = [
     {
-      name: "Invoice No",
+      name: t("col.invoiceNo"),
       selector: (row: any) => row.invoiceNo,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: any) => row.amount,
     },
     {
-      name: "Discount",
+      name: t("col.discount"),
       selector: (row: any) => row.discount,
     },
     {
-      name: "Document",
+      name: t("col.document"),
       selector: (row: any) => row.document,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -45,15 +47,15 @@ const PartnerInvoice = () => {
       ),
     },
     {
-      name: "Processed By",
+      name: t("col.processedBy"),
       selector: (row: any) => row.processedBy,
     },
     {
-      name: "Uploaded Date",
+      name: t("col.uploadedDate"),
       selector: (row: any) => row.uploadedDate,
     },
     {
-      name: "Action",
+      name: t("col.action"),
       cell: (row: any) => row.action,
     },
   ];
@@ -67,7 +69,7 @@ const PartnerInvoice = () => {
       status: "Approved",
       processedBy: "Muhammad Ali",
       uploadedDate: "22 October, 2024 10:21 AM",
-      action: <button>View</button>,
+      action: <button>{t("common:view")}</button>,
     },
     // more rows...
   ];

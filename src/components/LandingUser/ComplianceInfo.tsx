@@ -12,11 +12,13 @@ import { RootState } from "../../redux/rootReducer";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
 import RequiredDocFields from "./RequiredDocFields";
+import { useTranslation } from "react-i18next";
 import "./Landing.css";
 
 const { Option } = Select;
 
 const ComplianceInfo: React.FC = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -163,11 +165,11 @@ const ComplianceInfo: React.FC = () => {
 
       const res = await storeComplianceAnswers(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "Failed to store compliance answers.");
+        toast.error(res?.data?.message || t("compliance.toast.storeFailed"));
         return;
       }
 
-      toast.success(res?.data?.message || "Compliance answers stored successfully.");
+      toast.success(res?.data?.message || t("compliance.toast.storeSuccess"));
 
       // Upload dynamic required documents for this step
       const docsOk = await uploadStepDocuments(6, requiredDocuments, docFiles);
@@ -182,7 +184,7 @@ const ComplianceInfo: React.FC = () => {
       });
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || error?.message || "Something went wrong!");
+      toast.error(error?.response?.data?.message || error?.message || t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -198,7 +200,7 @@ const ComplianceInfo: React.FC = () => {
               {q.question}
             </label>
             <Select
-              placeholder="Select"
+              placeholder={t("compliance.select")}
               value={answers[q.id] || undefined}
               onChange={(value: string) => handleAnswerChange(q.id, value)}
               style={{ width: "100%" }}
@@ -230,7 +232,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -243,7 +245,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -260,7 +262,7 @@ const ComplianceInfo: React.FC = () => {
               {q.question}
             </label>
             <Input
-              placeholder="Enter your answer"
+              placeholder={t("compliance.enterAnswer")}
               className="form-control"
               value={answers[q.id] || ""}
               onChange={(e) => handleAnswerChange(q.id, e.target.value)}
@@ -294,10 +296,10 @@ const ComplianceInfo: React.FC = () => {
                 className="btn btn-secondary btn-sm me-2"
                 style={{ cursor: "pointer" }}
               >
-                Choose File
+                {t("action.chooseFile")}
               </label>
               <span style={{ fontSize: "14px" }}>
-                {answers[q.id]?.name || "No file chosen"}
+                {answers[q.id]?.name || t("action.noFileChosen")}
               </span>
             </div>
           </Col>
@@ -333,10 +335,10 @@ const ComplianceInfo: React.FC = () => {
               className="mb-2"
               style={{ fontWeight: 500, fontSize: "14px", color: "#666" }}
             >
-              Application No
+              {t("compliance.applicationNo.label")}
             </label>
             <Input
-              placeholder="Application Number"
+              placeholder={t("compliance.applicationNo.placeholder")}
               className="form-control"
               value={formValues.applicationNumber}
               readOnly
@@ -347,7 +349,7 @@ const ComplianceInfo: React.FC = () => {
 
         {/* Compliance Questions Section */}
         <h5 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "16px", color: "#333" }}>
-          Compliance Questions
+          {t("compliance.complianceQuestions")}
         </h5>
         <div className="mb-4">
           {complianceQuestions.map(renderDynamicQuestion)}
@@ -357,15 +359,15 @@ const ComplianceInfo: React.FC = () => {
         <Row className="mb-3">
           <Col md={6}>
             <label className="mb-2" style={{ fontWeight: 500, fontSize: "14px", color: "#666" }}>
-              Purpose of Factoring
+              {t("compliance.purposeOfFactoring")}
             </label>
             <Select
-              placeholder="Select"
+              placeholder={t("compliance.select")}
               value={formValues.purposeOfFactoring}
               onChange={(value) => handleChange("purposeOfFactoring", value)}
               style={{ width: "100%" }}
             >
-              <Option value="Select">Select</Option>
+              <Option value="Select">{t("compliance.select")}</Option>
               {purposes?.map((item: any) => (
                 <Option key={item.id} value={item.title}>
                   {item.title}
@@ -377,15 +379,15 @@ const ComplianceInfo: React.FC = () => {
           {/* Source of Income */}
           <Col md={6}>
             <label className="mb-2" style={{ fontWeight: 500, fontSize: "14px", color: "#666" }}>
-              Source of Revenue
+              {t("compliance.sourceOfRevenue")}
             </label>
             <Select
-              placeholder="Select"
+              placeholder={t("compliance.select")}
               value={formValues.sourceOfIncome}
               onChange={(value) => handleChange("sourceOfIncome", value)}
               style={{ width: "100%" }}
             >
-              <Option value="Select">Select</Option>
+              <Option value="Select">{t("compliance.select")}</Option>
               {sources?.map((item: any) => (
                 <Option key={item.id} value={item.title}>
                   {item.title}
@@ -400,7 +402,7 @@ const ComplianceInfo: React.FC = () => {
           <Col md={12}>
             <div className="d-flex mb-3 justify-content-between align-items-center">
               <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-                Is the entity Publicly Owned / Partly Owned / or Audit Exchange?
+                {t("compliance.entity.question")}
               </div>
               <div className="pill-group">
                 <label className="pill">
@@ -413,7 +415,7 @@ const ComplianceInfo: React.FC = () => {
                   />
                   <span className="visual">
                     <span className="dot" />
-                    <span>Publicly Owned</span>
+                    <span>{t("compliance.entity.publiclyOwned")}</span>
                   </span>
                 </label>
                 <label className="pill">
@@ -426,7 +428,7 @@ const ComplianceInfo: React.FC = () => {
                   />
                   <span className="visual">
                     <span className="dot" />
-                    <span>Partly Owned</span>
+                    <span>{t("compliance.entity.partlyOwned")}</span>
                   </span>
                 </label>
                 <label className="pill">
@@ -439,7 +441,7 @@ const ComplianceInfo: React.FC = () => {
                   />
                   <span className="visual">
                     <span className="dot" />
-                    <span>Audit Exchange</span>
+                    <span>{t("compliance.entity.auditExchange")}</span>
                   </span>
                 </label>
               </div>
@@ -450,7 +452,7 @@ const ComplianceInfo: React.FC = () => {
         {/* Additional Questions */}
         <div className="d-flex mb-3 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Does the entity identify with an associate entity or any kind of official in the AML / CFT?
+            {t("compliance.q.saudiFundsAccount")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -463,7 +465,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -476,7 +478,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -484,7 +486,7 @@ const ComplianceInfo: React.FC = () => {
 
         <div className="d-flex mb-3 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Does the entity meet the identity of all customers prior to providing or producing Organization coordinating maintaining AML / CFT?
+            {t("compliance.q.cftRequirements")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -497,7 +499,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -510,7 +512,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -518,7 +520,7 @@ const ComplianceInfo: React.FC = () => {
 
         <div className="d-flex mb-3 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Does the entity requires CFT, KYC, AML and periodic may be applied to all branches and subsidiaries?
+            {t("compliance.q.externalAuditing")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -531,7 +533,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -544,7 +546,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -552,7 +554,7 @@ const ComplianceInfo: React.FC = () => {
 
         <div className="d-flex mb-3 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Does the entity have an external External Auditors?
+            {t("compliance.q.internalAuditing")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -565,7 +567,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -578,7 +580,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -586,7 +588,7 @@ const ComplianceInfo: React.FC = () => {
 
         <div className="d-flex mb-3 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Does the entity have an employee training program for AML / CFT and KYC recruiting of staff to undertake training?
+            {t("compliance.q.trainingProgram")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -599,7 +601,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -612,7 +614,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -620,7 +622,7 @@ const ComplianceInfo: React.FC = () => {
 
         <div className="d-flex mb-4 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Does the entity study and assess the risk of its clients?
+            {t("compliance.q.studyRisk")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -633,7 +635,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -646,7 +648,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -654,7 +656,7 @@ const ComplianceInfo: React.FC = () => {
 
         {/* FATCA Questions Section */}
         <h5 style={{ fontSize: "18px", fontWeight: 600, marginBottom: "16px", marginTop: "24px", color: "#333" }}>
-          FATCA Questions
+          {t("compliance.fatcaQuestions")}
         </h5>
         <div className="mb-4">
           {fatcaQuestions.map(renderDynamicQuestion)}
@@ -663,7 +665,7 @@ const ComplianceInfo: React.FC = () => {
         {/* Disability Status */}
         <div className="d-flex mb-4 justify-content-between align-items-center">
           <div style={{ flex: 1, fontSize: "14px", color: "#333" }}>
-            Are you a person with disabilities? If yes, please state the type of the given type of disability / visual / movement?
+            {t("compliance.q.disabilityStatus")}
           </div>
           <div className="pill-group">
             <label className="pill">
@@ -676,7 +678,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>Yes</span>
+                <span>{t("common:yes")}</span>
               </span>
             </label>
             <label className="pill">
@@ -689,7 +691,7 @@ const ComplianceInfo: React.FC = () => {
               />
               <span className="visual">
                 <span className="dot" />
-                <span>No</span>
+                <span>{t("common:no")}</span>
               </span>
             </label>
           </div>
@@ -720,7 +722,7 @@ const ComplianceInfo: React.FC = () => {
             });
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
         <button
           className="step-buttons"
@@ -728,7 +730,7 @@ const ComplianceInfo: React.FC = () => {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "Submitting..." : "Next Step"}
+          {loading ? t("action.submitting") : t("action.nextStep")}
         </button>
       </div>
     </>

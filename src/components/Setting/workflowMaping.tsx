@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Button, Dropdown, Menu, Select } from "antd";
 
 import { FaSearch, FaSortAmountUp } from "react-icons/fa";
@@ -26,6 +27,7 @@ import { Col, Form, Modal, Row } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 const WorkFlowMapping = () => {
+  const { t } = useTranslation("settings");
   const [editRowId, setEditRowId] = useState(null);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -109,16 +111,16 @@ const WorkFlowMapping = () => {
   const validateForm: any = () => {
     let newErrors: any = {};
     if (!formValues.productName) {
-      newErrors.productName = "Product Name is required.";
+      newErrors.productName = t("workflow.val.productName");
     }
     if (!category) {
-      newErrors.customer = "Transaction Type is required.";
+      newErrors.customer = t("workflow.val.transactionType");
     }
     if (!formValues.operationName) {
-      newErrors.description = "Operation Name is required.";
+      newErrors.description = t("workflow.val.operationName");
     }
     if (!formValues.workFlowName) {
-      newErrors.workFlowName = "Work Flow Name is required.";
+      newErrors.workFlowName = t("workflow.val.workFlowName");
     }
 
     setErrors(newErrors);
@@ -375,11 +377,11 @@ const WorkFlowMapping = () => {
   const menu: any = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
 
       <Menu.Item key="delete" icon={<DeleteColumnOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -398,7 +400,7 @@ const WorkFlowMapping = () => {
     //     ),
     // },
     {
-      name: "Product Name",
+      name: t("workflow.col.productName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -411,7 +413,7 @@ const WorkFlowMapping = () => {
         ),
     },
     {
-      name: "Operation Name",
+      name: t("workflow.col.operationName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -426,7 +428,7 @@ const WorkFlowMapping = () => {
     },
 
     {
-      name: "Transaction Type",
+      name: t("workflow.col.transactionType"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -440,7 +442,7 @@ const WorkFlowMapping = () => {
     },
 
     {
-      name: "Work Flow Name",
+      name: t("workflow.col.workFlowName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -454,7 +456,7 @@ const WorkFlowMapping = () => {
     },
 
     {
-      name: "Action",
+      name: t("workflow.col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -466,7 +468,7 @@ const WorkFlowMapping = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -482,7 +484,7 @@ const WorkFlowMapping = () => {
         workFlowName: item?.workFlowName,
         id: item.id,
         transactionCategory:
-          item?.transactionCategory == 1 ? "Monetory" : "Non Monetory",
+          item?.transactionCategory == 1 ? t("workflow.monetory") : t("workflow.nonMonetory"),
       };
     });
   const validateFields: any = () => {
@@ -503,8 +505,8 @@ const WorkFlowMapping = () => {
     { label: "Percentage Slab", value: "percentageSlab" },
   ];
   const categoryOption = [
-    { label: "Monetory", value: "monetory" },
-    { label: "Non-Monetory", value: "nonMonetory" },
+    { label: t("workflow.category.monetory"), value: "monetory" },
+    { label: t("workflow.category.nonMonetory"), value: "nonMonetory" },
   ];
   const applicableOption = [
     { label: "One-Time", value: "oneTime" },
@@ -666,7 +668,7 @@ const WorkFlowMapping = () => {
           className="d-flex align-items-center col-6 justify-content-between mt-1"
           style={{ fontSize: "15px", fontWeight: "Bold" }}
         >
-          Work Flow Mapping
+          {t("workflow.title")}
         </div>
         <div className="col-6 d-flex justify-content-end">
           <Button
@@ -681,7 +683,7 @@ const WorkFlowMapping = () => {
               //   navigate("/account/LoanManagement/Application");
             }}
           >
-            Add New
+            {t("workflow.addNew")}
           </Button>
         </div>
       </div>
@@ -719,7 +721,7 @@ const WorkFlowMapping = () => {
       >
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">
-            Add New Work Flow Mapping
+            {t("workflow.modal.addTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
@@ -728,7 +730,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Transaction Type<span className="text-danger">*</span>
+                    {t("workflow.field.transactionType")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={category}
@@ -736,7 +738,7 @@ const WorkFlowMapping = () => {
                       setCategory(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("workflow.ph.selectRateLoanType")}
                   >
                     {categoryOption?.map((option, index) => (
                       <Select.Option key={index} value={option.value}>
@@ -752,7 +754,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Product Name<span className="text-danger">*</span>
+                    {t("workflow.field.productName")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={formValues.productName}
@@ -763,7 +765,7 @@ const WorkFlowMapping = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Product Name"
+                    placeholder={t("workflow.ph.selectProductName")}
                   >
                     {/* Add fixed option */}
                     {category != "monetory" && (
@@ -807,7 +809,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Operation Name<span className="text-danger">*</span>
+                    {t("workflow.field.operationName")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={formValues.operationName}
@@ -818,7 +820,7 @@ const WorkFlowMapping = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("workflow.ph.selectRateLoanType")}
                   >
                     {categoryData?.map((option) => (
                       <Select.Option value={option.id}>
@@ -844,7 +846,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Work Flow Name<span className="text-danger">*</span>
+                    {t("workflow.field.workFlowName")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={formValues.workFlowName}
@@ -855,7 +857,7 @@ const WorkFlowMapping = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Work Flow Type"
+                    placeholder={t("workflow.ph.selectWorkFlowType")}
                     aria-required
                   >
                     {workFlowId?.map((option) => (
@@ -895,7 +897,7 @@ const WorkFlowMapping = () => {
           color: "#FCFCFC"
         }} */
               >
-                Save
+                {t("common:save")}
               </Button>
             </div>
           </div>
@@ -913,7 +915,7 @@ const WorkFlowMapping = () => {
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">
             {" "}
-            Update Work Flow Mapping
+            {t("workflow.modal.updateTitle")}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body className="">
@@ -922,7 +924,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Transaction Type<span className="text-danger">*</span>
+                    {t("workflow.field.transactionType")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={category}
@@ -930,7 +932,7 @@ const WorkFlowMapping = () => {
                       setCategory(e);
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("workflow.ph.selectRateLoanType")}
                   >
                     {categoryOption?.map((option) => (
                       <Select.Option value={option.value}>
@@ -946,7 +948,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Product Name<span className="text-danger">*</span>
+                    {t("workflow.field.productName")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={
@@ -961,7 +963,7 @@ const WorkFlowMapping = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("workflow.ph.selectRateLoanType")}
                   >
                     {category != "monetory" && (
                       <Select.Option value="all">
@@ -1000,7 +1002,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Operation Name<span className="text-danger">*</span>
+                    {t("workflow.field.operationName")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={formValues.operationName}
@@ -1011,7 +1013,7 @@ const WorkFlowMapping = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Rate Loan Type"
+                    placeholder={t("workflow.ph.selectRateLoanType")}
                   >
                     {categoryData?.map((option) => (
                       <Select.Option value={option.id}>
@@ -1036,7 +1038,7 @@ const WorkFlowMapping = () => {
               <Col md={6} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Work Flow Name<span className="text-danger">*</span>
+                    {t("workflow.field.workFlowName")}<span className="text-danger">*</span>
                   </Form.Label>
                   <Select
                     value={
@@ -1051,7 +1053,7 @@ const WorkFlowMapping = () => {
                       }));
                     }}
                     style={{ width: "100%" }}
-                    placeholder="Select Work Flow Type"
+                    placeholder={t("workflow.ph.selectWorkFlowType")}
                   >
                     {workFlowId?.map((option) => (
                       <Select.Option value={option.definitionId}>
@@ -1090,7 +1092,7 @@ const WorkFlowMapping = () => {
           color: "#FCFCFC"
         }} */
               >
-                Save
+                {t("common:save")}
               </Button>
             </div>
           </div>

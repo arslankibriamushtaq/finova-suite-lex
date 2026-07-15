@@ -14,6 +14,7 @@ import {
 } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const data = [
   {
@@ -32,6 +33,7 @@ const data = [
   },
 ];
 const ManageRoles = () => {
+  const { t } = useTranslation("dashboard");
   const checkReduxState = useSelector((state: RootState) => state.block.check);
   const [addDialog, setAddDialog] = useState(false);
   const [updateDialog, setUpdateDialog] = useState(false);
@@ -122,12 +124,12 @@ const ManageRoles = () => {
   const actionSelect = [{ label: "Edit", img: Images.edit }];
   const Departments_Header = [
     {
-      name: "User Name",
+      name: t("manageRoles.userName"),
       selector: (row: { name: any }) => row.name,
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { status: any }) => row.status,
       cell: (row: any) => (
         <div
@@ -142,12 +144,12 @@ const ManageRoles = () => {
             cursor: row.status === "Active" ? "pointer" : "default",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("recent.menu.changeStatus"),
       selector: (row: { Status: any }) => row.Status,
       cell: (row: any, index: any) => (
         <div>
@@ -161,12 +163,12 @@ const ManageRoles = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("manageRoles.action"),
       selector: (row: { Action: any }) => row.Action,
       cell: (row: any) => (
         <Dropdown>
           <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Select
+            {t("common:select")}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -183,7 +185,7 @@ const ManageRoles = () => {
                       <img src={item.img} alt="" />
                     </div>
 
-                    {item.label}
+                    {item.label === "Edit" ? t("common:edit") : item.label}
                   </div>
                 </>
               </Dropdown.Item>
@@ -218,7 +220,7 @@ const ManageRoles = () => {
       <div className="cs-table">
         <div className="col-lg-12 col-12 d-flex align-items-center pb-3">
           <h2 className="col-lg-4 col-12 fs-6 fw-bold  d-flex justify-content-start ">
-            Manage Role
+            {t("manageRoles.title")}
           </h2>
           <div className="col-lg-8 col-12 d-flex justify-content-end align-items-center">
             {/* <Select
@@ -230,7 +232,7 @@ const ManageRoles = () => {
             <div className="d-flex">
               <input
                 type="text"
-                placeholder="Type here"
+                placeholder={t("manageRoles.typeHere")}
                 className="search-icon form-control search-bar"
                 value={searchValue}
                 onChange={onSearchHandle}
@@ -242,7 +244,7 @@ const ManageRoles = () => {
               }}
               className="theme-btn-next"
             >
-              Add New Role
+              {t("manageRoles.addNewRole")}
             </div>
           </div>
         </div>
@@ -250,14 +252,14 @@ const ManageRoles = () => {
       </div>
       <Modal show={addDialog} size="lg">
         <Modal.Header closeButton onClick={() => setAddDialog(!addDialog)}>
-          <Modal.Title>Add New Role</Modal.Title>
+          <Modal.Title>{t("manageRoles.addNewRole")}</Modal.Title>
         </Modal.Header>
         <ModalBody>
           <div className="d-flex gap-5">
             <div className="form-group form-label-groups col-md-6 d-grid">
-              User Name
+              {t("manageRoles.userName")}
               <Input
-                placeholder="Department Name"
+                placeholder={t("manageRoles.deptNamePlaceholder")}
                 className="p-2 mt-2"
                 onChange={(e: any) => {
                   setAddRoleName(e?.target?.value);
@@ -276,7 +278,7 @@ const ManageRoles = () => {
                 htmlFor="receiver"
                 style={{ fontSize: "14px", fontWeight: "500" }}
               >
-                Active/InActive
+                {t("manageRoles.activeInactive")}
               </label>
             </div>
           </div>
@@ -288,7 +290,7 @@ const ManageRoles = () => {
                 createEmployee();
               }}
             >
-              Add Role
+              {t("manageRoles.addRole")}
             </button>
           </div>
         </ModalBody>

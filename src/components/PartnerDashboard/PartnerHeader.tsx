@@ -8,9 +8,11 @@ import { RiArrowDropDownFill } from "react-icons/ri";
 import { useDispatch } from "react-redux";
 import { setToken } from "../../redux/apis/apisSlice";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { logOutApi } from "../../redux/apis/apisCrud";
 
 const PartnerHeader = () => {
+  const { t } = useTranslation("partner");
   const location = useLocation();
   const [selectTab, setSelectedTab] = useState("Dashboard");
 
@@ -30,17 +32,17 @@ const PartnerHeader = () => {
       await toast.promise(
         logOutApi(),
         {
-          loading: "Logging Out...",
+          loading: t("toast.loggingOut"),
           success: (res) => {
             dispatch(setToken({ token: "" }));
             localStorage.removeItem("token");
             localStorage.removeItem("userData");
             localStorage.removeItem("permissions");
             navigate("/login");
-            return res?.data?.message || "Logged out successfully";
+            return res?.data?.message || t("toast.loggedOut");
           },
           error: (err) => {
-            return err?.response?.data?.message || err?.message || "Logout failed!";
+            return err?.response?.data?.message || err?.message || t("toast.logoutFailed");
           },
         }
       );
@@ -66,7 +68,7 @@ const PartnerHeader = () => {
       key: "Dashboard",
       label: (
         <Link style={{ textDecoration: "none", color: "white" }} to="/partner">
-          Dashboard
+          {t("header.dashboard")}
         </Link>
       ),
 
@@ -81,30 +83,30 @@ const PartnerHeader = () => {
     },
 
     {
-      label: "Applications",
+      label: t("header.applications"),
       key: "AllApplications",
       children: [
         {
           key: "AllApplications",
-          label: <Link to="/partner/AllApplications">All Applications</Link>,
+          label: <Link to="/partner/AllApplications">{t("header.allApplications")}</Link>,
         },
         {
           key: "IncompletePartner",
           label: (
-            <Link to="/partner/IncompletePartner">Incomplete Applications</Link>
+            <Link to="/partner/IncompletePartner">{t("header.incompleteApplications")}</Link>
           ),
         },
         {
           key: "PendingApplications",
           label: (
-            <Link to="/partner/PendingApplications">Pending Applications</Link>
+            <Link to="/partner/PendingApplications">{t("header.pendingApplications")}</Link>
           ),
         },
         {
           key: "InProgressApplications",
           label: (
             <Link to="/partner/InProgressApplications">
-              In Progress Applications
+              {t("header.inProgressApplications")}
             </Link>
           ),
         },
@@ -112,7 +114,7 @@ const PartnerHeader = () => {
           key: "RejectedApplications",
           label: (
             <Link to="/partner/RejectedApplications">
-              Rejected Applications
+              {t("header.rejectedApplications")}
             </Link>
           ),
         },
@@ -120,7 +122,7 @@ const PartnerHeader = () => {
           key: "ApprovedApplications",
           label: (
             <Link to="/partner/ApprovedApplications">
-              Approved Applications
+              {t("header.approvedApplications")}
             </Link>
           ),
         },
@@ -140,7 +142,7 @@ const PartnerHeader = () => {
           style={{ textDecoration: "none", color: "white" }}
           to="/partner/apimanagement"
         >
-          Api Management
+          {t("header.apiManagement")}
         </Link>
       ),
       icon: (
@@ -156,7 +158,7 @@ const PartnerHeader = () => {
       key: "Landingpagemanagement",
       label: (
         <Link style={{ textDecoration: "none", color: "white" }} to="/partner/landingpage">
-          Landing Page Management
+          {t("header.landingPageManagement")}
         </Link>
       ),
       icon: (
@@ -174,7 +176,7 @@ const PartnerHeader = () => {
           style={{ textDecoration: "none", color: "white" }}
           to="/partner/comission"
         >
-          Comissions
+          {t("header.comissions")}
         </Link>
       ),
       icon: (
@@ -192,7 +194,7 @@ const PartnerHeader = () => {
           style={{ textDecoration: "none", color: "white" }}
           to="/partner/onboarding"
         >
-          Onboard Customers
+          {t("header.onboardCustomers")}
         </Link>
       ),
       icon: (
@@ -271,11 +273,11 @@ const PartnerHeader = () => {
                     className="profile-btn left"
                     onClick={() => navigate("/superadmin/settings")}
                   >
-                    <FaCog className="icon" /> Settings
+                    <FaCog className="icon" /> {t("header.settings")}
                   </button>
                   <div className="divider"></div>
                   <button className="profile-btn right" onClick={logOut}>
-                    <FaSignOutAlt className="icon" /> Log out
+                    <FaSignOutAlt className="icon" /> {t("header.logout")}
                   </button>
                 </div>
               </div>
@@ -304,9 +306,9 @@ const PartnerHeader = () => {
               buttonStyle="solid"
               style={{ marginRight: "16px" }}
             >
-              <Radio value="today">Today</Radio>
-              <Radio value="last-week">Last Week</Radio>
-              <Radio value="last-month">Last Month</Radio>
+              <Radio value="today">{t("header.today")}</Radio>
+              <Radio value="last-week">{t("header.lastWeek")}</Radio>
+              <Radio value="last-month">{t("header.lastMonth")}</Radio>
             </Radio.Group>
             <div className="d-flex gap-2">
               <DatePicker
@@ -315,7 +317,7 @@ const PartnerHeader = () => {
                   border: "1px solid #D1D1D1",
                   borderRadius: "32px",
                 }}
-                placeholder="From"
+                placeholder={t("header.from")}
               />
               <DatePicker
                 style={{
@@ -323,7 +325,7 @@ const PartnerHeader = () => {
                   border: "1px solid #D1D1D1",
                   borderRadius: "32px",
                 }}
-                placeholder="To"
+                placeholder={t("header.to")}
               />
             </div>
           </div>

@@ -1,4 +1,5 @@
 ﻿import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import {
@@ -35,6 +36,7 @@ const splitPhoneCode = (full: string): { phoneCode: string; local: string } => {
 };
 
 const BlacklistMobile = () => {
+  const { t } = useTranslation("riskManagement");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -75,7 +77,7 @@ const BlacklistMobile = () => {
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch blacklist mobile data");
+      toast.error(error?.response?.data?.message || t("blacklistMobile.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -89,15 +91,15 @@ const BlacklistMobile = () => {
   const handleSave = async () => {
     const localNumber = formData.mobileNumber.trim();
     if (!localNumber) {
-      toast.error("Mobile number is required");
+      toast.error(t("blacklistMobile.toast.mobileRequired"));
       return;
     }
     if (!/^\d+$/.test(localNumber)) {
-      toast.error("Mobile number must contain digits only");
+      toast.error(t("blacklistMobile.toast.mobileDigits"));
       return;
     }
     if (!formData.reason.trim()) {
-      toast.error("Reason is required");
+      toast.error(t("blacklistMobile.toast.reasonRequired"));
       return;
     }
     const fullNumber = formData.phoneCode + localNumber;
@@ -108,11 +110,11 @@ const BlacklistMobile = () => {
         reason: formData.reason.trim(),
         ...(formData.blockCodeId ? { blockCodeId: formData.blockCodeId } : {}),
       });
-      toast.success("Mobile added to blacklist successfully");
+      toast.success(t("blacklistMobile.toast.addSuccess"));
       setShowAddModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to blacklist mobile");
+      toast.error(error?.response?.data?.message || t("blacklistMobile.toast.addFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -124,11 +126,11 @@ const BlacklistMobile = () => {
     try {
       setIsRemoving(true);
       await removeBlacklistMobile(mobile);
-      toast.success("Mobile removed from blacklist");
+      toast.success(t("blacklistMobile.toast.removeSuccess"));
       setRemoveTarget(null);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to remove from blacklist");
+      toast.error(error?.response?.data?.message || t("blacklistMobile.toast.removeFailed"));
     } finally {
       setIsRemoving(false);
     }
@@ -149,17 +151,17 @@ const BlacklistMobile = () => {
 
   const headers = [
     {
-      name: "Mobile Number",
+      name: t("blacklistMobile.col.mobileNumber"),
       selector: (row: any) => row.mobileNumber || row.mobile || "-",
       sortable: true,
     },
     {
-      name: "Reason",
+      name: t("blacklistMobile.col.reason"),
       selector: (row: any) => row.reason || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
         const isBlacklisted = status === "BLACKLISTED";
@@ -173,14 +175,14 @@ const BlacklistMobile = () => {
       width: "140px",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) =>
         row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: "Block Code",
+      name: t("blacklistMobile.col.blockCode"),
       cell: (row: any) => {
         const code = row.blockCodeId ? (blockCodeMap[row.blockCodeId] || row.blockCodeId) : null;
         return code ? (
@@ -194,7 +196,7 @@ const BlacklistMobile = () => {
       width: "140px",
     },
     {
-      name: "Action",
+      name: t("blacklistMobile.col.action"),
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
         if (status !== "BLACKLISTED" && status !== "REMOVED") return null;
@@ -210,7 +212,7 @@ const BlacklistMobile = () => {
                   type="button"
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Select
+                  {t("blacklistMobile.action.select")}
                   <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                 </button>
               </DropdownMenuTrigger>
@@ -226,7 +228,7 @@ const BlacklistMobile = () => {
                       }}
                     >
                       <ShieldCheck className="h-4 w-4" />
-                      Re-Blacklist
+                      {t("blacklistMobile.action.reBlacklist")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onSelect={(e) => {
@@ -236,7 +238,7 @@ const BlacklistMobile = () => {
                       }}
                     >
                       <Link2 className="h-4 w-4" />
-                      Assign Block Code
+                      {t("blacklistMobile.action.assignBlockCode")}
                     </DropdownMenuItem>
                   </>
                 ) : (
@@ -249,7 +251,7 @@ const BlacklistMobile = () => {
                       }}
                     >
                       <ShieldOff className="h-4 w-4" />
-                      Remove from Blacklist
+                      {t("blacklistMobile.action.remove")}
                     </DropdownMenuItem>
                     <DropdownMenuItem
                       onSelect={(e) => {
@@ -259,7 +261,7 @@ const BlacklistMobile = () => {
                       }}
                     >
                       <Link2 className="h-4 w-4" />
-                      Assign Block Code
+                      {t("blacklistMobile.action.assignBlockCode")}
                     </DropdownMenuItem>
                   </>
                 )}
@@ -279,7 +281,7 @@ const BlacklistMobile = () => {
           <span className="pro-head-badge">
             <Smartphone className="h-4 w-4" />
           </span>
-          Blacklist Mobile
+          {t("blacklistMobile.title")}
         </h3>
       </div>
 
@@ -287,7 +289,7 @@ const BlacklistMobile = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
-          placeholder="Search by mobile, reason, or status"
+          placeholder={t("blacklistMobile.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -295,7 +297,7 @@ const BlacklistMobile = () => {
         />
         <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
-          Add to Blacklist
+          {t("blacklistMobile.addButton")}
         </Button>
         </div>
       </div>
@@ -320,11 +322,11 @@ const BlacklistMobile = () => {
       <Dialog open={showAddModal} onOpenChange={(open) => !open && setShowAddModal(false)}>
         <DialogContent className="max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>Add Mobile to Blacklist</DialogTitle>
+            <DialogTitle>{t("blacklistMobile.addModal.title")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Mobile Number *</Label>
+              <Label>{t("blacklistMobile.field.mobileNumber")}</Label>
               <div className="flex gap-2">
                 <Select
                   value={formData.phoneCode}
@@ -340,7 +342,7 @@ const BlacklistMobile = () => {
                   </SelectContent>
                 </Select>
                 <Input
-                  placeholder="501234567"
+                  placeholder={t("blacklistMobile.field.mobileNumberPlaceholder")}
                   value={formData.mobileNumber}
                   onChange={(e) => setFormData({ ...formData, mobileNumber: e.target.value.replace(/\D/g, "") })}
                   className="flex-1"
@@ -348,24 +350,24 @@ const BlacklistMobile = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <Label>Reason *</Label>
+              <Label>{t("blacklistMobile.field.reason")}</Label>
               <Input
-                placeholder="Reason for blacklisting"
+                placeholder={t("blacklistMobile.field.reasonPlaceholder")}
                 value={formData.reason}
                 onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Block Code</Label>
+              <Label>{t("blacklistMobile.field.blockCode")}</Label>
               <Select
                 value={formData.blockCodeId || "none"}
                 onValueChange={(val) => setFormData({ ...formData, blockCodeId: val === "none" ? "" : val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select block code (optional)" />
+                  <SelectValue placeholder={t("blacklistMobile.field.blockCodePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="none">None</SelectItem>
+                  <SelectItem value="none">{t("common:none")}</SelectItem>
                   {blockCodes.map((bc: any) => (
                     <SelectItem key={bc.id} value={String(bc.id)}>
                       {bc.code}{bc.description ? ` — ${bc.description}` : ""}
@@ -377,10 +379,10 @@ const BlacklistMobile = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowAddModal(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Blacklist"}
+              {isSaving ? t("blacklistMobile.save.saving") : t("blacklistMobile.save.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -390,21 +392,21 @@ const BlacklistMobile = () => {
       <Dialog open={!!removeTarget} onOpenChange={(open) => !open && setRemoveTarget(null)}>
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Remove from Blacklist</DialogTitle>
+            <DialogTitle>{t("blacklistMobile.removeModal.title")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to remove mobile{" "}
+            {t("blacklistMobile.removeModal.confirmPrefix")}{" "}
             <span className="font-medium text-foreground">
               {removeTarget?.mobileNumber || removeTarget?.mobile}
             </span>{" "}
-            from the blacklist?
+            {t("blacklistMobile.removeModal.confirmSuffix")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRemoveTarget(null)} disabled={isRemoving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmRemove} disabled={isRemoving}>
-              {isRemoving ? "Removing..." : "Remove"}
+              {isRemoving ? t("blacklistMobile.remove.removing") : t("blacklistMobile.remove.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -414,16 +416,16 @@ const BlacklistMobile = () => {
       <Dialog open={!!assignMobileTarget} onOpenChange={(open) => !open && setAssignMobileTarget(null)}>
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Assign Block Code</DialogTitle>
+            <DialogTitle>{t("blacklistMobile.assignModal.title")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-1">
-            <Label className="font-semibold">Block Code</Label>
+            <Label className="font-semibold">{t("blacklistMobile.field.blockCode")}</Label>
             <Select
               value={selectedMobileBlockCodeId || ""}
               onValueChange={(val) => setSelectedMobileBlockCodeId(val)}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a block code" />
+                <SelectValue placeholder={t("blacklistMobile.assign.placeholder")} />
               </SelectTrigger>
               <SelectContent>
                 {blockCodes.map((bc: any) => (
@@ -436,7 +438,7 @@ const BlacklistMobile = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setAssignMobileTarget(null)} disabled={isAssigningMobile}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               onClick={async () => {
@@ -445,18 +447,18 @@ const BlacklistMobile = () => {
                 try {
                   setIsAssigningMobile(true);
                   await assignBlockCodeToMobile(mobile, selectedMobileBlockCodeId);
-                  toast.success("Block code assigned");
+                  toast.success(t("blacklistMobile.toast.assignSuccess"));
                   setAssignMobileTarget(null);
                   fetchData();
                 } catch (error: any) {
-                  toast.error(error?.response?.data?.message || "Failed to assign block code");
+                  toast.error(error?.response?.data?.message || t("blacklistMobile.toast.assignFailed"));
                 } finally {
                   setIsAssigningMobile(false);
                 }
               }}
               disabled={isAssigningMobile || !selectedMobileBlockCodeId}
             >
-              {isAssigningMobile ? "Assigning..." : "Assign"}
+              {isAssigningMobile ? t("blacklistMobile.assign.assigning") : t("blacklistMobile.assign.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

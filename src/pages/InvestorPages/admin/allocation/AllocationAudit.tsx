@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Download,
@@ -161,6 +162,13 @@ const outcomeOptions = ['All Outcomes', 'success', 'failure', 'warning'];
 const actorOptions = ['All Actors', 'system', 'user'];
 
 export default function AllocationAudit() {
+  const { t } = useTranslation('investor');
+  const typeKey: Record<string, string> = { 'All Types': 'aud.type.allTypes', 'strategy_executed': 'aud.type.strategyExecuted', 'manual_allocation': 'aud.type.manualAllocation', 'simulation_run': 'aud.type.simulationRun', 'strategy_modified': 'aud.type.strategyModified', 'allocation_failed': 'aud.type.allocationFailed', 'exposure_limit_exceeded': 'aud.type.exposureLimitExceeded' };
+  const outcomeKey: Record<string, string> = { 'All Outcomes': 'aud.outcome.allOutcomes', 'success': 'aud.outcome.success', 'failure': 'aud.outcome.failure', 'warning': 'aud.outcome.warning' };
+  const actorKey: Record<string, string> = { 'All Actors': 'aud.actor.allActors', 'system': 'aud.actor.system', 'user': 'aud.actor.user' };
+  const tType = (v: string) => (typeKey[v] ? t(typeKey[v]) : v);
+  const tOutcome = (v: string) => (outcomeKey[v] ? t(outcomeKey[v]) : v);
+  const tActor = (v: string) => (actorKey[v] ? t(actorKey[v]) : v);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [outcomeFilter, setOutcomeFilter] = useState('All Outcomes');
@@ -202,9 +210,7 @@ export default function AllocationAudit() {
     }
   };
 
-  const getTypeLabel = (type: string) => {
-    return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  };
+  const getTypeLabel = (type: string) => tType(type);
 
   const handleViewDetails = (log: any) => {
     setSelectedLog(log);
@@ -212,7 +218,7 @@ export default function AllocationAudit() {
   };
 
   const handleExport = () => {
-    alert('Exporting audit logs to CSV...');
+    alert(t('aud.exporting'));
   };
 
   const formatCurrency = (amount: number) => {
@@ -235,12 +241,12 @@ export default function AllocationAudit() {
               to="/admin/allocation"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Dashboard
+              <ArrowLeft className="w-5 h-5 me-2" />
+              {t('sl.backToDashboard')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Allocation Audit Logs</h1>
-              <p className="text-gray-600">Track all allocation activities and system events</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('aud.title')}</h1>
+              <p className="text-gray-600">{t('aud.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
@@ -248,8 +254,8 @@ export default function AllocationAudit() {
               onClick={handleExport}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
+              <Download className="w-4 h-4 me-2" />
+              {t('ts.exportCsv')}
             </button>
           </div>
         </div>
@@ -262,10 +268,10 @@ export default function AllocationAudit() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search logs..."
+              placeholder={t('aud.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
             />
           </div>
           <select
@@ -274,7 +280,7 @@ export default function AllocationAudit() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
             {typeOptions.map(type => (
-              <option key={type} value={type}>{type === 'All Types' ? type : getTypeLabel(type)}</option>
+              <option key={type} value={type}>{tType(type)}</option>
             ))}
           </select>
           <select
@@ -283,7 +289,7 @@ export default function AllocationAudit() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
             {outcomeOptions.map(outcome => (
-              <option key={outcome} value={outcome}>{outcome.charAt(0).toUpperCase() + outcome.slice(1)}</option>
+              <option key={outcome} value={outcome}>{tOutcome(outcome)}</option>
             ))}
           </select>
           <select
@@ -292,7 +298,7 @@ export default function AllocationAudit() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
             {actorOptions.map(actor => (
-              <option key={actor} value={actor}>{actor.charAt(0).toUpperCase() + actor.slice(1)}</option>
+              <option key={actor} value={actor}>{tActor(actor)}</option>
             ))}
           </select>
         </div>
@@ -300,7 +306,7 @@ export default function AllocationAudit() {
         <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <Calendar className="w-4 h-4 text-gray-500" />
-            <span className="text-sm text-gray-700">Date Range:</span>
+            <span className="text-sm text-gray-700">{t('aud.dateRange')}</span>
           </div>
           <input
             type="date"
@@ -308,7 +314,7 @@ export default function AllocationAudit() {
             onChange={(e) => setDateFrom(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           />
-          <span className="text-gray-500">to</span>
+          <span className="text-gray-500">{t('common:to')}</span>
           <input
             type="date"
             value={dateTo}
@@ -316,7 +322,7 @@ export default function AllocationAudit() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           />
           <div className="text-sm text-gray-500">
-            {filteredLogs.length} of {auditLogs.length} logs
+            {t('aud.countLabel', { shown: filteredLogs.length, total: auditLogs.length })}
           </div>
         </div>
       </div>
@@ -327,29 +333,29 @@ export default function AllocationAudit() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Timestamp
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('aud.col.timestamp')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actor
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('aud.col.actor')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Strategy
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('sl.col.strategy')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Loan ID
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('aud.col.loanId')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Outcome
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('aud.col.outcome')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Details
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:details')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -367,7 +373,7 @@ export default function AllocationAudit() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {getTypeIcon(log.type)}
-                      <span className="ml-2 text-sm text-gray-900">
+                      <span className="ms-2 text-sm text-gray-900">
                         {getTypeLabel(log.type)}
                       </span>
                     </div>
@@ -386,27 +392,27 @@ export default function AllocationAudit() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {getOutcomeIcon(log.outcome)}
-                      <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                      <span className={`ms-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         log.outcome === 'success' ? 'bg-green-100 text-green-800' :
                         log.outcome === 'failure' ? 'bg-red-100 text-red-800' :
                         log.outcome === 'warning' ? 'bg-yellow-100 text-yellow-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {log.outcome.charAt(0).toUpperCase() + log.outcome.slice(1)}
+                        {tOutcome(log.outcome)}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {log.details.totalAllocated && formatCurrency(log.details.totalAllocated)}
-                    {log.details.errorCode && `Error: ${log.details.errorCode}`}
-                    {log.details.changeType && `Change: ${log.details.changeType}`}
-                    {log.details.simulationType && `Simulation: ${log.details.simulationType}`}
+                    {log.details.errorCode && t('aud.errorPrefix', { code: log.details.errorCode })}
+                    {log.details.changeType && t('aud.changePrefix', { type: log.details.changeType })}
+                    {log.details.simulationType && t('aud.simPrefix', { type: log.details.simulationType })}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <button
                       onClick={() => handleViewDetails(log)}
                       className="text-black hover:text-blue-900"
-                      title="View Details"
+                      title={t('aud.viewDetails')}
                     >
                       <Eye className="w-4 h-4" />
                     </button>
@@ -421,17 +427,17 @@ export default function AllocationAudit() {
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          Showing {filteredLogs.length} of {auditLogs.length} logs
+          {t('aud.countLabel', { shown: filteredLogs.length, total: auditLogs.length })}
         </div>
         <div className="flex items-center space-x-2">
           <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
-            Previous
+            {t('common:previous')}
           </button>
           <button className="px-3 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg">
             1
           </button>
           <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-            Next
+            {t('common:next')}
           </button>
         </div>
       </div>
@@ -441,7 +447,7 @@ export default function AllocationAudit() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Audit Log Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('aud.detailsTitle')}</h3>
               <button
                 onClick={() => setShowDetails(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -453,57 +459,57 @@ export default function AllocationAudit() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Event ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.eventId')}</label>
                   <p className="text-sm text-gray-900">{selectedLog.id}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Timestamp</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.timestamp')}</label>
                   <p className="text-sm text-gray-900">{new Date(selectedLog.timestamp).toLocaleString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:type')}</label>
                   <p className="text-sm text-gray-900">{getTypeLabel(selectedLog.type)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Actor</label>
-                  <p className="text-sm text-gray-900">{selectedLog.actorName} ({selectedLog.actor})</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.actor')}</label>
+                  <p className="text-sm text-gray-900">{selectedLog.actorName} ({tActor(selectedLog.actor)})</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Outcome</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.outcome')}</label>
                   <p className={`text-sm font-medium ${
                     selectedLog.outcome === 'success' ? 'text-green-600' :
                     selectedLog.outcome === 'failure' ? 'text-red-600' :
                     selectedLog.outcome === 'warning' ? 'text-yellow-600' :
                     'text-gray-600'
                   }`}>
-                    {selectedLog.outcome.charAt(0).toUpperCase() + selectedLog.outcome.slice(1)}
+                    {tOutcome(selectedLog.outcome)}
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Strategy</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('sl.col.strategy')}</label>
                   <p className="text-sm text-gray-900">{selectedLog.strategyName}</p>
                   <p className="text-sm text-gray-500">{selectedLog.strategyId}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Loan ID</label>
-                  <p className="text-sm text-gray-900">{selectedLog.loanId || 'N/A'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.col.loanId')}</label>
+                  <p className="text-sm text-gray-900">{selectedLog.loanId || t('aud.na')}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">IP Address</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.ipAddress')}</label>
                   <p className="text-sm text-gray-900">{selectedLog.metadata.ipAddress}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Session ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('aud.sessionId')}</label>
                   <p className="text-sm text-gray-900">{selectedLog.metadata.sessionId}</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6">
-              <label className="block text-sm font-medium text-gray-700 mb-3">Event Details</label>
+              <label className="block text-sm font-medium text-gray-700 mb-3">{t('aud.eventDetails')}</label>
               <div className="bg-gray-50 rounded-lg p-4">
                 <pre className="text-sm text-gray-900 whitespace-pre-wrap">
                   {JSON.stringify(selectedLog.details, null, 2)}
@@ -516,7 +522,7 @@ export default function AllocationAudit() {
                 onClick={() => setShowDetails(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
             </div>
           </div>

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { GetRevenueTransactions } from "../../redux/apis/apisCrudLms";
 const RevenueAccount = () => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -77,20 +79,20 @@ const RevenueAccount = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Revenue Source",
+      name: t("col.revenueSource"),
       cell: (row: any) => row.revenueSource || "-",
     },
 
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Profit Margin",
+      name: t("col.profitMargin"),
       selector: (row: { profitMargin: any }) => row.profitMargin || "-",
     },
     {
-      name: "Net Profit",
+      name: t("col.netProfit"),
       selector: (row: { netProfit: any }) => row.netProfit || "-",
     },
   ];

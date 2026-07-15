@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Users } from "lucide-react";
 import {
   Button,
@@ -62,6 +63,7 @@ const emptyForm: {
 };
 
 const Employees = () => {
+  const { t } = useTranslation("settings");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [from, setFrom] = useState(0);
@@ -105,10 +107,10 @@ const Employees = () => {
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => handleMenuClick("edit", row)}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleMenuClick("delete", row)}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -122,12 +124,12 @@ const Employees = () => {
 
   const tableColumns = [
     { name: "#", selector: (row: any) => row.Sr, width: "60px" },
-    { name: "Name", selector: (row: any) => row.name },
-    { name: "Email", selector: (row: any) => row.email },
-    { name: "Phone", selector: (row: any) => row.phone },
-    { name: "Role", selector: (row: any) => row.roleName },
+    { name: t("common:name"), selector: (row: any) => row.name },
+    { name: t("common:email"), selector: (row: any) => row.email },
+    { name: t("common:phone"), selector: (row: any) => row.phone },
+    { name: t("employees.col.role"), selector: (row: any) => row.roleName },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -144,12 +146,12 @@ const Employees = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("employees.col.action"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "2px", padding: "8px" }}>
-            Select
+            {t("common:select")}
             <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
           </Button>
         </Dropdown>
@@ -178,15 +180,15 @@ const Employees = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteEmployee(deleteTargetId), {
-        loading: "Deleting Employee...",
+        loading: t("employees.toast.deleting"),
         success: (response: any) => {
           getEmployeesData();
           setShowConfirmModal(false);
           setDeleteTargetId(null);
           setSelectedItem(null);
-          return response?.data?.message || "Employee deleted.";
+          return response?.data?.message || t("employees.toast.deleted");
         },
-        error: (err: any) => err?.response?.data?.message || err?.message || "Failed to delete employee",
+        error: (err: any) => err?.response?.data?.message || err?.message || t("employees.toast.deleteFailed"),
       });
     } catch (error) {
       setShowConfirmModal(false);
@@ -204,7 +206,7 @@ const Employees = () => {
           status: formData.status,
         };
         await toast.promise(updateEmployee(currentEmployeeId, body), {
-          loading: "Updating employee...",
+          loading: t("employees.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setShowConfirmModal(false);
@@ -212,9 +214,9 @@ const Employees = () => {
             setCurrentEmployeeId(null);
             setFormData(emptyForm);
             getEmployeesData();
-            return response?.data?.message || "Employee updated.";
+            return response?.data?.message || t("employees.toast.updated");
           },
-          error: (err: any) => err?.response?.data?.message || err?.message || "Failed to update employee",
+          error: (err: any) => err?.response?.data?.message || err?.message || t("employees.toast.updateFailed"),
         });
       } else if (selectedItem === "add") {
         const body = {
@@ -227,16 +229,16 @@ const Employees = () => {
           status: formData.status,
         };
         await toast.promise(storeEmployee(body), {
-          loading: "Adding employee...",
+          loading: t("employees.toast.adding"),
           success: (response: any) => {
             setShowModal(false);
             setShowConfirmModal(false);
             setSelectedItem(null);
             setFormData(emptyForm);
             getEmployeesData();
-            return response?.data?.message || "Employee added.";
+            return response?.data?.message || t("employees.toast.added");
           },
-          error: (err: any) => err?.response?.data?.message || err?.message || "Failed to add employee",
+          error: (err: any) => err?.response?.data?.message || err?.message || t("employees.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -331,7 +333,7 @@ const Employees = () => {
             <span className="pro-head-badge">
               <Users className="h-4 w-4" />
             </span>
-            Employees List
+            {t("employees.title")}
           </h3>
         </div>
 
@@ -347,7 +349,7 @@ const Employees = () => {
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <Input
               allowClear
-              placeholder="Search by name, email, phone, status"
+              placeholder={t("employees.searchPlaceholder")}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
@@ -362,7 +364,7 @@ const Employees = () => {
               }}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              Add New Employee
+              {t("employees.addNew")}
             </button>
           </div>
         </div>
@@ -395,13 +397,13 @@ const Employees = () => {
         <Modal
           className="custom-mod"
           style={{ maxWidth: "764px" }}
-          title={selectedItem === "edit" ? "Update Employee" : "Add New Employee"}
+          title={selectedItem === "edit" ? t("employees.modal.updateTitle") : t("employees.addNew")}
           open={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
-            <Button key="close" onClick={() => setShowModal(false)}>Cancel</Button>,
+            <Button key="close" onClick={() => setShowModal(false)}>{t("common:cancel")}</Button>,
             <Button key="save" type="primary" onClick={() => { setShowConfirmModal(true); setShowModal(false); }}>
-              Save
+              {t("common:save")}
             </Button>,
           ]}
         >
@@ -409,18 +411,18 @@ const Employees = () => {
             <Form layout="vertical">
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label="Name">
+                  <Form.Item label={t("common:name")}>
                     <Input
-                      placeholder="Full Name"
+                      placeholder={t("employees.ph.fullName")}
                       value={formData.name}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
                     />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Email">
+                  <Form.Item label={t("common:email")}>
                     <Input
-                      placeholder="Email"
+                      placeholder={t("employees.ph.email")}
                       value={formData.email}
                       disabled={selectedItem === "edit"}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
@@ -430,18 +432,18 @@ const Employees = () => {
               </Row>
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label="Phone">
+                  <Form.Item label={t("common:phone")}>
                     <Input
-                      placeholder="Phone"
+                      placeholder={t("employees.ph.phone")}
                       value={formData.phone}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, phone: e.target.value })}
                     />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Address">
+                  <Form.Item label={t("employees.field.address")}>
                     <Input
-                      placeholder="Address"
+                      placeholder={t("employees.ph.address")}
                       value={formData.address}
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, address: e.target.value })}
                     />
@@ -451,9 +453,9 @@ const Employees = () => {
               {selectedItem === "add" && (
                 <Row gutter={16}>
                   <Col span={12}>
-                    <Form.Item label="Password">
+                    <Form.Item label={t("employees.field.password")}>
                       <Input.Password
-                        placeholder="Password"
+                        placeholder={t("employees.ph.password")}
                         value={formData.password}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, password: e.target.value })}
                       />
@@ -463,10 +465,10 @@ const Employees = () => {
               )}
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label="Assign Role">
+                  <Form.Item label={t("employees.field.assignRole")}>
                     <Select
                       className="w-100"
-                      placeholder="Select Role"
+                      placeholder={t("employees.ph.selectRole")}
                       value={formData.roleId || undefined}
                       onChange={(value: string) => setFormData({ ...formData, roleId: value })}
                       options={roleData.map((item: any) => ({ label: item.roleName, value: item.id }))}
@@ -474,7 +476,7 @@ const Employees = () => {
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label="Status">
+                  <Form.Item label={t("common:status")}>
                     <Select
                       className="w-100"
                       value={formData.status}
@@ -494,21 +496,21 @@ const Employees = () => {
           className="custom-mod"
           style={{ maxWidth: "632px" }}
           title={
-            selectedItem === "edit" ? "Update Employee"
-            : selectedItem === "add" ? "Add New Employee"
-            : "Delete Employee"
+            selectedItem === "edit" ? t("employees.modal.updateTitle")
+            : selectedItem === "add" ? t("employees.addNew")
+            : t("employees.modal.deleteTitle")
           }
           footer={[
-            <Button key="no" onClick={() => setShowConfirmModal(false)}>No</Button>,
+            <Button key="no" onClick={() => setShowConfirmModal(false)}>{t("common:no")}</Button>,
             <Button key="yes" type="primary" onClick={selectedItem === "delete" ? handleDeleteConfirmed : handleSave}>
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <p className="mb-0">
-            {selectedItem === "edit" ? "Are you sure you want to update this record?"
-              : selectedItem === "add" ? "Are you sure you want to add new record?"
-              : "Are you sure you want to delete this record?"}
+            {selectedItem === "edit" ? t("confirm.update")
+              : selectedItem === "add" ? t("confirm.add")
+              : t("confirm.delete")}
           </p>
         </Modal>
       </div>

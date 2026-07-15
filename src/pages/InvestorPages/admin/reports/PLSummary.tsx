@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Download,
@@ -100,6 +101,7 @@ const plData = {
 };
 
 export default function PLSummary() {
+  const { t } = useTranslation('investor');
   const [dateRange, setDateRange] = useState('ytd');
   const [viewBy, setViewBy] = useState('product');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -127,7 +129,7 @@ export default function PLSummary() {
     // Simulate report generation
     await new Promise(resolve => setTimeout(resolve, 2000));
     setIsGenerating(false);
-    alert('Report generated successfully!');
+    alert(t('pl.reportGenerated'));
   };
 
   return (
@@ -139,15 +141,15 @@ export default function PLSummary() {
             to="/admin/reports"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Reports
+            <ArrowLeft className="w-4 h-4 me-2" />
+            {t('pl.backToReports')}
           </Link>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">P/L Summary</h1>
-            <p className="text-gray-600">Profit and loss analysis across all investments</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('pl.title')}</h1>
+            <p className="text-gray-600">{t('pl.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <select
@@ -155,11 +157,11 @@ export default function PLSummary() {
               onChange={(e) => setDateRange(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             >
-              <option value="mtd">Month to Date</option>
-              <option value="qtd">Quarter to Date</option>
-              <option value="ytd">Year to Date</option>
-              <option value="1y">Last 12 Months</option>
-              <option value="custom">Custom Range</option>
+              <option value="mtd">{t('pl.range.mtd')}</option>
+              <option value="qtd">{t('pl.range.qtd')}</option>
+              <option value="ytd">{t('pl.range.ytd')}</option>
+              <option value="1y">{t('pl.range.1y')}</option>
+              <option value="custom">{t('pl.range.custom')}</option>
             </select>
             <button
               onClick={handleGenerateReport}
@@ -167,23 +169,23 @@ export default function PLSummary() {
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
             >
               {isGenerating ? (
-                <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                <RefreshCw className="w-4 h-4 me-2 animate-spin" />
               ) : (
-                <RefreshCw className="w-4 h-4 mr-2" />
+                <RefreshCw className="w-4 h-4 me-2" />
               )}
-              Refresh Data
+              {t('dashboard.refreshData')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Share className="w-4 h-4 mr-2" />
-              Share
+              <Share className="w-4 h-4 me-2" />
+              {t('pl.share')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Printer className="w-4 h-4 mr-2" />
-              Print
+              <Printer className="w-4 h-4 me-2" />
+              {t('pl.print')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-              <Download className="w-4 h-4 mr-2" />
-              Export PDF
+              <Download className="w-4 h-4 me-2" />
+              {t('pl.exportPdf')}
             </button>
           </div>
         </div>
@@ -193,7 +195,7 @@ export default function PLSummary() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Total Investment</p>
+            <p className="text-sm text-gray-600">{t('pl.card.totalInvestment')}</p>
             <DollarSign className="w-5 h-5 text-gray-400" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{formatCurrency(plData.summary.totalInvestment)}</p>
@@ -202,38 +204,38 @@ export default function PLSummary() {
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Current Value</p>
+            <p className="text-sm text-gray-600">{t('pl.card.currentValue')}</p>
             <BarChart3 className="w-5 h-5 text-gray-700" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{formatCurrency(plData.summary.currentValue)}</p>
-          <p className="text-xs text-gray-500 mt-1">Market value</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pl.card.marketValue')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Unrealized Gains</p>
+            <p className="text-sm text-gray-600">{t('pl.card.unrealizedGains')}</p>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-2xl font-bold text-green-600">{formatCurrency(plData.summary.unrealizedGains)}</p>
-          <p className="text-xs text-gray-500 mt-1">Paper gains</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pl.card.paperGains')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Realized Gains</p>
+            <p className="text-sm text-gray-600">{t('pl.card.realizedGains')}</p>
             <DollarSign className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-2xl font-bold text-green-600">{formatCurrency(plData.summary.realizedGains)}</p>
-          <p className="text-xs text-gray-500 mt-1">Actual gains</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pl.card.actualGains')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Total Return</p>
+            <p className="text-sm text-gray-600">{t('pl.card.totalReturn')}</p>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-2xl font-bold text-green-600">{plData.summary.totalReturn.toFixed(2)}%</p>
-          <p className="text-xs text-gray-500 mt-1">Overall performance</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pl.card.overallPerformance')}</p>
         </div>
       </div>
 
@@ -246,7 +248,7 @@ export default function PLSummary() {
               viewBy === 'product' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            By Product
+            {t('pl.view.byProduct')}
           </button>
           <button
             onClick={() => setViewBy('period')}
@@ -254,7 +256,7 @@ export default function PLSummary() {
               viewBy === 'period' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            By Period
+            {t('pl.view.byPeriod')}
           </button>
           <button
             onClick={() => setViewBy('investor')}
@@ -262,7 +264,7 @@ export default function PLSummary() {
               viewBy === 'investor' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
             }`}
           >
-            By Investor
+            {t('pl.view.byInvestor')}
           </button>
         </div>
       </div>
@@ -271,35 +273,35 @@ export default function PLSummary() {
       {viewBy === 'product' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-8">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">P/L by Product</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('pl.plByProduct')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Product
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.product')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Investment
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.investment')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Current Value
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.currentValue')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Unrealized P/L
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.unrealizedPl')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Realized P/L
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.realizedPl')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total P/L
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.totalPl')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Return %
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.returnPct')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Investors
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.investors')}
                   </th>
                 </tr>
               </thead>
@@ -339,9 +341,9 @@ export default function PLSummary() {
                         product.return >= 0 ? 'text-green-600' : 'text-red-600'
                       }`}>
                         {product.return >= 0 ? (
-                          <TrendingUp className="w-4 h-4 mr-1" />
+                          <TrendingUp className="w-4 h-4 me-1" />
                         ) : (
-                          <TrendingDown className="w-4 h-4 mr-1" />
+                          <TrendingDown className="w-4 h-4 me-1" />
                         )}
                         {product.return >= 0 ? '+' : ''}{product.return.toFixed(2)}%
                       </div>
@@ -359,14 +361,14 @@ export default function PLSummary() {
 
       {viewBy === 'period' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">P/L by Period</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('pl.plByPeriod')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {plData.byPeriod.map((period, index) => (
               <div key={index} className="border border-gray-200 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-sm font-medium text-gray-900">{period.period}</h4>
                   <div className="flex items-center text-green-600">
-                    <TrendingUp className="w-4 h-4 mr-1" />
+                    <TrendingUp className="w-4 h-4 me-1" />
                     <span className="text-sm font-medium">{period.return.toFixed(1)}%</span>
                   </div>
                 </div>
@@ -388,23 +390,23 @@ export default function PLSummary() {
       {viewBy === 'investor' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-8">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Top Performing Investors</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('pl.topPerformingInvestors')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Investor
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.investor')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Total Gains
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.totalGains')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Return %
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.returnPct')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Performance
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('pl.col.performance')}
                   </th>
                 </tr>
               </thead>
@@ -413,7 +415,7 @@ export default function PLSummary() {
                   <tr key={index} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center me-3">
                           <span className="text-xs font-medium text-gray-700">{index + 1}</span>
                         </div>
                         <div className="text-sm font-medium text-gray-900">{investor.investor}</div>
@@ -424,7 +426,7 @@ export default function PLSummary() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center text-sm font-medium text-green-600">
-                        <TrendingUp className="w-4 h-4 mr-1" />
+                        <TrendingUp className="w-4 h-4 me-1" />
                         +{investor.return.toFixed(1)}%
                       </div>
                     </td>
@@ -448,14 +450,14 @@ export default function PLSummary() {
       <div className="bg-gray-50 rounded-lg p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-1">Portfolio Summary</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-1">{t('pl.portfolioSummary')}</h3>
             <p className="text-sm text-gray-600">
-              Total portfolio value increased by {formatCurrency(plData.summary.totalGains)} ({plData.summary.totalReturn.toFixed(2)}%) for the period {plData.summary.period}
+              {t('pl.summaryText', { gains: formatCurrency(plData.summary.totalGains), pct: plData.summary.totalReturn.toFixed(2), period: plData.summary.period })}
             </p>
           </div>
-          <div className="text-right">
-            <p className="text-sm text-gray-600">Last updated</p>
-            <p className="text-sm font-medium text-gray-900">{new Date().toLocaleDateString()} at {new Date().toLocaleTimeString()}</p>
+          <div className="text-end">
+            <p className="text-sm text-gray-600">{t('pl.lastUpdated')}</p>
+            <p className="text-sm font-medium text-gray-900">{t('pl.lastUpdatedAt', { date: new Date().toLocaleDateString(), time: new Date().toLocaleTimeString() })}</p>
           </div>
         </div>
       </div>

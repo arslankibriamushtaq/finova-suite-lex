@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "antd";
 import { Row, Col, Form } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -8,6 +9,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import axios from "../../../utils/axios";
 
 const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
+  const { t } = useTranslation("productManagement2");
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
   const [radioInputValue, setradioInputValue] = useState("Percentage");
@@ -57,36 +59,36 @@ const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
   }, []);
   const CollateralType = [
     {
-      label: "Percentage",
+      label: t("delinquency.percentage"),
       type: "radio",
       name: "Percentage",
       value: "Percentage",
     },
-    { label: "Fixed", type: "radio", name: "Fixed", value: "Fixed" },
+    { label: t("delinquency.fixed"), type: "radio", name: "Fixed", value: "Fixed" },
   ];
 
   const PercentageDetail = [
     {
       label:
         radioInputValue == "Percentage"
-          ? "Penalty Amount in %"
-          : "Penalty Amount",
+          ? t("delinquency.penaltyAmountPct")
+          : t("delinquency.penaltyAmount"),
       type: "number",
       name: "penalty",
-      placeholder: "Penalty",
+      placeholder: t("delinquency.penalty"),
     },
 
     {
-      label: "From Day",
+      label: t("delinquency.fromDay"),
       type: "number",
       name: "fromDay",
-      placeholder: "From Day",
+      placeholder: t("delinquency.fromDay"),
     },
     {
-      label: "Till Day",
+      label: t("delinquency.tillDay"),
       type: "number",
       name: "tillDay",
-      placeholder: "Till Day",
+      placeholder: t("delinquency.tillDay"),
     },
     /* {
       label: "Promises Per Year",
@@ -116,10 +118,10 @@ const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
 
   const validateFields: any = () => {
     const newErrors: any = {};
-    if (!formValues.penalty) newErrors.penalty = "Penalty is required";
+    if (!formValues.penalty) newErrors.penalty = t("delinquency.penaltyRequired");
 
-    if (!formValues.fromDay) newErrors.fromDay = "From Day is required";
-    if (!formValues.tillDay) newErrors.tillDay = "Till Day is required";
+    if (!formValues.fromDay) newErrors.fromDay = t("delinquency.fromDayRequired");
+    if (!formValues.tillDay) newErrors.tillDay = t("delinquency.tillDayRequired");
     /* if (!formValues.promisesPerYear)
       newErrors.promisesPerYear = "Promises Per Year is required";
     if (!formValues.promisesPerLoan)
@@ -168,7 +170,7 @@ const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
       }
     } catch (error: any) {
       setLoader(false);
-      toast.error(error.message || "An error occurred");
+      toast.error(error.message || t("delinquency.errorOccurred"));
     }
   };
 
@@ -181,7 +183,7 @@ const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
           className="d-flex align-items-center justify-content-between mt-1 mb-3"
           style={{ fontSize: "15px", fontWeight: "Bold" }}
         >
-          Penalty Amount Settings
+          {t("delinquency.penaltyAmountSettings")}
         </div>
 
         <Row>
@@ -248,7 +250,7 @@ const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
             setSelectedTab("DueLoan");
           }}
         >
-          Back
+          {t("common:back")}
         </Button>
         <Button
           className="application-btn mb-2"
@@ -260,7 +262,7 @@ const EditLatePayment = ({ productId, setSelectedTab }: any ) => {
           }} */
           onClick={updateSubmitForm}
         >
-          Save & Next
+          {t("delinquency.saveNext")}
         </Button>
       </div>
     </div>

@@ -19,11 +19,13 @@ import {
   updateAccountLedger,
 } from "../../redux/apis/apisCrudLms";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const AccountReportsList = ({
   loader,
 }: any) => {
   const navigate = useNavigate();
+  const { t } = useTranslation("reports");
   const [initialRendor, setInitialRendor] = useState(false);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -77,31 +79,31 @@ const AccountReportsList = ({
       width: "70px",
     },
     {
-      name: "Account Code",
+      name: t('accountReportsList.col.accountCode'),
       selector: (row: { accountCode: any }) => row.accountCode,
     },
     {
-      name: "Account Title",
+      name: t('accountReportsList.col.accountTitle'),
       cell: (row: { accountTitle: any }) => (
         <span style={{ whiteSpace: "break-spaces" }}>{row.accountTitle}</span>
       ),
     },
     {
-      name: "Account Type",
+      name: t('accountReportsList.col.accountType'),
       selector: (row: { accountType: any }) => row.accountType,
     },
 
     {
-      name: "Account Balance",
+      name: t('accountReportsList.col.accountBalance'),
       selector: (row: { accountBalance: any }) => row.accountBalance,
     },
     {
-      name: "IBAN",
+      name: t('accountReportsList.col.iban'),
       selector: (row: { bankAccountNumber: any }) =>
         row.bankAccountNumber || "-",
     },
     {
-      name: "BIC",
+      name: t('accountReportsList.col.bic'),
       selector: (row: { bic: any }) => row.bic || "-",
     },
   ];
@@ -166,7 +168,7 @@ const AccountReportsList = ({
         accountTitle: item.accountName,
         accountCode: item.accountCode,
         accountGroup: item.parentAccountName || "-",
-        accountType: item.accountType === 0 ? "Debit" : "Credit",
+        accountType: item.accountType === 0 ? t('accountReportsList.debit') : t('accountReportsList.credit'),
         id: item.id,
         accountBalance: item.accountBalance || 0,
         bankAccountNumber: item?.bankAccountNumber || "",
@@ -204,7 +206,7 @@ const AccountReportsList = ({
           <span className="pro-head-badge">
             <FileBarChart2 className="h-4 w-4" />
           </span>
-          Account Reports
+          {t('accountReportsList.title')}
         </h3>
       </div>
 
@@ -213,7 +215,7 @@ const AccountReportsList = ({
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by code, name, or type"
+            placeholder={t('accountReportsList.searchPlaceholder')}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e: any) => setSearchTerm(e.target.value)}
@@ -226,7 +228,7 @@ const AccountReportsList = ({
             onClick={showReports}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            View Reports
+            {t('action.viewReports')}
           </button>
         </div>
       </div>

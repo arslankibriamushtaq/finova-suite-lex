@@ -23,8 +23,10 @@ import {
 } from "../../../redux/apis/apisCrudLms";
 import { Button, Checkbox } from "antd";
 import { RootState } from "../../../redux/rootReducer";
+import { useTranslation } from "react-i18next";
 
 const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
+  const { t } = useTranslation("customersB");
   const navigate = useNavigate();
   const [businessType, setbusinessType] = useState<any>();
   const languageId = useSelector((state: RootState) => state.block.languages);
@@ -50,46 +52,46 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
   const [epf, setEpf] = useState<any>();
   const validationSchema = Yup.object().shape({
     registrationNumber: Yup.string()
-      .required("Registration number is required")
-      .matches(/^\S+$/, "Registration number should not contain spaces"),
+      .required(t("customersB:bm.val.registrationRequired"))
+      .matches(/^\S+$/, t("customersB:bm.val.registrationNoSpaces")),
     buisnessTypeId: Yup.string()
-      .required("Business Type is required")
-      .matches(/^\S+$/, "Please select a valid Business Type"),
+      .required(t("customersB:bm.val.businessTypeRequired"))
+      .matches(/^\S+$/, t("customersB:bm.val.businessTypeValid")),
     buisnessCategoryId: Yup.string()
-      .required("Business Category is required")
-      .matches(/^\S+$/, "Please select a valid Business Category"),
+      .required(t("customersB:bm.val.businessCategoryRequired"))
+      .matches(/^\S+$/, t("customersB:bm.val.businessCategoryValid")),
     legalName: Yup.string()
-      .required("Legal Name is required")
+      .required(t("customersB:bm.val.legalNameRequired"))
       .matches(
         /^[a-zA-Z\s]+$/,
-        "Legal Name should not contain numbers or special characters"
+        t("customersB:bm.val.legalNameFormat")
       ),
     taxId: Yup.string()
-      .required("Tax ID is required")
+      .required(t("customersB:bm.val.taxIdRequired"))
       .matches(
         /^[a-zA-Z0-9]+$/,
-        "Tax ID should only contain alphanumeric characters"
+        t("customersB:bm.val.taxIdFormat")
       ),
-    startDate: Yup.date().required("Start date is required"),
+    startDate: Yup.date().required(t("customersB:bm.val.startDateRequired")),
     totalCurrentEmployees: Yup.number()
-      .required("Total current employees is required")
-      .min(0, "Total employees must be 0 or more"),
+      .required(t("customersB:bm.val.employeesRequired"))
+      .min(0, t("customersB:bm.val.employeesMin")),
     contactPerson: Yup.string()
-      .required("Contact Person name is required")
+      .required(t("customersB:bm.val.contactPersonRequired"))
       .matches(
         /^[a-zA-Z\s]+$/,
-        "Contact Person name should contain only letters and spaces"
+        t("customersB:bm.val.contactPersonFormat")
       ),
-    managementSince: Yup.date().required("Management Since date is required"),
+    managementSince: Yup.date().required(t("customersB:bm.val.managementSinceRequired")),
     bankruptcy: Yup.string()
-      .required("Bankruptcy status is required")
-      .oneOf(["1", "2"], "Bankruptcy status is invalid"),
+      .required(t("customersB:bm.val.bankruptcyRequired"))
+      .oneOf(["1", "2"], t("customersB:bm.val.bankruptcyInvalid")),
     email: Yup.string()
-      .required("Email is required")
-      .email("Invalid email format"),
-    totalEPFId: Yup.string().required("Total EPF is required"),
+      .required(t("customersB:bm.val.emailRequired"))
+      .email(t("customersB:bm.val.emailInvalid")),
+    totalEPFId: Yup.string().required(t("customersB:bm.val.epfRequired")),
     timeZone: Yup.string()
-      .required("Time Zone is required")
+      .required(t("customersB:bm.val.timeZoneRequired"))
       .oneOf(
         [
           "UTC",
@@ -119,26 +121,26 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
           "UTC+11:00",
           "UTC+12:00",
         ],
-        "Invalid Time Zone"
+        t("customersB:bm.val.timeZoneInvalid")
       ),
-    addrs: Yup.string().required("Address is required"),
+    addrs: Yup.string().required(t("customersB:bm.val.addressRequired")),
     countryId: Yup.string()
-      .required("Country is required")
-      .matches(/^\S+$/, "Please select a valid country"),
-    postalAddressType: Yup.string().required("Postal Address Type is required"),
-    buildingNumber: Yup.string().required("Building Number is required"),
-    address1: Yup.string().required("Address Line 1 is required"),
+      .required(t("customersB:bm.val.countryRequired"))
+      .matches(/^\S+$/, t("customersB:bm.val.countryValid")),
+    postalAddressType: Yup.string().required(t("customersB:bm.val.postalAddressTypeRequired")),
+    buildingNumber: Yup.string().required(t("customersB:bm.val.buildingNumberRequired")),
+    address1: Yup.string().required(t("customersB:bm.val.address1Required")),
     zip: Yup.string()
-      .required("ZIP code is required")
-      .matches(/^\d{5,9}$/, "ZIP code should be 5 to 9 digits"),
+      .required(t("customersB:bm.val.zipRequired"))
+      .matches(/^\d{5,9}$/, t("customersB:bm.val.zipFormat")),
     cityId: Yup.string()
-      .required("City is required")
-      .matches(/^\S+$/, "Please select a valid city"),
+      .required(t("customersB:bm.val.cityRequired"))
+      .matches(/^\S+$/, t("customersB:bm.val.cityValid")),
     phone3: Yup.string()
-      .required("Phone number is required")
+      .required(t("customersB:bm.val.phoneRequired"))
       .matches(
         /^\d{11}$/,
-        "Phone number should be 11 digits including the country code"
+        t("customersB:bm.val.phoneFormat")
       ),
   });
 
@@ -228,7 +230,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
           await toast.promise(
             createBussinessEmployee(payload1), // API call
             {
-              loading: "Creating individual account...", // While request is pending
+              loading: t("customersB:bm.toast.creatingIndividual"), // While request is pending
               success: (response) => {
                 if (
                   response?.data?.notificationMessage ===
@@ -241,17 +243,17 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                     setCurrentTab(tabOrder[currentIndex + 1]);
                   }
 
-                  return "Individual account created successfully";
+                  return t("customersB:bm.toast.individualSuccess");
                 } else {
                   throw new Error(
                     response?.data?.errors?.errors[0] ||
-                      "Failed to create account."
+                      t("customersB:bm.toast.individualFail")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while creating the individual account.",
+                t("customersB:bm.toast.individualError"),
             }
           );
           break;
@@ -285,7 +287,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
           await toast.promise(
             createPartner(payload2), // API call
             {
-              loading: "Adding partner details...", // While request is pending
+              loading: t("customersB:bm.toast.addingPartner"), // While request is pending
               success: (response) => {
                 if (
                   response?.data?.notificationMessage ===
@@ -296,17 +298,17 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                     setCurrentTab(tabOrder[currentIndex + 1]);
                   }
 
-                  return "Partner details added successfully";
+                  return t("customersB:bm.toast.partnerSuccess");
                 } else {
                   throw new Error(
                     response?.data?.errors?.errors[0] ||
-                      "Failed to add partner details."
+                      t("customersB:bm.toast.partnerFail")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while creating the adding partner details.",
+                t("customersB:bm.toast.partnerError"),
             }
           );
           break;
@@ -341,7 +343,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
           await toast.promise(
             createAdress(payload3), // API call
             {
-              loading: "Adding address details...", // While request is pending
+              loading: t("customersB:bm.toast.addingAddress"), // While request is pending
               success: (response) => {
                 if (
                   response?.data?.notificationMessage ===
@@ -349,17 +351,17 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                 ) {
                   navigate("/lms/Customers/Business");
 
-                  return "Address details added successfully";
+                  return t("customersB:bm.toast.addressSuccess");
                 } else {
                   throw new Error(
                     response?.data?.errors?.errors[0] ||
-                      "Failed to add address details."
+                      t("customersB:bm.toast.addressFail")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while creating the adding address.",
+                t("customersB:bm.toast.addressError"),
             }
           );
           break;
@@ -368,7 +370,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
 
     return (
       <Button className="application-btn" onClick={handleStepSubmit}>
-        Submit Step
+        {t("customersB:bm.submitStep")}
       </Button>
     );
   };
@@ -466,22 +468,22 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
       await toast.promise(
         createBussinessEmployee(body), // API call
         {
-          loading: "Creating business account...", // Loading message
+          loading: t("customersB:bm.toast.creatingBusiness"), // Loading message
           success: (response) => {
             if (
               response?.data?.notificationMessage === "Operation successful."
             ) {
               navigate("/lms/Customers/Business");
-              return "Business account created successfully";
+              return t("customersB:bm.toast.businessSuccess");
             } else {
               throw new Error(
-                response?.data.errors?.[0] || "An unexpected error occurred."
+                response?.data.errors?.[0] || t("customersB:bm.toast.unexpectedError")
               );
             }
           },
           error: (err) =>
             err?.message ||
-            "Something went wrong while creating the business account.",
+            t("customersB:bm.toast.businessError"),
         }
       );
     } catch (error: any) {
@@ -826,7 +828,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                     >
                       <Tab
                         eventKey="businessInfo"
-                        title="Business Information"
+                        title={t("customersB:bm.tabBusinessInfo")}
                         style={{ marginRight: "10px" }}
                       >
                         <Row>
@@ -835,10 +837,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="registrationNumber"
                               className="mb-1 customer-fs-fw"
                             >
-                              Registration No.<span className="bg-red"> *</span>
+                              {t("customersB:bm.registrationNo")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder=" Registration No"
+                              placeholder={t("customersB:bm.registrationNoPlaceholder")}
                               id="registrationNumber"
                               type="text"
                               name="registrationNumber"
@@ -857,10 +859,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="name"
                               className="mb-1 customer-fs-fw"
                             >
-                              Name
+                              {t("common:name")}
                             </label>
                             <Field
-                              placeholder="Name"
+                              placeholder={t("common:name")}
                               id="name"
                               type="text"
                               name="name"
@@ -881,10 +883,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="buisnessTypeId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Business Type<span className="bg-red"> *</span>
+                              {t("customersB:bm.businessType")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Business Type"
+                              placeholder={t("customersB:bm.businessType")}
                               id="buisnessTypeId"
                               as="select"
                               name="buisnessTypeId"
@@ -893,7 +895,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 setFieldValue("buisnessTypeId", e.target.value);
                               }}
                             >
-                              <option label="Select Type" />
+                              <option label={t("customersB:bm.selectType")} />
                               {businessType &&
                                 businessType.map((item: any) => (
                                   <option
@@ -919,10 +921,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="buisnessCategoryId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Category<span className="bg-red"> *</span>
+                              {t("common:category")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Category"
+                              placeholder={t("common:category")}
                               id="buisnessCategoryId"
                               as="select"
                               name="buisnessCategoryId"
@@ -934,7 +936,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 );
                               }}
                             >
-                              <option label="Select Category" />
+                              <option label={t("customersB:bm.selectCategory")} />
                               {Category &&
                                 Category.map((item: any) => (
                                   <option
@@ -962,10 +964,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Legal Name<span className="bg-red"> *</span>
+                              {t("customersB:bm.legalName")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder=" Legal Name"
+                              placeholder={t("customersB:bm.legalName")}
                               id="legalName"
                               type="text"
                               name="legalName"
@@ -983,10 +985,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Tax ID<span className="bg-red"> *</span>
+                              {t("customersB:bm.taxId")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder=" Tax ID"
+                              placeholder={t("customersB:bm.taxId")}
                               id=" taxId"
                               type="text"
                               name="taxId"
@@ -1006,10 +1008,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Start Date
+                              {t("customersB:bm.startDate")}
                             </label>
                             <Field
-                              placeholder="Start Date"
+                              placeholder={t("customersB:bm.startDate")}
                               id="startDate"
                               type="date"
                               name="startDate"
@@ -1027,10 +1029,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw "
                             >
-                              Total Current Employees
+                              {t("customersB:bm.totalCurrentEmployees")}
                             </label>
                             <Field
-                              placeholder=" Total Current Employees"
+                              placeholder={t("customersB:bm.totalCurrentEmployees")}
                               id=" totalCurrentEmployees"
                               type="text"
                               name="totalCurrentEmployees"
@@ -1051,10 +1053,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Contact Person<span className="bg-red"> *</span>
+                              {t("customersB:bm.contactPerson")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Contact Person"
+                              placeholder={t("customersB:bm.contactPerson")}
                               id="contactPerson"
                               type="text"
                               name="contactPerson"
@@ -1072,10 +1074,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Management Since
+                              {t("customersB:bm.managementSince")}
                             </label>
                             <Field
-                              placeholder="Managment Since"
+                              placeholder={t("customersB:bm.managementSincePlaceholder")}
                               id="managementSince"
                               type="date"
                               name="managementSince"
@@ -1101,7 +1103,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               className="mt-4 ms-2"
                               style={{ fontSize: "14px" }}
                             >
-                              Stop Correspondence
+                              {t("customersB:bm.stopCorrespondence")}
                             </label>
                             <ErrorMessage
                               name="stopCorrespondence"
@@ -1121,7 +1123,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               className="mt-4 ms-2"
                               style={{ fontSize: "14px" }}
                             >
-                              Skip
+                              {t("customersB:bm.skip")}
                             </label>
                             <ErrorMessage
                               name="skip"
@@ -1137,10 +1139,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Bankruptucy<span className="bg-red"> *</span>
+                              {t("customersB:bm.bankruptcy")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Bankcruptucy"
+                              placeholder={t("customersB:bm.bankruptcyPlaceholder")}
                               id="bankruptcy"
                               as="select"
                               name="bankruptcy"
@@ -1148,7 +1150,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                             >
                               <option
                                 value=""
-                                label="Select bankruptcy status"
+                                label={t("customersB:bm.selectBankruptcy")}
                               />
                               {enums.Bankruptcy.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -1168,7 +1170,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Email<span className="bg-red"> *</span>
+                              {t("common:email")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               placeholder="info@mytm.com"
@@ -1192,16 +1194,16 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Time Zone<span className="bg-red"> *</span>
+                              {t("customersB:bm.timeZone")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Time Zone"
+                              placeholder={t("customersB:bm.timeZone")}
                               id="timeZone"
                               as="select"
                               name="timeZone"
                               className=" form-control"
                             >
-                              <option value="" label="Select Time Zone" />
+                              <option value="" label={t("customersB:bm.selectTimeZone")} />
                               {enums.TimeZone.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -1221,10 +1223,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Total EPF<span className="bg-red"> *</span>
+                              {t("customersB:bm.totalEPF")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Total EPF"
+                              placeholder={t("customersB:bm.totalEPF")}
                               id="totalEPFId"
                               as="select"
                               name="totalEPFId"
@@ -1233,7 +1235,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 setFieldValue("totalEPFId", e.target.value);
                               }}
                             >
-                              <option label="Select Total EPF" />
+                              <option label={t("customersB:bm.selectTotalEPF")} />
                               {epf &&
                                 epf.map((item: any) => (
                                   <option
@@ -1263,10 +1265,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="unn"
                               className="mb-1 customer-fs-fw"
                             >
-                              UNN
+                              {t("customersB:bm.unn")}
                             </label>
                             <Field
-                              placeholder="Enter unn"
+                              placeholder={t("customersB:bm.unnPlaceholder")}
                               id="unn"
                               type="number"
                               name="unn"
@@ -1282,7 +1284,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                         </Row>
                       </Tab>
 
-                      <Tab eventKey="optional" title="Optional">
+                      <Tab eventKey="optional" title={t("customersB:bm.tabOptional")}>
                         <Row className="pt-3">
                           <Col md={4}>
                             <div className=" d-flex align-items-center">
@@ -1295,7 +1297,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 // onChange={handleCheckboxChange}
                               />
                               <label htmlFor="" className="ms-2 customer-fs-fw">
-                                Privacy Opt-in
+                                {t("customersB:bm.privacyOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1310,7 +1312,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 // onChange={handleCheckboxChange}
                               />
                               <label htmlFor="" className="ms-2 customer-fs-fw">
-                                Insurance Opt-in
+                                {t("customersB:bm.insuranceOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1325,7 +1327,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 // onChange={handleCheckboxChange}
                               />
                               <label htmlFor="" className="ms-2 customer-fs-fw">
-                                Marketing Opt-in
+                                {t("customersB:bm.marketingOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1340,14 +1342,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 // onChange={handleCheckboxChange}
                               />
                               <label htmlFor="" className="ms-2 customer-fs-fw">
-                                Share Credit Opt-in
+                                {t("customersB:bm.shareCreditOptIn")}
                               </label>
                             </div>
                           </Col>
                         </Row>
                       </Tab>
 
-                      <Tab eventKey="partnerDetails" title="Partner Details">
+                      <Tab eventKey="partnerDetails" title={t("customersB:bm.tabPartnerDetails")}>
                         <FieldArray name="partners">
                           {({ push, remove }: any) => (
                             <>
@@ -1364,14 +1366,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            First Name
+                                            {t("customersB:bm.firstName")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="First Name"
+                                            placeholder={t("customersB:bm.firstName")}
                                             name={`partners.${index}.firstName`}
                                             className="form-control"
                                           />
@@ -1389,14 +1391,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Middle Name
+                                            {t("customersB:bm.middleName")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Middle Name"
+                                            placeholder={t("customersB:bm.middleName")}
                                             name={`partners.${index}.middleName`}
                                             className="form-control"
                                           />
@@ -1417,14 +1419,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Last Name
+                                            {t("customersB:bm.lastName")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Last Name"
+                                            placeholder={t("customersB:bm.lastName")}
                                             name={`partners.${index}.lastName`}
                                             className="form-control"
                                           />
@@ -1442,10 +1444,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Suffix
+                                            {t("customersB:bm.suffix")}
                                           </label>
                                           <Field
-                                            placeholder="Suffix"
+                                            placeholder={t("customersB:bm.suffix")}
                                             name={`partners.${index}.suffix`}
                                             className="form-control"
                                           />
@@ -1466,14 +1468,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Date of Birth
+                                            {t("customersB:bm.dob")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Date of Birth"
+                                            placeholder={t("customersB:bm.dob")}
                                             name={`partners.${index}.dob`}
                                             type="date"
                                             className="form-control"
@@ -1492,7 +1494,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Birth Place
+                                            {t("customersB:bm.birthPlace")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
@@ -1500,14 +1502,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                           </label>
                                           <Field
                                             as="select"
-                                            placeholder="Birth Place"
+                                            placeholder={t("customersB:bm.birthPlace")}
                                             id="birthPlace"
                                             name={`partners.${index}.birthPlace`}
                                             className="form-control"
                                           >
                                             <option
                                               value=""
-                                              label="Select type"
+                                              label={t("customersB:bm.selectTypePlaceholder")}
                                             />
                                             {city &&
                                               city.map((item: any) => (
@@ -1558,7 +1560,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 700,
                                             }}
                                           >
-                                            Is Director
+                                            {t("customersB:bm.isDirector")}
                                           </label>
                                           <ErrorMessage
                                             name={`partners.${index}.isDirector`}
@@ -1574,14 +1576,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Net Worth
+                                            {t("customersB:bm.netWorth")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Net Worth"
+                                            placeholder={t("customersB:bm.netWorth")}
                                             name={`partners.${index}.netWorth`}
                                             className="form-control"
                                           />
@@ -1602,14 +1604,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Gross Income
+                                            {t("customersB:bm.grossIncome")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Gross Income"
+                                            placeholder={t("customersB:bm.grossIncome")}
                                             name={`partners.${index}.grossIncome`}
                                             className="form-control"
                                           />
@@ -1627,7 +1629,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Language
+                                            {t("customersB:bm.language")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
@@ -1644,7 +1646,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               )
                                             }
                                           >
-                                            <option label="Select Language" />
+                                            <option label={t("customersB:bm.selectLanguage")} />
 
                                             {languageId &&
                                               languageId.map((item: any) => (
@@ -1675,10 +1677,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Ownership Percentage
+                                            {t("customersB:bm.ownershipPercentage")}
                                           </label>
                                           <Field
-                                            placeholder="Ownership Percentage"
+                                            placeholder={t("customersB:bm.ownershipPercentage")}
                                             name={`partners.${index}.ownershipPercentage`}
                                             className="form-control"
                                           />
@@ -1696,14 +1698,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Email
+                                            {t("common:email")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Email"
+                                            placeholder={t("common:email")}
                                             name={`partners.${index}.email2`}
                                             className="form-control"
                                           />
@@ -1724,14 +1726,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Phone Number
+                                            {t("customersB:bm.phoneNumber")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="Phone Number"
+                                            placeholder={t("customersB:bm.phoneNumber")}
                                             name={`partners.${index}.phone`}
                                             className="form-control"
                                           />
@@ -1749,10 +1751,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Extension
+                                            {t("customersB:bm.extension")}
                                           </label>
                                           <Field
-                                            placeholder="Extension"
+                                            placeholder={t("customersB:bm.extension")}
                                             name={`partners.${index}.extention`}
                                             className="form-control"
                                           />
@@ -1790,7 +1792,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 700,
                                             }}
                                           >
-                                            Permission to Call
+                                            {t("customersB:bm.permissionToCall")}
                                           </label>
                                           <ErrorMessage
                                             name={`partners.${index}.permissionToCall`}
@@ -1823,7 +1825,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 700,
                                             }}
                                           >
-                                            Permission to Text
+                                            {t("customersB:bm.permissionToText")}
                                           </label>
                                           <ErrorMessage
                                             name={`partners.${index}.permissionToText`}
@@ -1842,7 +1844,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Nationality
+                                            {t("customersB:bm.nationality")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
@@ -1859,7 +1861,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               )
                                             }
                                           >
-                                            <option label="Select Nationality" />
+                                            <option label={t("customersB:bm.selectNationality")} />
                                             {/* Assuming languageId is an array from props */}
                                             {country &&
                                               country.map((item: any) => (
@@ -1891,14 +1893,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            National Id
+                                            {t("customersB:bm.nationalId")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="National Id"
+                                            placeholder={t("customersB:bm.nationalId")}
                                             name={`partners.${index}.nationalId`}
                                             className="form-control"
                                           />
@@ -1918,14 +1920,14 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                               fontWeight: 600,
                                             }}
                                           >
-                                            Title
+                                            {t("customersB:bm.title")}
                                             <span style={{ color: "red" }}>
                                               {" "}
                                               *
                                             </span>
                                           </label>
                                           <Field
-                                            placeholder="title"
+                                            placeholder={t("customersB:bm.title")}
                                             name={`partners.${index}.title`}
                                             className="form-control"
                                           />
@@ -1938,7 +1940,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                       </Row>
                                       {values.partners.length > 1 && (
                                         <Row>
-                                          <Col className="text-right">
+                                          <Col className="text-end">
                                             <button
                                               type="button"
                                               className="btn theme-btn-next mt-3"
@@ -1947,7 +1949,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                                 values.partners.length === 1
                                               }
                                             >
-                                              Remove Partner
+                                              {t("customersB:bm.removePartner")}
                                             </button>
                                           </Col>
                                         </Row>
@@ -1982,7 +1984,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                   })
                                 }
                               >
-                                Add New Partner
+                                {t("customersB:bm.addNewPartner")}
                               </button>
                             </>
                           )}
@@ -1991,7 +1993,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
 
                       <Tab
                         eventKey="businessAddress"
-                        title="Business Address Details"
+                        title={t("customersB:bm.tabBusinessAddress")}
                       >
                         <Row className="pt-2 p=1 col-12">
                           <Col md={6} className="mb-4">
@@ -1999,10 +2001,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address<span className="bg-red"> *</span>
+                              {t("customersB:bm.address")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Address"
+                              placeholder={t("customersB:bm.address")}
                               id="addrs"
                               type="text"
                               name="addrs"
@@ -2020,10 +2022,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Country<span className="bg-red"> *</span>
+                              {t("customersB:bm.country")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Country"
+                              placeholder={t("customersB:bm.country")}
                               id="countryId"
                               as="select"
                               name="countryId"
@@ -2032,7 +2034,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 setFieldValue("countryId", e.target.value);
                               }}
                             >
-                              <option label="Select Country"></option>
+                              <option label={t("customersB:bm.selectCountry")}></option>
                               {country &&
                                 country.map((item: any) => (
                                   <option
@@ -2067,7 +2069,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 // onChange={handleCheckboxChange}
                               />
                               <label htmlFor="" className="ms-2">
-                                Current
+                                {t("customersB:bm.current")}
                               </label>
                             </div>
                           </Col>
@@ -2082,7 +2084,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 // onChange={handleCheckboxChange}
                               />
                               <label htmlFor="" className="ms-2">
-                                Confirmed
+                                {t("customersB:bm.confirmed")}
                               </label>
                             </div>
                           </Col>
@@ -2094,7 +2096,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 id="mailing"
                               />
                               <label htmlFor="" className="ms-2">
-                                Mailing
+                                {t("customersB:bm.mailing")}
                               </label>
                             </div>
                           </Col>
@@ -2105,10 +2107,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Type
+                              {t("common:type")}
                             </label>
                             <Field
-                              placeholder="Type"
+                              placeholder={t("common:type")}
                               id="type"
                               as="select"
                               name="type"
@@ -2116,7 +2118,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                             >
                               <option
                                 value=""
-                                label="Select Address Type"
+                                label={t("customersB:bm.selectAddressType")}
                               ></option>
                               {enums.AddressType.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -2136,11 +2138,11 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Postal Address Type
+                              {t("customersB:bm.postalAddressType")}
                               <span style={{ color: "red" }}> *</span>
                             </label>
                             <Field
-                              placeholder=" Postal Address Type"
+                              placeholder={t("customersB:bm.postalAddressType")}
                               id=" postalAddressType"
                               type="text"
                               name="postalAddressType"
@@ -2192,7 +2194,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 className="ms-2"
                                 style={{ fontWeight: 500 }}
                               >
-                                Permission to Call
+                                {t("customersB:bm.permissionToCall")}
                               </label>
                             </div>
                           </Col>
@@ -2211,7 +2213,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 className="ms-2"
                                 style={{ fontWeight: 500 }}
                               >
-                                Permission to Text
+                                {t("customersB:bm.permissionToText")}
                               </label>
                             </div>
                           </Col>
@@ -2222,10 +2224,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Street Pre
+                              {t("customersB:bm.streetPre")}
                             </label>
                             <Field
-                              placeholder="Street Pre"
+                              placeholder={t("customersB:bm.streetPre")}
                               id="streetPre"
                               type="text"
                               name="streetPre"
@@ -2244,10 +2246,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Street Name
+                              {t("customersB:bm.streetName")}
                             </label>
                             <Field
-                              placeholder="Street Name"
+                              placeholder={t("customersB:bm.streetName")}
                               id="streetName"
                               type="text"
                               name="streetName"
@@ -2265,10 +2267,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Street Type
+                              {t("customersB:bm.streetType")}
                             </label>
                             <Field
-                              placeholder="Street Type"
+                              placeholder={t("customersB:bm.streetType")}
                               id="streetType"
                               type="text"
                               name="streetType"
@@ -2286,11 +2288,11 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Building Number
+                              {t("customersB:bm.buildingNumber")}
                               <span style={{ color: "red" }}> *</span>
                             </label>
                             <Field
-                              placeholder="Building Number"
+                              placeholder={t("customersB:bm.buildingNumber")}
                               id="buildingNumber"
                               type="text"
                               name="buildingNumber"
@@ -2308,10 +2310,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address1<span className="bg-red"> *</span>
+                              {t("customersB:bm.address1")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Address1"
+                              placeholder={t("customersB:bm.address1")}
                               id="address1"
                               type="text"
                               name="address1"
@@ -2329,10 +2331,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address2
+                              {t("customersB:bm.address2")}
                             </label>
                             <Field
-                              placeholder="Address2"
+                              placeholder={t("customersB:bm.address2")}
                               id="address2"
                               type="text"
                               name="address2"
@@ -2350,10 +2352,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address3
+                              {t("customersB:bm.address3")}
                             </label>
                             <Field
-                              placeholder="Address3"
+                              placeholder={t("customersB:bm.address3")}
                               id="address3"
                               type="text"
                               name="address3"
@@ -2371,10 +2373,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Zip<span style={{ color: "red" }}> *</span>
+                              {t("customersB:bm.zip")}<span style={{ color: "red" }}> *</span>
                             </label>
                             <Field
-                              placeholder="Zip"
+                              placeholder={t("customersB:bm.zip")}
                               id="zip"
                               type="text"
                               name="zip"
@@ -2392,10 +2394,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Zip Extention
+                              {t("customersB:bm.zipExtention")}
                             </label>
                             <Field
-                              placeholder="Zip Extention"
+                              placeholder={t("customersB:bm.zipExtention")}
                               id="zipExtention"
                               type="text"
                               name="zipExtention"
@@ -2413,10 +2415,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              City<span className="bg-red"> *</span>
+                              {t("customersB:bm.city")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="City"
+                              placeholder={t("customersB:bm.city")}
                               id="cityId"
                               as="select"
                               name="cityId"
@@ -2425,7 +2427,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                                 setFieldValue("cityId", e.target.value);
                               }}
                             >
-                              <option label="Select City"></option>
+                              <option label={t("customersB:bm.selectCity")}></option>
                               {city &&
                                 city.map((item: any) => (
                                   <option
@@ -2450,10 +2452,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Phone<span className="bg-red"> *</span>
+                              {t("customersB:bm.phone")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Phone"
+                              placeholder={t("customersB:bm.phone")}
                               id="phone3"
                               type="text"
                               name="phone3"
@@ -2471,10 +2473,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Time Zone
+                              {t("customersB:bm.timeZone")}
                             </label>
                             <Field
-                              placeholder="Time Zone"
+                              placeholder={t("customersB:bm.timeZone")}
                               id="timeZone2"
                               as="select"
                               name="timeZone2"
@@ -2482,7 +2484,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                             >
                               <option
                                 value=""
-                                label="Select Time Zone"
+                                label={t("customersB:bm.selectTimeZone")}
                               ></option>
                               {enums.TimeZone.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -2502,10 +2504,10 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                               htmlFor="companyName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Comment
+                              {t("customersB:bm.comment")}
                             </label>
                             <Field
-                              placeholder="Comment"
+                              placeholder={t("customersB:bm.comment")}
                               id="comment"
                               type="text"
                               name="comment"
@@ -2528,7 +2530,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                       onClick={handlePrevious}
                       disabled={currentTab === tabOrder[0]}
                     >
-                      Previous
+                      {t("common:previous")}
                     </Button>
                     {[
                        "optional",
@@ -2547,7 +2549,7 @@ const BuisnessModal = ({ setBusinessForm, buisnessForm }: any) => {
                           )
                         }
                       >
-                        Next
+                        {t("common:next")}
                       </Button>
                     )}
                   </Modal.Footer>

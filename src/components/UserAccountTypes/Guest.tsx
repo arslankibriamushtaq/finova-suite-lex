@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Select } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -12,6 +13,7 @@ import autoTable from "jspdf-autotable";
 
 
 const Guests = () => {
+  const { t } = useTranslation("walletBlocks");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -23,22 +25,22 @@ const Guests = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("accountTypes.col.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "Phone Number",
+      name: t("accountTypes.col.phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
     },
     {
-      name: "Network",
+      name: t("accountTypes.col.network"),
       selector: (row: { network: any }) => row.network,
       sortable: true,
     },
     {
-      name: "City",
+      name: t("accountTypes.col.city"),
       selector: (row: { city: any }) => row.city,
       sortable: true,
     },
@@ -164,11 +166,11 @@ const Guests = () => {
       const doc = new jsPDF();
   
       const tableColumn = [
-        "Sr:",
-        "Phone Number",
-        "Network",
-        "City",
-        
+        t("accountTypes.col.sr"),
+        t("accountTypes.col.phone"),
+        t("accountTypes.col.network"),
+        t("accountTypes.col.city"),
+
       ];
   
       const tableRows = mappedData?.map((item: any) => [
@@ -193,7 +195,7 @@ const Guests = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -211,12 +213,12 @@ const Guests = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("accountTypes.searchPlaceholder")}
             />
           </div>
 
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("accountTypes.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -224,9 +226,9 @@ const Guests = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("accountTypes.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("accountTypes.print")}</button>
         </div>
       </div>
 

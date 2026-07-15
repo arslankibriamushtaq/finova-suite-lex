@@ -8,7 +8,9 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const TopBorrowersReport = () => {
+  const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<any>("");
   const [toDate, setToDate] = useState<any>("");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
@@ -72,35 +74,35 @@ const TopBorrowersReport = () => {
   }, [id, page, pageSize, fromDate]);
   const Call_Activity_Header = [
     {
-      name: "Customer",
+      name: t('topBorrowers.col.customer'),
       cell: (row: any) => row.customerName,
     },
     {
-      name: "Number of Loans",
+      name: t('topBorrowers.col.numberOfLoans'),
       selector: (row: { numberOfLoans: any }) => row.numberOfLoans,
     },
     {
-      name: "Total Disbursed Amount",
+      name: t('topBorrowers.col.totalDisbursedAmount'),
       selector: (row: { totalDisbursedAmount: any }) => row.totalDisbursedAmount,
     },
     {
-      name: "Total Profit Paid",
+      name: t('topBorrowers.col.totalProfitPaid'),
       selector: (row: { totalProfitPaid: any }) => row.totalProfitPaid,
     },
     {
-      name: "Penalties Paid",
+      name: t('topBorrowers.col.penaltiesPaid'),
       selector: (row: { penaltiesPaid: any }) => row.penaltiesPaid,
     },
     {
-      name: "Total Outstanding Amount",
+      name: t('topBorrowers.col.totalOutstandingAmount'),
       selector: (row: { totalOutstandingAmount: any }) => row.totalOutstandingAmount,
     },
     {
-      name: "Last Transaction Date",
+      name: t('topBorrowers.col.lastTransactionDate'),
       selector: (row: { lastTransactionDate: any }) => row.lastTransactionDate,
     },
     {
-      name: "Risk Category",
+      name: t('topBorrowers.col.riskCategory'),
       selector: (row: { riskCategory: any }) => row.riskCategory,
     },
   ];
@@ -153,31 +155,31 @@ const TopBorrowersReport = () => {
     <>
       <div className="col-12">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Loan Disbursment Report</h3>
+          <h3 className="mb-0 fw-bold text-dark">{t('topBorrowers.title')}</h3>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
             {/* From Date */}
             <div className="col-md-4">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t('common:from')}
               </label>
               <DatePicker
                 onChange={(e: any) => {
                   handleFromDateChange(e);
                 }}
-                placeholder="Select From Date"
+                placeholder={t('filter.selectFromDate')}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-4">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t('common:to')}
               </label>
               <DatePicker
                 onChange={handleToDateChange}
-                placeholder="Select To Date"
+                placeholder={t('filter.selectToDate')}
               />
             </div>
 
@@ -194,7 +196,7 @@ const TopBorrowersReport = () => {
                   setToDate("");
                 }}
               >
-                Clear
+                {t('common:clear')}
               </button>
             </div>
 
@@ -224,7 +226,7 @@ const TopBorrowersReport = () => {
                 exportToCSV(allCallActivity, "OverDueLoans");
               }}
             >
-              Export CSV
+              {t('action.exportCsv')}
             </button>
           </div>
         </div>

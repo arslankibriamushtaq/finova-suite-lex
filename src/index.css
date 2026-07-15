@@ -2,6 +2,7 @@
 @import "./styles/tokens.css";
 @import 'tailwindcss';
 @import "./assets/scss/custom.scss";
+@import "./styles/rtl.css";
 
 /* Custom dark mode variant */
 @custom-variant dark (&:is(.dark *));

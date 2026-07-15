@@ -9,8 +9,10 @@ import {
   createTicket
 } from "../../../redux/apis/apisCrudCms";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const CreateTicket = () => {
+  const { t } = useTranslation("cms");
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -108,10 +110,10 @@ const CreateTicket = () => {
 
   const getStatusName = (statusId: number) => {
     const statusMap: any = {
-      1: "ASSIGNED",
-      2: "PENDING",
-      3: "COMPLETED",
-      4: "RESOLVED"
+      1: t("createTicket.status.assigned"),
+      2: t("createTicket.status.pending"),
+      3: t("createTicket.status.completed"),
+      4: t("createTicket.status.resolved")
     };
     return statusMap[statusId] || "---";
   };
@@ -119,17 +121,17 @@ const CreateTicket = () => {
   const handleSubmit = async () => {
     try {
       if (!formData.category || !formData.subCategory || !formData.department || !formData.comment) {
-        toast.error("Please fill all required fields");
+        toast.error(t("createTicket.toast.fillRequired"));
         return;
       }
-      
+
       if (!userInfo && !formData.name.trim()) {
-        toast.error("Please enter customer name");
+        toast.error(t("createTicket.toast.enterName"));
         return;
       }
 
       if (!formData.phone) {
-        toast.error("Contact number is required");
+        toast.error(t("createTicket.toast.contactRequired"));
         return;
       }
 
@@ -158,14 +160,14 @@ const CreateTicket = () => {
       // Add your create ticket API call here
       const response = await createTicket(body);
       if (response) {
-        toast.success("Ticket created successfully");
+        toast.success(t("createTicket.toast.createdSuccess"));
         navigate(-1);
       } else {
-        toast.error("Failed to create ticket");
+        toast.error(t("createTicket.toast.createFailed"));
       }
-      
+
     } catch (error: any) {
-      toast.error(error?.message || "Failed to create ticket");
+      toast.error(error?.message || t("createTicket.toast.createFailed"));
     } finally {
       setLoading(false);
     }
@@ -188,7 +190,7 @@ const CreateTicket = () => {
             border: "1px solid var(--color-border-light)",
           }}
         />
-        <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>Create Ticket</h1>
+        <h1 style={{ fontSize: "28px", fontWeight: 600, margin: 0 }}>{t("createTicket.title")}</h1>
       </div>
 
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
@@ -210,16 +212,16 @@ const CreateTicket = () => {
                 backgroundColor: "var(--color-surface-ice)",
               }}
             >
-              <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>Customer Information</h2>
+              <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>{t("createTicket.customerInformation")}</h2>
             </div>
             <div style={{ padding: "24px" }}>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>Name</div>
+                  <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>{t("common:name")}</div>
                   <div style={{ fontSize: "14px" }}>{userInfo?.name || "---"}</div>
                 </div>
                 <div>
-                  <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>Contact</div>
+                  <div style={{ fontWeight: 600, fontSize: "14px", marginBottom: "8px" }}>{t("createTicket.contact")}</div>
                   <div style={{ fontSize: "14px" }}>{userInfo?.phone || contactNo || "---"}</div>
                 </div>
               </div>
@@ -241,7 +243,7 @@ const CreateTicket = () => {
                 backgroundColor: "var(--color-surface-ice)",
               }}
             >
-              <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>Previous Tickets</h2>
+              <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>{t("createTicket.previousTickets")}</h2>
             </div>
             <div style={{ padding: "0" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -256,7 +258,7 @@ const CreateTicket = () => {
                         borderBottom: "1px solid var(--color-border-subtle)",
                       }}
                     >
-                      Description
+                      {t("common:description")}
                     </th>
                     <th
                       style={{
@@ -267,7 +269,7 @@ const CreateTicket = () => {
                         borderBottom: "1px solid var(--color-border-subtle)",
                       }}
                     >
-                      Status
+                      {t("common:status")}
                     </th>
                     <th
                       style={{
@@ -278,7 +280,7 @@ const CreateTicket = () => {
                         borderBottom: "1px solid var(--color-border-subtle)",
                       }}
                     >
-                      Department
+                      {t("fields.department")}
                     </th>
                   </tr>
                 </thead>
@@ -308,7 +310,7 @@ const CreateTicket = () => {
                           color: "var(--color-text-subtle)",
                         }}
                       >
-                        No previous tickets found
+                        {t("createTicket.noPreviousTickets")}
                       </td>
                     </tr>
                   )}
@@ -334,7 +336,7 @@ const CreateTicket = () => {
                 backgroundColor: "var(--color-surface-ice)",
               }}
             >
-              <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>Add Complaint</h2>
+              <h2 style={{ fontSize: "16px", fontWeight: 600, margin: 0 }}>{t("createTicket.addComplaint")}</h2>
             </div>
             <div style={{ padding: "24px" }}>
               {/* Name field - only show if no userInfo */}
@@ -348,10 +350,10 @@ const CreateTicket = () => {
                       fontWeight: 600,
                     }}
                   >
-                    Name
+                    {t("common:name")}
                   </label>
                   <Input
-                    placeholder="Enter customer name"
+                    placeholder={t("createTicket.enterCustomerName")}
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     style={{ height: "40px" }}
@@ -369,10 +371,10 @@ const CreateTicket = () => {
                     fontWeight: 600,
                   }}
                 >
-                  Categories
+                  {t("createTicket.categories")}
                 </label>
                 <Select
-                  placeholder="Select Category"
+                  placeholder={t("fields.selectCategory")}
                   value={formData.category || undefined}
                   onChange={(value) => setFormData({ ...formData, category: value, subCategory: "" })}
                   style={{ width: "100%", height: "40px" }}
@@ -395,10 +397,10 @@ const CreateTicket = () => {
                     fontWeight: 600,
                   }}
                 >
-                  Sub Categories
+                  {t("createTicket.subCategories")}
                 </label>
                 <Select
-                  placeholder="Select Sub Category"
+                  placeholder={t("fields.selectSubCategory")}
                   value={formData.subCategory || undefined}
                   onChange={(value) => setFormData({ ...formData, subCategory: value, department: "" })}
                   disabled={!formData.category}
@@ -422,10 +424,10 @@ const CreateTicket = () => {
                     fontWeight: 600,
                   }}
                 >
-                  Department
+                  {t("fields.department")}
                 </label>
                 <Select
-                  placeholder="Select Department"
+                  placeholder={t("fields.selectDepartment")}
                   value={formData.department || undefined}
                   onChange={(value) => setFormData({ ...formData, department: value })}
                   disabled={!formData.subCategory}
@@ -449,10 +451,10 @@ const CreateTicket = () => {
                     fontWeight: 600,
                   }}
                 >
-                  Comment
+                  {t("fields.comment")}
                 </label>
                 <TextArea
-                  placeholder="Please put your comments here."
+                  placeholder={t("createTicket.commentPlaceholder")}
                   value={formData.comment}
                   onChange={(e) => setFormData({ ...formData, comment: e.target.value })}
                   rows={4}
@@ -474,7 +476,7 @@ const CreateTicket = () => {
                   fontWeight: 500,
                 }}
               >
-                Submit
+                {t("common:submit")}
               </Button>
             </div>
           </div>

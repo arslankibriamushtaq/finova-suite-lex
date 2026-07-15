@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { Reference } from "yup";
+import { useTranslation } from "react-i18next";
 import TransactionHistory from "./TransactionHistory";
 import ExcessPayment from "./ExcessPayment";
 
 const CustomerServices = () => {
+  const { t } = useTranslation("accountingLoans");
   const [selectTab, setSelectedTab] = useState("transactionHistory");
   const tapOptions = [
     {
-      title: "Transaction History",
+      title: t("txn.tabHistory"),
       key: "transactionHistory",
       folder: <TransactionHistory />,
     },

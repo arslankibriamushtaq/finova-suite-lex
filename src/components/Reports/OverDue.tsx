@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import { getOverdueLoansReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const OverDue = () => {
+  const { t } = useTranslation("reports");
   const [rows, setRows] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -85,7 +87,7 @@ const OverDue = () => {
       );
     } catch (error: any) {
       console.error("Error fetching overdue loans:", error);
-      toast.error(error?.message || "Failed to fetch overdue loans");
+      toast.error(error?.message || t("overDue.toast.fetchError"));
       setRows([]);
       setSummary(null);
     } finally {
@@ -179,30 +181,30 @@ const OverDue = () => {
 
   const headers = [
     {
-      name: "Loan Account No",
+      name: t("overDue.col.loanAccountNo"),
       selector: (row: any) => row.loanAccountNumber,
       sortable: true,
       width: "180px",
     },
     {
-      name: "Customer",
+      name: t("overDue.col.customer"),
       selector: (row: any) => row.customerName || row.customerId || "-",
       sortable: true,
     },
     {
-      name: "National ID",
+      name: t("overDue.col.nationalId"),
       selector: (row: any) => row.nationalId || "-",
       sortable: true,
       width: "130px",
     },
     {
-      name: "Product",
+      name: t("overDue.col.product"),
       selector: (row: any) => row.productName,
       sortable: true,
       width: "140px",
     },
     {
-      name: "Principal Overdue",
+      name: t("overDue.col.principalOverdue"),
       cell: (row: any) => (
         <span>{formatNumber(row.principalOverdue)}</span>
       ),
@@ -210,7 +212,7 @@ const OverDue = () => {
       width: "150px",
     },
     {
-      name: "Profit Overdue",
+      name: t("overDue.col.profitOverdue"),
       cell: (row: any) => (
         <span>{formatNumber(row.profitOverdue)}</span>
       ),
@@ -218,7 +220,7 @@ const OverDue = () => {
       width: "140px",
     },
     {
-      name: "Penalty",
+      name: t("overDue.col.penalty"),
       cell: (row: any) => (
         <span>{formatNumber(row.penaltyAmount)}</span>
       ),
@@ -226,7 +228,7 @@ const OverDue = () => {
       width: "120px",
     },
     {
-      name: "Total Overdue",
+      name: t("overDue.col.totalOverdue"),
       cell: (row: any) => (
         <span style={{ fontWeight: 600 }}>
           {row.totalOverdue != null ? `${formatNumber(row.totalOverdue)} ${row.currency || ""}`.trim() : "-"}
@@ -236,7 +238,7 @@ const OverDue = () => {
       width: "180px",
     },
     {
-      name: "DPD",
+      name: t("overDue.col.dpd"),
       cell: (row: any) => (
         <div className="d-flex align-items-center gap-2" style={{ whiteSpace: "nowrap" }}>
           <span>{row.daysPastDue ?? "-"}</span>
@@ -259,13 +261,13 @@ const OverDue = () => {
       width: "150px",
     },
     {
-      name: "Oldest Unpaid",
+      name: t("overDue.col.oldestUnpaid"),
       selector: (row: any) => formatDate(row.oldestUnpaidDate),
       sortable: true,
       width: "140px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -290,7 +292,7 @@ const OverDue = () => {
 
   const exportToCSV = () => {
     if (!mappedAndFiltered.length) {
-      toast.error("No data to export");
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvHeaders = [
@@ -330,7 +332,7 @@ const OverDue = () => {
           <span className="pro-head-badge">
             <CalendarX className="h-4 w-4" />
           </span>
-          Overdue Loans
+          {t("overDue.title")}
         </h3>
       </div>
 
@@ -338,7 +340,7 @@ const OverDue = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by loan ID, customer, facility, status"
+          placeholder={t("overDue.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -351,7 +353,7 @@ const OverDue = () => {
           disabled={!mappedAndFiltered.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t("action.exportCsv")}
         </button>
         </div>
       </div>
@@ -361,7 +363,7 @@ const OverDue = () => {
           {summary?.asOfDate && (
             <Col xs={24} sm={12} lg={8}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>As Of Date</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{t("overDue.summary.asOfDate")}</div>
                 <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {summary.asOfDate}
                 </div>
@@ -370,7 +372,7 @@ const OverDue = () => {
           )}
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Loans</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("overDue.summary.totalLoans")}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalLoans}
               </div>
@@ -378,7 +380,7 @@ const OverDue = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Overdue</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("overDue.summary.totalOverdue")}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}

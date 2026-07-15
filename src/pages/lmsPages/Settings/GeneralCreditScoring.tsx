@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import { Plus, Settings, Trash2, Save } from "lucide-react";
 import toast from "react-hot-toast";
@@ -81,6 +82,7 @@ const newCriteria = (sortOrder: number): Criteria => ({
 });
 
 const GeneralCreditScoring = () => {
+  const { t } = useTranslation("settings");
   const [searchParams, setSearchParams] = useSearchParams();
   const activeTab = searchParams.get("tab") || "general-credit-scoring";
   const [criteria, setCriteria] = useState<Criteria[]>([]);
@@ -131,7 +133,7 @@ const GeneralCreditScoring = () => {
       setFieldDefinitions(allDefs);
     } catch (error: any) {
       console.error(error);
-      toast.error("Failed to load general credit scoring criteria");
+      toast.error(t("creditScoring.toast.loadFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -190,14 +192,14 @@ const GeneralCreditScoring = () => {
 
   const handleSave = async () => {
     if (criteria.length === 0) {
-      return toast.error("Add at least one criteria before saving");
+      return toast.error(t("creditScoring.toast.addOne"));
     }
     for (const c of criteria) {
       if (!c.customName.trim()) {
-        return toast.error("Every criteria must have a name");
+        return toast.error(t("creditScoring.toast.needName"));
       }
       if (!c.rules || c.rules.length === 0) {
-        return toast.error(`Criteria "${c.customName}" has no rules`);
+        return toast.error(t("creditScoring.toast.noRules", { name: c.customName }));
       }
     }
 
@@ -221,11 +223,11 @@ const GeneralCreditScoring = () => {
         })),
       };
       await saveGeneralCreditScoringCriteria(payload);
-      toast.success("General credit scoring saved");
+      toast.success(t("creditScoring.toast.saved"));
       loadAll();
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to save");
+      toast.error(error?.response?.data?.message || t("creditScoring.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -304,13 +306,13 @@ const GeneralCreditScoring = () => {
       >
         <TabsList className="gcs-tabs-list">
           <TabsTrigger value="general-credit-scoring" className="gcs-tabs-trigger">
-            General Credit Scoring
+            {t("creditScoring.tab.general")}
           </TabsTrigger>
           <TabsTrigger value="accounts-limit-setting" className="gcs-tabs-trigger">
-            Accounts Limit Setting
+            {t("creditScoring.tab.accountsLimit")}
           </TabsTrigger>
           <TabsTrigger value="transfer-charges" className="gcs-tabs-trigger">
-            Transfer Charges
+            {t("creditScoring.tab.transferCharges")}
           </TabsTrigger>
         </TabsList>
 
@@ -320,11 +322,11 @@ const GeneralCreditScoring = () => {
               <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Settings className="size-4" />
               </span>
-              General Credit Scoring
+              {t("creditScoring.title")}
             </h3>
             <Button variant="outline" onClick={addCriteria} className="gap-2">
               <Plus className="h-4 w-4" />
-              Add Criteria
+              {t("creditScoring.addCriteria")}
             </Button>
           </div>
 
@@ -339,10 +341,10 @@ const GeneralCreditScoring = () => {
           <span className="flex size-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
             <Settings className="size-5" />
           </span>
-          <p className="text-sm text-muted-foreground">No criteria configured yet.</p>
+          <p className="text-sm text-muted-foreground">{t("creditScoring.noCriteria")}</p>
           <Button onClick={addCriteria} className="gap-2">
             <Plus className="h-4 w-4" />
-            Add Criteria
+            {t("creditScoring.addCriteria")}
           </Button>
         </div>
       ) : (
@@ -362,7 +364,7 @@ const GeneralCreditScoring = () => {
                     <span className="flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-sm font-semibold text-emerald-600 ring-1 ring-emerald-500/15">
                       {cIdx + 1}
                     </span>
-                    <CardTitle className="text-base">Criteria #{cIdx + 1}</CardTitle>
+                    <CardTitle className="text-base">{t("creditScoring.criteriaNum", { num: cIdx + 1 })}</CardTitle>
                   </div>
                   <div className="flex items-center gap-3">
                     <div className="flex items-center gap-2">
@@ -371,7 +373,7 @@ const GeneralCreditScoring = () => {
                         onCheckedChange={(checked) => updateCriteria(cIdx, { enabled: checked })}
                       />
                       <span className="text-sm text-muted-foreground">
-                        {c.enabled ? "Enabled" : "Disabled"}
+                        {c.enabled ? t("common:enabled") : t("common:disabled")}
                       </span>
                     </div>
                     <Button
@@ -388,13 +390,13 @@ const GeneralCreditScoring = () => {
               <CardContent className="relative space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Credit Scoring Field</Label>
+                    <Label>{t("creditScoring.field.scoringField")}</Label>
                     <Select
                       value={c.fieldDefinitionId ? String(c.fieldDefinitionId) : ""}
                       onValueChange={(value) => handleFieldDefinitionChange(cIdx, value)}
                     >
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a field definition" />
+                        <SelectValue placeholder={t("creditScoring.ph.fieldDef")} />
                       </SelectTrigger>
                       <SelectContent>
                         {fieldDefinitions.map((def) => (
@@ -406,9 +408,9 @@ const GeneralCreditScoring = () => {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Display Name</Label>
+                    <Label>{t("creditScoring.field.displayName")}</Label>
                     <Input
-                      placeholder="Display name shown in scoring reports"
+                      placeholder={t("creditScoring.ph.displayName")}
                       value={c.customName}
                       onChange={(e) => updateCriteria(cIdx, { customName: e.target.value })}
                     />
@@ -417,9 +419,9 @@ const GeneralCreditScoring = () => {
 
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-sm font-medium">Rules</h4>
+                    <h4 className="text-sm font-medium">{t("creditScoring.rules")}</h4>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Define operator, value, weight, and percentage for each rule.
+                      {t("creditScoring.rulesHint")}
                     </p>
                   </div>
                   <Button
@@ -429,13 +431,13 @@ const GeneralCreditScoring = () => {
                     className="gap-2"
                   >
                     <Plus className="h-4 w-4" />
-                    Add Rule
+                    {t("creditScoring.addRule")}
                   </Button>
                 </div>
 
                 {c.rules.length === 0 ? (
                   <div className="rounded-lg border border-dashed bg-muted/30 py-4 text-center text-sm text-muted-foreground">
-                    No rules added. Click "Add Rule" to create scoring rules.
+                    {t("creditScoring.noRulesHint")}
                   </div>
                 ) : (
                   <div className="space-y-2">
@@ -445,7 +447,7 @@ const GeneralCreditScoring = () => {
                         className="grid grid-cols-1 gap-2 rounded-lg border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 md:grid-cols-5"
                       >
                         <div className="space-y-1">
-                          <Label className="text-xs">Operator</Label>
+                          <Label className="text-xs">{t("creditScoring.field.operator")}</Label>
                           <Select
                             value={rule.operator}
                             onValueChange={(value) =>
@@ -458,7 +460,7 @@ const GeneralCreditScoring = () => {
                             <SelectContent>
                               {OPERATORS.map((op) => (
                                 <SelectItem key={op.value} value={op.value}>
-                                  {op.label}
+                                  {t(`creditScoring.operators.${op.value}`)}
                                 </SelectItem>
                               ))}
                             </SelectContent>
@@ -466,10 +468,10 @@ const GeneralCreditScoring = () => {
                         </div>
 
                         <div className="space-y-1">
-                          <Label className="text-xs">Value</Label>
+                          <Label className="text-xs">{t("creditScoring.field.value")}</Label>
                           <Input
                             placeholder={
-                              rule.operator === "BETWEEN" ? "e.g. 3000,7999" : "e.g. SAUDI"
+                              rule.operator === "BETWEEN" ? t("creditScoring.ph.valueBetween") : t("creditScoring.ph.value")
                             }
                             value={rule.value}
                             onChange={(e) =>
@@ -480,7 +482,7 @@ const GeneralCreditScoring = () => {
                         </div>
 
                         <div className="space-y-1">
-                          <Label className="text-xs">Weight</Label>
+                          <Label className="text-xs">{t("creditScoring.field.weight")}</Label>
                           <Input
                             type="number"
                             step="0.1"
@@ -495,7 +497,7 @@ const GeneralCreditScoring = () => {
                         </div>
 
                         <div className="space-y-1">
-                          <Label className="text-xs">Percentage (%)</Label>
+                          <Label className="text-xs">{t("creditScoring.field.percentage")}</Label>
                           <Input
                             type="number"
                             step="0.1"
@@ -536,7 +538,7 @@ const GeneralCreditScoring = () => {
           <div className="flex justify-end gap-2 pt-2">
             <Button onClick={handleSave} disabled={isSaving} className="gap-2">
               <Save className="h-4 w-4" />
-              {isSaving ? "Saving..." : "Save"}
+              {isSaving ? t("creditScoring.saving") : t("common:save")}
             </Button>
           </div>
         </div>

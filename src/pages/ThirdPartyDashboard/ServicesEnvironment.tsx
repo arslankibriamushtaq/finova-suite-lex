@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Select } from "antd";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
@@ -14,6 +15,7 @@ interface ApiOption {
 }
 
 const ServicesEnvironment = () => {
+  const { t } = useTranslation("connector");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [loadingApis, setLoadingApis] = useState(false);
   const [loadingServices, setLoadingServices] = useState(true);
@@ -31,31 +33,31 @@ const ServicesEnvironment = () => {
 
   const ServiceEnvironment_Headers = [
     {
-      name: "ID",
+      name: t("servicesEnvironment.col.id"),
       selector: (row: { id: any }) => row.id,
       sortable: true,
       width: "100px",
     },
     {
-      name: "Environment",
+      name: t("servicesEnvironment.col.environment"),
       selector: (row: { environment: any }) => row.environment || "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "URL",
+      name: t("servicesEnvironment.col.url"),
       selector: (row: { url: any }) => row.url,
       sortable: true,
       width: "350px",
     },
     {
-      name: "Method",
+      name: t("servicesEnvironment.col.method"),
       selector: (row: { method: any }) => row.method,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -66,7 +68,7 @@ const ServicesEnvironment = () => {
             fontSize: "12px",
           }}
         >
-          {row.status || "Inactive"}
+          {row.status || t("common:inactive")}
         </span>
       ),
       sortable: true,
@@ -173,7 +175,7 @@ const ServicesEnvironment = () => {
       setLoadingApis(false);
     } catch (error: any) {
       console.error(`Failed to fetch APIs for service ${serviceId}:`, error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch APIs");
+      toast.error(error?.response?.data?.message || error?.message || t("servicesEnvironment.toast.fetchApisFailed"));
       setLoadingApis(false);
     }
   };
@@ -208,7 +210,7 @@ const ServicesEnvironment = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch API environments");
+      toast.error(error?.response?.data?.message || error?.message || t("servicesEnvironment.toast.fetchEnvFailed"));
       setSkelitonLoading(false);
     }
   };
@@ -226,14 +228,14 @@ const ServicesEnvironment = () => {
       {(loadingServices || skelitonLoading ||loadingApis) && <Loader />}
       <div className="service">
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h2>Services Environment</h2>
+          <h2>{t("servicesEnvironment.title")}</h2>
         </div>
         <div className="d-flex gap-2 align-items-center mb-3">
         <div className="mb-3">
-          <label style={{ marginBottom: "8px", display: "block" }}>Select Service:</label>
+          <label style={{ marginBottom: "8px", display: "block" }}>{t("servicesEnvironment.selectServiceLabel")}</label>
           <Select
             style={{ width: "400px" }}
-            placeholder={loadingServices ? "Loading Services..." : "Select a service"}
+            placeholder={loadingServices ? t("servicesEnvironment.loadingServices") : t("servicesEnvironment.selectServicePlaceholder")}
             value={selectedServiceId}
             onChange={(value) => setSelectedServiceId(value)}
             loading={loadingServices}
@@ -252,10 +254,10 @@ const ServicesEnvironment = () => {
 
         {selectedServiceId && (
           <div className="mb-3">
-            <label style={{ marginBottom: "8px", display: "block" }}>Select API:</label>
+            <label style={{ marginBottom: "8px", display: "block" }}>{t("servicesEnvironment.selectApiLabel")}</label>
             <Select
               style={{ width: "400px" }}
-              placeholder={loadingApis ? "Loading APIs..." : "Select an API"}
+              placeholder={loadingApis ? t("servicesEnvironment.loadingApis") : t("servicesEnvironment.selectApiPlaceholder")}
               value={selectedApiId}
               onChange={(value) => setSelectedApiId(value)}
               loading={loadingApis}
@@ -291,13 +293,13 @@ const ServicesEnvironment = () => {
 
         {!selectedServiceId && (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-subtle)" }}>
-            Please select a service to view APIs
+            {t("servicesEnvironment.emptySelectService")}
           </div>
         )}
 
         {selectedServiceId && !selectedApiId && apiOptions.length === 0 && !loadingApis && (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--color-text-subtle)" }}>
-            No APIs found for this service
+            {t("servicesEnvironment.emptyNoApis")}
           </div>
         )}
       </div>

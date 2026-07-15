@@ -8,9 +8,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
 import { disclaimerTextStep } from "../../redux/apis/apisCrudFactoring";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 
 const Disclaimer = () => {
+  const { t } = useTranslation("landingUser");
   const navigate =useNavigate()
   const location = useLocation();
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,7 @@ const Disclaimer = () => {
     try {
       setLoading(true);
       await toast.promise(disclaimerTextStep(body), {
-        loading: "Confirmation...",
+        loading: t("disclaimer.toast.confirmation"),
         success: (res: any) => {
           if (res?.data?.success) {
             navigate("/applyloan/bankingInfo", {
@@ -49,9 +51,9 @@ const Disclaimer = () => {
             });
             return res?.data?.message;
           }
-          throw new Error(res?.data?.message || "Failed to Authorize");
+          throw new Error(res?.data?.message || t("disclaimer.toast.authorizeFailed"));
         },
-        error: (err) => err?.message || "Something went wrong!",
+        error: (err) => err?.message || t("common.somethingWentWrong"),
       });
     } finally {
       setLoading(false);
@@ -60,7 +62,7 @@ const Disclaimer = () => {
   
   const Confirmation = {
     question:[
-      { key: "submission", label: "Are you sure you want to submit this request?" }
+      { key: "submission", label: t("disclaimer.confirm") }
     ]
   }
     // Handle change
@@ -88,7 +90,7 @@ const Disclaimer = () => {
               checked={answers[q.key] === "yes"}
               onChange={() => handleChange(q.key, "yes")}
             />
-            <span className="ms-1" style={{fontSize: "17px"}}>Yes</span>
+            <span className="ms-1" style={{fontSize: "17px"}}>{t("common:yes")}</span>
           </div>
   
           <div className="d-flex">
@@ -99,7 +101,7 @@ const Disclaimer = () => {
               checked={answers[q.key] === "no"}
               onChange={() => handleChange(q.key, "no")}
             />
-            <span className="ms-1" style={{fontSize: "17px"}}>No</span>
+            <span className="ms-1" style={{fontSize: "17px"}}>{t("common:no")}</span>
           </div>
         </div>
       </div>
@@ -108,7 +110,7 @@ const Disclaimer = () => {
   return (
     <>
     <label className="mt-4 mb-3" style={{fontWeight: 600, fontSize: "20px"}}>
-        Disclaimer for Partners:
+        {t("disclaimer.title")}
     </label>
     <div 
       className="prose" 
@@ -131,9 +133,9 @@ const Disclaimer = () => {
             businessFormData: businessFormData,
             authorizedFormData: authorizedFormData
           }
-        })}}>Previous</button>
+        })}}>{t("common:previous")}</button>
         <button className = "step-buttons" disabled={answers["submission"] !== "yes"} onClick={()=>{handleSubmit()}}>
-          Next Step
+          {t("action.nextStep")}
         </button>
       </div>
     </>

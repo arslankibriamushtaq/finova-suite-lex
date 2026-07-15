@@ -24,6 +24,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 
 const investments = [
@@ -150,43 +151,46 @@ const allocationLogs = [
     date: '2024-01-20',
     investorName: 'John Anderson',
     productName: 'Large Cap Growth Fund',
-    action: 'Additional Investment',
+    action: 'invl.action.additional',
     amount: 100000,
     units: 783.12,
     price: 127.62,
     status: 'Completed',
-    processedBy: 'System Auto',
-    notes: 'Monthly recurring investment'
+    processedBy: 'reports.generatedBy.systemAuto',
+    notes: 'invl.notes.monthlyRecurring'
   },
   {
     id: 2,
     date: '2024-01-18',
     investorName: 'Sarah Chen',
     productName: 'Fixed Income Plus',
-    action: 'Dividend Reinvestment',
+    action: 'invl.action.dividendReinvest',
     amount: 8000,
     units: 80.00,
     price: 100.00,
     status: 'Completed',
-    processedBy: 'Admin User',
-    notes: 'Q4 2023 dividend reinvestment'
+    processedBy: 'reports.generatedBy.adminUser',
+    notes: 'invl.notes.q4Dividend'
   },
   {
     id: 3,
     date: '2024-01-15',
     investorName: 'Michael Rodriguez',
     productName: 'Emerging Markets Equity',
-    action: 'Partial Redemption',
+    action: 'invl.action.partialRedemption',
     amount: -50000,
     units: -208.33,
     price: 240.00,
     status: 'Pending',
     processedBy: 'Michael R.',
-    notes: 'Risk reduction request'
+    notes: 'invl.notes.riskReduction'
   }
 ];
 
 export default function InvestmentsList() {
+  const { t } = useTranslation('investor');
+  const statusKey: Record<string, string> = { 'Active': 'invl.status.active', 'Under Review': 'invl.status.underReview', 'Locked': 'invl.status.locked', 'Pending': 'invl.status.pending', 'Suspended': 'invl.status.suspended', 'Completed': 'invl.status.completed' };
+  const tStatus = (v: string) => (statusKey[v] ? t(statusKey[v]) : v);
   const [activeTab, setActiveTab] = useState('investments');
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -249,21 +253,21 @@ export default function InvestmentsList() {
   };
 
   const handleRefreshValuations = () => {
-    alert('Valuations refreshed successfully!');
+    alert(t('invl.valuationsRefreshed'));
   };
 
   const handleExportData = () => {
-    alert('Investment data exported successfully!');
+    alert(t('invl.dataExported'));
   };
 
   const handleSaveEdit = () => {
-    alert('Investment updated successfully!');
+    alert(t('invl.updatedSuccess'));
     setShowEditModal(false);
     setSelectedInvestment(null);
   };
 
   const confirmDelete = () => {
-    alert(`Investment for ${selectedInvestment?.investorName} deleted successfully!`);
+    alert(t('invl.deletedSuccess', { name: selectedInvestment?.investorName }));
     setShowDeleteModal(false);
     setSelectedInvestment(null);
   };
@@ -274,30 +278,30 @@ export default function InvestmentsList() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Investments</h1>
-            <p className="text-gray-600">Monitor all investment allocations and performance</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('invl.title')}</h1>
+            <p className="text-gray-600">{t('invl.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
               onClick={handleRefreshValuations}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh Valuations
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('invl.refreshValuations')}
             </button>
-            <button 
+            <button
               onClick={handleExportData}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
+              <Download className="w-4 h-4 me-2" />
+              {t('invl.exportData')}
             </button>
             <Link
               to="/admin/investments/new"
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              New Investment
+              <Plus className="w-4 h-4 me-2" />
+              {t('invl.newInvestment')}
             </Link>
           </div>
         </div>
@@ -308,9 +312,9 @@ export default function InvestmentsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Investments</p>
+              <p className="text-sm text-gray-600">{t('invl.totalInvestments')}</p>
               <p className="text-2xl font-bold text-gray-900">{totalInvestments}</p>
-              <p className="text-xs text-green-600 mt-1">Across 5 products</p>
+              <p className="text-xs text-green-600 mt-1">{t('invl.acrossProducts')}</p>
             </div>
             <BarChart3 className="w-8 h-8 text-gray-700" />
           </div>
@@ -318,9 +322,9 @@ export default function InvestmentsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Value</p>
+              <p className="text-sm text-gray-600">{t('invl.totalValue')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalValue)}</p>
-              <p className="text-xs text-green-600 mt-1">+15.2% overall</p>
+              <p className="text-xs text-green-600 mt-1">{t('invl.overallPlus')}</p>
             </div>
             <DollarSign className="w-8 h-8 text-green-500" />
           </div>
@@ -328,9 +332,9 @@ export default function InvestmentsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Gains</p>
+              <p className="text-sm text-gray-600">{t('invl.totalGains')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(totalGains)}</p>
-              <p className="text-xs text-green-600 mt-1">Realized + Unrealized</p>
+              <p className="text-xs text-green-600 mt-1">{t('invl.realizedUnrealized')}</p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
@@ -338,9 +342,9 @@ export default function InvestmentsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Avg Performance</p>
+              <p className="text-sm text-gray-600">{t('invl.avgPerformance')}</p>
               <p className="text-2xl font-bold text-gray-900">{avgPerformance.toFixed(1)}%</p>
-              <p className="text-xs text-gray-500 mt-1">YTD weighted average</p>
+              <p className="text-xs text-gray-500 mt-1">{t('invl.ytdWeighted')}</p>
             </div>
             <BarChart3 className="w-8 h-8 text-purple-500" />
           </div>
@@ -358,7 +362,7 @@ export default function InvestmentsList() {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Investment Holdings
+            {t('invl.tab.investments')}
           </button>
           <button
             onClick={() => setActiveTab('allocations')}
@@ -368,7 +372,7 @@ export default function InvestmentsList() {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Allocation Logs
+            {t('invl.tab.allocations')}
           </button>
           <button
             onClick={() => setActiveTab('analytics')}
@@ -378,7 +382,7 @@ export default function InvestmentsList() {
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
             }`}
           >
-            Performance Analytics
+            {t('invl.tab.analytics')}
           </button>
         </nav>
       </div>
@@ -392,10 +396,10 @@ export default function InvestmentsList() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Search investments..."
+                  placeholder={t('invl.searchPlaceholder')}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+                  className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
                 />
               </div>
               <select
@@ -403,28 +407,28 @@ export default function InvestmentsList() {
                 onChange={(e) => setStatusFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
               >
-                <option value="All Status">All Status</option>
-                <option value="Active">Active</option>
-                <option value="Under Review">Under Review</option>
-                <option value="Locked">Locked</option>
-                <option value="Suspended">Suspended</option>
+                <option value="All Status">{t('invl.allStatus')}</option>
+                <option value="Active">{t('invl.status.active')}</option>
+                <option value="Under Review">{t('invl.status.underReview')}</option>
+                <option value="Locked">{t('invl.status.locked')}</option>
+                <option value="Suspended">{t('invl.status.suspended')}</option>
               </select>
               <select
                 value={performanceFilter}
                 onChange={(e) => setPerformanceFilter(e.target.value)}
                 className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
               >
-                <option value="All Performance">All Performance</option>
-                <option value="Positive">Positive Returns</option>
-                <option value="Negative">Negative Returns</option>
+                <option value="All Performance">{t('invl.allPerformance')}</option>
+                <option value="Positive">{t('invl.positiveReturns')}</option>
+                <option value="Negative">{t('invl.negativeReturns')}</option>
               </select>
               <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-                <Filter className="w-4 h-4 mr-2" />
-                More Filters
+                <Filter className="w-4 h-4 me-2" />
+                {t('invl.moreFilters')}
               </button>
             </div>
             <div className="text-sm text-gray-500">
-              {filteredInvestments.length} of {investments.length} investments
+              {t('invl.countLabel', { shown: filteredInvestments.length, total: investments.length })}
             </div>
           </div>
 
@@ -434,29 +438,29 @@ export default function InvestmentsList() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Investor & Product
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('invl.col.investorProduct')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Investment
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('invl.col.investment')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Current Value
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('invl.col.currentValue')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Gain/Loss
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('invl.col.gainLoss')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Performance
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('invl.col.performance')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Units & Price
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('invl.col.unitsPrice')}
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      {t('common:status')}
                     </th>
                     <th className="relative px-6 py-3">
-                      <span className="sr-only">Actions</span>
+                      <span className="sr-only">{t('common:actions')}</span>
                     </th>
                   </tr>
                 </thead>
@@ -468,7 +472,7 @@ export default function InvestmentsList() {
                           <div className="text-sm font-medium text-gray-900">{investment.investorName}</div>
                           <div className="text-sm text-gray-500">{investment.productName}</div>
                           <div className="text-xs text-gray-400">
-                            Invested: {new Date(investment.investmentDate).toLocaleDateString()}
+                            {t('invl.investedLabel', { date: new Date(investment.investmentDate).toLocaleDateString() })}
                           </div>
                         </div>
                       </td>
@@ -477,7 +481,7 @@ export default function InvestmentsList() {
                           {formatCurrency(investment.investmentAmount)}
                         </div>
                         <div className="text-xs text-gray-500">
-                          {investment.allocationPercentage}% of portfolio
+                          {t('invl.pctPortfolio', { value: investment.allocationPercentage })}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -485,15 +489,15 @@ export default function InvestmentsList() {
                           {formatCurrency(investment.currentValue)}
                         </div>
                         <div className="text-xs text-gray-500">
-                          Last: {new Date(investment.lastValuation).toLocaleDateString()}
+                          {t('invl.lastLabel', { date: new Date(investment.lastValuation).toLocaleDateString() })}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
                           {investment.performanceType === 'positive' ? (
-                            <ArrowUpRight className="w-4 h-4 text-green-500 mr-1" />
+                            <ArrowUpRight className="w-4 h-4 text-green-500 me-1" />
                           ) : (
-                            <ArrowDownLeft className="w-4 h-4 text-red-500 mr-1" />
+                            <ArrowDownLeft className="w-4 h-4 text-red-500 me-1" />
                           )}
                           <div>
                             <div className={`text-sm font-medium ${
@@ -502,7 +506,7 @@ export default function InvestmentsList() {
                               {formatCurrency(investment.unrealizedGain + investment.realizedGain)}
                             </div>
                             <div className="text-xs text-gray-500">
-                              U: {formatCurrency(investment.unrealizedGain)} | R: {formatCurrency(investment.realizedGain)}
+                              {t('invl.urLabel', { u: formatCurrency(investment.unrealizedGain), r: formatCurrency(investment.realizedGain) })}
                             </div>
                           </div>
                         </div>
@@ -513,48 +517,48 @@ export default function InvestmentsList() {
                         }`}>
                           {investment.performanceYTD > 0 ? '+' : ''}{investment.performanceYTD}%
                         </div>
-                        <div className="text-xs text-gray-500">YTD</div>
+                        <div className="text-xs text-gray-500">{t('invl.ytd')}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
-                          <div className="text-sm text-gray-900">{investment.units.toLocaleString()} units</div>
+                          <div className="text-sm text-gray-900">{t('invl.unitsLabel', { value: investment.units.toLocaleString() })}</div>
                           <div className="text-xs text-gray-500">
-                            Entry: ${investment.entryPrice} | Current: ${investment.currentPrice}
+                            {t('invl.entryCurrent', { entry: investment.entryPrice, current: investment.currentPrice })}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(investment.status))}>
-                          {investment.status}
+                          {tStatus(investment.status)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button
                             onClick={() => handleViewDetails(investment)}
                             className="text-black hover:text-blue-900"
-                            title="View Details"
+                            title={t('irl.viewDetails')}
                           >
                             <Eye className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleEditInvestment(investment)}
                             className="text-gray-600 hover:text-gray-900"
-                            title="Edit Investment"
+                            title={t('invl.editInvestment')}
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <Link
                             to={`/admin/investments/${investment.id}/adjust`}
                             className="text-orange-600 hover:text-orange-900"
-                            title="Adjust Investment"
+                            title={t('invl.adjustInvestment')}
                           >
                             <Settings className="w-4 h-4" />
                           </Link>
                           <button
                             onClick={() => handleDeleteInvestment(investment)}
                             className="text-red-600 hover:text-red-900"
-                            title="Delete Investment"
+                            title={t('invl.deleteInvestment')}
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -572,32 +576,32 @@ export default function InvestmentsList() {
       {activeTab === 'allocations' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Recent Allocation Activities</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('invl.recentAllocations')}</h3>
           </div>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Date & Action
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('invl.col.dateAction')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Investor & Product
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('invl.col.investorProduct')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Amount & Units
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('invl.col.amountUnits')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Price
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('invl.col.price')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Status
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('common:status')}
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Processed By
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    {t('invl.col.processedBy')}
                   </th>
                   <th className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
+                    <span className="sr-only">{t('common:actions')}</span>
                   </th>
                 </tr>
               </thead>
@@ -609,7 +613,7 @@ export default function InvestmentsList() {
                         <div className="text-sm font-medium text-gray-900">
                           {new Date(log.date).toLocaleDateString()}
                         </div>
-                        <div className="text-sm text-gray-500">{log.action}</div>
+                        <div className="text-sm text-gray-500">{t(log.action)}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -624,7 +628,7 @@ export default function InvestmentsList() {
                           {formatCurrency(Math.abs(log.amount))}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {Math.abs(log.units).toLocaleString()} units
+                          {t('invl.unitsLabel', { value: Math.abs(log.units).toLocaleString() })}
                         </div>
                       </div>
                     </td>
@@ -633,18 +637,18 @@ export default function InvestmentsList() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(log.status))}>
-                        {log.status}
+                        {tStatus(log.status)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm text-gray-900">{log.processedBy}</div>
+                        <div className="text-sm text-gray-900">{t(log.processedBy)}</div>
                         {log.notes && (
-                          <div className="text-xs text-gray-500">{log.notes}</div>
+                          <div className="text-xs text-gray-500">{t(log.notes)}</div>
                         )}
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <button className="text-black hover:text-blue-900">
                         <Eye className="w-4 h-4" />
                       </button>
@@ -660,19 +664,19 @@ export default function InvestmentsList() {
       {activeTab === 'analytics' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Distribution</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('invl.performanceDistribution')}</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Positive Performers</span>
-                <span className="text-sm font-medium text-green-600">4 investments</span>
+                <span className="text-sm text-gray-600">{t('invl.positivePerformers')}</span>
+                <span className="text-sm font-medium text-green-600">{t('invl.investmentsPlural', { count: 4 })}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div className="bg-green-600 h-3 rounded-full" style={{ width: '80%' }}></div>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Negative Performers</span>
-                <span className="text-sm font-medium text-red-600">1 investment</span>
+                <span className="text-sm text-gray-600">{t('invl.negativePerformers')}</span>
+                <span className="text-sm font-medium text-red-600">{t('invl.investmentSingular')}</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-3">
                 <div className="bg-red-600 h-3 rounded-full" style={{ width: '20%' }}></div>
@@ -681,33 +685,33 @@ export default function InvestmentsList() {
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Risk Analysis</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('invl.riskAnalysis')}</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Conservative</span>
-                <span className="text-sm font-medium text-green-600">1 investment</span>
+                <span className="text-sm text-gray-600">{t('invl.risk.conservative')}</span>
+                <span className="text-sm font-medium text-green-600">{t('invl.investmentSingular')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Moderate</span>
-                <span className="text-sm font-medium text-yellow-600">1 investment</span>
+                <span className="text-sm text-gray-600">{t('invl.risk.moderate')}</span>
+                <span className="text-sm font-medium text-yellow-600">{t('invl.investmentSingular')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Moderate-High</span>
-                <span className="text-sm font-medium text-orange-600">1 investment</span>
+                <span className="text-sm text-gray-600">{t('invl.risk.moderateHigh')}</span>
+                <span className="text-sm font-medium text-orange-600">{t('invl.investmentSingular')}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">High Risk</span>
-                <span className="text-sm font-medium text-red-600">2 investments</span>
+                <span className="text-sm text-gray-600">{t('invl.risk.highRisk')}</span>
+                <span className="text-sm font-medium text-red-600">{t('invl.investmentsPlural', { count: 2 })}</span>
               </div>
             </div>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 p-6 lg:col-span-2">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Performance Trends</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('invl.recentTrends')}</h3>
             <div className="text-center py-12 text-gray-500">
               <BarChart3 className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>Interactive performance charts would be displayed here</p>
-              <p className="text-sm">Showing performance trends over time with drill-down capabilities</p>
+              <p>{t('invl.chartsPlaceholder')}</p>
+              <p className="text-sm">{t('invl.chartsSubtext')}</p>
             </div>
           </div>
         </div>
@@ -718,7 +722,7 @@ export default function InvestmentsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Investment Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('invl.detailsTitle')}</h3>
               <button
                 onClick={() => setShowDetailsModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -730,44 +734,44 @@ export default function InvestmentsList() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Investor</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.investor')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestment.investorName}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.product')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestment.productName}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Investment Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.investmentAmount')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedInvestment.investmentAmount)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Value</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.col.currentValue')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedInvestment.currentValue)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:status')}</label>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedInvestment.status)}`}>
-                    {selectedInvestment.status}
+                    {tStatus(selectedInvestment.status)}
                   </span>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Units</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.units')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestment.units.toLocaleString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Entry Price</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.entryPrice')}</label>
                   <p className="text-sm text-gray-900">${selectedInvestment.entryPrice}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Current Price</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.currentPrice')}</label>
                   <p className="text-sm text-gray-900">${selectedInvestment.currentPrice}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">YTD Performance</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.ytdPerformance')}</label>
                   <p className={`text-sm font-medium ${
                     selectedInvestment.performanceType === 'positive' ? 'text-green-600' : 'text-red-600'
                   }`}>
@@ -775,7 +779,7 @@ export default function InvestmentsList() {
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Gain/Loss</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('invl.totalGainLoss')}</label>
                   <p className={`text-sm font-medium ${
                     selectedInvestment.performanceType === 'positive' ? 'text-green-600' : 'text-red-600'
                   }`}>
@@ -790,7 +794,7 @@ export default function InvestmentsList() {
                 onClick={() => setShowDetailsModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
               <button
                 onClick={() => {
@@ -799,7 +803,7 @@ export default function InvestmentsList() {
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
               >
-                Edit Investment
+                {t('invl.editInvestment')}
               </button>
             </div>
           </div>
@@ -811,7 +815,7 @@ export default function InvestmentsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Edit Investment</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('invl.editTitle')}</h3>
               <button
                 onClick={() => setShowEditModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -823,7 +827,7 @@ export default function InvestmentsList() {
             <form className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Investment Amount</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('invl.investmentAmount')}</label>
                   <input
                     type="number"
                     defaultValue={selectedInvestment.investmentAmount}
@@ -831,7 +835,7 @@ export default function InvestmentsList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Units</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('invl.units')}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -843,7 +847,7 @@ export default function InvestmentsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Entry Price</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('invl.entryPrice')}</label>
                   <input
                     type="number"
                     step="0.01"
@@ -852,15 +856,15 @@ export default function InvestmentsList() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('common:status')}</label>
                   <select
                     defaultValue={selectedInvestment.status}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                   >
-                    <option value="Active">Active</option>
-                    <option value="Under Review">Under Review</option>
-                    <option value="Locked">Locked</option>
-                    <option value="Suspended">Suspended</option>
+                    <option value="Active">{t('invl.status.active')}</option>
+                    <option value="Under Review">{t('invl.status.underReview')}</option>
+                    <option value="Locked">{t('invl.status.locked')}</option>
+                    <option value="Suspended">{t('invl.status.suspended')}</option>
                   </select>
                 </div>
               </div>
@@ -871,14 +875,14 @@ export default function InvestmentsList() {
                   onClick={() => setShowEditModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleSaveEdit}
                   className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
                 >
-                  Save Changes
+                  {t('common:saveChanges')}
                 </button>
               </div>
             </form>
@@ -891,7 +895,7 @@ export default function InvestmentsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete Investment</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('invl.deleteTitle')}</h3>
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -902,7 +906,7 @@ export default function InvestmentsList() {
 
             <div className="mb-6">
               <p className="text-sm text-gray-600">
-                Are you sure you want to delete the investment for <strong>{selectedInvestment.investorName}</strong> in <strong>{selectedInvestment.productName}</strong>? This action cannot be undone.
+                {t('invl.deleteConfirm', { name: selectedInvestment.investorName, product: selectedInvestment.productName })}
               </p>
             </div>
 
@@ -911,13 +915,13 @@ export default function InvestmentsList() {
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={confirmDelete}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700"
               >
-                Delete Investment
+                {t('invl.deleteInvestment')}
               </button>
             </div>
           </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
@@ -32,6 +33,7 @@ const initialFormValues = {
 };
 
 const ProviderApiEnvConfig = () => {
+  const { t } = useTranslation("connector");
   const { apiId } = useParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -62,7 +64,7 @@ const ProviderApiEnvConfig = () => {
         setData([result]);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch environment configurations");
+      toast.error(error?.response?.data?.message || t("providerApiEnvConfig.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +104,7 @@ const ProviderApiEnvConfig = () => {
         authType: config.authType || "API_KEY",
       });
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch config details");
+      toast.error(error?.response?.data?.message || t("providerApiEnvConfig.toast.fetchDetailFailed"));
       setIsDialogOpen(false);
       setEditingConfig(null);
     } finally {
@@ -113,7 +115,7 @@ const ProviderApiEnvConfig = () => {
   // Save (create or update)
   const handleSave = async () => {
     if (!formValues.baseUrl?.trim()) {
-      toast.error("Base URL is required");
+      toast.error(t("providerApiEnvConfig.toast.baseUrlRequired"));
       return;
     }
 
@@ -132,10 +134,10 @@ const ProviderApiEnvConfig = () => {
 
       if (editingConfig) {
         await updateEnvConfig(editingConfig.id, body);
-        toast.success("Environment config updated successfully");
+        toast.success(t("providerApiEnvConfig.toast.updateSuccess"));
       } else {
         await createEnvConfig(body);
-        toast.success("Environment config created successfully");
+        toast.success(t("providerApiEnvConfig.toast.createSuccess"));
       }
 
       setIsDialogOpen(false);
@@ -143,7 +145,7 @@ const ProviderApiEnvConfig = () => {
       setFormValues(initialFormValues);
       loadEnvConfigs();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save environment config");
+      toast.error(error?.response?.data?.message || t("providerApiEnvConfig.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -155,11 +157,11 @@ const ProviderApiEnvConfig = () => {
     try {
       setIsDeleting(true);
       await deleteEnvConfig(deleteId);
-      toast.success("Environment config deleted successfully");
+      toast.success(t("providerApiEnvConfig.toast.deleteSuccess"));
       setDeleteId(null);
       loadEnvConfigs();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete environment config");
+      toast.error(error?.response?.data?.message || t("providerApiEnvConfig.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -181,7 +183,7 @@ const ProviderApiEnvConfig = () => {
 
   const tableHeaders = [
     {
-      name: "Environment",
+      name: t("providerApiEnvConfig.col.environment"),
       cell: (row: any) => (
         <span
           style={{
@@ -198,35 +200,35 @@ const ProviderApiEnvConfig = () => {
       // width: "140px",
     },
     {
-      name: "Base URL",
+      name: t("providerApiEnvConfig.col.baseUrl"),
       selector: (row: any) => row.baseUrl || "-",
       sortable: true,
       wrap: true,
       // width: "250px",
     },
     {
-      name: "Endpoint Path",
+      name: t("providerApiEnvConfig.col.endpointPath"),
       selector: (row: any) => row.endpointPath || "-",
       sortable: true,
       wrap: true,
       // width: "200px",
     },
     {
-      name: "Auth Type",
+      name: t("providerApiEnvConfig.col.authType"),
       selector: (row: any) => row.authType || "-",
       // width: "120px",
     },
     {
-      name: "Active",
+      name: t("providerApiEnvConfig.col.active"),
       cell: (row: any) => (
         <span className={row.active ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-          {row.active ? "Yes" : "No"}
+          {row.active ? t("common:yes") : t("common:no")}
         </span>
       ),
       // width: "80px",
     },
     {
-      name: "Created At",
+      name: t("providerApiEnvConfig.col.createdAt"),
       cell: (row: any) => (
         <div>{row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-"}</div>
       ),
@@ -234,7 +236,7 @@ const ProviderApiEnvConfig = () => {
       // width: "120px",
     },
     {
-      name: "Action",
+      name: t("providerApiEnvConfig.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -247,7 +249,7 @@ const ProviderApiEnvConfig = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("providerApiEnvConfig.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -259,7 +261,7 @@ const ProviderApiEnvConfig = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -269,7 +271,7 @@ const ProviderApiEnvConfig = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -291,11 +293,11 @@ const ProviderApiEnvConfig = () => {
           <Button variant="outline" size="icon" onClick={() => navigate(-1)}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="text-xl font-bold m-0">Environment Configuration</h1>
+          <h1 className="text-xl font-bold m-0">{t("providerApiEnvConfig.title")}</h1>
         </div>
         <Button className="gap-2" onClick={openAddDialog}>
           <Plus className="h-4 w-4" />
-          Add Config
+          {t("providerApiEnvConfig.addConfig")}
         </Button>
       </div>
 
@@ -303,20 +305,20 @@ const ProviderApiEnvConfig = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[650px]">
           <DialogHeader>
-            <DialogTitle>{editingConfig ? "Edit Environment Config" : "Add Environment Config"}</DialogTitle>
+            <DialogTitle>{editingConfig ? t("providerApiEnvConfig.modalTitleEdit") : t("providerApiEnvConfig.modalTitleAdd")}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4" style={{ opacity: isLoadingEdit ? 0.5 : 1, pointerEvents: isLoadingEdit ? "none" : "auto" }}>
             {isLoadingEdit && (
-              <div className="col-span-2 text-center py-4 text-muted-foreground">Loading...</div>
+              <div className="col-span-2 text-center py-4 text-muted-foreground">{t("action.loading")}</div>
             )}
             <div className="space-y-2">
-              <Label>Environment</Label>
+              <Label>{t("providerApiEnvConfig.form.environment")}</Label>
               <Select
                 value={formValues.environment}
                 onValueChange={(val) => setFormValues({ ...formValues, environment: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select environment" />
+                  <SelectValue placeholder={t("providerApiEnvConfig.form.environmentPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {ENVIRONMENTS.map((env) => (
@@ -326,13 +328,13 @@ const ProviderApiEnvConfig = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Auth Type</Label>
+              <Label>{t("providerApiEnvConfig.form.authType")}</Label>
               <Select
                 value={formValues.authType}
                 onValueChange={(val) => setFormValues({ ...formValues, authType: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select auth type" />
+                  <SelectValue placeholder={t("providerApiEnvConfig.form.authTypePlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {AUTH_TYPES.map((auth) => (
@@ -342,23 +344,23 @@ const ProviderApiEnvConfig = () => {
               </Select>
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Base URL *</Label>
+              <Label>{t("providerApiEnvConfig.form.baseUrl")}</Label>
               <Input
-                placeholder="https://sandbox.example.com"
+                placeholder={t("providerApiEnvConfig.form.baseUrlPlaceholder")}
                 value={formValues.baseUrl}
                 onChange={(e) => setFormValues({ ...formValues, baseUrl: e.target.value })}
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Endpoint Path</Label>
+              <Label>{t("providerApiEnvConfig.form.endpointPath")}</Label>
               <Input
-                placeholder="/api/v2/initiate"
+                placeholder={t("providerApiEnvConfig.form.endpointPlaceholder")}
                 value={formValues.endpointPath}
                 onChange={(e) => setFormValues({ ...formValues, endpointPath: e.target.value })}
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Credentials (JSON)</Label>
+              <Label>{t("providerApiEnvConfig.form.credentials")}</Label>
               <Textarea
                 placeholder='{"clientId":"xxx","clientSecret":"xxx"}'
                 value={formValues.credentials}
@@ -367,7 +369,7 @@ const ProviderApiEnvConfig = () => {
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Headers (JSON)</Label>
+              <Label>{t("providerApiEnvConfig.form.headers")}</Label>
               <Textarea
                 placeholder='{"X-Api-Version":"2.0"}'
                 value={formValues.headers}
@@ -376,7 +378,7 @@ const ProviderApiEnvConfig = () => {
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Query Params (JSON)</Label>
+              <Label>{t("providerApiEnvConfig.form.queryParams")}</Label>
               <Textarea
                 placeholder='{"lang":"ar"}'
                 value={formValues.queryParams}
@@ -386,9 +388,9 @@ const ProviderApiEnvConfig = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("common:cancel")}</Button>
             <Button onClick={handleSave} disabled={isSaving || isLoadingEdit}>
-              {isSaving ? "Saving..." : editingConfig ? "Update" : "Save"}
+              {isSaving ? t("providerApiEnvConfig.saving") : editingConfig ? t("common:update") : t("common:save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -398,15 +400,15 @@ const ProviderApiEnvConfig = () => {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
         <DialogContent className="max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Delete Environment Config</DialogTitle>
+            <DialogTitle>{t("providerApiEnvConfig.deleteModalTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground py-2">
-            Are you sure you want to delete this environment configuration? This action cannot be undone.
+            {t("providerApiEnvConfig.deleteBody")}
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>{t("common:cancel")}</Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("action.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -4,25 +4,27 @@ import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import { useParams } from "react-router-dom";
 import BankStatement from "./ApplicationDetailsTabs/BankStatement";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function BayaanCheck({ fullDetail }: any) {
+  const { t } = useTranslation("dashboard");
   const [active, setActive] = useState("BankStatement");
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [financialData, setFinancialData] = useState<any>(null);
   const tabOptions = [
     {
-      title: "Bank Statement",
+      title: t("bayaanTab.tab.bankStatement"),
       key: "BankStatement",
       component: <BankStatement financialData={financialData} />,
     },
     {
-      title: "Request Financial Document",
+      title: t("bayaanTab.tab.requestDocument"),
       key: "RequestFinancialDocument",
       component: <></>,
     },
     {
-      title: "Approve Banking Statement",
+      title: t("bayaanTab.tab.approveStatement"),
       key: "ApproveBankingStatement",
       component: <></>,
     },

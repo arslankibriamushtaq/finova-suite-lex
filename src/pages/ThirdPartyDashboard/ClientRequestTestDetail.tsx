@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -106,6 +107,7 @@ const formatDateTime = (value: any) =>
   value ? new Date(value).toLocaleString() : "-";
 
 const ClientRequestTestDetail = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
@@ -124,7 +126,7 @@ const ClientRequestTestDetail = () => {
       setDetail(root);
     } catch (error: any) {
       toast.error(
-        error?.response?.data?.message || error?.message || "Failed to fetch request details"
+        error?.response?.data?.message || error?.message || t("detail.toast.fetchFailed")
       );
       setDetail(null);
     } finally {
@@ -165,7 +167,7 @@ const ClientRequestTestDetail = () => {
             }}
           >
             <ArrowLeft size={18} />
-            <span style={{ lineHeight: 1 }}>Back</span>
+            <span style={{ lineHeight: 1 }}>{t("common:back")}</span>
           </button>
           <div
             style={{
@@ -185,7 +187,7 @@ const ClientRequestTestDetail = () => {
               height: 24,
             }}
           >
-            Request Details
+            {t("detail.title")}
           </h3>
         </div>
 
@@ -199,50 +201,50 @@ const ClientRequestTestDetail = () => {
               color: "var(--muted-foreground)",
             }}
           >
-            No details available for this request.
+            {t("detail.noDetails")}
           </div>
         )}
 
         {detail && (
           <>
-            <Section title="Overview">
+            <Section title={t("detail.section.overview")}>
               <div className="row g-3">
                 <div className="col-md-6">
-                  <InfoRow label="Request ID" value={detail.requestId || "-"} />
-                  <InfoRow label="Client" value={detail.clientName || detail.client?.name || "-"} />
-                  <InfoRow label="Service" value={detail.serviceName || detail.service?.name || detail.serviceId || "-"} />
-                  <InfoRow label="API" value={detail.apiName || detail.api?.name || detail.endpoint || "-"} />
+                  <InfoRow label={t("detail.label.requestId")} value={detail.requestId || "-"} />
+                  <InfoRow label={t("detail.label.client")} value={detail.clientName || detail.client?.name || "-"} />
+                  <InfoRow label={t("detail.label.service")} value={detail.serviceName || detail.service?.name || detail.serviceId || "-"} />
+                  <InfoRow label={t("detail.label.api")} value={detail.apiName || detail.api?.name || detail.endpoint || "-"} />
                 </div>
                 <div className="col-md-6">
-                  <InfoRow label="Method" value={detail.httpMethod || detail.method || "-"} />
-                  <InfoRow label="Status" value={<StatusPill status={detail.responseStatus ?? detail.statusCode ?? detail.status} />} />
-                  <InfoRow label="Mobile Phone" value={detail.mobilePhone || detail.mobile || detail.phone || detail.phoneNumber || "-"} />
-                  <InfoRow label="NID" value={detail.nid || detail.nationalId || "-"} />
-                  <InfoRow label="Created At" value={formatDateTime(detail.createdAt || detail.requestedAt || detail.timestamp)} />
+                  <InfoRow label={t("detail.label.method")} value={detail.httpMethod || detail.method || "-"} />
+                  <InfoRow label={t("detail.label.status")} value={<StatusPill status={detail.responseStatus ?? detail.statusCode ?? detail.status} />} />
+                  <InfoRow label={t("detail.label.mobilePhone")} value={detail.mobilePhone || detail.mobile || detail.phone || detail.phoneNumber || "-"} />
+                  <InfoRow label={t("detail.label.nid")} value={detail.nid || detail.nationalId || "-"} />
+                  <InfoRow label={t("detail.label.createdAt")} value={formatDateTime(detail.createdAt || detail.requestedAt || detail.timestamp)} />
                 </div>
               </div>
             </Section>
 
             {(detail.endpoint || detail.url || detail.path) && (
-              <Section title="Endpoint">
-                <InfoRow label="URL" value={detail.endpoint || detail.url || detail.path} />
-                {detail.host && <InfoRow label="Host" value={detail.host} />}
-                {detail.environment && <InfoRow label="Environment" value={detail.environment} />}
-                {detail.duration != null && <InfoRow label="Duration (ms)" value={detail.duration} />}
+              <Section title={t("detail.section.endpoint")}>
+                <InfoRow label={t("detail.label.url")} value={detail.endpoint || detail.url || detail.path} />
+                {detail.host && <InfoRow label={t("detail.label.host")} value={detail.host} />}
+                {detail.environment && <InfoRow label={t("detail.label.environment")} value={detail.environment} />}
+                {detail.duration != null && <InfoRow label={t("detail.label.duration")} value={detail.duration} />}
               </Section>
             )}
 
             {(detail.requestHeaders || detail.requestBody || detail.request) && (
-              <Section title="Request">
+              <Section title={t("detail.section.request")}>
                 {detail.requestHeaders && (
                   <div className="mb-3">
-                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>Headers</div>
+                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>{t("detail.headers")}</div>
                     <JsonBlock value={detail.requestHeaders} />
                   </div>
                 )}
                 {(detail.requestBody || detail.request) && (
                   <div>
-                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>Body</div>
+                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>{t("detail.body")}</div>
                     <JsonBlock value={detail.requestBody ?? detail.request} />
                   </div>
                 )}
@@ -250,16 +252,16 @@ const ClientRequestTestDetail = () => {
             )}
 
             {(detail.responseHeaders || detail.responseBody || detail.response) && (
-              <Section title="Response">
+              <Section title={t("detail.section.response")}>
                 {detail.responseHeaders && (
                   <div className="mb-3">
-                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>Headers</div>
+                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>{t("detail.headers")}</div>
                     <JsonBlock value={detail.responseHeaders} />
                   </div>
                 )}
                 {(detail.responseBody || detail.response) && (
                   <div>
-                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>Body</div>
+                    <div className="fw-bold mb-2" style={{ fontSize: 13 }}>{t("detail.body")}</div>
                     <JsonBlock value={detail.responseBody ?? detail.response} />
                   </div>
                 )}
@@ -267,7 +269,7 @@ const ClientRequestTestDetail = () => {
             )}
 
             {detail.errorMessage && (
-              <Section title="Error">
+              <Section title={t("detail.section.error")}>
                 <JsonBlock value={detail.errorMessage} />
               </Section>
             )}

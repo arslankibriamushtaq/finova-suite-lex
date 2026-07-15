@@ -3,11 +3,13 @@ import { Select, DatePicker } from "antd";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { getAccountLogs } from "../../redux/apis/apisCrudLms";
+import { useTranslation } from "react-i18next";
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 
 const AccountLogs = () => {
+  const { t } = useTranslation("customersB");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [voucherType, setVoucherType] = useState("");
@@ -37,50 +39,50 @@ const AccountLogs = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Customer ID",
+      name: t("customersB:accountLogs.customerId"),
       selector: (row: { CustomerId: any }) => row.CustomerId,
     },
     {
-      name: "Log ID",
+      name: t("customersB:accountLogs.logId"),
       selector: (row: { LogId: any }) => row.LogId,
     },
     {
-      name: "Event Type",
+      name: t("customersB:accountLogs.eventType"),
       selector: (row: { EventType: any }) => row.EventType,
     },
     {
-      name: "Timestamp",
+      name: t("customersB:accountLogs.timestamp"),
       selector: (row: { Timestamp: any }) => row.Timestamp,
     },
     {
-      name: "Action TakenBy",
+      name: t("customersB:accountLogs.actionTakenBy"),
       selector: (row: { ActionTakenBy: any }) => row.ActionTakenBy,
     },
     {
-      name: "Reason/Remarks",
+      name: t("customersB:accountLogs.reasonRemarks"),
       selector: (row: { ReasonRemarks: any }) => row.ReasonRemarks,
     },
     {
-      name: "Collateral ID",
+      name: t("customersB:accountLogs.collateralId"),
       selector: (row: { CollateralId: any }) => row.CollateralId,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { Amount: any }) => row.Amount,
     },
     {
-      name: "Penalty Fee",
+      name: t("customersB:accountLogs.penaltyFee"),
       selector: (row: { PenaltyFee: any }) => row.PenaltyFee,
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       dataIndex: "Status",
       key: "Status",
       render: (text: any) => (
         <span
           className={
-            text === "Completed" ? "status-completed" : "status-review"
+            text === t("common:completed") ? "status-completed" : "status-review"
           }
         >
           {text}
@@ -97,7 +99,7 @@ const AccountLogs = () => {
   };
 
   const handleExportCSV = () => {
-    alert("Export CSV Functionality Coming Soon!");
+    alert(t("customersB:accountLogs.exportComingSoon"));
   };
 
   const mappedData = accLogs && accLogs.map((item: any) => {
@@ -111,23 +113,23 @@ const AccountLogs = () => {
       CollateralId: item.CollateralId,
       Amount: item.Amount,
       PenaltyFee: item.PenaltyFee,
-      Status: item.Status ? "Completed" : "Under Review",
+      Status: item.Status ? t("common:completed") : t("customersB:accountLogs.underReview"),
     };
   }) || [];
 
   return (
     <div>
       <div className="col-11 mb-4">
-        <h3 style={{ marginLeft: "10px" }}>Account Logs</h3>
+        <h3 style={{ marginLeft: "10px" }}>{t("customersB:accountLogs.title")}</h3>
       </div>
       <div className="d-flex col-12 align-items-center mb-3">
         {/* Filter Inputs */}
         <div className="col-10 d-flex align-items-center gap-3">
           <div>
-            <p style={{ marginBottom: "4px" }}>From</p>
+            <p style={{ marginBottom: "4px" }}>{t("common:from")}</p>
             <input
               type="date"
-              placeholder="Select"
+              placeholder={t("common:select")}
               style={{
                 height: "40px",
                 width: "180px",
@@ -138,10 +140,10 @@ const AccountLogs = () => {
             />
           </div>
           <div>
-            <p style={{ marginBottom: "4px" }}>To</p>
+            <p style={{ marginBottom: "4px" }}>{t("common:to")}</p>
             <input
               type="date"
-              placeholder="Select"
+              placeholder={t("common:select")}
               style={{
                 height: "40px",
                 width: "180px",
@@ -153,9 +155,9 @@ const AccountLogs = () => {
           </div>
           {/* Voucher Type Select */}
           <div>
-            <p style={{ marginBottom: "4px" }}>Voucher Type</p>
+            <p style={{ marginBottom: "4px" }}>{t("customersB:accountLogs.voucherType")}</p>
             <Select
-              placeholder="Select"
+              placeholder={t("common:select")}
               value={voucherType}
               onChange={(value) => setVoucherType(value)}
               style={{
@@ -163,16 +165,16 @@ const AccountLogs = () => {
                 width: "180px",
               }}
             >
-              <Option value="">All</Option>
-              <Option value="voucher1">Voucher 1</Option>
-              <Option value="voucher2">Voucher 2</Option>
+              <Option value="">{t("common:all")}</Option>
+              <Option value="voucher1">{t("customersB:accountLogs.voucher1")}</Option>
+              <Option value="voucher2">{t("customersB:accountLogs.voucher2")}</Option>
             </Select>
           </div>
           {/* Account Select */}
           <div>
-            <p style={{ marginBottom: "4px" }}>Account</p>
+            <p style={{ marginBottom: "4px" }}>{t("customersB:accountLogs.account")}</p>
             <Select
-              placeholder="Select"
+              placeholder={t("common:select")}
               value={account}
               onChange={(value) => setAccount(value)}
               style={{
@@ -180,9 +182,9 @@ const AccountLogs = () => {
                 width: "180px",
               }}
             >
-              <Option value="">All</Option>
-              <Option value="account1">Account 1</Option>
-              <Option value="account2">Account 2</Option>
+              <Option value="">{t("common:all")}</Option>
+              <Option value="account1">{t("customersB:accountLogs.account1")}</Option>
+              <Option value="account2">{t("customersB:accountLogs.account2")}</Option>
             </Select>
           </div>
           {/* Clear Button */}
@@ -198,7 +200,7 @@ const AccountLogs = () => {
             }}
             onClick={handleClearFilters}
           >
-            Clear
+            {t("common:clear")}
           </button>
         </div>
         {/* Export CSV Button */}
@@ -217,7 +219,7 @@ const AccountLogs = () => {
             }}
             onClick={handleExportCSV}
           >
-            Export CSV
+            {t("customersB:accountLogs.exportCsv")}
           </button>
         </div>
       </div>

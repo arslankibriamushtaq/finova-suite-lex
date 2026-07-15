@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import enTranslations from "../../locales/en.json";
 import arTranslations from "../../locales/ar.json";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function ManagerInformation({ packageDetails }: any) {
+  const { t } = useTranslation("dashboard");
   const [managerData, setManagerData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -46,7 +48,7 @@ function ManagerInformation({ packageDetails }: any) {
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error fetching manager data:", error);
-      toast.error("Failed to fetch manager information");
+      toast.error(t("managerInfo.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }

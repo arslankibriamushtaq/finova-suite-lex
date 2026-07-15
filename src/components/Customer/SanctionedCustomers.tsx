@@ -17,6 +17,7 @@ import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 // Block codes data
 const blockCodesData = [
@@ -30,6 +31,7 @@ const blockCodesData = [
   { id: 8, code: "213213", type: "Compliance", blocked: true },
 ];
 const RejectedCustomers = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -87,17 +89,17 @@ const RejectedCustomers = () => {
   };
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t('sanctionedCustomers.col.sr'),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "Name",
+      name: t('common:name'),
       selector: (row: { name: any }) => row.name,
       sortable: true,
     },
     {
-      name: "NID",
+      name: t('sanctionedCustomers.col.nid'),
       cell: (row: any) => (
         <MaskedValue value={row.nid} showToggle={true} unmaskedCount={4} />
       ),
@@ -105,28 +107,28 @@ const RejectedCustomers = () => {
       sortable: true,
     },
     {
-      name: "CIF",
+      name: t('sanctionedCustomers.col.cif'),
       selector: (row: { cif: any }) => row.cif || "-",
       sortable: true,
       width: "220px",
     },
     {
-      name: "Email",
+      name: t('common:email'),
       selector: (row: { email: any }) => row.email,
       sortable: true,
     },
     {
-      name: "Phone",
+      name: t('common:phone'),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
     },
     {
-      name: "PEP",
+      name: t('sanctionedCustomers.col.pep'),
       selector: (row: { pep: any }) => row.pep,
       sortable: true,
     },
     {
-      name: "Risk Status",
+      name: t('sanctionedCustomers.col.riskStatus'),
       cell: (row: any) => {
         const riskStatus = row.risk || "--";
         const displayRisk = normalizeRiskDisplay(riskStatus);
@@ -150,7 +152,7 @@ const RejectedCustomers = () => {
       },
     },
     {
-      name: "Actions",
+      name: t('common:actions'),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -165,7 +167,7 @@ const RejectedCustomers = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t('common:select')} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -178,7 +180,7 @@ const RejectedCustomers = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t('common:viewDetails')}
       </Menu.Item>
       {/* <Menu.Item
         key="changeRisk"
@@ -277,12 +279,12 @@ const handleCheckboxChange = (id: number) => {
 // Handle block selected codes
 const handleBlockSelected = async () => {
   if (!currentUserId) {
-    toast.error("User ID not found");
+    toast.error(t('sanctionedCustomers.toast.userIdNotFound'));
     return;
   }
 
   if (selectedBlockCodes.length === 0) {
-    toast.error("Please select at least one block code");
+    toast.error(t('sanctionedCustomers.toast.selectBlockCode'));
     return;
   }
 
@@ -301,7 +303,7 @@ const handleBlockSelected = async () => {
           selectedBlockCodes.includes(code.id) ? { ...code, blocked: true } : code
         )
       );
-      toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been blocked`);
+      toast.success(response?.data?.message || t('sanctionedCustomers.toast.blocked', { count: selectedBlockCodes.length }));
       setSelectedBlockCodes([]);
       
       // Refresh the leads list to get updated data
@@ -322,23 +324,23 @@ const handleBlockSelected = async () => {
         console.error("Error refreshing block codes:", error);
       }
     } else {
-      toast.error(response?.data?.message || "Failed to block codes");
+      toast.error(response?.data?.message || t('sanctionedCustomers.toast.blockFailed'));
     }
   } catch (error: any) {
     console.error("Error blocking codes:", error);
-    toast.error(error?.response?.data?.message || error?.message || "Failed to block codes");
+    toast.error(error?.response?.data?.message || error?.message || t('sanctionedCustomers.toast.blockFailed'));
   }
 };
 
 // Handle unblock selected codes
 const handleUnblockSelected = async () => {
   if (!currentUserId) {
-    toast.error("User ID not found");
+    toast.error(t('sanctionedCustomers.toast.userIdNotFound'));
     return;
   }
 
   if (selectedBlockCodes.length === 0) {
-    toast.error("Please select at least one block code");
+    toast.error(t('sanctionedCustomers.toast.selectBlockCode'));
     return;
   }
 
@@ -357,7 +359,7 @@ const handleUnblockSelected = async () => {
           selectedBlockCodes.includes(code.id) ? { ...code, blocked: false } : code
         )
       );
-      toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been unblocked`);
+      toast.success(response?.data?.message || t('sanctionedCustomers.toast.unblocked', { count: selectedBlockCodes.length }));
       setSelectedBlockCodes([]);
       
       // Refresh the leads list to get updated data
@@ -378,11 +380,11 @@ const handleUnblockSelected = async () => {
         console.error("Error refreshing block codes:", error);
       }
     } else {
-      toast.error(response?.data?.message || "Failed to unblock codes");
+      toast.error(response?.data?.message || t('sanctionedCustomers.toast.unblockFailed'));
     }
   } catch (error: any) {
     console.error("Error unblocking codes:", error);
-    toast.error(error?.response?.data?.message || error?.message || "Failed to unblock codes");
+    toast.error(error?.response?.data?.message || error?.message || t('sanctionedCustomers.toast.unblockFailed'));
   }
 };
 
@@ -405,17 +407,17 @@ const handleStatusSwitchChange = async (row: any, checked: boolean) => {
     });
 
     if (response?.data?.success) {
-      toast.success(response?.data?.message || `Status changed to ${newStatus} successfully`);
+      toast.success(response?.data?.message || t('sanctionedCustomers.toast.statusChanged', { status: newStatus }));
       // Refresh the leads list to get updated data
       getLeadsList();
     } else {
-      toast.error(response?.data?.message || "Failed to change status");
+      toast.error(response?.data?.message || t('sanctionedCustomers.toast.statusFailed'));
       // Revert the switch if API call failed
       getLeadsList();
     }
   } catch (error: any) {
     console.error("Error changing status:", error);
-    toast.error(error?.response?.data?.message || error?.message || "Failed to change status");
+    toast.error(error?.response?.data?.message || error?.message || t('sanctionedCustomers.toast.statusFailed'));
     // Revert the switch if API call failed
     getLeadsList();
   }
@@ -432,7 +434,7 @@ const handleChangeRiskModalClose = () => {
 // Handle risk change
 const handleRiskChange = async () => {
   if (!selectedUserForRiskChange || !newRisk) {
-    toast.error("Please select a risk level");
+    toast.error(t('sanctionedCustomers.toast.selectRisk'));
     return;
   }
 
@@ -441,16 +443,16 @@ const handleRiskChange = async () => {
     const response = await updateKycRisk(selectedUserForRiskChange.id, newRisk);
 
     if (response?.status >= 200 && response?.status < 300) {
-      toast.success(response?.data?.message || `Risk changed to ${newRisk} successfully`);
+      toast.success(response?.data?.message || t('sanctionedCustomers.toast.riskChanged', { risk: newRisk }));
       handleChangeRiskModalClose();
       // Refresh the leads list to get updated data
       getLeadsList();
     } else {
-      toast.error(response?.data?.message || "Failed to change risk");
+      toast.error(response?.data?.message || t('sanctionedCustomers.toast.riskFailed'));
     }
   } catch (error: any) {
     console.error("Error changing risk:", error);
-    toast.error(error?.response?.data?.message || error?.message || "Failed to change risk");
+    toast.error(error?.response?.data?.message || error?.message || t('sanctionedCustomers.toast.riskFailed'));
   } finally {
     setIsChangingRisk(false);
   }
@@ -492,7 +494,7 @@ const handleRiskChange = async () => {
         email: item?.email || "-",
         phone: item?.phone || "-",
         cnic: item?.cnic || "-",
-        pep: item?.pep ? "Yes" : "No",
+        pep: item?.pep ? t('common:yes') : t('common:no'),
         accountBalance: item?.balance || "-",
         UpdatedBy: item?.updated_at || "-",
         accountType: item?.user_type || "-",
@@ -502,11 +504,11 @@ const handleRiskChange = async () => {
     });
     const exportCSV = async () => {
       try {
-        toast.loading("Exporting Rejected customers...", { id: "export-rejected-customers" });
+        toast.loading(t('sanctionedCustomers.toast.exporting'), { id: "export-rejected-customers" });
         const response = await exportRejectedUsers();
-        
+
         if (!response || !response.data) {
-          throw new Error("Failed to download file");
+          throw new Error(t('sanctionedCustomers.toast.downloadFailed'));
         }
         
         // Convert server response to a Blob (binary file)
@@ -548,13 +550,13 @@ const handleRiskChange = async () => {
         link.remove();
         window.URL.revokeObjectURL(url);
         
-        toast.success("Rejected customers exported successfully", { id: "export-rejected-customers" });
+        toast.success(t('sanctionedCustomers.toast.exportSuccess'), { id: "export-rejected-customers" });
       } catch (error: any) {
         console.error("Export error:", error);
         toast.error(
-          error?.response?.data?.message || 
-          error?.message || 
-          "Failed to export PEP customers",
+          error?.response?.data?.message ||
+          error?.message ||
+          t('sanctionedCustomers.toast.exportFailed'),
           { id: "export-pep-customers" }
         );
       }
@@ -566,25 +568,25 @@ const handleRiskChange = async () => {
       <div className="d-flex justify-content-end col-12 filter-select">
         <Select
           style={{ width: "120px", marginRight: "8px" }}
-          placeholder="PEP"
+          placeholder={t('sanctionedCustomers.filter.pep')}
           allowClear
           value={pep || undefined}
           onChange={(value) => setPep(value || '')}
         >
-          <Select.Option value="1">Yes</Select.Option>
-          <Select.Option value="0">No</Select.Option>
+          <Select.Option value="1">{t('common:yes')}</Select.Option>
+          <Select.Option value="0">{t('common:no')}</Select.Option>
         </Select>
 
         <Select
           style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Status"
+          placeholder={t('common:status')}
           allowClear
           value={status || undefined}
           onChange={(value) => setStatus(value || '')}
           suffixIcon={<FaFilter />}
         >
-          <Select.Option value="active">Active</Select.Option>
-          <Select.Option value="inactive">Inactive</Select.Option>
+          <Select.Option value="active">{t('common:active')}</Select.Option>
+          <Select.Option value="inactive">{t('common:inactive')}</Select.Option>
         </Select>
 
         <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
@@ -598,7 +600,7 @@ const handleRiskChange = async () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t('sanctionedCustomers.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -610,7 +612,7 @@ const handleRiskChange = async () => {
             >
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t('common:from')}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -624,7 +626,7 @@ const handleRiskChange = async () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t('common:to')}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -641,7 +643,7 @@ const handleRiskChange = async () => {
             </div>
           </div>
            <button className="theme-btn-next" onClick={exportCSV}>
-              Export CSV</button> 
+              {t('sanctionedCustomers.exportCsv')}</button>
         </div>
       </div>
 
@@ -660,7 +662,7 @@ const handleRiskChange = async () => {
       />
          {/* Block Codes Management Modal */}
          <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Manage Block Codes for User</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('sanctionedCustomers.blockModal.title')}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
         footer={null}
@@ -679,7 +681,7 @@ const handleRiskChange = async () => {
               gap: "20px"
             }}>
               <PulseLoading size="lg" />
-              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>{t('sanctionedCustomers.blockModal.loading')}</p>
             </div>
           ) : (
             <>
@@ -691,14 +693,14 @@ const handleRiskChange = async () => {
                 marginBottom: "20px",
                 padding: "10px 0"
               }}>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>Block Code Selection</h3>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>{t('sanctionedCustomers.blockModal.heading')}</h3>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Button
                     type="primary"
                     style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }}
                     onClick={handleSelectAll}
                   >
-                    ✓ Select All
+                    ✓ {t('common:selectAll')}
                   </Button>
                   <Button
                     style={{
@@ -708,7 +710,7 @@ const handleRiskChange = async () => {
                     }}
                     onClick={handleDeselectAll}
                   >
-                    ⊘ Deselect All
+                    ⊘ {t('sanctionedCustomers.blockModal.deselectAll')}
                   </Button>
                 </div>
               </div>
@@ -747,7 +749,7 @@ const handleRiskChange = async () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Block Code
+                    {t('sanctionedCustomers.blockModal.colCode')}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -755,7 +757,7 @@ const handleRiskChange = async () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Type
+                    {t('common:type')}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -763,7 +765,7 @@ const handleRiskChange = async () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Action
+                    {t('sanctionedCustomers.blockModal.colAction')}
                   </th>
                 </tr>
               </thead>
@@ -821,7 +823,7 @@ const handleRiskChange = async () => {
                         alignItems: "center",
                         gap: "6px"
                       }}>
-                        {code.blocked ? "⊘" : "✓"} {code.blocked ? "Blocked" : "Active"}
+                        {code.blocked ? "⊘" : "✓"} {code.blocked ? t('sanctionedCustomers.blockModal.blocked') : t('common:active')}
                       </button>
                     </td>
                   </tr>
@@ -848,7 +850,7 @@ const handleRiskChange = async () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)"
               }}
             >
-              ⊘ Block Selected
+              ⊘ {t('sanctionedCustomers.blockModal.blockSelected')}
             </Button>
             <Button
               type="primary"
@@ -859,7 +861,7 @@ const handleRiskChange = async () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning-gold)"
               }}
             >
-              ⊙ Unblock Selected
+              ⊙ {t('sanctionedCustomers.blockModal.unblockSelected')}
             </Button>
           </div>
 
@@ -879,7 +881,7 @@ const handleRiskChange = async () => {
                     color: "white"
                   }}
                 >
-                  Close
+                  {t('common:close')}
                 </Button>
               </div>
             </>
@@ -889,7 +891,7 @@ const handleRiskChange = async () => {
 
       {/* Change Risk Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Risk</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('sanctionedCustomers.riskModal.title')}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}
         footer={null}
@@ -900,10 +902,10 @@ const handleRiskChange = async () => {
           {selectedUserForRiskChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('sanctionedCustomers.field.userName')}</p>
                 <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForRiskChange.name || "-"}</p>
-                
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Risk:</p>
+
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('sanctionedCustomers.field.currentRisk')}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -920,21 +922,21 @@ const handleRiskChange = async () => {
                       textTransform: "capitalize"
                     }}
                   >
-                    {selectedUserForRiskChange.risk_status || "Low"}
+                    {selectedUserForRiskChange.risk_status || t('sanctionedCustomers.risk.low')}
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Risk:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('sanctionedCustomers.field.newRisk')}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newRisk}
                   onChange={(value) => setNewRisk(value)}
-                  placeholder="Select Risk Level"
+                  placeholder={t('sanctionedCustomers.placeholder.selectRisk')}
                 >
-                  <Select.Option value="high">High</Select.Option>
-                  <Select.Option value="low">Low</Select.Option>
-                  <Select.Option value="medium">Medium</Select.Option>
-                  <Select.Option value="pep">PEP</Select.Option>
+                  <Select.Option value="high">{t('sanctionedCustomers.risk.high')}</Select.Option>
+                  <Select.Option value="low">{t('sanctionedCustomers.risk.low')}</Select.Option>
+                  <Select.Option value="medium">{t('sanctionedCustomers.risk.medium')}</Select.Option>
+                  <Select.Option value="pep">{t('sanctionedCustomers.risk.pep')}</Select.Option>
                 </Select>
               </div>
               <div style={{
@@ -950,16 +952,16 @@ const handleRiskChange = async () => {
                   disabled={isChangingRisk}
               className="invoice-btn"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
-                
+
                   onClick={handleRiskChange}
-               
+
                   disabled={!newRisk || newRisk === selectedUserForRiskChange.risk_status}
                className="theme-btn"
                 >
-                  {isChangingRisk ? "Changing..." : "Change Risk"}
+                  {isChangingRisk ? t('sanctionedCustomers.changing') : t('sanctionedCustomers.changeRisk')}
                 </button>
               </div>
             </>

@@ -6,6 +6,7 @@ import { getReqDocument, requestApplicationDocuments } from "../../redux/apis/ap
 import TableView from "../TableView/TableView";
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 interface Document {
   id: number;
@@ -18,6 +19,7 @@ interface Document {
 }
 
 function ApplicationDocuments() {
+  const { t } = useTranslation("financing");
   const [activeTab, setActiveTab] = useState("RequestDocuments");
   const [documents, setDocuments] = useState<Document[]>([]);
   const [selectedDocuments, setSelectedDocuments] = useState<number[]>([]);
@@ -60,7 +62,7 @@ function ApplicationDocuments() {
       }
     } catch (error: any) {
       console.error("Error fetching documents:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch documents");
+      toast.error(error?.response?.data?.message || t("toast.fetchDocsFailed"));
     } finally {
       setLoading(false);
     }
@@ -86,7 +88,7 @@ function ApplicationDocuments() {
       }
     } catch (error: any) {
       console.error("Error fetching required documents:", error);
-      toast.error(error?.message || "Failed to fetch required documents");
+      toast.error(error?.message || t("toast.fetchRequiredDocsFailed"));
     } finally {
       setLoadingUploaded(false);
     }
@@ -95,7 +97,7 @@ function ApplicationDocuments() {
 
   const handleRequestNow = async () => {
     if (selectedDocuments.length === 0) {
-      toast.error("Please select at least one document");
+      toast.error(t("toast.selectAtLeastOneDoc"));
       return;
     }
 
@@ -108,14 +110,14 @@ function ApplicationDocuments() {
       const response = await requestApplicationDocuments(body);
       
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "Documents requested successfully");
+        toast.success(response?.data?.message || t("toast.docsRequested"));
         setSelectedDocuments([]);
       } else {
-        toast.error(response?.data?.message || "Failed to request documents");
+        toast.error(response?.data?.message || t("toast.requestDocsFailed"));
       }
     } catch (error: any) {
       console.error("Error requesting documents:", error);
-      toast.error(error?.response?.data?.message || "Failed to request documents");
+      toast.error(error?.response?.data?.message || t("toast.requestDocsFailed"));
     } finally {
       setRequesting(false);
     }
@@ -132,13 +134,13 @@ function ApplicationDocuments() {
 
   // Define column structure for TableView
   const headers = [
-    { name: "Name", selector: (row: any) => row.name, sortable: true },
-    { name: "Type", selector: (row: any) => row.type, sortable: true },
-    { name: "Requested By", selector: (row: any) => row.created_by || "-", sortable: true },
-    { name: "Updated By", selector: (row: any) => row.created_by || "-", sortable: true },
-    { name: "Request Date", selector: (row: any) => row.created_at || "-", sortable: true },
+    { name: t("common:name"), selector: (row: any) => row.name, sortable: true },
+    { name: t("common:type"), selector: (row: any) => row.type, sortable: true },
+    { name: t("appDocs.requestedBy"), selector: (row: any) => row.created_by || "-", sortable: true },
+    { name: t("col.updatedBy"), selector: (row: any) => row.created_by || "-", sortable: true },
+    { name: t("appDocs.requestDate"), selector: (row: any) => row.created_at || "-", sortable: true },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -148,18 +150,18 @@ function ApplicationDocuments() {
             color: "white",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Document",
+      name: t("col.document"),
       cell: () => (
-        <span className="text-muted">Required</span>
+        <span className="text-muted">{t("appDocs.required")}</span>
       ),
     },
     {
-      name: "Action",
+      name: t("col.action"),
       cell: () => (
         <span className="text-muted">-</span>
       ),
@@ -182,14 +184,14 @@ function ApplicationDocuments() {
     <div className="application-documents-container" style={{ padding: "20px" }}>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h2 style={{ fontSize: "24px", fontWeight: "600", margin: 0 }}>
-          Application Documents
+          {t("appDocs.title")}
         </h2>
         <Button
           variant="link"
           onClick={() => navigate(-1)}
           style={{ textDecoration: "none", color: "#666" }}
         >
-          ← Back
+          ← {t("common:back")}
         </Button>
       </div>
 
@@ -199,7 +201,7 @@ function ApplicationDocuments() {
         className="mb-4"
       >
         {/* Request Documents Tab */}
-        <Tab eventKey="RequestDocuments" title="Request Documents">
+        <Tab eventKey="RequestDocuments" title={t("appDocs.requestDocuments")}>
           <div
             style={{
               backgroundColor: "#fff",
@@ -210,7 +212,7 @@ function ApplicationDocuments() {
           >
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 style={{ fontSize: "16px", fontWeight: "500", margin: 0 }}>
-                Please select documents required for this application:
+                {t("appDocs.selectPrompt")}
               </h5>
               <Button
                 variant="danger"
@@ -221,7 +223,7 @@ function ApplicationDocuments() {
                   padding: "8px 20px",
                 }}
               >
-                View All Documents
+                {t("appDocs.viewAllDocuments")}
               </Button>
             </div>
 
@@ -252,7 +254,7 @@ function ApplicationDocuments() {
                   ) : (
                     <div className="text-center py-5">
                       <p style={{ color: "#666", margin: 0 }}>
-                        No documents available
+                        {t("appDocs.noDocumentsAvailable")}
                       </p>
                     </div>
                   )}
@@ -271,7 +273,7 @@ function ApplicationDocuments() {
                         minWidth: "150px",
                       }}
                     >
-                      {requesting ? "Requesting..." : "Request now"}
+                      {requesting ? t("appDocs.requesting") : t("appDocs.requestNow")}
                     </Button>
                   </div>
              
@@ -281,7 +283,7 @@ function ApplicationDocuments() {
         </Tab>
 
         {/* View Documents Tab */}
-        <Tab eventKey="ViewDocuments" title="View Documents">
+        <Tab eventKey="ViewDocuments" title={t("appDocs.viewDocuments")}>
           <div
             style={{
               backgroundColor: "#fff",
@@ -293,7 +295,7 @@ function ApplicationDocuments() {
           >
             <div className="d-flex justify-content-between align-items-center mb-4">
               <h5 style={{ fontSize: "16px", fontWeight: "500", margin: 0 }}>
-                Documents against this application
+                {t("appDocs.docsAgainstApplication")}
               </h5>
               <Button
                 variant="danger"
@@ -304,7 +306,7 @@ function ApplicationDocuments() {
                   padding: "8px 20px",
                 }}
               >
-                View All Documents
+                {t("appDocs.viewAllDocuments")}
               </Button>
             </div>
             
@@ -327,7 +329,7 @@ function ApplicationDocuments() {
             ) : (
               <div className="text-center py-5">
                 <p style={{ color: "#666", margin: 0 }}>
-                  No Record Found
+                  {t("appDocs.noRecordFound")}
                 </p>
               </div>
             )}

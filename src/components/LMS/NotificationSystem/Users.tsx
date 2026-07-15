@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -28,6 +29,7 @@ import { Images } from "../../Config/Images";
 import TableView from "../../TableView/TableView";
 
 const Users = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -71,43 +73,43 @@ const Users = () => {
 
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
             width: "100px",
         },
         {
-            name: "Full Name",
+            name: t("users.col.fullName"),
             selector: (row: { fullName: any }) => row.fullName,
             sortable: true,
         },
         {
-            name: "Email",
+            name: t("common:email"),
             selector: (row: { email: any }) => row.email,
             sortable: true,
         },
         {
-            name: "Phone",
+            name: t("common:phone"),
             selector: (row: { phone: any }) => row.phone,
             sortable: true,
         },
         {
-            name: "City",
+            name: t("users.col.city"),
             selector: (row: { city: any }) => row.city,
             sortable: true,
         },
         {
-            name: "Gender",
+            name: t("users.col.gender"),
             selector: (row: { gender: any }) => row.gender,
             sortable: true,
         },
         {
-            name: "Language",
+            name: t("shared.language"),
             selector: (row: { languageId: any }) => getLanguageNameById(row?.languageId),
             sortable: true,
         },
         {
-            name: "Device Token",
+            name: t("users.col.deviceToken"),
             cell: (row: { deviceToken: any }) => (
                 <div style={{ maxWidth: "200px", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {row.deviceToken}
@@ -116,7 +118,7 @@ const Users = () => {
             sortable: true,
         },
         {
-            name: "Created At",
+            name: t("common:createdAt"),
             selector: (row: { createdAt: any }) => formatDate(row?.createdAt),
             sortable: true,
         },
@@ -147,14 +149,14 @@ const Users = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -244,9 +246,9 @@ const Users = () => {
                         languageId: "",
                     });
                     await getList();
-                    return "User updated successfully!";
+                    return t("users.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createUser(body);
@@ -262,17 +264,17 @@ const Users = () => {
                         gender: "Male",
                         languageId: "",
                     });
-                    return "User added successfully!";
+                    return t("users.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating User..." : "Adding User...",
+            loading: isEditing ? t("users.toast.updating") : t("users.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -284,16 +286,16 @@ const Users = () => {
                     setIsDeleteModalVisible(false);
                     await getList();
                     setEditRowId(null);
-                    return "User deleted successfully!";
+                    return t("users.toast.deleted");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to delete");
+                    throw new Error(response?.data?.errors || t("shared.failedDelete"));
                 }
             };
 
             toast.promise(deletePromise(), {
-                loading: "Deleting User...",
+                loading: t("users.toast.deleting"),
                 success: (msg) => msg,
-                error: (err) => err.message || "Something went wrong",
+                error: (err) => err.message || t("shared.somethingWentWrong"),
             });
         } catch (error: any) {
             toast.error(error.message);
@@ -328,7 +330,7 @@ const Users = () => {
                     <Select
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
                     />
@@ -344,7 +346,7 @@ const Users = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -365,7 +367,7 @@ const Users = () => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New User
+                            {t("users.addNew")}
                         </button>
                     </div>
                 </div>
@@ -388,13 +390,13 @@ const Users = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit User" : "Add New User"}
+                title={editRowId ? t("users.editTitle") : t("users.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -402,11 +404,11 @@ const Users = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Full Name <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("users.col.fullName")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter full name"
+                                    placeholder={t("users.ph.fullName")}
                                     name="fullName"
                                     value={formData.fullName}
                                     onChange={(e: any) => setFormData({ ...formData, fullName: e?.target?.value })}
@@ -415,11 +417,11 @@ const Users = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Email <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("common:email")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="email"
                                     className="custom-input"
-                                    placeholder="Enter email"
+                                    placeholder={t("users.ph.email")}
                                     name="email"
                                     value={formData.email}
                                     onChange={(e: any) => setFormData({ ...formData, email: e?.target?.value })}
@@ -431,11 +433,11 @@ const Users = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Phone <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("common:phone")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter phone number"
+                                    placeholder={t("users.ph.phone")}
                                     name="phone"
                                     value={formData.phone}
                                     onChange={(e: any) => setFormData({ ...formData, phone: e?.target?.value })}
@@ -444,11 +446,11 @@ const Users = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">City <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("users.col.city")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter city"
+                                    placeholder={t("users.ph.city")}
                                     name="city"
                                     value={formData.city}
                                     onChange={(e: any) => setFormData({ ...formData, city: e?.target?.value })}
@@ -460,11 +462,11 @@ const Users = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Device Token <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("users.col.deviceToken")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter device token"
+                                    placeholder={t("users.ph.deviceToken")}
                                     name="deviceToken"
                                     value={formData.deviceToken}
                                     onChange={(e: any) => setFormData({ ...formData, deviceToken: e?.target?.value })}
@@ -473,10 +475,10 @@ const Users = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Language <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.language")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select language"
+                                    placeholder={t("shared.selectLanguage")}
                                     value={formData.languageId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, languageId: val })}
                                 >
@@ -493,15 +495,15 @@ const Users = () => {
                     <Row>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">Gender <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("users.label.gender")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
                                         value={formData.gender}
                                     >
-                                        <Radio value="Male">Male</Radio>
-                                        <Radio value="Female">Female</Radio>
-                                        <Radio value="Other">Other</Radio>
+                                        <Radio value="Male">{t("users.gender.male")}</Radio>
+                                        <Radio value="Female">{t("users.gender.female")}</Radio>
+                                        <Radio value="Other">{t("users.gender.other")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
@@ -515,10 +517,10 @@ const Users = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                title={"Delete User"}
+                title={t("users.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -527,12 +529,12 @@ const Users = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    Are you sure you want to delete this User?
+                    {t("users.delete.confirm")}
                 </Form>
             </Modal>
         </div>

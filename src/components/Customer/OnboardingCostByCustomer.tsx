@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { ArrowLeft, SaudiRiyal, Phone, RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
@@ -40,6 +41,7 @@ const formatDateTime = (iso?: string | null) => {
 };
 
 const OnboardingCostByCustomer = () => {
+  const { t } = useTranslation("customerManagement");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -57,7 +59,7 @@ const OnboardingCostByCustomer = () => {
       const result = response?.data?.data || null;
       setReport(result);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch onboarding cost report");
+      toast.error(error?.response?.data?.message || t("onboardingCostByCustomer.fetchError"));
       setReport(null);
     } finally {
       setIsLoading(false);
@@ -83,10 +85,10 @@ const OnboardingCostByCustomer = () => {
           className="page-header-back gap-1"
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t("common:back")}
         </Button>
         <h3 className="page-header-title mb-0 fw-bold text-dark ps-0">
-          Onboarding Cost By Customer
+          {t("onboardingCostByCustomer.title")}
         </h3>
       </div>
 
@@ -101,15 +103,15 @@ const OnboardingCostByCustomer = () => {
       >
         <div className="filter-row">
           <div className="filter-field">
-            <label className="filter-label">Environment</label>
+            <label className="filter-label">{t("onboardingCostByCustomer.environment")}</label>
             <Select value={env} onValueChange={(v) => setEnv(v)}>
               <SelectTrigger className="filter-select-trigger">
-                <SelectValue placeholder="Select env" />
+                <SelectValue placeholder={t("onboardingCostByCustomer.selectEnv")} />
               </SelectTrigger>
               <SelectContent>
                 {ENV_OPTIONS.map((o) => (
                   <SelectItem key={o.value} value={o.value}>
-                    {o.label}
+                    {t(`onboardingCostByCustomer.env.${o.value}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -122,13 +124,13 @@ const OnboardingCostByCustomer = () => {
             className="refresh-btn"
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("common:refresh")}
           </button>
         </div>
       </div>
 
       <div className="historical-note mb-3">
-        Costs shown reflect historical pricing at the time each call was made. Updating a provider API's cost only affects future calls — past calls keep the rate they were billed at.
+        {t("onboardingCostByCustomer.historicalNote")}
       </div>
 
       {/* Totals cards */}
@@ -137,7 +139,7 @@ const OnboardingCostByCustomer = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <Phone className="h-4 w-4" />
-              Total Calls
+              {t("onboardingCostByCustomer.totalCalls")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -152,7 +154,7 @@ const OnboardingCostByCustomer = () => {
           <CardHeader className="pb-2">
             <CardTitle className="text-sm text-muted-foreground flex items-center gap-2">
               <SaudiRiyal className="h-4 w-4" />
-              Total Cost
+              {t("onboardingCostByCustomer.totalCost")}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -173,17 +175,17 @@ const OnboardingCostByCustomer = () => {
       {/* Items */}
       <Card className="mb-3">
         <CardHeader>
-          <CardTitle className="text-base">Items</CardTitle>
+          <CardTitle className="text-base">{t("onboardingCostByCustomer.items")}</CardTitle>
         </CardHeader>
         <CardContent>
           <Table className="cost-table">
             <TableHeader>
               <TableRow>
-                <TableHead>API Code</TableHead>
-                <TableHead>Provider</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Created At</TableHead>
-                <TableHead className="text-right">API Cost</TableHead>
+                <TableHead>{t("onboardingCostByCustomer.apiCode")}</TableHead>
+                <TableHead>{t("onboardingCostByCustomer.provider")}</TableHead>
+                <TableHead>{t("common:status")}</TableHead>
+                <TableHead>{t("common:createdAt")}</TableHead>
+                <TableHead className="text-end">{t("onboardingCostByCustomer.apiCost")}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -196,7 +198,7 @@ const OnboardingCostByCustomer = () => {
               ) : items.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center text-muted-foreground">
-                    No data
+                    {t("common:noData")}
                   </TableCell>
                 </TableRow>
               ) : (
@@ -235,7 +237,7 @@ const OnboardingCostByCustomer = () => {
                         )}
                       </TableCell>
                       <TableCell>{formatDateTime(row.created_at)}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className="text-end">
                         {row.api_cost != null ? `${formatNumber(row.api_cost, 4)} ${rowCurrency}` : "-"}
                       </TableCell>
                     </TableRow>

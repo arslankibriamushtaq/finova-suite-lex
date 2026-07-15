@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Dropdown, Menu, Select } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter, FaSearch } from "react-icons/fa";
@@ -9,6 +10,7 @@ import arrowDown from "../../assets/images/arrow-down.png";
 import { useNavigate } from "react-router-dom";
 
 const Role = () => {
+  const { t } = useTranslation("adminMisc");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [from, setFrom] = useState(0);
@@ -35,21 +37,21 @@ const Role = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit")}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete")}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("ui.sr"),
       selector: (row: { Id: any }) => row.Id,
       width: "15%",
       sortable: true,
@@ -64,14 +66,14 @@ const Role = () => {
       // ),
     },
     {
-      name: "Role",
+      name: t("role.col.role"),
       width: "75%",
       selector: (row: { Name: any }) => row.Name,
       sortable: true,
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -86,7 +88,7 @@ const Role = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -134,7 +136,7 @@ const Role = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -152,7 +154,7 @@ const Role = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("ui.searchPlaceholder")}
             />
           </div>
 
@@ -162,7 +164,7 @@ const Role = () => {
               navigate("/UserRoleManagement/AddRole");
             }}
           >
-            Add Role
+            {t("role.addBtn")}
           </button>
         </div>
       </div>

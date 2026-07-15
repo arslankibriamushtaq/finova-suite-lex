@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getServicesList } from "../../redux/apis/apisThirdParty";
 
 const ServicesList = () => {
+  const { t } = useTranslation("connector");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -15,18 +17,18 @@ const ServicesList = () => {
 
   const Service_Headers = [
     {
-      name: "ID",
+      name: t("servicesList.col.id"),
       selector: (row: { id: any }) => row.id,
       sortable: true,
       width: "100px",
     },
     {
-      name: "Service Name",
+      name: t("servicesList.col.serviceName"),
       selector: (row: { serviceName: any }) => row.serviceName,
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -37,7 +39,7 @@ const ServicesList = () => {
             fontSize: "12px",
           }}
         >
-          {row.status === 1 ? "Active" : "Inactive"}
+          {row.status === 1 ? t("common:active") : t("common:inactive")}
         </span>
       ),
       sortable: true,
@@ -77,7 +79,7 @@ const ServicesList = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch services");
+      toast.error(error?.response?.data?.message || error?.message || t("servicesList.toast.fetchFailed"));
       setSkelitonLoading(false);
     }
   };
@@ -95,7 +97,7 @@ const ServicesList = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Services List</h2>
+        <h2>{t("servicesList.title")}</h2>
       </div>
       <TableView
         header={Service_Headers}

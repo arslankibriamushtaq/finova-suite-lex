@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "antd";
 import toast from "react-hot-toast";
 import { exportEnvironmentCsv } from "../../redux/apis/apisThirdParty";
 
 const ExportCsv = () => {
+  const { t } = useTranslation("connector");
   const [loading, setLoading] = useState(false);
 
   const handleExport = async () => {
@@ -25,14 +27,14 @@ const ExportCsv = () => {
         link.click();
         document.body.removeChild(link);
         
-        toast.success(`CSV file exported successfully. ${response.data.data.total_records || 0} records exported.`);
+        toast.success(t("exportCsv.toast.success", { count: response.data.data.total_records || 0 }));
       } else {
-        toast.error("Invalid response format from server");
+        toast.error(t("exportCsv.toast.invalidFormat"));
       }
-      
+
       setLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to export CSV");
+      toast.error(error?.response?.data?.message || error?.message || t("exportCsv.toast.exportFailed"));
       setLoading(false);
     }
   };
@@ -40,12 +42,12 @@ const ExportCsv = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Export CSV</h2>
+        <h2>{t("exportCsv.title")}</h2>
       </div>
-      
+
       <div style={{ padding: "40px", textAlign: "center" }}>
         <p style={{ marginBottom: "20px", color: "var(--color-text-muted)" }}>
-          Click the button below to download the environment data as a CSV file.
+          {t("exportCsv.description")}
         </p>
         <Button
           type="primary"
@@ -54,7 +56,7 @@ const ExportCsv = () => {
           style={{ backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" }}
           size="large"
         >
-          {loading ? "Exporting..." : "Export CSV"}
+          {loading ? t("exportCsv.exporting") : t("exportCsv.exportButton")}
         </Button>
       </div>
     </div>

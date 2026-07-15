@@ -9,6 +9,7 @@ import {
   SearchOutlined,
 } from "@ant-design/icons";
 import { Col, Form, Modal, Row } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import Loader from "../../../components/Loader/Loader";
 import TableView from "../../../components/TableView/TableView";
@@ -61,6 +62,7 @@ type ModalType = "approve" | "reject" | null;
 const WaiveOffDetails = () => {
   const { applicationId } = useParams<{ applicationId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation("loanManagement");
 
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -88,7 +90,7 @@ const WaiveOffDetails = () => {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to fetch waiver requests"
+          t("waiveOff.fetchFailed")
       );
     } finally {
       setLoading(false);
@@ -117,16 +119,16 @@ const WaiveOffDetails = () => {
 
   const validate = (): boolean => {
     const e: Record<string, string> = {};
-    if (!actionReason.trim()) e.reason = "Reason is required";
+    if (!actionReason.trim()) e.reason = t("waiveOff.reasonRequired");
     if (modalType === "approve") {
       if (!actionAmount) {
-        e.amount = "Amount is required";
+        e.amount = t("waiveOff.amountRequired");
       } else {
         const amt = parseFloat(actionAmount);
         if (isNaN(amt) || amt <= 0) {
-          e.amount = "Enter a valid amount";
+          e.amount = t("waiveOff.validAmount");
         } else if (amt > parseFloat(selectedRow?.requestedAmount)) {
-          e.amount = `Cannot exceed requested amount (SAR ${parseFloat(selectedRow?.requestedAmount).toLocaleString("en-US", { minimumFractionDigits: 2 })})`;
+          e.amount = t("waiveOff.cannotExceed", { value: parseFloat(selectedRow?.requestedAmount).toLocaleString("en-US", { minimumFractionDigits: 2 }) });
         }
       }
     }
@@ -143,12 +145,12 @@ const WaiveOffDetails = () => {
           reason: actionReason.trim(),
           amount: parseFloat(actionAmount),
         });
-        toast.success("Waiver request approved successfully");
+        toast.success(t("waiveOff.approvedSuccess"));
       } else {
         await rejectWaiverByInvoice(selectedRow.invoiceId, {
           reason: actionReason.trim(),
         });
-        toast.success("Waiver request rejected");
+        toast.success(t("waiveOff.rejectedSuccess"));
       }
       closeModal();
       fetchData();
@@ -171,10 +173,10 @@ const WaiveOffDetails = () => {
       }}
     >
       <Menu.Item key="approve" icon={<CheckCircleOutlined />}>
-        Approve
+        {t("common:approve")}
       </Menu.Item>
       <Menu.Item key="reject" icon={<CloseCircleOutlined />} danger>
-        Reject
+        {t("common:reject")}
       </Menu.Item>
     </Menu>
   );
@@ -220,17 +222,17 @@ const WaiveOffDetails = () => {
       width: "60px",
     },
     {
-      name: "Invoice ID",
+      name: t("waiveOff.colInvoiceId"),
       selector: (row: any) => row.invoiceId || "-",
       width: "180px",
     },
     {
-      name: "Requested Amount",
+      name: t("waiveOff.colRequestedAmount"),
       selector: (row: any) => formatCurrency(row.requestedAmount),
       width: "170px",
     },
     {
-      name: "Reason",
+      name: t("waiveOff.colReason"),
       cell: (row: any) => (
         <span
           title={row.reason || ""}
@@ -248,12 +250,12 @@ const WaiveOffDetails = () => {
       width: "220px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => <StatusPill status={row.status} />,
       width: "120px",
     },
     {
-      name: "Rejection Reason",
+      name: t("waiveOff.colRejectionReason"),
       cell: (row: any) => (
         <span
           title={row.rejectionReason || ""}
@@ -274,17 +276,17 @@ const WaiveOffDetails = () => {
       width: "200px",
     },
     {
-      name: "Requested At",
+      name: t("waiveOff.colRequestedAt"),
       selector: (row: any) => formatDateTime(row.requestedAt),
       width: "180px",
     },
     {
-      name: "Processed At",
+      name: t("waiveOff.colProcessedAt"),
       selector: (row: any) => formatDateTime(row.processedAt),
       width: "180px",
     },
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => {
         if (row.status !== "PENDING") {
           return <span style={{ fontSize: 12, color: "var(--muted-foreground)" }}>—</span>;
@@ -296,7 +298,7 @@ const WaiveOffDetails = () => {
               type="primary"
               style={{ borderColor: "white", borderRadius: 2, padding: "10px 20px" }}
             >
-              Select <DownOutlined />
+              {t("applications.select")} <DownOutlined />
             </Button>
           </Dropdown>
         );
@@ -326,7 +328,7 @@ const WaiveOffDetails = () => {
           }}
         >
           <ArrowLeft size={18} />
-          Back
+          {t("common:back")}
         </button>
 
         <div style={{ height: 20, width: 1, backgroundColor: "var(--border)" }} />
@@ -335,7 +337,7 @@ const WaiveOffDetails = () => {
           <span className="pro-head-badge">
             <FileText className="h-4 w-4" />
           </span>
-          Waive Off Details
+          {t("waiveOff.title")}
         </h3>
 
         <div className="ms-auto">
@@ -370,7 +372,7 @@ const WaiveOffDetails = () => {
             </span>
             <span style={{ fontWeight: 700, fontSize: 14 }}>{total}</span>
             <span style={{ color: "var(--muted-foreground)", fontWeight: 500 }}>
-              {total === 1 ? "request" : "requests"}
+              {t("waiveOff.request", { count: total })}
             </span>
           </span>
         </div>
@@ -388,7 +390,7 @@ const WaiveOffDetails = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by invoice ID, status, reason, amount"
+            placeholder={t("waiveOff.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -427,7 +429,7 @@ const WaiveOffDetails = () => {
       <Modal show={!!modalType} onHide={closeModal} centered>
         <Modal.Header closeButton>
           <Modal.Title style={{ fontSize: 16 }}>
-            {modalType === "approve" ? "Approve Waiver Request" : "Reject Waiver Request"}
+            {modalType === "approve" ? t("waiveOff.approveTitle") : t("waiveOff.rejectTitle")}
           </Modal.Title>
         </Modal.Header>
 
@@ -438,14 +440,14 @@ const WaiveOffDetails = () => {
                 <Col md={12} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: 13, fontWeight: 600 }}>
-                      Waiver Amount (SAR) *
+                      {t("waiveOff.waiverAmount")}
                     </Form.Label>
                     <Form.Control
                       type="number"
                       min={0.01}
                       step={0.01}
                       max={selectedRow?.requestedAmount}
-                      placeholder={`Max: ${parseFloat(selectedRow?.requestedAmount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 })}`}
+                      placeholder={t("waiveOff.maxPlaceholder", { value: parseFloat(selectedRow?.requestedAmount || 0).toLocaleString("en-US", { minimumFractionDigits: 2 }) })}
                       value={actionAmount}
                       onChange={(e) => {
                         const max = parseFloat(selectedRow?.requestedAmount || 0);
@@ -457,7 +459,7 @@ const WaiveOffDetails = () => {
                       isInvalid={!!errors.amount}
                     />
                     <Form.Text className="text-muted" style={{ fontSize: 11 }}>
-                      Requested: {formatCurrency(selectedRow?.requestedAmount)} — cannot exceed this amount
+                      {t("waiveOff.requestedHint", { value: formatCurrency(selectedRow?.requestedAmount) })}
                     </Form.Text>
                     <Form.Control.Feedback type="invalid">
                       {errors.amount}
@@ -469,15 +471,15 @@ const WaiveOffDetails = () => {
               <Col md={12} className="mb-1">
                 <Form.Group>
                   <Form.Label style={{ fontSize: 13, fontWeight: 600 }}>
-                    {modalType === "approve" ? "Approval Reason *" : "Rejection Reason *"}
+                    {modalType === "approve" ? t("waiveOff.approvalReason") : t("waiveOff.rejectionReasonLabel")}
                   </Form.Label>
                   <Form.Control
                     as="textarea"
                     rows={3}
                     placeholder={
                       modalType === "approve"
-                        ? "Enter reason for approval..."
-                        : "Enter reason for rejection..."
+                        ? t("waiveOff.approvalPlaceholder")
+                        : t("waiveOff.rejectionPlaceholder")
                     }
                     value={actionReason}
                     onChange={(e) => {
@@ -497,7 +499,7 @@ const WaiveOffDetails = () => {
 
         <Modal.Footer>
           <Button onClick={closeModal} disabled={actionLoading}>
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button
             className="gradient-btn"
@@ -507,7 +509,7 @@ const WaiveOffDetails = () => {
             danger={modalType === "reject"}
             style={{ borderColor: "white", borderRadius: 2, padding: "10px 20px" }}
           >
-            {modalType === "approve" ? "Approve" : "Reject"}
+            {modalType === "approve" ? t("common:approve") : t("common:reject")}
           </Button>
         </Modal.Footer>
       </Modal>

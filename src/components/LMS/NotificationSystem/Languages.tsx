@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -19,6 +20,7 @@ import { Images } from "../../Config/Images";
 import TableView from "../../TableView/TableView";
 
 const Languages = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -40,30 +42,30 @@ const Languages = () => {
 
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
         },
         {
-            name: "Name",
+            name: t("common:name"),
             selector: (row: { name: any }) => row.name,
             sortable: true,
         },
         {
-            name: "Shortcode",
+            name: t("languages.col.shortcode"),
             selector: (row: { shortcode: any }) => row.shortcode,
             sortable: true,
             width: "160px",
         },
         {
-            name: "Created At",
+            name: t("common:createdAt"),
             selector: (row: { createdAt: any }) => row.createdAt,
             sortable: true,
             wrap: true,
         },
 
         {
-            name: "Actions",
+            name: t("common:actions"),
 
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -78,7 +80,7 @@ const Languages = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -105,14 +107,14 @@ const Languages = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -178,9 +180,9 @@ const Languages = () => {
                         shortcode: "",
                     });
                     await getList();
-                    return "Language updated successfully!";
+                    return t("languages.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createLanguages(body);
@@ -191,17 +193,17 @@ const Languages = () => {
                         name: "",
                         shortcode: "",
                     });
-                    return "Language added successfully!";
+                    return t("languages.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating Language..." : "Adding Language...",
+            loading: isEditing ? t("languages.toast.updating") : t("languages.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -213,16 +215,16 @@ const Languages = () => {
                      setIsDeleteModalVisible(false);
                      await getList();
                      setEditRowId(null);
-                     return "Language deleted successfully!";
+                     return t("languages.toast.deleted");
                  } else {
-                     throw new Error(response?.data?.errors || "Failed to delete");
+                     throw new Error(response?.data?.errors || t("shared.failedDelete"));
                  }
              };
 
              toast.promise(deletePromise(), {
-                 loading: "Deleting Language...",
+                 loading: t("languages.toast.deleting"),
                  success: (msg) => msg,
-                 error: (err) => err.message || "Something went wrong",
+                 error: (err) => err.message || t("shared.somethingWentWrong"),
              });
          } catch (error: any) {
              toast.error(error.message);
@@ -255,7 +257,7 @@ const Languages = () => {
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
                         // onChange={handleChange}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
 
@@ -273,7 +275,7 @@ const Languages = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -289,7 +291,7 @@ const Languages = () => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New Language
+                            {t("languages.addNew")}
                         </button>
                     </div>
                 </div>
@@ -312,13 +314,13 @@ const Languages = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit Language" : "Add New Language"}
+                title={editRowId ? t("languages.editTitle") : t("languages.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -326,11 +328,11 @@ const Languages = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Name <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("common:name")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter language name"
+                                    placeholder={t("languages.ph.name")}
                                     name="name"
                                     value={formData.name}
                                     onChange={(e: any) => {
@@ -344,11 +346,11 @@ const Languages = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Shortcode <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("languages.col.shortcode")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="e.g. en, fr, en-us"
+                                    placeholder={t("languages.ph.shortcode")}
                                     name="shortcode"
                                     value={formData.shortcode}
                                     onChange={(e: any) => {
@@ -389,10 +391,10 @@ const Languages = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                 title={"Delete Language"}
+                 title={t("languages.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -401,13 +403,12 @@ const Languages = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    {`
-               Are you sure you want to delete this Language?`}
+                    {t("languages.delete.confirm")}
                 </Form>
             </Modal>
         </div>

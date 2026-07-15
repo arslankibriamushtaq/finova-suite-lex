@@ -1,0 +1,53 @@
+/* ==========================================================================
+   Late global overrides (direction-agnostic — LTR + RTL).
+   Loaded after custom.css/custom.scss so these win the cascade. Kept separate
+   from rtl.css, which holds only RTL (Arabic) direction fixes.
+   ========================================================================== */
+
+/* --- Table action buttons must not clip longer translated labels ------------
+   `.rdt_TableCell` (react-data-table-component, used by <TableView/> across the
+   app) is globally set to `overflow:hidden; white-space:nowrap; text-overflow:
+   clip` to keep tables compact. With longer locales that truncates action
+   controls — e.g. the French "Sélectionner" / "Modifier" buttons or the
+   "Actions" dropdown trigger get cut off. Let any cell that contains an
+   interactive control reveal it fully (action controls sit in the last column,
+   so the extra width is harmless), and keep the control on a single line. --- */
+.rdt_TableCell:has(button),
+.rdt_TableCell:has(.ant-btn),
+.rdt_TableCell:has(a.btn),
+.rdt_TableCell:has([role="button"]),
+.rdt_TableCell:has([class*="dropdown"]),
+.rdt_TableCell:has(.gradient-btn) {
+  overflow: visible !important;
+}
+
+.rdt_TableCell button,
+.rdt_TableCell .ant-btn,
+.rdt_TableCell [role="button"] {
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  width: auto !important;
+  min-width: max-content !important;
+}
+
+/* antd <Table> action cells share the same problem when compact styles apply. */
+.ant-table-cell:has(button),
+.ant-table-cell:has(.ant-btn),
+.ant-table-cell:has([role="button"]) {
+  overflow: visible !important;
+}
+.ant-table-cell button,
+.ant-table-cell .ant-btn {
+  white-space: nowrap !important;
+  min-width: max-content !important;
+}
+
+/* Generic safety net: any button anywhere should size to its (translated)
+   label rather than clip it. Never shrink a button below its content width. */
+button,
+.btn,
+.ant-btn {
+  white-space: nowrap;
+}

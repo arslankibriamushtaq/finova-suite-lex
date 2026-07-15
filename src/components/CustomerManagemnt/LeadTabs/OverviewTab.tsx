@@ -1,7 +1,9 @@
 import React from "react";
 import { Row, Col, Descriptions } from "antd";
+import { useTranslation } from "react-i18next";
 
 const OverviewTab: React.FC = () => {
+  const { t } = useTranslation("customerManagement");
   return (
     <div>
       <Row gutter={24}>
@@ -10,12 +12,12 @@ const OverviewTab: React.FC = () => {
             bordered
             column={1}
             size="small"
-            title="English"
+            title={t("leadTabs.overview.english")}
             style={{ background: "var(--color-surface-ice)", borderRadius: 2 }}
           >
-            <Descriptions.Item label="Lead ID">LD-2025001</Descriptions.Item>
-            <Descriptions.Item label="Status">Active</Descriptions.Item>
-            <Descriptions.Item label="Creation Date">
+            <Descriptions.Item label={t("leadTabs.overview.leadId")}>LD-2025001</Descriptions.Item>
+            <Descriptions.Item label={t("common:status")}>{t("common:active")}</Descriptions.Item>
+            <Descriptions.Item label={t("leadTabs.overview.creationDate")}>
               21 Oct 2025
             </Descriptions.Item>
           </Descriptions>
@@ -26,12 +28,12 @@ const OverviewTab: React.FC = () => {
             bordered
             column={1}
             size="small"
-            title="Arabic"
+            title={t("leadTabs.overview.arabic")}
             style={{ background: "var(--color-surface-ice)", borderRadius: 2 }}
           >
-            <Descriptions.Item label="معرف العميل">LD-2025001</Descriptions.Item>
-            <Descriptions.Item label="الحالة">نشط</Descriptions.Item>
-            <Descriptions.Item label="تاريخ الإنشاء">
+            <Descriptions.Item label={t("leadTabs.overview.leadId")}>LD-2025001</Descriptions.Item>
+            <Descriptions.Item label={t("common:status")}>{t("common:active")}</Descriptions.Item>
+            <Descriptions.Item label={t("leadTabs.overview.creationDate")}>
               21 أكتوبر 2025
             </Descriptions.Item>
           </Descriptions>

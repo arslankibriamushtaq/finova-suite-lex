@@ -14,9 +14,11 @@ import { RootState } from "../../redux/rootReducer";
 import { ErrorMessage, Field, Formik, Form } from "formik";
 import { Modal, Row, Col, ModalHeader, ModalBody } from "react-bootstrap";
 import * as Yup from "yup";
+import { useTranslation } from "react-i18next";
 type FileType = Parameters<GetProp<UploadProps, "beforeUpload">>[0];
 
 const PayInvoice = () => {
+  const { t } = useTranslation("accountingLoans");
   const [invoiceData, setInvoiceData] = useState<any>([]);
   const [showModal, setShowModal] = useState(false);
   const payInvoice = useSelector((state: RootState) => state.block.payInvoices);
@@ -85,15 +87,15 @@ const PayInvoice = () => {
     }
   };
   const validationSchema = Yup.object({
-    paymentMethod: Yup.string().required("Payment Method is required."),
-    payerName: Yup.string().required("Payer Name is required."),
+    paymentMethod: Yup.string().required(t("pay.val.paymentMethodRequired")),
+    payerName: Yup.string().required(t("pay.val.payerNameRequired")),
     chequeNo: Yup.string().when(
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque") {
           return schema
-            .required("Cheque Number is required.")
-            .matches(/^[0-9]+$/, "Cheque Number must be numeric.");
+            .required(t("pay.val.chequeNumberRequired"))
+            .matches(/^[0-9]+$/, t("pay.val.chequeNumberNumeric"));
         }
         return schema.notRequired();
       }
@@ -103,7 +105,7 @@ const PayInvoice = () => {
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque") {
-          return schema.required("Branch Code is required.");
+          return schema.required(t("pay.val.branchCodeRequired"));
         }
         return schema.notRequired();
       }
@@ -113,7 +115,7 @@ const PayInvoice = () => {
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cash") {
-          return schema.required("Receipt Number is required.");
+          return schema.required(t("pay.val.receiptNumberRequired"));
         }
         return schema.notRequired();
       }
@@ -123,7 +125,7 @@ const PayInvoice = () => {
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque" || paymentMethod === "Credit Card") {
-          return schema.required("Bank Name is required.");
+          return schema.required(t("pay.val.bankNameRequired"));
         }
         return schema.notRequired();
       }
@@ -133,7 +135,7 @@ const PayInvoice = () => {
       "paymentMethod",
       (paymentMethod: any, schema) => {
         if (paymentMethod[0] === "Cheque" || paymentMethod === "Credit Card") {
-          return schema.required("Bank Account Number is required.");
+          return schema.required(t("pay.val.bankAccNumberRequired"));
         }
         return schema.notRequired();
       }
@@ -147,20 +149,20 @@ const PayInvoice = () => {
       { value: 4, label: "Prefer_not_to_say" },
     ],
     RepaymentType: [
-      { value: 0, label: "invoice" },
-      { value: 1, label: "Promise" },
+      { value: 0, label: t("pay.optInvoice") },
+      { value: 1, label: t("pay.optPromise") },
     ],
     RepaymentStatus: [
-      { value: 0, label: "Pending" },
-      { value: 1, label: "Approved" },
-      { value: 2, label: "Rejected" },
+      { value: 0, label: t("pay.optPending") },
+      { value: 1, label: t("pay.optApproved") },
+      { value: 2, label: t("pay.optRejected") },
     ],
 
     RepaymentChannel: [
-      { value: 0, label: "Cheque" },
-      { value: 1, label: "Online" },
-      { value: 2, label: "Cash" },
-      { value: 3, label: "Gateway" },
+      { value: 0, label: t("pay.cheque") },
+      { value: 1, label: t("pay.online") },
+      { value: 2, label: t("pay.cash") },
+      { value: 3, label: t("txnHistory.mode.gateway") },
     ],
   };
   const totalInvoiceList = payInvoice?.totalInvoiceList || [];
@@ -170,7 +172,7 @@ const PayInvoice = () => {
         <div className="col-12 d-flex">
           <div className="col-6">
             {" "}
-            <h5>Invoice Template </h5>
+            <h5>{t("payInvoice.template")} </h5>
           </div>
           {/* <div className="col-6 d-flex justify-content-end">
             <Button
@@ -187,7 +189,7 @@ const PayInvoice = () => {
           <div className="col-12 d-flex mt-5 ">
             <div className="col-8">
               <label className="mb-2" style={{ fontSize: "1rem" }}>
-                Invoice No.
+                {t("payInvoice.invoiceNo")}
               </label>
 
               <div className="col-4">
@@ -245,7 +247,7 @@ const PayInvoice = () => {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  From
+                  {t("payInvoice.from")}
                 </label>
                 <span className="">{payInvoice?.from}</span>
               </div>
@@ -256,7 +258,7 @@ const PayInvoice = () => {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Billing To
+                  {t("payInvoice.billingTo")}
                 </label>
                 <span className="">{payInvoice?.billingTo}</span>
               </div>
@@ -270,7 +272,7 @@ const PayInvoice = () => {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Payment Term
+                  {t("payInvoice.paymentTerm")}
                 </label>
                 <span className="">{payInvoice?.paymentTerms}</span>
               </div>
@@ -281,7 +283,7 @@ const PayInvoice = () => {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Ship To
+                  {t("payInvoice.shipTo")}
                 </label>
                 <span className="">{payInvoice?.shipTo}</span>
               </div>
@@ -294,7 +296,7 @@ const PayInvoice = () => {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  PO Number
+                  {t("payInvoice.poNumber")}
                 </label>
                 <span className="">{payInvoice?.poNumber}</span>
               </div>
@@ -305,7 +307,7 @@ const PayInvoice = () => {
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
                 <label className="m-0" style={{ fontWeight: "bold" }}>
-                  Due Date
+                  {t("payInvoice.dueDate")}
                 </label>
                 <span className="">{payInvoice?.dueDate}</span>
                 {/* <DatePickerComponent givenDate={invoiceData?.dueDate} /> */}
@@ -330,7 +332,7 @@ const PayInvoice = () => {
                 className="d-flex justify-content-between align-items-center p-3 mt-2"
                 style={{ backgroundColor: "var(--muted)", borderRadius: "2px" }}
               >
-                <label style={{ fontWeight: "bold" }}>Date</label>
+                <label style={{ fontWeight: "bold" }}>{t("payInvoice.date")}</label>
                 <span className="ms-5">
                 {new Date().toISOString().slice(0, 10)}
                 </span>
@@ -348,7 +350,7 @@ const PayInvoice = () => {
                   color: "var(--foreground)",
                 }}
               >
-                Item
+                {t("payInvoice.item")}
               </div>
               <div
                 className="mb-2 p-3 col-3"
@@ -359,7 +361,7 @@ const PayInvoice = () => {
                   color: "var(--foreground)",
                 }}
               >
-                Amount
+                {t("payInvoice.amount")}
               </div>
               <div
                 className="mb-2 p-3 col-3"
@@ -370,7 +372,7 @@ const PayInvoice = () => {
                   color: "var(--foreground)",
                 }}
               >
-                Discount
+                {t("payInvoice.discount")}
               </div>
               <div
                 className="mb-2 p-3 col-3"
@@ -381,7 +383,7 @@ const PayInvoice = () => {
                   color: "var(--foreground)",
                 }}
               >
-                Discounted Amount
+                {t("payInvoice.discountedAmount")}
               </div>
             </div>
 
@@ -437,7 +439,7 @@ const PayInvoice = () => {
                 </div>
               ))
             ) : (
-              <p>No invoices found</p>
+              <p>{t("payInvoice.noInvoices")}</p>
             )}
           </div>
           <div
@@ -447,7 +449,7 @@ const PayInvoice = () => {
             }}
           >
             <div className="col-6" style={{ fontWeight: 600 }}>
-              Sub Total
+              {t("payInvoice.subTotal")}
             </div>
             <div
               className="col-6 d-flex justify-content-end font-bold"
@@ -466,7 +468,7 @@ const PayInvoice = () => {
                     borderRight: "1px solid var(--border)",
                   }}
                 >
-                  <label style={{ fontWeight: "bold" }}>Tax(%)</label>
+                  <label style={{ fontWeight: "bold" }}>{t("payInvoice.tax")}</label>
                   <span>{invoiceData?.tax || "0.00"}</span>
                 </div>
               </div>
@@ -479,7 +481,7 @@ const PayInvoice = () => {
                   }}
                 >
                   <label className="m-0" style={{ fontWeight: "bold" }}>
-                    Shipping
+                    {t("payInvoice.shipping")}
                   </label>
                   <span className="">{invoiceData?.shipping || "0.00"}</span>
                 </div>
@@ -519,7 +521,7 @@ const PayInvoice = () => {
                 background: themeStyle.gradientBackgroundColor,
               }}
             >
-              <label style={{ fontWeight: 500 }}>Total</label>
+              <label style={{ fontWeight: 500 }}>{t("payInvoice.total")}</label>
               <div
                 className=" font-bold"
                 style={{
@@ -550,7 +552,7 @@ const PayInvoice = () => {
             setShowModal(true);
           }}
         >
-          Pay invoice
+          {t("payInvoice.payInvoice")}
         </Button>
       </div>
       <Modal show={showModal} size="lg" centered>
@@ -560,7 +562,7 @@ const PayInvoice = () => {
             setShowModal(false);
           }}
         >
-          <Modal.Title>Pay Invoice Manually</Modal.Title>
+          <Modal.Title>{t("pay.title")}</Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{
@@ -632,7 +634,7 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Invoice No.
+                      {t("pay.invoiceNo")}
                     </label>
                     <Field name="invoiceNumber" className="form-control" />
                   </Col>
@@ -642,7 +644,7 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Amount
+                      {t("pay.amount")}
                     </label>
                     <Field name="totalAmount" className="form-control" />
                   </Col>
@@ -655,17 +657,17 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Payment Method <span className="text-danger">*</span>
+                      {t("pay.paymentMethod")} <span className="text-danger">*</span>
                     </label>
                     <Field
                       as="select"
                       name="paymentMethod"
                       className="form-control"
                     >
-                      <option label="Select Payment Method" value="" />
-                      <option value="Cheque">Cheque</option>
-                      <option value="Credit Card">Online</option>
-                      <option selected value="Cash">Cash</option>
+                      <option label={t("pay.selectPaymentMethod")} value="" />
+                      <option value="Cheque">{t("pay.cheque")}</option>
+                      <option value="Credit Card">{t("pay.online")}</option>
+                      <option selected value="Cash">{t("pay.cash")}</option>
                     </Field>
                     <ErrorMessage
                       name="paymentMethod"
@@ -679,7 +681,7 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Due Date
+                      {t("pay.dueDate")}
                     </label>
                     <Field
                       name="dueDate"
@@ -697,13 +699,13 @@ const PayInvoice = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Cheque Number <span className="text-danger">*</span>
+                          {t("pay.chequeNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="chequeNo"
                           className="form-control"
-                          placeholder="Cheque Num..."
+                          placeholder={t("pay.chequeNumPlaceholder")}
                         />
                         <ErrorMessage
                           name="chequeNo"
@@ -717,13 +719,13 @@ const PayInvoice = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Branch Code <span className="text-danger">*</span>
+                          {t("pay.branchCode")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="branchCode"
                           className="form-control"
-                          placeholder="Branch Code"
+                          placeholder={t("pay.branchCode")}
                         />
                         <ErrorMessage
                           name="branchCode"
@@ -739,13 +741,13 @@ const PayInvoice = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Name <span className="text-danger">*</span>
+                          {t("pay.bankName")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankName"
                           className="form-control"
-                          placeholder="Bank Name"
+                          placeholder={t("pay.bankName")}
                         />
                         <ErrorMessage
                           name="bankName"
@@ -759,13 +761,13 @@ const PayInvoice = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Acc Number <span className="text-danger">*</span>
+                          {t("pay.bankAccNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankAccNumber"
                           className="form-control"
-                          placeholder="Bank Account Number"
+                          placeholder={t("pay.bankAccountNumber")}
                         />
                         <ErrorMessage
                           name="bankAccNumber"
@@ -784,13 +786,13 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Payer Name <span className=" text-danger">*</span>
+                      {t("pay.payerName")} <span className=" text-danger">*</span>
                     </label>
                     <Field
                       as="input"
                       name="payerName"
                       className="form-control"
-                      placeholder="Payer Name"
+                      placeholder={t("pay.payerName")}
                     />
                     <ErrorMessage
                       name="payerName"
@@ -804,14 +806,14 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Repayment Types
+                      {t("pay.repaymentTypes")}
                     </label>
                     <Field
                       as="select"
                       name="repaymentTypes"
                       className="form-control"
                     >
-                      <option label="Select Type" value="" />
+                      <option label={t("pay.selectType")} value="" />
                       {enums.RepaymentType.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -834,13 +836,13 @@ const PayInvoice = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Name <span className="text-danger">*</span>
+                          {t("pay.bankName")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankName"
                           className="form-control"
-                          placeholder="Bank Name"
+                          placeholder={t("pay.bankName")}
                         />
                         <ErrorMessage
                           name="bankName"
@@ -854,13 +856,13 @@ const PayInvoice = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Bank Acc Number <span className="text-danger">*</span>
+                          {t("pay.bankAccNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="bankAccNumber"
                           className="form-control"
-                          placeholder="Bank Account Number"
+                          placeholder={t("pay.bankAccountNumber")}
                         />
                         <ErrorMessage
                           name="bankAccNumber"
@@ -879,10 +881,10 @@ const PayInvoice = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Status
+                      {t("pay.status")}
                     </label>
                     <Field as="select" name="Status" className="form-control">
-                      <option label="Set Status" value="" />
+                      <option label={t("pay.setStatus")} value="" />
                       {enums.RepaymentStatus.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -923,13 +925,13 @@ const PayInvoice = () => {
                           className="mb-2 "
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Receipt Number <span className="text-danger">*</span>
+                          {t("pay.receiptNumber")} <span className="text-danger">*</span>
                         </label>
                         <Field
                           as="input"
                           name="receiptNumber"
                           className="form-control"
-                          placeholder="Receipt Number"
+                          placeholder={t("pay.receiptNumber")}
                         />
                         <ErrorMessage
                           name="receiptNumber"
@@ -947,7 +949,7 @@ const PayInvoice = () => {
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Document
+                        {t("pay.document")}
                       </label>
                       <br />
                       {/* {!fileName ? (
@@ -1020,7 +1022,7 @@ const PayInvoice = () => {
                       borderRadius: "2px",
                     }}
                   >
-                    Submit
+                    {t("common:submit")}
                   </button>
                 </div>
               </Form>

@@ -12,8 +12,10 @@ import { verifyBusiness, verifyEmail } from "../../redux/apis/apisCrudFactoring"
 import { uploadStepDocuments } from "../../utils/uploadStepDocuments";
 import { setUserId, setBusinessDetails } from "../../redux/apis/apisSlice";
 import RequiredDocFields from "./RequiredDocFields";
+import { useTranslation } from "react-i18next";
 
 const BusinessDetails = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -80,7 +82,7 @@ const BusinessDetails = () => {
   const handleSubmit = async () => {
     const productId = getProductId();
     if (!productId) {
-      toast.error("Please select a product.");
+      toast.error(t("business.toast.selectProduct"));
       return;
     }
 
@@ -113,7 +115,7 @@ const BusinessDetails = () => {
 
       const res = await verifyBusiness(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "Business verification failed.");
+        toast.error(res?.data?.message || t("business.toast.verifyFailed"));
         return;
       }
 
@@ -134,11 +136,11 @@ const BusinessDetails = () => {
       };
       const emailRes = await verifyEmail(emailBody);
       if (!emailRes?.data?.success) {
-        toast.error(emailRes?.data?.message || "Email verification failed.");
+        toast.error(emailRes?.data?.message || t("business.toast.emailFailed"));
         return;
       }
 
-      toast.success(emailRes?.data?.message || "Email verification successful.");
+      toast.success(emailRes?.data?.message || t("business.toast.emailSuccess"));
 
       // 4) Move to OTP screen
       navigate("/applyloan/otpVerification", {
@@ -146,7 +148,7 @@ const BusinessDetails = () => {
       });
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || error?.message || "Something went wrong!");
+      toast.error(error?.response?.data?.message || error?.message || t("common.somethingWentWrong"));
     } finally {
       setLoading(false);
     }
@@ -159,16 +161,16 @@ const BusinessDetails = () => {
         <Row className="mt-2 mb-4">
           <Col md={12}>
             <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-              Product
+              {t("business.product.label")}
             </label>
             <Select
-              placeholder="Select Product"
+              placeholder={t("business.product.placeholder")}
               className="w-100"
               value={"13"}
               onChange={(value) => setFormData({ ...formData, partner_id: value })}
               style={{ height: "38px" }}
             >
-              <Select.Option value="13">Invoice Factoring</Select.Option>
+              <Select.Option value="13">{t("business.product.invoiceFactoring")}</Select.Option>
             </Select>
           </Col>
         </Row>
@@ -177,16 +179,16 @@ const BusinessDetails = () => {
         <div className="mb-4">
           <h5 className="mb-3 d-flex align-items-center" style={{ color: "#1963b9", fontWeight: 600 }}>
             <FaTruck className="me-2" size={20} />
-            Supplier Information
+            {t("business.supplier.title")}
           </h5>
           
           <Row className="mb-3">
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Company UNN
+                {t("business.field.companyUnn")}
               </label>
               <Input
-                placeholder="Enter Company UNN"
+                placeholder={t("business.field.companyUnn.placeholder")}
                 className="form-control"
                 value={formData.supplier_company_unn}
                 onChange={(e) => setFormData((p) => ({ ...p, supplier_company_unn: e.target.value }))}
@@ -195,10 +197,10 @@ const BusinessDetails = () => {
 
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Email
+                {t("common:email")}
               </label>
               <Input
-                placeholder="Enter Email"
+                placeholder={t("business.field.email.placeholder")}
                 className="form-control"
                 type="email"
                 value={formData.supplier_email}
@@ -210,10 +212,10 @@ const BusinessDetails = () => {
           <Row className="mb-3">
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                National Id
+                {t("business.field.nationalId")}
               </label>
               <Input
-                placeholder="Enter National ID"
+                placeholder={t("business.field.nationalId.placeholder")}
                 className="form-control"
                 value={formData.supplier_national_id}
                 onChange={(e) => setFormData((p) => ({ ...p, supplier_national_id: e.target.value }))}
@@ -222,10 +224,10 @@ const BusinessDetails = () => {
 
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Date of Birth
+                {t("business.field.dob")}
               </label>
               <DatePicker
-                placeholder="Select Date"
+                placeholder={t("business.field.dob.placeholder")}
                 className="form-control w-100"
                 format="YYYY-MM-DD"
                 value={formData.supplier_dob ? dayjs(formData.supplier_dob) : null}
@@ -237,7 +239,7 @@ const BusinessDetails = () => {
           <Row className="mb-3">
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Mobile Number
+                {t("business.field.mobile")}
               </label>
               <div className="d-flex">
                 <Input
@@ -248,7 +250,7 @@ const BusinessDetails = () => {
                   readOnly
                 />
                 <Input
-                  placeholder="Enter Mobile Number"
+                  placeholder={t("business.field.mobile.placeholder")}
                   className="form-control"
                   value={formData.supplier_mobile_no}
                   onChange={(e) => setFormData((p) => ({ ...p, supplier_mobile_no: e.target.value }))}
@@ -262,16 +264,16 @@ const BusinessDetails = () => {
         <div className="mb-4">
           <h5 className="mb-3 d-flex align-items-center" style={{ color: "#1963b9", fontWeight: 600 }}>
             <FaShoppingCart className="me-2" size={20} />
-            Buyer Information
+            {t("business.buyer.title")}
           </h5>
           
           <Row className="mb-3">
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Company UNN
+                {t("business.field.companyUnn")}
               </label>
               <Input
-                placeholder="Enter Company UNN"
+                placeholder={t("business.field.companyUnn.placeholder")}
                 className="form-control"
                 value={formData.buyer_company_unn}
                 onChange={(e) => setFormData((p) => ({ ...p, buyer_company_unn: e.target.value }))}
@@ -280,10 +282,10 @@ const BusinessDetails = () => {
 
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Email
+                {t("common:email")}
               </label>
               <Input
-                placeholder="Enter Email"
+                placeholder={t("business.field.email.placeholder")}
                 className="form-control"
                 type="email"
                 value={formData.buyer_email}
@@ -295,10 +297,10 @@ const BusinessDetails = () => {
           <Row className="mb-3">
             <Col md={6}>
               <label className="mb-1" style={{ fontWeight: 500 }}>
-                National Id
+                {t("business.field.nationalId")}
               </label>
               <Input
-                placeholder="Enter National ID"
+                placeholder={t("business.field.nationalId.placeholder")}
                 className="form-control"
                 value={formData.buyer_national_id}
                 onChange={(e) => setFormData((p) => ({ ...p, buyer_national_id: e.target.value }))}
@@ -307,10 +309,10 @@ const BusinessDetails = () => {
 
             <Col md={6}>
               <label className="mb-1" style={{ fontWeight: 500 }}>
-                Date of Birth
+                {t("business.field.dob")}
               </label>
               <DatePicker
-                placeholder="Select Date"
+                placeholder={t("business.field.dob.placeholder")}
                 className="form-control w-100"
                 format="YYYY-MM-DD"
                 value={formData.buyer_dob ? dayjs(formData.buyer_dob) : null}
@@ -322,7 +324,7 @@ const BusinessDetails = () => {
           <Row className="mb-3">
             <Col md={6}>
               <label className="mb-1 required-asterisk" style={{ fontWeight: 500 }}>
-                Mobile Number
+                {t("business.field.mobile")}
               </label>
               <div className="d-flex">
                 <Input
@@ -333,7 +335,7 @@ const BusinessDetails = () => {
                   readOnly
                 />
                 <Input
-                  placeholder="Enter Mobile Number"
+                  placeholder={t("business.field.mobile.placeholder")}
                   className="form-control"
                   value={formData.buyer_mobile_no}
                   onChange={(e) => setFormData((p) => ({ ...p, buyer_mobile_no: e.target.value }))}
@@ -360,7 +362,7 @@ const BusinessDetails = () => {
             state: { businessFormData: formData }
           })}
         >
-          Previous
+          {t("common:previous")}
         </button>
 
         <button
@@ -379,7 +381,7 @@ const BusinessDetails = () => {
             handleSubmit();
           }}
         >
-          {loading ? "Submitting..." : "Next Step"}
+          {loading ? t("action.submitting") : t("action.nextStep")}
         </button>
       </div>
     </>

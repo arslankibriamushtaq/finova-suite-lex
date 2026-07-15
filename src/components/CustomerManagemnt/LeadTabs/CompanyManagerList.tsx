@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Button,
@@ -31,6 +32,7 @@ import toast from "react-hot-toast";
 import arrowDown from "../../../assets/images/arrow-down.png";
 
 const CompanyManagerList = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -72,14 +74,14 @@ const CompanyManagerList = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -97,27 +99,27 @@ const CompanyManagerList = () => {
       // sortable: true,
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "NID    ",
+      name: t("companyManager.col.nid"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
      {
-      name: "Relation",
+      name: t("companyManager.col.relation"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "DOB",
+      name: t("companyManager.col.dob"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Nationality",
+      name: t("companyManager.col.nationality"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
@@ -128,13 +130,13 @@ const CompanyManagerList = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteCommodityType(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("companyManager.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("common:deletedSuccessfully");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("companyManager.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -151,37 +153,37 @@ const CompanyManagerList = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateCommodityType(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("companyManager.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
               name: "",
-              status: 0 
+              status: 0
              });
             getList();
-            return "Updated successfully";
+            return t("common:updatedSuccessfully");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("companyManager.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createCommodityType(body), {
-          loading: "Adding finance purpose...",
+          loading: t("companyManager.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
                 name: "",
-                status: 0 
+                status: 0
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("companyManager.toast.addSuccess");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("companyManager.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -228,7 +230,7 @@ const CompanyManagerList = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -244,7 +246,7 @@ const CompanyManagerList = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -263,7 +265,7 @@ const CompanyManagerList = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("common:search")}
               />
             </div>
 
@@ -272,13 +274,13 @@ const CompanyManagerList = () => {
               onClick={() => {
                 setShowModal(true);
                 setSelectedItem("add");
-                setFormData({ 
+                setFormData({
                   name: "",
-                  status: 0 
+                  status: 0
                 });
               }}
             >
-              Add New Record
+              {t("companyManager.addNew")}
             </button>
           </div>
         </div>
@@ -300,13 +302,13 @@ const CompanyManagerList = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("companyManager.modal.editTitle") : t("companyManager.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -316,7 +318,7 @@ const CompanyManagerList = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -324,11 +326,11 @@ const CompanyManagerList = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={24}>
-                <label className="fw-400">Minimum Amount</label>
+                <label className="fw-400">{t("companyManager.form.minimumAmount")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("companyManager.form.enterName")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -337,26 +339,26 @@ const CompanyManagerList = () => {
                 </Col>
                 {selectedItem != "edit" && (
                   <Col className = "px-2" md={24}>
-                    <label className="fw-400">Range</label>
+                    <label className="fw-400">{t("companyManager.form.range")}</label>
                     <Select
                       className="fs-6"
-                      placeholder="Select type"
+                      placeholder={t("companyManager.form.selectType")}
                       value={formData.status}
                       onChange={(e: any) =>
                         setFormData({ ...formData, status: e})
                       }
                     >
-                      <option value = {1}>True</option> 
-                      <option value = {0}>False</option>      
+                      <option value = {1}>{t("companyManager.form.true")}</option>
+                      <option value = {0}>{t("companyManager.form.false")}</option>
                     </Select>
                   </Col>
                 )}
                 <Col className="px-2" md={24}>
-                <label className="fw-400">Maximum Amount</label>
+                <label className="fw-400">{t("companyManager.form.maximumAmount")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("companyManager.form.enterName")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -374,14 +376,14 @@ const CompanyManagerList = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("companyManager.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("companyManager.modal.addTitle")
+              : t("companyManager.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -390,17 +392,17 @@ const CompanyManagerList = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("companyManager.confirm.update")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("companyManager.confirm.add")
+                : t("companyManager.confirm.delete")
             }`}
           </Form>
         </Modal>

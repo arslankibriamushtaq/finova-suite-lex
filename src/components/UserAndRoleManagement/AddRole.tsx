@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReactECharts from "echarts-for-react";
 import icon from "../../assets/images/Vector-11.png";
 import circle from "../../assets/images/circle-icon.png";
@@ -49,11 +50,31 @@ const data1 = [
   },
 ];
 const AddRole = () => {
+  const { t } = useTranslation("adminMisc");
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [status, setStatus] = useState("Manager");
   const handleStatusChange = (value: string) => {
     setStatus(value);
+  };
+  const groupLabelKey: Record<string, string> = {
+    "Manage Customers": "addRole.group.manageCustomers",
+    "Manage Complaints": "addRole.group.manageComplaints",
+    "Manage Complaints Types": "addRole.group.manageComplaintsTypes",
+    "Account Status": "addRole.group.accountStatus",
+  };
+  const permLabelKey: Record<string, string> = {
+    "view customer": "addRole.perm.viewCustomer",
+    "view customer detail": "addRole.perm.viewCustomerDetail",
+    "view complain": "addRole.perm.viewComplain",
+    "edit complain": "addRole.perm.editComplain",
+    "show all complain": "addRole.perm.showAllComplain",
+    "show assigned complain": "addRole.perm.showAssignedComplain",
+    "show generated complain": "addRole.perm.showGeneratedComplain",
+    "view complain_type": "addRole.perm.viewComplainType",
+    "edit complain_type": "addRole.perm.editComplainType",
+    "delete complain_type": "addRole.perm.deleteComplainType",
+    "create complain_type": "addRole.perm.createComplainType",
   };
   const customerDetails = [
     {
@@ -241,21 +262,21 @@ const AddRole = () => {
     <div className="service ps-3">
       <div className="custom-mod">
         <div className="cust-drop col-4">
-          <label>Role Name</label>
+          <label>{t("addRole.roleName")}</label>
           <Select
             defaultValue="Manager"
             style={{ width: "100%", marginTop: "10px" }}
             onChange={handleStatusChange}
           >
-            <Option value="Manager">Manager</Option>
-            <Option value="Inactive">Inactive</Option>
-            <Option value="Pending">Pending</Option>
+            <Option value="Manager">{t("addRole.status.manager")}</Option>
+            <Option value="Inactive">{t("addRole.status.inactive")}</Option>
+            <Option value="Pending">{t("addRole.status.pending")}</Option>
           </Select>
-          <p className="edit-mod">Edit modal content</p>
+          <p className="edit-mod">{t("addRole.editModalContent")}</p>
         </div>
       </div>
       <div className="service">
-        <div className="theme-heading">Assign Permission to the Role</div>
+        <div className="theme-heading">{t("addRole.assignPermission")}</div>
         <div className="mt-3">
           <div className="d-flex flex-wrap">
             {customerDetails.map((detail, index) => (
@@ -267,11 +288,15 @@ const AddRole = () => {
                   className="profile-sec w-100"
                   style={{ height: "-webkit-fill-available" }}
                 >
-                  <p className="role-label">{detail.label}</p>
+                  <p className="role-label">
+                    {groupLabelKey[detail.label] ? t(groupLabelKey[detail.label]) : detail.label}
+                  </p>
                   <div>
                     {detail?.Menu?.map((detail, index) => (
                       <div>
-                        <Checkbox>{detail?.label}</Checkbox>
+                        <Checkbox>
+                          {permLabelKey[detail?.label] ? t(permLabelKey[detail.label]) : detail?.label}
+                        </Checkbox>
                       </div>
                     ))}
                   </div>
@@ -282,8 +307,8 @@ const AddRole = () => {
         </div>
       </div>
       <div className="d-flex gap-2 justify-content-end pt-2 pb-4">
-        <button className="invoice-btn">Close</button>
-        <button className="theme-btn">Create Role</button>
+        <button className="invoice-btn">{t("common:close")}</button>
+        <button className="theme-btn">{t("addRole.createRole")}</button>
       </div>
     </div>
   );

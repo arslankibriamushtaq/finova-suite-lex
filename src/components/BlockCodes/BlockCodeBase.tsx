@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Button, Modal, Form, Input, Switch, Dropdown, Menu, Select } from "antd";
 import { EditOutlined, DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { Plus, type LucideIcon } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { Button as UIButton } from "../ui/button";
 import arrowDown from "../../assets/images/arrow-down.png";
@@ -21,6 +22,7 @@ interface BlockCodeBaseProps {
 }
 
 const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeBaseProps) => {
+  const { t } = useTranslation("walletBlocks");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -44,14 +46,14 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -71,17 +73,17 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
 
   const columns = [
     {
-      name: "Sr:",
+      name: t("blockCodes.col.sr"),
       selector: (row: any) => row.sr,
       sortable: true,
     },
     {
-      name: "Code",
+      name: t("blockCodes.col.code"),
       selector: (row: any) => row.code,
       sortable: true,
     },
     {
-      name: "Description",
+      name: t("blockCodes.col.description"),
       selector: (row: any) => row.description,
       sortable: true,
       cell: (row: any) => (
@@ -91,21 +93,21 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
       ),
     },
     {
-      name: "Type",
+      name: t("blockCodes.col.type"),
       selector: (row: any) => row.type,
       sortable: true,
       cell: (row: any) => {
         const typeLabels: any = {
-          COMPLIANCE: "Compliance",
-          AML: "AML",
-          ANTI_FRAUD: "Anti-Fraud",
-          SANCTION: "Sanction",
+          COMPLIANCE: t("blockCodes.type.compliance"),
+          AML: t("blockCodes.type.aml"),
+          ANTI_FRAUD: t("blockCodes.type.antiFraud"),
+          SANCTION: t("blockCodes.type.sanction"),
         };
         return <span>{typeLabels[row.type] || row.type}</span>;
       },
     },
     {
-      name: "Status",
+      name: t("blockCodes.col.status"),
       cell: (row: any) => (
         <span
           style={{
@@ -116,12 +118,12 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
             fontSize: "12px",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </span>
       ),
     },
     {
-      name: "Actions",
+      name: t("blockCodes.col.actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -135,7 +137,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("blockCodes.select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -184,7 +186,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
       setTo(start + paged.length);
       setTotalPage(Math.ceil(total / pageSize));
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch data");
+      toast.error(error?.message || t("blockCodes.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -196,11 +198,11 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
 
   // Get placeholder based on type
   const getCodePlaceholder = () => {
-    if (defaultType === 'COMPLIANCE') return 'e.g., COMP001';
-    if (defaultType === 'AML') return 'e.g., AML001';
-    if (defaultType === 'ANTI_FRAUD') return 'e.g., FRAUD001';
-    if (defaultType === 'SANCTION') return 'e.g., SANCT001';
-    return 'e.g., COMP001, AML001, FRAUD001, SANCT001';
+    if (defaultType === 'COMPLIANCE') return t("blockCodes.ph.compliance");
+    if (defaultType === 'AML') return t("blockCodes.ph.aml");
+    if (defaultType === 'ANTI_FRAUD') return t("blockCodes.ph.antiFraud");
+    if (defaultType === 'SANCTION') return t("blockCodes.ph.sanction");
+    return t("blockCodes.ph.default");
   };
 
   const handleAdd = () => {
@@ -227,7 +229,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
   };
 
   const handleDelete = async (_id: number) => {
-    toast.error("Delete is not supported for block codes.");
+    toast.error(t("blockCodes.toast.deleteUnsupported"));
   };
 
   const handleSubmit = async (values: any) => {
@@ -246,12 +248,12 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
           type: values.type,
         });
       }
-      toast.success(editMode ? "Updated successfully" : "Created successfully");
+      toast.success(editMode ? t("blockCodes.toast.updated") : t("blockCodes.toast.created"));
       setIsModalVisible(false);
       form.resetFields();
       fetchData();
     } catch (error: any) {
-      toast.error(error?.message || "Operation failed");
+      toast.error(error?.message || t("blockCodes.toast.opFailed"));
     } finally {
       setLoading(false);
     }
@@ -281,7 +283,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by code or description"
+            placeholder={t("blockCodes.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e) => {
@@ -293,28 +295,28 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
 
           {defaultType === "" && (
             <Select
-              placeholder="Type"
+              placeholder={t("blockCodes.typePlaceholder")}
               allowClear
               value={type || undefined}
               onChange={(value) => setType(value || "")}
               style={{ width: 160, height: 40 }}
             >
-              <Select.Option value="COMPLIANCE">Compliance</Select.Option>
-              <Select.Option value="AML">AML</Select.Option>
-              <Select.Option value="ANTI_FRAUD">Anti-Fraud</Select.Option>
-              <Select.Option value="SANCTION">Sanction</Select.Option>
+              <Select.Option value="COMPLIANCE">{t("blockCodes.type.compliance")}</Select.Option>
+              <Select.Option value="AML">{t("blockCodes.type.aml")}</Select.Option>
+              <Select.Option value="ANTI_FRAUD">{t("blockCodes.type.antiFraud")}</Select.Option>
+              <Select.Option value="SANCTION">{t("blockCodes.type.sanction")}</Select.Option>
             </Select>
           )}
 
           <Select
-            placeholder="Status"
+            placeholder={t("blockCodes.statusPlaceholder")}
             allowClear
             value={status || undefined}
             onChange={(value) => setStatus(value || "")}
             style={{ width: 140, height: 40 }}
           >
-            <Select.Option value="1">Active</Select.Option>
-            <Select.Option value="0">Inactive</Select.Option>
+            <Select.Option value="1">{t("common:active")}</Select.Option>
+            <Select.Option value="0">{t("common:inactive")}</Select.Option>
           </Select>
 
           <UIButton
@@ -323,7 +325,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
             style={{ flexShrink: 0, height: 40 }}
           >
             <Plus className="h-4 w-4" />
-            Add New
+            {t("blockCodes.addNew")}
           </UIButton>
         </div>
       </div>
@@ -353,7 +355,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
       </div>
 
       <Modal
-        title={editMode ? "Edit Block Code" : "Add New Block Code"}
+        title={editMode ? t("blockCodes.modal.editTitle") : t("blockCodes.modal.addTitle")}
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -371,7 +373,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
               form.resetFields();
             }}
           >
-            Cancel
+            {t("common:cancel")}
           </Button>,
           <Button
             key="submit"
@@ -379,7 +381,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
             loading={loading}
             onClick={() => form.submit()}
           >
-            {editMode ? "Update" : "Create"}
+            {editMode ? t("common:update") : t("common:create")}
           </Button>,
         ]}
       >
@@ -390,39 +392,38 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
           initialValues={{ status: true, type: defaultType || undefined }}
         >
           <Form.Item
-            label="Code"
+            label={t("blockCodes.form.code")}
             name="code"
             rules={[
-              { required: true, message: "Please enter block code" },
+              { required: true, message: t("blockCodes.valid.codeRequired") },
               {
                 pattern: /^[A-Z0-9_]+$/,
-                message:
-                  "Code must contain only uppercase letters, numbers, and underscores",
+                message: t("blockCodes.valid.codePattern"),
               },
             ]}
           >
             <Input placeholder={getCodePlaceholder()} />
           </Form.Item>
 
-          <Form.Item label="Description" name="description">
-            <TextArea rows={4} placeholder="Enter description (optional)" />
+          <Form.Item label={t("blockCodes.form.description")} name="description">
+            <TextArea rows={4} placeholder={t("blockCodes.descPlaceholder")} />
           </Form.Item>
 
           <Form.Item
-            label="Type"
+            label={t("blockCodes.form.type")}
             name="type"
-            rules={[{ required: true, message: "Please select type" }]}
+            rules={[{ required: true, message: t("blockCodes.valid.typeRequired") }]}
           >
-            <Select placeholder="Select type" disabled={!!defaultType}>
-              <Select.Option value="COMPLIANCE">Compliance</Select.Option>
-              <Select.Option value="AML">AML</Select.Option>
-              <Select.Option value="ANTI_FRAUD">Anti-Fraud</Select.Option>
-              <Select.Option value="SANCTION">Sanction</Select.Option>
+            <Select placeholder={t("blockCodes.typeSelectPlaceholder")} disabled={!!defaultType}>
+              <Select.Option value="COMPLIANCE">{t("blockCodes.type.compliance")}</Select.Option>
+              <Select.Option value="AML">{t("blockCodes.type.aml")}</Select.Option>
+              <Select.Option value="ANTI_FRAUD">{t("blockCodes.type.antiFraud")}</Select.Option>
+              <Select.Option value="SANCTION">{t("blockCodes.type.sanction")}</Select.Option>
             </Select>
           </Form.Item>
 
-          <Form.Item label="Status" name="status" valuePropName="checked">
-            <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+          <Form.Item label={t("blockCodes.form.status")} name="status" valuePropName="checked">
+            <Switch checkedChildren={t("blockCodes.switch.active")} unCheckedChildren={t("blockCodes.switch.inactive")} />
           </Form.Item>
         </Form>
       </Modal>

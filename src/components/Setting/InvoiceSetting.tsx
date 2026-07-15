@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Input, Button, Select, message } from "antd";
 import { GetCompanyData,GetVatNumberData, updateCompanyData, updateVatNumber } from "../../redux/apis/apisCrudLms";
 import Loader from "../Loader/Loader";
@@ -6,6 +7,7 @@ import Loader from "../Loader/Loader";
 const { Option } = Select;
 
 function InvoiceSetting() {
+  const { t } = useTranslation("settings");
   const [form] = Form.useForm();
   const [vatData,setVatData]= useState<any>([]);
   const [companyData,setCompanyData]= useState<any>([]);
@@ -68,13 +70,13 @@ if (data.length > 0) {
       const invoiceResponse = await updateVatNumber(invoicePayload)
 
       if (!companyResponse?.data?.success || !invoiceResponse?.data?.success) {
-        throw new Error("One of the APIs failed");
+        throw new Error(t("invoice.toast.apiFailed"));
       }
 
-      message.success("Invoice settings saved successfully!");
+      message.success(t("invoice.toast.saved"));
       // form.resetFields();
     } catch (error: any) {
-      message.error(error.message || "Something went wrong!");
+      message.error(error.message || t("invoice.toast.failed"));
     }
   };
 
@@ -90,31 +92,31 @@ if (data.length > 0) {
         <div className="row">
           <div className="col-6">
             <Form.Item
-              label="Company Name"
+              label={t("invoice.field.companyName")}
               name="CompanyName"
-              rules={[{ required: true, message: "Please enter company name" }]}
+              rules={[{ required: true, message: t("invoice.val.companyName") }]}
             >
-              <Input 
+              <Input
                 style={{height:'40px'}}
-               placeholder="Enter company name" />
+               placeholder={t("invoice.ph.companyName")} />
             </Form.Item>
           </div>
           <div className="col-6">
             <Form.Item
-              label="Address"
+              label={t("invoice.field.address")}
               name="Address"
-              rules={[{ required: true, message: "Please enter address" }]}
+              rules={[{ required: true, message: t("invoice.val.address") }]}
             >
-              <Input style={{height:'40px'}} placeholder="Enter address" />
+              <Input style={{height:'40px'}} placeholder={t("invoice.ph.address")} />
             </Form.Item>
           </div>
         </div>
         <div className="row">
           <div className="col-6">
             <Form.Item
-              label="Type"
+              label={t("common:type")}
               name="type"
-              rules={[{ required: true, message: "Please select type" }]}
+              rules={[{ required: true, message: t("invoice.val.type") }]}
             >
               <Select>
                 <Option value="B2C">B2C</Option>
@@ -125,26 +127,26 @@ if (data.length > 0) {
           <div className="col-6">
             {" "}
             <Form.Item
-              label="VAT Number"
+              label={t("invoice.field.vatNumber")}
               name="vatNumber"
-              rules={[{ required: true, message: "Please enter VAT number" }]}
+              rules={[{ required: true, message: t("invoice.val.vatNumber") }]}
             >
-              <Input style={{height:'40px'}} placeholder="Enter VAT number" />
+              <Input style={{height:'40px'}} placeholder={t("invoice.ph.vatNumber")} />
             </Form.Item>
           </div>
         </div>
 
         <Form.Item
-          label="Description"
+          label={t("common:description")}
           name="description"
         //   rules={[{ required: true, message: "Please enter description" }]}
         >
-          <Input.TextArea rows={3} placeholder="Enter description" />
+          <Input.TextArea rows={3} placeholder={t("invoice.ph.description")} />
         </Form.Item>
 
         <Form.Item className="d-flex justify-content-end">
           <Button type="primary" htmlType="submit" className="application-btn">
-            Save Settings
+            {t("invoice.saveSettings")}
           </Button>
         </Form.Item>
       </Form>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Select } from "antd";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import TableView from "../../TableView/TableView";
@@ -12,6 +13,7 @@ import autoTable from "jspdf-autotable";
 import { max } from "moment";
 
 const SystemAudit = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -24,38 +26,38 @@ const SystemAudit = () => {
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "User Name",
+      name: t("logs.userName"),
       selector: (row: { user_agent: any }) => row.user_agent,
       sortable: true,
     },
     {
-      name: "Event",
+      name: t("logs.event"),
       selector: (row: { event: any }) => row.event,
       sortable: true,
     },
     {
-      name: "Auditable Type",
+      name: t("logs.auditableType"),
       selector: (row: { auditable_type: any }) => row.auditable_type,
       sortable: true,
     },
     {
-      name: "URL",
+      name: t("logs.url"),
       selector: (row: { url: any }) => row.url,
       sortable: true,
       maxWidth: "200px",
     },
     {
-      name: "IP Address",
+      name: t("logs.ipAddress"),
       selector: (row: { ip_address: any }) => row.ip_address,
       sortable: true,
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
     },
@@ -110,13 +112,13 @@ const SystemAudit = () => {
     const doc = new jsPDF();
 
     const tableColumn = [
-      "Sr",
-      "User Name",
-      "Event",
-      "Auditable Type",
-      "URL",
-      "IP Address",
-      "Created At",
+      t("shared.sr"),
+      t("logs.userName"),
+      t("logs.event"),
+      t("logs.auditableType"),
+      t("logs.url"),
+      t("logs.ipAddress"),
+      t("common:createdAt"),
     ];
 
     const tableRows = mappedData?.map((item: any) => [
@@ -145,7 +147,7 @@ const SystemAudit = () => {
         <Select
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
         />
@@ -161,12 +163,12 @@ const SystemAudit = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
 
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -174,9 +176,9 @@ const SystemAudit = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
         </div>
       </div>
 

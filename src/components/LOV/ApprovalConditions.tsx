@@ -34,6 +34,7 @@ import {
   SelectValue,
 } from "../ui/select";
 import { Badge } from "../ui/badge";
+import { useTranslation } from "react-i18next";
 
 interface ApprovalFieldDefinition {
   id?: string;
@@ -46,6 +47,7 @@ interface ApprovalFieldDefinition {
 }
 
 const ApprovalConditions = () => {
+  const { t } = useTranslation("lov");
   const [conditions, setConditions] = useState<ApprovalFieldDefinition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -102,7 +104,7 @@ const ApprovalConditions = () => {
         setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch approval conditions");
+      toast.error(error?.response?.data?.message || t("approvalConditions.toast.fetchFailed"));
       setConditions([]);
     } finally {
       setIsLoading(false);
@@ -116,7 +118,7 @@ const ApprovalConditions = () => {
   // Handle Create Submit
   const handleCreateSubmit = async () => {
     if (!createFormData.fieldKey.trim() || !createFormData.nameEn.trim() || !createFormData.nameAr.trim()) {
-      toast.error("All fields are required");
+      toast.error(t("approvalConditions.validation.allRequired"));
       return;
     }
 
@@ -132,7 +134,7 @@ const ApprovalConditions = () => {
       };
 
       await createApprovalConditionField(payload);
-      toast.success("Approval condition field created successfully");
+      toast.success(t("approvalConditions.toast.created"));
       setIsCreateModalOpen(false);
       setCreateFormData({
         fieldKey: "",
@@ -144,7 +146,7 @@ const ApprovalConditions = () => {
       });
       fetchConditions();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to create approval condition field");
+      toast.error(error?.response?.data?.message || t("approvalConditions.toast.createFailed"));
     } finally {
       setIsCreating(false);
     }
@@ -153,12 +155,12 @@ const ApprovalConditions = () => {
   // Handle Edit Submit
   const handleEditSubmit = async () => {
     if (!editFormData.nameEn.trim() || !editFormData.nameAr.trim()) {
-      toast.error("All fields are required");
+      toast.error(t("approvalConditions.validation.allRequired"));
       return;
     }
 
     if (!selectedCondition?.id) {
-      toast.error("No field selected for editing");
+      toast.error(t("approvalConditions.toast.noFieldEdit"));
       return;
     }
 
@@ -173,7 +175,7 @@ const ApprovalConditions = () => {
       };
 
       await updateApprovalConditionField(selectedCondition.id, payload);
-      toast.success("Approval condition field updated successfully");
+      toast.success(t("approvalConditions.toast.updated"));
       setConditions((prev) =>
         prev.map((item) =>
           item.id === selectedCondition.id
@@ -184,7 +186,7 @@ const ApprovalConditions = () => {
       setIsEditModalOpen(false);
       setSelectedCondition(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update approval condition field");
+      toast.error(error?.response?.data?.message || t("approvalConditions.toast.updateFailed"));
     } finally {
       setIsEditing(false);
     }
@@ -193,19 +195,19 @@ const ApprovalConditions = () => {
   // Handle Delete Confirm
   const handleDeleteConfirm = async () => {
     if (!selectedForDelete?.id) {
-      toast.error("No field selected for deletion");
+      toast.error(t("approvalConditions.toast.noFieldDelete"));
       return;
     }
 
     setIsDeletingItem(true);
     try {
       await deleteApprovalConditionField(selectedForDelete.id);
-      toast.success("Approval condition field deleted successfully");
+      toast.success(t("approvalConditions.toast.deleted"));
       setConditions((prev) => prev.filter((item) => item.id !== selectedForDelete.id));
       setIsDeleteModalOpen(false);
       setSelectedForDelete(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete approval condition field");
+      toast.error(error?.response?.data?.message || t("approvalConditions.toast.deleteFailed"));
     } finally {
       setIsDeletingItem(false);
     }
@@ -248,22 +250,22 @@ const ApprovalConditions = () => {
   // Table Headers
   const tableHeaders = [
     {
-      name: "Field Key",
+      name: t("approvalConditions.col.fieldKey"),
       selector: (row: any) => row.fieldKey,
       sortable: true,
     },
     {
-      name: "Name (EN)",
+      name: t("approvalConditions.col.nameEn"),
       selector: (row: any) => row.nameEn,
       sortable: true,
     },
     {
-      name: "Name (AR)",
+      name: t("approvalConditions.col.nameAr"),
       selector: (row: any) => row.nameAr,
       sortable: true,
     },
     {
-      name: "Data Type",
+      name: t("approvalConditions.col.dataType"),
       cell: (row: any) => (
         <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-950 text-blue-900 dark:text-blue-100">
           {row.dataType}
@@ -272,36 +274,36 @@ const ApprovalConditions = () => {
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <Badge variant="outline" className={row.active ? "bg-green-100 dark:bg-green-950 text-green-900 dark:text-green-100" : "bg-red-100 dark:bg-red-950 text-red-900 dark:text-red-100"}>
-          {row.active ? "Active" : "Inactive"}
+          {row.active ? t("common:active") : t("common:inactive")}
         </Badge>
       ),
       sortable: true,
     },
     {
-      name: "Sort Order",
+      name: t("approvalConditions.col.sortOrder"),
       selector: (row: any) => row.sortOrder,
       sortable: true,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="outline" className="gap-1">
-              Select <ChevronDown className="h-4 w-4" />
+              {t("common:select")} <ChevronDown className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => openEditModal(row)} className="cursor-pointer gap-2">
               <Edit2 className="h-4 w-4" />
-              <span>Edit</span>
+              <span>{t("common:edit")}</span>
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => openDeleteModal(row)} className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950">
               <Trash2 className="h-4 w-4" />
-              <span>Delete</span>
+              <span>{t("common:delete")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -318,7 +320,7 @@ const ApprovalConditions = () => {
           <span className="pro-head-badge">
             <ListChecks className="h-4 w-4" />
           </span>
-          Approval Condition Fields
+          {t("approvalConditions.title")}
         </h3>
       </div>
 
@@ -327,7 +329,7 @@ const ApprovalConditions = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by key or name"
+            placeholder={t("approvalConditions.ph.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
@@ -342,7 +344,7 @@ const ApprovalConditions = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="w-4 h-4" />
-            Create
+            {t("common:create")}
           </Button>
         </div>
       </div>
@@ -369,60 +371,60 @@ const ApprovalConditions = () => {
         <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Create Approval Condition Field</DialogTitle>
+              <DialogTitle>{t("approvalConditions.modal.createTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="create-fieldKey">Field Key</Label>
+                <Label htmlFor="create-fieldKey">{t("approvalConditions.label.fieldKey")}</Label>
                 <Input
                   id="create-fieldKey"
                   value={createFormData.fieldKey}
                   onChange={(e) => setCreateFormData({ ...createFormData, fieldKey: e.target.value })}
-                  placeholder="e.g., IQAMA_REMAINING_MONTHS"
+                  placeholder={t("approvalConditions.ph.fieldKey")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="create-nameEn">Name (English)</Label>
+                <Label htmlFor="create-nameEn">{t("approvalConditions.label.nameEn")}</Label>
                 <Input
                   id="create-nameEn"
                   value={createFormData.nameEn}
                   onChange={(e) => setCreateFormData({ ...createFormData, nameEn: e.target.value })}
-                  placeholder="e.g., Iqama Remaining Months"
+                  placeholder={t("approvalConditions.ph.nameEn")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="create-nameAr">Name (Arabic)</Label>
+                <Label htmlFor="create-nameAr">{t("approvalConditions.label.nameAr")}</Label>
                 <Input
                   id="create-nameAr"
                   value={createFormData.nameAr}
                   onChange={(e) => setCreateFormData({ ...createFormData, nameAr: e.target.value })}
-                  placeholder="e.g., أشهر الإقامة المتبقية"
+                  placeholder={t("approvalConditions.ph.nameAr")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="create-dataType">Data Type</Label>
+                <Label htmlFor="create-dataType">{t("approvalConditions.label.dataType")}</Label>
                 <Select value={createFormData.dataType} onValueChange={(value) => setCreateFormData({ ...createFormData, dataType: value })}>
                   <SelectTrigger id="create-dataType" className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="STRING">String</SelectItem>
-                    <SelectItem value="NUMERIC">Numeric</SelectItem>
-                    <SelectItem value="BOOLEAN">Boolean</SelectItem>
+                    <SelectItem value="STRING">{t("approvalConditions.dataType.string")}</SelectItem>
+                    <SelectItem value="NUMERIC">{t("approvalConditions.dataType.numeric")}</SelectItem>
+                    <SelectItem value="BOOLEAN">{t("approvalConditions.dataType.boolean")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="create-sortOrder">Sort Order</Label>
+                <Label htmlFor="create-sortOrder">{t("approvalConditions.label.sortOrder")}</Label>
                 <Input
                   id="create-sortOrder"
                   type="number"
                   value={createFormData.sortOrder}
                   onChange={(e) => setCreateFormData({ ...createFormData, sortOrder: parseInt(e.target.value) || 0 })}
-                  placeholder="e.g., 21"
+                  placeholder={t("approvalConditions.ph.sortOrder")}
                   className="mt-1"
                 />
               </div>
@@ -434,12 +436,12 @@ const ApprovalConditions = () => {
                   onChange={(e) => setCreateFormData({ ...createFormData, active: e.target.checked })}
                   className="rounded border-input"
                 />
-                <Label htmlFor="create-active" className="font-normal cursor-pointer">Active</Label>
+                <Label htmlFor="create-active" className="font-normal cursor-pointer">{t("common:active")}</Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>Cancel</Button>
-              <Button onClick={handleCreateSubmit} disabled={isCreating}>{isCreating ? "Creating..." : "Create"}</Button>
+              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>{t("common:cancel")}</Button>
+              <Button onClick={handleCreateSubmit} disabled={isCreating}>{isCreating ? t("approvalConditions.creating") : t("common:create")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -448,11 +450,11 @@ const ApprovalConditions = () => {
         <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
           <DialogContent className="max-w-md">
             <DialogHeader>
-              <DialogTitle>Edit Approval Condition Field</DialogTitle>
+              <DialogTitle>{t("approvalConditions.modal.editTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="edit-fieldKey">Field Key</Label>
+                <Label htmlFor="edit-fieldKey">{t("approvalConditions.label.fieldKey")}</Label>
                 <Input
                   id="edit-fieldKey"
                   value={editFormData.fieldKey}
@@ -461,46 +463,46 @@ const ApprovalConditions = () => {
                 />
               </div>
               <div>
-                <Label htmlFor="edit-nameEn">Name (English)</Label>
+                <Label htmlFor="edit-nameEn">{t("approvalConditions.label.nameEn")}</Label>
                 <Input
                   id="edit-nameEn"
                   value={editFormData.nameEn}
                   onChange={(e) => setEditFormData({ ...editFormData, nameEn: e.target.value })}
-                  placeholder="e.g., Iqama Remaining Months"
+                  placeholder={t("approvalConditions.ph.nameEn")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-nameAr">Name (Arabic)</Label>
+                <Label htmlFor="edit-nameAr">{t("approvalConditions.label.nameAr")}</Label>
                 <Input
                   id="edit-nameAr"
                   value={editFormData.nameAr}
                   onChange={(e) => setEditFormData({ ...editFormData, nameAr: e.target.value })}
-                  placeholder="e.g., أشهر الإقامة المتبقية"
+                  placeholder={t("approvalConditions.ph.nameAr")}
                   className="mt-1"
                 />
               </div>
               <div>
-                <Label htmlFor="edit-dataType">Data Type</Label>
+                <Label htmlFor="edit-dataType">{t("approvalConditions.label.dataType")}</Label>
                 <Select value={editFormData.dataType} onValueChange={(value) => setEditFormData({ ...editFormData, dataType: value })}>
                   <SelectTrigger id="edit-dataType" className="mt-1">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="STRING">String</SelectItem>
-                    <SelectItem value="NUMERIC">Numeric</SelectItem>
-                    <SelectItem value="BOOLEAN">Boolean</SelectItem>
+                    <SelectItem value="STRING">{t("approvalConditions.dataType.string")}</SelectItem>
+                    <SelectItem value="NUMERIC">{t("approvalConditions.dataType.numeric")}</SelectItem>
+                    <SelectItem value="BOOLEAN">{t("approvalConditions.dataType.boolean")}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div>
-                <Label htmlFor="edit-sortOrder">Sort Order</Label>
+                <Label htmlFor="edit-sortOrder">{t("approvalConditions.label.sortOrder")}</Label>
                 <Input
                   id="edit-sortOrder"
                   type="number"
                   value={editFormData.sortOrder}
                   onChange={(e) => setEditFormData({ ...editFormData, sortOrder: parseInt(e.target.value) || 0 })}
-                  placeholder="e.g., 21"
+                  placeholder={t("approvalConditions.ph.sortOrder")}
                   className="mt-1"
                 />
               </div>
@@ -512,12 +514,12 @@ const ApprovalConditions = () => {
                   onChange={(e) => setEditFormData({ ...editFormData, active: e.target.checked })}
                   className="rounded border-input"
                 />
-                <Label htmlFor="edit-active" className="font-normal cursor-pointer">Active</Label>
+                <Label htmlFor="edit-active" className="font-normal cursor-pointer">{t("common:active")}</Label>
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>Cancel</Button>
-              <Button onClick={handleEditSubmit} disabled={isEditing}>{isEditing ? "Updating..." : "Update"}</Button>
+              <Button variant="outline" onClick={() => setIsEditModalOpen(false)}>{t("common:cancel")}</Button>
+              <Button onClick={handleEditSubmit} disabled={isEditing}>{isEditing ? t("approvalConditions.updating") : t("common:update")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
@@ -526,19 +528,19 @@ const ApprovalConditions = () => {
         <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
           <DialogContent className="max-w-sm">
             <DialogHeader>
-              <DialogTitle className="text-red-600 dark:text-red-400">Delete Approval Condition Field</DialogTitle>
+              <DialogTitle className="text-red-600 dark:text-red-400">{t("approvalConditions.modal.deleteTitle")}</DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
-              <p className="text-sm text-foreground">Are you sure you want to delete this approval condition field?</p>
+              <p className="text-sm text-foreground">{t("approvalConditions.confirmDeleteBody")}</p>
               <div className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-800 rounded p-3">
-                <p className="text-sm font-medium text-red-900 dark:text-red-100">Field Key: {selectedForDelete?.fieldKey}</p>
+                <p className="text-sm font-medium text-red-900 dark:text-red-100">{t("approvalConditions.fieldKeyLabel", { value: selectedForDelete?.fieldKey })}</p>
               </div>
-              <p className="text-xs text-muted-foreground">This action cannot be undone.</p>
+              <p className="text-xs text-muted-foreground">{t("approvalConditions.actionUndone")}</p>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>Cancel</Button>
+              <Button variant="outline" onClick={() => setIsDeleteModalOpen(false)}>{t("common:cancel")}</Button>
               <Button variant="destructive" onClick={handleDeleteConfirm} disabled={isDeletingItem}>
-                {isDeletingItem ? "Deleting..." : "Delete"}
+                {isDeletingItem ? t("approvalConditions.deleting") : t("common:delete")}
               </Button>
             </DialogFooter>
           </DialogContent>

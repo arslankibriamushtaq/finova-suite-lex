@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Select, DatePicker, Button, Dropdown, Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
@@ -12,6 +13,7 @@ interface ClientRequestHistoryProps {
 }
 
 const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment = "dev" }) => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
@@ -36,10 +38,10 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="view" onClick={() => handleMenuClick("view", row)}>
-        View Details
+        {t("clientRequestHistory.menu.viewDetails")}
       </Menu.Item>
       <Menu.Item key="retry" onClick={() => handleMenuClick("retry", row)}>
-        Retry Request
+        {t("clientRequestHistory.menu.retry")}
       </Menu.Item>
     </Menu>
   );
@@ -50,42 +52,42 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
 
   const Request_Headers = [
     {
-      name: "Request Number",
+      name: t("clientRequestHistory.col.requestNumber"),
       selector: (row: { requestNumber: any }) => row.requestNumber,
       sortable: true,
     },
     {
-      name: "Contract Number",
+      name: t("clientRequestHistory.col.contractNumber"),
       selector: (row: { contractNumber: any }) => row.contractNumber,
       sortable: true,
     },
     {
-      name: "CR Number",
+      name: t("clientRequestHistory.col.crNumber"),
       selector: (row: { crNumber: any }) => row.crNumber,
       sortable: true,
     },
     {
-      name: "NID",
+      name: t("clientRequestHistory.col.nid"),
       selector: (row: { nid: any }) => row.nid,
       sortable: true,
     },
     {
-      name: "Client Name",
+      name: t("clientRequestHistory.col.clientName"),
       selector: (row: { clientName: any }) => row.clientName,
       sortable: true,
     },
     {
-      name: "Service Name",
+      name: t("clientRequestHistory.col.serviceName"),
       selector: (row: { serviceName: any }) => row.serviceName,
       sortable: true,
     },
     {
-      name: "Api Name",
+      name: t("clientRequestHistory.col.apiName"),
       selector: (row: { apiName: any }) => row.apiName,
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -101,17 +103,17 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
       ),
     },
     {
-      name: "Request Time",
+      name: t("clientRequestHistory.col.requestTime"),
       selector: (row: { requestTime: any }) => row.requestTime,
       sortable: true,
       width: "180px",
     },
     {
-      name: "Action",
+      name: t("clientRequestHistory.col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button type="link">
-            View <DownOutlined />
+            {t("clientRequestHistory.view")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -144,7 +146,7 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
       setTotalPage(mockData.data.last_page);
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch request history");
+      toast.error(error?.message || t("clientRequestHistory.toast.fetchFailed"));
       setSkelitonLoading(false);
     }
   };
@@ -167,7 +169,7 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
   }));
 
   const handleExport = () => {
-    toast.success("Exporting to Excel...");
+    toast.success(t("clientRequestHistory.toast.exporting"));
     // TODO: Implement export logic
   };
 
@@ -178,84 +180,84 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
       {/* Filters Row */}
       <div style={{ marginBottom: "20px", display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "flex-end" }}>
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Search by CR No.</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.searchCR")}</label>
           <Input
-            placeholder="Xxxxxxxxxx"
+            placeholder={t("clientRequestHistory.placeholder.generic")}
             value={searchCR}
             onChange={(e) => setSearchCR(e.target.value)}
             style={{ width: "150px" }}
           />
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Search by Contract No.</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.searchContract")}</label>
           <Input
-            placeholder="Xxxxxxxxxx"
+            placeholder={t("clientRequestHistory.placeholder.generic")}
             value={searchContract}
             onChange={(e) => setSearchContract(e.target.value)}
             style={{ width: "150px" }}
           />
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Search by Nid</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.searchNID")}</label>
           <Input
-            placeholder="Xxxxxxxxxx"
+            placeholder={t("clientRequestHistory.placeholder.generic")}
             value={searchNID}
             onChange={(e) => setSearchNID(e.target.value)}
             style={{ width: "150px" }}
           />
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Search by Request Number</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.searchRequest")}</label>
           <Input
-            placeholder="Req-Xxxxxxxxx"
+            placeholder={t("clientRequestHistory.placeholder.request")}
             value={searchRequest}
             onChange={(e) => setSearchRequest(e.target.value)}
             style={{ width: "150px" }}
           />
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Select Client</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.selectClient")}</label>
           <Select value={selectedClient} onChange={setSelectedClient} style={{ width: "120px" }}>
-            <Option value="All">All</Option>
+            <Option value="All">{t("common:all")}</Option>
           </Select>
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Select Service</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.selectService")}</label>
           <Select value={selectedService} onChange={setSelectedService} style={{ width: "120px" }}>
-            <Option value="All">All</Option>
+            <Option value="All">{t("common:all")}</Option>
           </Select>
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>Select Api</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("clientRequestHistory.filter.selectApi")}</label>
           <Select value={selectedApi} onChange={setSelectedApi} style={{ width: "120px" }}>
-            <Option value="All">All</Option>
+            <Option value="All">{t("common:all")}</Option>
           </Select>
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>From</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("common:from")}</label>
           <DatePicker
             format="MM/DD/YYYY"
             value={fromDate}
             onChange={setFromDate}
-            placeholder="mm/dd/yyyy"
+            placeholder={t("clientRequestHistory.placeholder.date")}
             style={{ width: "140px" }}
           />
         </div>
-        
+
         <div>
-          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>To</label>
+          <label style={{ display: "block", marginBottom: "4px", fontSize: "12px" }}>{t("common:to")}</label>
           <DatePicker
             format="MM/DD/YYYY"
             value={toDate}
             onChange={setToDate}
-            placeholder="mm/dd/yyyy"
+            placeholder={t("clientRequestHistory.placeholder.date")}
             style={{ width: "140px" }}
           />
         </div>
@@ -265,7 +267,7 @@ const ClientRequestHistory: React.FC<ClientRequestHistoryProps> = ({ environment
             style={{ backgroundColor: "var(--color-status-active)", color: "white", border: "none" }}
             onClick={handleExport}
           >
-            Export Excel
+            {t("clientRequestHistory.exportExcel")}
           </Button>
         )}
       </div>

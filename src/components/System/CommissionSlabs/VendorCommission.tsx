@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 import { Menu, Select, Dropdown, Button, Form, Modal, Input } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../../TableView/TableView";
 import { FaFilter, FaSearch } from "react-icons/fa";
 import { Images } from "../../Config/Images";
@@ -17,6 +18,7 @@ import toast from "react-hot-toast";
 import { DeleteOutlined, DownOutlined, EditOutlined } from "@ant-design/icons"; ////
 
 const VendorCommission = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [vendor, setVendor] = useState([]);
   const [CommissionList, setCommissionList] = useState<any>();
@@ -43,58 +45,58 @@ const VendorCommission = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { id: any }) => row.id,
       sortable: true,
       width: "100px",
     },
     {
-      name: "Vendor Commission Name",
+      name: t("vendorCommission.commissionName"),
       selector: (row: { vendorName: any }) => row.vendorName,
       sortable: true,
       width: "200px",
     },
     {
-      name: "name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Vendor Service Name",
+      name: t("vendorCommission.serviceName"),
       selector: (row: { vendorService: any }) => row.vendorService,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Taken Value",
+      name: t("vendorCommission.takenValue"),
       selector: (row: { takeValue: any }) => row.takeValue,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Give Value",
+      name: t("vendorCommission.giveValue"),
       selector: (row: { giveValue: any }) => row.giveValue,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -108,7 +110,7 @@ const VendorCommission = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -147,14 +149,14 @@ const VendorCommission = () => {
           toast.success(response.data.message);
           getList();
         } else {
-          toast.error(response?.data?.errors || "Failed to update");
+          toast.error(response?.data?.errors || t("vendorCommission.updateFailed"));
         }
       } else {
         response = await createVendorCommission(body);
         if (response.status === 200) {
           toast.success(response.data.message);
         } else {
-          toast.error(response?.data?.errors || "Failed to add");
+          toast.error(response?.data?.errors || t("vendorCommission.addFailed"));
         }
       }
     } catch (error: any) {
@@ -207,7 +209,7 @@ const VendorCommission = () => {
       const response = await vendorList(page, pageSize);
       setVendor(response?.data?.data?.data || []);
     } catch (error) {
-      toast.error("Failed to load complaint types");
+      toast.error(t("vendorCommission.loadVendorFailed"));
     }
   };
 
@@ -221,7 +223,7 @@ const VendorCommission = () => {
       const data = res?.data?.data?.data || [];
       setServices(data);
     } catch (error) {
-      toast.error("Failed to fetch services");
+      toast.error(t("vendorCommission.fetchServicesFailed"));
     }
   };
 
@@ -307,7 +309,7 @@ const VendorCommission = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
         />
@@ -323,14 +325,14 @@ const VendorCommission = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("shared.excel")}</button>
+          <button className="invoice-btn">{t("shared.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button className="theme-btn" onClick={() => setShowModal(true)}>
-            Add New Vendor Commission
+            {t("vendorCommission.addNew")}
           </button>
         </div>
       </div>
@@ -353,17 +355,17 @@ const VendorCommission = () => {
         style={{ maxWidth: "732px" }}
         title={
           selectedItem === "edit"
-            ? "Update Complaint"
-            : "Add New Complaint"
+            ? t("vendorCommission.editTitle")
+            : t("vendorCommission.addTitle")
         }
         visible={showModal}
         onCancel={handleOnHide}
         footer={[
           <Button key="close" onClick={handleOnHide}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button key="save" type="primary" onClick={handleSave}>
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
@@ -372,11 +374,11 @@ const VendorCommission = () => {
            <Row>
               <Col md={12}>
                 <div className="custom-input-container">
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
                     type="text"
                     className="fs-6"
-                    placeholder="Placeholder"
+                    placeholder={t("shared.placeholder")}
                     name="name"
                     value={formData.name}
                     onChange={(e) =>handleInputChange("name", e.target.value)}
@@ -388,14 +390,14 @@ const VendorCommission = () => {
             <Col md={6}>
                 <div className="custom-input-container">
                   <label className="input-label">
-                    Select Vendor
+                    {t("vendorCommission.selectVendor")}
                   </label>
-                  <Select     
+                  <Select
                     className="fs-6"
                     value={formData.vendorId}
                     onChange={(e)=>handleInputChange("vendorId", e)}
                   >
-                    <option value="">Select Type</option>
+                    <option value="">{t("vendorCommission.selectOption")}</option>
                     {vendor && vendor.map((type: any) => {
                       return (
                         <option key={type.id} value={type.id}>
@@ -408,13 +410,13 @@ const VendorCommission = () => {
               </Col>
               <Col md={6}>
                 <div className="custom-input-container">
-                  <label className="input-label">Select Vendor Service</label>
-                  <Select     
+                  <label className="input-label">{t("vendorCommission.selectVendorService")}</label>
+                  <Select
                     className="fs-6"
                     value={formData.vendorServiceId}
                     onChange={(e)=>handleInputChange("vendorServiceId", e)}
                     >
-                    <option value="">Select Type</option>
+                    <option value="">{t("vendorCommission.selectOption")}</option>
                     {filteredServices.map((type: any) => {
                       return (
                         <option key={type.id} value={type.id}>
@@ -430,16 +432,16 @@ const VendorCommission = () => {
               <Col md={12}>
                 <div className="custom-input-container">
                   <label className="input-label">
-                    Select Type
+                    {t("vendorCommission.selectTypeLabel")}
                   </label>
-                  <Select           
+                  <Select
                     className="fs-6"
                     value={formData.type}
                     onChange={(e) =>handleInputChange("type", e)}
                   >
-                    <option value="">Select type</option>
-                    <option value="fix">Fixed</option>
-                    <option value="slab">Slab</option>
+                    <option value="">{t("vendorCommission.selectTypeOption")}</option>
+                    <option value="fix">{t("vendorCommission.fixed")}</option>
+                    <option value="slab">{t("vendorCommission.slab")}</option>
                   
                   </Select>
                 </div>
@@ -449,10 +451,10 @@ const VendorCommission = () => {
             <Row>
             <Col md={6}>
               <div className="custom-input-container">
-              <label className="input-label">Take Value</label>
+              <label className="input-label">{t("vendorCommission.takeValue")}</label>
               <Input
                 className="fs-6"
-                placeholder="Placeholder"
+                placeholder={t("shared.placeholder")}
                 name="takeValue"
                 value={formData.takeValue}
                 onChange={(e) =>handleInputChange("takeValue", e.target.value)}
@@ -461,10 +463,10 @@ const VendorCommission = () => {
               </Col>
               <Col md={6}>
                 <div className="custom-input-container">
-                  <label className="input-label">Give Value</label>
+                  <label className="input-label">{t("vendorCommission.giveValue")}</label>
                   <Input
                 className="fs-6"
-                placeholder="Placeholder"
+                placeholder={t("shared.placeholder")}
                 name="giveValue"
                 value={formData.giveValue}
                 onChange={(e) =>handleInputChange("giveValue", e.target.value)}

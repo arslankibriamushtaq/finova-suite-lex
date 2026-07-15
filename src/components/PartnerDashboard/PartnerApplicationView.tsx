@@ -6,29 +6,31 @@ import PartnerManagerInformation from "./PartnerManagerInformation";
 import PartnerFactoringTab from "./PartnerFactoringTab";
 import PartnerDisclaimer from "./PartnerDisclaimer";
 import PartnerEpromissoryNote from "./PartnerEpromissoryNote";
+import { useTranslation } from "react-i18next";
 
 const PartnerApplicationView = () => {
+  const { t } = useTranslation("partner");
   localStorage.setItem("partnertabs", "BusinessInformation");
   const getTabs = localStorage.getItem("partnertabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
   const tapOptions = [
     {
-      title: "Business Information ",
+      title: t("appView.businessInformation"),
       key: "BusinessInformation",
       folder: <PartnerBusinessinfo setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "Manager List ",
+      title: t("appView.managerList"),
       key: "ManagerList",
       folder: <PartnerManagerList setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "Manager Information",
+      title: t("appView.managerInformation"),
       key: "ManagerInformation",
       folder: <PartnerManagerInformation setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "Factoring Information",
+      title: t("appView.factoringInformation"),
       key: "FactoringTab",
       folder: <PartnerFactoringTab setSelectedTab={setSelectedTab} />,
     },
@@ -38,12 +40,12 @@ const PartnerApplicationView = () => {
     //   folder: <RevenueDetails setSelectedTab={setSelectedTab} />,
     // },
     {
-      title: "Disclaimer",
+      title: t("appView.disclaimer"),
       key: "Disclaimer",
       folder: <PartnerDisclaimer setSelectedTab={setSelectedTab} />,
     },
     {
-      title: "E-Promissory Note",
+      title: t("appView.epromissoryNote"),
       key: "EpromissoryNote",
       folder: <PartnerEpromissoryNote setSelectedTab={setSelectedTab} />,
     },

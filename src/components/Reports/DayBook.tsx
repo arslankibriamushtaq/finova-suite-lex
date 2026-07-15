@@ -6,8 +6,10 @@ import { BookOpen } from "lucide-react";
 import { getDaybookReport } from "../../redux/apis/apisCrudLms";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const DayBook = () => {
+  const { t } = useTranslation("reports");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -75,7 +77,7 @@ const DayBook = () => {
       });
     } catch (error: any) {
       console.error("Error fetching daybook:", error);
-      toast.error(error?.message || "Failed to fetch daybook report");
+      toast.error(error?.message || t('dayBook.toast.fetchError'));
       setEntries([]);
       setSummary(null);
     } finally {
@@ -104,35 +106,35 @@ const DayBook = () => {
 
   const headers = [
     {
-      name: "Posted At",
+      name: t('dayBook.col.postedAt'),
       selector: (row: any) => formatDate(row.postedAt),
       sortable: true,
       width: "160px",
     },
     {
-      name: "Voucher No",
+      name: t('dayBook.col.voucherNo'),
       selector: (row: any) => row.voucherNumber || "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Reference Type",
+      name: t('dayBook.col.referenceType'),
       selector: (row: any) => row.referenceType || "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: "Account",
+      name: t('dayBook.col.account'),
       selector: (row: any) => row.accountCode ? `${row.accountCode} — ${row.accountName || ""}` : (row.accountName || "-"),
       sortable: true,
     },
     {
-      name: "Description",
+      name: t('common:description'),
       selector: (row: any) => row.lineDescription || row.description || "-",
       grow: 2,
     },
     {
-      name: "Debit",
+      name: t('dayBook.col.debit'),
       cell: (row: any) => (
         <span>{formatNumber(row.debitAmount)}</span>
       ),
@@ -140,7 +142,7 @@ const DayBook = () => {
       width: "130px",
     },
     {
-      name: "Credit",
+      name: t('dayBook.col.credit'),
       cell: (row: any) => (
         <span>{formatNumber(row.creditAmount)}</span>
       ),
@@ -148,7 +150,7 @@ const DayBook = () => {
       width: "130px",
     },
     {
-      name: "Status",
+      name: t('common:status'),
       cell: (row: any) => (
         <span
           style={{
@@ -225,7 +227,7 @@ const DayBook = () => {
             <span className="pro-head-badge">
               <BookOpen className="h-4 w-4" />
             </span>
-            Day Book
+            {t('dayBook.title')}
           </h3>
         </div>
 
@@ -234,14 +236,14 @@ const DayBook = () => {
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <Input
               allowClear
-              placeholder="Search by voucher, account, reference, status…"
+              placeholder={t('dayBook.searchPlaceholder')}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
             <DatePicker
-              placeholder="From"
+              placeholder={t('common:from')}
               value={fromDate}
               onChange={(d) => setFromDate(d)}
               format="YYYY-MM-DD"
@@ -249,7 +251,7 @@ const DayBook = () => {
               style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
             />
             <DatePicker
-              placeholder="To"
+              placeholder={t('common:to')}
               value={toDate}
               onChange={(d) => setToDate(d)}
               format="YYYY-MM-DD"
@@ -263,7 +265,7 @@ const DayBook = () => {
               disabled={loading}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              {loading ? "Loading..." : "Refresh"}
+              {loading ? t('common:loading') : t('common:refresh')}
             </button>
           </div>
         </div>
@@ -272,7 +274,7 @@ const DayBook = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Transactions</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.totalTransactions')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalTransactions}
               </div>
@@ -280,7 +282,7 @@ const DayBook = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Debits</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.totalDebits')}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}
@@ -291,7 +293,7 @@ const DayBook = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Credits</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.totalCredits')}</div>
               <div
                 className="mt-2"
                 style={{ fontSize: 22, fontWeight: 700 }}
@@ -302,7 +304,7 @@ const DayBook = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Difference</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dayBook.summary.difference')}</div>
               <div
                 className="mt-2"
                 style={{

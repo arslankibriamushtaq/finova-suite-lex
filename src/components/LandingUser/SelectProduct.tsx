@@ -7,7 +7,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setProductDetails, setUserProduct, setApplicationNumber, setRequiredDocuments } from "../../redux/apis/apisSlice";
 import { RootState } from "../../redux/rootReducer";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 const SelectProduct: React.FC = () => {
+  const { t } = useTranslation("landingUser");
   const [verified, setVerified] = useState(false);
   const [products, setProducts] = useState<any[]>([]);
   const savedProduct = useSelector((state: RootState) => state.block.userProductData);
@@ -26,11 +28,11 @@ const SelectProduct: React.FC = () => {
     e.preventDefault();
 
     if (!selected?.id) {
-      toast.error("Please select a product!");
+      toast.error(t("selectProduct.toast.selectProduct"));
       return;
     }
     if (!verified) {
-      toast.error("Please verify that you are a human!");
+      toast.error(t("selectProduct.toast.verifyHuman"));
       return;
     }
 
@@ -59,12 +61,12 @@ const SelectProduct: React.FC = () => {
           console.error("Error fetching required documents:", docErr);
         }
       } else {
-        toast.error(res?.data?.message || "Failed to load product details");
+        toast.error(res?.data?.message || t("selectProduct.toast.loadDetailsFailed"));
         return;
       }
     } catch (error: any) {
       console.error("Error fetching product details:", error);
-      toast.error(error?.message || "Failed to load product details");
+      toast.error(error?.message || t("selectProduct.toast.loadDetailsFailed"));
       return;
     }
 
@@ -148,7 +150,7 @@ const SelectProduct: React.FC = () => {
         className="step-buttons" 
         style={{ background: "#1963b9", padding: "10px 5px", borderRadius: "0", minWidth: "100px",lineHeight:"24px" }}
         onClick={handleSubmit}>
-        Next Step
+        {t("action.nextStep")}
       </button>
       </div>
 

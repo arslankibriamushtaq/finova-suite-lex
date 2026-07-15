@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Modal, Form, Input, Switch, Dropdown, Menu, Select } from "antd";
 import { EditOutlined, DeleteOutlined } from "@ant-design/icons";
 import { FaFilter } from "react-icons/fa";
@@ -16,6 +17,7 @@ import {
 import toast from "react-hot-toast";
 
 const ComplianceRequirement = () => {
+  const { t } = useTranslation("settings");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -47,21 +49,21 @@ const ComplianceRequirement = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="status"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("status", row)}
       >
-        Change Status
+        {t("compliance.menu.changeStatus")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -86,47 +88,47 @@ const ComplianceRequirement = () => {
     try {
       const response = await updateComplianceRequirementStatus(id);
       if (response?.data?.success) {
-        toast.success("Status updated successfully");
+        toast.success(t("toast.statusUpdated"));
         fetchData();
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to update status");
+      toast.error(error?.message || t("toast.statusFailed"));
     }
   };
 
   const columns = [
     {
-      name: "Sr:",
+      name: t("compliance.col.sr"),
       selector: (row: any) => row.sr,
       sortable: true,
-    
+
     },
     {
-      name: "Question (EN)",
+      name: t("compliance.col.questionEn"),
       selector: (row: any) => row.question_en,
       sortable: true,
 
     },
     {
-      name: "Question (AR)",
+      name: t("compliance.col.questionAr"),
       selector: (row: any) => row.question_ar,
       sortable: true,
-   
+
     },
     {
-      name: "LOV Type",
+      name: t("compliance.col.lovType"),
       selector: (row: any) => row.lov_type,
       sortable: true,
-  
+
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) => row.type,
       sortable: true,
-  
+
     },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: any) => row.category,
       sortable: true,
       cell: (row: any) => (
@@ -135,7 +137,7 @@ const ComplianceRequirement = () => {
  
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -146,13 +148,13 @@ const ComplianceRequirement = () => {
             fontSize: "12px",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </span>
       ),
-   
+
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -166,7 +168,7 @@ const ComplianceRequirement = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -225,7 +227,7 @@ const ComplianceRequirement = () => {
         setTotalPage(responseData.last_page || 1);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch data");
+      toast.error(error?.message || t("toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -290,7 +292,7 @@ const ComplianceRequirement = () => {
         setApplicableToTypes(data.applicable_to_types || []);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch compliance question types");
+      toast.error(error?.message || t("compliance.toast.typesFailed"));
     }
   };
 
@@ -325,20 +327,20 @@ const ComplianceRequirement = () => {
 
   const handleDelete = async (id: number) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this item?",
-      content: "This action cannot be undone.",
-      okText: "Yes, Delete",
+      title: t("deleteItem.title"),
+      content: t("deleteItem.content"),
+      okText: t("deleteItem.ok"),
       okType: "danger",
-      cancelText: "Cancel",
+      cancelText: t("common:cancel"),
       onOk: async () => {
         try {
           const response = await deleteComplianceRequirement(id);
           if (response?.data?.success) {
-            toast.success("Deleted successfully");
+            toast.success(t("common:deletedSuccessfully"));
             fetchData();
           }
         } catch (error: any) {
-          toast.error(error?.message || "Failed to delete");
+          toast.error(error?.message || t("toast.deleteFailed"));
         }
       },
     });
@@ -381,14 +383,14 @@ const ComplianceRequirement = () => {
 
       if (response?.data?.success) {
         toast.success(
-          editMode ? "Updated successfully" : "Created successfully"
+          editMode ? t("common:updatedSuccessfully") : t("toast.created")
         );
         setIsModalVisible(false);
         form.resetFields();
         fetchData();
       }
     } catch (error: any) {
-      toast.error(error?.message || "Operation failed");
+      toast.error(error?.message || t("toast.operationFailed"));
     } finally {
       setLoading(false);
     }
@@ -399,7 +401,7 @@ const ComplianceRequirement = () => {
       <div className="d-flex justify-content-end col-12 filter-select">
         <Select
           style={{ width: "120px", marginRight: "8px" }}
-          placeholder="Type"
+          placeholder={t("common:type")}
           allowClear
           value={type || undefined}
           onChange={(value) => setType(value || '')}
@@ -413,7 +415,7 @@ const ComplianceRequirement = () => {
 
         <Select
           style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Category"
+          placeholder={t("common:category")}
           allowClear
           value={category || undefined}
           onChange={(value) => setCategory(value || '')}
@@ -437,7 +439,7 @@ const ComplianceRequirement = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("searchShort")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -447,7 +449,7 @@ const ComplianceRequirement = () => {
             className="theme-btn"
             style={{ minWidth: "120px" }}
           >
-            + Add New
+            {t("addNew")}
           </button>
         </div>
       </div>
@@ -467,7 +469,7 @@ const ComplianceRequirement = () => {
       />
 
       <Modal
-        title={editMode ? "Edit Requirement" : "Add New Requirement"}
+        title={editMode ? t("compliance.modal.editTitle") : t("compliance.modal.addTitle")}
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -496,21 +498,21 @@ const ComplianceRequirement = () => {
           <div className="row">
             <div className="col-md-6">
               <Form.Item
-                label="Question (English)"
+                label={t("compliance.field.questionEn")}
                 name="question_en"
-                rules={[{ required: true, message: "Please enter question" }]}
+                rules={[{ required: true, message: t("compliance.val.questionEn") }]}
               >
-                <Input placeholder="Question" />
+                <Input placeholder={t("compliance.ph.question")} />
               </Form.Item>
             </div>
 
             <div className="col-md-6">
               <Form.Item
-                label="Question (Arabic)"
+                label={t("compliance.field.questionAr")}
                 name="question_ar"
-                rules={[{ required: true, message: "Please enter question in Arabic" }]}
+                rules={[{ required: true, message: t("compliance.val.questionAr") }]}
               >
-                <Input placeholder="سوال عربی" style={{ textAlign: 'right' }} />
+                <Input placeholder={t("compliance.ph.questionAr")} style={{ textAlign: 'right' }} />
               </Form.Item>
             </div>
           </div>
@@ -518,11 +520,11 @@ const ComplianceRequirement = () => {
           <div className="row">
             <div className="col-md-6">
               <Form.Item
-                label="Category"
+                label={t("common:category")}
                 name="category"
-                rules={[{ required: true, message: "Please select category" }]}
+                rules={[{ required: true, message: t("compliance.val.category") }]}
               >
-                <Select placeholder="Select category">
+                <Select placeholder={t("compliance.ph.category")}>
                   {categories.map((item: any) => (
                     <Select.Option key={item.value} value={item.value}>
                       {item.label}
@@ -534,11 +536,11 @@ const ComplianceRequirement = () => {
 
             <div className="col-md-6">
               <Form.Item
-                label="LOV Type"
+                label={t("compliance.field.lovType")}
                 name="lov_type"
-                rules={[{ required: true, message: "Please select LOV type" }]}
+                rules={[{ required: true, message: t("compliance.val.lovType") }]}
               >
-                <Select placeholder="Select LOV type">
+                <Select placeholder={t("compliance.ph.lovType")}>
                   {lovTypes.map((lov: any) => (
                     <Select.Option key={lov.value} value={lov.value}>
                       {lov.label}
@@ -552,11 +554,11 @@ const ComplianceRequirement = () => {
           <div className="row">
             <div className="col-md-6">
               <Form.Item
-                label="Type"
+                label={t("common:type")}
                 name="type"
-                rules={[{ required: true, message: "Please select type" }]}
+                rules={[{ required: true, message: t("compliance.val.type") }]}
               >
-                <Select placeholder="Select type">
+                <Select placeholder={t("compliance.ph.type")}>
                   {questionTypes.map((item: any) => (
                     <Select.Option key={item.value} value={item.value}>
                       {item.label}
@@ -568,11 +570,11 @@ const ComplianceRequirement = () => {
 
             <div className="col-md-6">
               <Form.Item
-                label="LOV Able"
+                label={t("compliance.field.lovAble")}
                 name="lov_able"
-                rules={[{ required: true, message: "Please select LOV able" }]}
+                rules={[{ required: true, message: t("compliance.val.lovAble") }]}
               >
-                <Select placeholder="Select LOV able">
+                <Select placeholder={t("compliance.ph.lovAble")}>
                   {lovAbleOptions.map((item: any) => (
                     <Select.Option key={item.value} value={item.value}>
                       {item.label}
@@ -586,23 +588,23 @@ const ComplianceRequirement = () => {
           <div className="row">
             <div className="col-md-6">
               <Form.Item
-                label="Category Weight"
+                label={t("compliance.field.categoryWeight")}
                 name="category_weight"
-                rules={[{ required: true, message: "Please enter category weight" }]}
+                rules={[{ required: true, message: t("compliance.val.categoryWeight") }]}
               >
-                <Input type="number" placeholder="Enter weight (e.g., 15)" />
+                <Input type="number" placeholder={t("compliance.ph.categoryWeight")} />
               </Form.Item>
             </div>
 
             <div className="col-md-6">
               <Form.Item
-                label="Locale"
+                label={t("compliance.field.locale")}
                 name="locale"
-                rules={[{ required: true, message: "Please select locale" }]}
+                rules={[{ required: true, message: t("compliance.val.locale") }]}
               >
-                <Select placeholder="Select locale">
-                  <Select.Option value="en">English</Select.Option>
-                  <Select.Option value="ar">Arabic</Select.Option>
+                <Select placeholder={t("compliance.ph.locale")}>
+                  <Select.Option value="en">{t("compliance.locale.en")}</Select.Option>
+                  <Select.Option value="ar">{t("compliance.locale.ar")}</Select.Option>
                 </Select>
               </Form.Item>
             </div>
@@ -611,11 +613,11 @@ const ComplianceRequirement = () => {
           <div className="row">
             <div className="col-md-6">
               <Form.Item
-                label="Applicable To"
+                label={t("compliance.field.applicableTo")}
                 name="applicable_to"
-                rules={[{ required: true, message: "Please select applicable to" }]}
+                rules={[{ required: true, message: t("compliance.val.applicableTo") }]}
               >
-                <Select placeholder="Select applicable to">
+                <Select placeholder={t("compliance.ph.applicableTo")}>
                   {applicableToTypes.map((item: any) => (
                     <Select.Option key={item.value} value={item.value}>
                       {item.label}
@@ -626,8 +628,8 @@ const ComplianceRequirement = () => {
             </div>
 
             <div className="col-md-6">
-              <Form.Item label="Status" name="status" valuePropName="checked">
-                <Switch style={{ backgroundColor: "var(--foreground)" }} checkedChildren="Active" unCheckedChildren="Inactive" />
+              <Form.Item label={t("common:status")} name="status" valuePropName="checked">
+                <Switch style={{ backgroundColor: "var(--foreground)" }} checkedChildren={t("common:active")} unCheckedChildren={t("common:inactive")} />
               </Form.Item>
             </div>
           </div>
@@ -637,21 +639,21 @@ const ComplianceRequirement = () => {
             <div className="row">
               <div className="col-md-6">
                 <Form.Item
-                  label="Is Multiplier"
+                  label={t("compliance.field.isMultiplier")}
                   name="is_multiplier"
-                  rules={[{ required: true, message: "Please enter is multiplier" }]}
+                  rules={[{ required: true, message: t("compliance.val.isMultiplier") }]}
                 >
-                  <Input type="number" placeholder="Enter is multiplier (e.g., 0)" />
+                  <Input type="number" placeholder={t("compliance.ph.isMultiplier")} />
                 </Form.Item>
               </div>
 
               <div className="col-md-6">
                 <Form.Item
-                  label="Maximum Amount"
+                  label={t("compliance.field.maxAmount")}
                   name="maximum_amount"
-                  rules={[{ required: true, message: "Please enter maximum amount" }]}
+                  rules={[{ required: true, message: t("compliance.val.maxAmount") }]}
                 >
-                  <Input type="number" placeholder="Enter maximum amount (e.g., 1000)" />
+                  <Input type="number" placeholder={t("compliance.ph.maxAmount")} />
                 </Form.Item>
               </div>
             </div>
@@ -661,21 +663,21 @@ const ComplianceRequirement = () => {
             <div className="row">
               <div className="col-md-6">
                 <Form.Item
-                  label="Minimum Amount"
+                  label={t("compliance.field.minAmount")}
                   name="minimum_amount"
-                  rules={[{ required: true, message: "Please enter minimum amount" }]}
+                  rules={[{ required: true, message: t("compliance.val.minAmount") }]}
                 >
-                  <Input type="number" placeholder="Enter minimum amount (e.g., 100)" />
+                  <Input type="number" placeholder={t("compliance.ph.minAmount")} />
                 </Form.Item>
               </div>
 
               <div className="col-md-6">
                 <Form.Item
-                  label="Is Adult Dependent"
+                  label={t("compliance.field.isAdultDependent")}
                   name="is_adult_dependent"
-                  rules={[{ required: true, message: "Please enter is adult dependent" }]}
+                  rules={[{ required: true, message: t("compliance.val.isAdultDependent") }]}
                 >
-                  <Input type="number" placeholder="Enter is adult dependent (e.g., 0)" />
+                  <Input type="number" placeholder={t("compliance.ph.isAdultDependent")} />
                 </Form.Item>
               </div>
             </div>
@@ -689,7 +691,7 @@ const ComplianceRequirement = () => {
                   form.resetFields();
                 }}
               >
-                Cancel
+                {t("common:cancel")}
               </Button>
               <Button
                 type="primary"
@@ -697,7 +699,7 @@ const ComplianceRequirement = () => {
                 loading={loading}
                 className="gradient-btn"
               >
-                Save
+                {t("common:save")}
               </Button>
             </div>
           </Form.Item>

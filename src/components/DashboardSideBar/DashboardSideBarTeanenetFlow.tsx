@@ -3,11 +3,13 @@ import { Sidebar, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Images } from "../Config/Images";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import Loader from "../Loader/Loader";
 
 const DasbhboardSidebarTeanenetFlow = () => {
+  const { t } = useTranslation("sidebar");
   const dispatch = useDispatch();
   const location = useLocation();
   const product = useSelector((state: RootState) => state.block.product);
@@ -153,7 +155,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                             : {}
                         }
                       >
-                        Product & Package Detail
+                        {t("productPackageDetail")}
                       </span>
                     </div>
                     <div className="jss280"></div>
@@ -189,7 +191,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                             : { color: "#838383" }
                         }
                       >
-                        Business Info
+                        {t("businessInfo")}
                       </span>
                     </div>
                     <div className="jss280"></div>
@@ -225,7 +227,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                             : { color: "#838383" }
                         }
                       >
-                        Payment
+                        {t("payment")}
                       </span>
                     </div>
                     <div className="jss280"></div>
@@ -261,7 +263,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                             : { color: "#838383" }
                         }
                       >
-                        Set Password
+                        {t("setPassword")}
                       </span>
                     </div>
                     <div className="jss280"></div>
@@ -293,7 +295,7 @@ const DasbhboardSidebarTeanenetFlow = () => {
                             : { color: "#838383" }
                         }
                       >
-                        Finish
+                        {t("finish")}
                       </span>
                     </div>
                     <div className="jss280"></div>

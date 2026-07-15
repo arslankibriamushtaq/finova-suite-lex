@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button, Dropdown, Input, Menu } from "antd";
 import { DownOutlined, EyeOutlined, SearchOutlined } from "@ant-design/icons";
@@ -8,6 +9,7 @@ import toast from "react-hot-toast";
 import { getClientRequestTest } from "../../redux/apis/apisThirdParty";
 
 const ClientRequestTest = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [allRows, setAllRows] = useState<any[]>([]);
@@ -73,7 +75,7 @@ const ClientRequestTest = () => {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to fetch test requests"
+          t("clientRequestTest.toast.fetchFailed")
       );
       setAllRows([]);
     } finally {
@@ -141,7 +143,7 @@ const ClientRequestTest = () => {
   const actionMenu = (row: any) => (
     <Menu>
       <Menu.Item key="view" icon={<EyeOutlined />} onClick={() => handleView(row)}>
-        View Details
+        {t("clientRequestTest.viewDetails")}
       </Menu.Item>
     </Menu>
   );
@@ -151,7 +153,7 @@ const ClientRequestTest = () => {
 
   const headers = [
     {
-      name: "Request ID",
+      name: t("clientRequestTest.col.requestId"),
       selector: (row: any) => row.requestId || row.id || "-",
       sortable: true,
       width: "170px",
@@ -167,40 +169,40 @@ const ClientRequestTest = () => {
       },
     },
     {
-      name: "Client",
+      name: t("clientRequestTest.col.client"),
       selector: (row: any) => row.clientName || row.client?.name || "-",
       sortable: true,
       width: "160px",
     },
     {
-      name: "Provider",
+      name: t("clientRequestTest.col.provider"),
       selector: (row: any) => row.providerName || row.provider?.name || "-",
       sortable: true,
       width: "160px",
     },
     {
-      name: "Service",
+      name: t("clientRequestTest.col.service"),
       selector: (row: any) => row.serviceName || row.service?.name || row.serviceId || "-",
       sortable: true,
     },
     {
-      name: "API",
+      name: t("clientRequestTest.col.api"),
       selector: (row: any) => row.apiName || row.api?.name || row.endpoint || "-",
       sortable: true,
     },
     {
-      name: "Mobile Phone",
+      name: t("clientRequestTest.col.mobilePhone"),
       selector: (row: any) =>
         row.mobilePhone || row.mobile || row.phone || row.phoneNumber || "-",
       width: "150px",
     },
     {
-      name: "NID",
+      name: t("clientRequestTest.col.nid"),
       selector: (row: any) => row.nid || row.nationalId || "-",
       width: "130px",
     },
     {
-      name: "Environment",
+      name: t("clientRequestTest.col.environment"),
       cell: (row: any) => {
         const env = (
           row.environment ||
@@ -239,7 +241,7 @@ const ClientRequestTest = () => {
       width: "130px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.responseStatus ?? row.statusCode ?? row.status ?? "-";
         const code = Number(status);
@@ -267,13 +269,13 @@ const ClientRequestTest = () => {
       width: "110px",
     },
     {
-      name: "Created At",
+      name: t("clientRequestTest.col.createdAt"),
       selector: (row: any) => formatDate(row.createdAt || row.requestedAt || row.timestamp),
       sortable: true,
       width: "180px",
     },
     {
-      name: "Action",
+      name: t("clientRequestTest.col.action"),
       cell: (row: any) => (
         <Dropdown overlay={actionMenu(row)} trigger={["click"]}>
           <Button
@@ -281,7 +283,7 @@ const ClientRequestTest = () => {
             className="theme-btn-next"
             style={{ height: 36, borderRadius: 2 }}
           >
-            Select <DownOutlined />
+            {t("clientRequestTest.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -296,7 +298,7 @@ const ClientRequestTest = () => {
           <span className="pro-head-badge">
             <History className="h-4 w-4" />
           </span>
-          Client Request Test
+          {t("clientRequestTest.title")}
         </h3>
       </div>
 
@@ -305,7 +307,7 @@ const ClientRequestTest = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by request ID, service, API, mobile, NID, environment, status"
+            placeholder={t("clientRequestTest.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}

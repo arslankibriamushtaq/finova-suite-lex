@@ -21,8 +21,10 @@ import {
 import { ChevronDown, Pencil, Trash2, Plus, ListChecks } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const PurposeOfFinancing = () => {
+  const { t } = useTranslation("lov");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -71,7 +73,7 @@ const PurposeOfFinancing = () => {
         setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch purpose of finance data");
+      toast.error(error?.response?.data?.message || t("purposeOfFinancing.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -109,11 +111,11 @@ const PurposeOfFinancing = () => {
 
   const handleSave = async () => {
     if (!formData.code.trim()) {
-      toast.error("Code is required");
+      toast.error(t("purposeOfFinancing.validation.code"));
       return;
     }
     if (!formData.nameEn.trim()) {
-      toast.error("English name is required");
+      toast.error(t("purposeOfFinancing.validation.nameEn"));
       return;
     }
 
@@ -134,16 +136,16 @@ const PurposeOfFinancing = () => {
 
       if (modalMode === "edit" && currentItemId) {
         await updatePurposeOfFinance(currentItemId, body);
-        toast.success("Updated successfully");
+        toast.success(t("purposeOfFinancing.toast.updated"));
       } else {
         await createPurposeOfFinance(body);
-        toast.success("Created successfully");
+        toast.success(t("purposeOfFinancing.toast.created"));
       }
 
       setShowFormModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+      toast.error(error?.response?.data?.message || (modalMode === "edit" ? t("purposeOfFinancing.toast.updateFailed") : t("purposeOfFinancing.toast.createFailed")));
     } finally {
       setIsSaving(false);
     }
@@ -154,11 +156,11 @@ const PurposeOfFinancing = () => {
     try {
       setIsDeleting(true);
       await deletePurposeOfFinance(deleteTarget.id);
-      toast.success("Deleted successfully");
+      toast.success(t("purposeOfFinancing.toast.deleted"));
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
+      toast.error(error?.response?.data?.message || t("purposeOfFinancing.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -167,38 +169,38 @@ const PurposeOfFinancing = () => {
 
   const headers = [
     {
-      name: "Code",
+      name: t("purposeOfFinancing.col.code"),
       selector: (row: any) => row.code || "-",
       sortable: true,
     },
     {
-      name: "Name (EN)",
+      name: t("purposeOfFinancing.col.nameEn"),
       selector: (row: any) => row.nameEn || "-",
       sortable: true,
     },
     {
-      name: "Name (AR)",
+      name: t("purposeOfFinancing.col.nameAr"),
       selector: (row: any) => row.nameAr || "-",
       sortable: true,
     },
     {
-      name: "Description (EN)",
+      name: t("purposeOfFinancing.col.descriptionEn"),
       selector: (row: any) => row.descriptionEn || "-",
       sortable: true,
     },
     {
-      name: "Sort Order",
+      name: t("purposeOfFinancing.col.sortOrder"),
       selector: (row: any) => row.sortOrder ?? "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = row.active ?? true;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </span>
         );
       },
@@ -206,7 +208,7 @@ const PurposeOfFinancing = () => {
       width: "100px",
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -219,7 +221,7 @@ const PurposeOfFinancing = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -231,7 +233,7 @@ const PurposeOfFinancing = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -241,7 +243,7 @@ const PurposeOfFinancing = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -258,7 +260,7 @@ const PurposeOfFinancing = () => {
           <span className="pro-head-badge">
             <ListChecks className="h-4 w-4" />
           </span>
-          Purpose of Finance
+          {t("purposeOfFinancing.title")}
         </h3>
       </div>
 
@@ -266,7 +268,7 @@ const PurposeOfFinancing = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
-          placeholder="Search by code or name"
+          placeholder={t("purposeOfFinancing.ph.search")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => {
@@ -277,7 +279,7 @@ const PurposeOfFinancing = () => {
         />
         <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
-          Add New Record
+          {t("shared.addNewRecord")}
         </Button>
         </div>
       </div>
@@ -302,21 +304,21 @@ const PurposeOfFinancing = () => {
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Record" : "Add New Record"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? t("purposeOfFinancing.modal.editTitle") : t("shared.addNewRecord")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Code *</Label>
+                <Label>{t("purposeOfFinancing.label.code")} *</Label>
                 <Input
-                  placeholder="e.g. HOME_PURCHASE"
+                  placeholder={t("purposeOfFinancing.ph.code")}
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   disabled={modalMode === "edit"}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Sort Order</Label>
+                <Label>{t("purposeOfFinancing.label.sortOrder")}</Label>
                 <Input
                   type="number"
                   placeholder="0"
@@ -325,33 +327,33 @@ const PurposeOfFinancing = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Name (EN) *</Label>
+                <Label>{t("purposeOfFinancing.label.nameEn")} *</Label>
                 <Input
-                  placeholder="English name"
+                  placeholder={t("purposeOfFinancing.ph.nameEn")}
                   value={formData.nameEn}
                   onChange={(e) => setFormData({ ...formData, nameEn: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Name (AR)</Label>
+                <Label>{t("purposeOfFinancing.label.nameAr")}</Label>
                 <Input
-                  placeholder="Arabic name"
+                  placeholder={t("purposeOfFinancing.ph.nameAr")}
                   value={formData.nameAr}
                   onChange={(e) => setFormData({ ...formData, nameAr: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (EN)</Label>
+                <Label>{t("purposeOfFinancing.label.descriptionEn")}</Label>
                 <Input
-                  placeholder="English description"
+                  placeholder={t("purposeOfFinancing.ph.descriptionEn")}
                   value={formData.descriptionEn}
                   onChange={(e) => setFormData({ ...formData, descriptionEn: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (AR)</Label>
+                <Label>{t("purposeOfFinancing.label.descriptionAr")}</Label>
                 <Input
-                  placeholder="Arabic description"
+                  placeholder={t("purposeOfFinancing.ph.descriptionAr")}
                   value={formData.descriptionAr}
                   onChange={(e) => setFormData({ ...formData, descriptionAr: e.target.value })}
                 />
@@ -363,16 +365,16 @@ const PurposeOfFinancing = () => {
                   checked={formData.active}
                   onCheckedChange={(checked) => setFormData({ ...formData, active: !!checked })}
                 />
-                <span className="text-sm">Active</span>
+                <span className="text-sm">{t("common:active")}</span>
               </label>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+              {isSaving ? t("purposeOfFinancing.saving") : modalMode === "edit" ? t("common:update") : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -382,21 +384,21 @@ const PurposeOfFinancing = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Record</DialogTitle>
+            <DialogTitle>{t("purposeOfFinancing.modal.deleteTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
+            {t("purposeOfFinancing.confirmDeletePrefix")}{" "}
             <span className="font-medium text-foreground">
               {deleteTarget?.nameEn || deleteTarget?.code}
             </span>
-            ? This action cannot be undone.
+            {t("purposeOfFinancing.confirmDeleteSuffix")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("purposeOfFinancing.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

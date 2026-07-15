@@ -9,6 +9,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import axios from 'axios'
 import { store } from '../../redux/store'
 import arrowDown from "../../assets/images/arrow-down.png";
+import { useTranslation } from 'react-i18next';
 
  async function storeCustomerInvoice(formData: FormData) {
     const token = (store.getState() as any).block.token;
@@ -37,6 +38,7 @@ import arrowDown from "../../assets/images/arrow-down.png";
     );
   }
 const InvoiceByApplicationID = () => {
+    const { t } = useTranslation("customersB");
     const location = useLocation();
     const application = location.state?.application; 
     const [invoices, setInvoices] = useState<any[]>([])
@@ -64,7 +66,7 @@ const InvoiceByApplicationID = () => {
                 setTotalPage(res?.data?.data?.invoices?.last_page);
                 setInvoices(list)
             } catch (error: any) {
-                toast.error(error?.message || 'Failed to load invoices')
+                toast.error(error?.message || t("customersB:invoice.loadFail"))
                 setInvoices([])
             } finally {
                 setIsLoading(false)
@@ -92,29 +94,29 @@ const InvoiceByApplicationID = () => {
     ), [invoices])
 
     const headers = [
-        { name: 'Sr', selector: (row: any) => row.Sr || '-' },
-        { name: 'Application No', selector: (row: any) => row.application_no || '-' },
-        { name: 'Debtors', selector: (row: any) => row.debtors || '-' },
-        { name: 'Invoice No', selector: (row: any) => row.invoice_no || '-' },
-        { name: 'Invoice Date', selector: (row: any) => row.invoice_date || '-' },
-        { name: 'Due Date', selector: (row: any) => row.due_date || '-' },
-        { name: 'Amount', selector: (row: any) => row.formatted_amount ?? '-' },
-        { name: 'Invoice Discount', selector: (row: any) => row.invoice_discount ?? '-' },
-        { name: 'Status', selector: (row: any) => row.status || '-' },
-        { name: 'Processed By', selector: (row: any) => row.processed_by || '-' },
+        { name: t("customersB:invoice.sr"), selector: (row: any) => row.Sr || '-' },
+        { name: t("customersB:invoice.applicationNo"), selector: (row: any) => row.application_no || '-' },
+        { name: t("customersB:invoice.debtors"), selector: (row: any) => row.debtors || '-' },
+        { name: t("customersB:invoice.invoiceNo"), selector: (row: any) => row.invoice_no || '-' },
+        { name: t("customersB:invoice.invoiceDate"), selector: (row: any) => row.invoice_date || '-' },
+        { name: t("customersB:invoice.dueDate"), selector: (row: any) => row.due_date || '-' },
+        { name: t("common:amount"), selector: (row: any) => row.formatted_amount ?? '-' },
+        { name: t("customersB:invoice.invoiceDiscount"), selector: (row: any) => row.invoice_discount ?? '-' },
+        { name: t("common:status"), selector: (row: any) => row.status || '-' },
+        { name: t("customersB:invoice.processedBy"), selector: (row: any) => row.processed_by || '-' },
         {
-            name: 'Document',
+            name: t("customersB:invoice.document"),
             cell: (row: any) => row.invoice_document ? (
-                <a href={row.invoice_document} target="_blank" rel="noreferrer">View</a>
+                <a href={row.invoice_document} target="_blank" rel="noreferrer">{t("common:view")}</a>
             ) : '-',
         },
         {
-            name: "Actions",
+            name: t("common:actions"),
             cell: (row: any) => (
                 <Dropdown
                     menu={{
                         items: [
-                            { key: 'edit', label: 'Edit', icon: <EditOutlined /> },
+                            { key: 'edit', label: t("common:edit"), icon: <EditOutlined /> },
                             // { key: 'invoice', label: 'Invoice', icon: <FileOutlined /> },
                         ],
                         onClick: ({ key }) => handleMenuClick(String(key), row),
@@ -132,7 +134,7 @@ const InvoiceByApplicationID = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -149,7 +151,7 @@ const InvoiceByApplicationID = () => {
                 amount: data.amount,
                 invoice_document: data.invoice_document ? [{
                     uid: '-1',
-                    name: 'Current Document',
+                    name: t("customersB:invoice.currentDocument"),
                     status: 'done',
                     url: data.invoice_document,
                 }] : [],
@@ -176,8 +178,8 @@ const InvoiceByApplicationID = () => {
                 }
                 
                 await toast.promise(updatCustomerInvoice(selectedInvoice?.id, fd), {
-                    loading: 'Updating invoice...',
-                    success: 'Invoice updated successfully',
+                    loading: t("customersB:invoice.updating"),
+                    success: t("customersB:invoice.updateSuccess"),
                     // error: 'Failed to update invoice'
                 })
                 setShowModal(false)
@@ -199,7 +201,7 @@ const InvoiceByApplicationID = () => {
                 setIsLoading(false)
             } catch (err: any) {
                 if (err?.errorFields) return; // form errors already shown
-                toast.error(err?.response?.data?.errors?.invoice_document?.[0] || err?.message || 'Failed to update invoice')
+                toast.error(err?.response?.data?.errors?.invoice_document?.[0] || err?.message || t("customersB:invoice.updateFail"))
             }
         } else {
             // Create new invoice
@@ -217,9 +219,9 @@ const InvoiceByApplicationID = () => {
                     fd.append('invoice_document', firstFile)
                 }
                 await toast.promise(storeCustomerInvoice(fd), {
-                    loading: 'Creating invoice...',
-                    success: 'Invoice created successfully',
-                    error: 'Failed to create invoice'
+                    loading: t("customersB:invoice.creating"),
+                    success: t("customersB:invoice.createSuccess"),
+                    error: t("customersB:invoice.createFail")
                 })
                 setShowModal(false)
                 // refresh list
@@ -239,7 +241,7 @@ const InvoiceByApplicationID = () => {
                 setIsLoading(false)
             } catch (err: any) {
                 if (err?.errorFields) return; // form errors already shown
-                toast.error(err?.response?.data?.errors?.invoice_document?.[0] || err?.message || 'Failed to create invoice')
+                toast.error(err?.response?.data?.errors?.invoice_document?.[0] || err?.message || t("customersB:invoice.createFail"))
             }
         }
     }
@@ -247,13 +249,13 @@ const InvoiceByApplicationID = () => {
         <div>
             <div className="container-fluid px-4 p-2 mt-2">
                 <div className="d-flex align-items-center justify-content-between mb-3 mt-1">
-                    <label className="mb-0">Invoices</label>
+                    <label className="mb-0">{t("customersB:invoice.invoices")}</label>
                     <button className="theme-btn-next" onClick={() => {
                         setSelectedInvoice(null)
                         form.resetFields()
                         form.setFieldsValue({ application_no: application?.applicationNumber })
                         setShowModal(true)
-                    }}>Add Invoice</button>
+                    }}>{t("customersB:invoice.addInvoice")}</button>
                 </div>
                 <TableView
                     header={headers}
@@ -272,34 +274,34 @@ const InvoiceByApplicationID = () => {
             <Modal
                 className="custom-mod"
                 style={{ maxWidth: "640px" }}
-                title={selectedInvoice?.id ? "Edit Invoice" : "Add Invoice"}
+                title={selectedInvoice?.id ? t("customersB:invoice.editInvoice") : t("customersB:invoice.addInvoice")}
                 open={showModal}
                 onCancel={() => setShowModal(false)}
                 onOk={handleOk}
-                okText={selectedInvoice?.id ? "Update" : "Add"}
+                okText={selectedInvoice?.id ? t("common:update") : t("common:add")}
             >
                 <div className={"Ente-details"}>
                 <Form layout="vertical" form={form}>
                     <Row>
                         <Col  className="px-2" md={12}>
-                        <Form.Item label="Application No" name="application_no">
+                        <Form.Item label={t("customersB:invoice.applicationNo")} name="application_no">
                         <Input disabled />
                     </Form.Item>
                         </Col>
                         <Col  className="px-2" md={12}>
-                        <Form.Item label="Invoice Date" name="invoice_date" rules={[{ required: true }]}>
+                        <Form.Item label={t("customersB:invoice.invoiceDate")} name="invoice_date" rules={[{ required: true }]}>
                         <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                         </Col>
                     </Row>
                     <Row>
                         <Col  className="px-2" md={12}>
-                        <Form.Item label="Due Date" name="due_date" rules={[{ required: true }]}>
+                        <Form.Item label={t("customersB:invoice.dueDate")} name="due_date" rules={[{ required: true }]}>
                         <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                         </Col>
                         <Col  className="px-2" md={12}>
-                        <Form.Item label="Amount" name="amount" rules={[{ required: true }]}>
+                        <Form.Item label={t("common:amount")} name="amount" rules={[{ required: true }]}>
                         <Input type="number" min={0} />
                     </Form.Item>
                         </Col>
@@ -307,9 +309,9 @@ const InvoiceByApplicationID = () => {
                    
                  
                    
-                    <Form.Item label="Invoice Document" name="invoice_document" valuePropName="fileList" getValueFromEvent={(e) => e?.fileList}>
-                        <Upload beforeUpload={() => false} maxCount={1}> 
-                            <Button icon={<UploadOutlined />}>Select File</Button>
+                    <Form.Item label={t("customersB:invoice.invoiceDocument")} name="invoice_document" valuePropName="fileList" getValueFromEvent={(e) => e?.fileList}>
+                        <Upload beforeUpload={() => false} maxCount={1}>
+                            <Button icon={<UploadOutlined />}>{t("customersB:invoice.selectFile")}</Button>
                         </Upload>
                     </Form.Item>
                 </Form>

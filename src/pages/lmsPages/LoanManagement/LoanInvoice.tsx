@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Button, Dropdown, Menu, DatePicker } from "antd";
 import { Receipt } from "lucide-react";
 import { FaSearch } from "react-icons/fa";
@@ -37,6 +38,7 @@ const data = [
 ];
 
 const LoanInvoice = () => {
+  const { t } = useTranslation("loanManagement");
   const [searchValue, setSearchValue] = useState("");
   const [addCustomerModal, setAddCustomerModal] = useState(false);
   const [individualModal, setIndividualModal] = useState(false);
@@ -95,13 +97,13 @@ const LoanInvoice = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="view" icon={<EyeOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
     </Menu>
   );
   const Account_Documents_List_Header = [
     {
-      name: "Application ID",
+      name: t("loanInvoice.colApplicationId"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -114,7 +116,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Document Type",
+      name: t("loanInvoice.colDocumentType"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -127,7 +129,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Customer ID",
+      name: t("loanInvoice.colCustomerId"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -140,7 +142,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -153,7 +155,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Product",
+      name: t("loanInvoice.colProduct"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -166,7 +168,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -179,7 +181,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Company",
+      name: t("loanInvoice.colCompany"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -192,7 +194,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Billing Cycle",
+      name: t("loanInvoice.colBillingCycle"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -205,7 +207,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Purpose",
+      name: t("loanInvoice.colPurpose"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -218,7 +220,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Producer",
+      name: t("loanInvoice.colProducer"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -231,7 +233,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Contact No.",
+      name: t("loanInvoice.colContactNo"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -244,7 +246,7 @@ const LoanInvoice = () => {
         ),
     },
     {
-      name: "Lead No.",
+      name: t("loanInvoice.colLeadNo"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -258,7 +260,7 @@ const LoanInvoice = () => {
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       width: "150px",
       cell: (row: any) => (
         <div
@@ -288,11 +290,11 @@ const LoanInvoice = () => {
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button>
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -309,7 +311,7 @@ const LoanInvoice = () => {
           <span className="pro-head-badge">
             <Receipt className="h-4 w-4" />
           </span>
-          Loan Invoice
+          {t("loanInvoice.title")}
         </h3>
       </div>
 
@@ -317,32 +319,32 @@ const LoanInvoice = () => {
       <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <DatePicker
-            placeholder="From"
+            placeholder={t("common:from")}
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t("common:to")}
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="From"
+            placeholder={t("common:from")}
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t("common:to")}
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <Button
             style={{ borderRadius: 2, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="invoice-btn"
           >
-            Clear
+            {t("common:clear")}
           </Button>
           <Button
             style={{ borderRadius: 2, border: "transparent", height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             className="invoice-btn"
           >
-            Export CSV
+            {t("loanInvoice.exportCsv")}
           </Button>
         </div>
       </div>

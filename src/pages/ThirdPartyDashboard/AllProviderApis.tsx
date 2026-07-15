@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getAllProviderApis, createProviderApi, updateProviderApi, getProviderApiById, deleteProviderApi, getAllProviders, updateProviderApiCostByCode } from "../../redux/apis/apisMiddlewareProviders";
@@ -32,6 +33,7 @@ const initialFormValues = {
 };
 
 const AllProviderApis = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -51,7 +53,7 @@ const AllProviderApis = () => {
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch provider APIs");
+      toast.error(error?.response?.data?.message || t("allProviderApis.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -102,7 +104,7 @@ const AllProviderApis = () => {
         timeoutMs: apiData.timeoutMs ?? "",
       });
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch provider API details");
+      toast.error(error?.response?.data?.message || t("allProviderApis.toast.fetchDetailFailed"));
       setIsDialogOpen(false);
       setEditingApi(null);
     } finally {
@@ -112,11 +114,11 @@ const AllProviderApis = () => {
 
   const handleSave = async () => {
     if (!formValues.name?.trim()) {
-      toast.error("Name is required");
+      toast.error(t("allProviderApis.validation.nameRequired"));
       return;
     }
     if (!formValues.endpointPath?.trim()) {
-      toast.error("Endpoint Path is required");
+      toast.error(t("allProviderApis.validation.endpointRequired"));
       return;
     }
 
@@ -133,10 +135,10 @@ const AllProviderApis = () => {
           timeoutMs: formValues.timeoutMs ? Number(formValues.timeoutMs) : null,
         };
         await updateProviderApi(editingApi.id, body);
-        toast.success("Provider API updated successfully");
+        toast.success(t("allProviderApis.toast.updateSuccess"));
       } else {
         if (!formValues.code?.trim()) {
-          toast.error("Code is required");
+          toast.error(t("allProviderApis.validation.codeRequired"));
           setIsSaving(false);
           return;
         }
@@ -153,7 +155,7 @@ const AllProviderApis = () => {
           body.providerId = formValues.providerId;
         }
         await createProviderApi(body);
-        toast.success("Provider API created successfully");
+        toast.success(t("allProviderApis.toast.createSuccess"));
       }
 
       setIsDialogOpen(false);
@@ -161,7 +163,7 @@ const AllProviderApis = () => {
       setFormValues(initialFormValues);
       loadProviderApis();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save provider API");
+      toast.error(error?.response?.data?.message || t("allProviderApis.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -184,16 +186,16 @@ const AllProviderApis = () => {
 
   const handleSaveCost = async () => {
     if (!costApi?.code) {
-      toast.error("API code is missing");
+      toast.error(t("allProviderApis.validation.apiCodeMissing"));
       return;
     }
     const trimmed = costValues.costPerCall?.toString().trim();
     if (!trimmed || isNaN(Number(trimmed))) {
-      toast.error("Cost per call must be a valid number");
+      toast.error(t("allProviderApis.validation.costValidNumber"));
       return;
     }
     if (!costValues.costCurrency?.trim()) {
-      toast.error("Currency is required");
+      toast.error(t("allProviderApis.validation.currencyRequired"));
       return;
     }
     try {
@@ -202,11 +204,11 @@ const AllProviderApis = () => {
         costPerCall: Number(trimmed).toFixed(4),
         costCurrency: costValues.costCurrency.trim(),
       });
-      toast.success("Cost updated successfully");
+      toast.success(t("allProviderApis.toast.costUpdateSuccess"));
       setCostApi(null);
       loadProviderApis();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update cost");
+      toast.error(error?.response?.data?.message || t("allProviderApis.toast.costUpdateFailed"));
     } finally {
       setIsSavingCost(false);
     }
@@ -217,11 +219,11 @@ const AllProviderApis = () => {
     try {
       setIsDeleting(true);
       await deleteProviderApi(deleteId);
-      toast.success("Provider API deleted successfully");
+      toast.success(t("allProviderApis.toast.deleteSuccess"));
       setDeleteId(null);
       loadProviderApis();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete provider API");
+      toast.error(error?.response?.data?.message || t("allProviderApis.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -268,21 +270,21 @@ const AllProviderApis = () => {
 
   const headers = [
     {
-      name: "Code",
+      name: t("allProviderApis.col.code"),
       selector: (row: any) => row.code || "-",
       sortable: true,
       wrap: true,
       width: "200px",
     },
     {
-      name: "Name",
+      name: t("allProviderApis.col.name"),
       selector: (row: any) => row.name || "-",
       sortable: true,
       wrap: true,
       // width: "200px",
     },
     {
-      name: "Method",
+      name: t("allProviderApis.col.method"),
       cell: (row: any) => (
         <span
           style={{
@@ -299,14 +301,14 @@ const AllProviderApis = () => {
       // width: "100px",
     },
     {
-      name: "Endpoint Path",
+      name: t("allProviderApis.col.endpointPath"),
       selector: (row: any) => row.endpointPath || "-",
       sortable: true,
       wrap: true,
       // width: "220px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span className={getStatusColor(row.status)}>
           {row.status || "-"}
@@ -316,17 +318,17 @@ const AllProviderApis = () => {
       // width: "110px",
     },
     {
-      name: "Async",
-      selector: (row: any) => (row.async ? "Yes" : "No"),
+      name: t("allProviderApis.col.async"),
+      selector: (row: any) => (row.async ? t("common:yes") : t("common:no")),
       // width: "80px",
     },
     {
-      name: "Timeout (ms)",
+      name: t("allProviderApis.col.timeout"),
       selector: (row: any) => row.timeoutMs ?? "-",
       // width: "120px",
     },
     {
-      name: "Created At",
+      name: t("allProviderApis.col.createdAt"),
       cell: (row: any) => (
         <div>
           {row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-"}
@@ -336,7 +338,7 @@ const AllProviderApis = () => {
       // width: "120px",
     },
     {
-      name: "Action",
+      name: t("allProviderApis.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -349,7 +351,7 @@ const AllProviderApis = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("allProviderApis.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -361,7 +363,7 @@ const AllProviderApis = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {
@@ -370,7 +372,7 @@ const AllProviderApis = () => {
                 }}
               >
                 <SaudiRiyal className="h-4 w-4" />
-                Update cost by API
+                {t("allProviderApis.updateCost")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 onSelect={(e) => {
@@ -379,7 +381,7 @@ const AllProviderApis = () => {
                 }}
               >
                 <Settings className="h-4 w-4" />
-                Env Configuration
+                {t("allProviderApis.envConfig")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -389,7 +391,7 @@ const AllProviderApis = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -411,7 +413,7 @@ const AllProviderApis = () => {
           <span className="pro-head-badge">
             <Webhook className="h-4 w-4" />
           </span>
-          All Provider APIs
+          {t("allProviderApis.title")}
         </h3>
       </div>
 
@@ -420,7 +422,7 @@ const AllProviderApis = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by name, code, method, or endpoint"
+            placeholder={t("allProviderApis.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -432,7 +434,7 @@ const AllProviderApis = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="h-4 w-4" />
-            Add Provider API
+            {t("allProviderApis.addProviderApi")}
           </Button>
         </div>
       </div>
@@ -440,21 +442,21 @@ const AllProviderApis = () => {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-[650px]">
           <DialogHeader>
-            <DialogTitle>{editingApi ? "Edit Provider API" : "Add Provider API"}</DialogTitle>
+            <DialogTitle>{editingApi ? t("allProviderApis.modalTitleEdit") : t("allProviderApis.modalTitleAdd")}</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-4 py-4" style={{ opacity: isLoadingEdit ? 0.5 : 1, pointerEvents: isLoadingEdit ? "none" : "auto" }}>
             {isLoadingEdit && (
-              <div className="col-span-2 text-center py-4 text-muted-foreground">Loading...</div>
+              <div className="col-span-2 text-center py-4 text-muted-foreground">{t("action.loading")}</div>
             )}
             {!editingApi && (
               <div className="space-y-2">
-                <Label>Provider</Label>
+                <Label>{t("allProviderApis.form.provider")}</Label>
                 <Select
                   value={formValues.providerId}
                   onValueChange={(val) => setFormValues({ ...formValues, providerId: val })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select provider (optional)" />
+                    <SelectValue placeholder={t("allProviderApis.form.providerPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     {providers.map((p) => (
@@ -467,30 +469,30 @@ const AllProviderApis = () => {
               </div>
             )}
             <div className="space-y-2">
-              <Label>Code {!editingApi && "*"}</Label>
+              <Label>{t("allProviderApis.form.code")} {!editingApi && "*"}</Label>
               <Input
-                placeholder="e.g. NAFATH_INITIATE"
+                placeholder={t("allProviderApis.form.codePlaceholder")}
                 value={formValues.code}
                 onChange={(e) => setFormValues({ ...formValues, code: e.target.value })}
                 disabled={!!editingApi}
               />
             </div>
             <div className="space-y-2">
-              <Label>Name *</Label>
+              <Label>{t("allProviderApis.form.name")}</Label>
               <Input
-                placeholder="API name"
+                placeholder={t("allProviderApis.form.namePlaceholder")}
                 value={formValues.name}
                 onChange={(e) => setFormValues({ ...formValues, name: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>HTTP Method</Label>
+              <Label>{t("allProviderApis.form.httpMethod")}</Label>
               <Select
                 value={formValues.httpMethod}
                 onValueChange={(val) => setFormValues({ ...formValues, httpMethod: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select method" />
+                  <SelectValue placeholder={t("allProviderApis.form.methodPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {HTTP_METHODS.map((m) => (
@@ -500,26 +502,26 @@ const AllProviderApis = () => {
               </Select>
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Description</Label>
+              <Label>{t("allProviderApis.form.description")}</Label>
               <Input
-                placeholder="Brief description"
+                placeholder={t("allProviderApis.form.descriptionPlaceholder")}
                 value={formValues.description}
                 onChange={(e) => setFormValues({ ...formValues, description: e.target.value })}
               />
             </div>
             <div className="col-span-2 space-y-2">
-              <Label>Endpoint Path *</Label>
+              <Label>{t("allProviderApis.form.endpointPath")}</Label>
               <Input
-                placeholder="/v2/initiate"
+                placeholder={t("allProviderApis.form.endpointPlaceholder")}
                 value={formValues.endpointPath}
                 onChange={(e) => setFormValues({ ...formValues, endpointPath: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Timeout (ms)</Label>
+              <Label>{t("allProviderApis.form.timeout")}</Label>
               <Input
                 type="number"
-                placeholder="30000"
+                placeholder={t("allProviderApis.form.timeoutPlaceholder")}
                 value={formValues.timeoutMs}
                 onChange={(e) => setFormValues({ ...formValues, timeoutMs: Number(e.target.value) })}
               />
@@ -529,13 +531,13 @@ const AllProviderApis = () => {
                 checked={formValues.async}
                 onCheckedChange={(val) => setFormValues({ ...formValues, async: val })}
               />
-              <Label>Async</Label>
+              <Label>{t("allProviderApis.form.async")}</Label>
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{t("common:cancel")}</Button>
             <Button onClick={handleSave} disabled={isSaving || isLoadingEdit}>
-              {isSaving ? "Saving..." : editingApi ? "Update" : "Save"}
+              {isSaving ? t("allProviderApis.saving") : editingApi ? t("common:update") : t("common:save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -544,33 +546,33 @@ const AllProviderApis = () => {
       <Dialog open={!!costApi} onOpenChange={(open) => { if (!open) setCostApi(null); }}>
         <DialogContent className="max-w-[480px]">
           <DialogHeader>
-            <DialogTitle>Update cost by API</DialogTitle>
+            <DialogTitle>{t("allProviderApis.costModalTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4 py-2">
             <div className="space-y-2">
-              <Label>API Code</Label>
+              <Label>{t("allProviderApis.cost.apiCode")}</Label>
               <Input value={costApi?.code || ""} disabled />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Cost per call *</Label>
+                <Label>{t("allProviderApis.cost.costPerCall")}</Label>
                 <Input
                   type="number"
                   step="0.0001"
                   min="0"
-                  placeholder="e.g. 2.7500"
+                  placeholder={t("allProviderApis.cost.costPlaceholder")}
                   value={costValues.costPerCall}
                   onChange={(e) => setCostValues({ ...costValues, costPerCall: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Currency *</Label>
+                <Label>{t("allProviderApis.cost.currency")}</Label>
                 <Select
                   value={costValues.costCurrency}
                   onValueChange={(val) => setCostValues({ ...costValues, costCurrency: val })}
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select currency" />
+                    <SelectValue placeholder={t("allProviderApis.cost.currencyPlaceholder")} />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="SAR">SAR</SelectItem>
@@ -583,9 +585,9 @@ const AllProviderApis = () => {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCostApi(null)} disabled={isSavingCost}>Cancel</Button>
+            <Button variant="outline" onClick={() => setCostApi(null)} disabled={isSavingCost}>{t("common:cancel")}</Button>
             <Button onClick={handleSaveCost} disabled={isSavingCost}>
-              {isSavingCost ? "Saving..." : "Update"}
+              {isSavingCost ? t("allProviderApis.saving") : t("common:update")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -594,15 +596,15 @@ const AllProviderApis = () => {
       <Dialog open={!!deleteId} onOpenChange={(open) => { if (!open) setDeleteId(null); }}>
         <DialogContent className="max-w-[400px]">
           <DialogHeader>
-            <DialogTitle>Delete Provider API</DialogTitle>
+            <DialogTitle>{t("allProviderApis.deleteModalTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground py-2">
-            Are you sure you want to delete this provider API? This action cannot be undone.
+            {t("allProviderApis.deleteBody")}
           </p>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>Cancel</Button>
+            <Button variant="outline" onClick={() => setDeleteId(null)} disabled={isDeleting}>{t("common:cancel")}</Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("action.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -9,8 +9,10 @@ import {
   getDueLoansReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
+import { useTranslation } from "react-i18next";
 
 const Due = () => {
+  const { t } = useTranslation("reports");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -41,7 +43,7 @@ const Due = () => {
       }
     } catch (error: any) {
       console.error("Error fetching due loans:", error);
-      toast.error(error?.message || "Failed to fetch due loans");
+      toast.error(error?.message || t("due.toast.fetchError"));
       setAllCallActivity([]);
     } finally {
       setLoading(false);
@@ -114,52 +116,52 @@ const Due = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Loan Account No.",
+      name: t("due.col.loanAccountNo"),
       selector: (row: any) => row.loanAccountNumber,
       width: "180px",
     },
     {
-      name: "Customer Name",
+      name: t("due.col.customerName"),
       selector: (row: any) => row.customerName,
       width: "160px",
     },
     {
-      name: "Product",
+      name: t("due.col.product"),
       selector: (row: any) => row.productName,
       width: "140px",
     },
     {
-      name: "Installment #",
+      name: t("due.col.installmentNumber"),
       selector: (row: any) => row.installmentNumber,
       width: "120px",
     },
     {
-      name: "Due Date",
+      name: t("due.col.dueDate"),
       selector: (row: any) => row.dueDate,
       width: "130px",
     },
     {
-      name: "Principal Due",
+      name: t("due.col.principalDue"),
       selector: (row: any) => row.principalDue,
       width: "150px",
     },
     {
-      name: "Profit Due",
+      name: t("due.col.profitDue"),
       selector: (row: any) => row.profitDue,
       width: "140px",
     },
     {
-      name: "Installment Amount",
+      name: t("due.col.installmentAmount"),
       selector: (row: any) => row.installmentAmount,
       width: "170px",
     },
     {
-      name: "Days Until Due",
+      name: t("due.col.daysUntilDue"),
       selector: (row: any) => row.daysUntilDue,
       width: "140px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: any) => row.status,
       width: "120px",
     },
@@ -167,7 +169,7 @@ const Due = () => {
 
   const exportToCSV = (data: any[], fileName: string) => {
     if (!data || data.length === 0) {
-      toast.error("No data to export");
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvRows: string[] = [];
@@ -190,21 +192,21 @@ const Due = () => {
             <span className="pro-head-badge">
               <Clock className="h-4 w-4" />
             </span>
-            Due Loans
+            {t("due.title")}
           </h3>
         </div>
         <div className="pro-card p-3 mb-3">
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by loan, customer, product, or status"
+            placeholder={t("due.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
-            placeholder="From"
+            placeholder={t("common:from")}
             value={fromDate}
             onChange={(d) => setFromDate(d)}
             format="YYYY-MM-DD"
@@ -212,7 +214,7 @@ const Due = () => {
             style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t("common:to")}
             value={toDate}
             onChange={(d) => setToDate(d)}
             format="YYYY-MM-DD"
@@ -226,7 +228,7 @@ const Due = () => {
             disabled={loading}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            {loading ? "Loading..." : "Refresh"}
+            {loading ? t("common:loading") : t("common:refresh")}
           </button>
           <button
             type="button"
@@ -235,7 +237,7 @@ const Due = () => {
             disabled={!mappedData.length}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t("action.exportCsv")}
           </button>
         </div>
       </div>

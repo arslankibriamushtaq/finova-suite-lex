@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { ArrowRight, ArrowLeft, BookTemplate as Template, Wrench, Eye, CheckCircle, Clock, Zap } from "lucide-react"
 import { useLanguage } from "../../hooks/use-language"
 import { useRouter } from "../../lib/router"
@@ -286,6 +287,7 @@ const productTemplates = [
 
 export default function CreateWizerd() {
   const { isRTL } = useLanguage()
+  const { t } = useTranslation("productManagement2")
   const router = useRouter()
   const [selectedCategories, setSelectedCategories] = useState<any>(null)
   const [selectedOption, setSelectedOption] = useState<"template" | "custom" | null>(null)
@@ -356,19 +358,19 @@ export default function CreateWizerd() {
       {/* Header */}
       <div className="border-b bg-card">
         <div className="px-3 py-3">
-          <div className={`max-w-8xl mx-auto ${isRTL ? "rtl:text-right" : ""}`}>
+          <div className={`max-w-8xl mx-auto ${isRTL ? "rtl:text-end" : ""}`}>
             <h1 className="text-xl font-semibold text-foreground mb-1 flex items-center gap-2.5">
               <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Wrench className="h-4 w-4" />
               </span>
-              Choose Your Setup Method
+              {t("setupWizard.chooseSetupMethodTitle")}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Select whether to use a pre-configured template or create a custom product from scratch
+              {t("setupWizard.chooseSetupMethodSubtitle")}
             </p>
             {selectedCategories && (
               <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Selected:</span>
+                <span>{t("setupWizard.selected")}</span>
                 <Badge variant="outline">{selectedCategories.masterCategory}</Badge>
                 <span>→</span>
                 <Badge variant="outline">{selectedCategories.subCategory}</Badge>
@@ -386,7 +388,7 @@ export default function CreateWizerd() {
               <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
                 1
               </div>
-              <h2 className="text-base font-semibold m-0">Choose Setup Method</h2>
+              <h2 className="text-base font-semibold m-0">{t("setupWizard.chooseSetupMethod")}</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* Use Template Option */}
@@ -420,12 +422,11 @@ export default function CreateWizerd() {
                   <div className="w-12 h-12 bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <Wrench className="h-6 w-6" />
                   </div>
-                  <h3 className="text-base font-semibold mb-2">Create Custom</h3>
+                  <h3 className="text-base font-semibold mb-2">{t("setupWizard.createCustom")}</h3>
                   <p className="text-sm text-muted-foreground mb-3">
-                    Build your product from scratch with complete control over every configuration, workflow, and
-                    setting.
+                    {t("setupWizard.createCustomDesc")}
                   </p>
-                  <div className="text-xs text-emerald-600 font-medium">Full Control • More Time Required</div>
+                  <div className="text-xs text-emerald-600 font-medium">{t("setupWizard.fullControl")}</div>
                 </CardContent>
               </Card>
             </div>
@@ -438,7 +439,7 @@ export default function CreateWizerd() {
                 <div className="w-7 h-7 bg-emerald-500 text-white rounded-full flex items-center justify-center text-xs font-semibold shadow-sm shadow-emerald-500/30">
                   2
                 </div>
-                <h2 className="text-base font-semibold m-0">Select Template</h2>
+                <h2 className="text-base font-semibold m-0">{t("setupWizard.selectTemplate")}</h2>
               </div>
 
               {getFilteredTemplates().length > 0 ? (
@@ -476,7 +477,7 @@ export default function CreateWizerd() {
                           <span className="text-muted-foreground">~{template.estimatedSetupTime}</span>
                         </div>
                         <div className="space-y-2">
-                          <div className="text-sm font-medium">Includes:</div>
+                          <div className="text-sm font-medium">{t("setupWizard.includes")}</div>
                           <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
                             {template.features.map((feature, index) => (
                               <div key={index} className="flex items-center gap-1">
@@ -497,7 +498,7 @@ export default function CreateWizerd() {
                             className="flex-1 gap-2"
                           >
                             <Eye className="h-4 w-4" />
-                            Preview
+                            {t("setupWizard.preview")}
                           </Button>
                           <Button
                             size="sm"
@@ -508,7 +509,7 @@ export default function CreateWizerd() {
                             }}
                             className="flex-1 gap-2"
                           >
-                            Use Template
+                            {t("setupWizard.useTemplate")}
                             <ArrowRight className="h-4 w-4" />
                           </Button>
                         </div>
@@ -519,10 +520,9 @@ export default function CreateWizerd() {
               ) : (
                 <Card className="border-dashed">
                   <CardContent className="p-8 text-center">
-                    <h3 className="text-lg font-semibold mb-2">No Templates Available</h3>
+                    <h3 className="text-lg font-semibold mb-2">{t("setupWizard.noTemplates")}</h3>
                     <p className="text-muted-foreground mb-4">
-                      No pre-configured templates are available for this category combination. You can proceed to create
-                      a custom product.
+                      {t("setupWizard.noTemplatesDesc")}
                     </p>
                   </CardContent>
                 </Card>
@@ -534,13 +534,13 @@ export default function CreateWizerd() {
           <div className="flex items-center justify-between pt-6 border-t">
             <Button variant="outline" onClick={() => router.push("/Los/ProductManagement/Categories")} className="gap-2">
               <ArrowLeft className="h-4 w-4" />
-              Back to Categories
+              {t("setupWizard.backToCategories")}
             </Button>
 
             <div className="flex gap-3">
               {selectedOption === "custom" && (
                 <Button onClick={handleCreateCustom} className="gap-2">
-                  Create Custom Product
+                  {t("setupWizard.createCustomProduct")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               )}
@@ -575,7 +575,7 @@ export default function CreateWizerd() {
               <div className="space-y-6">
                 {/* Overview */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-2">Overview</h3>
+                  <h3 className="text-lg font-semibold mb-2">{t("setupWizard.overview")}</h3>
                   <p className="text-muted-foreground">{previewTemplate.preview.overview}</p>
                   <div className="flex items-center gap-4 mt-3 text-sm">
                     <div className="flex items-center gap-1">
@@ -590,7 +590,7 @@ export default function CreateWizerd() {
 
                 {/* Application Steps */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Application Steps</h3>
+                  <h3 className="text-lg font-semibold mb-3">{t("setupWizard.applicationSteps")}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {previewTemplate.preview.applicationSteps.map((step: string, index: number) => (
                       <div key={index} className="flex items-center gap-2 text-sm">
@@ -607,7 +607,7 @@ export default function CreateWizerd() {
 
                 {/* Approval Workflows */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Approval Workflows</h3>
+                  <h3 className="text-lg font-semibold mb-3">{t("setupWizard.approvalWorkflows")}</h3>
                   <div className="space-y-3">
                     {previewTemplate.preview.approvalWorkflows.map((workflow: any, index: number) => (
                       <div key={index} className="border rounded-lg p-3">
@@ -619,10 +619,10 @@ export default function CreateWizerd() {
                         </div>
                         <div className="text-xs text-muted-foreground space-y-1">
                           <div>
-                            <strong>Condition:</strong> {workflow.condition}
+                            <strong>{t("setupWizard.condition")}</strong> {workflow.condition}
                           </div>
                           <div>
-                            <strong>Action:</strong> {workflow.action}
+                            <strong>{t("setupWizard.action")}</strong> {workflow.action}
                           </div>
                         </div>
                       </div>
@@ -634,7 +634,7 @@ export default function CreateWizerd() {
 
                 {/* Fee Structure */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Fee Structure</h3>
+                  <h3 className="text-lg font-semibold mb-3">{t("setupWizard.feeStructure")}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {Object.entries(previewTemplate.preview.feeStructure).map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center p-2 bg-muted/50 rounded">
@@ -649,7 +649,7 @@ export default function CreateWizerd() {
 
                 {/* Credit Scoring Criteria */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Credit Scoring Criteria</h3>
+                  <h3 className="text-lg font-semibold mb-3">{t("setupWizard.creditScoringCriteria")}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {Object.entries(previewTemplate.preview.creditScoring).map(([key, value]) => (
                       <div key={key} className="flex justify-between items-center p-2 bg-muted/50 rounded">
@@ -664,7 +664,7 @@ export default function CreateWizerd() {
 
                 {/* Required Documents */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Required Documents</h3>
+                  <h3 className="text-lg font-semibold mb-3">{t("setupWizard.requiredDocuments")}</h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                     {previewTemplate.preview.documents.map((doc: string, index: number) => (
                       <div key={index} className="flex items-center gap-2 text-sm">
@@ -679,7 +679,7 @@ export default function CreateWizerd() {
 
                 {/* Funding Configuration */}
                 <div>
-                  <h3 className="text-lg font-semibold mb-3">Funding Configuration</h3>
+                  <h3 className="text-lg font-semibold mb-3">{t("setupWizard.fundingConfiguration")}</h3>
                   <div className="flex gap-2">
                     {previewTemplate.preview.fundingConfiguration.map((funding: string, index: number) => (
                       <Badge key={index} variant="outline">
@@ -692,10 +692,10 @@ export default function CreateWizerd() {
                 {/* Action Buttons */}
                 <div className="flex gap-3 pt-4">
                   <Button variant="outline" onClick={() => setIsPreviewOpen(false)} className="flex-1">
-                    Close Preview
+                    {t("setupWizard.closePreview")}
                   </Button>
                   <Button onClick={handleUsePreviewedTemplate} className="flex-1 gap-2">
-                    Use This Template
+                    {t("setupWizard.useThisTemplate")}
                     <ArrowRight className="h-4 w-4" />
                   </Button>
                 </div>

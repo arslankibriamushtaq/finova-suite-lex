@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import Loader from "../../Loader/Loader";
 import { Row, Col } from "antd";
 import { BankOutlined, UserOutlined, DollarOutlined, ClockCircleOutlined, UpOutlined, DownOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 function SalaryDetails({ fullDetail }: any) {
+  const { t } = useTranslation("financing");
   const [salaryData, setSalaryData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [expandedEmploymentCards, setExpandedEmploymentCards] = useState<{ [key: number]: boolean }>({});
@@ -101,7 +103,7 @@ function SalaryDetails({ fullDetail }: any) {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch salary details");
+      toast.error(t("toast.fetchSalaryFailed"));
       setSalaryData(null);
     } finally {
       setLoading(false);
@@ -163,10 +165,10 @@ function SalaryDetails({ fullDetail }: any) {
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "30px" }}>
         <div>
           <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "24px", margin: 0, marginBottom: "5px" ,textAlign:'left'}}>
-            Employment History
+            {t("salary.employmentHistory")}
           </h2>
           <p style={{ color: "var(--muted-foreground)", fontSize: "14px", margin: 0 }}>
-            View all employment records and details
+            {t("salary.employmentSubtitle")}
           </p>
         </div>
         {!isDataEmpty && (
@@ -178,14 +180,14 @@ function SalaryDetails({ fullDetail }: any) {
             fontWeight: 600,
             color: "var(--foreground)"
           }}>
-            {employmentStatusInfo.length} {employmentStatusInfo.length === 1 ? "Record" : "Records"}
+            {employmentStatusInfo.length} {employmentStatusInfo.length === 1 ? t("salary.record") : t("salary.records")}
           </div>
         )}
       </div>
 
       {isDataEmpty ? (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--muted-foreground)" }}>
-          No employment details available
+          {t("salary.noEmploymentDetails")}
         </div>
       ) : (
         <>
@@ -195,7 +197,7 @@ function SalaryDetails({ fullDetail }: any) {
               const isExpanded = expandedEmploymentCards[index] || false;
               const status = employment.employmentStatus || employment.employment_status || employment.status || "--";
               const statusColor = getEmploymentStatusColor(status);
-              const title = employment.occupationTitle || employment.occupation_title || employment.employerName || employment.employer_name || "Employment Record";
+              const title = employment.occupationTitle || employment.occupation_title || employment.employerName || employment.employer_name || t("salary.employmentRecord");
               const employerName = employment.employerName || employment.employer_name || "--";
               const joiningDate = employment.joiningDate || employment.joining_date || "--";
               const amount = employment.pensionAmount || employment.pension_amount || employment.basicWage || employment.basic_wage || 0;
@@ -246,7 +248,7 @@ function SalaryDetails({ fullDetail }: any) {
                         <div style={{ display: "flex", alignItems: "center", gap: "16px", fontSize: "14px", color: "var(--muted-foreground)" }}>
                           <span>{employerName}</span>
                           <span>•</span>
-                          <span>Joined: {joiningDate}</span>
+                          <span>{t("salary.joined", { date: joiningDate })}</span>
                           {amount > 0 && (
                             <>
                               <span>•</span>
@@ -273,17 +275,17 @@ function SalaryDetails({ fullDetail }: any) {
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
                               <UserOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                               <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
-                                Personal Information
+                                {t("tabs.personalInformation")}
                               </h4>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>FULL NAME</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.fullName")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {employment.fullName || employment.full_name || "--"}
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EMPLOYMENT TYPE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.employmentType")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {employment.employmentType || employment.employment_type || "--"}
                               </span>
@@ -297,15 +299,15 @@ function SalaryDetails({ fullDetail }: any) {
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
                               <BankOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                               <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
-                                Employment Details
+                                {t("salary.employmentDetails")}
                               </h4>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EMPLOYER NAME</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.employerName")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>{employerName}</span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EMPLOYMENT STATUS</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.employmentStatus")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 <span
                                   style={{
@@ -322,13 +324,13 @@ function SalaryDetails({ fullDetail }: any) {
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>JOINING DATE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.joiningDate")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>{joiningDate}</span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>WORKING MONTHS</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.workingMonths")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
-                                {employment.workingMonths || employment.working_months || 0} months
+                                {employment.workingMonths || employment.working_months || 0} {t("unit.months")}
                               </span>
                             </div>
                           </div>
@@ -341,12 +343,12 @@ function SalaryDetails({ fullDetail }: any) {
                               <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
                                 <ClockCircleOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                                 <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
-                                  Occupation Details
+                                  {t("salary.occupationDetails")}
                                 </h4>
                               </div>
                               {employment.occupationCode && (
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>OCCUPATION CODE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.occupationCode")}</span>
                                   <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.occupationCode || employment.occupation_code || "--"}
                                   </span>
@@ -354,7 +356,7 @@ function SalaryDetails({ fullDetail }: any) {
                               )}
                               {employment.occupationTitle && (
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>OCCUPATION TITLE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.occupationTitle")}</span>
                                   <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.occupationTitle || employment.occupation_title || "--"}
                                   </span>
@@ -362,7 +364,7 @@ function SalaryDetails({ fullDetail }: any) {
                               )}
                               {employment.occupationCode_meaning && (
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>DESCRIPTION</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.description")}</span>
                                   <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.occupationCode_meaning || "--"}
                                   </span>
@@ -378,23 +380,23 @@ function SalaryDetails({ fullDetail }: any) {
                             <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
                               <DollarOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                               <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
-                                Compensation Details
+                                {t("salary.compensationDetails")}
                               </h4>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>BASIC WAGE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.basicWage")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {formatAmount(employment.basicWage || employment.basic_wage)}
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>HOUSING ALLOWANCE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.housingAllowance")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {formatAmount(employment.housingAllowance || employment.housing_allowance)}
                               </span>
                             </div>
                             <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>OTHER ALLOWANCE</span>
+                              <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.otherAllowance")}</span>
                               <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                 {formatAmount(employment.otherAllowance || employment.other_allowance)}
                               </span>
@@ -402,19 +404,19 @@ function SalaryDetails({ fullDetail }: any) {
                             {employment.isEmployeePensioned && (
                               <>
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>PENSION AMOUNT</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.pensionAmount")}</span>
                                   <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {formatAmount(employment.pensionAmount || employment.pension_amount)}
                                   </span>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>PENSION TYPE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.pensionType")}</span>
                                   <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.pensionType || employment.pension_type || "--"}
                                   </span>
                                 </div>
                                 <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>PENSION START DATE</span>
+                                  <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.pensionStartDate")}</span>
                                   <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                                     {employment.pensionStartDate || employment.pension_start_date || "--"}
                                   </span>
@@ -442,7 +444,7 @@ function SalaryDetails({ fullDetail }: any) {
               }}
             >
               <div style={{ color: "#065F46", fontWeight: 700, fontSize: "14px" }}>
-                This Application has been approved
+                {t("salary.applicationApproved")}
               </div>
             </div>
           )}
@@ -453,10 +455,10 @@ function SalaryDetails({ fullDetail }: any) {
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
                 <div>
                   <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "5px" }}>
-                    Monthly Expenses Summary
+                    {t("salary.monthlyExpensesSummary")}
                   </h2>
                   <p style={{ color: "var(--muted-foreground)", fontSize: "14px", margin: 0 }}>
-                    Breakdown of monthly income and expenses
+                    {t("salary.monthlyExpensesSubtitle")}
                   </p>
                 </div>
               </div>
@@ -469,17 +471,17 @@ function SalaryDetails({ fullDetail }: any) {
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
                         <DollarOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                         <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
-                          Monthly Income
+                          {t("salary.monthlyIncomeHeading")}
                         </h4>
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>MONTHLY INCOME</span>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.monthlyIncome")}</span>
                         <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                           {formatAmount(salaryData.monthlyExpenses.monthlyIncome)}
                         </span>
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>EXISTING LIABILITIES</span>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 400 }}>{t("salary.existingLiabilities")}</span>
                         <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>
                           {formatAmount(salaryData.monthlyExpenses.existingLiabilities)}
                         </span>
@@ -493,11 +495,11 @@ function SalaryDetails({ fullDetail }: any) {
                       <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "16px" }}>
                         <ClockCircleOutlined style={{ fontSize: "18px", color: "var(--muted-foreground)" }} />
                         <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)" }}>
-                          Total Monthly Expenses
+                          {t("salary.totalMonthlyExpenses")}
                         </h4>
                       </div>
                       <div style={{ display: "flex", justifyContent: "space-between", padding: "12px 0", background: "var(--surface-card-alt)", borderRadius: "2px", paddingLeft: "12px", paddingRight: "12px" }}>
-                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>TOTAL EXPENSES</span>
+                        <span style={{ fontSize: "14px", color: "var(--foreground)", fontWeight: 600 }}>{t("salary.totalExpenses")}</span>
                         <span style={{ fontSize: "16px", color: "var(--foreground)", fontWeight: 700 }}>
                           {formatAmount(salaryData.monthlyExpenses.totalExpenses)}
                         </span>
@@ -517,12 +519,12 @@ function SalaryDetails({ fullDetail }: any) {
                     <Col xs={24}>
                       <div style={{ marginBottom: "24px" }}>
                         <h4 style={{ margin: 0, fontSize: "16px", fontWeight: 600, color: "var(--foreground)", marginBottom: "16px" }}>
-                          Expense Breakdown
+                          {t("salary.expenseBreakdown")}
                         </h4>
                         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "12px" }}>
                           {salaryData.monthlyExpenses.foodGroceries && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Food & Groceries</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.foodGroceries")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.foodGroceries)}
                               </div>
@@ -530,7 +532,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.utilities && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Utilities</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.utilities")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.utilities)}
                               </div>
@@ -538,7 +540,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.healthcare && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Healthcare</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.healthcare")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.healthcare)}
                               </div>
@@ -546,7 +548,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.communication && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Communication</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.communication")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.communication)}
                               </div>
@@ -554,7 +556,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.housingRent && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Housing Rent</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.housingRent")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.housingRent)}
                               </div>
@@ -562,7 +564,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.clothingEssentials && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Clothing & Essentials</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.clothingEssentials")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.clothingEssentials)}
                               </div>
@@ -570,7 +572,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.education && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Education</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.education")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.education)}
                               </div>
@@ -578,7 +580,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.transportation && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Transportation</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.transportation")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {formatAmount(salaryData.monthlyExpenses.transportation)}
                               </div>
@@ -586,7 +588,7 @@ function SalaryDetails({ fullDetail }: any) {
                           )}
                           {salaryData.monthlyExpenses.dependents && (
                             <div style={{ borderBottom: "1px solid #eee", padding: "12px 0" }}>
-                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>Dependents</span>
+                              <span style={{ fontSize: "14px", color: "var(--muted-foreground)" }}>{t("salary.dependents")}</span>
                               <div style={{ fontSize: "14px", fontWeight: 600, color: "var(--foreground)" }}>
                                 {salaryData.monthlyExpenses.dependents}
                               </div>

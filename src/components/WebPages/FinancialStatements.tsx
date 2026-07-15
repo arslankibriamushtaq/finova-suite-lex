@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 // URL for external RTL stylesheet
 const rtlCssUrl = new URL('../../styles/arabic-rtl.css', import.meta.url).href;
@@ -48,6 +49,7 @@ interface FinancialStatementsData {
 }
 
 const FinancialStatements = () => {
+  const { t } = useTranslation('webPages');
   const [pageData, setPageData] = useState<FinancialStatementsData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -389,7 +391,7 @@ const FinancialStatements = () => {
         flexDirection: 'column',
         gap: '10px'
       }}>
-        <div>Error: {error}</div>
+        <div>{t('errorWithMessage', { message: error })}</div>
         <button 
           onClick={() => fetchPageData(locale)}
           style={{
@@ -417,7 +419,7 @@ const FinancialStatements = () => {
         fontSize: '18px',
         color: '#666'
       }}>
-        No data available
+        {t('state.noDataAvailableShort')}
       </div>
     );
   }
@@ -552,7 +554,7 @@ const FinancialStatements = () => {
               color: '#666',
               fontSize: '16px'
             }}>
-              No financial statements available at the moment.
+              {t('state.noFinancialStatements')}
             </div>
           )}
         </div>

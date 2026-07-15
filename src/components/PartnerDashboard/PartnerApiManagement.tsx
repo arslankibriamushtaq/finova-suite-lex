@@ -4,9 +4,11 @@ import EnabledApis from "./EnabledApis";
 import CompanyApiSetting from "./CompanyApiSetting";
 import ErrorCodeSetting from "./ErrorCodeSetting";
 import { getPartnerAllApis } from "../../redux/apis/apisCrud";
+import { useTranslation } from "react-i18next";
 
 
 function PartnerApiManagement({ setActiveTab }: any) {
+  const { t } = useTranslation("partner");
   const [active, setActive] = useState("EnabledApis");
   const [partnerData, setPartnerData] = useState<any>(null);
   const [apisData, setApisData] = useState<any>([]);
@@ -29,17 +31,17 @@ function PartnerApiManagement({ setActiveTab }: any) {
   }, []);
   const tabOptions = [
     {
-      title: "Enabled Apis",
+      title: t("apiMgmt.enabledApis"),
       key: "EnabledApis",
       component: <EnabledApis apisData={apisData} partnerData={partnerData} setActiveTab={setActiveTab} />,
     },
     {
-      title: "Company APIs Setting",
+      title: t("apiMgmt.companyApisSetting"),
       key: "CompanyAPIsSetting",
       component: <CompanyApiSetting apisData={apisData} partnerData={partnerData} setActiveTab={setActiveTab} />,
     },
     {
-      title: "Error Codes Setting",
+      title: t("apiMgmt.errorCodesSetting"),
       key: "ErrorCodesSetting",
       component: <ErrorCodeSetting errorCodesData={errorCodesData} setActiveTab={setActiveTab} />,
     },

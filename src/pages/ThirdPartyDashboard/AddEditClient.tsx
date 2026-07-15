@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { createClient, updateClient, getClientById, listApiAccess, bulkGrantAccess, getAllProviders, getProviderApisByProvider } from "../../redux/apis/apisMiddlewareProviders";
@@ -28,6 +29,7 @@ interface ProviderApi {
 }
 
 const AddEditClient = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditMode = !!id;
@@ -113,7 +115,7 @@ const AddEditClient = () => {
         // Access control may not exist yet
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch client data");
+      toast.error(error?.response?.data?.message || t("addEditClient.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -179,11 +181,11 @@ const AddEditClient = () => {
 
   const handleSubmit = async () => {
     if (!formValues.name.trim()) {
-      toast.error("Name is required");
+      toast.error(t("addEditClient.toast.nameRequired"));
       return;
     }
     if (!formValues.code.trim()) {
-      toast.error("Code is required");
+      toast.error(t("addEditClient.toast.codeRequired"));
       return;
     }
 
@@ -206,12 +208,12 @@ const AddEditClient = () => {
 
       if (isEditMode && id) {
         await updateClient(id, body);
-        toast.success("Client updated successfully");
+        toast.success(t("addEditClient.toast.updateSuccess"));
       } else {
         const res = await createClient(body);
         const created = res?.data?.data || res?.data;
         clientId = created?.id;
-        toast.success("Client created successfully");
+        toast.success(t("addEditClient.toast.createSuccess"));
       }
 
       // Save access grants if we have a clientId
@@ -223,7 +225,7 @@ const AddEditClient = () => {
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
-          `Failed to ${isEditMode ? "update" : "create"} client`
+          (isEditMode ? t("addEditClient.toast.updateFailed") : t("addEditClient.toast.createFailed"))
       );
     } finally {
       setIsSaving(false);
@@ -252,7 +254,7 @@ const AddEditClient = () => {
       }
     } catch (error: any) {
       console.error("Error saving access grants:", error);
-      toast.error("Client saved but access grants failed");
+      toast.error(t("addEditClient.toast.accessGrantsFailed"));
     }
   };
 
@@ -280,7 +282,7 @@ const AddEditClient = () => {
   if (loading) {
     return (
       <div className="service p-4">
-        <p className="text-muted-foreground">Loading client data...</p>
+        <p className="text-muted-foreground">{t("addEditClient.loadingClientData")}</p>
       </div>
     );
   }
@@ -289,7 +291,7 @@ const AddEditClient = () => {
     <div className="service p-4">
       <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">
-          {isEditMode ? "Edit Client" : "Add New Client"}
+          {isEditMode ? t("addEditClient.titleEdit") : t("addEditClient.titleAdd")}
         </h1>
         <Button
           variant="outline"
@@ -297,20 +299,20 @@ const AddEditClient = () => {
           onClick={() => navigate("/ThirdPartyManagement/Clients")}
         >
           <ArrowLeft className="h-4 w-4" />
-          Back
+          {t("common:back")}
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Client Details</CardTitle>
+          <CardTitle>{t("addEditClient.cardClientDetails")}</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
+              <Label>{t("addEditClient.form.name")}</Label>
               <Input
-                placeholder="e.g. KYC Adapter Service"
+                placeholder={t("addEditClient.form.namePlaceholder")}
                 value={formValues.name}
                 onChange={(e) =>
                   setFormValues({ ...formValues, name: e.target.value })
@@ -319,9 +321,9 @@ const AddEditClient = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Code *</Label>
+              <Label>{t("addEditClient.form.code")}</Label>
               <Input
-                placeholder="e.g. KYC_ADAPTER"
+                placeholder={t("addEditClient.form.codePlaceholder")}
                 value={formValues.code}
                 onChange={(e) =>
                   setFormValues({ ...formValues, code: e.target.value })
@@ -331,9 +333,9 @@ const AddEditClient = () => {
             </div>
 
             <div className="col-span-1 md:col-span-2 space-y-2">
-              <Label>Description</Label>
+              <Label>{t("addEditClient.form.description")}</Label>
               <Input
-                placeholder="Brief description of the client"
+                placeholder={t("addEditClient.form.descriptionPlaceholder")}
                 value={formValues.description}
                 onChange={(e) =>
                   setFormValues({ ...formValues, description: e.target.value })
@@ -342,9 +344,9 @@ const AddEditClient = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Callback URL</Label>
+              <Label>{t("addEditClient.form.callbackUrl")}</Label>
               <Input
-                placeholder="http://service:8087/api/v1/callbacks"
+                placeholder={t("addEditClient.form.callbackPlaceholder")}
                 value={formValues.callbackUrl}
                 onChange={(e) =>
                   setFormValues({ ...formValues, callbackUrl: e.target.value })
@@ -353,7 +355,7 @@ const AddEditClient = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Environment</Label>
+              <Label>{t("addEditClient.form.environment")}</Label>
               <Select
                 value={formValues.environment}
                 onValueChange={(val) =>
@@ -361,7 +363,7 @@ const AddEditClient = () => {
                 }
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select environment" />
+                  <SelectValue placeholder={t("addEditClient.form.environmentPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   {ENVIRONMENTS.map((env) => (
@@ -375,7 +377,7 @@ const AddEditClient = () => {
 
             <div className="col-span-1 md:col-span-2 space-y-2">
               <div className="flex items-center justify-between">
-                <Label>IP Whitelist</Label>
+                <Label>{t("addEditClient.form.ipWhitelist")}</Label>
                 <Button
                   type="button"
                   variant="outline"
@@ -384,14 +386,14 @@ const AddEditClient = () => {
                   onClick={addIpEntry}
                 >
                   <Plus className="h-3 w-3" />
-                  Add IP
+                  {t("addEditClient.addIp")}
                 </Button>
               </div>
               <div className="space-y-2">
                 {formValues.ipWhitelist.map((ip, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input
-                      placeholder="e.g. 10.0.0.0/8"
+                      placeholder={t("addEditClient.ipPlaceholder")}
                       value={ip}
                       onChange={(e) => updateIpEntry(index, e.target.value)}
                     />
@@ -417,11 +419,11 @@ const AddEditClient = () => {
       {/* Provider & API Access */}
       <Card className="mt-4">
         <CardHeader>
-          <CardTitle>Provider & API Access</CardTitle>
+          <CardTitle>{t("addEditClient.cardProviderApiAccess")}</CardTitle>
         </CardHeader>
         <CardContent>
           {providers.length === 0 ? (
-            <p className="text-sm text-muted-foreground">No providers available.</p>
+            <p className="text-sm text-muted-foreground">{t("addEditClient.noProviders")}</p>
           ) : (
             <div className="border rounded-lg p-4 bg-muted/30">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-x-6 gap-y-4">
@@ -452,7 +454,7 @@ const AddEditClient = () => {
                           }
                         />
                         <span
-                          className="text-sm font-medium ml-2"
+                          className="text-sm font-medium ms-2"
                           style={{ color: "var(--foreground)" }}
                         >
                           {providerLabel}
@@ -461,14 +463,14 @@ const AddEditClient = () => {
 
                       {/* Child APIs — shown directly below the provider */}
                       {isChecked && (
-                        <div className="flex flex-col ml-6 mt-3 space-y-2.5">
+                        <div className="flex flex-col ms-6 mt-3 space-y-2.5">
                           {isLoadingProviderApis ? (
                             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                               <Loader2 className="h-3 w-3 animate-spin" />
-                              Loading...
+                              {t("action.loading")}
                             </div>
                           ) : apis.length === 0 ? (
-                            <p className="text-xs text-muted-foreground">No APIs</p>
+                            <p className="text-xs text-muted-foreground">{t("addEditClient.noApis")}</p>
                           ) : (
                             <>
                               <label className="flex items-center gap-2.5 cursor-pointer">
@@ -478,7 +480,7 @@ const AddEditClient = () => {
                                     handleSelectAllApis(provider.id, !!checked)
                                   }
                                 />
-                                <span className="text-sm font-semibold ml-2">Select All APIs</span>
+                                <span className="text-sm font-semibold ms-2">{t("addEditClient.selectAllApis")}</span>
                               </label>
                               {apis.map((api) => {
                                 const apiLabel =
@@ -500,7 +502,7 @@ const AddEditClient = () => {
                                       }
                                     />
                                     <span
-                                      className="text-sm font-normal ml-2"
+                                      className="text-sm font-normal ms-2"
                                       style={{ color: "var(--foreground)" }}
                                     >
                                       {apiLabel}
@@ -526,14 +528,14 @@ const AddEditClient = () => {
           variant="outline"
           onClick={() => navigate("/ThirdPartyManagement/Clients")}
         >
-          Cancel
+          {t("common:cancel")}
         </Button>
         <Button onClick={handleSubmit} disabled={isSaving}>
           {isSaving
-            ? "Saving..."
+            ? t("addEditClient.saving")
             : isEditMode
-            ? "Update Client"
-            : "Create Client"}
+            ? t("addEditClient.updateClient")
+            : t("addEditClient.createClient")}
         </Button>
       </div>
     </div>

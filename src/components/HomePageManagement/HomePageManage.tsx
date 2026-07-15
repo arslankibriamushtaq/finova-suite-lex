@@ -2,9 +2,11 @@ import React, { useState } from "react";
 import { Images } from "../Config/Images";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/rootReducer";
 
 const HomePageManage = () => {
+  const { t } = useTranslation("webPages");
   const dispatch = useDispatch();
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -19,14 +21,14 @@ const HomePageManage = () => {
       <div className="container-fluid container-custom">
         <div className="col-md-12">
           <div className="page-header align-items-center">
-            <h3 className="welcome-heading">Home Page Management</h3>
+            <h3 className="welcome-heading">{t("header.homePageManagement")}</h3>
             <div className="d-flex ">
               <a href="HomePageManagement/home-page/setting">
                 <button
                   className="btn-theme float-end"
                   style={{ background: themeBuilder?.table?.backgroundColor }}
                 >
-                  Preview Home Page
+                  {t("previewHomePage")}
                 </button>
               </a>
             </div>
@@ -58,7 +60,7 @@ const HomePageManage = () => {
                         background: themeBuilder?.table?.backgroundColor,
                       }}
                     >
-                      Edit Template
+                      {t("editTemplate")}
                     </button>
                   </div>
                 </div>

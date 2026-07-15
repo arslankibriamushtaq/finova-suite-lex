@@ -9,7 +9,9 @@ import {
 } from "@ant-design/icons";
 import { createPriority, deletePriority, getPriorities, updatePriority } from "../../../redux/apis/apisCrudCms";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 const Priorities = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -66,44 +68,44 @@ const Priorities = () => {
     {
       key: "edit",
       icon: <EditOutlined />,
-      label: "Edit",
+      label: t("common:edit"),
       onClick: () => handleMenuClick("edit", row),
     },
     {
       key: "delete",
       icon: <DeleteOutlined />,
-      label: "Delete",
+      label: t("common:delete"),
       onClick: () => handleMenuClick("delete", row),
     },
   ];
 
   const Table_Headers = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       width: "30%",
 
       selector: (row: { srNo: string }) => row.srNo || "-",
     },
     {
-        name: "Priority Name",
+        name: t("priorities.priorityName"),
         width: "30%",
 
         selector: (row: { priorityName: string }) => row.priorityName || "-",
     },
     {
-        name: "Priority Hours",
+        name: t("priorities.priorityHours"),
         width: "30%",
         selector: (row: { priorityhours: string }) => row.priorityhours || "-",
     },
     {
-        name: "Actions",
+        name: t("common:actions"),
         cell: (row: any) => (
           <Dropdown menu={{ items: getMenuItems(row) }} trigger={["click"]}>
             <Button
               className="gradient-btn"
               type="primary"
             >
-              Select <DownOutlined />
+              {t("fields.select")} <DownOutlined />
             </Button>
           </Dropdown>
         ),
@@ -126,7 +128,7 @@ const Priorities = () => {
     try {
       if (isEditMode) {
         await toast.promise(updatePriority(selectedPriority?.id, body), {
-          loading: "Updating...",
+          loading: t("toast.updating"),
           success: (response: any) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -134,11 +136,11 @@ const Priorities = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to update",
+          error: (err) => (err?.response?.data?.message) || t("toast.failedUpdate"),
         });
       } else {
         await toast.promise(createPriority(body), {
-          loading: "Adding priority...",
+          loading: t("priorities.toast.adding"),
           success: (response) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -146,7 +148,7 @@ const Priorities = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to add new priority",
+          error: (err) => (err?.response?.data?.message) || t("priorities.toast.failedAdd"),
         });
       }
     } catch (error) {
@@ -157,7 +159,7 @@ const Priorities = () => {
   const handleDelete = async () => {
     try {
       await toast.promise(deletePriority(selectedPriority?.id), {
-        loading: "Deleting...",
+        loading: t("toast.deleting"),
         success: (response: any) => {
           if (response?.data?.success) {
             setIsDeleteModal(false);
@@ -165,7 +167,7 @@ const Priorities = () => {
           }
           return response?.data?.message;
         },
-        error: (err) => (err?.response?.data?.message) || "Failed to delete",
+        error: (err) => (err?.response?.data?.message) || t("toast.failedDelete"),
       });
     } catch (error) {
       console.error("Failed to delete priority:", error);
@@ -210,11 +212,11 @@ const Priorities = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h5 className="mb-0">Priorities</h5>
+          <h5 className="mb-0">{t("priorities.title")}</h5>
         </div>
         <div className="text-end">
         <Input
-            placeholder="Search by name"
+            placeholder={t("fields.searchByName")}
             value={searchValue}
             prefix={<SearchOutlined />} style={{ width: "300px", height: "33px", marginRight: "10px" }}
             onChange={(e: any) => {
@@ -227,7 +229,7 @@ const Priorities = () => {
               setAddPriorityModal(true);
             }}
           >
-            Add New Priority
+            {t("priorities.addNew")}
           </button>
          
         </div>
@@ -256,7 +258,7 @@ const Priorities = () => {
         maskClosable={false}
         title={
           <span style={{ fontSize: "16px", fontWeight: 600 }}>
-            {isEditMode ? "Edit Priority" : "Add Priority"}
+            {isEditMode ? t("priorities.editModalTitle") : t("priorities.addModalTitle")}
           </span>
         }
         footer={null}
@@ -272,10 +274,10 @@ const Priorities = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Priority Name
+              {t("priorities.priorityName")}
             </label>
             <Input
-              placeholder="Enter priority name"
+              placeholder={t("priorities.enterPriorityName")}
               value={priorityName}
               onChange={(e) => setPriorityName(e.target.value)}
               style={{ height: "40px" }}
@@ -291,10 +293,10 @@ const Priorities = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Priority Hours
+              {t("priorities.priorityHours")}
             </label>
             <Input
-              placeholder="Enter priority hours"
+              placeholder={t("priorities.enterPriorityHours")}
               value={priorityHours}
               onChange={(e) => setPriorityHours(e.target.value)}
               style={{ height: "40px" }}
@@ -322,7 +324,7 @@ const Priorities = () => {
                 fontWeight: 500,
               }}
             >
-              Close
+              {t("common:close")}
             </button>
             <button
               onClick={handleSavePriority}
@@ -337,7 +339,7 @@ const Priorities = () => {
                 fontWeight: 500,
               }}
             >
-              Save Priority
+              {t("priorities.savePriority")}
             </button>
           </div>
         </div>
@@ -347,14 +349,14 @@ const Priorities = () => {
         onCancel={handleCloseDeleteModal}
         centered
         maskClosable={false}
-        title="Delete Priority"
+        title={t("priorities.deleteModalTitle")}
         footer={null}
       >
         <div style={{ padding: "20px 0" }}>
-          <p>Are you sure you want to delete this priority?</p>
+          <p>{t("priorities.deleteConfirm")}</p>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "30px" }}>
-            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
-            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
+            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>{t("common:cancel")}</Button>
+            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>{t("common:delete")}</Button>
           </div>
         </div>
       </Modal>

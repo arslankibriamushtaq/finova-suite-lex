@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Menu, Select, Modal, Input, Form } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -19,6 +20,7 @@ import toast from "react-hot-toast";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 const IncomeProof = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -44,7 +46,7 @@ const IncomeProof = () => {
       await toast.promise(
         deleteIncomeProof(rowData?.id), // API call
         {
-          loading: "Deleting Income Proof...",
+          loading: t("incomeProof.deleting"),
           success: (response) => {
             if (response?.data?.success) {
               getIncomeProofData();
@@ -54,13 +56,13 @@ const IncomeProof = () => {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.notificationMessage ||
-                  "Failed to deleting Income Proof"
+                  t("incomeProof.deleteFailed")
               );
             }
           },
           error: (err) =>
             err?.message ||
-            "Something went wrong while deleting the Income Proof",
+            t("incomeProof.deleteError"),
         }
       );
     } catch (error: any) {
@@ -110,7 +112,7 @@ const IncomeProof = () => {
   };
   const getListCommission = (id: any) => {
     const entry: any = vendorList?.find((entry: any) => entry.id === id);
-    return entry ? entry.name : "ID not found";
+    return entry ? entry.name : t("shared.idNotFound");
   };
   useEffect(() => {
     getVendorCommisionType();
@@ -118,27 +120,27 @@ const IncomeProof = () => {
   }, [page, pageSize]);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "180px",
     },
 
     {
-      name: "name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "500px",
     },
     {
-      name: "Income Type",
+      name: t("incomeProof.incomeType"),
       selector: (row: { income_type_id: any }) => row.income_type_id,
       sortable: true,
       width: "480px",
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -153,7 +155,7 @@ const IncomeProof = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -166,14 +168,14 @@ const IncomeProof = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -256,7 +258,7 @@ const IncomeProof = () => {
         await toast.promise(
           editIncomeProof(updateBody), // Pass the body with ID included
           {
-            loading: "Updating Vendor Commission Slab...",
+            loading: t("incomeProof.updating"),
             success: (response: any) => {
               if (response?.data?.success) {
                 setIsModalVisible(false);
@@ -265,20 +267,20 @@ const IncomeProof = () => {
               } else {
                 throw new Error(
                   response?.response?.data?.errors?.[0] ||
-                    "Failed to update Income Proof"
+                    t("incomeProof.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating the Income Proof",
+              t("incomeProof.updateError"),
           }
         );
       } else {
         await toast.promise(
           createIncomeProof(formValues), // API call
           {
-            loading: "Adding Income Proof...",
+            loading: t("incomeProof.adding"),
             success: (response) => {
               if (response?.data?.success) {
                 setFormValues({
@@ -288,17 +290,17 @@ const IncomeProof = () => {
 
                 setIsModalVisible(false);
                 getIncomeProofData();
-                return "Income Proof Added Successfully";
+                return t("incomeProof.addSuccess");
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.notificationMessage ||
-                    "Failed to add Income Proof."
+                    t("incomeProof.addFailed")
                 );
               }
             },
             error: (err) =>
-              err?.message || "Something went wrong while adding Income Proof.",
+              err?.message || t("incomeProof.addError"),
           }
         );
       }
@@ -329,7 +331,7 @@ const IncomeProof = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -347,14 +349,14 @@ const IncomeProof = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("shared.excel")}</button>
+          <button className="invoice-btn">{t("shared.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New Income Proof
+            {t("incomeProof.addNew")}
           </button>
         </div>
       </div>
@@ -376,13 +378,13 @@ const IncomeProof = () => {
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={
-          selectedItem === "edit" ? "Edit Income Proof" : "Add Income Proof"
+          selectedItem === "edit" ? t("incomeProof.editTitle") : t("incomeProof.addTitle")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button
             key="save"
@@ -390,7 +392,7 @@ const IncomeProof = () => {
             disabled={isLoading}
             onClick={handleOk}
           >
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
@@ -400,13 +402,13 @@ const IncomeProof = () => {
               {/* Status Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Select Income Type Name</label>
+                  <label className="input-label">{t("incomeProof.selectIncomeTypeLabel")}</label>
                   <Select
                     value={formValues.income_type_id}
                     onChange={(value) => handleSubType("income_type_id", value)}
                     style={{ width: "100%", marginTop: "0" }}
                   >
-                    <option value="">Select Income Type</option>
+                    <option value="">{t("incomeProof.selectIncomeTypeOption")}</option>
                     {vendorList.map((item) => (
                       <Select.Option key={item.id} value={item.id}>
                         {item.name}
@@ -418,9 +420,9 @@ const IncomeProof = () => {
 
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
-                    placeholder="Enter Name"
+                    placeholder={t("incomeProof.namePlaceholder")}
                     className="fs-6"
                     value={formValues.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -449,7 +451,7 @@ const IncomeProof = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -464,7 +466,7 @@ const IncomeProof = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -478,7 +480,7 @@ const IncomeProof = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure want to delete this Income Proof?
+            {t("incomeProof.deleteConfirm")}
           </p>
         </div>
       </Modal>

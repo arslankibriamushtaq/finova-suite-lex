@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Modal, Form, Input, Switch, Upload, message, Dropdown, Menu } from "antd";
 import { PlusOutlined, EditOutlined, DeleteOutlined, UploadOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
@@ -16,6 +17,7 @@ import toast from "react-hot-toast";
 const { TextArea } = Input;
 
 const AwnInfo = () => {
+  const { t } = useTranslation("settings");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -38,7 +40,7 @@ const AwnInfo = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       {/* <Menu.Item
         key="status"
@@ -52,7 +54,7 @@ const AwnInfo = () => {
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -77,35 +79,35 @@ const AwnInfo = () => {
     try {
       const response = await updateAwnInfoStatus(id);
       if (response?.data?.success) {
-        toast.success("Status updated successfully");
+        toast.success(t("toast.statusUpdated"));
         fetchData();
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to update status");
+      toast.error(error?.message || t("toast.statusFailed"));
     }
   };
 
   const columns = [
     {
-      name: "Sr:",
+      name: t("awnInfo.col.sr"),
       selector: (row: any) => row.sr,
       sortable: true,
       width: "80px",
     },
     {
-      name: "Title (EN)",
+      name: t("awnInfo.col.titleEn"),
       selector: (row: any) => row.title_en,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Title (AR)",
+      name: t("awnInfo.col.titleAr"),
       selector: (row: any) => row.title_ar,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Description (EN)",
+      name: t("awnInfo.col.descEn"),
       selector: (row: any) => row.description_en,
       sortable: true,
       cell: (row: any) => (
@@ -116,7 +118,7 @@ const AwnInfo = () => {
       ),
     },
     {
-        name: "Description (AR)",
+        name: t("awnInfo.col.descAr"),
         selector: (row: any) => row.description_ar,
         sortable: true,
         cell: (row: any) => (
@@ -127,7 +129,7 @@ const AwnInfo = () => {
         ),
       },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -138,13 +140,13 @@ const AwnInfo = () => {
             fontSize: "12px",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </span>
       ),
       width: "120px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -158,7 +160,7 @@ const AwnInfo = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -190,7 +192,7 @@ const AwnInfo = () => {
         setTotalPage(responseData.last_page || 1);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch data");
+      toast.error(error?.message || t("toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -233,20 +235,20 @@ const AwnInfo = () => {
 
   const handleDelete = async (id: number) => {
     Modal.confirm({
-      title: "Are you sure you want to delete this item?",
-      content: "This action cannot be undone.",
-      okText: "Yes, Delete",
+      title: t("deleteItem.title"),
+      content: t("deleteItem.content"),
+      okText: t("deleteItem.ok"),
       okType: "danger",
-      cancelText: "Cancel",
+      cancelText: t("common:cancel"),
       onOk: async () => {
         try {
           const response = await deleteAwnInfo(id);
           if (response?.data?.success) {
-            toast.success("Deleted successfully");
+            toast.success(t("common:deletedSuccessfully"));
             fetchData();
           }
         } catch (error: any) {
-          toast.error(error?.message || "Failed to delete");
+          toast.error(error?.message || t("toast.deleteFailed"));
         }
       },
     });
@@ -278,7 +280,7 @@ const AwnInfo = () => {
 
       if (response?.data?.success) {
         toast.success(
-          editMode ? "Updated successfully" : "Created successfully"
+          editMode ? t("common:updatedSuccessfully") : t("toast.created")
         );
         setIsModalVisible(false);
         form.resetFields();
@@ -286,7 +288,7 @@ const AwnInfo = () => {
         fetchData();
       }
     } catch (error: any) {
-      toast.error(error?.message || "Operation failed");
+      toast.error(error?.message || t("toast.operationFailed"));
     } finally {
       setLoading(false);
     }
@@ -302,12 +304,12 @@ const AwnInfo = () => {
     beforeUpload: (file: any) => {
       const isImage = file.type.startsWith("image/");
       if (!isImage) {
-        message.error("You can only upload image files!");
+        message.error(t("awnInfo.msg.onlyImage"));
         return false;
       }
       const isLt2M = file.size / 1024 / 1024 < 2;
       if (!isLt2M) {
-        message.error("Image must be smaller than 2MB!");
+        message.error(t("awnInfo.msg.imageSize"));
         return false;
       }
       setFileList([file]);
@@ -330,7 +332,7 @@ const AwnInfo = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("searchShort")}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -340,7 +342,7 @@ const AwnInfo = () => {
             className="theme-btn"
             style={{ minWidth: "120px" }}
           >
-            + Add New
+            {t("addNew")}
           </button>
         </div>
       </div>
@@ -360,7 +362,7 @@ const AwnInfo = () => {
       />
 
       <Modal
-        title={editMode ? "Edit Factoring Valley Info" : "Add Factoring Valley Info"}
+        title={editMode ? t("awnInfo.modal.editTitle") : t("awnInfo.modal.addTitle")}
         open={isModalVisible}
         onCancel={() => {
           setIsModalVisible(false);
@@ -377,55 +379,55 @@ const AwnInfo = () => {
           initialValues={{ status: true }}
         >
           <Form.Item
-            label="Title (English)"
+            label={t("awnInfo.field.titleEn")}
             name="title_en"
-            rules={[{ required: true, message: "Please enter title in English" }]}
+            rules={[{ required: true, message: t("awnInfo.val.titleEn") }]}
           >
-            <Input placeholder="Enter title in English" />
+            <Input placeholder={t("awnInfo.ph.titleEn")} />
           </Form.Item>
 
           <Form.Item
-            label="Title (Arabic)"
+            label={t("awnInfo.field.titleAr")}
             name="title_ar"
-            rules={[{ required: true, message: "Please enter title in Arabic" }]}
+            rules={[{ required: true, message: t("awnInfo.val.titleAr") }]}
           >
-            <Input placeholder="Enter title in Arabic" />
+            <Input placeholder={t("awnInfo.ph.titleAr")} />
           </Form.Item>
 
           <Form.Item
-            label="Description (English)"
+            label={t("awnInfo.field.descEn")}
             name="description_en"
             rules={[
-              { required: true, message: "Please enter description in English" },
+              { required: true, message: t("awnInfo.val.descEn") },
             ]}
           >
             <TextArea
               rows={4}
-              placeholder="Enter description in English"
+              placeholder={t("awnInfo.ph.descEn")}
             />
           </Form.Item>
 
           <Form.Item
-            label="Description (Arabic)"
+            label={t("awnInfo.field.descAr")}
             name="description_ar"
             rules={[
-              { required: true, message: "Please enter description in Arabic" },
+              { required: true, message: t("awnInfo.val.descAr") },
             ]}
           >
             <TextArea
               rows={4}
-              placeholder="Enter description in Arabic"
+              placeholder={t("awnInfo.ph.descAr")}
             />
           </Form.Item>
 
-          <Form.Item label="Image" name="image">
+          <Form.Item label={t("awnInfo.field.image")} name="image">
             <Upload {...uploadProps} listType="picture" maxCount={1}>
-              <Button icon={<UploadOutlined />}>Upload Image</Button>
+              <Button icon={<UploadOutlined />}>{t("awnInfo.uploadImage")}</Button>
             </Upload>
           </Form.Item>
 
-          <Form.Item label="Status" name="status" valuePropName="checked">
-            <Switch style={{ backgroundColor: "var(--foreground)" }} checkedChildren="Active" unCheckedChildren="Inactive" />
+          <Form.Item label={t("common:status")} name="status" valuePropName="checked">
+            <Switch style={{ backgroundColor: "var(--foreground)" }} checkedChildren={t("common:active")} unCheckedChildren={t("common:inactive")} />
           </Form.Item>
 
           <Form.Item>
@@ -437,7 +439,7 @@ const AwnInfo = () => {
                   setFileList([]);
                 }}
               >
-                Cancel
+                {t("common:cancel")}
               </Button>
               <Button
                 type="primary"
@@ -445,7 +447,7 @@ const AwnInfo = () => {
                 loading={loading}
                 className="gradient-btn"
               >
-                {editMode ? "Update" : "Create"}
+                {editMode ? t("common:update") : t("common:create")}
               </Button>
             </div>
           </Form.Item>

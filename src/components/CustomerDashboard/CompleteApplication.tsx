@@ -6,8 +6,10 @@ import DetailManagerTab from './CompleteApplicationTabs/DetailManagerTab';
 import FactoringInfoTab from './CompleteApplicationTabs/FactoringInfoTab';
 import InvoicesTab from './CompleteApplicationTabs/InvoicesTab';
 import ThankYouTab from './CompleteApplicationTabs/ThankYouTab';
+import { useTranslation } from 'react-i18next';
 
 const CompleteApplication = () => {
+  const { t } = useTranslation("customersB");
   const { id } = useParams();
   const location = useLocation();
   const applicationData = location.state?.application || {};
@@ -59,7 +61,7 @@ const CompleteApplication = () => {
         }}
         className="mb-3"
       >
-        <Tab eventKey="Summary" title="Summary">
+        <Tab eventKey="Summary" title={t("customersB:completeApp.summary")}>
           {mainTab === "Summary" && (
             <div className="mt-3">
               {/* Sub-tabs */}
@@ -69,22 +71,22 @@ const CompleteApplication = () => {
                 onSelect={(key: any) => setSubTab(key)}
                 className="mb-3"
               >
-                <Tab eventKey="BusinessInfo" title="Business Info">
+                <Tab eventKey="BusinessInfo" title={t("customersB:completeApp.businessInfo")}>
                   {subTab === "BusinessInfo" && (
                     <BusinessInfoTab applicationData={applicationData} />
                   )}
                 </Tab>
-                <Tab eventKey="DetailManager" title="Detail Manager">
+                <Tab eventKey="DetailManager" title={t("customersB:completeApp.detailManager")}>
                   {subTab === "DetailManager" && (
                     <DetailManagerTab applicationData={applicationData} />
                   )}
                 </Tab>
-                <Tab eventKey="FactoringInfo" title="Factoring Info">
+                <Tab eventKey="FactoringInfo" title={t("customersB:completeApp.factoringInfo")}>
                   {subTab === "FactoringInfo" && (
                     <FactoringInfoTab applicationData={applicationData} />
                   )}
                 </Tab>
-                <Tab eventKey="Invoices" title="Invoices">
+                <Tab eventKey="Invoices" title={t("customersB:completeApp.invoices")}>
                   {subTab === "Invoices" && (
                     <InvoicesTab applicationData={applicationData} />
                   )}
@@ -93,7 +95,7 @@ const CompleteApplication = () => {
             </div>
           )}
         </Tab>
-        <Tab eventKey="ThankYou" title="Thank You">
+        <Tab eventKey="ThankYou" title={t("customersB:completeApp.thankYou")}>
           {mainTab === "ThankYou" && (
             <ThankYouTab applicationData={applicationData} />
           )}

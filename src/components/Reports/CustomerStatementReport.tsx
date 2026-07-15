@@ -5,6 +5,7 @@ import { FileText } from "lucide-react";
 import { getCustomerStatementReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const TENANT_ID = "00000000-0000-0000-0000-000000000001";
 
@@ -15,6 +16,7 @@ const formatAmount = (n: any) =>
   });
 
 const CustomerStatementReport = () => {
+  const { t } = useTranslation("reports");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [reportData, setReportData] = useState<any[]>([]);
@@ -37,7 +39,7 @@ const CustomerStatementReport = () => {
 
   const columns = [
     {
-      name: "Date",
+      name: t('common:date'),
       selector: (row: any) => row.date || row.transactionDate || "-",
       cell: (row: any) =>
         row.date || row.transactionDate
@@ -45,12 +47,12 @@ const CustomerStatementReport = () => {
           : "-",
     },
     {
-      name: "Description",
+      name: t('common:description'),
       selector: (row: any) =>
         row.description || row.narration || row.entryType || "-",
     },
     {
-      name: "Reference",
+      name: t('customerStatement.col.reference'),
       selector: (row: any) =>
         row.referenceNo ||
         row.voucherNo ||
@@ -59,19 +61,19 @@ const CustomerStatementReport = () => {
         "-",
     },
     {
-      name: "Debit",
+      name: t('customerStatement.col.debit'),
       selector: (row: any) => row.debit || row.amountDebit || 0,
       cell: (row: any) =>
         `${formatAmount(row.debit || row.amountDebit || 0)} SAR`,
     },
     {
-      name: "Credit",
+      name: t('customerStatement.col.credit'),
       selector: (row: any) => row.credit || row.amountCredit || 0,
       cell: (row: any) =>
         `${formatAmount(row.credit || row.amountCredit || 0)} SAR`,
     },
     {
-      name: "Balance",
+      name: t('customerStatement.col.balance'),
       selector: (row: any) => row.balance || row.runningBalance || 0,
       cell: (row: any) => (
         <b>{formatAmount(row.balance || row.runningBalance || 0)} SAR</b>
@@ -93,7 +95,7 @@ const CustomerStatementReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching customer statement:", error);
-      toast.error(error?.message || "Failed to fetch statement");
+      toast.error(error?.message || t('customerStatement.toast.fetchError'));
       setReportData([]);
       setTotals(null);
     } finally {
@@ -126,7 +128,7 @@ const CustomerStatementReport = () => {
 
   const exportToCSV = () => {
     if (!filteredData || filteredData.length === 0) {
-      toast.error("No data available to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
 
@@ -166,7 +168,7 @@ const CustomerStatementReport = () => {
           <span className="pro-head-badge">
             <FileText className="h-4 w-4" />
           </span>
-          Customer Statement
+          {t('customerStatement.title')}
         </h3>
       </div>
 
@@ -176,14 +178,14 @@ const CustomerStatementReport = () => {
           value={fromDate}
           onChange={(d) => setFromDate(d)}
           format="YYYY-MM-DD"
-          placeholder="From Date"
+          placeholder={t('filter.fromDate')}
           style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <DatePicker
           value={toDate}
           onChange={(d) => setToDate(d)}
           format="YYYY-MM-DD"
-          placeholder="To Date"
+          placeholder={t('filter.toDate')}
           style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <button
@@ -193,7 +195,7 @@ const CustomerStatementReport = () => {
           disabled={!filteredData.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t('action.exportCsv')}
         </button>
         </div>
       </div>
@@ -202,7 +204,7 @@ const CustomerStatementReport = () => {
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Opening Balance</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('customerStatement.summary.openingBalance')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.openingBalance)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -210,7 +212,7 @@ const CustomerStatementReport = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Debits</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('customerStatement.summary.totalDebits')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.totalDebits)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -218,7 +220,7 @@ const CustomerStatementReport = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Credits</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('customerStatement.summary.totalCredits')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.totalCredits)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -226,7 +228,7 @@ const CustomerStatementReport = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Closing Balance</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('customerStatement.summary.closingBalance')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.closingBalance)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>

@@ -9,8 +9,10 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const DailyTransactionSummary = () => {
+  const { t } = useTranslation("reports");
   const [targetDate, setTargetDate] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any[]>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -50,7 +52,7 @@ const DailyTransactionSummary = () => {
         setSummaryData(responseData && !Array.isArray(responseData) ? responseData : null);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch daily transaction summary");
+      toast.error(error?.message || t('dailyTransactionSummary.toast.fetchError'));
       setAllCallActivity([]);
       setSummaryData(null);
     } finally {
@@ -112,12 +114,12 @@ const DailyTransactionSummary = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Channel Name",
+      name: t('dailyTransactionSummary.col.channelName'),
       cell: (row: any) => <span className="fw-bold">{row.channel}</span>,
     },
-    { name: "Transaction Count", selector: (row: any) => row.count },
+    { name: t('dailyTransactionSummary.col.transactionCount'), selector: (row: any) => row.count },
     {
-      name: "Total Amount",
+      name: t('dailyTransactionSummary.col.totalAmount'),
       cell: (row: any) => (
         <span className="text-primary fw-bold">{formatNumber(row.amount)} SAR</span>
       ),
@@ -126,7 +128,7 @@ const DailyTransactionSummary = () => {
 
   const exportToCSV = () => {
     if (!mappedData.length) {
-      toast.error("No data to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
     const csvHeaders = ["Channel Name", "Transaction Count", "Total Amount"];
@@ -148,7 +150,7 @@ const DailyTransactionSummary = () => {
           <span className="pro-head-badge">
             <Activity className="h-4 w-4" />
           </span>
-          Daily Transaction Summary
+          {t('dailyTransactionSummary.title')}
         </h3>
       </div>
 
@@ -156,14 +158,14 @@ const DailyTransactionSummary = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by channel"
+          placeholder={t('dailyTransactionSummary.searchPlaceholder')}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
         <DatePicker
-          placeholder="Transaction date"
+          placeholder={t('dailyTransactionSummary.transactionDatePlaceholder')}
           value={targetDate}
           onChange={(d) => setTargetDate(d)}
           format="YYYY-MM-DD"
@@ -177,7 +179,7 @@ const DailyTransactionSummary = () => {
           disabled={!mappedData.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t('action.exportCsv')}
         </button>
         </div>
       </div>
@@ -187,7 +189,7 @@ const DailyTransactionSummary = () => {
           {summaryData?.totalCredits != null && (
             <Col xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Credits</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.totalCredits')}</div>
                 <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {formatNumber(summaryData.totalCredits)} SAR
                 </div>
@@ -197,7 +199,7 @@ const DailyTransactionSummary = () => {
           {summaryData?.totalDebits != null && (
             <Col xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>Total Debits</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.totalDebits')}</div>
                 <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {formatNumber(summaryData.totalDebits)} SAR
                 </div>
@@ -206,7 +208,7 @@ const DailyTransactionSummary = () => {
           )}
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Transaction Count</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.transactionCount')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalCount}
               </div>
@@ -214,7 +216,7 @@ const DailyTransactionSummary = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Channels</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('dailyTransactionSummary.summary.channels')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.channelCount}
               </div>

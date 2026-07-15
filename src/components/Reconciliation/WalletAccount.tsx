@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import axios from "axios";
 import { fetchOverPayments } from "../../redux/apis/walletApiLmsCrud";
 const WalletAccount = () => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -85,20 +87,20 @@ const WalletAccount = () => {
     
 
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Overpaymenty Amount",
+      name: t("col.overpaymentAmount"),
       selector: (row: { amount: any }) => row.amount || "-",
     },
     {
-      name: "Refund Status",
+      name: t("col.refundStatus"),
       selector: (row: { status: any }) =>row.status || "-",
     },
 
     {
-      name: "Notes",
+      name: t("col.notes"),
       selector: (row: { notes: any }) =>row.notes || "-",
     },
   ];

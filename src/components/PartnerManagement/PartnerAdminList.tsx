@@ -13,12 +13,14 @@ import {
 } from "../../redux/apis/apisCrud";
 import { EditOutlined, SendOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { usePermissions, useWorkflowActions, PARTNER_ADMIN_PERMISSIONS, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions";
 import { CheckCircleOutlined, CloseCircleOutlined, SafetyCertificateOutlined, StopOutlined } from "@ant-design/icons";
 
 const PartnerAdminList = () => {
+  const { t } = useTranslation("partner");
   // Permissions
   const { hasPermission, canUpdate, canCreate, canVerifyModule, canRejectAsChecker, canApproveModule, canRejectAsApprover } = usePermissions();
   const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions();
@@ -64,13 +66,13 @@ const PartnerAdminList = () => {
             item.id === adminId ? { ...item, status: newStatus === "1" ? 1 : 0 } : item
           )
         );
-        toast.success(response?.data?.message || "Partner admin status updated successfully");
+        toast.success(response?.data?.message || t("toast.adminStatusUpdated"));
       } else {
-        toast.error(response?.data?.message || "Failed to update partner admin status");
+        toast.error(response?.data?.message || t("toast.adminStatusFailed"));
       }
     } catch (error: any) {
       console.error("Error updating partner admin status:", error);
-      toast.error(error?.response?.data?.message || "Failed to update partner admin status");
+      toast.error(error?.response?.data?.message || t("toast.adminStatusFailed"));
     }
   };
 
@@ -119,7 +121,7 @@ const PartnerAdminList = () => {
           icon={<EditOutlined />}
           onClick={() => handleMenuClick("edit", row)}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
       )}
       {canResendEmail && (
@@ -128,7 +130,7 @@ const PartnerAdminList = () => {
           icon={<SendOutlined />}
           onClick={() => handleMenuClick("resend", row)}
         >
-          Resend Login Email
+          {t("menu.resendLoginEmail")}
         </Menu.Item>
       )}
       {canVerifyAdmin && (
@@ -137,7 +139,7 @@ const PartnerAdminList = () => {
           icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
-          Verify
+          {t("menu.verify")}
         </Menu.Item>
       )}
       {canCheckerRejectAdmin && (
@@ -146,7 +148,7 @@ const PartnerAdminList = () => {
           icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
-          Reject (Checker)
+          {t("menu.rejectChecker")}
         </Menu.Item>
       )}
       {canApproveAdmin && (
@@ -155,7 +157,7 @@ const PartnerAdminList = () => {
           icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
-          Approve
+          {t("common:approve")}
         </Menu.Item>
       )}
       {canApproverRejectAdmin && (
@@ -164,7 +166,7 @@ const PartnerAdminList = () => {
           icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
-          Reject (Approver)
+          {t("menu.rejectApprover")}
         </Menu.Item>
       )}
     </Menu>
@@ -172,37 +174,37 @@ const PartnerAdminList = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name || "-",
       sortable: true,
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { email: any }) => row.email || "-",
       sortable: true,
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone || "-",
       sortable: true,
     },
     {
-      name: "Address",
+      name: t("col.address"),
       selector: (row: { address: any }) => row.address || "-",
       sortable: true,
     },
     {
-      name: "DOB",
+      name: t("col.dob"),
       selector: (row: { dob: any }) => row.dob || "-",
       sortable: true,
     },
     {
-      name: "Country",
-      selector: (row: { country_id: any }) => row.country_id === 1 ? "Saudi Arabia" : "-",
+      name: t("col.country"),
+      selector: (row: { country_id: any }) => row.country_id === 1 ? t("form.saudiArabia") : "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <Switch
           checked={row.status === "Active" || row.status === true || row.status === 1}
@@ -214,13 +216,13 @@ const PartnerAdminList = () => {
       width: "100px",
     },
     {
-      name: "Registered Date",
+      name: t("col.registeredDate"),
       selector: (row: { registered_date: any }) => row.registered_date || "-",
       sortable: true,
     },
     // Only include Action column if user has any action permission
     ...(hasAnyAction ? [{
-      name: "Action",
+      name: t("col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -232,7 +234,7 @@ const PartnerAdminList = () => {
               padding: "8px",
             }}
           >
-            Action
+            {t("col.action")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -249,7 +251,7 @@ const PartnerAdminList = () => {
 
   const getPartnerAdminsData = async () => {
     if (!partnerId) {
-      toast.error("Partner ID is missing");
+      toast.error(t("toast.partnerIdMissing"));
       navigate("/PartnerManagement/PartnersList");
       return;
     }
@@ -266,11 +268,11 @@ const PartnerAdminList = () => {
         setPage(1);
         setTotalPage(Math.ceil(adminsData.length / pageSize) || 1);
       } else {
-        toast.error(response?.data?.message || "Failed to fetch partner admins");
+        toast.error(response?.data?.message || t("toast.adminsFetchFailed"));
       }
     } catch (error: any) {
       console.error("Error fetching partner admins:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch partner admins");
+      toast.error(error?.response?.data?.message || t("toast.adminsFetchFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -300,14 +302,14 @@ const PartnerAdminList = () => {
         style={{ background: "white", padding: "1rem", borderRadius: "2px" }}
       >
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 style={{ margin: 0 }}>Partner Admin List</h4>
+          <h4 style={{ margin: 0 }}>{t("adminList.title")}</h4>
           <div className="d-flex gap-2 align-items-center">
             {canCreateAdmin && (
               <button
                 className="theme-btn-next"
                 onClick={() => navigate(`/LOS/PartnerManagement/AddPartnerAdmin?id=${partnerId}`)}
               >
-                Add Partner Admin
+                {t("adminList.add")}
               </button>
             )}
           </div>

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { Steps } from "antd";
+import { useTranslation } from "react-i18next";
 
 const { Step } = Steps;
 
@@ -23,44 +24,45 @@ interface ApplicationStepperProps {
 }
 
 const ApplicationStepper: React.FC<ApplicationStepperProps> = ({ steps }) => {
-  const [stepsData] = useState<StepContent[]>([
+  const { t } = useTranslation("dashboard");
+  const stepsData = useMemo<StepContent[]>(() => [
     {
-      title: "Finance",
+      title: t("stepper.finance"),
       tasks: [],
     },
     {
-      title: "Verification",
+      title: t("stepper.verification"),
       tasks: [],
     },
     {
-      title: "Simmah Consent",
+      title: t("stepper.simahConsent"),
       tasks: [],
     },
     {
-      title: "Counter",
+      title: t("stepper.counter"),
       tasks: [],
     },
     {
-      title: "Contract",
+      title: t("stepper.contract"),
       tasks: [],
     },
     {
-      title: "OTP",
+      title: t("stepper.otp"),
       tasks: [],
     },
     {
-      title: "IVR",
+      title: t("stepper.ivr"),
       tasks: [],
     },
     {
-      title: "DISBURSED",
+      title: t("stepper.disbursed"),
       tasks: [],
     },
     {
-      title: "PAID",
+      title: t("stepper.paid"),
       tasks: [],
     },
-  ]);
+  ], [t]);
 
   // Calculate current step based on steps prop
   const currentStep = useMemo(() => {

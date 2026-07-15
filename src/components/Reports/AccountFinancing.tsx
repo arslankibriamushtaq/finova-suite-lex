@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Receipt,
   NotebookText,
@@ -15,15 +16,16 @@ type ReportCard = { label: string; link: string; color: string; Icon: LucideIcon
 
 function AccountFinancing() {
   const navigate = useNavigate();
+  const { t } = useTranslation("reports");
 
   const buttonLabels: ReportCard[] = [
-    { label: "Vouchers", link: "vouchers", color: "#10b981", Icon: Receipt },
-    { label: "Daybook", link: "daybook", color: "#14b8a6", Icon: NotebookText },
-    { label: "Trial Balance", link: "trialbalance", color: "#06b6d4", Icon: Scale },
-    { label: "Ledger", link: "ledger", color: "#6366f1", Icon: Library },
-    { label: "Collection", link: "collection", color: "#22c55e", Icon: HandCoins },
-    { label: "Profit & Revenue", link: "profit-revenue", color: "#8b5cf6", Icon: TrendingUp },
-    { label: "Customer Statement", link: "customer-statement", color: "#f59e0b", Icon: FileText },
+    { label: t('accountFinancing.card.vouchers'), link: "vouchers", color: "#10b981", Icon: Receipt },
+    { label: t('accountFinancing.card.daybook'), link: "daybook", color: "#14b8a6", Icon: NotebookText },
+    { label: t('accountFinancing.card.trialBalance'), link: "trialbalance", color: "#06b6d4", Icon: Scale },
+    { label: t('accountFinancing.card.ledger'), link: "ledger", color: "#6366f1", Icon: Library },
+    { label: t('accountFinancing.card.collection'), link: "collection", color: "#22c55e", Icon: HandCoins },
+    { label: t('accountFinancing.card.profitRevenue'), link: "profit-revenue", color: "#8b5cf6", Icon: TrendingUp },
+    { label: t('accountFinancing.card.customerStatement'), link: "customer-statement", color: "#f59e0b", Icon: FileText },
   ];
 
   const handleButtonClick = (link: string) => {
@@ -44,7 +46,7 @@ function AccountFinancing() {
           <span className="pro-head-badge">
             <Library className="h-4 w-4" />
           </span>
-          Accounting &amp; Financing Reports
+          {t('accountFinancing.title')}
         </h3>
       </div>
 

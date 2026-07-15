@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "../ui/dialog";
 import { Input } from "../ui/input";
@@ -19,6 +20,7 @@ import { useDispatch, useSelector } from "react-redux";
 
 
 const AdminFeeSlabs = ({ readOnly = false,setSelectedTab }: any) => {
+  const { t } = useTranslation("productManagement2");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -56,7 +58,7 @@ const AdminFeeSlabs = ({ readOnly = false,setSelectedTab }: any) => {
             }
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load admin fee slabs data");
+          toast.error(error?.response?.data?.message || t("adminFee.loadFailed"));
         }
       }
     };
@@ -92,13 +94,13 @@ const handleNext=()=>{
         response = await createFeeSlab(createBody);
       }
       if (response?.data?.message === "success") {
-        toast.success(response?.data?.message || "Fee slab created");
+        toast.success(response?.data?.message || t("adminFee.created"));
         setIsModalVisible(false);
         setNewSlab({ from_amount: "", to_amount: "", profit_percent: 0, admin_fee: 0, processing_fee: 0 });
         getList();
         return;
       }
-      toast.error(response?.data?.message || "Failed to create fee slab");
+      toast.error(response?.data?.message || t("adminFee.createFailed"));
     } catch (err: any) {
       if (err?.response?.data?.errors) {
         Object.keys(err?.response?.data?.errors).forEach((field) => {
@@ -108,7 +110,7 @@ const handleNext=()=>{
         });
         return;
       }
-      toast.error(err?.response?.data?.message || "Failed to create fee slab");
+      toast.error(err?.response?.data?.message || t("adminFee.createFailed"));
     }
   };
   const handleCancel = () => {
@@ -119,13 +121,13 @@ const handleNext=()=>{
 
   // No row actions currently
   const Activity_Loans_Header = [
-    { name: "From Amount", selector: (row: any) => `SR ${row.from_amount}`, sortable: true },
-    { name: "To Amount", selector: (row: any) => `SR ${row.to_amount}`, sortable: true },
-    { name: "Profit (%)", selector: (row: any) => `${row.profit_percent || 0}%`, sortable: true },
-    { name: "Admin Fee", selector: (row: any) => `SR ${row.admin_fee || 0}`, sortable: true },
-    { name: "Processing Fee", selector: (row: any) => `SR ${row.processing_fee || 0}`, sortable: true },
+    { name: t("adminFee.fromAmount"), selector: (row: any) => `SR ${row.from_amount}`, sortable: true },
+    { name: t("adminFee.toAmount"), selector: (row: any) => `SR ${row.to_amount}`, sortable: true },
+    { name: t("adminFee.profitPct"), selector: (row: any) => `${row.profit_percent || 0}%`, sortable: true },
+    { name: t("adminFee.adminFee"), selector: (row: any) => `SR ${row.admin_fee || 0}`, sortable: true },
+    { name: t("adminFee.processingFee"), selector: (row: any) => `SR ${row.processing_fee || 0}`, sortable: true },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -138,12 +140,12 @@ const handleNext=()=>{
             color: "var(--primary-foreground)",
           }}
         >
-          {row.status === "active" || row.status === 1 ? "Active" : "Inactive"}
+          {row.status === "active" || row.status === 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("adminFee.changeStatus"),
       cell: (row: { status: any; id?: number }) => (
         <Switch
           checked={row.status === 1}
@@ -153,7 +155,7 @@ const handleNext=()=>{
             try {
               const res = await updateFeeSlabStatus(row.id, newStatus);
               if (res?.data?.success) {
-                toast.success(res?.data?.message || "Status updated successfully");
+                toast.success(res?.data?.message || t("adminFee.statusUpdated"));
                 getList();
                 setData((prevData: any) =>
                   prevData.map((item: any) =>
@@ -162,7 +164,7 @@ const handleNext=()=>{
                 );
               }
             } catch (error) {
-              toast.error("Failed to update status");
+              toast.error(t("adminFee.statusUpdateFailed"));
               console.error("Error updating status:", error);
             }
           }}
@@ -172,7 +174,7 @@ const handleNext=()=>{
     },
     
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <DropdownMenu>
@@ -181,17 +183,17 @@ const handleNext=()=>{
               className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5"
               disabled={readOnly}
             >
-              Select <ChevronDown className="h-4 w-4" />
+              {t("list.select")} <ChevronDown className="h-4 w-4" />
             </UIButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => openEdit(row)}>
               <Pencil className="h-4 w-4" />
-              Edit
+              {t("common:edit")}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={() => handleDelete(row)}>
               <Trash2 className="h-4 w-4" />
-              Delete
+              {t("common:delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -238,10 +240,10 @@ const handleNext=()=>{
   const handleDelete = async (row: any) => {
     try {
      const res= await deleteProcessingFeeSlab(row.id);
-      toast.success(res?.data?.message || "Deleted successfully");
+      toast.success(res?.data?.message || t("adminFee.deleted"));
       getList();
     } catch (e: any) {
-      toast.error(e?.response?.data?.message || "Failed to delete");
+      toast.error(e?.response?.data?.message || t("adminFee.deleteFailed"));
     }
   };
   useEffect(() => {
@@ -265,51 +267,51 @@ const handleNext=()=>{
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Fee Slabs
+        {t("adminFee.title")}
       </h1>
       <div className="d-flex justify-content-end mb-3 gap-2">
         {/* <Select defaultValue="All Partners" style={{ width: 160 }} disabled>
           <option>All Partners</option>
         </Select> */}
         <UIButton className="theme-btn-next" onClick={() => { setSelectedItem("add"); setIsModalVisible(true); }}>
-          Add New Record
+          {t("adminFee.addNewRecord")}
         </UIButton>
       </div>
 
       <Dialog open={isModalVisible} onOpenChange={setIsModalVisible}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle>{readOnly ? "View Admin Fee Slab" : "Add Admin Fee Slab"}</DialogTitle>
+            <DialogTitle>{readOnly ? t("adminFee.viewTitle") : t("adminFee.addTitle")}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
-              <Label>Amount From</Label>
-              <Input placeholder="Amount From" value={newSlab.from_amount} onChange={(e) => setNewSlab({ ...newSlab, from_amount: e.target.value })} disabled={readOnly} />
+              <Label>{t("adminFee.amountFrom")}</Label>
+              <Input placeholder={t("adminFee.amountFrom")} value={newSlab.from_amount} onChange={(e) => setNewSlab({ ...newSlab, from_amount: e.target.value })} disabled={readOnly} />
             </div>
             <div className="space-y-2">
-              <Label>Amount To</Label>
-              <Input placeholder="Amount To" value={newSlab.to_amount} onChange={(e) => setNewSlab({ ...newSlab, to_amount: e.target.value })} disabled={readOnly} />
+              <Label>{t("adminFee.amountTo")}</Label>
+              <Input placeholder={t("adminFee.amountTo")} value={newSlab.to_amount} onChange={(e) => setNewSlab({ ...newSlab, to_amount: e.target.value })} disabled={readOnly} />
             </div>
             <div className="space-y-2">
-              <Label>Profit %</Label>
-              <Input placeholder="Profit %" value={newSlab.profit_percent} onChange={(e) => setNewSlab({ ...newSlab, profit_percent: e.target.value })} disabled={readOnly} />
+              <Label>{t("adminFee.profit")}</Label>
+              <Input placeholder={t("adminFee.profit")} value={newSlab.profit_percent} onChange={(e) => setNewSlab({ ...newSlab, profit_percent: e.target.value })} disabled={readOnly} />
             </div>
             <div className="space-y-2">
-              <Label>Admin Fee</Label>
-              <Input placeholder="Admin Fee" value={newSlab.admin_fee} onChange={(e) => setNewSlab({ ...newSlab, admin_fee: e.target.value })} disabled={readOnly} />
+              <Label>{t("adminFee.adminFee")}</Label>
+              <Input placeholder={t("adminFee.adminFee")} value={newSlab.admin_fee} onChange={(e) => setNewSlab({ ...newSlab, admin_fee: e.target.value })} disabled={readOnly} />
             </div>
             <div className="space-y-2">
-              <Label>Processing Fee</Label>
-              <Input placeholder="Processing Fee" value={newSlab.processing_fee} onChange={(e) => setNewSlab({ ...newSlab, processing_fee: e.target.value })} disabled={readOnly} />
+              <Label>{t("adminFee.processingFee")}</Label>
+              <Input placeholder={t("adminFee.processingFee")} value={newSlab.processing_fee} onChange={(e) => setNewSlab({ ...newSlab, processing_fee: e.target.value })} disabled={readOnly} />
             </div>
           </div>
           <DialogFooter>
             {readOnly ? (
-              <UIButton onClick={handleCancel}>Close</UIButton>
+              <UIButton onClick={handleCancel}>{t("common:close")}</UIButton>
             ) : (
               <>
-                <UIButton variant="outline" onClick={handleCancel}>Cancel</UIButton>
-                <UIButton className="theme-btn-next" onClick={handleSubmit}>Save</UIButton>
+                <UIButton variant="outline" onClick={handleCancel}>{t("common:cancel")}</UIButton>
+                <UIButton className="theme-btn-next" onClick={handleSubmit}>{t("common:save")}</UIButton>
               </>
             )}
           </DialogFooter>
@@ -328,7 +330,7 @@ const handleNext=()=>{
         setPageSize={setPageSize}
         to={to}
       />
-      <div className="d-flex justify-content-end mt-3"><UIButton className="theme-btn-next" onClick={handleNext}>Next</UIButton></div>
+      <div className="d-flex justify-content-end mt-3"><UIButton className="theme-btn-next" onClick={handleNext}>{t("common:next")}</UIButton></div>
     </div>
   );
 };

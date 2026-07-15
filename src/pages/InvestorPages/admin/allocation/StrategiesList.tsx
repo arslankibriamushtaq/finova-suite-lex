@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Search,
@@ -107,6 +108,13 @@ const productOptions = ['All Products', 'POS Loans', 'Auto Loans', 'MSME Loans',
 const riskOptions = ['All Risk Bands', 'Low', 'Medium', 'High'];
 
 export default function StrategiesList() {
+  const { t } = useTranslation('investor');
+  const statusKey: Record<string, string> = { 'All Status': 'sl.status.allStatus', 'Published': 'sl.status.published', 'Draft': 'sl.status.draft', 'Paused': 'sl.status.paused' };
+  const productKey: Record<string, string> = { 'All Products': 'sl.product.allProducts', 'POS Loans': 'sl.product.pos', 'Auto Loans': 'sl.product.auto', 'MSME Loans': 'sl.product.msme', 'Consumer Loans': 'sl.product.consumer', 'Real Estate': 'sl.product.realEstate' };
+  const riskKey: Record<string, string> = { 'All Risk Bands': 'sl.risk.allRiskBands', 'Low': 'sl.risk.low', 'Medium': 'sl.risk.medium', 'High': 'sl.risk.high' };
+  const tStatus = (s: string) => (statusKey[s] ? t(statusKey[s]) : s);
+  const tProduct = (p: string) => (productKey[p] ? t(productKey[p]) : p);
+  const tRisk = (r: string) => (riskKey[r] ? t(riskKey[r]) : r);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [productFilter, setProductFilter] = useState('All Products');
@@ -172,31 +180,31 @@ export default function StrategiesList() {
   };
 
   const handleBulkEnable = () => {
-    alert(`Enabling ${selectedStrategies.length} strategies`);
+    alert(t('sl.bulkEnabling', { count: selectedStrategies.length }));
     setSelectedStrategies([]);
   };
 
   const handleBulkDisable = () => {
-    alert(`Disabling ${selectedStrategies.length} strategies`);
+    alert(t('sl.bulkDisabling', { count: selectedStrategies.length }));
     setSelectedStrategies([]);
   };
 
   const handleBulkExport = () => {
-    alert(`Exporting ${selectedStrategies.length} strategies`);
+    alert(t('sl.bulkExporting', { count: selectedStrategies.length }));
   };
 
   const handleToggleStrategy = (strategyId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'Published' ? 'Paused' : 'Published';
-    alert(`Strategy ${strategyId} ${newStatus === 'Published' ? 'enabled' : 'disabled'}`);
+    alert(newStatus === 'Published' ? t('sl.toggleEnabled', { id: strategyId }) : t('sl.toggleDisabled', { id: strategyId }));
   };
 
   const handleCloneStrategy = (strategyId: string) => {
-    alert(`Cloning strategy ${strategyId}`);
+    alert(t('sl.cloning', { id: strategyId }));
   };
 
   const handleDeleteStrategy = (strategyId: string) => {
-    if (confirm('Are you sure you want to delete this strategy?')) {
-      alert(`Deleting strategy ${strategyId}`);
+    if (confirm(t('sl.deleteConfirm'))) {
+      alert(t('sl.deleting', { id: strategyId }));
     }
   };
 
@@ -210,32 +218,32 @@ export default function StrategiesList() {
               to="/admin/allocation"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Dashboard
+              <ArrowLeft className="w-5 h-5 me-2" />
+              {t('sl.backToDashboard')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Allocation Strategies</h1>
-              <p className="text-gray-600">Manage automated allocation strategies</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('sl.title')}</h1>
+              <p className="text-gray-600">{t('sl.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('common:refresh')}
             </button>
-            <button 
+            <button
               onClick={handleBulkExport}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export
+              <Download className="w-4 h-4 me-2" />
+              {t('common:export')}
             </button>
             <Link
               to="/admin/allocation/strategies/new"
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Create Strategy
+              <Plus className="w-4 h-4 me-2" />
+              {t('ad.createStrategy')}
             </Link>
           </div>
         </div>
@@ -249,22 +257,22 @@ export default function StrategiesList() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
               <input
                 type="text"
-                placeholder="Search strategies..."
+                placeholder={t('sl.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+                className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
               />
             </div>
             <button
               onClick={() => setShowFilters(!showFilters)}
               className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Filter className="w-4 h-4 mr-2" />
-              Filters
+              <Filter className="w-4 h-4 me-2" />
+              {t('common:filters')}
             </button>
           </div>
           <div className="text-sm text-gray-500">
-            {filteredStrategies.length} of {strategies.length} strategies
+            {t('sl.countLabel', { shown: filteredStrategies.length, total: strategies.length })}
           </div>
         </div>
 
@@ -276,7 +284,7 @@ export default function StrategiesList() {
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             >
               {statusOptions.map(status => (
-                <option key={status} value={status}>{status}</option>
+                <option key={status} value={status}>{tStatus(status)}</option>
               ))}
             </select>
             <select
@@ -285,7 +293,7 @@ export default function StrategiesList() {
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             >
               {productOptions.map(product => (
-                <option key={product} value={product}>{product}</option>
+                <option key={product} value={product}>{tProduct(product)}</option>
               ))}
             </select>
             <select
@@ -294,7 +302,7 @@ export default function StrategiesList() {
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             >
               {riskOptions.map(risk => (
-                <option key={risk} value={risk}>{risk}</option>
+                <option key={risk} value={risk}>{tRisk(risk)}</option>
               ))}
             </select>
           </div>
@@ -306,26 +314,26 @@ export default function StrategiesList() {
         <div className="mb-6 p-4 bg-gray-50 border border-gray-300 rounded-lg">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-blue-900">
-              {selectedStrategies.length} strategies selected
+              {t('sl.selectedLabel', { count: selectedStrategies.length })}
             </span>
             <div className="flex items-center space-x-3">
               <button
                 onClick={handleBulkEnable}
                 className="text-sm font-medium text-green-600 hover:text-green-700"
               >
-                Enable
+                {t('common:enable')}
               </button>
               <button
                 onClick={handleBulkDisable}
                 className="text-sm font-medium text-yellow-600 hover:text-yellow-700"
               >
-                Disable
+                {t('common:disable')}
               </button>
               <button
                 onClick={handleBulkExport}
                 className="text-sm font-medium text-black hover:text-gray-800"
               >
-                Export
+                {t('common:export')}
               </button>
             </div>
           </div>
@@ -338,7 +346,7 @@ export default function StrategiesList() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left">
+                <th className="px-6 py-3 text-start">
                   <input
                     type="checkbox"
                     checked={selectedStrategies.length === filteredStrategies.length && filteredStrategies.length > 0}
@@ -346,26 +354,26 @@ export default function StrategiesList() {
                     className="rounded border-gray-300 text-black focus:ring-gray-500"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Strategy
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('sl.col.strategy')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Rules
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('sl.col.rules')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Allocated
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('sl.col.allocated')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Performance
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('sl.col.performance')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Next Run
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('sl.col.nextRun')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -385,12 +393,12 @@ export default function StrategiesList() {
                       <div className="text-sm font-medium text-gray-900">{strategy.name}</div>
                       <div className="text-sm text-gray-500">ID: {strategy.id}</div>
                       <div className="text-xs text-gray-500 mt-1">
-                        Created by {strategy.createdBy}
+                        {t('sl.createdBy', { name: strategy.createdBy })}
                       </div>
                       <div className="flex flex-wrap gap-1 mt-2">
                         {strategy.riskBands.map((risk) => (
                           <span key={risk} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
-                            {risk} Risk
+                            {t('sl.riskLabel', { risk: tRisk(risk) })}
                           </span>
                         ))}
                       </div>
@@ -399,16 +407,16 @@ export default function StrategiesList() {
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
                       {getStatusIcon(strategy.status)}
-                      <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(strategy.status)}`}>
-                        {strategy.status}
+                      <span className={`ms-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(strategy.status)}`}>
+                        {tStatus(strategy.status)}
                       </span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{strategy.rulesCount} rules</div>
+                    <div className="text-sm text-gray-900">{t('sl.rulesCount', { count: strategy.rulesCount })}</div>
                     <div className="text-xs text-gray-500">
-                      {strategy.productModels.slice(0, 2).join(', ')}
-                      {strategy.productModels.length > 2 && ` +${strategy.productModels.length - 2} more`}
+                      {strategy.productModels.slice(0, 2).map(tProduct).join(', ')}
+                      {strategy.productModels.length > 2 && ` ${t('sl.moreCount', { count: strategy.productModels.length - 2 })}`}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -422,50 +430,50 @@ export default function StrategiesList() {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {strategy.nextRun ? new Date(strategy.nextRun).toLocaleString() : 'Not scheduled'}
+                    {strategy.nextRun ? new Date(strategy.nextRun).toLocaleString() : t('sl.notScheduled')}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <Link 
                         to={`/admin/allocation/strategies/${strategy.id}`}
                         className="text-black hover:text-blue-900"
-                        title="View Details"
+                        title={t('sl.viewDetails')}
                       >
                         <Eye className="w-4 h-4" />
                       </Link>
-                      <Link 
+                      <Link
                         to={`/admin/allocation/strategies/${strategy.id}?edit=true`}
                         className="text-gray-600 hover:text-gray-900"
-                        title="Edit Strategy"
+                        title={t('sl.editStrategy')}
                       >
                         <Edit className="w-4 h-4" />
                       </Link>
-                      <Link 
+                      <Link
                         to={`/admin/allocation/strategies/${strategy.id}/simulate`}
                         className="text-green-600 hover:text-green-900"
-                        title="Run Simulation"
+                        title={t('sl.runSimulation')}
                       >
                         <Play className="w-4 h-4" />
                       </Link>
-                      <button 
+                      <button
                         onClick={() => handleToggleStrategy(strategy.id, strategy.status)}
                         className={`${strategy.status === 'Published' ? 'text-yellow-600 hover:text-yellow-900' : 'text-green-600 hover:text-green-900'}`}
-                        title={strategy.status === 'Published' ? 'Pause Strategy' : 'Enable Strategy'}
+                        title={strategy.status === 'Published' ? t('sl.pauseStrategy') : t('sl.enableStrategy')}
                       >
                         {strategy.status === 'Published' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleCloneStrategy(strategy.id)}
                         className="text-purple-600 hover:text-purple-900"
-                        title="Clone Strategy"
+                        title={t('sl.cloneStrategy')}
                       >
                         <Copy className="w-4 h-4" />
                       </button>
                       {strategy.status === 'Draft' && (
-                        <button 
+                        <button
                           onClick={() => handleDeleteStrategy(strategy.id)}
                           className="text-red-600 hover:text-red-900"
-                          title="Delete Strategy"
+                          title={t('sl.deleteStrategy')}
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -482,17 +490,17 @@ export default function StrategiesList() {
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          Showing {filteredStrategies.length} of {strategies.length} strategies
+          {t('sl.countLabel', { shown: filteredStrategies.length, total: strategies.length })}
         </div>
         <div className="flex items-center space-x-2">
           <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
-            Previous
+            {t('common:previous')}
           </button>
           <button className="px-3 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg">
             1
           </button>
           <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-            Next
+            {t('common:next')}
           </button>
         </div>
       </div>

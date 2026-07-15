@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getEnvironmentConfig } from "../../redux/apis/apisThirdParty";
@@ -17,6 +18,7 @@ import {
 import { ChevronDown, Pencil, Plus, Trash2 } from "lucide-react";
 
 const EnvConfig = () => {
+  const { t } = useTranslation("connector");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -92,7 +94,7 @@ const EnvConfig = () => {
 
       setData(flatRows);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch environment config");
+      toast.error(error?.response?.data?.message || t("envConfig.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -137,7 +139,7 @@ const EnvConfig = () => {
     if (!selectedItem) return;
 
     if (!formValues.baseUrl.trim()) {
-      toast.error("Base URL is required");
+      toast.error(t("envConfig.toast.baseUrlRequired"));
       return;
     }
 
@@ -166,11 +168,11 @@ const EnvConfig = () => {
       };
 
       await updateEnvConfig(selectedItem.configId, body);
-      toast.success("Environment config updated successfully");
+      toast.success(t("envConfig.toast.updateSuccess"));
       closeModal();
       fetchEnvironmentConfig();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to update environment config");
+      toast.error(error?.response?.data?.message || t("envConfig.toast.updateFailed"));
     } finally {
       setIsSubmitting(false);
     }
@@ -202,46 +204,46 @@ const EnvConfig = () => {
 
   const tableHeaders = [
     {
-      name: "Provider",
+      name: t("envConfig.col.provider"),
       selector: (row: any) => row.providerName,
       sortable: true,
     },
     {
-      name: "API Name",
+      name: t("envConfig.col.apiName"),
       selector: (row: any) => row.apiName,
       sortable: true,
     },
     {
-      name: "Base URL",
+      name: t("envConfig.col.baseUrl"),
       selector: (row: any) => row.baseUrl,
       sortable: true,
       // width: "250px",
     },
     {
-      name: "Endpoint",
+      name: t("envConfig.col.endpoint"),
       selector: (row: any) => row.endpointPath,
       sortable: true,
       // width: "250px",
     },
     {
-      name: "Method",
+      name: t("envConfig.col.method"),
       selector: (row: any) => row.httpMethod,
       sortable: true,
       // width: "100px",
     },
     {
-      name: "Environment",
+      name: t("envConfig.col.environment"),
       selector: (row: any) => row.environment,
       sortable: true,
       // width: "120px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = row.active === true;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </span>
         );
       },
@@ -249,7 +251,7 @@ const EnvConfig = () => {
       // width: "100px",
     },
     {
-      name: "Action",
+      name: t("envConfig.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -262,7 +264,7 @@ const EnvConfig = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("envConfig.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -274,7 +276,7 @@ const EnvConfig = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -286,7 +288,7 @@ const EnvConfig = () => {
 
   return (
     <div className="service p-4">
-      <h1 className="text-xl font-bold pb-3">Environment Config</h1>
+      <h1 className="text-xl font-bold pb-3">{t("envConfig.title")}</h1>
 
       <TableView
         header={tableHeaders}
@@ -305,7 +307,7 @@ const EnvConfig = () => {
       <Dialog open={showEditModal} onOpenChange={(open) => !open && closeModal()}>
         <DialogContent className="max-w-[700px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Environment Config</DialogTitle>
+            <DialogTitle>{t("envConfig.modalTitle")}</DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4">
@@ -319,23 +321,23 @@ const EnvConfig = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Base URL *</Label>
+                <Label>{t("envConfig.form.baseUrl")}</Label>
                 <Input
-                  placeholder="https://sandbox.example.com"
+                  placeholder={t("envConfig.form.baseUrlPlaceholder")}
                   value={formValues.baseUrl}
                   onChange={(e) => setFormValues({ ...formValues, baseUrl: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Endpoint Path</Label>
+                <Label>{t("envConfig.form.endpointPath")}</Label>
                 <Input
-                  placeholder="/api/v1/resource"
+                  placeholder={t("envConfig.form.endpointPlaceholder")}
                   value={formValues.endpointPath}
                   onChange={(e) => setFormValues({ ...formValues, endpointPath: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Method</Label>
+                <Label>{t("envConfig.form.method")}</Label>
                 <Select
                   value={formValues.httpMethod}
                   onValueChange={(val) => setFormValues({ ...formValues, httpMethod: val })}
@@ -351,7 +353,7 @@ const EnvConfig = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Environment</Label>
+                <Label>{t("envConfig.form.environment")}</Label>
                 <Select
                   value={formValues.environment}
                   onValueChange={(val) => setFormValues({ ...formValues, environment: val })}
@@ -369,7 +371,7 @@ const EnvConfig = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Status</Label>
+              <Label>{t("envConfig.form.status")}</Label>
               <Select
                 value={formValues.active ? "active" : "inactive"}
                 onValueChange={(val) => setFormValues({ ...formValues, active: val === "active" })}
@@ -378,8 +380,8 @@ const EnvConfig = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
+                  <SelectItem value="active">{t("common:active")}</SelectItem>
+                  <SelectItem value="inactive">{t("common:inactive")}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -387,22 +389,22 @@ const EnvConfig = () => {
             {/* Headers */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label className="font-semibold">Headers</Label>
+                <Label className="font-semibold">{t("envConfig.headers")}</Label>
                 <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addHeader}>
                   <Plus className="h-3 w-3" />
-                  Add Header
+                  {t("envConfig.addHeader")}
                 </Button>
               </div>
               <div className="space-y-2 max-h-[200px] overflow-y-auto">
                 {headersList.map((header, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input
-                      placeholder="Header Key"
+                      placeholder={t("envConfig.headerKey")}
                       value={header.key}
                       onChange={(e) => updateHeader(index, "key", e.target.value)}
                     />
                     <Input
-                      placeholder="Header Value"
+                      placeholder={t("envConfig.headerValue")}
                       value={header.value}
                       onChange={(e) => updateHeader(index, "value", e.target.value)}
                     />
@@ -425,22 +427,22 @@ const EnvConfig = () => {
             {/* Credentials */}
             <div>
               <div className="flex items-center justify-between mb-2">
-                <Label className="font-semibold">Credentials</Label>
+                <Label className="font-semibold">{t("envConfig.credentials")}</Label>
                 <Button type="button" variant="outline" size="sm" className="gap-1" onClick={addCredential}>
                   <Plus className="h-3 w-3" />
-                  Add Credential
+                  {t("envConfig.addCredential")}
                 </Button>
               </div>
               <div className="space-y-2 max-h-[200px] overflow-y-auto">
                 {credentialsList.map((credential, index) => (
                   <div key={index} className="flex items-center gap-2">
                     <Input
-                      placeholder="Credential Key"
+                      placeholder={t("envConfig.credentialKey")}
                       value={credential.key}
                       onChange={(e) => updateCredential(index, "key", e.target.value)}
                     />
                     <Input
-                      placeholder="Credential Value"
+                      placeholder={t("envConfig.credentialValue")}
                       value={credential.value}
                       onChange={(e) => updateCredential(index, "value", e.target.value)}
                     />
@@ -463,10 +465,10 @@ const EnvConfig = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={closeModal} disabled={isSubmitting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleUpdate} disabled={isSubmitting}>
-              {isSubmitting ? "Updating..." : "Update"}
+              {isSubmitting ? t("envConfig.updating") : t("common:update")}
             </Button>
           </DialogFooter>
         </DialogContent>

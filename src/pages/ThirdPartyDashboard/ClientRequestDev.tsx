@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { History, ChevronDown, Eye, Search, X } from "lucide-react";
 import {
@@ -12,6 +13,7 @@ import toast from "react-hot-toast";
 import { getClientRequestDevList } from "../../redux/apis/apisThirdParty";
 
 const ClientRequestDev = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -66,7 +68,7 @@ const ClientRequestDev = () => {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to fetch dev requests"
+          t("clientRequestDev.toast.fetchFailed")
       );
       setData([]);
       setTotalRows(0);
@@ -126,7 +128,7 @@ const ClientRequestDev = () => {
 
   const headers = [
     {
-      name: "Request ID",
+      name: t("clientRequestDev.col.requestId"),
       selector: (row: any) => row.requestId || row.id || "-",
       sortable: true,
       width: "170px",
@@ -142,7 +144,7 @@ const ClientRequestDev = () => {
       },
     },
     {
-      name: "API Code",
+      name: t("clientRequestDev.col.apiCode"),
       selector: (row: any) => row.apiCode || "-",
       sortable: true,
       width: "180px",
@@ -153,35 +155,35 @@ const ClientRequestDev = () => {
       ),
     },
     {
-      name: "Client",
+      name: t("clientRequestDev.col.client"),
       selector: (row: any) => row.clientName || row.client?.name || "-",
       sortable: true,
       width: "160px",
     },
     {
-      name: "Service",
+      name: t("clientRequestDev.col.service"),
       selector: (row: any) =>
         row.serviceName || row.service?.name || row.serviceId || "-",
       sortable: true,
     },
     {
-      name: "API",
+      name: t("clientRequestDev.col.api"),
       selector: (row: any) => row.apiName || row.api?.name || row.endpoint || "-",
       sortable: true,
     },
     {
-      name: "Mobile Phone",
+      name: t("clientRequestDev.col.mobilePhone"),
       selector: (row: any) =>
         row.mobilePhone || row.mobile || row.phone || row.phoneNumber || "-",
       width: "150px",
     },
     {
-      name: "NID",
+      name: t("clientRequestDev.col.nid"),
       selector: (row: any) => row.nid || row.nationalId || "-",
       width: "130px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.responseStatus ?? row.statusCode ?? row.status ?? "-";
         const code = Number(status);
@@ -209,14 +211,14 @@ const ClientRequestDev = () => {
       width: "110px",
     },
     {
-      name: "Created At",
+      name: t("clientRequestDev.col.createdAt"),
       selector: (row: any) =>
         formatDate(row.createdAt || row.requestedAt || row.timestamp),
       sortable: true,
       width: "180px",
     },
     {
-      name: "Action",
+      name: t("clientRequestDev.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -229,7 +231,7 @@ const ClientRequestDev = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("clientRequestDev.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -241,7 +243,7 @@ const ClientRequestDev = () => {
                 }}
               >
                 <Eye className="h-4 w-4" />
-                View Details
+                {t("clientRequestDev.viewDetails")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -258,7 +260,7 @@ const ClientRequestDev = () => {
           <span className="pro-head-badge">
             <History className="h-4 w-4" />
           </span>
-          Client Request Dev
+          {t("clientRequestDev.title")}
         </h3>
       </div>
 
@@ -274,7 +276,7 @@ const ClientRequestDev = () => {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search ID, API, client, status…"
+              placeholder={t("clientRequestDev.searchPlaceholder")}
               style={{ flex: 1, border: "none", outline: "none", background: "transparent" }}
               className="text-sm"
             />
@@ -283,7 +285,7 @@ const ClientRequestDev = () => {
                 type="button"
                 onClick={() => setSearch("")}
                 className="text-muted-foreground hover:text-foreground"
-                aria-label="Clear search"
+                aria-label={t("clientRequestDev.clearSearch")}
               >
                 <X className="h-4 w-4" />
               </button>

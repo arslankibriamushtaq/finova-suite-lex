@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { store } from '../../redux/store';
 import { Images } from '../Config/Images';
 // URL for external RTL stylesheet
@@ -55,6 +56,7 @@ const getSectionContent = (section: any, currentLocale: string = 'en') => {
 };
 
 const CalculatorPage = () => {
+  const { t } = useTranslation('webPages');
   const [pageData, setPageData] = useState<CalculatorPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -304,10 +306,10 @@ const CalculatorPage = () => {
     return (
       <div className="header-footer-settings">
         <div className="header-footer-settings__error">
-          <h3>Error Loading Calculator Page Data</h3>
+          <h3>{t('state.errorLoadingCalculator')}</h3>
           <p>{error}</p>
           <button onClick={() => fetchPageData(locale)} className="theme-btn-next">
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -318,8 +320,8 @@ const CalculatorPage = () => {
     return (
       <div className="header-footer-settings">
         <div className="header-footer-settings__error">
-          <h3>No Data Available</h3>
-          <p>No calculator page data was found.</p>
+          <h3>{t('state.noDataAvailable')}</h3>
+          <p>{t('state.noCalculatorData')}</p>
           <button onClick={() => fetchPageData(locale)} className="theme-btn-next">
             Retry
           </button>

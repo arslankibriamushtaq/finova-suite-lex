@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 import { Images } from "../Config/Images";
 import { getProductsListing } from "../../redux/apis/apisCrudFactoring";
@@ -13,6 +14,7 @@ const whyChoosePoints = [
 ];
 
 const ManagementForm = () => {
+  const { t } = useTranslation("webPages");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [products, setProducts] = useState<any[]>([]);
@@ -119,7 +121,7 @@ const ManagementForm = () => {
         <div className="container">
           <div className="row">
             <div className="col-12">
-              <p className="heading py-4">Our Products</p>
+              <p className="heading py-4">{t("form.ourProducts")}</p>
             </div>
 
             {products.length === 0 && (
@@ -128,7 +130,7 @@ const ManagementForm = () => {
                   <div style={overlayStyle}>
                     <div className="text-center pb-2">
                       <p className="m-0 txt-bold" style={cardTextStyle}>
-                        No products available at the moment.
+                        {t("form.noProducts")}
                       </p>
                     </div>
                   </div>
@@ -158,7 +160,7 @@ const ManagementForm = () => {
                               className="btn btn-theme float-end mx-1"
                               onClick={() => handleApply(product)}
                             >
-                              Apply for {product.name_en}
+                              {t("form.applyFor", { name: product.name_en })}
                             </button>
                           </div>
                         </div>
@@ -241,7 +243,7 @@ const ManagementForm = () => {
         <div className="container">
           <div className="row no-gutters">
 
-            <div className="col-md-6 my-auto pr-md-5 order-md-3">
+            <div className="col-md-6 my-auto pe-md-5 order-md-3">
               <h2 
                 className="sub-heading" 
                 style={{
@@ -263,7 +265,7 @@ const ManagementForm = () => {
                   Approval within 24 hours
                 </p>
               </div>
-              <a href="#" className="btn btn-lg btn-theme mb-2" style={{maxWidth: "fit-content"}}>Apply Now</a>
+              <a href="#" className="btn btn-lg btn-theme mb-2" style={{maxWidth: "fit-content"}}>{t("form.applyNow")}</a>
             </div>
           </div>
         </div>
@@ -294,7 +296,7 @@ const ManagementForm = () => {
       </section>
       <div className="d-flex mt-2 justify-content-center flex-column flex-md-row">
                 <a href="#" className="btn btn-lg mt-3 btn-theme" style={{maxWidth: "fit-content"}}>
-                  Apply for Quick Factoring
+                  {t("form.applyForQuickFactoring")}
                 </a>
               </div>
       <footer className="p-4 text-center">

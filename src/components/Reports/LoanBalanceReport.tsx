@@ -7,8 +7,10 @@ import toast from "react-hot-toast";
 import { getLoanBalanceReport } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const LoanBalanceReport = () => {
+  const { t } = useTranslation("reports");
   const [items, setItems] = useState<any[]>([]);
   const [summary, setSummary] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -65,7 +67,7 @@ const LoanBalanceReport = () => {
       );
     } catch (error: any) {
       console.error("Error fetching loan balance report:", error);
-      toast.error(error?.message || "Failed to fetch loan balance report");
+      toast.error(error?.message || t('loanBalance.toast.fetchError'));
       setItems([]);
       setSummary(null);
     } finally {
@@ -139,25 +141,25 @@ const LoanBalanceReport = () => {
 
   const columns = [
     {
-      name: "Loan Account No",
+      name: t('loanBalance.col.loanAccountNo'),
       selector: (row: any) => row.loanAccountNumber || "-",
       sortable: true,
       width: "170px",
     },
     {
-      name: "Customer",
+      name: t('loanBalance.col.customer'),
       selector: (row: any) => row.customerName || row.customerId || "-",
       sortable: true,
       grow: 2,
     },
     {
-      name: "Product",
+      name: t('loanBalance.col.product'),
       selector: (row: any) => row.productName || "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Disbursed Amount",
+      name: t('loanBalance.col.disbursedAmount'),
       cell: (row: any) => (
         <span>{formatNumber(row.disbursedAmount)}</span>
       ),
@@ -165,7 +167,7 @@ const LoanBalanceReport = () => {
       width: "150px",
     },
     {
-      name: "Total Paid",
+      name: t('loanBalance.col.totalPaid'),
       cell: (row: any) => (
         <span>{formatNumber(row.totalPaid)}</span>
       ),
@@ -173,7 +175,7 @@ const LoanBalanceReport = () => {
       width: "130px",
     },
     {
-      name: "Principal O/S",
+      name: t('loanBalance.col.principalOs'),
       cell: (row: any) => (
         <span>{formatNumber(row.principalOutstanding)}</span>
       ),
@@ -181,7 +183,7 @@ const LoanBalanceReport = () => {
       width: "140px",
     },
     {
-      name: "Profit O/S",
+      name: t('loanBalance.col.profitOs'),
       cell: (row: any) => (
         <span>{formatNumber(row.profitOutstanding)}</span>
       ),
@@ -189,7 +191,7 @@ const LoanBalanceReport = () => {
       width: "130px",
     },
     {
-      name: "Penalties O/S",
+      name: t('loanBalance.col.penaltiesOs'),
       cell: (row: any) => (
         <span>{formatNumber(row.penaltiesOutstanding)}</span>
       ),
@@ -197,13 +199,13 @@ const LoanBalanceReport = () => {
       width: "140px",
     },
     {
-      name: "Next Due Date",
+      name: t('loanBalance.col.nextDueDate'),
       selector: (row: any) => formatDate(row.nextDueDate),
       sortable: true,
       width: "130px",
     },
     {
-      name: "Status",
+      name: t('common:status'),
       cell: (row: any) => {
         const status = row.loanStatus || "-";
         const color = (() => {
@@ -241,7 +243,7 @@ const LoanBalanceReport = () => {
 
   const exportToCSV = () => {
     if (!filtered.length) {
-      toast.error("No data to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
     const csvHeaders = [
@@ -269,7 +271,7 @@ const LoanBalanceReport = () => {
           <span className="pro-head-badge">
             <Scale className="h-4 w-4" />
           </span>
-          Loan Balance & Outstanding Report
+          {t('loanBalance.title')}
         </h3>
       </div>
 
@@ -277,7 +279,7 @@ const LoanBalanceReport = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by loan, customer, product, statusâ€¦"
+          placeholder={t('loanBalance.searchPlaceholder')}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -290,7 +292,7 @@ const LoanBalanceReport = () => {
           disabled={!filtered.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t('action.exportCsv')}
         </button>
         </div>
       </div>
@@ -299,7 +301,7 @@ const LoanBalanceReport = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Loans</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.totalLoans')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.totalCount}
               </div>
@@ -307,7 +309,7 @@ const LoanBalanceReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Principal Outstanding</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.principalOutstanding')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalPrincipalOutstanding)} SAR
               </div>
@@ -315,7 +317,7 @@ const LoanBalanceReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Profit Outstanding</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.profitOutstanding')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalProfitOutstanding)} SAR
               </div>
@@ -323,7 +325,7 @@ const LoanBalanceReport = () => {
           </Col>
           <Col xs={24} sm={12} lg={6}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Penalties Outstanding</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('loanBalance.summary.penaltiesOutstanding')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalPenaltiesOutstanding)} SAR
               </div>

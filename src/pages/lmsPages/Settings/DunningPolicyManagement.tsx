@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Plus, Pencil, Trash2, ChevronDown, Megaphone } from "lucide-react";
 import {
@@ -49,6 +50,7 @@ const emptyForm: DunningPolicyForm = {
 };
 
 const DunningPolicyManagement = () => {
+  const { t } = useTranslation("settings");
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
@@ -98,7 +100,7 @@ const DunningPolicyManagement = () => {
         setTotalRows(0);
         setTotalPage(1);
       } else {
-        toast.error(error?.response?.data?.message || "Failed to fetch dunning policies");
+        toast.error(error?.response?.data?.message || t("dunning.toast.fetchFailed"));
       }
     } finally {
       setIsLoading(false);
@@ -142,11 +144,11 @@ const DunningPolicyManagement = () => {
 
   const validate = (): boolean => {
     const e: Record<string, string> = {};
-    if (!form.name.trim()) e.name = "Policy name is required";
+    if (!form.name.trim()) e.name = t("dunning.val.name");
     if (form.penaltyWaiverAllowed && form.maxWaiversAllowed !== "") {
       const n = Number(form.maxWaiversAllowed);
       if (!Number.isInteger(n) || n < 1)
-        e.maxWaiversAllowed = "Must be a positive integer";
+        e.maxWaiversAllowed = t("dunning.val.maxWaivers");
     }
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -169,15 +171,15 @@ const DunningPolicyManagement = () => {
       setIsSaving(true);
       if (modalMode === "add") {
         await createDunningPolicy(buildPayload());
-        toast.success("Dunning policy created");
+        toast.success(t("dunning.toast.created"));
       } else {
         await updateDunningPolicy(form.id!, buildPayload());
-        toast.success("Dunning policy updated");
+        toast.success(t("dunning.toast.updated"));
       }
       closeModal();
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save dunning policy");
+      toast.error(error?.response?.data?.message || t("dunning.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -188,11 +190,11 @@ const DunningPolicyManagement = () => {
     try {
       setIsDeleting(true);
       await deleteDunningPolicy(deleteTarget.id);
-      toast.success("Dunning policy deleted");
+      toast.success(t("dunning.toast.deleted"));
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete dunning policy");
+      toast.error(error?.response?.data?.message || t("dunning.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -200,13 +202,13 @@ const DunningPolicyManagement = () => {
 
   const columns = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) => row.name || row.nameEn || "-",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Description",
+      name: t("common:description"),
       cell: (row: any) => (
         <span
           title={row.description || ""}
@@ -224,7 +226,7 @@ const DunningPolicyManagement = () => {
       width: "260px",
     },
     {
-      name: "Penalty Waiver",
+      name: t("dunning.col.penaltyWaiver"),
       cell: (row: any) => (
         <span
           style={{
@@ -240,13 +242,13 @@ const DunningPolicyManagement = () => {
               : "var(--muted-foreground)",
           }}
         >
-          {row.penaltyWaiverAllowed ? "Allowed" : "Not Allowed"}
+          {row.penaltyWaiverAllowed ? t("dunning.allowed") : t("dunning.notAllowed")}
         </span>
       ),
       width: "140px",
     },
     {
-      name: "Max Waivers",
+      name: t("dunning.col.maxWaivers"),
       selector: (row: any) =>
         row.penaltyWaiverAllowed && row.maxWaiversAllowed != null
           ? String(row.maxWaiversAllowed)
@@ -254,7 +256,7 @@ const DunningPolicyManagement = () => {
       width: "120px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -268,36 +270,36 @@ const DunningPolicyManagement = () => {
             color: "var(--primary-foreground)",
           }}
         >
-          {row.active ? "Active" : "Inactive"}
+          {row.active ? t("common:active") : t("common:inactive")}
         </span>
       ),
       width: "100px",
     },
     {
-      name: "Updated",
+      name: t("dunning.col.updated"),
       selector: (row: any) => formatDate(row.updatedAt),
       width: "180px",
     },
     {
-      name: "Action",
+      name: t("dunning.col.action"),
       cell: (row: any) => (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-1">
-              Select <ChevronDown className="h-3 w-3" />
+              {t("common:select")} <ChevronDown className="h-3 w-3" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onSelect={() => openEdit(row)}>
-              <Pencil className="h-4 w-4 mr-2" />
-              Edit
+              <Pencil className="h-4 w-4 me-2" />
+              {t("common:edit")}
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
               onSelect={() => setDeleteTarget(row)}
             >
-              <Trash2 className="h-4 w-4 mr-2" />
-              Delete
+              <Trash2 className="h-4 w-4 me-2" />
+              {t("common:delete")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -313,7 +315,7 @@ const DunningPolicyManagement = () => {
           <span className="pro-head-badge">
             <Megaphone className="h-4 w-4" />
           </span>
-          Dunning Policies
+          {t("dunning.title")}
         </h3>
       </div>
 
@@ -322,7 +324,7 @@ const DunningPolicyManagement = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by name, code, or description"
+            placeholder={t("dunning.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
@@ -337,7 +339,7 @@ const DunningPolicyManagement = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="h-4 w-4" />
-            Add Policy
+            {t("dunning.addPolicy")}
           </Button>
         </div>
       </div>
@@ -364,15 +366,15 @@ const DunningPolicyManagement = () => {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {modalMode === "add" ? "Add Dunning Policy" : "Edit Dunning Policy"}
+              {modalMode === "add" ? t("dunning.modal.addTitle") : t("dunning.modal.editTitle")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="space-y-4 py-2">
             <div className="space-y-1">
-              <Label>Policy Name *</Label>
+              <Label>{t("dunning.field.policyName")} *</Label>
               <Input
-                placeholder="e.g. Standard Dunning"
+                placeholder={t("dunning.ph.name")}
                 value={form.name}
                 onChange={(e) => setField("name", e.target.value)}
                 className={errors.name ? "border-destructive" : ""}
@@ -383,9 +385,9 @@ const DunningPolicyManagement = () => {
             </div>
 
             <div className="space-y-1">
-              <Label>Description</Label>
+              <Label>{t("common:description")}</Label>
               <Input
-                placeholder="Brief description of this policy"
+                placeholder={t("dunning.ph.description")}
                 value={form.description}
                 onChange={(e) => setField("description", e.target.value)}
               />
@@ -396,11 +398,11 @@ const DunningPolicyManagement = () => {
                 checked={form.active}
                 onCheckedChange={(v) => setField("active", v)}
               />
-              <Label>Active</Label>
+              <Label>{t("common:active")}</Label>
             </div>
 
             <div className="border-t pt-4 space-y-3">
-              <h4 className="text-sm font-medium">Penalty Waiver Configuration</h4>
+              <h4 className="text-sm font-medium">{t("dunning.penaltyConfig")}</h4>
 
               <div className="flex items-center gap-3">
                 <Switch
@@ -410,16 +412,16 @@ const DunningPolicyManagement = () => {
                     if (!v) setField("maxWaiversAllowed", "");
                   }}
                 />
-                <Label>Penalty Waiver Allowed</Label>
+                <Label>{t("dunning.field.penaltyWaiverAllowed")}</Label>
               </div>
 
               {form.penaltyWaiverAllowed && (
                 <div className="space-y-1">
-                  <Label>Max Waivers Allowed</Label>
+                  <Label>{t("dunning.field.maxWaiversAllowed")}</Label>
                   <Input
                     type="number"
                     min={1}
-                    placeholder="e.g. 3"
+                    placeholder={t("dunning.ph.maxWaivers")}
                     value={form.maxWaiversAllowed}
                     onChange={(e) => setField("maxWaiversAllowed", e.target.value)}
                     className={errors.maxWaiversAllowed ? "border-destructive" : ""}
@@ -434,10 +436,10 @@ const DunningPolicyManagement = () => {
 
           <DialogFooter>
             <Button variant="outline" onClick={closeModal} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Save"}
+              {isSaving ? t("dunning.saving") : t("common:save")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -450,12 +452,11 @@ const DunningPolicyManagement = () => {
       >
         <DialogContent className="max-w-sm">
           <DialogHeader>
-            <DialogTitle>Delete Dunning Policy</DialogTitle>
+            <DialogTitle>{t("dunning.modal.deleteTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
-            <strong>{deleteTarget?.name || deleteTarget?.nameEn}</strong>? This
-            action cannot be undone.
+            {t("dunning.deletePrefix")}{" "}
+            <strong>{deleteTarget?.name || deleteTarget?.nameEn}</strong>{t("dunning.deleteSuffix")}
           </p>
           <DialogFooter>
             <Button
@@ -463,14 +464,14 @@ const DunningPolicyManagement = () => {
               onClick={() => setDeleteTarget(null)}
               disabled={isDeleting}
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               variant="destructive"
               onClick={confirmDelete}
               disabled={isDeleting}
             >
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("dunning.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

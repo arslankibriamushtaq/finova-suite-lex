@@ -7,7 +7,9 @@ import csv from "../../assets/images/print-csv.svg";
 import blackPrint from "../../assets/images/blac-print.png";
 import { Tabs } from "antd";
 import ChartSkeleton from "../ChartSkeleton";
+import { useTranslation } from "react-i18next";
 const Bundles = (props: any) => {
+  const { t } = useTranslation("dashboard");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [legends, setLegends] = useState<any>();
   const [activeTab, setActiveTab] = useState("numbers");
@@ -22,10 +24,10 @@ const Bundles = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Avg Time", // Y-axis label
+      name: t("appStatusChart.yAxis.avgTime"), // Y-axis label
     },
     series: {
-      name: "Series 1", // Name for the first set of bars
+      name: t("appStatusChart.series1"), // Name for the first set of bars
       data: props?.dashboardData?.bundles?.graph?.map((day) => day?.amount), // Data for the first set of bars
       type: "bar",
       barGap: "0%", // No gap between bars in different series
@@ -39,7 +41,7 @@ const Bundles = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -95,7 +97,7 @@ const Bundles = (props: any) => {
       left: "center",
       top: "center",
       style: {
-        text: `Total Tickets\n${totalTickets}`, // Display "Total Tickets" and the value
+        text: `${t("rewards.totalTickets")}\n${totalTickets}`, // Display "Total Tickets" and the value
         fontSize: 12, // Font size for the text
         fontWeight: "bold",
         fill: "#333", // Text color
@@ -117,11 +119,11 @@ const Bundles = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Numbers", // Y-axis label
+      name: t("services.numbers"), // Y-axis label
     },
     series: [
       {
-        name: "Series 1", // Name for the first set of bars
+        name: t("appStatusChart.series1"), // Name for the first set of bars
         data: props?.dashboardData?.bundles?.graph?.map((day) => day?.count), // Data for the first set of bars
         type: "bar",
         barGap: "0%", // No gap between bars in different series
@@ -137,7 +139,7 @@ const Bundles = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -162,11 +164,11 @@ const Bundles = (props: any) => {
     },
     yAxis: {
       type: "value",
-      name: "Average", // Y-axis label
+      name: t("services.average"), // Y-axis label
     },
     series: [
       {
-        name: "Series 1", // Name for the first set of bars
+        name: t("appStatusChart.series1"), // Name for the first set of bars
         data: [5, 10, 7.5, 12.5, 15, 11, 9], // Average data for the first set of bars
         type: "bar",
         barGap: "0%", // No gap between bars in different series
@@ -181,7 +183,7 @@ const Bundles = (props: any) => {
       trigger: "axis",
       formatter: function (params) {
         // Custom tooltip to show both series values
-        let tooltip = `Day ${params[0].axisValue}:<br>`;
+        let tooltip = `${t("appStatusChart.tooltipDay", { day: params[0].axisValue })}<br>`;
         params.forEach((item) => {
           tooltip += `${item.marker} ${item.seriesName}: ${item.data}<br>`;
         });
@@ -196,10 +198,10 @@ const Bundles = (props: any) => {
     },
   };
   const ticketsTab = [
-    { key: "Amount", label: "Amount", chartOptions: numbersBarChartOptions },
+    { key: "Amount", label: t("common:amount"), chartOptions: numbersBarChartOptions },
     {
       key: "Sales",
-      label: "No of Sales",
+      label: t("services.noOfSales"),
       chartOptions: averageBarChartOptions,
     },
   ];
@@ -216,7 +218,7 @@ const Bundles = (props: any) => {
           className="d-flex"
           style={{ justifyContent: "space-between", padding: "20px 15px" }}
         >
-          <h4>Bundles</h4>
+          <h4>{t("bundles.title")}</h4>
           <div className="csv-print">
             <img
               src={blackPrint}
@@ -225,7 +227,7 @@ const Bundles = (props: any) => {
               height={15}
               style={{ cursor: "pointer" }} // Add pointer cursor
             />
-            Print CSV
+            {t("services.printCsv")}
           </div>
         </div>
 
@@ -242,7 +244,7 @@ const Bundles = (props: any) => {
           >
             <div className="ticket p-3">
               <label className="label-tag" style={{ position: "absolute" }}>
-                Bundles sale
+                {t("bundles.label")}
               </label>
               <Tabs
                 defaultActiveKey="numbers"

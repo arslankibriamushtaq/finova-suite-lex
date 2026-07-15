@@ -9,8 +9,10 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const EarlySettlement = () => {
+  const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<any>(null);
   const [toDate, setToDate] = useState<any>(null);
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
@@ -54,7 +56,7 @@ const EarlySettlement = () => {
         setAllCallActivity(Array.isArray(items) ? items : []);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch early settlement report");
+      toast.error(error?.message || t("earlySettlement.toast.fetchError"));
       setAllCallActivity([]);
     } finally {
       setLoading(false);
@@ -131,31 +133,31 @@ const EarlySettlement = () => {
   }, [mappedData, page, pageSize]);
 
   const Call_Activity_Header = [
-    { name: "Customer Name", selector: (row: any) => row.customerName },
+    { name: t("earlySettlement.col.customerName"), selector: (row: any) => row.customerName },
     {
-      name: "Original Amount",
+      name: t("earlySettlement.col.originalAmount"),
       cell: (row: any) => <span>{formatNumber(row.originalAmount)}</span>,
     },
     {
-      name: "Settlement Amount",
+      name: t("earlySettlement.col.settlementAmount"),
       cell: (row: any) => <span>{formatNumber(row.settlementAmount)}</span>,
     },
     {
-      name: "Rebate/Discount",
+      name: t("earlySettlement.col.rebateDiscount"),
       cell: (row: any) => (
         <span className="text-success">{formatNumber(row.rebateAmount)}</span>
       ),
     },
     {
-      name: "Profit Saved",
+      name: t("earlySettlement.col.profitSaved"),
       cell: (row: any) => <span>{formatNumber(row.profitSaved)}</span>,
     },
     {
-      name: "Settlement Date",
+      name: t("earlySettlement.col.settlementDate"),
       selector: (row: any) => formatDate(row.settlementDate),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const color = String(row.status || "").toLowerCase() === "settled"
           ? "rgba(63,195,128,0.9)"
@@ -181,7 +183,7 @@ const EarlySettlement = () => {
 
   const exportToCSV = () => {
     if (!mappedData.length) {
-      toast.error("No data to export");
+      toast.error(t("toast.noExportData"));
       return;
     }
     const csvHeaders = [
@@ -212,7 +214,7 @@ const EarlySettlement = () => {
           <span className="pro-head-badge">
             <BadgeCheck className="h-4 w-4" />
           </span>
-          Early Settlement Report
+          {t("earlySettlement.title")}
         </h3>
       </div>
 
@@ -220,14 +222,14 @@ const EarlySettlement = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by customer, loan, facility, status"
+          placeholder={t("earlySettlement.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
         <DatePicker
-          placeholder="From"
+          placeholder={t("common:from")}
           value={fromDate}
           onChange={(d) => setFromDate(d)}
           format="YYYY-MM-DD"
@@ -235,7 +237,7 @@ const EarlySettlement = () => {
           style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2 }}
         />
         <DatePicker
-          placeholder="To"
+          placeholder={t("common:to")}
           value={toDate}
           onChange={(d) => setToDate(d)}
           format="YYYY-MM-DD"
@@ -249,7 +251,7 @@ const EarlySettlement = () => {
           disabled={!mappedData.length}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Export CSV
+          {t("action.exportCsv")}
         </button>
         </div>
       </div>
@@ -258,7 +260,7 @@ const EarlySettlement = () => {
         <Row gutter={[16, 16]} className="mb-3">
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Settlement Value</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("earlySettlement.summary.totalSettlementValue")}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalSettlementAmount)} SAR
               </div>
@@ -266,7 +268,7 @@ const EarlySettlement = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Rebates Given</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("earlySettlement.summary.totalRebatesGiven")}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatNumber(visibleTotals.totalRebateAmount)} SAR
               </div>
@@ -274,7 +276,7 @@ const EarlySettlement = () => {
           </Col>
           <Col xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Settled Loans Count</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t("earlySettlement.summary.settledLoansCount")}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {visibleTotals.settledCount}
               </div>

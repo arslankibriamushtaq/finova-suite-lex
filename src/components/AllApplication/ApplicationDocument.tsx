@@ -1,18 +1,20 @@
 import React, { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import ApplicationDocumentRequest from "./ApplicationDocumentRequest";
 import ApplicationDocumentView from "./ApplicationDocumentView";
 
 const ApplicationDocument = () => {
+  const { t } = useTranslation("allApplication");
   const [selectTab, setSelectedTab] = useState("RequestDocuments");
   const tapOptions = [
     {
-      title: "Request Documents",
+      title: t("appDoc.tab.requestDocuments"),
       key: "RequestDocuments",
       folder: <ApplicationDocumentRequest />,
     },
     {
-      title: "View Documents",
+      title: t("appDoc.tab.viewDocuments"),
       key: "ViewDocuments",
       folder: <ApplicationDocumentView />,
     },
@@ -22,7 +24,7 @@ const ApplicationDocument = () => {
     <>
       <div className="cs-table">
         <div className="col-lg-12 search-bar col-12 d-flex align-items-center">
-          <h2 className="col-lg-6 col-12">View Application</h2>
+          <h2 className="col-lg-6 col-12">{t("view.title")}</h2>
         </div>
 
         <div>

@@ -3,10 +3,12 @@ import { Button, Input} from "antd";
 import TableView from "../../../components/TableView/TableView";
 import { getLogs } from "../../../redux/apis/apisCrudCms";
 import {
-    EyeOutlined,  
+    EyeOutlined,
   SearchOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 const Logs = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -21,23 +23,23 @@ const Logs = () => {
 
   const Table_Headers = [
     {
-      name: "Date",
+      name: t("logs.date"),
       width: "30%",
 
       selector: (row: { date: string }) => row.date || "-",
     },
     {
-      name: "Log Errors",
+      name: t("logs.logErrors"),
       width: "30%",
       selector: (row: { logErrors: string }) => row.logErrors || "-",
     },
     {
-      name: "Log Infos",
+      name: t("logs.logInfos"),
       width: "30%",
       selector: (row: { logInfos: string }) => row.logInfos || "-",
     },
     {
-        name: "Actions",
+        name: t("common:actions"),
         width: "10%",
         selector: (row: { actions: string }) => row.actions || "-",
         cell: (row: any) => (
@@ -81,7 +83,7 @@ const Logs = () => {
     <>
       <div className="d-flex col-12 justify-content-between align-items-center mb-3">
         <div className="col-8">
-          <h5 className="mb-2">Factoring Valley CMS LOGS - Summary</h5>
+          <h5 className="mb-2">{t("logs.title")}</h5>
         </div>
       
       </div>

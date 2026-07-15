@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { Row, Col, Form, Tab, Tabs, Button, Badge } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { createDeliquency, getDeliquency } from "../../../redux/apis/apisCrudLms";
@@ -12,6 +13,7 @@ enum ProductDeliquencyType {
 }
 
 const EarlySettlement = ({ productId, setSelectedTab }: any) => {
+  const { t } = useTranslation("productManagement2");
   const [activeSubTab, setActiveSubTab] = useState("SetDelinquencyType");
   const [radioInputValue, setradioInputValue] = useState("FixedFrequency");
   const [customFrequencyData, setCustomFrequencyData] = useState<any>();
@@ -38,8 +40,8 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
   const [isPrincipleBasedActive, setIsPrincipleBasedActive] = useState<boolean>(false);
 
   const settleMentType = [
-    { label: "Fixed Frequency", type: "radio", name: "FixedFrequency", value: "FixedFrequency" },
-    { label: "Custom Frequency", type: "radio", name: "CustomFrequency", value: "CustomFrequency" },
+    { label: t("delinquency.fixedFrequency"), type: "radio", name: "FixedFrequency", value: "FixedFrequency" },
+    { label: t("delinquency.customFrequency"), type: "radio", name: "CustomFrequency", value: "CustomFrequency" },
   ];
 
   const handleInputChange = (event: any) => {
@@ -85,7 +87,7 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
         }
       }
     } catch (error: any) {
-      toast.error(error.message || "An error occurred");
+      toast.error(error.message || t("delinquency.errorOccurred"));
     } finally {
       setLoader(false);
     }
@@ -98,15 +100,15 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
 
   const handlePrincipleSubmit = async () => {
     const idToUse = productId;
-    if (!idToUse) { toast.error("Please select a product first"); return; }
+    if (!idToUse) { toast.error(t("delinquency.selectProductFirst")); return; }
 
     const validationErrors: any = {};
-    if (!settlementMonths || Number(settlementMonths) <= 0) validationErrors.settlementMonths = "Number of months must be greater than 0";
-    if (!settlementAmountPerMonth || Number(settlementAmountPerMonth) <= 0) validationErrors.settlementAmountPerMonth = "Amount must be greater than 0";
+    if (!settlementMonths || Number(settlementMonths) <= 0) validationErrors.settlementMonths = t("delinquency.monthsGreaterThanZero");
+    if (!settlementAmountPerMonth || Number(settlementAmountPerMonth) <= 0) validationErrors.settlementAmountPerMonth = t("delinquency.amountGreaterThanZero");
 
     if (Object.keys(validationErrors).length > 0) {
       setPrincipleErrors(validationErrors);
-      toast.error("Please fill all required fields");
+      toast.error(t("delinquency.fillAllRequired"));
       return;
     }
     setPrincipleErrors({});
@@ -125,10 +127,10 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
     setLoader(true);
     try {
       const res = await createDeliquency(body);
-      toast.success("Saved successfully");
+      toast.success(t("common:savedSuccessfully"));
       setSelectedTab("DueLoan");
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to save");
+      toast.error(error?.response?.data?.message || error?.message || t("delinquency.failedToSave"));
     } finally {
       setLoader(false);
     }
@@ -137,7 +139,7 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
   const InvoiceBasedContent = useMemo(() => (
     <div className="border-deliquencies p-4 mt-4">
       <div className="d-flex align-items-center justify-content-between mt-1" style={{ fontSize: "15px", fontWeight: "Bold" }}>
-        Penalty Amount Settings
+        {t("delinquency.penaltyAmountSettings")}
       </div>
       <Row>
         {settleMentType.map((field, index) => (
@@ -183,25 +185,25 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
   const PrincipleBasedContent = useMemo(() => (
     <div className="border-deliquencies p-4 mt-4">
       <div className="d-flex align-items-center justify-content-between mt-1" style={{ fontSize: "15px", fontWeight: "Bold" }}>
-        Principle Based Early Settlement
+        {t("delinquency.principleBasedTitle")}
       </div>
       <Row className="mt-3">
         <Col md={6} className="mb-3">
           <Form.Group>
-            <Form.Label style={{ fontSize: "13px", fontWeight: 600 }}>Discount</Form.Label>
+            <Form.Label style={{ fontSize: "13px", fontWeight: 600 }}>{t("delinquency.discount")}</Form.Label>
             <Form.Select value={discountType} onChange={(e) => setDiscountType(e.target.value as "FIXED" | "PERCENTAGE")}>
-              <option value="FIXED">Fixed</option>
-              <option value="PERCENTAGE">Percentage</option>
+              <option value="FIXED">{t("delinquency.fixed")}</option>
+              <option value="PERCENTAGE">{t("delinquency.percentage")}</option>
             </Form.Select>
           </Form.Group>
         </Col>
         <Col md={6} className="mb-3">
           <Form.Group>
-            <Form.Label style={{ fontSize: "13px", fontWeight: 600 }}>Number of Months</Form.Label>
+            <Form.Label style={{ fontSize: "13px", fontWeight: 600 }}>{t("delinquency.numberOfMonths")}</Form.Label>
             <Form.Control
               type="number" min={1} value={settlementMonths}
               onChange={(e) => { setSettlementMonths(e.target.value); setPrincipleErrors((p: any) => ({ ...p, settlementMonths: "" })); }}
-              placeholder="Enter number of months"
+              placeholder={t("delinquency.enterNumberOfMonths")}
             />
             {principleErrors?.settlementMonths && <div className="text-danger mt-1" style={{ fontSize: "12px" }}>{principleErrors.settlementMonths}</div>}
           </Form.Group>
@@ -211,19 +213,19 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
         <Col md={6} className="mb-3">
           <Form.Group>
             <Form.Label style={{ fontSize: "13px", fontWeight: 600 }}>
-              {discountType === "FIXED" ? "Fixed Amount per month" : "Percentage Amount per month"}
+              {discountType === "FIXED" ? t("delinquency.fixedAmountPerMonth") : t("delinquency.percentageAmountPerMonth")}
             </Form.Label>
             <Form.Control
               type="number" min={0} value={settlementAmountPerMonth}
               onChange={(e) => { setSettlementAmountPerMonth(e.target.value); setPrincipleErrors((p: any) => ({ ...p, settlementAmountPerMonth: "" })); }}
-              placeholder="Enter amount"
+              placeholder={t("delinquency.enterAmount")}
             />
             {principleErrors?.settlementAmountPerMonth && <div className="text-danger mt-1" style={{ fontSize: "12px" }}>{principleErrors.settlementAmountPerMonth}</div>}
           </Form.Group>
         </Col>
       </Row>
       <div className="mt-3 d-flex justify-content-end">
-        <Button variant="primary" onClick={handlePrincipleSubmit}>Submit</Button>
+        <Button variant="primary" onClick={handlePrincipleSubmit}>{t("common:submit")}</Button>
       </div>
     </div>
   ), [discountType, settlementMonths, settlementAmountPerMonth, principleErrors]);
@@ -237,32 +239,32 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
         activeKey={activeSubTab}
         onSelect={(tab: any) => {
           if (tab === "InvoiceBased" && !isInvoiceBasedActive) {
-            toast.error("Invoice Based tab is inactive. Please activate it from the Set Delinquency Type tab.");
+            toast.error(t("delinquency.invoiceTabInactive"));
             return;
           }
           if (tab === "PrincipleBased" && !isPrincipleBasedActive) {
-            toast.error("Principle Based tab is inactive. Please activate it from the Set Delinquency Type tab.");
+            toast.error(t("delinquency.principleTabInactive"));
             return;
           }
           setActiveSubTab(tab);
         }}
       >
-        <Tab eventKey="SetDelinquencyType" title="Set Early Settlement Type">
+        <Tab eventKey="SetDelinquencyType" title={t("delinquency.setEarlySettlementType")}>
           <div className="border-deliquencies p-4 mt-4">
-            <h6 className="mb-4 fw-bold">Activate/Deactivate Tabs</h6>
+            <h6 className="mb-4 fw-bold">{t("delinquency.activateDeactivateTabs")}</h6>
             <Row>
               {[
-                { key: "InvoiceBased", label: "Invoice Based", isActive: isInvoiceBasedActive, setIsActive: setIsInvoiceBasedActive },
-                { key: "PrincipleBased", label: "Principle Based", isActive: isPrincipleBasedActive, setIsActive: setIsPrincipleBasedActive },
+                { key: "InvoiceBased", label: t("delinquency.invoiceBased"), isActive: isInvoiceBasedActive, setIsActive: setIsInvoiceBasedActive },
+                { key: "PrincipleBased", label: t("delinquency.principleBased"), isActive: isPrincipleBasedActive, setIsActive: setIsPrincipleBasedActive },
               ].map((tab) => (
                 <Col md={6} key={tab.key} className="mb-3">
                   <div className="d-flex align-items-center justify-content-between p-3 border rounded">
                     <div>
                       <h6 className="mb-1 fw-semibold">{tab.label}</h6>
-                      <small className="text-muted">{tab.isActive ? "Currently Active" : "Currently Inactive"}</small>
+                      <small className="text-muted">{tab.isActive ? t("delinquency.currentlyActive") : t("delinquency.currentlyInactive")}</small>
                     </div>
                     {tab.isActive ? (
-                      <Badge bg="success" style={{ fontSize: "14px", padding: "8px 16px" }}>Activated</Badge>
+                      <Badge bg="success" style={{ fontSize: "14px", padding: "8px 16px" }}>{t("delinquency.activated")}</Badge>
                     ) : (
                       <Button
                         variant="secondary"
@@ -277,7 +279,7 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
                           setActiveSubTab(tab.key);
                         }}
                       >
-                        Activate
+                        {t("delinquency.activate")}
                       </Button>
                     )}
                   </div>
@@ -285,14 +287,14 @@ const EarlySettlement = ({ productId, setSelectedTab }: any) => {
               ))}
             </Row>
             <div className="mt-3 p-3 bg-light rounded">
-              <small className="text-muted"><strong>Note:</strong> Only one tab can be active at a time.</small>
+              <small className="text-muted"><strong>{t("delinquency.noteLabel")}</strong> {t("delinquency.noteOnlyOneActive")}</small>
             </div>
           </div>
         </Tab>
-        <Tab eventKey="InvoiceBased" title="Invoice Based" disabled={!isInvoiceBasedActive}>
+        <Tab eventKey="InvoiceBased" title={t("delinquency.invoiceBased")} disabled={!isInvoiceBasedActive}>
           {activeSubTab === "InvoiceBased" && isInvoiceBasedActive && InvoiceBasedContent}
         </Tab>
-        <Tab eventKey="PrincipleBased" title="Principle Based" disabled={!isPrincipleBasedActive}>
+        <Tab eventKey="PrincipleBased" title={t("delinquency.principleBased")} disabled={!isPrincipleBasedActive}>
           {activeSubTab === "PrincipleBased" && isPrincipleBasedActive && PrincipleBasedContent}
         </Tab>
       </Tabs>

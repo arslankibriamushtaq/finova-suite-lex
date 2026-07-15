@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight, Plus, Trash2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../../ui/select"
@@ -38,6 +39,7 @@ export default function AdminFeeSlabsTab({
   removeFeeSlab,
   updateFeeSlab,
 }: AdminFeeSlabsTabProps) {
+  const { t } = useTranslation("productManagement2")
   // TODO: Re-enable when permission API is implemented
   // const { canCreate, canRemove, canUpdate } = usePermissions();
   // const canAddSlab = canCreate(PROCESSING_FEE_SLAB_PERMISSIONS);
@@ -53,13 +55,13 @@ export default function AdminFeeSlabsTab({
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Fee Slabs</CardTitle>
-              <p className="mt-2 text-muted-foreground">Configure fee structures based on financing amounts.</p>
+              <CardTitle>{t("feeSlabs.title")}</CardTitle>
+              <p className="mt-2 text-muted-foreground">{t("feeSlabs.subtitle")}</p>
             </div>
             {canAddSlab && (
               <Button onClick={addFeeSlab} className="gap-2">
                 <Plus className="h-4 w-4" />
-                Add Fee Slab
+                {t("feeSlabs.addSlab")}
               </Button>
             )}
           </div>
@@ -67,24 +69,24 @@ export default function AdminFeeSlabsTab({
         <CardContent>
           {formData.admin_fee_slabs.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
-              <p>No fee slabs configured. Click "Add Fee Slab" to get started.</p>
+              <p>{t("feeSlabs.empty")}</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Min Amount</TableHead>
-                  <TableHead>Max Amount</TableHead>
-                  <TableHead>Min Tenure</TableHead>
-                  <TableHead>Max Tenure</TableHead>
-                  <TableHead>Profit %</TableHead>
-                  <TableHead>Profit Type</TableHead>
-                  <TableHead>Processing Fee</TableHead>
-                  <TableHead>Admin Fee</TableHead>
-                  <TableHead>Profit Category</TableHead>
-                  <TableHead>Partner Scope</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Actions</TableHead>
+                  <TableHead>{t("feeSlabs.minAmount")}</TableHead>
+                  <TableHead>{t("feeSlabs.maxAmount")}</TableHead>
+                  <TableHead>{t("feeSlabs.minTenure")}</TableHead>
+                  <TableHead>{t("feeSlabs.maxTenure")}</TableHead>
+                  <TableHead>{t("feeSlabs.profitPct")}</TableHead>
+                  <TableHead>{t("feeSlabs.profitType")}</TableHead>
+                  <TableHead>{t("feeSlabs.processingFee")}</TableHead>
+                  <TableHead>{t("feeSlabs.adminFee")}</TableHead>
+                  <TableHead>{t("feeSlabs.profitCategory")}</TableHead>
+                  <TableHead>{t("feeSlabs.partnerScope")}</TableHead>
+                  <TableHead>{t("common:status")}</TableHead>
+                  <TableHead>{t("common:actions")}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -162,8 +164,8 @@ export default function AdminFeeSlabsTab({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="percentage">Percentage</SelectItem>
-                          <SelectItem value="fixed">Fixed</SelectItem>
+                          <SelectItem value="percentage">{t("feeSlabs.percentage")}</SelectItem>
+                          <SelectItem value="fixed">{t("feeSlabs.fixed")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -202,8 +204,8 @@ export default function AdminFeeSlabsTab({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="monthly">Monthly</SelectItem>
-                          <SelectItem value="amount">Tenure</SelectItem>
+                          <SelectItem value="monthly">{t("feeSlabs.monthly")}</SelectItem>
+                          <SelectItem value="amount">{t("feeSlabs.tenure")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -216,8 +218,8 @@ export default function AdminFeeSlabsTab({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="all">All Partners</SelectItem>
-                          <SelectItem value="specific">Specific Partners</SelectItem>
+                          <SelectItem value="all">{t("feeSlabs.allPartners")}</SelectItem>
+                          <SelectItem value="specific">{t("feeSlabs.specificPartners")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -232,8 +234,8 @@ export default function AdminFeeSlabsTab({
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="active">Active</SelectItem>
-                          <SelectItem value="inactive">Inactive</SelectItem>
+                          <SelectItem value="active">{t("common:active")}</SelectItem>
+                          <SelectItem value="inactive">{t("common:inactive")}</SelectItem>
                         </SelectContent>
                       </Select>
                     </TableCell>
@@ -261,10 +263,10 @@ export default function AdminFeeSlabsTab({
       <div className="flex justify-between gap-3 pt-4">
         <Button variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </Button>
         <Button onClick={onNext} className="gap-2">
-          Next: Duration Settings
+          {t("nav.nextDurationSettings")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

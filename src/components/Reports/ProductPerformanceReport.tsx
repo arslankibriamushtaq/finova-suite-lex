@@ -8,7 +8,9 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const ProductPerformanceReport = () => {
+  const { t } = useTranslation("reports");
   const [modal, setModal] = useState(false);
   const [modalUpdate, setModalUpdate] = useState(false);
   const [editRowId, setEditRowId] = useState(null);
@@ -71,31 +73,31 @@ const ProductPerformanceReport = () => {
   }, [id, page, pageSize, fromDate]);
   const Call_Activity_Header = [
     {
-      name: "Customer",
+      name: t('productPerformance.col.customer'),
       cell: (row: any) => row.customerName,
     },
     {
-      name: "Loan Amount",
+      name: t('productPerformance.col.loanAmount'),
       selector: (row: { loanAmount: any }) => row.loanAmount,
     },
     {
-      name: "Overdue Amount",
+      name: t('productPerformance.col.overdueAmount'),
       selector: (row: { remaingAmount: any }) => row.remaingAmount,
     },
     {
-      name: "Payable Status",
+      name: t('productPerformance.col.payableStatus'),
       selector: (row: { status: any }) => row.status,
     },
     {
-      name: "Iqama ID",
+      name: t('productPerformance.col.iqamaId'),
       selector: (row: { iqamaId: any }) => row.iqamaId,
     },
     {
-      name: "Loan Application No.",
+      name: t('productPerformance.col.loanApplicationNo'),
       selector: (row: { applicationNum: any }) => row.applicationNum,
     },
     {
-      name: "Date",
+      name: t('common:date'),
       selector: (row: { date: any }) => row.date,
     },
   ];
@@ -148,31 +150,31 @@ const ProductPerformanceReport = () => {
     <>
       <div className="col-12">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Loan Disbursment Report</h3>
+          <h3 className="mb-0 fw-bold text-dark">{t('productPerformance.title')}</h3>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
             {/* From Date */}
             <div className="col-md-4">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t('common:from')}
               </label>
               <DatePicker
                 onChange={(e: any) => {
                   handleFromDateChange(e);
                 }}
-                placeholder="Select From Date"
+                placeholder={t('filter.selectFromDate')}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-4">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t('common:to')}
               </label>
               <DatePicker
                 onChange={handleToDateChange}
-                placeholder="Select To Date"
+                placeholder={t('filter.selectToDate')}
               />
             </div>
 
@@ -189,7 +191,7 @@ const ProductPerformanceReport = () => {
                   setToDate("");
                 }}
               >
-                Clear
+                {t('common:clear')}
               </button>
             </div>
 
@@ -219,7 +221,7 @@ const ProductPerformanceReport = () => {
                 exportToCSV(allCallActivity, "OverDueLoans");
               }}
             >
-              Export CSV
+              {t('action.exportCsv')}
             </button>
           </div>
         </div>

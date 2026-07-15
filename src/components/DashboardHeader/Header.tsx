@@ -13,6 +13,8 @@ import { logOutApi } from "../../redux/apis/apisCrud";
 import { store } from "../../redux/store";
 import NotificationInbox from "../NotificationInbox";
 import ThemeToggle from "../ThemeToggle";
+import { useTranslation } from "react-i18next";
+import { LanguageSwitcher } from "../language-switcher";
 import { AdminNotificationBell } from "../notifications/AdminNotificationBell";
 
 // Defined outside the component so styled-components doesn't recreate it on
@@ -26,6 +28,7 @@ const HeaderGlobalStyle = createGlobalStyle<{ $bg?: string }>`
 
 const DashboardHeader = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("common");
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const dispatch = useDispatch();
   const [open, setOpen] = useState(false);
@@ -57,7 +60,7 @@ const DashboardHeader = () => {
       localStorage.removeItem("userData");
       localStorage.removeItem("permissions");
       navigate("/login");
-      toast.success("Logged out successfully");
+      toast.success(t("loggedOutSuccess"));
     } catch (error: any) {
       console.error("Error during log out", error);
       // Even if there's an error, clear local data and redirect
@@ -66,7 +69,7 @@ const DashboardHeader = () => {
       localStorage.removeItem("userData");
       localStorage.removeItem("permissions");
       navigate("/login");
-      toast.error("Logged out (with errors)");
+      toast.error(t("loggedOutWithErrors"));
     }
   };
   function splitCamelCase(str: string) {
@@ -159,6 +162,7 @@ const DashboardHeader = () => {
                 >
                   {/* <img src={Images.notification} alt="Notifications" /> */}
                 </a>
+                <LanguageSwitcher />
                 <ThemeToggle />
                 <AdminNotificationBell />
                 <div className="user-profile-trigger d-flex align-items-center" onClick={toggleMenu} style={{ cursor: "pointer" }}>
@@ -215,7 +219,7 @@ const DashboardHeader = () => {
                   {/* User Name */}
                   <h4 className="profile-name">
                     {" "}
-                    Welcome , {user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName}
+                    {t("welcome")} , {user?.name || user?.user?.name || user?.fullName || user?.user?.fullName || user?.displayName || user?.user?.displayName || user?.userName || user?.user?.userName}
                   </h4>
 
                   {/* Profile Actions */}
@@ -224,7 +228,7 @@ const DashboardHeader = () => {
                       className="profile-btn left"
                       onClick={() => navigate("/profile")}
                     >
-                      <FaCog className="icon" /> Settings
+                      <FaCog className="icon" /> {t("settings")}
                     </button>
                     <div className="divider"></div>
                     <button
@@ -233,7 +237,7 @@ const DashboardHeader = () => {
                         logOut();
                       }}
                     >
-                      <FaSignOutAlt className="icon" /> Log out
+                      <FaSignOutAlt className="icon" /> {t("logout")}
                     </button>
                   </div>
                 </div>

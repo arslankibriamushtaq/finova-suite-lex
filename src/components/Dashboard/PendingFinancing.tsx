@@ -17,6 +17,7 @@ import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { encryptId } from "../../utils/encryption";
+import { useTranslation } from "react-i18next";
 
 // Status mapping helper
 const getStatusText = (statusId: number): string => {
@@ -62,63 +63,64 @@ const PendingFinancing = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const navigate = useNavigate();
+  const { t } = useTranslation("financing");
   const Activity_Loans_Header = [
     {
-      name: "Application Number",
+      name: t("col.applicationNumber"),
       selector: (row: { loan_application_number: any }) => row.loan_application_number,
       sortable: true,
       width: "180px",
     },
     {
-      name: "Customer Name",
+      name: t("col.customerName"),
       selector: (row: { customer_name: any }) => row.customer_name,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
       width: "140px",
     },
     {
-      name: "National ID",
+      name: t("col.nationalId"),
       selector: (row: { nid: any }) => row.nid,
       sortable: true,
       width: "130px",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Tenure",
+      name: t("col.tenure"),
       selector: (row: { duration: any }) => row.duration,
       sortable: true,
       width: "100px",
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { loan_amount: any }) => row.loan_amount,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Installment Type",
+      name: t("col.installmentType"),
       selector: (row: { installment_type: any }) => row.installment_type,
       sortable: true,
       width: "140px",
     },
     {
-      name: "Application Date",
+      name: t("col.applicationDate"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status_id: any; status: any }) => {
         const statusId = row.status_id;
         const statusText = statusId ? getStatusText(statusId) : (row.status || 'N/A');
@@ -149,7 +151,7 @@ const PendingFinancing = () => {
       sortable: true,
     },
     {
-      name: "Rejection Reason",
+      name: t("col.rejectionReason"),
       cell: (row: { rejection_reason: any }) => {
         const reason = row.rejection_reason || "-";
         return (
@@ -172,7 +174,7 @@ const PendingFinancing = () => {
       width: "150px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -186,7 +188,7 @@ const PendingFinancing = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -202,7 +204,7 @@ const PendingFinancing = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View
+        {t("common:view")}
       </Menu.Item>
       {/* <Menu.Item
         key="Invoices"
@@ -275,14 +277,14 @@ const PendingFinancing = () => {
       setSkelitonLoading(true);
       const res = await resendLoginEmail(id);
       if (res?.data?.success) {
-        toast.success(res?.data?.message || "Login email sent successfully");
+        toast.success(res?.data?.message || t("toast.loginEmailSent"));
         getLeadsList();
       } else {
-        toast.error(res?.data?.message || "Failed to resend login email");
+        toast.error(res?.data?.message || t("toast.resendEmailFailed"));
       }
     } catch (error: any) {
       console.error("Error resending login email:", error);
-      toast.error(error?.response?.data?.message || "Failed to resend login email");
+      toast.error(error?.response?.data?.message || t("toast.resendEmailFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -318,7 +320,7 @@ const PendingFinancing = () => {
       }
     } catch (error: any) {
       console.error("Error fetching applications:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch applications");
+      toast.error(error?.response?.data?.message || error?.message || t("toast.fetchApplicationsFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -362,7 +364,7 @@ const PendingFinancing = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -380,7 +382,7 @@ const PendingFinancing = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("filter.searchPlaceholder")}
             />
           </div>
           <div className="d-flex align-items-center">
@@ -390,7 +392,7 @@ const PendingFinancing = () => {
             >
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t("common:from")}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -404,7 +406,7 @@ const PendingFinancing = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t("common:to")}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -420,7 +422,7 @@ const PendingFinancing = () => {
             </div>
           </div>
           <button className="theme-btn-next" onClick={exportToExcel}>
-            Export CSV
+            {t("filter.exportCsv")}
           </button>
         </div>
       </div>

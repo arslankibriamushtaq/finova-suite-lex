@@ -13,7 +13,9 @@ import { formatDate } from "../../App";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { usePermissions, OPPORTUNITY_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { useTranslation } from "react-i18next";
 const Opportunity = () => {
+  const { t } = useTranslation("customerManagement");
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [skelitonLoading, setSkelitonLoading] = useState(false);
@@ -135,37 +137,37 @@ const Opportunity = () => {
   // Close popup when clicking outside
   const Activity_Loans_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name || "-",
       sortable: true,
       width: "400px"
     },
     {
-      name: "NID",
+      name: t("opportunity.col.nid"),
       selector: (row: { nid: any }) => row.nid || "-",
       sortable: true,
       width: "200px"
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: { email: any }) => row.email || "-",
       sortable: true,
       width: "200px"
     },
     {
-      name: "Partner",
+      name: t("opportunity.col.partner"),
       selector: (row: { partner: any }) => row.partner || "-",
       sortable: true,
       width: "150px"
     },
     {
-      name: "compliance_status",
+      name: t("opportunity.col.complianceStatus"),
       selector: (row: { compliance_status: any }) => row.compliance_status || "-",
       sortable: true,
       width: "150px"
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: { phone: any }) => row.phone || "-",
       sortable: true,
       width: "200px"
@@ -196,7 +198,7 @@ const Opportunity = () => {
       sortable: true,
     }, */
     {
-      name: "Is Blocked",
+      name: t("opportunity.col.isBlocked"),
       selector: (row: { is_blocked: any }) => row.is_blocked,
       sortable: true,
       cell: (row: any) => (
@@ -212,13 +214,13 @@ const Opportunity = () => {
             display: "inline-block",
           }}
         >
-          {row.is_blocked ? "Blocked" : "Unblocked"}
+          {row.is_blocked ? t("opportunity.status.blocked") : t("opportunity.status.unblocked")}
         </span>
       ),
       width: "150px"
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => {
         const status = row.status || "-";
         const getStatusColor = () => {
@@ -247,13 +249,13 @@ const Opportunity = () => {
       width: "150px"
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at || "-",
       sortable: true,
       width: "200px"
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -267,7 +269,7 @@ const Opportunity = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("opportunity.select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -280,7 +282,7 @@ const Opportunity = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
     </Menu>
   );
@@ -310,11 +312,11 @@ const Opportunity = () => {
 
   const exportCSV = async () => {
     try {
-      toast.loading("Exporting Opportunities...", { id: "export-opportunities" });
+      toast.loading(t("opportunity.toast.exporting"), { id: "export-opportunities" });
       const response = await exportOpportunities();
-      
+
       if (!response || !response.data) {
-        throw new Error("Failed to download file");
+        throw new Error(t("opportunity.toast.downloadFailed"));
       }
       
       // Convert server response to a Blob (binary file)
@@ -356,13 +358,13 @@ const Opportunity = () => {
       link.remove();
       window.URL.revokeObjectURL(url);
       
-      toast.success("Opportunities exported successfully", { id: "export-opportunities" });
+      toast.success(t("opportunity.toast.exported"), { id: "export-opportunities" });
     } catch (error: any) {
       console.error("Export error:", error);
       toast.error(
-        error?.response?.data?.message || 
-        error?.message || 
-        "Failed to export Opportunities",
+        error?.response?.data?.message ||
+        error?.message ||
+        t("opportunity.toast.exportFailed"),
         { id: "export-opportunities" }
       );
     }
@@ -428,12 +430,12 @@ const Opportunity = () => {
   // Handle block selected codes
   const handleBlockSelected = async () => {
     if (!currentUserId) {
-      toast.error("User ID not found");
+      toast.error(t("opportunity.toast.userIdNotFound"));
       return;
     }
 
     if (selectedBlockCodes.length === 0) {
-      toast.error("Please select at least one block code");
+      toast.error(t("opportunity.toast.selectBlockCode"));
       return;
     }
 
@@ -452,7 +454,7 @@ const Opportunity = () => {
             selectedBlockCodes.includes(code.id) ? { ...code, blocked: true } : code
           )
         );
-        toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been blocked`);
+        toast.success(response?.data?.message || t("opportunity.toast.blocked", { count: selectedBlockCodes.length }));
         setSelectedBlockCodes([]);
         
         // Refresh the opportunities list to get updated data
@@ -473,23 +475,23 @@ const Opportunity = () => {
           console.error("Error refreshing block codes:", error);
         }
       } else {
-        toast.error(response?.data?.message || "Failed to block codes");
+        toast.error(response?.data?.message || t("opportunity.toast.blockFailed"));
       }
     } catch (error: any) {
       console.error("Error blocking codes:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to block codes");
+      toast.error(error?.response?.data?.message || error?.message || t("opportunity.toast.blockFailed"));
     }
   };
 
   // Handle unblock selected codes
   const handleUnblockSelected = async () => {
     if (!currentUserId) {
-      toast.error("User ID not found");
+      toast.error(t("opportunity.toast.userIdNotFound"));
       return;
     }
 
     if (selectedBlockCodes.length === 0) {
-      toast.error("Please select at least one block code");
+      toast.error(t("opportunity.toast.selectBlockCode"));
       return;
     }
 
@@ -508,7 +510,7 @@ const Opportunity = () => {
             selectedBlockCodes.includes(code.id) ? { ...code, blocked: false } : code
           )
         );
-        toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been unblocked`);
+        toast.success(response?.data?.message || t("opportunity.toast.unblocked", { count: selectedBlockCodes.length }));
         setSelectedBlockCodes([]);
         
         // Refresh the opportunities list to get updated data
@@ -529,11 +531,11 @@ const Opportunity = () => {
           console.error("Error refreshing block codes:", error);
         }
       } else {
-        toast.error(response?.data?.message || "Failed to unblock codes");
+        toast.error(response?.data?.message || t("opportunity.toast.unblockFailed"));
       }
     } catch (error: any) {
       console.error("Error unblocking codes:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to unblock codes");
+      toast.error(error?.response?.data?.message || error?.message || t("opportunity.toast.unblockFailed"));
     }
   };
 
@@ -562,14 +564,14 @@ const Opportunity = () => {
 
           <Select
             style={{ width: "120px", borderTopRightRadius: "0px" }}
-            placeholder="Status"
+            placeholder={t("opportunity.statusFilterPlaceholder")}
             allowClear
             value={status || undefined}
             onChange={(value) => setStatus(value || '')}
             suffixIcon={<FaFilter />}
           >
-            <Select.Option value="active">Active</Select.Option>
-            <Select.Option value="inactive">Inactive</Select.Option>
+            <Select.Option value="active">{t("common:active")}</Select.Option>
+            <Select.Option value="inactive">{t("common:inactive")}</Select.Option>
           </Select>
 
           <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
@@ -583,7 +585,7 @@ const Opportunity = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("opportunity.searchPlaceholder")}
                 value={search}
                 onChange={(e) => handleSearchChange(e.target.value)}
               />
@@ -595,7 +597,7 @@ const Opportunity = () => {
               >
                 <DatePicker
                   className="date-picker"
-                  placeholder="From"
+                  placeholder={t("common:from")}
                   value={fromDate}
                   onChange={(date) => {
                     setFromDate(date);
@@ -609,7 +611,7 @@ const Opportunity = () => {
                 />
                 <DatePicker
                   className="date-picker"
-                  placeholder="To"
+                  placeholder={t("common:to")}
                   value={toDate}
                   onChange={(date) => {
                     setToDate(date);
@@ -627,7 +629,7 @@ const Opportunity = () => {
             </div>
             {canExportOpportunities && (
               <button className="theme-btn-next" onClick={exportCSV}>
-                Export CSV
+                {t("opportunity.exportCsv")}
               </button>
             )} 
           </div>
@@ -650,7 +652,7 @@ const Opportunity = () => {
 
       {/* Block Codes Management Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Manage Block Codes for User</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("opportunity.blockModal.title")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
         footer={null}
@@ -669,7 +671,7 @@ const Opportunity = () => {
               gap: "20px"
             }}>
               <PulseLoading size="lg" />
-              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>{t("opportunity.blockModal.loading")}</p>
             </div>
           ) : (
             <>
@@ -681,14 +683,14 @@ const Opportunity = () => {
                 marginBottom: "20px",
                 padding: "10px 0"
               }}>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>Block Code Selection</h3>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>{t("opportunity.blockModal.selectionHeading")}</h3>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Button
                     type="primary"
                     style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }}
                     onClick={handleSelectAll}
                   >
-                    ✓ Select All
+                    {t("opportunity.blockModal.selectAll")}
                   </Button>
                   <Button
                     style={{
@@ -698,7 +700,7 @@ const Opportunity = () => {
                     }}
                     onClick={handleDeselectAll}
                   >
-                    ⊘ Deselect All
+                    {t("opportunity.blockModal.deselectAll")}
                   </Button>
                 </div>
               </div>
@@ -737,7 +739,7 @@ const Opportunity = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Block Code
+                    {t("opportunity.blockModal.colBlockCode")}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -745,7 +747,7 @@ const Opportunity = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Type
+                    {t("common:type")}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -753,7 +755,7 @@ const Opportunity = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Action
+                    {t("opportunity.blockModal.colAction")}
                   </th>
                 </tr>
               </thead>
@@ -811,7 +813,7 @@ const Opportunity = () => {
                         alignItems: "center",
                         gap: "6px"
                       }}>
-                        {code.blocked ? "⊘" : "✓"} {code.blocked ? "Blocked" : "Active"}
+                        {code.blocked ? "⊘" : "✓"} {code.blocked ? t("opportunity.blockModal.blocked") : t("opportunity.blockModal.active")}
                       </button>
                     </td>
                   </tr>
@@ -838,7 +840,7 @@ const Opportunity = () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)"
               }}
             >
-              ⊘ Block Selected
+              {t("opportunity.blockModal.blockSelected")}
             </Button>
             <Button
               type="primary"
@@ -849,10 +851,10 @@ const Opportunity = () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-success)"
               }}
             >
-              ✓ Unblock Selected
+              {t("opportunity.blockModal.unblockSelected")}
             </Button>
             <Button onClick={handleModalClose}>
-              Close
+              {t("common:close")}
             </Button>
           </div>
             </>

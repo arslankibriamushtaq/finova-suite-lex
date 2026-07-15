@@ -3,8 +3,10 @@ import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType, applicationApprovalChecks } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function CompilanceCheck({ setActiveTab, fullDetail }: any) {
+  const { t } = useTranslation("dashboard");
   const [loading, setLoading] = useState(false);
   const [answers, setAnswers] = useState<any[]>([]);
   const [complianceHistory, setComplianceHistory] = useState<any>(null);
@@ -43,11 +45,11 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
           setAnswers(answersData);
           setComplianceHistory(response.data.data.compliance_history);
         } else {
-          toast.error("Failed to load compliance data");
+          toast.error(t("compliance.toast.loadFailed"));
         }
       } catch (error: any) {
         console.error("API Error:", error);
-        toast.error(error?.response?.data?.message || error?.message || "Failed to load compliance data");
+        toast.error(error?.response?.data?.message || error?.message || t("compliance.toast.loadFailed"));
       } finally {
         setLoading(false);
       }
@@ -56,12 +58,12 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
 
   const handleReject = async () => {
     if (!comment.trim()) {
-      toast.error("Please enter a comment");
+      toast.error(t("compliance.toast.enterComment"));
       return;
     }
-    
+
     if (!id) {
-      toast.error("Missing application number");
+      toast.error(t("compliance.toast.missingAppNo"));
       return;
     }
 
@@ -77,14 +79,14 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
       const response = await applicationApprovalChecks(body);
       
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Compliance rejected successfully!");
+        toast.success(response?.data?.message || t("compliance.toast.rejected"));
         setComment("");
         await fetchComplianceData();
       } else {
-        toast.error(response?.data?.message || "Failed to reject compliance");
+        toast.error(response?.data?.message || t("compliance.toast.rejectFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to reject compliance");
+      toast.error(error?.response?.data?.message || error?.message || t("compliance.toast.rejectFailed"));
     } finally {
       setRejecting(false);
     }
@@ -97,7 +99,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
     } */
     
     if (!id) {
-      toast.error("Missing application number");
+      toast.error(t("compliance.toast.missingAppNo"));
       return;
     }
 
@@ -113,14 +115,14 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
       const response = await applicationApprovalChecks(body);
       
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Compliance approved successfully!");
+        toast.success(response?.data?.message || t("compliance.toast.approved"));
         setComment("");
         await fetchComplianceData();
       } else {
-        toast.error(response?.data?.message || "Failed to approve compliance");
+        toast.error(response?.data?.message || t("compliance.toast.approveFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to approve compliance");
+      toast.error(error?.response?.data?.message || error?.message || t("compliance.toast.approveFailed"));
     } finally {
       setApproving(false);
     }
@@ -206,7 +208,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
               {hasComplianceHistory && (
                 <div style={{ marginBottom: "24px", padding: "18px", borderRadius: "2px", background: "var(--surface-card-alt)", border: "1px solid var(--surface-border)" }}>
                   <h4 style={{ fontSize: "16px", fontWeight: 600, color: "var(--foreground)", marginBottom: "12px" }}>
-                    KYC / Compliance Summary
+                    {t("compliance.summaryTitle")}
                   </h4>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
                     {complianceHistoryEntries.map(([key, value]) => (
@@ -223,7 +225,7 @@ function CompilanceCheck({ setActiveTab, fullDetail }: any) {
               {/* Compliance Questions in Two Columns */}
               {answers.length === 0 ? (
                 <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-                  No response found
+                  {t("compliance.noResponse")}
                 </div>
               ) : (
                 <div className="row">

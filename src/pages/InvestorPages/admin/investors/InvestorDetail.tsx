@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { 
-  ArrowLeft, 
+import { useTranslation } from 'react-i18next';
+import {
+  ArrowLeft,
   Edit, 
   Mail, 
   Phone, 
@@ -44,7 +45,7 @@ const investorData = {
     country: 'USA'
   },
   accreditedInvestor: true,
-  tags: ['High Value', 'VIP'],
+  tags: ['idet.tag.highValue', 'idet.tag.vip'],
   portfolioAllocation: {
     equity: 60,
     bonds: 30,
@@ -147,6 +148,11 @@ const investorData = {
 };
 
 export default function InvestorDetail() {
+  const { t } = useTranslation('investor');
+  const statusKey: Record<string, string> = { 'Active': 'idet.status.active', 'Pending': 'idet.status.pending', 'Suspended': 'idet.status.suspended', 'Inactive': 'idet.status.inactive' };
+  const riskKey: Record<string, string> = { 'Conservative': 'idet.risk.conservative', 'Moderate': 'idet.risk.moderate', 'Aggressive': 'idet.risk.aggressive' };
+  const tStatus = (v: string) => (statusKey[v] ? t(statusKey[v]) : v);
+  const tRisk = (v: string) => (riskKey[v] ? t(riskKey[v]) : v);
   const { id } = useParams();
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -170,11 +176,11 @@ export default function InvestorDetail() {
   };
 
   const tabs = [
-    { id: 'overview', name: 'Overview' },
-    { id: 'investments', name: 'Investments' },
-    { id: 'transactions', name: 'Transactions' },
-    { id: 'documents', name: 'Documents' },
-    { id: 'activity', name: 'Activity Log' },
+    { id: 'overview', name: t('idet.tab.overview') },
+    { id: 'investments', name: t('idet.tab.investments') },
+    { id: 'transactions', name: t('idet.tab.transactions') },
+    { id: 'documents', name: t('idet.tab.documents') },
+    { id: 'activity', name: t('idet.tab.activity') },
   ];
 
   return (
@@ -186,8 +192,8 @@ export default function InvestorDetail() {
             to="/admin/investors"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Investors
+            <ArrowLeft className="w-4 h-4 me-2" />
+            {t('kycd.backToInvestors')}
           </Link>
         </div>
         
@@ -202,12 +208,12 @@ export default function InvestorDetail() {
               <h1 className="text-3xl font-bold text-gray-900">{investorData.name}</h1>
               <div className="flex items-center space-x-4 mt-2">
                 <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(investorData.status)}`}>
-                  {investorData.status}
+                  {tStatus(investorData.status)}
                 </span>
-                <span className="text-sm text-gray-500">{investorData.type} Investor</span>
+                <span className="text-sm text-gray-500">{t('idet.typeInvestor', { type: t('ai.type.individual') })}</span>
                 <span className="flex items-center text-sm text-gray-500">
-                  <CheckCircle className="w-4 h-4 mr-1 text-green-500" />
-                  KYC Verified
+                  <CheckCircle className="w-4 h-4 me-1 text-green-500" />
+                  {t('idet.kycVerified')}
                 </span>
               </div>
             </div>
@@ -215,15 +221,15 @@ export default function InvestorDetail() {
           
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Download className="w-4 h-4 mr-2" />
-              Export
+              <Download className="w-4 h-4 me-2" />
+              {t('common:export')}
             </button>
-            <Link 
+            <Link
               to={`/admin/investors/${id}?edit=true`}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Edit className="w-4 h-4 mr-2" />
-              Edit
+              <Edit className="w-4 h-4 me-2" />
+              {t('common:edit')}
             </Link>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
               <MoreHorizontal className="w-4 h-4" />
@@ -237,11 +243,11 @@ export default function InvestorDetail() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Portfolio Value</p>
+              <p className="text-sm text-gray-600">{t('idet.portfolioValue')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(investorData.portfolioValue)}</p>
               <p className="text-sm text-green-600 flex items-center mt-1">
-                <TrendingUp className="w-3 h-3 mr-1" />
-                +18.0% overall
+                <TrendingUp className="w-3 h-3 me-1" />
+                {t('idet.overallPlus')}
               </p>
             </div>
             <DollarSign className="w-8 h-8 text-green-500" />
@@ -251,9 +257,9 @@ export default function InvestorDetail() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Investment</p>
+              <p className="text-sm text-gray-600">{t('idet.totalInvestment')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(investorData.totalInvestment)}</p>
-              <p className="text-sm text-gray-500 mt-1">Across 4 products</p>
+              <p className="text-sm text-gray-500 mt-1">{t('idet.acrossProducts')}</p>
             </div>
             <DollarSign className="w-8 h-8 text-gray-700" />
           </div>
@@ -262,9 +268,9 @@ export default function InvestorDetail() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Unrealized Gains</p>
+              <p className="text-sm text-gray-600">{t('idet.unrealizedGains')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(investorData.unrealizedGains)}</p>
-              <p className="text-sm text-green-600 mt-1">+17.9% unrealized</p>
+              <p className="text-sm text-green-600 mt-1">{t('idet.unrealizedPlus')}</p>
             </div>
             <TrendingUp className="w-8 h-8 text-green-500" />
           </div>
@@ -273,9 +279,9 @@ export default function InvestorDetail() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Realized Gains</p>
+              <p className="text-sm text-gray-600">{t('idet.realizedGains')}</p>
               <p className="text-2xl font-bold text-gray-900">{formatCurrency(investorData.realizedGains)}</p>
-              <p className="text-sm text-gray-500 mt-1">Lifetime gains</p>
+              <p className="text-sm text-gray-500 mt-1">{t('idet.lifetimeGains')}</p>
             </div>
             <CheckCircle className="w-8 h-8 text-purple-500" />
           </div>
@@ -284,26 +290,26 @@ export default function InvestorDetail() {
 
       {/* Contact Information */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Contact Information</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('idet.contactInfo')}</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="flex items-center space-x-3">
             <Mail className="w-5 h-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500">Email</p>
+              <p className="text-sm text-gray-500">{t('idet.email')}</p>
               <p className="text-sm font-medium text-gray-900">{investorData.email}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <Phone className="w-5 h-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500">Phone</p>
+              <p className="text-sm text-gray-500">{t('idet.phone')}</p>
               <p className="text-sm font-medium text-gray-900">{investorData.phone}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <MapPin className="w-5 h-5 text-gray-400" />
             <div>
-              <p className="text-sm text-gray-500">Address</p>
+              <p className="text-sm text-gray-500">{t('idet.address')}</p>
               <p className="text-sm font-medium text-gray-900">
                 {investorData.address.city}, {investorData.address.state} {investorData.address.zipCode}
               </p>
@@ -336,10 +342,10 @@ export default function InvestorDetail() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Portfolio Allocation */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Portfolio Allocation</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('idet.portfolioAllocation')}</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">Equity</span>
+                <span className="text-sm font-medium text-gray-900">{t('idet.equity')}</span>
                 <span className="text-sm text-gray-500">{investorData.portfolioAllocation.equity}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -350,7 +356,7 @@ export default function InvestorDetail() {
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">Bonds</span>
+                <span className="text-sm font-medium text-gray-900">{t('idet.bonds')}</span>
                 <span className="text-sm text-gray-500">{investorData.portfolioAllocation.bonds}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -361,7 +367,7 @@ export default function InvestorDetail() {
               </div>
               
               <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-gray-900">Alternatives</span>
+                <span className="text-sm font-medium text-gray-900">{t('idet.alternatives')}</span>
                 <span className="text-sm text-gray-500">{investorData.portfolioAllocation.alternatives}%</span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
@@ -375,38 +381,38 @@ export default function InvestorDetail() {
 
           {/* Investor Profile */}
           <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Investor Profile</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('idet.investorProfile')}</h3>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Risk Profile</span>
+                <span className="text-sm text-gray-500">{t('idet.riskProfileLabel')}</span>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                  {investorData.riskProfile}
+                  {tRisk(investorData.riskProfile)}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Accredited Investor</span>
+                <span className="text-sm text-gray-500">{t('idet.accreditedInvestor')}</span>
                 <span className="text-sm font-medium text-green-600">
-                  {investorData.accreditedInvestor ? 'Yes' : 'No'}
+                  {investorData.accreditedInvestor ? t('common:yes') : t('common:no')}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Onboarding Date</span>
+                <span className="text-sm text-gray-500">{t('idet.onboardingDate')}</span>
                 <span className="text-sm font-medium text-gray-900">
                   {new Date(investorData.onboardingDate).toLocaleDateString()}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-500">Last Activity</span>
+                <span className="text-sm text-gray-500">{t('idet.lastActivity')}</span>
                 <span className="text-sm font-medium text-gray-900">
                   {new Date(investorData.lastActivity).toLocaleDateString()}
                 </span>
               </div>
               <div>
-                <span className="text-sm text-gray-500 block mb-2">Tags</span>
+                <span className="text-sm text-gray-500 block mb-2">{t('idet.tags')}</span>
                 <div className="flex space-x-2">
                   {investorData.tags.map((tag, index) => (
                     <span key={index} className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-900">
-                      {tag}
+                      {t(tag)}
                     </span>
                   ))}
                 </div>
@@ -419,38 +425,38 @@ export default function InvestorDetail() {
       {activeTab === 'investments' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">Investment Holdings</h3>
-            <Link 
+            <h3 className="text-lg font-semibold text-gray-900">{t('idet.investmentHoldings')}</h3>
+            <Link
               to={`/admin/investments/new?investor=${id}`}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Investment
+              <Plus className="w-4 h-4 me-2" />
+              {t('idet.addInvestment')}
             </Link>
           </div>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Product
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.product')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Investment
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.investment')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Current Value
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.currentValue')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Gain/Loss
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.gainLoss')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Performance
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.performance')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Units
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.units')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -461,7 +467,7 @@ export default function InvestorDetail() {
                     <div>
                       <div className="text-sm font-medium text-gray-900">{investment.productName}</div>
                       <div className="text-sm text-gray-500">
-                        Invested: {new Date(investment.investmentDate).toLocaleDateString()}
+                        {t('idet.investedLabel', { date: new Date(investment.investmentDate).toLocaleDateString() })}
                       </div>
                     </div>
                   </td>
@@ -473,7 +479,7 @@ export default function InvestorDetail() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                      <TrendingUp className="w-4 h-4 text-green-500 me-1" />
                       <span className="text-sm font-medium text-green-600">
                         {formatCurrency(investment.unrealizedGain)}
                       </span>
@@ -487,7 +493,7 @@ export default function InvestorDetail() {
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                     {investment.units.toLocaleString()}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <Link 
                       to={`/admin/investments/${investment.id}/adjust`}
                       className="text-black hover:text-blue-900"
@@ -505,31 +511,31 @@ export default function InvestorDetail() {
       {activeTab === 'transactions' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h3 className="text-lg font-semibold text-gray-900">Transaction History</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('idet.transactionHistory')}</h3>
           </div>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Product
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.product')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Amount
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.amount')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.date')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Reference
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.reference')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -542,7 +548,7 @@ export default function InvestorDetail() {
                       transaction.type === 'Dividend' ? 'bg-green-100 text-green-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
-                      {transaction.type}
+                      {t(`idet.txType.${transaction.type}`)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -560,13 +566,13 @@ export default function InvestorDetail() {
                       transaction.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     }`}>
-                      {transaction.status}
+                      {t(`idet.txStatus.${transaction.status}`)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {transaction.reference}
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <button className="text-black hover:text-blue-900">
                       <Eye className="w-4 h-4" />
                     </button>
@@ -581,29 +587,29 @@ export default function InvestorDetail() {
       {activeTab === 'documents' && (
         <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
           <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-gray-900">KYC Documents</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('idet.kycDocuments')}</h3>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-              <Plus className="w-4 h-4 mr-2" />
-              Upload Document
+              <Plus className="w-4 h-4 me-2" />
+              {t('idet.uploadDocument')}
             </button>
           </div>
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Document
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.document')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Upload Date
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('idet.col.uploadDate')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:status')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -614,7 +620,7 @@ export default function InvestorDetail() {
                     {document.name}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {document.type}
+                    {t(`idet.docType.${document.type}`)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(document.uploadDate).toLocaleDateString()}
@@ -625,10 +631,10 @@ export default function InvestorDetail() {
                       document.status === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     }`}>
-                      {document.status}
+                      {t(`idet.docStatus.${document.status}`)}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button className="text-black hover:text-blue-900">
                         <Eye className="w-4 h-4" />
@@ -647,27 +653,27 @@ export default function InvestorDetail() {
 
       {activeTab === 'activity' && (
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Activity Log</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('idet.activityLog')}</h3>
           <div className="space-y-4">
             <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
               <div className="w-2 h-2 bg-gray-700 rounded-full mt-2"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Investment added to Large Cap Growth Fund</p>
-                <p className="text-xs text-gray-500 mt-1">January 20, 2024 at 10:30 AM</p>
+                <p className="text-sm font-medium text-gray-900">{t('idet.act1')}</p>
+                <p className="text-xs text-gray-500 mt-1">{t('idet.act1Date')}</p>
               </div>
             </div>
             <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
               <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">KYC documentation verified</p>
-                <p className="text-xs text-gray-500 mt-1">January 15, 2024 at 2:15 PM</p>
+                <p className="text-sm font-medium text-gray-900">{t('idet.act2')}</p>
+                <p className="text-xs text-gray-500 mt-1">{t('idet.act2Date')}</p>
               </div>
             </div>
             <div className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
               <div className="w-2 h-2 bg-yellow-500 rounded-full mt-2"></div>
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">Profile updated by admin</p>
-                <p className="text-xs text-gray-500 mt-1">January 10, 2024 at 4:45 PM</p>
+                <p className="text-sm font-medium text-gray-900">{t('idet.act3')}</p>
+                <p className="text-xs text-gray-500 mt-1">{t('idet.act3Date')}</p>
               </div>
             </div>
           </div>

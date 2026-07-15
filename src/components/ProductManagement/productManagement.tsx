@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { Plus, Package } from "lucide-react"
 import { Input } from "antd"
 import { SearchOutlined } from "@ant-design/icons"
@@ -29,6 +30,7 @@ import useProductPermissions, { useWorkflowActions, WORKFLOW_MODULE_NAMES } from
 
 export default function ProductManagement() {
   const { t, isRTL } = useLanguage()
+  const { t: tp } = useTranslation("productManagement2")
   const router = useRouter()
   
   // TODO: Re-enable when permission API is implemented
@@ -79,12 +81,12 @@ export default function ProductManagement() {
     try {
       setDeleting(true)
       await deleteProduct(deleteProductId)
-      toast.success("Product deleted successfully")
+      toast.success(tp("toast.deleted"))
       setDeleteDialogOpen(false)
       setDeleteProductId(null)
       getData()
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete product")
+      toast.error(error?.response?.data?.message || tp("toast.deleteFailed"))
     } finally {
       setDeleting(false)
     }
@@ -169,13 +171,13 @@ export default function ProductManagement() {
   }, [page, pageSize, searchTerm, filters]);
   const Table_Headers = [
     {
-      name: "Product Name",
+      name: tp("field.productName"),
       selector: (row: any) => row.productName,
       wrap: true,
       width: "200px",
     },
     {
-      name: "Product Arabic Name",
+      name: tp("field.productArabicName"),
       selector: (row: any) => row.name_ar,
       wrap: true,
       width: "200px",
@@ -191,25 +193,25 @@ export default function ProductManagement() {
     //   ) : <span className="text-muted-foreground">-</span>,
     // },
     {
-      name: "Email",
+      name: tp("common:email"),
       selector: (row: any) => row.email || "-",
       width: "260px",
     },
     {
-      name: "Country",
+      name: tp("field.country"),
       selector: (row: any) => row.country || "-",
     },
     {
-      name: "Category",
+      name: tp("common:category"),
       selector: (row: any) => row.category?.name_en || "-",
       wrap: true,
     },
     {
-      name: "Product Type",
+      name: tp("field.productType"),
       selector: (row: any) => row.productType || "-",
     },
     {
-      name: "Status",
+      name: tp("common:status"),
       cell: (row: any) => {
         const status = row.status?.toUpperCase?.() || row.status;
         const isActive = status === "ACTIVE" || status === "Active";
@@ -221,7 +223,7 @@ export default function ProductManagement() {
       },
     },
     {
-      name: "Actions",
+      name: tp("common:actions"),
       cell: (row: any) => {
         const menuItems = menu(row)
         // Only show dropdown if there are menu items
@@ -240,7 +242,7 @@ export default function ProductManagement() {
                   type="button"
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Select
+                  {tp("list.select")}
                   <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                 </button>
               </DropdownMenuTrigger>
@@ -272,7 +274,7 @@ export default function ProductManagement() {
       menuItems.push({
         key: "edit",
         icon: <Pencil className="h-4 w-4" />,
-        label: "Edit",
+        label: tp("common:edit"),
         onClick: () => handleEditProduct(row.id),
       })
     }
@@ -281,7 +283,7 @@ export default function ProductManagement() {
     menuItems.push({
       key: "delete",
       icon: <Trash2 className="h-4 w-4 text-destructive" />,
-      label: "Delete",
+      label: tp("common:delete"),
       onClick: () => openDeleteDialog(row.id),
     })
 
@@ -290,7 +292,7 @@ export default function ProductManagement() {
       menuItems.push({
         key: "verify",
         icon: <Check className="h-4 w-4" />,
-        label: "Verify",
+        label: tp("action.verify"),
         onClick: () => handleVerifyProduct(row),
       })
     }
@@ -300,7 +302,7 @@ export default function ProductManagement() {
       menuItems.push({
         key: "checker-reject",
         icon: <X className="h-4 w-4" />,
-        label: "Reject",
+        label: tp("common:reject"),
         onClick: () => handleCheckerRejectProduct(row),
       })
     }
@@ -310,7 +312,7 @@ export default function ProductManagement() {
       menuItems.push({
         key: "approve",
         icon: <ShieldCheck className="h-4 w-4" />,
-        label: "Approve",
+        label: tp("common:approve"),
         onClick: () => handleApproveProduct(row),
       })
     }
@@ -320,7 +322,7 @@ export default function ProductManagement() {
       menuItems.push({
         key: "approver-reject",
         icon: <X className="h-4 w-4" />,
-        label: "Reject",
+        label: tp("common:reject"),
         onClick: () => handleApproverRejectProduct(row),
       })
     }
@@ -415,17 +417,17 @@ export default function ProductManagement() {
             <span className="mb-1 flex size-12 items-center justify-center rounded-full bg-red-100">
               <Trash2 className="size-6 text-red-600" />
             </span>
-            <DialogTitle className="text-center">Delete Product</DialogTitle>
+            <DialogTitle className="text-center">{tp("list.deleteTitle")}</DialogTitle>
             <DialogDescription className="text-center">
-              Are you sure you want to delete this product? This action cannot be undone.
+              {tp("list.deleteMessage")}
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-2 sm:justify-center">
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} disabled={deleting}>
-              Cancel
+              {tp("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={handleDeleteProduct} disabled={deleting}>
-              {deleting ? "Deleting..." : "Delete"}
+              {deleting ? tp("list.deleting") : tp("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

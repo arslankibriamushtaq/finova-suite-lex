@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -59,6 +60,7 @@ interface ContactUsPageData {
 }
 
 const ContactUsSettings = () => {
+  const { t } = useTranslation('webPages');
   // UI States
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [editingFieldPath, setEditingFieldPath] = useState<any>('');
@@ -331,13 +333,13 @@ const ContactUsSettings = () => {
           const result = await response.json();
           const fileUrl = `${API_BASE_URL}${result.data.path}`;
           updateFormValue(fieldPath, fileUrl);
-          toast.success('File uploaded successfully!');
+          toast.success(t('toast.fileUploaded'));
         } else {
-          toast.error('Failed to upload file');
+          toast.error(t('toast.failedUploadFile'));
         }
       } catch (err) {
         console.error('Error uploading file:', err);
-        toast.error('Error uploading file');
+        toast.error(t('toast.errorUploadingFile'));
       }
     };
     input.click();
@@ -608,14 +610,14 @@ const ContactUsSettings = () => {
             
             // Update the icon with the uploaded file URL
             updateFormValue(`contact_details.social_links.${editingSocialIndex}.icon`, fileUrl);
-            toast.success('Icon uploaded successfully!');
+            toast.success(t('toast.iconUploaded'));
           } else {
-            toast.error('Failed to upload icon');
+            toast.error(t('toast.failedUploadIcon'));
             return; // Don't close modal if upload failed
           }
         } catch (err) {
           console.error('Error uploading icon:', err);
-          toast.error('Error uploading icon');
+          toast.error(t('toast.errorUploadingIcon'));
           return; // Don't close modal if upload failed
         }
       } else {
@@ -654,7 +656,7 @@ const ContactUsSettings = () => {
   const handleButtonTextModalSave = () => {
     updateFormValue('contact_form.button_text', tempButtonText);
     setShowButtonTextModal(false);
-    toast.success('Button text updated! Click PUBLISH to save changes.');
+    toast.success(t('toast.buttonTextUpdated'));
   };
 
   const handleContactModalSave = () => {
@@ -692,7 +694,7 @@ const ContactUsSettings = () => {
     fieldPath: string,
     value: any,
     fieldType: string,
-    placeholder: string = 'Enter value'
+    placeholder: string = t('field.enterValue')
   ) => {
     const isEditing = editingFieldPath === fieldPath;
 
@@ -857,18 +859,18 @@ const ContactUsSettings = () => {
       if (response.status === 200) {
         const result = response.data;
         
-        toast.success('Contact Us page published successfully!');
+        toast.success(t('toast.contactPublished'));
         
         // Re-fetch data to reflect changes
         await fetchPageData();
       } else {
         const errorText = response.data?.message || 'Unknown error';
         console.error('❌ Publish failed:', errorText);
-        toast.error('Failed to publish contact us page');
+        toast.error(t('toast.failedPublishContact'));
       }
     } catch (err) {
       console.error('Error publishing contact us page:', err);
-      toast.error('Error publishing contact us page');
+      toast.error(t('toast.errorPublishingContact'));
     } finally {
       setIsLoading(false);
     }
@@ -883,7 +885,7 @@ const ContactUsSettings = () => {
       {/* Header with Language Switcher */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          Contact Us Page
+          {t('header.contactUsPage')}
         </h2>
         {/* Language Switcher */}
         <div
@@ -918,7 +920,7 @@ const ContactUsSettings = () => {
       {/* Publish Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
         <div className="header-footer-settings__publish-text">
-          {isLoading ? 'Publishing...' : 'PUBLISH'}
+          {isLoading ? t('publishing') : t('publish')}
         </div>
       </div>
 
@@ -957,7 +959,7 @@ const ContactUsSettings = () => {
             e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
           }}
         >
-          {formValue.contact_hero?.hero_image?.url ? 'Change Hero Image' : 'Upload Hero Image'}
+          {formValue.contact_hero?.hero_image?.url ? t('changeHeroImage') : t('uploadHeroImage')}
         </button>
       </section>
 
@@ -1346,7 +1348,7 @@ const ContactUsSettings = () => {
             maxHeight: '90vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Content</h3>
+            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>{t('modal.editContent')}</h3>
             <div style={{
               border: '1px solid var(--color-border-light)',
               borderRadius: '2px',
@@ -1394,7 +1396,7 @@ const ContactUsSettings = () => {
                   setEditingFieldPath('');
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 style={{
@@ -1411,7 +1413,7 @@ const ContactUsSettings = () => {
                   setEditingFieldPath('');
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
             </div>
           </div>
@@ -1490,7 +1492,7 @@ const ContactUsSettings = () => {
                   type="url"
                   value={tempSocialUrl}
                   onChange={(e) => setTempSocialUrl(e.target.value)}
-                  placeholder="Enter social media URL"
+                  placeholder={t('field.enterSocialMediaUrl')}
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -1689,7 +1691,7 @@ const ContactUsSettings = () => {
                   type="text"
                   value={tempContactValue}
                   onChange={(e) => setTempContactValue(e.target.value)}
-                  placeholder="Enter contact information"
+                  placeholder={t('field.enterContactInformation')}
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -1717,7 +1719,7 @@ const ContactUsSettings = () => {
                   type="url"
                   value={tempContactUrl}
                   onChange={(e) => setTempContactUrl(e.target.value)}
-                  placeholder="Enter URL"
+                  placeholder={t('field.enterUrl')}
                   style={{
                     width: '100%',
                     padding: '12px',
@@ -1813,7 +1815,7 @@ const ContactUsSettings = () => {
                 type="text"
                 value={tempButtonText}
                 onChange={(e) => setTempButtonText(e.target.value)}
-                placeholder="Enter button text"
+                placeholder={t('field.enterButtonText')}
                 style={{
                   width: '100%',
                   padding: '12px',

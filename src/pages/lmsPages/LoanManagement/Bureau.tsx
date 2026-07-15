@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import Loader from "../../../components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
 const Bureau = () => {
+  const { t } = useTranslation("loanManagement");
   const navigate = useNavigate();
   const [loader, setLoader] = useState(false);
   const [checked, setChecked] = useState(false);
@@ -17,7 +19,7 @@ const Bureau = () => {
             className="d-flex align-items-center justify-content-between mt-1 mb-3"
             style={{ fontSize: "15px", fontWeight: "Bold" }}
           >
-            Credit Bureau Consent
+            {t("bureau.title")}
           </div>
         </div>
 
@@ -30,13 +32,13 @@ const Bureau = () => {
           />
           <span className="ps-2">
             {" "}
-            I Acknowledge and authorize{" "}
+            {t("bureau.consentPrefix")}{" "}
             <span
               style={{ color: "var(--foreground)", fontSize: "14px", fontWeight: "800" }}
             >
               Credira
             </span>{" "}
-            to collect my data from credit bureau.
+            {t("bureau.consentSuffix")}
           </span>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -29,6 +30,7 @@ import TableView from "../../TableView/TableView";
 
 
 const UserPreferences = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -70,23 +72,23 @@ const UserPreferences = () => {
 
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
             width: "100px",
         },
         {
-            name: "User Name",
+            name: t("userPrefs.col.userName"),
             selector: (row: { userName: any }) => row.userName,
             sortable: true,
         },
         {
-            name: "Channel",
+            name: t("shared.channel"),
             selector: (row: { channelName: any }) => row.channelName,
             sortable: true,
         },
         {
-            name: "Enabled",
+            name: t("common:enabled"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -97,23 +99,23 @@ const UserPreferences = () => {
                         color: "white",
                     }}
                 >
-                    {row.enabled ? "Enabled" : "Disabled"}
+                    {row.enabled ? t("common:enabled") : t("common:disabled")}
                 </div>
             ),
             width: "100px",
         },
         {
-            name: "Mute Until",
-            selector: (row: { muteUntil: any }) => row.muteUntil ? formatDate(row.muteUntil) : "Not muted",
+            name: t("userPrefs.col.muteUntil"),
+            selector: (row: { muteUntil: any }) => row.muteUntil ? formatDate(row.muteUntil) : t("userPrefs.notMuted"),
             sortable: true,
         },
         {
-            name: "Created At",
+            name: t("common:createdAt"),
             selector: (row: { createdAt: any }) => formatDate(row?.createdAt),
             sortable: true,
         },
         {
-            name: "Actions",
+            name: t("common:actions"),
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
                     <Button
@@ -127,7 +129,7 @@ const UserPreferences = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -157,14 +159,14 @@ const UserPreferences = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -242,7 +244,7 @@ const UserPreferences = () => {
             }
         } catch (error: any) {
             console.error("Error fetching users:", error);
-            toast.error("Failed to load users: " + error.message);
+            toast.error(t("userPrefs.toast.loadUsersFailed") + error.message);
         } finally {
             setUsersLoading(false);
         }
@@ -261,11 +263,11 @@ const UserPreferences = () => {
                 setChannels(channelsData);
             } else {
 
-                toast.error((response?.data?.errors || "Unknown error"));
+                toast.error((response?.data?.errors || t("shared.somethingWentWrong")));
             }
         } catch (error: any) {
             console.error("Error fetching channels:", error);
-            toast.error("Failed to load channels: " + error.message);
+            toast.error(t("userPrefs.toast.loadChannelsFailed") + error.message);
         } }
 
     useEffect(() => {
@@ -301,9 +303,9 @@ const UserPreferences = () => {
                         muteUntil: null,
                     });
                     await getList();
-                    return "User preference updated successfully!";
+                    return t("userPrefs.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createUserNotificationPreference(body);
@@ -316,17 +318,17 @@ const UserPreferences = () => {
                         enabled: true,
                         muteUntil: null,
                     });
-                    return "User preference added successfully!";
+                    return t("userPrefs.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating User Preference..." : "Adding User Preference...",
+            loading: isEditing ? t("userPrefs.toast.updating") : t("userPrefs.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -338,16 +340,16 @@ const UserPreferences = () => {
                     setIsDeleteModalVisible(false);
                     await getList();
                     setEditRowId(null);
-                    return "User preference deleted successfully!";
+                    return t("userPrefs.toast.deleted");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to delete");
+                    throw new Error(response?.data?.errors || t("shared.failedDelete"));
                 }
             };
 
             toast.promise(deletePromise(), {
-                loading: "Deleting User Preference...",
+                loading: t("userPrefs.toast.deleting"),
                 success: (msg) => msg,
-                error: (err) => err.message || "Something went wrong",
+                error: (err) => err.message || t("shared.somethingWentWrong"),
             });
         } catch (error: any) {
             toast.error(error.message);
@@ -368,7 +370,7 @@ const UserPreferences = () => {
                     <Select
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
                     />
@@ -384,7 +386,7 @@ const UserPreferences = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -402,7 +404,7 @@ const UserPreferences = () => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New User Preference
+                            {t("userPrefs.addNew")}
                         </button>
                     </div>
                 </div>
@@ -425,13 +427,13 @@ const UserPreferences = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit User Preference" : "Add New User Preference"}
+                title={editRowId ? t("userPrefs.editTitle") : t("userPrefs.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -439,10 +441,10 @@ const UserPreferences = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">User <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("userPrefs.label.user")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder={usersLoading ? "Loading users..." : "Select user"}
+                                    placeholder={usersLoading ? t("userPrefs.ph.loadingUsers") : t("userPrefs.ph.selectUser")}
                                     loading={usersLoading}
                                     value={formData.userId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, userId: val })}
@@ -453,7 +455,7 @@ const UserPreferences = () => {
                                         </Select.Option>
                                     )) : (
                                         <Select.Option disabled value="no-users">
-                                            {usersLoading ? "Loading..." : "No users available"}
+                                            {usersLoading ? t("shared.loadingText") : t("userPrefs.opt.noUsers")}
                                         </Select.Option>
                                     )}
                                 </Select>
@@ -461,10 +463,10 @@ const UserPreferences = () => {
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box select-custom">
-                                <Form.Label className="px-2 mt-2">Channel <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("shared.channel")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Select
                                     style={{ width: "100%", height: "40px" }}
-                                    placeholder="Select channel"
+                                    placeholder={t("shared.selectChannel")}
                                     value={formData.channelId || undefined}
                                     onChange={(val: string) => setFormData({ ...formData, channelId: val })}
                                 >
@@ -481,25 +483,25 @@ const UserPreferences = () => {
                     <Row>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">Enabled <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("common:enabled")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) => setFormData({ ...formData, enabled: e.target.value })}
                                         value={formData.enabled}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
                         </Col>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Mute Until</Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("userPrefs.label.muteUntil")}</Form.Label>
                                 <DatePicker
                                     showTime
                                     format="YYYY-MM-DD HH:mm"
-                                    placeholder="Select mute until date"
+                                    placeholder={t("userPrefs.ph.muteUntil")}
                                     value={formData.muteUntil}
                                     onChange={(date) => setFormData({ ...formData, muteUntil: date })}
                                     style={{ width: "100%" }}
@@ -515,10 +517,10 @@ const UserPreferences = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                title={"Delete User Preference"}
+                title={t("userPrefs.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -527,12 +529,12 @@ const UserPreferences = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    Are you sure you want to delete this User Preference?
+                    {t("userPrefs.delete.confirm")}
                 </Form>
             </Modal>
         </div>

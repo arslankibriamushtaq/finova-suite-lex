@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 
 interface ModalEditProps {
@@ -15,6 +16,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
   setFormValue,
   handleButtonText,
 }) => {
+  const { t } = useTranslation("webPages");
   return (
     <>
       {open ? (
@@ -25,7 +27,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                 className="d-flex justify-content-between"
                 style={{ background: "#004D72", color: "white" }}
               >
-                <h2 className="ps-3 m-0 fs-7 ">Edit Button Details</h2>
+                <h2 className="ps-3 m-0 fs-7 ">{t("modal.editButtonDetails")}</h2>
                 <div className="cursor-pointer d-flex ">
                   <img
                     className="me-3"
@@ -38,7 +40,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                 </div>
               </div>
               <div className="ps-3 mt-3">
-                <div className="mb-2 text-secondary">Button text</div>
+                <div className="mb-2 text-secondary">{t("field.buttonText")}</div>
                 <input
                   placeholder={buttonText}
                   type="text"
@@ -48,7 +50,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                   }}
                 />
               </div>
-              <div className="mb-2 text-secondary">Button Url</div>
+              <div className="mb-2 text-secondary">{t("field.buttonUrlAlt")}</div>
               <input type="text" />
               <div>
                 <button
@@ -59,7 +61,7 @@ const ModalEdit: React.FC<ModalEditProps> = ({
                   className="btn-theme mt-3"
                   style={{ width: "80px", height: "40px" }}
                 >
-                  Apply
+                  {t("common:apply")}
                 </button>
               </div>
             </div>

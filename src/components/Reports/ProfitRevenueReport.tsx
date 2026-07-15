@@ -7,6 +7,7 @@ import { getProfitRevenueReport } from "../../redux/apis/apisCrudLms";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const formatAmount = (n: number | string | undefined | null) =>
   Number(n || 0).toLocaleString(undefined, {
@@ -15,6 +16,7 @@ const formatAmount = (n: number | string | undefined | null) =>
   });
 
 const ProfitRevenueReport = () => {
+  const { t } = useTranslation("reports");
   const [period, setPeriod] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [responseData, setResponseData] = useState<any>(null);
@@ -60,7 +62,7 @@ const ProfitRevenueReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching profit revenue report:", error);
-      toast.error(error?.message || "Failed to fetch report");
+      toast.error(error?.message || t('profitRevenue.toast.fetchError'));
       setResponseData(null);
       setItems([]);
     } finally {
@@ -100,7 +102,7 @@ const ProfitRevenueReport = () => {
   const columns = useMemo(() => {
     const base = [
       {
-        name: "S No",
+        name: t('profitRevenue.col.sNo'),
         selector: (row: any) => row.Sr,
         sortable: true,
         width: "70px",
@@ -172,7 +174,7 @@ const ProfitRevenueReport = () => {
             <span className="pro-head-badge">
               <TrendingUp className="h-4 w-4" />
             </span>
-            Profit & Revenue Report
+            {t('profitRevenue.title')}
           </h3>
         </div>
 
@@ -180,7 +182,7 @@ const ProfitRevenueReport = () => {
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <AntInput
               allowClear
-              placeholder="Search"
+              placeholder={t('common:search')}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -191,7 +193,7 @@ const ProfitRevenueReport = () => {
               onChange={(d) => setPeriod(d)}
               picker="month"
               format="YYYY-MM"
-              placeholder="Period"
+              placeholder={t('profitRevenue.periodPlaceholder')}
               style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40, background: "#fff" }}
             />
             <button
@@ -201,7 +203,7 @@ const ProfitRevenueReport = () => {
               disabled={!responseData}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              Export CSV
+              {t('action.exportCsv')}
             </button>
           </div>
         </div>
@@ -209,7 +211,7 @@ const ProfitRevenueReport = () => {
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Profit Earned</div>
+              <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.profitEarned')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(responseData?.profitEarned)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -217,7 +219,7 @@ const ProfitRevenueReport = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Profit Collected</div>
+              <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.profitCollected')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(responseData?.profitCollected)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -225,7 +227,7 @@ const ProfitRevenueReport = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Accrued Profit</div>
+              <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.accruedProfit')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(responseData?.accruedProfit)} <span style={{ fontSize: 14 }}>SAR</span>
               </div>

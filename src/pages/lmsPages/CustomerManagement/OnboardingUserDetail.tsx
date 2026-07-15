@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
@@ -127,6 +128,7 @@ const Block = ({
 /* ------------------------------------------------------------------ */
 
 const OnboardingUserDetail = () => {
+  const { t } = useTranslation("customerManagement");
   const params = useParams();
   const navigate = useNavigate();
   const workflowId = params.workflowId || params.id || "";
@@ -149,7 +151,7 @@ const OnboardingUserDetail = () => {
       console.error(error);
       const message = (error as { response?: { data?: { message?: string } } })?.response?.data
         ?.message;
-      toast.error(message || "Failed to load onboarding session");
+      toast.error(message || t("onboardingUserDetail.toast.loadFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -169,7 +171,7 @@ const OnboardingUserDetail = () => {
     session?.maskedEmail ||
     session?.maskedMobile ||
     session?.email ||
-    "Onboarding User";
+    t("onboardingUserDetail.defaultName");
   const email = session?.maskedEmail || session?.email || "";
   const mobile = session?.maskedMobile || session?.phone || session?.mobile || "";
   const flow = session?.flowType || session?.flow || session?.countryCode || "—";
@@ -186,12 +188,12 @@ const OnboardingUserDetail = () => {
     : "";
 
   const headerFacts = [
-    { icon: Mail, label: "Email", value: email },
-    { icon: Phone, label: "Mobile", value: mobile },
-    { icon: RouteIcon, label: "Flow", value: flow },
-    { icon: Hash, label: "Workflow ID", value: workflowId },
-    { icon: CalendarDays, label: "Started", value: formatDateTime(startedAt) },
-    { icon: Clock, label: "Last Updated", value: formatDateTime(session?.updatedAt) },
+    { icon: Mail, label: t("common:email"), value: email },
+    { icon: Phone, label: t("onboardingUserDetail.fact.mobile"), value: mobile },
+    { icon: RouteIcon, label: t("onboardingUserDetail.fact.flow"), value: flow },
+    { icon: Hash, label: t("onboardingUserDetail.fact.workflowId"), value: workflowId },
+    { icon: CalendarDays, label: t("onboardingUserDetail.fact.started"), value: formatDateTime(startedAt) },
+    { icon: Clock, label: t("onboardingUserDetail.fact.lastUpdated"), value: formatDateTime(session?.updatedAt) },
   ].filter((f) => f.value && f.value !== "—");
 
   return (
@@ -206,7 +208,7 @@ const OnboardingUserDetail = () => {
           <span className="flex size-8 items-center justify-center rounded-lg border bg-card shadow-sm transition-all group-hover:border-emerald-500/40 group-hover:text-emerald-600 group-hover:shadow">
             <ArrowLeft className="size-4" />
           </span>
-          Back
+          {t("common:back")}
         </button>
         <Button
           variant="outline"
@@ -214,17 +216,17 @@ const OnboardingUserDetail = () => {
           className="gap-2 rounded-lg"
           onClick={loadDetail}
           disabled={isLoading}
-          title="Refresh"
+          title={t("common:refresh")}
         >
           <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-          Refresh
+          {t("common:refresh")}
         </Button>
       </div>
 
       {isLoading && !session ? (
-        <div className="text-sm text-muted-foreground py-8 text-center">Loading session…</div>
+        <div className="text-sm text-muted-foreground py-8 text-center">{t("onboardingUserDetail.loading")}</div>
       ) : !session ? (
-        <div className="text-sm text-muted-foreground py-8 text-center">No session found.</div>
+        <div className="text-sm text-muted-foreground py-8 text-center">{t("onboardingUserDetail.noSession")}</div>
       ) : (
         <div className="flex flex-col gap-4">
           {/* Header band */}
@@ -291,10 +293,10 @@ const OnboardingUserDetail = () => {
           )}
 
           {/* Onboarding steps — horizontal animated stepper (matches Customer 360) */}
-          <Block title="Onboarding Steps" icon={ListChecks} className="order-first">
+          <Block title={t("onboardingUserDetail.stepsTitle")} icon={ListChecks} className="order-first">
             {steps.length === 0 ? (
               <p className="py-4 text-sm text-muted-foreground">
-                No onboarding steps available for this session.
+                {t("onboardingUserDetail.noSteps")}
               </p>
             ) : (
               <div className="relative flex items-start overflow-x-auto pb-2">
@@ -313,7 +315,7 @@ const OnboardingUserDetail = () => {
                     step.stepName ||
                     step.label ||
                     step.currentStepLabel ||
-                    `Step ${step.orderIndex ?? idx + 1}`;
+                    t("onboardingUserDetail.stepFallback", { number: step.orderIndex ?? idx + 1 });
                   const when =
                     step.completedAt || step.startedAt || step.occurredAt || null;
                   const circle = done

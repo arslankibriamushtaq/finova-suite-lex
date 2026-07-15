@@ -9,7 +9,9 @@ import {
   DownOutlined,
 } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 const SubCategories = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -87,35 +89,35 @@ const SubCategories = () => {
   }, [searchValue]);
   const Table_Headers = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       selector: (row: { srNo: string }) => row.srNo || "-",
     },
     {
-      name: "Sub Category Name",
+      name: t("subCategories.subCategoryName"),
 
       selector: (row: { subCategoryName: string }) => row.subCategoryName || "-",
     },
     {
-      name: "Category ID",
+      name: t("subCategories.categoryId"),
       selector: (row: { category: any }) => row.category?.title || "-",
     },
     {
-      name: "Priority",
+      name: t("fields.priority"),
       selector: (row: { priority: any }) => row.priority?.priority || "-",
     },
     {
-      name: "Department",
+      name: t("fields.department"),
       selector: (row: { department: any }) => row.department?.name || "-",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown menu={{ items: menu(row) }} trigger={["click"]}>
           <Button
             className="gradient-btn"
             type="primary"
           >
-            Select <DownOutlined />
+            {t("fields.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -126,13 +128,13 @@ const SubCategories = () => {
     {
       key: "edit",
       icon: <EditOutlined />,
-      label: "Edit",
+      label: t("common:edit"),
       onClick: () => handleMenuClick("edit", row),
     },
     {
       key: "delete",
       icon: <DeleteOutlined />,
-      label: "Delete",
+      label: t("common:delete"),
       onClick: () => handleMenuClick("delete", row),
     }
   ];
@@ -179,7 +181,7 @@ const SubCategories = () => {
     try {
       if (isEditMode) {
         await toast.promise(updateSubCategory(selectedRow?.id, body), {
-          loading: "Updating...",
+          loading: t("toast.updating"),
           success: (response: any) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -187,11 +189,11 @@ const SubCategories = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to update",
+          error: (err) => (err?.response?.data?.message) || t("toast.failedUpdate"),
         });
       } else {
         await toast.promise(createSubCategory(body), {
-          loading: "Adding sub category...",
+          loading: t("subCategories.toast.adding"),
           success: (response: any) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -199,7 +201,7 @@ const SubCategories = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to add new sub category",
+          error: (err) => (err?.response?.data?.message) || t("subCategories.toast.failedAdd"),
         });
       }
     } catch (error) {
@@ -210,7 +212,7 @@ const SubCategories = () => {
   const handleDelete = async () => {
     try {
       await toast.promise(deleteSubCategory(selectedRow?.id), {
-        loading: "Deleting...",
+        loading: t("toast.deleting"),
         success: (response: any) => {
           if (response?.data?.success) {
             setIsDeleteModal(false);
@@ -218,7 +220,7 @@ const SubCategories = () => {
           }
           return response?.data?.message;
         },
-        error: (err) => (err?.response?.data?.message) || "Failed to delete",
+        error: (err) => (err?.response?.data?.message) || t("toast.failedDelete"),
       });
     } catch (error) {
       console.error("Failed to delete sub category:", error);
@@ -262,11 +264,11 @@ const SubCategories = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h5 className="mb-0">Sub Categories</h5>
+          <h5 className="mb-0">{t("subCategories.title")}</h5>
         </div>
         <div className="text-end">
           <Input
-            placeholder="Search by name"
+            placeholder={t("fields.searchByName")}
             value={searchValue}
             prefix={<SearchOutlined />} style={{ width: "300px", height: "33px", marginRight: "10px" }}
             onChange={(e: any) => {
@@ -279,7 +281,7 @@ const SubCategories = () => {
               setAddCategoryModal(true);
             }}
           >
-            Add New Sub Category
+            {t("subCategories.addNew")}
           </button>
 
         </div>
@@ -308,7 +310,7 @@ const SubCategories = () => {
         maskClosable={false}
         title={
           <span style={{ fontSize: "16px", fontWeight: 600 }}>
-            {isEditMode ? "Edit Sub Category" : "Add Sub Category"}
+            {isEditMode ? t("subCategories.editModalTitle") : t("subCategories.addModalTitle")}
           </span>
         }
         footer={null}
@@ -324,10 +326,10 @@ const SubCategories = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Sub Category Name
+              {t("subCategories.subCategoryName")}
             </label>
             <Input
-              placeholder="Enter sub category name"
+              placeholder={t("subCategories.enterSubCategoryName")}
               value={subCategoryName}
               onChange={(e) => setSubCategoryName(e.target.value)}
               style={{ height: "40px" }}
@@ -343,10 +345,10 @@ const SubCategories = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Select Priority
+              {t("fields.selectPriority")}
             </label>
             <Select
-              placeholder="Select Priority"
+              placeholder={t("fields.selectPriority")}
               value={selectedPriority || undefined}
               onChange={(value) => setSelectedPriority(value)}
               style={{ width: "100%", height: "40px" }}
@@ -366,10 +368,10 @@ const SubCategories = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Department
+              {t("fields.department")}
             </label>
             <Select
-              placeholder="Select Department"
+              placeholder={t("fields.selectDepartment")}
               value={selectedDepartment || undefined}
               onChange={(value) => setSelectedDepartment(value)}
               style={{ width: "100%", height: "40px" }}
@@ -389,10 +391,10 @@ const SubCategories = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Select Category
+              {t("fields.selectCategory")}
             </label>
             <Select
-              placeholder="Select Category"
+              placeholder={t("fields.selectCategory")}
               value={selectedCategory || undefined}
               onChange={(value) => setSelectedCategory(value)}
               style={{ width: "100%", height: "40px" }}
@@ -424,7 +426,7 @@ const SubCategories = () => {
                 fontWeight: 500,
               }}
             >
-              Close
+              {t("common:close")}
             </button>
             <button
               onClick={handleSave}
@@ -439,7 +441,7 @@ const SubCategories = () => {
                 fontWeight: 500,
               }}
             >
-              Save
+              {t("common:save")}
             </button>
           </div>
         </div>
@@ -449,14 +451,14 @@ const SubCategories = () => {
         onCancel={handleCloseDeleteModal}
         centered
         maskClosable={false}
-        title="Delete Sub Category"
+        title={t("subCategories.deleteModalTitle")}
         footer={null}
       >
         <div style={{ padding: "20px 0" }}>
-          <p>Are you sure you want to delete this Sub Category?</p>
+          <p>{t("subCategories.deleteConfirm")}</p>
           <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px", marginTop: "30px" }}>
-            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Cancel</Button>
-            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>Delete</Button>
+            <Button onClick={handleCloseDeleteModal} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--color-cms-teal)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>{t("common:cancel")}</Button>
+            <Button onClick={handleDelete} style={{ padding: "8px 24px", borderRadius: "2px", border: "none", backgroundColor: "var(--foreground)", color: "white", cursor: "pointer", fontSize: "14px", fontWeight: 500 }}>{t("common:delete")}</Button>
           </div>
         </div>
       </Modal>

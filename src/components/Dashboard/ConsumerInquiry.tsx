@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 interface ConsumerInquiryProps {
   simahData?: any;
 }
 
 const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
+  const { t } = useTranslation("dashboard");
   const [expandedSections, setExpandedSections] = useState<{ [key: string]: boolean }>({
     Score: true, // Score section expanded by default
     Contacts: false,
@@ -37,7 +39,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
   if (!simahData) {
     return (
       <div style={{ padding: "20px", textAlign: "center", color: "var(--foreground)" }}>
-        No SIMAH data available
+        {t("ci.noSimah")}
       </div>
     );
   }
@@ -79,7 +81,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             borderBottom: expandedSections.Score ? "1px solid var(--surface-border)" : "none",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Score</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.score")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Score ? "▲" : "▼"}
           </span>
@@ -126,7 +128,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No score data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.score") })}</div>
             )}
           </div>
         )}
@@ -143,7 +145,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Reason Codes</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.reasonCodes")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ReasonCodes ? "▲" : "▼"}
           </span>
@@ -182,7 +184,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No contacts data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.contacts") })}</div>
             )}
           </div>
         )}
@@ -200,7 +202,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Contacts</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.contacts")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Contacts ? "▲" : "▼"}
           </span>
@@ -249,7 +251,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No contacts data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.contacts") })}</div>
             )}
           </div>
         )}
@@ -268,7 +270,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Addresses</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.addresses")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Addresses ? "▲" : "▼"}
           </span>
@@ -317,7 +319,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No addresses data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.addresses") })}</div>
             )}
           </div>
         )}
@@ -336,7 +338,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Employers</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.employers")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Employers ? "▲" : "▼"}
           </span>
@@ -385,7 +387,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No employers data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.employers") })}</div>
             )}
           </div>
         )}
@@ -404,7 +406,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>Judgements</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.judgements")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.Judgements ? "▲" : "▼"}
           </span>
@@ -433,7 +435,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No judgements data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.judgements") })}</div>
             )}
           </div>
         )}
@@ -452,7 +454,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>ReportDate</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.reportDate")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ReportDate ? "▲" : "▼"}
           </span>
@@ -479,7 +481,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>DisclerText</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.disclerText")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.DisclerText ? "▲" : "▼"}
           </span>
@@ -515,7 +517,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>SummaryInfo</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.summaryInfo")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.SummaryInfo ? "▲" : "▼"}
           </span>
@@ -557,7 +559,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PrevEnquiries</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.prevEnquiries")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PrevEnquiries ? "▲" : "▼"}
           </span>
@@ -606,7 +608,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No previous enquiries data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.prevEnquiries") })}</div>
             )}
           </div>
         )}
@@ -625,7 +627,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PublicNotices</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.publicNotices")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PublicNotices ? "▲" : "▼"}
           </span>
@@ -654,7 +656,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No public notices data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.publicNotices") })}</div>
             )}
           </div>
         )}
@@ -673,7 +675,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>ReportDetails</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.reportDetails")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ReportDetails ? "▲" : "▼"}
           </span>
@@ -715,7 +717,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>BouncedCheques</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.bouncedCheques")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.BouncedCheques ? "▲" : "▼"}
           </span>
@@ -744,7 +746,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No bounced cheques data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.bouncedCheques") })}</div>
             )}
           </div>
         )}
@@ -763,7 +765,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PrimaryDefaults</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.primaryDefaults")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PrimaryDefaults ? "▲" : "▼"}
           </span>
@@ -816,7 +818,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No primary defaults data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.primaryDefaults") })}</div>
             )}
           </div>
         )}
@@ -835,7 +837,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>MemberNarratives</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.memberNarratives")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.MemberNarratives ? "▲" : "▼"}
           </span>
@@ -844,7 +846,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
           <div>
             <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
               <div style={{ fontSize: "12px", color: "var(--foreground)" }}>
-                {memberNarratives !== null && memberNarratives !== undefined ? JSON.stringify(memberNarratives) : "No member narratives data available"}
+                {memberNarratives !== null && memberNarratives !== undefined ? JSON.stringify(memberNarratives) : t("ci.noData", { item: t("ci.memberNarratives") })}
               </div>
             </div>
           </div>
@@ -864,7 +866,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>GuarantorDefaults</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.guarantorDefaults")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.GuarantorDefaults ? "▲" : "▼"}
           </span>
@@ -873,7 +875,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
           <div>
             <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
               <div style={{ fontSize: "12px", color: "var(--foreground)" }}>
-                {guarantorDefaults !== null && guarantorDefaults !== undefined ? JSON.stringify(guarantorDefaults) : "No guarantor defaults data available"}
+                {guarantorDefaults !== null && guarantorDefaults !== undefined ? JSON.stringify(guarantorDefaults) : t("ci.noData", { item: t("ci.guarantorDefaults") })}
               </div>
             </div>
           </div>
@@ -893,7 +895,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>PersonalNarratives</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.personalNarratives")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.PersonalNarratives ? "▲" : "▼"}
           </span>
@@ -902,7 +904,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
           <div>
             <div style={{ padding: "16px", background: "var(--surface-card-alt)" }}>
               <div style={{ fontSize: "12px", color: "var(--foreground)" }}>
-                {personalNarratives !== null && personalNarratives !== undefined ? JSON.stringify(personalNarratives) : "No personal narratives data available"}
+                {personalNarratives !== null && personalNarratives !== undefined ? JSON.stringify(personalNarratives) : t("ci.noData", { item: t("ci.personalNarratives") })}
               </div>
             </div>
           </div>
@@ -922,7 +924,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>CreditInstrumentDetails</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.creditInstrumentDetails")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.CreditInstrumentDetails ? "▲" : "▼"}
           </span>
@@ -975,7 +977,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
                 </div>
               </div>
             ) : (
-              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>No credit instrument details data available</div>
+              <div style={{ padding: "16px", color: "var(--muted-foreground)" }}>{t("ci.noData", { item: t("ci.creditInstrumentDetails") })}</div>
             )}
           </div>
         )}
@@ -994,7 +996,7 @@ const ConsumerInquiry = ({ simahData }: ConsumerInquiryProps) => {
             alignItems: "center",
           }}
         >
-          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>ProvidedDemographicsInfo</span>
+          <span style={{ fontWeight: 600, color: "var(--foreground)", fontSize: "14px" }}>{t("ci.providedDemographicsInfo")}</span>
           <span style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
             {expandedSections.ProvidedDemographicsInfo ? "▲" : "▼"}
           </span>

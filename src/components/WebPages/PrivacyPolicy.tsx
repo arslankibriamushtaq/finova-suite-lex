@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 // URL for external RTL stylesheet
 const rtlCssUrl = new URL('../../styles/arabic-rtl.css', import.meta.url).href;
@@ -32,6 +33,7 @@ interface PrivacyPolicyData {
 }
 
 const PrivacyPolicy: React.FC = () => {
+  const { t } = useTranslation('webPages');
   const [pageData, setPageData] = useState<PrivacyPolicyData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -287,7 +289,7 @@ const PrivacyPolicy: React.FC = () => {
         margin: '20px',
         border: '1px solid #e0e0e0'
       }}>
-        <h3>Error Loading Privacy Policy</h3>
+        <h3>{t('state.errorLoadingPrivacyPublic')}</h3>
         <p>{error}</p>
         <button 
           onClick={() => fetchPageData(locale)}
@@ -301,7 +303,7 @@ const PrivacyPolicy: React.FC = () => {
             marginTop: '10px'
           }}
         >
-          Retry
+          {t('retry')}
         </button>
       </div>
     );

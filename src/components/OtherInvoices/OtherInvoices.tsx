@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import AccountInvoices from "./AccountInvoices";
 import LoanInvoices from "./LoanInvoices";
 
 const OtherInvoices = () => {
+  const { t } = useTranslation("accountingLoans");
   const localStorageKey = "selectedTab"; // Key for localStorage
   const defaultTab = "AccountInvoices"; // Default tab key
 
@@ -19,12 +21,12 @@ const OtherInvoices = () => {
 
   const tapOptions = [
     {
-      title: "Account Invoices",
+      title: t("otherInvoices.tabAccount"),
       key: "AccountInvoices",
       folder: <AccountInvoices />,
     },
     {
-      title: "Loan Invoices",
+      title: t("otherInvoices.tabLoan"),
       key: "LoanInvoices",
       folder: <LoanInvoices />,
     },

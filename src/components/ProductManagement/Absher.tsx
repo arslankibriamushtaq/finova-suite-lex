@@ -1,8 +1,10 @@
 import { Input } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 
 function Absher({ setSelectedTab }: any) {
+  const { t } = useTranslation("productManagement2");
   return (
     <div>
       <h1
@@ -14,10 +16,10 @@ function Absher({ setSelectedTab }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -26,10 +28,10 @@ function Absher({ setSelectedTab }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -40,10 +42,10 @@ function Absher({ setSelectedTab }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -52,10 +54,10 @@ function Absher({ setSelectedTab }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -67,15 +69,15 @@ function Absher({ setSelectedTab }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Client ID
+                {t("verification.clientId")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -84,10 +86,10 @@ function Absher({ setSelectedTab }: any) {
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Client Authorization
+                {t("verification.clientAuthorization")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -99,7 +101,7 @@ function Absher({ setSelectedTab }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-        Parameters
+        {t("verification.parameters")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
@@ -107,7 +109,7 @@ function Absher({ setSelectedTab }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -119,7 +121,7 @@ function Absher({ setSelectedTab }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 

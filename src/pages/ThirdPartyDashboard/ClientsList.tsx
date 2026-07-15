@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
@@ -17,6 +18,7 @@ import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 const ClientsList = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -38,7 +40,7 @@ const ClientsList = () => {
       const list = response?.data?.data || response?.data || [];
       setData(Array.isArray(list) ? list : []);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch clients");
+      toast.error(error?.response?.data?.message || t("clientsList.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -53,11 +55,11 @@ const ClientsList = () => {
     try {
       setIsDeleting(true);
       await deleteClient(deleteTarget.id);
-      toast.success("Client deleted successfully");
+      toast.success(t("clientsList.toast.deleteSuccess"));
       setDeleteTarget(null);
       loadClients();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete client");
+      toast.error(error?.response?.data?.message || t("clientsList.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -75,32 +77,32 @@ const ClientsList = () => {
 
   const headers = [
     {
-      name: "Name",
+      name: t("clientsList.col.name"),
       selector: (row: any) => row.name || "-",
       sortable: true,
     },
     {
-      name: "Code",
+      name: t("clientsList.col.code"),
       selector: (row: any) => row.code || "-",
       sortable: true,
     },
     {
-      name: "Description",
+      name: t("clientsList.col.description"),
       selector: (row: any) => row.description || "-",
       sortable: true,
     },
     {
-      name: "Callback URL",
+      name: t("clientsList.col.callbackUrl"),
       selector: (row: any) => row.callbackUrl || "-",
       sortable: true,
     },
     {
-      name: "Environment",
+      name: t("clientsList.col.environment"),
       selector: (row: any) => row.environment || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const status = row.status || "ACTIVE";
         const colorClass =
@@ -113,13 +115,13 @@ const ClientsList = () => {
       },
     },
     {
-      name: "Created At",
+      name: t("clientsList.col.createdAt"),
       selector: (row: any) =>
         row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
     },
     {
-      name: "Action",
+      name: t("clientsList.col.action"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -132,7 +134,7 @@ const ClientsList = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("clientsList.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -144,7 +146,7 @@ const ClientsList = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               {/* <DropdownMenuItem
                 onSelect={(e) => {
@@ -163,7 +165,7 @@ const ClientsList = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -179,7 +181,7 @@ const ClientsList = () => {
           <span className="pro-head-badge">
             <Contact className="h-4 w-4" />
           </span>
-          Client List
+          {t("clientsList.title")}
         </h3>
       </div>
 
@@ -188,7 +190,7 @@ const ClientsList = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by name, code, or status"
+            placeholder={t("clientsList.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -200,7 +202,7 @@ const ClientsList = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
             <Plus className="h-4 w-4" />
-            Add New Client
+            {t("clientsList.addNewClient")}
           </Button>
         </div>
       </div>
@@ -226,17 +228,17 @@ const ClientsList = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Client</DialogTitle>
+            <DialogTitle>{t("clientsList.modalTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete <span className="font-medium text-foreground">{deleteTarget?.name}</span>? This action cannot be undone.
+            {t("clientsList.deleteConfirm", { name: deleteTarget?.name })}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("action.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

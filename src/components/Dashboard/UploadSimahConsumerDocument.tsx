@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import { getSimahCheckDetails } from "../../redux/apis/apisCrud";
 import { FaUpload, FaFilePdf, FaTimes } from "react-icons/fa";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function UploadSimahConsumerDocument() {
+  const { t } = useTranslation("dashboard");
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading] = useState(false);
@@ -22,24 +24,24 @@ function UploadSimahConsumerDocument() {
     if (file) {
       // Validate file type
       if (file.type !== "application/pdf") {
-        toast.error("Please select a PDF file only");
+        toast.error(t("uploadSimah.toast.pdfOnly"));
         return;
       }
 
       // Validate file size (max 10MB)
       const maxSize = 10 * 1024 * 1024; // 10MB in bytes
       if (file.size > maxSize) {
-        toast.error("File size must be less than 10MB");
+        toast.error(t("uploadSimah.toast.maxSize"));
         return;
       }
 
       setPdfFile(file);
-      
+
       // Create object URL for preview
       const objectUrl = URL.createObjectURL(file);
       setPdfUrl(objectUrl);
-      
-      toast.success("PDF file selected successfully");
+
+      toast.success(t("uploadSimah.toast.selected"));
     }
   };
 
@@ -58,12 +60,12 @@ function UploadSimahConsumerDocument() {
   // Handle file upload to API
   const handleUpload = async () => {
     if (!pdfFile) {
-      toast.error("Please select a PDF file first");
+      toast.error(t("uploadSimah.toast.selectFirst"));
       return;
     }
 
     if (!id) {
-      toast.error("Application ID not found");
+      toast.error(t("factoringApproval.toast.appIdNotFound"));
       return;
     }
 
@@ -79,17 +81,17 @@ function UploadSimahConsumerDocument() {
 
       if (response?.data?.success) {
         setUploadedDocument(response.data.data);
-        toast.success(response?.data?.message || "SIMAH document uploaded successfully");
+        toast.success(response?.data?.message || t("uploadSimah.toast.uploaded"));
         // Optionally switch to another tab after successful upload
         // setActiveTab("ApproveSimahInfo");
       } else {
-        toast.error(response?.data?.message || "Failed to upload document");
+        toast.error(response?.data?.message || t("uploadSimah.toast.uploadFailed"));
       }
     } catch (error: any) {
       console.error("Error uploading document:", error);
       toast.error(
-        error?.response?.data?.message || 
-        "Failed to upload SIMAH document"
+        error?.response?.data?.message ||
+        t("uploadSimah.toast.uploadFailed2")
       );
     } finally {
       setUploading(false);
@@ -105,7 +107,7 @@ function UploadSimahConsumerDocument() {
     <div className="upload-simah-document-container" style={{ padding: "20px" }}>
       <div className="upload-section" style={{ marginBottom: "20px" }}>
         <h5 style={{ marginBottom: "20px", color: "#333" }}>
-          Upload SIMAH Consumer Document
+          {t("uploadSimah.title")}
         </h5>
         
         <div 
@@ -123,10 +125,10 @@ function UploadSimahConsumerDocument() {
             <div>
               <FaUpload size={50} color="#999" style={{ marginBottom: "15px" }} />
               <p style={{ color: "#666", marginBottom: "15px" }}>
-                Select or drag and drop your SIMAH PDF document here
+                {t("uploadSimah.dropText")}
               </p>
               <p style={{ color: "#999", fontSize: "12px", marginBottom: "20px" }}>
-                Maximum file size: 10MB | Format: PDF only
+                {t("uploadSimah.constraints")}
               </p>
               <Button
                 variant="primary"
@@ -134,7 +136,7 @@ function UploadSimahConsumerDocument() {
                 disabled={loading || uploading}
               >
                 <FaUpload style={{ marginRight: "8px" }} />
-                Browse Files
+                {t("uploadSimah.browseFiles")}
               </Button>
             </div>
           ) : (
@@ -144,7 +146,7 @@ function UploadSimahConsumerDocument() {
                 {pdfFile.name}
               </p>
               <p style={{ color: "#999", fontSize: "12px", marginBottom: "20px" }}>
-                Size: {(pdfFile.size / 1024 / 1024).toFixed(2)} MB
+                {t("uploadSimah.size")} {(pdfFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
               <div className="d-flex gap-2 justify-content-center">
                 <Button
@@ -154,7 +156,7 @@ function UploadSimahConsumerDocument() {
                   disabled={uploading}
                 >
                   <FaTimes style={{ marginRight: "5px" }} />
-                  Remove
+                  {t("common:remove")}
                 </Button>
                 <Button
                   variant="secondary"
@@ -163,7 +165,7 @@ function UploadSimahConsumerDocument() {
                   disabled={uploading}
                 >
                   <FaUpload style={{ marginRight: "5px" }} />
-                  Change File
+                  {t("uploadSimah.changeFile")}
                 </Button>
               </div>
             </div>
@@ -191,12 +193,12 @@ function UploadSimahConsumerDocument() {
                   <div style={{ display: "inline-block", transform: "scale(0.3)", transformOrigin: "center", marginRight: "8px" }}>
                     <Loader />
                   </div>
-                  Uploading...
+                  {t("uploadSimah.uploading")}
                 </>
               ) : (
                 <>
                   <FaUpload style={{ marginRight: "8px" }} />
-                  Upload Document
+                  {t("uploadSimah.uploadDocument")}
                 </>
               )}
             </Button>
@@ -209,22 +211,22 @@ function UploadSimahConsumerDocument() {
         <div className="alert alert-success mb-4" role="alert">
           <h5 className="alert-heading">
             <i className="fas fa-check-circle me-2"></i>
-            Document Uploaded Successfully
+            {t("uploadSimah.uploadedTitle")}
           </h5>
           <hr />
           <div className="mb-2">
-            <strong>File Name:</strong> {uploadedDocument.file_name || uploadedDocument.filename || pdfFile?.name || 'Document'}
+            <strong>{t("uploadSimah.fileName")}</strong> {uploadedDocument.file_name || uploadedDocument.filename || pdfFile?.name || 'Document'}
           </div>
           {uploadedDocument.file_path && (
             <div className="mb-2">
-              <strong>File Path:</strong> {uploadedDocument.file_path}
+              <strong>{t("uploadSimah.filePath")}</strong> {uploadedDocument.file_path}
             </div>
           )}
           {uploadedDocument.file_url && (
             <div>
               <a href={uploadedDocument.file_url} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-primary">
                 <i className="fas fa-eye me-2"></i>
-                View Document
+                {t("uploadSimah.viewDocument")}
               </a>
             </div>
           )}
@@ -235,7 +237,7 @@ function UploadSimahConsumerDocument() {
       {pdfUrl && (
         <div className="pdf-preview-section">
           <h5 style={{ marginBottom: "15px", color: "#333" }}>
-            Document Preview
+            {t("uploadSimah.previewTitle")}
           </h5>
           <div
             style={{
@@ -250,7 +252,7 @@ function UploadSimahConsumerDocument() {
             ) : (
               <iframe
                 src={pdfUrl}
-                title="SIMAH Document Preview"
+                title={t("uploadSimah.iframeTitle")}
                 width="100%"
                 height="600px"
                 style={{ border: "none" }}
@@ -258,7 +260,7 @@ function UploadSimahConsumerDocument() {
                 }}
                 onError={(e) => {
                   console.error("Error loading PDF in iframe:", e);
-                  toast.error("Failed to preview PDF");
+                  toast.error(t("uploadSimah.toast.previewFailed"));
                 }}
               />
             )}

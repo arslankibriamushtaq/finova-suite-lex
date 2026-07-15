@@ -326,14 +326,14 @@ export default function AdminUsers() {
               onClick={handleExportUsers}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
+              <Download className="w-4 h-4 me-2" />
               Export Users
             </button>
             <button 
               onClick={() => setShowCreateUserModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <UserPlus className="w-4 h-4 mr-2" />
+              <UserPlus className="w-4 h-4 me-2" />
               Add User
             </button>
           </div>
@@ -396,7 +396,7 @@ export default function AdminUsers() {
             }`}
           >
             <div className="flex items-center">
-              <Users className="w-4 h-4 mr-2" />
+              <Users className="w-4 h-4 me-2" />
               Users
             </div>
           </button>
@@ -409,7 +409,7 @@ export default function AdminUsers() {
             }`}
           >
             <div className="flex items-center">
-              <Shield className="w-4 h-4 mr-2" />
+              <Shield className="w-4 h-4 me-2" />
               Roles & Permissions
             </div>
           </button>
@@ -422,7 +422,7 @@ export default function AdminUsers() {
             }`}
           >
             <div className="flex items-center">
-              <Lock className="w-4 h-4 mr-2" />
+              <Lock className="w-4 h-4 me-2" />
               Security Settings
             </div>
           </button>
@@ -442,7 +442,7 @@ export default function AdminUsers() {
                   placeholder="Search users..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+                  className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
                 />
               </div>
               <select
@@ -477,22 +477,22 @@ export default function AdminUsers() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       User
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Role
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Last Login
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Security
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Permissions
                     </th>
                     <th className="relative px-6 py-3">
@@ -505,7 +505,7 @@ export default function AdminUsers() {
                     <tr key={user.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                          <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
                             <span className="text-sm font-medium text-gray-700">
                               {user.name.split(' ').map(n => n[0]).join('')}
                             </span>
@@ -537,12 +537,12 @@ export default function AdminUsers() {
                         <div className="flex items-center space-x-2">
                           {user.mfaEnabled ? (
                             <span className="flex items-center text-xs text-green-600">
-                              <Lock className="w-3 h-3 mr-1" />
+                              <Lock className="w-3 h-3 me-1" />
                               MFA On
                             </span>
                           ) : (
                             <span className="flex items-center text-xs text-red-600">
-                              <Unlock className="w-3 h-3 mr-1" />
+                              <Unlock className="w-3 h-3 me-1" />
                               MFA Off
                             </span>
                           )}
@@ -563,7 +563,7 @@ export default function AdminUsers() {
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                         <div className="flex items-center space-x-2">
                           <button 
                             onClick={() => handleViewUser(user)}
@@ -620,7 +620,7 @@ export default function AdminUsers() {
               onClick={() => setShowCreateRoleModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4 me-2" />
               New Role
             </button>
           </div>
@@ -628,19 +628,19 @@ export default function AdminUsers() {
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Role Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Description
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Users
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Permissions
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
                     Last Modified
                   </th>
                   <th className="relative px-6 py-3">
@@ -653,7 +653,7 @@ export default function AdminUsers() {
                   <tr key={role.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Shield className="w-5 h-5 text-gray-400 mr-3" />
+                        <Shield className="w-5 h-5 text-gray-400 me-3" />
                         <div>
                           <div className="text-sm font-medium text-gray-900">{role.name}</div>
                         </div>
@@ -664,7 +664,7 @@ export default function AdminUsers() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <Users className="w-4 h-4 text-gray-400 mr-1" />
+                        <Users className="w-4 h-4 text-gray-400 me-1" />
                         <span className="text-sm text-gray-900">{role.userCount}</span>
                       </div>
                     </td>
@@ -683,7 +683,7 @@ export default function AdminUsers() {
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDate(role.lastModified)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button 
                           onClick={() => handleViewRole(role)}
@@ -733,19 +733,19 @@ export default function AdminUsers() {
               <h4 className="text-md font-medium text-gray-900 mb-4">Password Policy</h4>
               <div className="space-y-3">
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Minimum 8 characters</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Require uppercase and lowercase letters</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Require numbers and special characters</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Password expiry (90 days)</span>
                 </label>
               </div>
@@ -755,15 +755,15 @@ export default function AdminUsers() {
               <h4 className="text-md font-medium text-gray-900 mb-4">Multi-Factor Authentication</h4>
               <div className="space-y-3">
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Enforce MFA for all admin users</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Allow SMS authentication</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Allow authenticator apps</span>
                 </label>
               </div>
@@ -795,7 +795,7 @@ export default function AdminUsers() {
               <h4 className="text-md font-medium text-gray-900 mb-4">IP Restrictions</h4>
               <div className="space-y-3">
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                   <span className="text-sm text-gray-700">Enable IP whitelist for admin access</span>
                 </label>
                 <div>
@@ -814,7 +814,7 @@ export default function AdminUsers() {
                 onClick={handleSaveSecuritySettings}
                 className="flex items-center px-6 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
               >
-                <Settings className="w-4 h-4 mr-2" />
+                <Settings className="w-4 h-4 me-2" />
                 Save Security Settings
               </button>
             </div>
@@ -886,15 +886,15 @@ export default function AdminUsers() {
 
               <div className="space-y-3">
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                   <span className="text-sm text-gray-700">Send welcome email</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                   <span className="text-sm text-gray-700">Require MFA setup</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                   <span className="text-sm text-gray-700">Force password change on first login</span>
                 </label>
               </div>
@@ -1089,16 +1089,16 @@ export default function AdminUsers() {
                   <input
                     type="checkbox"
                     defaultChecked={selectedUser.mfaEnabled}
-                    className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3"
+                    className="rounded border-gray-300 text-black focus:ring-gray-500 me-3"
                   />
                   <span className="text-sm text-gray-700">Require Multi-Factor Authentication</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                   <span className="text-sm text-gray-700">Send notification email about changes</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                   <span className="text-sm text-gray-700">Force password reset on next login</span>
                 </label>
               </div>
@@ -1108,15 +1108,15 @@ export default function AdminUsers() {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <span className="text-gray-500">Created:</span>
-                    <span className="ml-2 text-gray-900">{formatDate(selectedUser.createdDate)}</span>
+                    <span className="ms-2 text-gray-900">{formatDate(selectedUser.createdDate)}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Last Login:</span>
-                    <span className="ml-2 text-gray-900">{formatDateTime(selectedUser.lastLogin)}</span>
+                    <span className="ms-2 text-gray-900">{formatDateTime(selectedUser.lastLogin)}</span>
                   </div>
                   <div>
                     <span className="text-gray-500">Login Attempts:</span>
-                    <span className="ml-2 text-gray-900">{selectedUser.loginAttempts}</span>
+                    <span className="ms-2 text-gray-900">{selectedUser.loginAttempts}</span>
                   </div>
                 </div>
               </div>
@@ -1220,7 +1220,7 @@ export default function AdminUsers() {
                     <label key={permission} className="flex items-center">
                       <input
                         type="checkbox"
-                        className="rounded border-gray-300 text-black focus:ring-gray-500 mr-2"
+                        className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
                       />
                       <span className="text-sm text-gray-700">{permission}</span>
                     </label>
@@ -1290,7 +1290,7 @@ export default function AdminUsers() {
                       <input
                         type="checkbox"
                         defaultChecked={selectedRole.permissions.includes(permission)}
-                        className="rounded border-gray-300 text-black focus:ring-gray-500 mr-2"
+                        className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
                       />
                       <span className="text-sm text-gray-700">{permission}</span>
                     </label>

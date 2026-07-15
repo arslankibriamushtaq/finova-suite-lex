@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -31,6 +32,7 @@ interface GlobalSection {
 }
 
 const GlobalSectionsSettings = () => {
+  const { t } = useTranslation('webPages');
   const [searchParams] = useSearchParams();
   
   // Get section info from URL params
@@ -274,13 +276,13 @@ const GlobalSectionsSettings = () => {
               }
             }
             
-            toast.success('Image uploaded successfully!');
+            toast.success(t('toast.imageUploaded'));
           } else {
-            toast.error('Failed to upload image');
+            toast.error(t('toast.failedUploadImage'));
           }
         } catch (err) {
           console.error('Error uploading image:', err);
-          toast.error('Error uploading image');
+          toast.error(t('toast.errorUploadingImage'));
         }
       }
     };
@@ -308,14 +310,14 @@ const GlobalSectionsSettings = () => {
       const response = await updateGlobalSection(parseInt(sectionId), locale, requestBody);
       
       if (response.status === 200) {
-        toast.success('Section published successfully!');
+        toast.success(t('toast.sectionPublished'));
         await fetchSectionData();
       } else {
         throw new Error('Failed to publish section');
       }
     } catch (error) {
       console.error('Error publishing section:', error);
-      toast.error('Error publishing section');
+      toast.error(t('toast.errorPublishingSection'));
     } finally {
       setIsLoading(false);
     }
@@ -783,7 +785,7 @@ const GlobalSectionsSettings = () => {
                     setEditingRepeaterData(currentValue || []);
                     setShowRepeaterModal(true);
                   }}
-                  title="Click to edit"
+                  title={t('clickToEdit')}
                 >
                   {isImageIcon ? (
                     <img 
@@ -837,7 +839,7 @@ const GlobalSectionsSettings = () => {
                 color: 'var(--color-text-muted)',
                 ...(locale === 'ar' ? { marginLeft: '4px' } : { marginRight: '4px' })
               }}
-              title="Add social link"
+              title={t('title.addSocialLink')}
             >
               +
             </button>
@@ -1005,7 +1007,7 @@ const GlobalSectionsSettings = () => {
 
       {/* PUBLISH Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
-        <div className="header-footer-settings__publish-text">PUBLISH</div>
+        <div className="header-footer-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Main Content Area */}
@@ -1312,7 +1314,7 @@ const GlobalSectionsSettings = () => {
                                   const updatedContact = { ...contactData };
                                   delete updatedContact[fieldKey];
                                   updateFormValue('contact', updatedContact);
-                                  toast.success(locale === 'ar' ? 'تم الحذف بنجاح' : 'Field deleted successfully!');
+                                  toast.success(t('toast.fieldDeleted'));
                                 }}
                                 style={{
                                   background: 'none',
@@ -1448,7 +1450,7 @@ const GlobalSectionsSettings = () => {
                           e.currentTarget.style.borderColor = 'transparent';
                           e.currentTarget.style.transform = 'scale(1)';
                         }}
-                        title="Click to edit"
+                        title={t('clickToEdit')}
                       >
                         {isImageIcon ? (
                           <img 
@@ -1850,7 +1852,7 @@ const GlobalSectionsSettings = () => {
               <h3 style={{ 
                 textAlign: locale === 'ar' ? 'right' : 'left',
                 direction: locale === 'ar' ? 'rtl' : 'ltr'
-              }}>Edit Content</h3>
+              }}>{t('modal.editContent')}</h3>
               <button onClick={() => {
                 setShowTextEditor(false);
                 setEditingFieldPath('');
@@ -1890,7 +1892,7 @@ const GlobalSectionsSettings = () => {
                   setShowTextEditor(false);
                   setEditingFieldPath('');
                   setEditingFieldValue('');
-                  toast.success('Content saved!');
+                  toast.success(t('toast.contentSaved'));
                 }}
                 style={{ padding: '10px 20px', backgroundColor: 'var(--color-action-blue)', color: 'var(--primary-foreground)', border: 'none', borderRadius: '2px', cursor: 'pointer' }}
               >
@@ -1925,7 +1927,7 @@ const GlobalSectionsSettings = () => {
             overflow: 'auto'
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3>Edit {sectionData.schema[editingRepeaterField]?.label || 'Item'}</h3>
+              <h3>{t('modal.editItem', { label: sectionData.schema[editingRepeaterField]?.label || t('modal.itemN', { number: '' }).trim() })}</h3>
               <button onClick={handleRepeaterModalCancel} style={{ background: 'none', border: 'none', fontSize: '24px', cursor: 'pointer' }}>×</button>
             </div>
             <div style={{ marginBottom: '20px' }}>
@@ -1953,7 +1955,7 @@ const GlobalSectionsSettings = () => {
                               setEditingRepeaterData(newData);
                             }}
                             style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '2px' }}
-                            placeholder="Enter URL"
+                            placeholder={t('field.enterUrl')}
                           />
                         </div>
                       )}
@@ -1974,7 +1976,7 @@ const GlobalSectionsSettings = () => {
                                 setEditingRepeaterData(newData);
                               }}
                               style={{ flex: 1, padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '2px' }}
-                              placeholder="Icon class or path"
+                              placeholder={t('field.iconClassOrPath')}
                             />
                             <button
                               onClick={async () => {
@@ -2007,7 +2009,7 @@ const GlobalSectionsSettings = () => {
                                           : '';
                                         
                                         if (!fileUrl) {
-                                          toast.error('No path in API response');
+                                          toast.error(t('toast.noPathInResponse'));
                                           return;
                                         }
                                         
@@ -2019,13 +2021,13 @@ const GlobalSectionsSettings = () => {
                                         };
                                         setEditingRepeaterData(newData);
                                         
-                                        toast.success('Icon uploaded successfully!');
+                                        toast.success(t('toast.iconUploaded'));
                                       } else {
-                                        toast.error('Failed to upload icon');
+                                        toast.error(t('toast.failedUploadIcon'));
                                       }
                                     } catch (err) {
                                       console.error('Error uploading icon:', err);
-                                      toast.error('Error uploading icon');
+                                      toast.error(t('toast.errorUploadingIcon'));
                                     }
                                   }
                                 };
@@ -2138,7 +2140,7 @@ const GlobalSectionsSettings = () => {
                                 setEditingRepeaterData(newData);
                               }}
                               style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '2px' }}
-                              placeholder={`Enter ${fieldConfig?.label || fieldName}`}
+                              placeholder={t('field.enterNamed', { name: fieldConfig?.label || fieldName })}
                             />
                           ) : fieldType === 'select' ? (
                             <select
@@ -2230,7 +2232,7 @@ const GlobalSectionsSettings = () => {
                                 setEditingRepeaterData(newData);
                               }}
                               style={{ width: '100%', padding: '8px', border: '1px solid var(--color-border-light)', borderRadius: '2px' }}
-                              placeholder={`Enter ${fieldConfig?.label || fieldName}`}
+                              placeholder={t('field.enterNamed', { name: fieldConfig?.label || fieldName })}
                             />
                           )}
                         </div>
@@ -2330,7 +2332,7 @@ const GlobalSectionsSettings = () => {
                     direction: locale === 'ar' ? 'rtl' : 'ltr',
                     textAlign: locale === 'ar' ? 'right' : 'left'
                   }}
-                  placeholder={locale === 'ar' ? 'أدخل النص' : 'Enter link text'}
+                  placeholder={t('field.enterLinkText')}
                 />
               </div>
               <div>
@@ -2405,9 +2407,9 @@ const GlobalSectionsSettings = () => {
                     setExternalLinkText('');
                     setExternalLinkUrl('');
                     setExternalLinkMenuIndex(null);
-                    toast.success(locale === 'ar' ? 'تمت الإضافة بنجاح' : 'Link added successfully!');
+                    toast.success(t('toast.linkAdded'));
                   } else {
-                    toast.error(locale === 'ar' ? 'يرجى إدخال النص والرابط' : 'Please enter both text and URL');
+                    toast.error(t('toast.enterTextAndUrl'));
                   }
                 }}
                 style={{ 

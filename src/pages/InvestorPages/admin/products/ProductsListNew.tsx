@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button, Dropdown, Menu } from 'antd';
 import { DownOutlined } from '@ant-design/icons';
 import { 
@@ -32,33 +33,36 @@ import toast from 'react-hot-toast';
 
 export default function ProductsList() {
   const navigate = useNavigate();
+  const { t } = useTranslation('investor');
 
   // Helper function to get product status text
   const getProductStatusText = (status: number) => {
     const statusMap = {
-      0: 'Active',
-      1: 'Inactive', 
-      2: 'Closed',
-      3: 'Suspended',
-      4: 'Launching'
+      0: 'pln.status.active',
+      1: 'pln.status.inactive',
+      2: 'pln.status.closed',
+      3: 'pln.status.suspended',
+      4: 'pln.status.launching'
     };
-    return statusMap[status as keyof typeof statusMap] || 'Unknown';
+    const key = statusMap[status as keyof typeof statusMap];
+    return key ? t(key) : t('pln.status.unknown');
   };
 
   // Helper function to get product category text
   const getProductCategoryText = (category: number) => {
     const categoryMap = {
-      0: 'Equity',
-      1: 'Fixed Income',
-      2: 'Real Estate',
-      3: 'Commodities',
-      4: 'Mutual Funds',
-      5: 'Exchange Traded Funds',
-      6: 'Cryptocurrencies',
-      7: 'Alternative Investments',
-      8: 'Cash and Cash Equivalents'
+      0: 'pln.cat.equity',
+      1: 'pln.cat.fixedIncome',
+      2: 'pln.cat.realEstate',
+      3: 'pln.cat.commodities',
+      4: 'pln.cat.mutualFunds',
+      5: 'pln.cat.etf',
+      6: 'pln.cat.crypto',
+      7: 'pln.cat.altInvestments',
+      8: 'pln.cat.cash'
     };
-    return categoryMap[category as keyof typeof categoryMap] || 'Unknown';
+    const key = categoryMap[category as keyof typeof categoryMap];
+    return key ? t(key) : t('pln.cat.unknown');
   };
 
   const [products, setProducts] = useState<Product[]>([]);
@@ -108,10 +112,10 @@ export default function ProductsList() {
         setFrom(fromValue);
         setTo(toValue);
       } else {
-        setError('Failed to fetch products');
+        setError(t('pln.err.fetchFailed'));
       }
     } catch (err) {
-      setError('Error fetching products');
+      setError(t('pln.err.fetchError'));
       console.error('Error fetching products:', err);
     } finally {
       setSkelitonLoading(false);
@@ -142,7 +146,7 @@ export default function ProductsList() {
       setFormLoading(true);
       const response = await createProduct(formData);
       if (response.success) {
-        toast.success(response.notificationMessage || 'Product created successfully');
+        toast.success(response.notificationMessage || t('pln.toast.created'));
         setShowCreateModal(false);
         setFormData({
           name: '',
@@ -159,10 +163,10 @@ export default function ProductsList() {
         });
         fetchProducts();
       } else {
-        toast.error(response.notificationMessage || 'Failed to create product');
+        toast.error(response.notificationMessage || t('pln.toast.createFailed'));
       }
     } catch (err) {
-      toast.error('Error creating product');
+      toast.error(t('pln.toast.createError'));
       console.error('Error creating product:', err);
     } finally {
       setFormLoading(false);
@@ -191,7 +195,7 @@ export default function ProductsList() {
       
       const response = await updateProduct(updateData);
       if (response.success) {
-        toast.success('Product updated successfully!');
+        toast.success(t('pln.toast.updated'));
         setFormData({
           name: '',
           type: '',
@@ -207,10 +211,10 @@ export default function ProductsList() {
         });
         fetchProducts();
       } else {
-        toast.error(response.notificationMessage || 'Failed to update product');
+        toast.error(response.notificationMessage || t('pln.toast.updateFailed'));
       }
     } catch (err) {
-      toast.error('Error updating product');
+      toast.error(t('pln.toast.updateError'));
       console.error('Error updating product:', err);
     } finally {
       setFormLoading(false);
@@ -225,14 +229,14 @@ export default function ProductsList() {
       setFormLoading(true);
       const response = await deleteProductById(selectedProduct.id);
       if (response.success) {
-        toast.success('Product deleted successfully!');
+        toast.success(t('pln.toast.deleted'));
         setShowDeleteModal(false);
         fetchProducts();
       } else {
-        toast.error(response.notificationMessage || 'Failed to delete product');
+        toast.error(response.notificationMessage || t('pln.toast.deleteFailed'));
       }
     } catch (err) {
-      toast.error('Error deleting product');
+      toast.error(t('pln.toast.deleteError'));
       console.error('Error deleting product:', err);
     } finally {
       setFormLoading(false);
@@ -260,23 +264,23 @@ export default function ProductsList() {
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="view" onClick={() => handleViewClick(row.id)}>
-        <Eye className="w-4 h-4 mr-2" style={{ display: 'inline' }} />
-        View Details
+        <Eye className="w-4 h-4 me-2" style={{ display: 'inline' }} />
+        {t('pln.menu.viewDetails')}
       </Menu.Item>
       <Menu.Item key="config" onClick={() => navigate(`/InvestorDashboard/Products/${row.id}/config`)}>
-        <Settings className="w-4 h-4 mr-2" style={{ display: 'inline' }} />
-        Product Configurations
+        <Settings className="w-4 h-4 me-2" style={{ display: 'inline' }} />
+        {t('pln.menu.configurations')}
       </Menu.Item>
       <Menu.Item key="delete" onClick={() => handleDeleteClick(row)}>
-        <Trash2 className="w-4 h-4 mr-2" style={{ display: 'inline' }} />
-        Delete
+        <Trash2 className="w-4 h-4 me-2" style={{ display: 'inline' }} />
+        {t('common:delete')}
       </Menu.Item>
     </Menu>
   );
 
   const Product_Headers = [
     {
-      name: "Product",
+      name: t('pln.col.product'),
       selector: (row: { productName: any; description: any }) => (
         <div>
           <div className="text-sm font-medium">{row.productName}</div>
@@ -287,7 +291,7 @@ export default function ProductsList() {
       width: "300px",
     },
     {
-      name: "Type",
+      name: t('common:type'),
       selector: (row: { type: any }) => (
         <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-900">
           {row.type}
@@ -296,24 +300,24 @@ export default function ProductsList() {
       sortable: true,
     },
     {
-      name: "Code",
+      name: t('pln.col.code'),
       selector: (row: { code: any }) => (
         <span className="text-sm text-gray-900">{row.code}</span>
       ),
       sortable: true,
     },
     {
-      name: "Expected Return",
+      name: t('pln.col.expectedReturn'),
       selector: (row: { expectedReturn: any }) => (
         <div className="flex items-center">
-          <Target className="w-4 h-4 text-green-500 mr-1" />
+          <Target className="w-4 h-4 text-green-500 me-1" />
           <span>{row.expectedReturn}%</span>
         </div>
       ),
       sortable: true,
     },
     {
-      name: "Min Investment",
+      name: t('pln.col.minInvestment'),
       selector: (row: { minimumInvestment: any }) => (
         <div className="flex items-center">
         
@@ -323,10 +327,10 @@ export default function ProductsList() {
       sortable: true,
     },
     {
-      name: "Launch Date",
+      name: t('pln.col.launchDate'),
       selector: (row: { launchDate: any }) => (
         <div className="flex items-center">
-          <Calendar className="w-4 h-4 text-gray-400 mr-1" />
+          <Calendar className="w-4 h-4 text-gray-400 me-1" />
           <span>{new Date(row.launchDate).toLocaleDateString()}</span>
         </div>
       ),
@@ -334,7 +338,7 @@ export default function ProductsList() {
       width: "150px",
     },
     {
-      name: "Status",
+      name: t('common:status'),
       cell: (row: any) => (
         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
           row.status === 0 ? 'bg-green-100 text-green-800' : // Active
@@ -350,11 +354,11 @@ export default function ProductsList() {
       sortable: true,
     },
     {
-      name: "Action",
+      name: t('pln.col.action'),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
-            Select <DownOutlined />
+            {t('pln.select')} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -382,7 +386,7 @@ export default function ProductsList() {
           onClick={fetchProducts}
           className="mt-2 px-4 py-2 bg-black text-white rounded-lg "
         >
-          Retry
+          {t('pln.retry')}
         </button>
       </div>
     );
@@ -393,16 +397,16 @@ export default function ProductsList() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Products & Rates Management</h1>
-          <p className="text-gray-600">Manage investment products and their configurations</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('pln.title')}</h1>
+          <p className="text-gray-600">{t('pln.subtitle')}</p>
         </div>
         <button
           onClick={() => setShowCreateModal(true)}
           className="flex items-center px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
           style={{ borderRadius: '2px' }}
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Add Product
+          <Plus className="w-4 h-4 me-2" />
+          {t('pln.addProduct')}
         </button>
       </div>
 
@@ -427,7 +431,7 @@ export default function ProductsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Create Product</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('pln.createProduct')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -440,49 +444,49 @@ export default function ProductsList() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Name
+                    {t('pln.field.productName')}
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter product name"
+                    placeholder={t('pln.ph.productName')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Type
+                    {t('pln.field.productType')}
                   </label>
                   <input
                     type="text"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter product type"
+                    placeholder={t('pln.ph.productType')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Code
+                    {t('pln.field.productCode')}
                   </label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter product code"
+                    placeholder={t('pln.ph.productCode')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Expected Return (%)
+                    {t('pln.field.expectedReturnPct')}
                   </label>
                   <input
                     type="text"
@@ -490,28 +494,28 @@ export default function ProductsList() {
                     value={formData.expectedReturn}
                     onChange={(e) => setFormData({ ...formData, expectedReturn: Number(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter expected return"
+                    placeholder={t('pln.ph.expectedReturn')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Minimum Investment
+                    {t('pln.field.minimumInvestment')}
                   </label>
                   <input
                     type="text"
                     value={formData.minimumInvestment}
                     onChange={(e) => setFormData({ ...formData, minimumInvestment: Number(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter minimum investment"
+                    placeholder={t('pln.ph.minimumInvestment')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Category
+                    {t('pln.field.productCategory')}
                   </label>
                   <select
                     value={formData.productCategory}
@@ -519,21 +523,21 @@ export default function ProductsList() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                     required
                   >
-                    <option value={0}>Equity</option>
-                    <option value={1}>Fixed Income</option>
-                    <option value={2}>Real Estate</option>
-                    <option value={3}>Commodities</option>
-                    <option value={4}>Mutual Funds</option>
-                    <option value={5}>Exchange Traded Funds</option>
-                    <option value={6}>Cryptocurrencies</option>
-                    <option value={7}>Alternative Investments</option>
-                    <option value={8}>Cash and Cash Equivalents</option>
+                    <option value={0}>{t('pln.cat.equity')}</option>
+                    <option value={1}>{t('pln.cat.fixedIncome')}</option>
+                    <option value={2}>{t('pln.cat.realEstate')}</option>
+                    <option value={3}>{t('pln.cat.commodities')}</option>
+                    <option value={4}>{t('pln.cat.mutualFunds')}</option>
+                    <option value={5}>{t('pln.cat.etf')}</option>
+                    <option value={6}>{t('pln.cat.crypto')}</option>
+                    <option value={7}>{t('pln.cat.altInvestments')}</option>
+                    <option value={8}>{t('pln.cat.cash')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Status
+                    {t('pln.field.productStatus')}
                   </label>
                   <select
                     value={formData.productStatus}
@@ -541,17 +545,17 @@ export default function ProductsList() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                     required
                   >
-                    <option value={0}>Active</option>
-                    <option value={1}>Inactive</option>
-                    <option value={2}>Closed</option>
-                    <option value={3}>Suspended</option>
-                    <option value={4}>Launching</option>
+                    <option value={0}>{t('pln.status.active')}</option>
+                    <option value={1}>{t('pln.status.inactive')}</option>
+                    <option value={2}>{t('pln.status.closed')}</option>
+                    <option value={3}>{t('pln.status.suspended')}</option>
+                    <option value={4}>{t('pln.status.launching')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Launch Date
+                    {t('pln.field.launchDate')}
                   </label>
                   <input
                     type="datetime-local"
@@ -564,28 +568,28 @@ export default function ProductsList() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Investment Duration (months)
+                    {t('pln.field.investmentDuration')}
                   </label>
                   <input
                     type="text"
                     value={formData.investmentDuration}
                     onChange={(e) => setFormData({ ...formData, investmentDuration: Number(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter investment duration"
+                    placeholder={t('pln.ph.investmentDuration')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Segment ID
+                    {t('pln.field.segmentId')}
                   </label>
                   <input
                     type="text"
                     value={formData.segmentId}
                     onChange={(e) => setFormData({ ...formData, segmentId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter segment ID"
+                    placeholder={t('pln.ph.segmentId')}
                     required
                   />
                 </div>
@@ -593,13 +597,13 @@ export default function ProductsList() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {t('pln.field.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                  placeholder="Enter product description"
+                  placeholder={t('pln.ph.description')}
                   rows={3}
                   required
                 />
@@ -612,7 +616,7 @@ export default function ProductsList() {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="submit"
@@ -622,11 +626,11 @@ export default function ProductsList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Creating...
+                      <Loader2 className="w-4 h-4 animate-spin me-2" />
+                      {t('pln.creating')}
                     </div>
                   ) : (
-                    'Create Product'
+                    t('pln.createProduct')
                   )}
                 </button>
               </div>
@@ -640,7 +644,7 @@ export default function ProductsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Edit Product</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('pln.editProduct')}</h3>
               <button
                 onClick={() => {}}
                 className="text-gray-400 hover:text-gray-500"
@@ -653,49 +657,49 @@ export default function ProductsList() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Name
+                    {t('pln.field.productName')}
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter product name"
+                    placeholder={t('pln.ph.productName')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Type
+                    {t('pln.field.productType')}
                   </label>
                   <input
                     type="text"
                     value={formData.type}
                     onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter product type"
+                    placeholder={t('pln.ph.productType')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Code
+                    {t('pln.field.productCode')}
                   </label>
                   <input
                     type="text"
                     value={formData.code}
                     onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter product code"
+                    placeholder={t('pln.ph.productCode')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Category
+                    {t('pln.field.productCategory')}
                   </label>
                   <select
                     value={formData.productCategory}
@@ -703,21 +707,21 @@ export default function ProductsList() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                     required
                   >
-                    <option value={0}>Equity</option>
-                    <option value={1}>Fixed Income</option>
-                    <option value={2}>Real Estate</option>
-                    <option value={3}>Commodities</option>
-                    <option value={4}>Mutual Funds</option>
-                    <option value={5}>Exchange Traded Funds</option>
-                    <option value={6}>Cryptocurrencies</option>
-                    <option value={7}>Alternative Investments</option>
-                    <option value={8}>Cash and Cash Equivalents</option>
+                    <option value={0}>{t('pln.cat.equity')}</option>
+                    <option value={1}>{t('pln.cat.fixedIncome')}</option>
+                    <option value={2}>{t('pln.cat.realEstate')}</option>
+                    <option value={3}>{t('pln.cat.commodities')}</option>
+                    <option value={4}>{t('pln.cat.mutualFunds')}</option>
+                    <option value={5}>{t('pln.cat.etf')}</option>
+                    <option value={6}>{t('pln.cat.crypto')}</option>
+                    <option value={7}>{t('pln.cat.altInvestments')}</option>
+                    <option value={8}>{t('pln.cat.cash')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Product Status
+                    {t('pln.field.productStatus')}
                   </label>
                   <select
                     value={formData.productStatus}
@@ -725,17 +729,17 @@ export default function ProductsList() {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                     required
                   >
-                    <option value={0}>Active</option>
-                    <option value={1}>Inactive</option>
-                    <option value={2}>Closed</option>
-                    <option value={3}>Suspended</option>
-                    <option value={4}>Launching</option>
+                    <option value={0}>{t('pln.status.active')}</option>
+                    <option value={1}>{t('pln.status.inactive')}</option>
+                    <option value={2}>{t('pln.status.closed')}</option>
+                    <option value={3}>{t('pln.status.suspended')}</option>
+                    <option value={4}>{t('pln.status.launching')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Launch Date
+                    {t('pln.field.launchDate')}
                   </label>
                   <input
                     type="datetime-local"
@@ -748,28 +752,28 @@ export default function ProductsList() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Investment Duration (months)
+                    {t('pln.field.investmentDuration')}
                   </label>
                   <input
                     type="text"
                     value={formData.investmentDuration}
                     onChange={(e) => setFormData({ ...formData, investmentDuration: Number(e.target.value) })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter investment duration"
+                    placeholder={t('pln.ph.investmentDuration')}
                     required
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Segment ID
+                    {t('pln.field.segmentId')}
                   </label>
                   <input
                     type="text"
                     value={formData.segmentId}
                     onChange={(e) => setFormData({ ...formData, segmentId: e.target.value })}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                    placeholder="Enter segment ID"
+                    placeholder={t('pln.ph.segmentId')}
                     required
                   />
                 </div>
@@ -777,13 +781,13 @@ export default function ProductsList() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
+                  {t('pln.field.description')}
                 </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
-                  placeholder="Enter product description"
+                  placeholder={t('pln.ph.description')}
                   rows={3}
                   required
                 />
@@ -795,7 +799,7 @@ export default function ProductsList() {
                   onClick={() => {}}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="submit"
@@ -804,11 +808,11 @@ export default function ProductsList() {
                 >
                   {formLoading ? (
                     <div className="flex items-center">
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Updating...
+                      <Loader2 className="w-4 h-4 animate-spin me-2" />
+                      {t('pln.updating')}
                     </div>
                   ) : (
-                    'Update Product'
+                    t('pln.updateProduct')
                   )}
                 </button>
               </div>
@@ -822,7 +826,7 @@ export default function ProductsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Product Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('pln.productDetails')}</h3>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -834,54 +838,54 @@ export default function ProductsList() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.view.id')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.id}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.view.name')}</label>
                   <p className="text-lg font-semibold text-gray-900">{selectedProduct.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:type')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.type}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Code</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.col.code')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.code}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Expected Return</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.col.expectedReturn')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.expectedReturn}%</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Minimum Investment</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.minimumInvestment')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.minimumInvestment.toLocaleString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.productCategory')}</label>
                   <p className="text-sm text-gray-900">{getProductCategoryText(selectedProduct.productCategory)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Product Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.productStatus')}</label>
                   <p className="text-sm text-gray-900">{getProductStatusText(selectedProduct.productStatus)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Launch Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.launchDate')}</label>
                   <p className="text-sm text-gray-900">
                     {new Date(selectedProduct.launchDate).toLocaleDateString()}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Investment Duration</label>
-                  <p className="text-sm text-gray-900">{selectedProduct.investmentDuration} months</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.view.investmentDuration')}</label>
+                  <p className="text-sm text-gray-900">{t('pln.view.months', { count: selectedProduct.investmentDuration })}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Segment ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.segmentId')}</label>
                   <p className="text-sm text-gray-900">{selectedProduct.segmentId}</p>
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('pln.field.description')}</label>
                 <p className="text-sm text-gray-900">{selectedProduct.description}</p>
               </div>
             </div>
@@ -891,7 +895,7 @@ export default function ProductsList() {
                 onClick={() => setShowViewModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
             </div>
           </div>
@@ -903,7 +907,7 @@ export default function ProductsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Delete Product</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('pln.deleteProduct')}</h3>
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -914,13 +918,13 @@ export default function ProductsList() {
 
             <div className="mb-6">
               <p className="text-gray-600 mb-4">
-                Are you sure you want to delete this product?
+                {t('pln.confirmDelete')}
               </p>
               <div className="bg-gray-50 p-4 rounded-lg">
                 <div className="flex items-center">
-                  <Package className="w-5 h-5 text-gray-700 mr-2" />
+                  <Package className="w-5 h-5 text-gray-700 me-2" />
                   <p className="text-sm text-gray-700">
-                    <span className="font-medium">Product:</span> {selectedProduct.name}
+                    <span className="font-medium">{t('pln.productLabel')}</span> {selectedProduct.name}
                   </p>
                 </div>
               </div>
@@ -931,7 +935,7 @@ export default function ProductsList() {
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={handleDelete}
@@ -940,11 +944,11 @@ export default function ProductsList() {
               >
                 {formLoading ? (
                   <div className="flex items-center">
-                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                    Deleting...
+                    <Loader2 className="w-4 h-4 animate-spin me-2" />
+                    {t('pln.deleting')}
                   </div>
                 ) : (
-                  'Delete Product'
+                  t('pln.deleteProduct')
                 )}
               </button>
             </div>

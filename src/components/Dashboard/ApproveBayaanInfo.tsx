@@ -3,8 +3,10 @@ import { applicationApprovalChecks, getApplicationDetailsByType } from "../../re
 import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const ApproveBayaanInfo = () => {
+  const { t } = useTranslation("dashboard");
   const [comment, setComment] = useState("");
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
@@ -31,11 +33,11 @@ const ApproveBayaanInfo = () => {
         const bayaanHistoryData = response.data.data.bayan_history || null;
         setBayaanHistory(bayaanHistoryData);
       } else {
-        toast.error("Failed to load Bayan data");
+        toast.error(t("approveBayaan.toast.loadFailed"));
       }
     } catch (error: any) {
       console.error("API Error:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load Bayan data");
+      toast.error(error?.response?.data?.message || error?.message || t("approveBayaan.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -43,12 +45,12 @@ const ApproveBayaanInfo = () => {
 
   const handleReject = async () => {
     if (!comment.trim()) {
-      toast.error("Please enter a comment");
+      toast.error(t("compliance.toast.enterComment"));
       return;
     }
-    
+
     if (!id) {
-      toast.error("Missing application number");
+      toast.error(t("compliance.toast.missingAppNo"));
       return;
     }
 
@@ -64,14 +66,14 @@ const ApproveBayaanInfo = () => {
       const response = await applicationApprovalChecks(body);
       
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Bayan rejected successfully!");
+        toast.success(response?.data?.message || t("approveBayaan.toast.rejected"));
         setComment("");
         await fetchBayanData();
       } else {
-        toast.error(response?.data?.message || "Failed to reject bayan");
+        toast.error(response?.data?.message || t("approveBayaan.toast.rejectFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to reject bayan");
+      toast.error(error?.response?.data?.message || error?.message || t("approveBayaan.toast.rejectFailed"));
     } finally {
       setRejecting(false);
     }
@@ -83,7 +85,7 @@ const ApproveBayaanInfo = () => {
       return;
     } */
     if (!id) {
-      toast.error("Missing application number");
+      toast.error(t("compliance.toast.missingAppNo"));
       return;
     }
 
@@ -99,14 +101,14 @@ const ApproveBayaanInfo = () => {
       const response = await applicationApprovalChecks(body);
       
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Bayan approved successfully!");
+        toast.success(response?.data?.message || t("approveBayaan.toast.approved"));
         setComment("");
         await fetchBayanData();
       } else {
-        toast.error(response?.data?.message || "Failed to approve bayan");
+        toast.error(response?.data?.message || t("approveBayaan.toast.approveFailed"));
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to approve bayan");
+      toast.error(error?.response?.data?.message || error?.message || t("approveBayaan.toast.approveFailed"));
     } finally {
       setApproving(false);
     }
@@ -127,13 +129,13 @@ const ApproveBayaanInfo = () => {
         <div className="row">
           <div className="col-12">
             <h6 className="mb-3" style={{ fontWeight: "600", color: "#000000" }}>
-              Bayan Approval Status
+              {t("approveBayaan.statusTitle")}
             </h6>
           </div>
           <div className="col-6">
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2" style={{ borderBottom: "1px solid #CFCFCF" }}>
               <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>
-                Processor
+                {t("approval.processor")}
               </p>
               <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                 {bayaanHistory.processor || "--"}
@@ -141,7 +143,7 @@ const ApproveBayaanInfo = () => {
             </div>
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2" style={{ borderBottom: "1px solid #CFCFCF" }}>
               <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>
-                Application Status
+                {t("approval.applicationStatus")}
               </p>
               <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                 {bayaanHistory.application_status || "--"}
@@ -151,7 +153,7 @@ const ApproveBayaanInfo = () => {
           <div className="col-6">
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2" style={{ borderBottom: "1px solid #CFCFCF" }}>
               <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>
-                Processed Date
+                {t("approval.processedDate")}
               </p>
               <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                 {bayaanHistory.processed_date ? new Date(bayaanHistory.processed_date).toLocaleString() : "--"}
@@ -159,7 +161,7 @@ const ApproveBayaanInfo = () => {
             </div>
             <div className="d-flex justify-content-between align-items-center mb-3 pb-2" style={{ borderBottom: "1px solid #CFCFCF" }}>
               <p style={{ color: "#0B0B0B", fontSize: "14px", margin: 0 }}>
-                Comment
+                {t("approval.comment")}
               </p>
               <span style={{ fontWeight: "600", color: "#0B0B0B", fontSize: "14px" }}>
                 {bayaanHistory.app_comment || "--"}
@@ -179,7 +181,7 @@ const ApproveBayaanInfo = () => {
               display: "block"
             }}
           >
-            Select Reason
+            {t("approveBayaan.selectReason")}
           </label>
           <div className="d-flex align-items-center gap-3">
             <input
@@ -203,7 +205,7 @@ const ApproveBayaanInfo = () => {
                 disabled={rejecting}
                 style={{ opacity: rejecting ? 0.6 : 1 }}
               >
-                {rejecting ? "Rejecting..." : "Reject"}
+                {rejecting ? t("approval.rejecting") : t("common:reject")}
               </button>
               <button 
                 className="theme-btn-next"
@@ -211,7 +213,7 @@ const ApproveBayaanInfo = () => {
                 disabled={approving}
                 style={{ opacity: approving ? 0.6 : 1 }}
               >
-                {approving ? "Approving..." : "Approve"}
+                {approving ? t("approval.approving") : t("common:approve")}
               </button>
             </div>
           </div>

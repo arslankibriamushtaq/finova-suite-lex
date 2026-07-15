@@ -1,5 +1,6 @@
 import { Input } from "antd";
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 
 import toast from "react-hot-toast";
@@ -7,7 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 
 function KycCitizenInfo({ envData }: any) {
-
+  const { t } = useTranslation("productManagement2");
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -83,12 +84,12 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Kyc Citizen Info
+        {t("verification.kycCitizenInfo")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
             placeholder=""
@@ -97,7 +98,7 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
             placeholder=""
@@ -108,7 +109,7 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
 
@@ -117,7 +118,7 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
 
@@ -129,12 +130,12 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Username
+            {t("verification.username")}
           </label>
           <Input
 
@@ -143,7 +144,7 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Password
+            {t("verification.password")}
           </label>
           <Input
 
@@ -154,7 +155,7 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Request URL
+            {t("verification.requestUrl")}
           </label>
           <Input
 
@@ -167,7 +168,7 @@ function KycCitizenInfo({ envData }: any) {
           className="pt-4 pb-3"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          Parameters
+          {t("verification.parameters")}
         </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
@@ -191,24 +192,24 @@ function KycCitizenInfo({ envData }: any) {
           className="pt-2 pb-3"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          Kyc Citizen Address
+          {t("verification.kycCitizenAddress")}
         </h1>
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Base URL
+              {t("verification.baseUrl")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              End Point
+              {t("verification.endPoint")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -216,19 +217,19 @@ function KycCitizenInfo({ envData }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Environment
+              {t("verification.environment")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Method
+              {t("verification.method")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -237,24 +238,24 @@ function KycCitizenInfo({ envData }: any) {
           className="pt-4 pb-3"
           style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-          Credentials
+          {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Username
+              {t("verification.username")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Password
+              {t("verification.password")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -262,10 +263,10 @@ function KycCitizenInfo({ envData }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Request URL
+              {t("verification.requestUrl")}
             </label>
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -275,14 +276,14 @@ function KycCitizenInfo({ envData }: any) {
             className="pt-4 pb-3"
             style={{ fontSize: "16px", fontWeight: "bold" }}
           >
-            Parameters
+            {t("verification.parameters")}
           </h1>
           <Col md={6}>
             {/* <label className="mb-1" style={{ fontWeight: 400 }}>
       Request URL
     </label> */}
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -291,7 +292,7 @@ function KycCitizenInfo({ envData }: any) {
       Request URL
     </label> */}
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -302,7 +303,7 @@ function KycCitizenInfo({ envData }: any) {
       Request URL
     </label> */}
             <Input
-              placeholder="Enter Payment"
+              placeholder={t("verification.enterPayment")}
               className="fs-6"
               value="" />
           </Col>
@@ -313,15 +314,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Mobile Verification
+        {t("verification.mobileVerification")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -330,10 +331,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -344,10 +345,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -356,10 +357,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -371,15 +372,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            App Id
+            {t("verification.appId")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -388,10 +389,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            App Key
+            {t("verification.appKey")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -402,10 +403,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Service Key
+            {t("verification.serviceKey")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -414,10 +415,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Organization Number
+            {t("verification.organizationNumber")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -430,14 +431,14 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -449,7 +450,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -467,10 +468,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -479,10 +480,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -493,10 +494,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -505,10 +506,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -520,15 +521,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            API Key
+            {t("verification.apiKey")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -541,14 +542,14 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -561,15 +562,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Get Manager
+        {t("verification.getManager")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -578,10 +579,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -592,10 +593,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -604,10 +605,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -619,15 +620,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Credentials
+        {t("verification.credentials")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            API Key
+            {t("verification.apiKey")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -640,14 +641,14 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -665,10 +666,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -677,10 +678,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -691,10 +692,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -703,10 +704,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -718,15 +719,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                ID
+                {t("verification.id")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -735,10 +736,10 @@ function KycCitizenInfo({ envData }: any) {
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Domain
+                {t("verification.domain")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -749,10 +750,10 @@ function KycCitizenInfo({ envData }: any) {
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Password
+                {t("verification.password")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -765,14 +766,14 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -784,7 +785,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -802,10 +803,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -814,10 +815,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -828,10 +829,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -840,10 +841,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -855,15 +856,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                ID
+                {t("verification.id")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -872,10 +873,10 @@ function KycCitizenInfo({ envData }: any) {
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Domain
+                {t("verification.domain")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -886,10 +887,10 @@ function KycCitizenInfo({ envData }: any) {
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Password
+                {t("verification.password")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -902,14 +903,14 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Parameters
+        {t("verification.parameters")}
       </h1>
         <Col md={6}>
           {/* <label className="mb-1" style={{ fontWeight: 400 }}>
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -927,10 +928,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -939,10 +940,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -953,10 +954,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -965,10 +966,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -980,15 +981,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                ID
+                {t("verification.id")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -997,10 +998,10 @@ function KycCitizenInfo({ envData }: any) {
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Domain
+                {t("verification.domain")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -1011,10 +1012,10 @@ function KycCitizenInfo({ envData }: any) {
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Password
+                {t("verification.password")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -1026,7 +1027,7 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-        Parameters
+        {t("verification.parameters")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
@@ -1034,7 +1035,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1046,33 +1047,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
-            className="fs-6"
-            value=""
-
-            //onChange={(e) => handleChange("name", e.target.value)}
-          />
-        </Col>
-      </Row>
-      <Row className="mb-4">
-        <Col md={6}>
-          {/* <label className="mb-1" style={{ fontWeight: 400 }}>
-            Request URL
-          </label> */}
-          <Input
-            placeholder="Enter Payment"
-            className="fs-6"
-            value=""
-
-            //onChange={(e) => handleChange("name", e.target.value)}
-          />
-        </Col>
-        <Col md={6}>
-          {/* <label className="mb-1" style={{ fontWeight: 400 }}>
-            Request URL
-          </label> */}
-          <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1086,7 +1061,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1098,7 +1073,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1112,7 +1087,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1124,7 +1099,33 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
+            className="fs-6"
+            value=""
+
+            //onChange={(e) => handleChange("name", e.target.value)}
+          />
+        </Col>
+      </Row>
+      <Row className="mb-4">
+        <Col md={6}>
+          {/* <label className="mb-1" style={{ fontWeight: 400 }}>
+            Request URL
+          </label> */}
+          <Input
+            placeholder={t("verification.enterPayment")}
+            className="fs-6"
+            value=""
+
+            //onChange={(e) => handleChange("name", e.target.value)}
+          />
+        </Col>
+        <Col md={6}>
+          {/* <label className="mb-1" style={{ fontWeight: 400 }}>
+            Request URL
+          </label> */}
+          <Input
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1142,10 +1143,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Base URL
+            {t("verification.baseUrl")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1154,10 +1155,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            End Point
+            {t("verification.endPoint")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1168,10 +1169,10 @@ function KycCitizenInfo({ envData }: any) {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Environment
+            {t("verification.environment")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1180,10 +1181,10 @@ function KycCitizenInfo({ envData }: any) {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Method
+            {t("verification.method")}
           </label>
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1195,15 +1196,15 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-            Credentials
+            {t("verification.credentials")}
         </h1>
         <Row className="mb-4">
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Client ID
+                {t("verification.clientId")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -1212,10 +1213,10 @@ function KycCitizenInfo({ envData }: any) {
             </Col>
             <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-                Client Authorization
+                {t("verification.clientAuthorization")}
             </label>
             <Input
-                placeholder="Enter Payment"
+                placeholder={t("verification.enterPayment")}
                 className="fs-6"
                 value=""
 
@@ -1227,7 +1228,7 @@ function KycCitizenInfo({ envData }: any) {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
         >
-        Parameters
+        {t("verification.parameters")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
@@ -1235,7 +1236,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 
@@ -1247,7 +1248,7 @@ function KycCitizenInfo({ envData }: any) {
             Request URL
           </label> */}
           <Input
-            placeholder="Enter Payment"
+            placeholder={t("verification.enterPayment")}
             className="fs-6"
             value=""
 

@@ -12,9 +12,11 @@ import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { GetAccountBlanceReport } from "../../redux/apis/apisCrudLms";
+import { useTranslation } from "react-i18next";
 
 
 const AccountReport = () => {
+  const { t } = useTranslation("reports");
 
    const location = useLocation();
   const { formattedRows } = location.state || { formattedRows: [] };
@@ -76,7 +78,7 @@ const transformData = (rows: any[]) => {
       setFrom(calculatedFrom);
       setTo(calculatedTo);
     } catch (error: any) {
-      toast.error(error?.message || "Something went wrong");
+      toast.error(error?.message || t('common:somethingWentWrong'));
     } finally {
       setLoading(false);
     }
@@ -84,48 +86,48 @@ const transformData = (rows: any[]) => {
 
 const Account_Documents_List_Header = [
   {
-    name: "ANB",
+    name: t('accountReport.col.anb'),
     cell: (row: any) => (
         <div className="d-flex flex-column py-2">
       <div>
-        <strong>Name: </strong><span>{row.bankName}</span>
+        <strong>{t('common:name')}: </strong><span>{row.bankName}</span>
       </div>
       <div>
-        <strong>IBAN: </strong><span>{row.iban}</span>
+        <strong>{t('accountReport.iban')}: </strong><span>{row.iban}</span>
       </div>
       <div>
-        <strong>Balance: </strong><span>{row.bankBalance}</span>
+        <strong>{t('accountReport.balance')}: </strong><span>{row.bankBalance}</span>
       </div>
         </div>
     ),
   },
   {
-    name: "COA",
+    name: t('accountReport.col.coa'),
     cell: (row: any) => (
         <div className="d-flex flex-column py-2">
       <div>
-        <strong>Name: </strong><span>{row.coaName}</span>
+        <strong>{t('common:name')}: </strong><span>{row.coaName}</span>
       </div>
       <div>
-        <strong>IBAN: </strong><span>{row.coaCode}</span>
+        <strong>{t('accountReport.iban')}: </strong><span>{row.coaCode}</span>
       </div>
       <div>
-        <strong>Balance: </strong><span>{row.coaBalance}</span>
+        <strong>{t('accountReport.balance')}: </strong><span>{row.coaBalance}</span>
       </div>
         </div>
     ),
   },
 
   {
-    name: "Status",
+    name: t('common:status'),
     cell: (row: any) => (
       <div>
         {row.matched && (
-          <span style={{ color: "green", fontWeight: "bold" }}>Matched</span>
+          <span style={{ color: "green", fontWeight: "bold" }}>{t('accountReport.matched')}</span>
         )}
         {row.unmatched && (
           <span style={{ color: "red", fontWeight: "bold" }}>
-            Unmatched {row.amount ? `(${row.amount})` : ""}
+            {t('accountReport.unmatched')} {row.amount ? `(${row.amount})` : ""}
           </span>
         )}
        {!row.matched && !row.unmatched && (

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { RefreshCw, Check, X, ChevronDown, SlidersHorizontal } from "lucide-react";
 
@@ -74,14 +75,18 @@ const formatDate = (dateString: string | null) => {
   }
 };
 
-const LimitCell = ({ current, requested }: { current: number; requested: number }) => (
-  <div className="flex flex-col text-xs leading-tight">
-    <span className="text-muted-foreground">Cur: {formatMoney(current)}</span>
-    <span className="font-medium text-foreground">Req: {formatMoney(requested)}</span>
-  </div>
-);
+const LimitCell = ({ current, requested }: { current: number; requested: number }) => {
+  const { t } = useTranslation("customerManagement");
+  return (
+    <div className="flex flex-col text-xs leading-tight">
+      <span className="text-muted-foreground">{t("walletLimits.cell.current", { value: formatMoney(current) })}</span>
+      <span className="font-medium text-foreground">{t("walletLimits.cell.requested", { value: formatMoney(requested) })}</span>
+    </div>
+  );
+};
 
 const WalletTransactionLimits = () => {
+  const { t } = useTranslation("customerManagement");
   const [data, setData] = useState<WalletLimitRequest[]>([]);
   const [status, setStatus] = useState("ALL");
   const [isLoading, setIsLoading] = useState(false);
@@ -110,7 +115,7 @@ const WalletTransactionLimits = () => {
       setData(Array.isArray(rows) ? rows : []);
     } catch (error: any) {
       console.error(error);
-      toast.error("Failed to load wallet limit requests");
+      toast.error(t("walletLimits.toast.loadFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -132,12 +137,12 @@ const WalletTransactionLimits = () => {
     setIsApproving(true);
     try {
       await approveWalletLimitRequest(approveTarget.id, { notes: approveNotes.trim() });
-      toast.success("Limit request approved");
+      toast.success(t("walletLimits.toast.approved"));
       setApproveTarget(null);
       loadRequests();
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to approve request");
+      toast.error(error?.response?.data?.message || t("walletLimits.toast.approveFailed"));
     } finally {
       setIsApproving(false);
     }
@@ -146,7 +151,7 @@ const WalletTransactionLimits = () => {
   const handleReject = async () => {
     if (!rejectTarget) return;
     if (!rejectionReason.trim()) {
-      return toast.error("Rejection reason is required");
+      return toast.error(t("walletLimits.toast.reasonRequired"));
     }
     setIsRejecting(true);
     try {
@@ -154,12 +159,12 @@ const WalletTransactionLimits = () => {
         rejectionReason: rejectionReason.trim(),
         notes: rejectNotes.trim(),
       });
-      toast.success("Limit request rejected");
+      toast.success(t("walletLimits.toast.rejected"));
       setRejectTarget(null);
       loadRequests();
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to reject request");
+      toast.error(error?.response?.data?.message || t("walletLimits.toast.rejectFailed"));
     } finally {
       setIsRejecting(false);
     }
@@ -167,7 +172,7 @@ const WalletTransactionLimits = () => {
 
   const headers = [
     {
-      name: "Customer ID",
+      name: t("walletLimits.col.customerId"),
       cell: (row: WalletLimitRequest) => (
         <span className="font-mono text-xs" title={row.customerId}>
           {row.customerId}
@@ -176,42 +181,42 @@ const WalletTransactionLimits = () => {
       width: "230px",
     },
     {
-      name: "Single Limit",
+      name: t("walletLimits.col.singleLimit"),
       cell: (row: WalletLimitRequest) => (
         <LimitCell current={row.currentSingleLimit} requested={row.requestedSingleLimit} />
       ),
       width: "150px",
     },
     {
-      name: "Daily Limit",
+      name: t("walletLimits.col.dailyLimit"),
       cell: (row: WalletLimitRequest) => (
         <LimitCell current={row.currentDailyLimit} requested={row.requestedDailyLimit} />
       ),
       width: "150px",
     },
     {
-      name: "Weekly Limit",
+      name: t("walletLimits.col.weeklyLimit"),
       cell: (row: WalletLimitRequest) => (
         <LimitCell current={row.currentWeeklyLimit} requested={row.requestedWeeklyLimit} />
       ),
       width: "150px",
     },
     {
-      name: "Monthly Limit",
+      name: t("walletLimits.col.monthlyLimit"),
       cell: (row: WalletLimitRequest) => (
         <LimitCell current={row.currentMonthlyLimit} requested={row.requestedMonthlyLimit} />
       ),
       width: "150px",
     },
     {
-      name: "Yearly Limit",
+      name: t("walletLimits.col.yearlyLimit"),
       cell: (row: WalletLimitRequest) => (
         <LimitCell current={row.currentYearlyLimit} requested={row.requestedYearlyLimit} />
       ),
       width: "160px",
     },
     {
-      name: "Reason",
+      name: t("walletLimits.col.reason"),
       cell: (row: WalletLimitRequest) => (
         <span className="text-sm text-muted-foreground" title={row.reason || ""}>
           {row.reason || "-"}
@@ -220,7 +225,7 @@ const WalletTransactionLimits = () => {
       width: "220px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: WalletLimitRequest) => (
         <span
           className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
@@ -233,14 +238,14 @@ const WalletTransactionLimits = () => {
       width: "120px",
     },
     {
-      name: "Requested At",
+      name: t("walletLimits.col.requestedAt"),
       cell: (row: WalletLimitRequest) => (
         <span className="text-sm text-muted-foreground">{formatDate(row.requestedAt)}</span>
       ),
       width: "170px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: WalletLimitRequest) =>
         row.status === "PENDING" ? (
           <div
@@ -254,21 +259,21 @@ const WalletTransactionLimits = () => {
                   type="button"
                   className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Select
+                  {t("common:select")}
                   <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
                 <DropdownMenuItem onClick={() => openApprove(row)} className="cursor-pointer gap-2">
                   <Check className="h-4 w-4 text-green-600" />
-                  <span>Approve</span>
+                  <span>{t("common:approve")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => openReject(row)}
                   className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
                 >
                   <X className="h-4 w-4" />
-                  <span>Reject</span>
+                  <span>{t("common:reject")}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -289,18 +294,18 @@ const WalletTransactionLimits = () => {
           <span className="pro-head-badge">
             <SlidersHorizontal className="h-4 w-4" />
           </span>
-          Wallet Transactions Limits
+          {t("walletLimits.title")}
         </h3>
         <div className="d-flex align-items-center gap-2">
           <div style={{ width: 180 }}>
             <Select value={status} onValueChange={setStatus}>
               <SelectTrigger>
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder={t("walletLimits.filterPlaceholder")} />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {t(`common:${opt.value.toLowerCase()}`)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -308,7 +313,7 @@ const WalletTransactionLimits = () => {
           </div>
           <Button variant="outline" className="gap-2" onClick={loadRequests} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("common:refresh")}
           </Button>
         </div>
       </div>
@@ -328,16 +333,16 @@ const WalletTransactionLimits = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Check className="w-5 h-5 text-green-600" />
-              Approve Limit Request
+              {t("walletLimits.approve.title")}
             </DialogTitle>
             <DialogDescription>
-              Approve the requested transaction limits for this customer.
+              {t("walletLimits.approve.desc")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            <Label>Notes (optional)</Label>
+            <Label>{t("walletLimits.notesOptional")}</Label>
             <Textarea
-              placeholder="e.g. Approved — KYC verified"
+              placeholder={t("walletLimits.approve.notesPlaceholder")}
               value={approveNotes}
               onChange={(e) => setApproveNotes(e.target.value)}
               rows={3}
@@ -345,11 +350,11 @@ const WalletTransactionLimits = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setApproveTarget(null)}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleApprove} disabled={isApproving} className="gap-2">
               <Check className="h-4 w-4" />
-              {isApproving ? "Approving..." : "Approve"}
+              {isApproving ? t("walletLimits.approving") : t("common:approve")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -361,28 +366,28 @@ const WalletTransactionLimits = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <X className="w-5 h-5 text-destructive" />
-              Reject Limit Request
+              {t("walletLimits.reject.title")}
             </DialogTitle>
             <DialogDescription>
-              Provide a reason for rejecting this limit request.
+              {t("walletLimits.reject.desc")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>
-                Rejection Reason <span className="text-destructive">*</span>
+                {t("walletLimits.reject.reasonLabel")} <span className="text-destructive">*</span>
               </Label>
               <Textarea
-                placeholder="e.g. Insufficient income proof"
+                placeholder={t("walletLimits.reject.reasonPlaceholder")}
                 value={rejectionReason}
                 onChange={(e) => setRejectionReason(e.target.value)}
                 rows={2}
               />
             </div>
             <div className="space-y-2">
-              <Label>Notes (optional)</Label>
+              <Label>{t("walletLimits.notesOptional")}</Label>
               <Textarea
-                placeholder="e.g. Re-apply with payslip"
+                placeholder={t("walletLimits.reject.notesPlaceholder")}
                 value={rejectNotes}
                 onChange={(e) => setRejectNotes(e.target.value)}
                 rows={2}
@@ -391,7 +396,7 @@ const WalletTransactionLimits = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setRejectTarget(null)}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               variant="destructive"
@@ -400,7 +405,7 @@ const WalletTransactionLimits = () => {
               className="gap-2"
             >
               <X className="h-4 w-4" />
-              {isRejecting ? "Rejecting..." : "Reject"}
+              {isRejecting ? t("walletLimits.rejecting") : t("common:reject")}
             </Button>
           </DialogFooter>
         </DialogContent>

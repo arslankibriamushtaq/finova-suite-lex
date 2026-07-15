@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -58,6 +59,7 @@ const getSectionContent = (section: any) => {
 
 
 const AboutPageSettings = () => {
+  const { t } = useTranslation('webPages');
   const navigate = useNavigate();
   
   // UI States
@@ -328,7 +330,7 @@ const AboutPageSettings = () => {
       const response = await updatePageData(2, requestBody);
 
       if (response.status === 200) {
-        toast.success('About page published successfully!');
+        toast.success(t('toast.aboutPublished'));
         // Fetch updated data from API
         await fetchAboutData(locale);
       } else {
@@ -336,7 +338,7 @@ const AboutPageSettings = () => {
       }
     } catch (err) {
         console.error('Error publishing about page:', err);
-      toast.error('Failed to publish about page');
+      toast.error(t('toast.failedPublishAbout'));
     } finally {
       setIsLoading(false);
     }
@@ -474,7 +476,7 @@ const AboutPageSettings = () => {
               alt: result.data.alt || result.data.original_name || 'Uploaded image'
             });
             
-            toast.success('Image uploaded successfully!');
+            toast.success(t('toast.imageUploaded'));
           } else {
             throw new Error(result.message || 'Invalid response from upload API');
           }
@@ -542,8 +544,8 @@ const AboutPageSettings = () => {
       return (
         <EditableText 
           value={value || ''} 
-          field={fieldPath} 
-          placeholder={label || 'Enter text'}
+          field={fieldPath}
+          placeholder={label || t('field.enterText')}
         />
       );
     } else if (fieldType === 'date') {
@@ -563,7 +565,7 @@ const AboutPageSettings = () => {
             backgroundColor: 'var(--color-surface-subtle)',
             outline: 'none'
           }}
-          placeholder={label || 'Select date'}
+          placeholder={label || t('field.selectDate')}
         />
       );
     } else if (fieldType === 'textarea') {
@@ -736,10 +738,10 @@ const AboutPageSettings = () => {
     return (
       <div className="header-footer-settings">
         <div className="header-footer-settings__error">
-          <h3>Error Loading About Page Data</h3>
+          <h3>{t('state.errorLoadingAbout')}</h3>
           <p>{error}</p>
           <button onClick={() => fetchAboutData(locale)} className="theme-btn-next">
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -750,10 +752,10 @@ const AboutPageSettings = () => {
     return (
       <div className="header-footer-settings">
         <div className="header-footer-settings__error">
-          <h3>No Data Available</h3>
-          <p>No about page data was found.</p>
+          <h3>{t('state.noDataAvailable')}</h3>
+          <p>{t('state.noAboutData')}</p>
           <button onClick={() => fetchAboutData(locale)} className="theme-btn-next">
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -765,7 +767,7 @@ const AboutPageSettings = () => {
       {/* Header Section */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          About Page
+          {t('header.aboutPage')}
         </h2>
         {/* Language Switcher */}
         <div
@@ -799,7 +801,7 @@ const AboutPageSettings = () => {
 
       {/* PUBLISH Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
-        <div className="header-footer-settings__publish-text">PUBLISH</div>
+        <div className="header-footer-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Main Content Area */}
@@ -878,7 +880,7 @@ const AboutPageSettings = () => {
                   e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
                 }}
               >
-                {formValue.about_hero?.hero_image?.url ? 'Change Hero Image' : 'Upload Hero Image'}
+                {formValue.about_hero?.hero_image?.url ? t('changeHeroImage') : t('uploadHeroImage')}
               </button>
             </div>
 
@@ -1196,7 +1198,7 @@ const AboutPageSettings = () => {
           <div className="header-footer-settings__edit-modal">
             <div className="header-footer-settings__edit-modal-header">
               <h3 className="header-footer-settings__edit-modal-title">
-                Edit Button Details
+                {t('modal.editButtonDetails')}
               </h3>
               <button 
                 onClick={handleCloseModal}
@@ -1207,7 +1209,7 @@ const AboutPageSettings = () => {
             </div>
             <div className="header-footer-settings__edit-modal-content">
               <div className="header-footer-settings__edit-field">
-                <label className="header-footer-settings__edit-label">Button text</label>
+                <label className="header-footer-settings__edit-label">{t('field.buttonText')}</label>
                 <input
                   type="text"
                   value={editingText}
@@ -1217,7 +1219,7 @@ const AboutPageSettings = () => {
               </div>
               {editingField.startsWith('header.') && (
                 <div className="header-footer-settings__edit-field">
-                  <label className="header-footer-settings__edit-label">Button URL</label>
+                  <label className="header-footer-settings__edit-label">{t('field.buttonUrl')}</label>
                   <input
                     type="text"
                     value={editingUrl}
@@ -1232,7 +1234,7 @@ const AboutPageSettings = () => {
                 onClick={handleApply}
                 className="header-footer-settings__edit-apply-btn"
               >
-                Apply
+                {t('common:apply')}
               </button>
             </div>
           </div>
@@ -1268,7 +1270,7 @@ const AboutPageSettings = () => {
               alignItems: 'center',
               marginBottom: '20px'
             }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Edit Text</h3>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>{t('modal.editText')}</h3>
               <button
                 onClick={() => {
                   setShowTextEditor(false);
@@ -1336,7 +1338,7 @@ const AboutPageSettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={() => {
@@ -1354,7 +1356,7 @@ const AboutPageSettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
             </div>
           </div>
@@ -1390,7 +1392,7 @@ const AboutPageSettings = () => {
               alignItems: 'center',
               marginBottom: '20px'
             }}>
-              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>Edit Items</h3>
+              <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>{t('modal.editItems')}</h3>
               <button
                 onClick={() => {
                   setShowRepeaterModal(false);
@@ -1437,7 +1439,7 @@ const AboutPageSettings = () => {
                       border: '1px solid var(--color-border-light)',
                       borderRadius: '2px'
                     }}
-                    placeholder="Label"
+                    placeholder={t('field.label')}
                   />
                   <button
                     onClick={() => {
@@ -1453,7 +1455,7 @@ const AboutPageSettings = () => {
                       cursor: 'pointer'
                     }}
                   >
-                    Remove
+                    {t('modal.remove')}
                   </button>
                 </div>
               ))}
@@ -1471,7 +1473,7 @@ const AboutPageSettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Add Item
+                {t('modal.addItem')}
               </button>
             </div>
 
@@ -1495,7 +1497,7 @@ const AboutPageSettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={() => {
@@ -1513,7 +1515,7 @@ const AboutPageSettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
             </div>
           </div>
@@ -1527,9 +1529,9 @@ const AboutPageSettings = () => {
             <div className="header-footer-settings__success-icon">
               ✓
             </div>
-            <h3 className="header-footer-settings__success-title">About Page Published!</h3>
+            <h3 className="header-footer-settings__success-title">{t('success.aboutTitle')}</h3>
             <p className="header-footer-settings__success-text">
-              Your about page has been successfully published.
+              {t('success.aboutText')}
             </p>
             <button
               onClick={() => {
@@ -1538,7 +1540,7 @@ const AboutPageSettings = () => {
               }}
               className="theme-btn-next"
             >
-              OK
+              {t('common:ok')}
             </button>
           </div>
         </div>

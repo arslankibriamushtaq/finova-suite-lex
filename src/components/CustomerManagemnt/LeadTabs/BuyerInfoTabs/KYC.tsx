@@ -1,22 +1,24 @@
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import { Button } from "antd";
+import { useTranslation } from "react-i18next";
 
 function KYC() {
+  const { t } = useTranslation("customerManagement");
   const [selectTab, setSelectedTab] = useState<string>("ConsumerManualVerification");
   const [comment, setComment] = useState<string>("");
 
   const tabOptions = [
     {
-      title: "Consumer Manual Verification",
+      title: t("leadTabs.buyerKyc.tab.consumerManualVerification"),
       key: "ConsumerManualVerification",
     },
     {
-      title: "Consumer Verification",
+      title: t("leadTabs.buyerKyc.tab.consumerVerification"),
       key: "ConsumerVerification",
     },
     {
-      title: "Approve Consumer Verification",
+      title: t("leadTabs.buyerKyc.tab.approveConsumerVerification"),
       key: "ApproveConsumerVerification",
     },
   ];
@@ -47,9 +49,9 @@ function KYC() {
               <div>
                 {/* Comment Box Section */}
                 <div style={{ marginTop: "20px" }}>
-                  <h6 style={{ marginBottom: "10px", fontWeight: 600 }}>Comment Box</h6>
+                  <h6 style={{ marginBottom: "10px", fontWeight: 600 }}>{t("leadTabs.buyerKyc.commentBox")}</h6>
                   <textarea
-                    placeholder="Write comment here"
+                    placeholder={t("leadTabs.buyerKyc.writeCommentHere")}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     style={{
@@ -68,14 +70,14 @@ function KYC() {
                       onClick={handleReject}
                       style={{ minWidth: "100px" }}
                     >
-                      Reject
+                      {t("common:reject")}
                     </Button>
                     <Button
                       type="primary"
                       onClick={handleApprove}
                       style={{ minWidth: "100px" }}
                     >
-                      Approve
+                      {t("common:approve")}
                     </Button>
                   </div>
                 </div>

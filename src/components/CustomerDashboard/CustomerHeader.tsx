@@ -9,8 +9,10 @@ import { logOutApi } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import { useDispatch } from "react-redux";
 import { setToken } from "../../redux/apis/apisSlice";
+import { useTranslation } from "react-i18next";
 
 const CustomerHeader = () => {
+  const { t } = useTranslation("customersB");
   const location = useLocation();
   const [selectTab, setSelectedTab] = useState("Dashboard");
   const dispatch = useDispatch();
@@ -50,7 +52,7 @@ const CustomerHeader = () => {
           style={{ textDecoration: "none", color: "white" }}
           to="/customer"
         >
-          Dashboard
+          {t("customersB:header.dashboard")}
         </Link>
       ),
 
@@ -71,7 +73,7 @@ const CustomerHeader = () => {
           style={{ textDecoration: "none", color: "white" }}
           to="/customer/Applications"
         >
-          Applications
+          {t("customersB:header.applications")}
         </Link>
       ),
 
@@ -91,7 +93,7 @@ const CustomerHeader = () => {
           style={{ textDecoration: "none", color: "white" }}
           to="/superadmin"
         >
-          Invoices
+          {t("customersB:header.invoices")}
         </Link>
       ),
 
@@ -116,17 +118,17 @@ const CustomerHeader = () => {
       await toast.promise(
         logOutApi(),
         {
-          loading: "Logging Out...",
+          loading: t("customersB:header.loggingOut"),
           success: (res) => {
             dispatch(setToken({ token: "" }));
             localStorage.removeItem("token");
             localStorage.removeItem("userData");
             localStorage.removeItem("permissions");
             navigate("/login");
-            return res?.data?.message || "Logged out successfully";
+            return res?.data?.message || t("customersB:header.logoutSuccess");
           },
           error: (err) => {
-            return err?.response?.data?.message || err?.message || "Logout failed!";
+            return err?.response?.data?.message || err?.message || t("customersB:header.logoutFail");
           },
         }
       );
@@ -170,7 +172,7 @@ const CustomerHeader = () => {
                   className="user-avatar"
                 />
                 <span className="user-name">
-                  Super Admin <RiArrowDropDownFill />
+                  {t("customersB:header.superAdmin")} <RiArrowDropDownFill />
                 </span>
               </div>
             </div>
@@ -194,7 +196,7 @@ const CustomerHeader = () => {
                 </div>
 
                 {/* User Name */}
-                <h4 className="profile-name">Super Admin</h4>
+                <h4 className="profile-name">{t("customersB:header.superAdmin")}</h4>
 
                 {/* Profile Actions */}
                 <div className="profile-actions">
@@ -202,11 +204,11 @@ const CustomerHeader = () => {
                     className="profile-btn left"
                     onClick={() => navigate("/superadmin/settings")}
                   >
-                    <FaCog className="icon" /> Settings
+                    <FaCog className="icon" /> {t("customersB:header.settings")}
                   </button>
                   <div className="divider"></div>
                   <button className="profile-btn right" onClick={()=>{logOut()}}>
-                    <FaSignOutAlt className="icon" /> Log out
+                    <FaSignOutAlt className="icon" /> {t("customersB:header.logout")}
                   </button>
                 </div>
               </div>
@@ -235,9 +237,9 @@ const CustomerHeader = () => {
               buttonStyle="solid"
               style={{ marginRight: "16px" }}
             >
-              <Radio value="today">Today</Radio>
-              <Radio value="last-week">Last Week</Radio>
-              <Radio value="last-month">Last Month</Radio>
+              <Radio value="today">{t("customersB:header.today")}</Radio>
+              <Radio value="last-week">{t("customersB:header.lastWeek")}</Radio>
+              <Radio value="last-month">{t("customersB:header.lastMonth")}</Radio>
             </Radio.Group>
             <div className="d-flex gap-2">
               <DatePicker
@@ -246,7 +248,7 @@ const CustomerHeader = () => {
                   border: "1px solid var(--color-border-light)",
                   borderRadius: "32px",
                 }}
-                placeholder="From"
+                placeholder={t("common:from")}
               />
               <DatePicker
                 style={{
@@ -254,7 +256,7 @@ const CustomerHeader = () => {
                   border: "1px solid var(--color-border-light)",
                   borderRadius: "32px",
                 }}
-                placeholder="To"
+                placeholder={t("common:to")}
               />
             </div>
           </div>

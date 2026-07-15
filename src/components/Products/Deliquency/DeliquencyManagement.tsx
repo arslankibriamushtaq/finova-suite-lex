@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle } from "lucide-react";
 import { Tab, Tabs } from "react-bootstrap";
 import EarlySettlement from "./EarlySettlement";
@@ -14,6 +15,7 @@ import Default from "./Default";
 import { getAllProducts } from "../../../redux/apis/apisCrudProductManagement";
 
 const DeliquencyManagement = () => {
+  const { t } = useTranslation("productManagement2");
   localStorage.setItem("tabs", "EarlySettlement");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
@@ -67,7 +69,7 @@ const DeliquencyManagement = () => {
   // }, [formValues.productID]);
   const tapOptions = [
     {
-      title: "Early Settlement",
+      title: t("delinquency.tab.earlySettlement"),
       key: "EarlySettlement",
       folder: (
         <EarlySettlement
@@ -77,7 +79,7 @@ const DeliquencyManagement = () => {
       ),
     },
     {
-      title: "Due Loan",
+      title: t("delinquency.tab.dueLoan"),
       key: "DueLoan",
       folder: (
         <Due
@@ -87,7 +89,7 @@ const DeliquencyManagement = () => {
       ),
     },
     {
-      title: "Late Payment",
+      title: t("delinquency.tab.latePayment"),
       key: "LatePayment",
       folder: (
         <LatePayment
@@ -97,7 +99,7 @@ const DeliquencyManagement = () => {
       ),
     },
     {
-      title: "Write-offs",
+      title: t("delinquency.tab.writeOffs"),
       key: "Write-offs",
       folder: (
         <WriteOff
@@ -107,7 +109,7 @@ const DeliquencyManagement = () => {
       ),
     },
     {
-      title: "Non-Performing Loan",
+      title: t("delinquency.tab.nonPerforming"),
       key: "Non-PerformingLoan",
       folder: (
         <NonPerforming
@@ -118,7 +120,7 @@ const DeliquencyManagement = () => {
     },
 
     {
-      title: "Broken Promises",
+      title: t("delinquency.tab.brokenPromises"),
       key: "BrokenPromises",
       folder: (
         <BrokenPromisses
@@ -145,7 +147,7 @@ const DeliquencyManagement = () => {
           <span className="pro-head-badge">
             <AlertTriangle className="h-4 w-4" />
           </span>
-          Delinquency Management
+          {t("delinquency.title")}
         </h3>
       </div>
 
@@ -157,7 +159,7 @@ const DeliquencyManagement = () => {
               className="d-block mb-1"
               style={{ fontSize: 13, fontWeight: 600, color: "var(--muted-foreground)" }}
             >
-              Select Product
+              {t("delinquency.selectProduct")}
             </label>
             <Select
               value={formValues.productID}
@@ -172,7 +174,7 @@ const DeliquencyManagement = () => {
               }}
               defaultValue={formValues?.productID}
               style={{ width: "100%", height: 40 }}
-              placeholder="Select Product"
+              placeholder={t("delinquency.selectProduct")}
             >
               {prodId?.map((option: any) => (
                 <Select.Option key={option.id} value={option.id}>

@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   Button,
@@ -31,6 +32,7 @@ import toast from "react-hot-toast";
 import arrowDown from "../../../assets/images/arrow-down.png";
 
 const FinancingApplication = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -72,14 +74,14 @@ const FinancingApplication = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -92,27 +94,27 @@ const FinancingApplication = () => {
     //   // width: "15%",
     // },
     {
-      name: "Application Number",
+      name: t("financingApp.col.applicationNumber"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Factoring Type",
+      name: t("financingApp.col.factoringType"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Apply Date",
+      name: t("financingApp.col.applyDate"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Parent Status",
+      name: t("financingApp.col.parentStatus"),
       cell: (row: any) => (
         <div
           style={{
@@ -129,12 +131,12 @@ const FinancingApplication = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("financingApp.col.changeStatus"),
       cell: (row: any) => (
         <Switch
           checked={row.status}
@@ -165,7 +167,7 @@ const FinancingApplication = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -178,7 +180,7 @@ const FinancingApplication = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -190,13 +192,13 @@ const FinancingApplication = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteCommodityType(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("financingApp.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("common:deletedSuccessfully");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("financingApp.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -213,37 +215,37 @@ const FinancingApplication = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateCommodityType(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("financingApp.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
               name: "",
-              status: 0 
+              status: 0
              });
             getList();
-            return "Updated successfully";
+            return t("common:updatedSuccessfully");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("financingApp.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createCommodityType(body), {
-          loading: "Adding finance purpose...",
+          loading: t("financingApp.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
             setShowConfirmModal(false);
             setCurrentSourceId(null);
-            setFormData({ 
+            setFormData({
                 name: "",
-                status: 0 
+                status: 0
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("financingApp.toast.addSuccess");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("financingApp.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -290,7 +292,7 @@ const FinancingApplication = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -306,7 +308,7 @@ const FinancingApplication = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -325,7 +327,7 @@ const FinancingApplication = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("common:search")}
               />
             </div>
 
@@ -334,13 +336,13 @@ const FinancingApplication = () => {
               onClick={() => {
                 setShowModal(true);
                 setSelectedItem("add");
-                setFormData({ 
+                setFormData({
                   name: "",
-                  status: 0 
+                  status: 0
                 });
               }}
             >
-              Add New Record
+              {t("financingApp.addNew")}
             </button>
           </div>
         </div>
@@ -362,13 +364,13 @@ const FinancingApplication = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("financingApp.modal.editTitle") : t("financingApp.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -378,7 +380,7 @@ const FinancingApplication = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -386,11 +388,11 @@ const FinancingApplication = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={24}>
-                <label className="fw-400">Minimum Amount</label>
+                <label className="fw-400">{t("financingApp.form.minimumAmount")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("financingApp.form.enterName")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -399,26 +401,26 @@ const FinancingApplication = () => {
                 </Col>
                 {selectedItem != "edit" && (
                   <Col className = "px-2" md={24}>
-                    <label className="fw-400">Range</label>
+                    <label className="fw-400">{t("financingApp.form.range")}</label>
                     <Select
                       className="fs-6"
-                      placeholder="Select type"
+                      placeholder={t("financingApp.form.selectType")}
                       value={formData.status}
                       onChange={(e: any) =>
                         setFormData({ ...formData, status: e})
                       }
                     >
-                      <option value = {1}>True</option> 
-                      <option value = {0}>False</option>      
+                      <option value = {1}>{t("financingApp.form.true")}</option>
+                      <option value = {0}>{t("financingApp.form.false")}</option>
                     </Select>
                   </Col>
                 )}
                 <Col className="px-2" md={24}>
-                <label className="fw-400">Maximum Amount</label>
+                <label className="fw-400">{t("financingApp.form.maximumAmount")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("financingApp.form.enterName")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -436,14 +438,14 @@ const FinancingApplication = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("financingApp.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("financingApp.modal.addTitle")
+              : t("financingApp.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -452,17 +454,17 @@ const FinancingApplication = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("financingApp.confirm.update")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("financingApp.confirm.add")
+                : t("financingApp.confirm.delete")
             }`}
           </Form>
         </Modal>

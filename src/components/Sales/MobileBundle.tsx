@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Select } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 import {
   getIbft,
@@ -13,6 +14,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 const MobileBundle = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -50,25 +52,25 @@ const MobileBundle = () => {
   }, []);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "80px",
     },
 
     {
-      name: "TID",
+      name: t("sales.tid"),
       selector: (row: { trx_id: any }) => row.trx_id,
       sortable: true,
     },
     {
-      name: "Network",
+      name: t("sales.network"),
       selector: (row: { transaction_type: any }) => row.transaction_type,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Mobile Number",
+      name: t("sales.mobileNumber"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
@@ -93,21 +95,21 @@ const MobileBundle = () => {
     //   width: "170px",
     // },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount,
       sortable: true,
       width: "280px",
     },
 
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
       width: "380px",
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -124,7 +126,7 @@ const MobileBundle = () => {
             cursor: row.status === "active" ? "pointer" : "default",
           }}
         >
-          {row.status === "completed" ? "Paid" : "Unpaid"}
+          {row.status === "completed" ? t("sales.paidCap") : t("sales.unpaidCap")}
         </div>
       ),
     },
@@ -156,16 +158,16 @@ const MobileBundle = () => {
       const doc = new jsPDF();
   
       const tableColumn = [
-        "Sr:",
-        "TID",
-        "Network",
-        "Mobile Number",
+        t("shared.sr"),
+        t("sales.tid"),
+        t("sales.network"),
+        t("sales.mobileNumber"),
         // "Sender Account",
         // "Reciever Name",
         // "Reciever Account",
-        "Amount",
-        "Created At",
-        "Status",
+        t("common:amount"),
+        t("common:createdAt"),
+        t("common:status"),
       ];
   
       const tableRows = mappedData?.map((item: any) => [
@@ -178,7 +180,7 @@ const MobileBundle = () => {
         // item.receiver_account,
         item.amount,
         item.created_at,
-        item.status === "completed" ? "Paid" : "Unpaid",
+        item.status === "completed" ? t("sales.paidCap") : t("sales.unpaidCap"),
       ]);
   
       autoTable(doc, {
@@ -197,7 +199,7 @@ const MobileBundle = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             // onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
 
@@ -215,11 +217,11 @@ const MobileBundle = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
             <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -227,9 +229,9 @@ const MobileBundle = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-            <button className="invoice-btn">Print</button>
+            <button className="invoice-btn">{t("common:print")}</button>
           </div>
         </div>
 

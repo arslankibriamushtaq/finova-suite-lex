@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -30,6 +31,7 @@ const getSectionContent = (section: any) => {
 };
 
 const PrivacyPolicySettings = () => {
+  const { t } = useTranslation('webPages');
   // UI States
   const [editingText, setEditingText] = useState('');
   const [editingField, setEditingField] = useState('');
@@ -290,14 +292,14 @@ const PrivacyPolicySettings = () => {
       const response = await updatePageData(3, requestBody);
 
       if (response.status === 200) {
-        toast.success('Privacy policy published successfully!');
+        toast.success(t('toast.privacyPublished'));
         await fetchPrivacyData(locale);
       } else {
         throw new Error('Failed to publish privacy policy');
       }
     } catch (err) {
       console.error('Error publishing privacy policy:', err);
-      toast.error('Error publishing privacy policy');
+      toast.error(t('toast.errorPublishingPrivacy'));
     } finally {
       setIsLoading(false);
     }
@@ -343,8 +345,8 @@ const PrivacyPolicySettings = () => {
       return (
         <EditableText 
           value={value || ''} 
-          field={fieldPath} 
-          placeholder={label || 'Enter text'}
+          field={fieldPath}
+          placeholder={label || t('field.enterText')}
         />
       );
     } else if (fieldType === 'textarea') {
@@ -510,10 +512,10 @@ const PrivacyPolicySettings = () => {
     return (
       <div className="header-footer-settings">
         <div className="header-footer-settings__error">
-          <h3>Error Loading Privacy Policy Data</h3>
+          <h3>{t('state.errorLoadingPrivacy')}</h3>
           <p>{error}</p>
           <button onClick={() => fetchPrivacyData(locale)} className="theme-btn-next">
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -524,10 +526,10 @@ const PrivacyPolicySettings = () => {
     return (
       <div className="header-footer-settings">
         <div className="header-footer-settings__error">
-          <h3>No Data Available</h3>
-          <p>No privacy policy data was found.</p>
+          <h3>{t('state.noDataAvailable')}</h3>
+          <p>{t('state.noPrivacyData')}</p>
           <button onClick={() => fetchPrivacyData(locale)} className="theme-btn-next">
-            Retry
+            {t('retry')}
           </button>
         </div>
       </div>
@@ -539,7 +541,7 @@ const PrivacyPolicySettings = () => {
       {/* Header Section */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          Privacy Policy Page
+          {t('header.privacyPolicyPage')}
         </h2>
         {/* Language Switcher */}
         <div 
@@ -573,7 +575,7 @@ const PrivacyPolicySettings = () => {
 
       {/* PUBLISH Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
-        <div className="header-footer-settings__publish-text">PUBLISH</div>
+        <div className="header-footer-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Main Content Area */}
@@ -618,7 +620,7 @@ const PrivacyPolicySettings = () => {
                   e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
                 }}
               >
-                {formValue.privacy_hero?.hero_image?.url ? 'Change Hero Image' : 'Upload Hero Image'}
+                {formValue.privacy_hero?.hero_image?.url ? t('changeHeroImage') : t('uploadHeroImage')}
               </button>
             </section>
 
@@ -906,7 +908,7 @@ const PrivacyPolicySettings = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginTop: 0, marginBottom: '20px' }}>Edit Text</h3>
+            <h3 style={{ marginTop: 0, marginBottom: '20px' }}>{t('modal.editText')}</h3>
             <CKEditor
               editor={ClassicEditor as any}
               data={editingFieldValue}
@@ -941,7 +943,7 @@ const PrivacyPolicySettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={() => {
@@ -957,7 +959,7 @@ const PrivacyPolicySettings = () => {
                   cursor: 'pointer'
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
             </div>
           </div>

@@ -12,20 +12,21 @@ import {
   CheckCircleOutlined
 } from "@ant-design/icons";
 import { Outlet, useLocation } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 const steps:any = [
-  { title: "Select Partner", icon: Images.ApiManagementIcon },
-  { title: "Terms & Conditions", icon: Images.ApiManagementIcon },
-  { title: "Business Info", icon: Images.ApiManagementIcon },
-  { title: "Financing Info", icon: Images.ApiManagementIcon },
-  { title: "Authorized Info", icon: Images.ApiManagementIcon},
-  { title: "OTP Verification", icon: Images.ApiManagementIcon },
-  { title: "Compliance Info", icon: Images.ApiManagementIcon },
-  { title: "Disclaimer", icon: Images.ApiManagementIcon },
-  { title: "Bank Details", icon:Images.ApiManagementIcon },
-  { title: "Summary", icon: Images.ApiManagementIcon },
-  { title: "Nafath Verification", icon: Images.ApiManagementIcon },
-  { title: "Finish", icon: Images.ApiManagementIcon},
+  { titleKey: "stepper.selectPartner", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.termsConditions", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.businessInfo", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.financingInfo", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.authorizedInfo", icon: Images.ApiManagementIcon},
+  { titleKey: "stepper.otpVerification", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.complianceInfo", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.disclaimer", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.bankDetails", icon:Images.ApiManagementIcon },
+  { titleKey: "stepper.summary", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.nafathVerification", icon: Images.ApiManagementIcon },
+  { titleKey: "stepper.finish", icon: Images.ApiManagementIcon},
 ];
 
 interface LandingStepperProps {
@@ -33,6 +34,7 @@ interface LandingStepperProps {
 }
 
 const LandingStepper: React.FC<LandingStepperProps> = ({ currentStep }) => {
+  const { t } = useTranslation("landingUser");
   return (
     <div className="pt-4" style={{  backgroundColor: "#fff" }}>
       <Steps
@@ -40,12 +42,12 @@ const LandingStepper: React.FC<LandingStepperProps> = ({ currentStep }) => {
         // direction="horizontal"
         current={currentStep}
         items={steps.map((step:any, index:any) => ({
-          title:step.title,
+          title:t(step.titleKey),
           icon: (
             <img
             className="d-flex justify-content-center"
               src={step.icon}
-              alt={step.title}
+              alt={t(step.titleKey)}
               style={{
                 width: 20,   // adjust size here
                 height: 20,

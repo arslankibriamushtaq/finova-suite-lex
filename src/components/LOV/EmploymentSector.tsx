@@ -22,9 +22,11 @@ import {
 } from "../../redux/apis/apisCrud";
 import { DeleteOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import arrowDown from "../../assets/images/arrow-down.png";
 
 const EmploymentSector = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -60,21 +62,21 @@ const EmploymentSector = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -156,9 +158,9 @@ const EmploymentSector = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteListOfValues(deleteTargetId), {
-        loading: "Deleting...",
-        success: "Deleted successfully",
-        error: "Failed to delete source",
+        loading: t("employmentSector.toast.deleting"),
+        success: t("employmentSector.toast.deleted"),
+        error: t("employmentSector.toast.deleteFailed"),
       });
       setShowConfirmModal(false);
       setDeleteTargetId(null);
@@ -182,15 +184,15 @@ const EmploymentSector = () => {
       try {
         if (isEdit && editId) {
           await toast.promise(updateListOfValue(editId, body), {
-            loading: "Updating...",
-            success: "Updated successfully",
-            error: "Failed to update",
+            loading: t("employmentSector.toast.updating"),
+            success: t("employmentSector.toast.updated"),
+            error: t("employmentSector.toast.updateFailed"),
           });
         } else {
           await toast.promise(createListOfValue(body), {
-            loading: "Adding...",
-            success: "Added successfully",
-            error: "Failed to add new record",
+            loading: t("employmentSector.toast.adding"),
+            success: t("employmentSector.toast.added"),
+            error: t("employmentSector.toast.addFailed"),
           });
         }
         setOpen(false);
@@ -210,23 +212,23 @@ const EmploymentSector = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Title",
+      name: t("employmentSector.col.title"),
       selector: (row: { title: any }) => row.title || "-",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row.type || "-",
     },
     {
-      name: "Factor Weight",
+      name: t("employmentSector.col.factorWeight"),
       selector: (row: { factor_weight: any }) => row.factor_weight ?? "-",
     },
     {
-      name: "Factors",
+      name: t("employmentSector.col.factors"),
       selector: (row: { factors: any }) => row.factors ?? "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -242,7 +244,7 @@ const EmploymentSector = () => {
             color: "var(--primary-foreground)",
           }}
         >
-          {row.status === true ? "Active" : "Inactive"}
+          {row.status === true ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
@@ -267,7 +269,7 @@ const EmploymentSector = () => {
     //   ),
     // },
     {
-       name: "Action",
+       name: t("common:actions"),
        width: "10%",
        cell: (row: any) => (
          <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -283,7 +285,7 @@ const EmploymentSector = () => {
                gap: "5px",
              }}
            >
-            Select
+            {t("common:select")}
              <img src={arrowDown} alt="" />
            </Button>
          </Dropdown>
@@ -303,7 +305,7 @@ const EmploymentSector = () => {
       status: item?.status,
     }));
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     // Filter logic can be implemented here
   };
@@ -319,7 +321,7 @@ const EmploymentSector = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
           options={options}
@@ -338,12 +340,12 @@ const EmploymentSector = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
 
           <button className="theme-btn-next" onClick={handleAdd}>
-            Add New Record
+            {t("shared.addNewRecord")}
           </button>
         </div>
       </div>
@@ -367,7 +369,7 @@ const EmploymentSector = () => {
       <Modal
         title={
           <span className="font-semibold text-lg">
-            {isEdit ? "Edit Employment Sector" : "Add Employment Sector"}
+            {isEdit ? t("employmentSector.modal.editTitle") : t("employmentSector.modal.addTitle")}
           </span>
         }
         open={open}
@@ -377,39 +379,39 @@ const EmploymentSector = () => {
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="Title"
+            label={t("employmentSector.label.title")}
             name="title"
-            rules={[{ required: true, message: "Please enter title" }]}
+            rules={[{ required: true, message: t("employmentSector.validation.title") }]}
           >
-            <Input placeholder="Enter Title" />
+            <Input placeholder={t("employmentSector.ph.title")} />
           </Form.Item>
 
           <Form.Item
-            label="Type"
+            label={t("common:type")}
             name="type"
           >
             <Input placeholder="EmploymentSector" disabled />
           </Form.Item>
 
           <Form.Item
-            label="Factor Weight"
+            label={t("employmentSector.label.factorWeight")}
             name="factor_weight"
           >
-            <Input type="number" placeholder="Enter Factor Weight" />
+            <Input type="number" placeholder={t("employmentSector.ph.factorWeight")} />
           </Form.Item>
 
           <Form.Item name="status" valuePropName="checked">
-            <Checkbox>Status</Checkbox>
+            <Checkbox>{t("common:status")}</Checkbox>
           </Form.Item>
 
           <div className="flex justify-end gap-2 mt-4">
-            <Button onClick={handleCancel}>Cancel</Button>
+            <Button onClick={handleCancel}>{t("common:cancel")}</Button>
             <Button
               type="primary"
               onClick={handleSave}
               className="theme-btn-next"
             >
-              {isEdit ? "Update" : "Save"}
+              {isEdit ? t("common:update") : t("common:save")}
             </Button>
           </div>
         </Form>
@@ -417,15 +419,15 @@ const EmploymentSector = () => {
 
       {/* Delete Confirmation Modal */}
       <Modal
-        title="Confirm Delete"
+        title={t("employmentSector.confirmDeleteTitle")}
         open={showConfirmModal}
         onCancel={() => setShowConfirmModal(false)}
         onOk={handleDeleteConfirmed}
-        okText="Yes, Delete"
+        okText={t("employmentSector.yesDelete")}
         okButtonProps={{ danger: true }}
-        cancelText="Cancel"
+        cancelText={t("common:cancel")}
       >
-        <p>Are you sure you want to delete this record?</p>
+        <p>{t("employmentSector.confirmDeleteBody")}</p>
       </Modal>
     </div>
   );

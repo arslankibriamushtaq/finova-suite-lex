@@ -60,8 +60,10 @@ const Layout = () => {
           style={{
             display: "block",
             width: "100%",
-            paddingLeft: isMobile ? "0" : (collapsed && !isHovered ? "80px" : "290px"),
-            transition: "padding-left 0.3s ease"
+            // Logical property so the reserved sidebar gutter mirrors in RTL
+            // (Arabic): start = left in LTR, right in RTL.
+            paddingInlineStart: isMobile ? "0" : (collapsed && !isHovered ? "80px" : "290px"),
+            transition: "padding-inline-start 0.3s ease"
           }}
           className={`flex ${isMobile ? "" : "colTwo"}`}
         >

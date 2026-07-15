@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const Disclaimer = () => {
+  const { t } = useTranslation("allApplication");
   const [isYesSelected, setIsYesSelected] = useState(false);
 
   const handleRadioChange = (event: any) => {
@@ -10,10 +12,10 @@ const Disclaimer = () => {
     <>
       <div className="disclaimerInfo">
         <div className="flex-radio radios-buttons">
-          <span>I agreed and accepted the following disclaimer:</span>
+          <span>{t("disclaimer.agree")}</span>
           <div>
             <label className="mb-0">
-              <span>Yes</span>
+              <span>{t("common:yes")}</span>
               <input
                 type="radio"
                 value="yes"
@@ -22,7 +24,7 @@ const Disclaimer = () => {
               />
             </label>
             <label className="mb-0">
-              <span>No</span>
+              <span>{t("common:no")}</span>
               <input
                 type="radio"
                 value="no"
@@ -32,7 +34,7 @@ const Disclaimer = () => {
             </label>
           </div>
         </div>
-        <p>Selected option: {isYesSelected ? "Yes" : "No"}</p>
+        <p>{t("disclaimer.selectedOption", { value: isYesSelected ? t("common:yes") : t("common:no") })}</p>
 
         <div className="row">
           <div className="col-md-6">

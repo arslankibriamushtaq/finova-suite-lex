@@ -4,8 +4,10 @@ import toast from "react-hot-toast";
 import { nafathRequestStatus, submitApplication } from "../../redux/apis/apisCrudFactoring";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
+import { useTranslation } from "react-i18next";
 
 const NafathVerification = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
   const nid = useSelector((state: RootState) => state.block.nid)
@@ -32,7 +34,7 @@ const NafathVerification = () => {
     (async () => {
       const res = await nafathRequestStatus(body);
       if (!res?.data?.success) {
-        throw new Error(res?.data?.message || "Failed to Verify");
+        throw new Error(res?.data?.message || t("nafath.toast.verifyFailed"));
       }
       const response = await submitApplication({
         application_no: applicationNo,
@@ -56,9 +58,9 @@ const NafathVerification = () => {
       return res;
     })(),
     {
-      loading: "Verifying OTP...",
-      success: (res: any) => res?.data?.message || "Successfull!",
-      error: (err: any) => err?.message || "Something went wrong!",
+      loading: t("otpCommon.verifyingOtp"),
+      success: (res: any) => res?.data?.message || t("nafath.toast.success"),
+      error: (err: any) => err?.message || t("common.somethingWentWrong"),
     }
   );
 } finally {
@@ -71,13 +73,13 @@ const NafathVerification = () => {
     <>
     <div className="d-flex justify-content-center p-4 mt-4">
       <div className="verification-card">
-        <h2>Nafath Verification</h2>
+        <h2>{t("nafath.title")}</h2>
         <div className="d-flex justify-content-center">
             <img src={Images.otp} alt="" width={88} height={88} />
         </div>
         <div className="verification-circle">11</div>
         <div className="d-flex justify-content-center">
-            <p className="mt-2">Please login to your Nafath account and verify this number</p>
+            <p className="mt-2">{t("nafath.desc")}</p>
         </div>
       </div>
     </div>
@@ -91,9 +93,9 @@ const NafathVerification = () => {
             businessFormData: businessFormData,
             authorizedFormData: authorizedFormData
           }
-        })}}>Previous</button>
+        })}}>{t("common:previous")}</button>
         <button className = "step-buttons" onClick={()=>{handleSubmit();}}>
-          Submit Application
+          {t("action.submitApplication")}
         </button>
     </div>
     </>

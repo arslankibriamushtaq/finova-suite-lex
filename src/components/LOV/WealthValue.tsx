@@ -29,8 +29,10 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { useTranslation } from "react-i18next";
 
 const WealthValue = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -72,14 +74,14 @@ const WealthValue = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -92,12 +94,12 @@ const WealthValue = () => {
     //   // width: "15%",
     // },
     {
-      name: "Title",
+      name: t("wealthValue.col.title"),
       selector: (row: { name: any }) => row.name,
       // sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -114,12 +116,12 @@ const WealthValue = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("shared.changeStatus"),
       cell: (row: any) => (
         <Switch
           checked={row.status}
@@ -150,7 +152,7 @@ const WealthValue = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -163,7 +165,7 @@ const WealthValue = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -175,13 +177,13 @@ const WealthValue = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteCommodityType(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("wealthValue.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("wealthValue.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("wealthValue.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -198,7 +200,7 @@ const WealthValue = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateCommodityType(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("wealthValue.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -209,13 +211,13 @@ const WealthValue = () => {
               status: 0 
              });
             getList();
-            return "Updated successfully";
+            return t("wealthValue.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("wealthValue.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createCommodityType(body), {
-          loading: "Adding finance purpose...",
+          loading: t("wealthValue.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -226,9 +228,9 @@ const WealthValue = () => {
                 status: 0 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("wealthValue.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("wealthValue.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -275,7 +277,7 @@ const WealthValue = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -291,7 +293,7 @@ const WealthValue = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -310,7 +312,7 @@ const WealthValue = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -319,13 +321,13 @@ const WealthValue = () => {
               onClick={() => {
                 setShowModal(true);
                 setSelectedItem("add");
-                setFormData({ 
+                setFormData({
                   name: "",
-                  status: 0 
+                  status: 0
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -347,13 +349,13 @@ const WealthValue = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("wealthValue.modal.editTitle") : t("shared.addNewRecord")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -363,7 +365,7 @@ const WealthValue = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -371,11 +373,11 @@ const WealthValue = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={24}>
-                <label className="fw-400">Minimum Amount</label>
+                <label className="fw-400">{t("wealthValue.label.minAmount")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("wealthValue.ph.name")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -384,26 +386,26 @@ const WealthValue = () => {
                 </Col>
                 {selectedItem != "edit" && (
                   <Col className = "px-2" md={24}>
-                    <label className="fw-400">Range</label>
+                    <label className="fw-400">{t("wealthValue.label.range")}</label>
                     <Select
                       className="fs-6"
-                      placeholder="Select type"
+                      placeholder={t("wealthValue.ph.selectType")}
                       value={formData.status}
                       onChange={(e: any) =>
                         setFormData({ ...formData, status: e})
                       }
                     >
-                      <option value = {1}>True</option> 
-                      <option value = {0}>False</option>      
+                      <option value = {1}>{t("wealthValue.opt.true")}</option>
+                      <option value = {0}>{t("wealthValue.opt.false")}</option>
                     </Select>
                   </Col>
                 )}
                 <Col className="px-2" md={24}>
-                <label className="fw-400">Maximum Amount</label>
+                <label className="fw-400">{t("wealthValue.label.maxAmount")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Name"
+                  placeholder={t("wealthValue.ph.name")}
                   value={formData.name}
                   onChange={(e: any) =>
                     setFormData({ ...formData, name: e.target.value })
@@ -421,14 +423,14 @@ const WealthValue = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("wealthValue.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("wealthValue.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -437,17 +439,17 @@ const WealthValue = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("wealthValue.confirmUpdate")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("wealthValue.confirmAdd")
+                : t("wealthValue.confirmDelete")
             }`}
           </Form>
         </Modal>

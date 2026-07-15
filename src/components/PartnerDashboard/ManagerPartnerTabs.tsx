@@ -1,9 +1,11 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function ManagerPartnerTabs({ packageDetails }: any) {
+  const { t } = useTranslation("partner");
   const detailSections = [
     {
-      heading: "Address Info:",
+      heading: t("manager.addressInfo"),
       align: "start",
       details: [
         { label: "Customer ID", value: packageDetails?.order_number || "-" },

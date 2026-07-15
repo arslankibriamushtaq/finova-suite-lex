@@ -4,8 +4,10 @@ import TableView from "../TableView/TableView";
 import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const NewApplicantEnquiry = () => {
+  const { t } = useTranslation("dashboard");
   const { id } = useParams();
   const [loading, setLoading] = useState(true);
   const [naeData, setNaeData] = useState<any>(null);
@@ -21,7 +23,7 @@ const NewApplicantEnquiry = () => {
       setNaeData(response.data?.data || {});
     } catch (error: any) {
       console.error("Error fetching NAE data:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch NAE data");
+      toast.error(error?.response?.data?.message || t("nae.toast.fetchFailed"));
       setNaeData({});
     } finally {
       setLoading(false);
@@ -83,7 +85,7 @@ const NewApplicantEnquiry = () => {
           <TableView className="mt-3" header={headers} data={data} />
         ) : (
           <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-            No data available
+            {t("common:noData")}
           </div>
         )}
       </div>
@@ -128,7 +130,7 @@ const NewApplicantEnquiry = () => {
           </div>
         ) : (
           <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-            No data available
+            {t("common:noData")}
           </div>
         )}
       </div>
@@ -211,7 +213,7 @@ const NewApplicantEnquiry = () => {
       <div className="d-flex flex-column gap-2" style={{ backgroundColor: "#FFF8", padding: "20px" }}>
         {/* Fetch New Record Button */}
         <div className="d-flex justify-content-end align-items-center mb-3">
-          <button className="theme-btn-next">Fetch New Record</button>
+          <button className="theme-btn-next">{t("bayaanReport.fetchNewRecord")}</button>
         </div>
 
         <div className="profile-sec mt-3 mb-3">
@@ -220,19 +222,19 @@ const NewApplicantEnquiry = () => {
               {/* Business Highlights Heading */}
               <div className="px-4">
               <h6 className="mb-2 px-3 py-3" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Business Highlights
+                {t("nae.businessHighlights")}
               </h6>
               </div>
               {/* Identification Section */}
-              {renderTwoColumnSection(identificationData, "Identification")}
+              {renderTwoColumnSection(identificationData, t("nae.identification"))}
 
               {/* Highlights Section */}
-              {renderTwoColumnSection(highlightsData, "Highlights")}
+              {renderTwoColumnSection(highlightsData, t("nae.highlights"))}
 
               {/* MAIN HQR Section */}
               <div className="p-4 mt-4" style={{ backgroundColor: "#F8F8F8" }}>
                 <div className="p-3 mb-3" style={{ backgroundColor: "#000000", color: "white", fontWeight: "600" }}>
-                  MAIN HQR
+                  {t("nae.mainHqr")}
                 </div>
                 {mainHQRData && (mainHQRData.leftColumn?.length > 0 || mainHQRData.rightColumn?.length > 0) ? (
                   <>
@@ -295,7 +297,7 @@ const NewApplicantEnquiry = () => {
                   </>
                 ) : (
                   <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-                    No data available
+                    {t("common:noData")}
                   </div>
                 )}
               </div>
@@ -303,7 +305,7 @@ const NewApplicantEnquiry = () => {
               {/* Relevant Events Section */}
               <div className="px-4">
               <h6 className="mb-4 px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Relevant Events
+                {t("nae.relevantEvents")}
               </h6>
               
               {relevantEventsData && (relevantEventsData.leftColumn?.length > 0 || relevantEventsData.rightColumn?.length > 0) ? (
@@ -335,28 +337,28 @@ const NewApplicantEnquiry = () => {
                 </div>
               ) : (
                 <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-                  No data available
+                  {t("common:noData")}
                 </div>
               )}
               </div>
               {/* All history tables rendered dynamically */}
-              {renderTable(registrationStatusData, "HISTORY OF REGISTRATION STATUS")}
-              {renderTable(companyNamesData, "HISTORY OF COMPANY NAMES")}
-              {renderTable(registeredAddressData, "HISTORY OF REGISTERED ADDRESS")}
-              {renderTable(legalFormData, "HISTORY OF LEGAL FORM")}
-              {renderTable(capitalAmountData, "HISTORY OF CAPITAL AMOUNT")}
-              {renderTable(managementShareholdersData, "HISTORY OF FORMER MANAGEMENT AND SHAREHOLDERS")}
+              {renderTable(registrationStatusData, t("nae.historyRegistrationStatus"))}
+              {renderTable(companyNamesData, t("nae.historyCompanyNames"))}
+              {renderTable(registeredAddressData, t("nae.historyRegisteredAddress"))}
+              {renderTable(legalFormData, t("nae.historyLegalForm"))}
+              {renderTable(capitalAmountData, t("nae.historyCapitalAmount"))}
+              {renderTable(managementShareholdersData, t("nae.historyManagementShareholders"))}
 
               {/* Business Relations Heading */}
               <div className="px-4">
               <h6 className="px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Business Relations
+                {t("nae.businessRelations")}
               </h6>
               </div>
               {/* Related Companies Section */}
               <div className="px-4 mt-3" style={{ backgroundColor: "#F8F8F8" }}>
                 <div className="p-3 mb-4" style={{ backgroundColor: "#000000", color: "white", fontWeight: "600" }}>
-                  Related Companies
+                  {t("nae.relatedCompanies")}
                 </div>
 
                 {/* Related companies rendered dynamically */}
@@ -369,7 +371,7 @@ const NewApplicantEnquiry = () => {
                       renderTable(relComp.data, "")
                     ) : (
                       <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-                        No data available
+                        {t("common:noData")}
                       </div>
                     )}
                   </div>
@@ -379,13 +381,13 @@ const NewApplicantEnquiry = () => {
               {/* Operations Heading */}
               <div className="px-4">
               <h6 className="px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Operations
+                {t("nae.operations")}
               </h6>
               </div>
               {/* Branches Information Section */}
               <div className="px-4 mt-3" style={{ backgroundColor: "#F8F8F8" }}>
                 <div className="p-3 mb-4" style={{ backgroundColor: "#000000", color: "white", fontWeight: "600" }}>
-                  Branches Information
+                  {t("nae.branchesInformation")}
                 </div>
 
                 {branchesData.length > 0 ? (
@@ -424,7 +426,7 @@ const NewApplicantEnquiry = () => {
                   ))
                 ) : (
                   <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-                    No branches information available
+                    {t("nae.noBranches")}
                   </div>
                 )}
               </div>
@@ -432,17 +434,17 @@ const NewApplicantEnquiry = () => {
               {/* Subject Heading */}
               <div className="px-4">
               <h6 className="px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Subject
+                {t("nae.subject")}
               </h6>
               </div>
 
               {/* Subject Data from Contributors Section */}
-              {renderTwoColumnSection(subjectDataFromContributors, "Subject Data from Contributors")}
+              {renderTwoColumnSection(subjectDataFromContributors, t("nae.subjectData"))}
 
               {/* Contact Data Heading */}
               <div className="px-4">
               <h6 className="px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Contact Data
+                {t("nae.contactData")}
               </h6>
               </div>
                {contactData.length > 0 ? contactData.map((contact: any, idx: any) => {
@@ -483,21 +485,21 @@ const NewApplicantEnquiry = () => {
                  );
                }) : (
                 <div className="px-4 mt-3 p-3 text-center" style={{ backgroundColor: "#F8F8F8", color: "#6C6C6C" }}>
-                  No data available
+                  {t("common:noData")}
                 </div>
                )}
 
               {/* Contracts Summary Heading */}
               <div className="px-4">
               <h6 className="px-3 py-3 mt-5" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Contracts Summary
+                {t("nae.contractsSummary")}
               </h6>
               </div>
               {/* Key Values Section */}
-              {renderTwoColumnSection(keyValuesData, "Key Values")}
+              {renderTwoColumnSection(keyValuesData, t("nae.keyValues"))}
 
               {/* Summary by Category and Phase Section */}
-              {renderTable(summaryCategoryData, "Summary by Category and Phase")}
+              {renderTable(summaryCategoryData, t("nae.summaryByCategory"))}
             </div>
           </div>
         </div>

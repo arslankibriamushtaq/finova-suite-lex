@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
+import { useTranslation } from "react-i18next";
 
 const EpromissoryNote = ({setActiveTab}: any) => {
+  const { t } = useTranslation("dashboard");
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -21,13 +23,13 @@ const EpromissoryNote = ({setActiveTab}: any) => {
 
       if (directUrl) {
         setPdfUrl(directUrl);
-        toast.success("PDF loaded successfully");
+        toast.success(t("epromissory.toast.loaded"));
       } else {
-        toast.error("Invalid PDF URL");
+        toast.error(t("epromissory.toast.invalidUrl"));
       }
     } catch (error) {
       console.error("Error loading PDF:", error);
-      toast.error("Failed to fetch PDF");
+      toast.error(t("epromissory.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -38,7 +40,7 @@ const EpromissoryNote = ({setActiveTab}: any) => {
     <div style={{ padding: "20px" }}>
       {loading ? (
         <div style={{ textAlign: "center", padding: "50px" }}>
-          <p>Loading PDF...</p>
+          <p>{t("epromissory.loading")}</p>
         </div>
       ) : pdfUrl ? (
         <div style={{ height: "85vh", marginTop: "20px" }}>
@@ -47,29 +49,29 @@ const EpromissoryNote = ({setActiveTab}: any) => {
             width="100%"
             height="100%"
             style={{ border: "none", borderRadius: "2px" }}
-            title="ePromissory Note PDF"
+            title={t("epromissory.iframeTitle")}
             onError={() => {
               console.error("Failed to load PDF in iframe");
-              toast.error("Failed to load PDF");
+              toast.error(t("epromissory.toast.loadFailed"));
             }}
           />
           <div style={{ marginTop: "10px", textAlign: "center" }}>
             <p style={{ fontSize: "12px", color: "#666" }}>
-              If the PDF doesn't display properly, try opening it in a new tab:{" "}
-              <a 
-                href={pdfUrl} 
-                target="_blank" 
+              {t("epromissory.helpText")}{" "}
+              <a
+                href={pdfUrl}
+                target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: "#000000", textDecoration: "underline" }}
               >
-                Open PDF in new tab
+                {t("epromissory.openNewTab")}
               </a>
             </p>
           </div>
         </div>
       ) : (
         <div style={{ textAlign: "center", padding: "50px" }}>
-          <p>No PDF available</p>
+          <p>{t("epromissory.noPdf")}</p>
         </div>
       )}
     </div>

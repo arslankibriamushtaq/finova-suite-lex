@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Dropdown, Menu } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import { useNavigate, useParams } from "react-router-dom";
@@ -7,6 +8,7 @@ import toast from "react-hot-toast";
 import { getClientAdmins, deleteClientAdmin } from "../../redux/apis/apisThirdParty";
 
 const ClientAdminList = () => {
+  const { t } = useTranslation("connector");
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const clientId = id ? parseInt(id) : 0;
@@ -22,10 +24,10 @@ const ClientAdminList = () => {
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="edit" onClick={() => handleMenuClick("edit", row)}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="delete" onClick={() => handleMenuClick("delete", row)}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -34,13 +36,13 @@ const ClientAdminList = () => {
     if (action === "edit") {
       navigate(`/ThirdPartyManagement/Clients/${clientId}/Admins/Edit/${row.id}`);
     } else if (action === "delete") {
-      if (window.confirm(`Are you sure you want to delete ${row.name}?`)) {
+      if (window.confirm(t("clientAdminList.deleteConfirm", { name: row.name }))) {
         try {
           await deleteClientAdmin(row.id);
-          toast.success("Client admin deleted successfully");
+          toast.success(t("clientAdminList.toast.deleteSuccess"));
           getClientAdminsList();
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to delete client admin");
+          toast.error(error?.response?.data?.message || error?.message || t("clientAdminList.toast.deleteFailed"));
         }
       }
     }
@@ -48,34 +50,34 @@ const ClientAdminList = () => {
 
   const ClientAdmin_Headers = [
     {
-      name: "Name",
+      name: t("clientAdminList.col.name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
     },
     {
-      name: "Email",
+      name: t("clientAdminList.col.email"),
       selector: (row: { email: any }) => row.email,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Phone",
+      name: t("clientAdminList.col.phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
     },
     {
-      name: "Date of Birth",
+      name: t("clientAdminList.col.dob"),
       selector: (row: { dob: any }) => row.dob,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Address",
+      name: t("clientAdminList.col.address"),
       selector: (row: { address: any }) => row.address || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -86,17 +88,17 @@ const ClientAdminList = () => {
             fontSize: "12px",
           }}
         >
-          {row.status === "Active" || row.status === 1 ? "Active" : "Inactive"}
+          {row.status === "Active" || row.status === 1 ? t("common:active") : t("common:inactive")}
         </span>
       ),
       sortable: true,
     },
     {
-      name: "Action",
+      name: t("clientAdminList.col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
-            Select <DownOutlined />
+            {t("clientAdminList.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -132,7 +134,7 @@ const ClientAdminList = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch client admins");
+      toast.error(error?.response?.data?.message || t("clientAdminList.toast.fetchFailed"));
       setSkelitonLoading(false);
     }
   };
@@ -154,13 +156,13 @@ const ClientAdminList = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Client Admins</h2>
+        <h2>{t("clientAdminList.title")}</h2>
         <Button
           type="primary"
           style={{ backgroundColor: "var(--foreground)" }}
           onClick={() => navigate(`/ThirdPartyManagement/Clients/${clientId}/Admins/Add`)}
         >
-          Add Client Admin
+          {t("clientAdminList.addClientAdmin")}
         </Button>
       </div>
       <TableView

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Save,
@@ -45,6 +46,7 @@ interface AdjustmentForm {
 }
 
 export default function InvestmentAdjust() {
+  const { t } = useTranslation('investor');
   const { id } = useParams();
   const [formData, setFormData] = useState<AdjustmentForm>({
     adjustmentType: 'add',
@@ -105,30 +107,30 @@ export default function InvestmentAdjust() {
     const newErrors: Record<string, string> = {};
 
     if (!formData.amount || parseFloat(formData.amount) <= 0) {
-      newErrors.amount = 'Amount is required and must be positive';
+      newErrors.amount = t('iadj.err.amount');
     }
 
     if (!formData.units || parseFloat(formData.units) <= 0) {
-      newErrors.units = 'Units is required and must be positive';
+      newErrors.units = t('iadj.err.units');
     }
 
     if (!formData.price || parseFloat(formData.price) <= 0) {
-      newErrors.price = 'Price is required and must be positive';
+      newErrors.price = t('iadj.err.price');
     }
 
     if (!formData.reason) {
-      newErrors.reason = 'Reason for adjustment is required';
+      newErrors.reason = t('iadj.err.reason');
     }
 
     if (!formData.confirmRisks) {
-      newErrors.confirmRisks = 'You must acknowledge the risks';
+      newErrors.confirmRisks = t('iadj.err.confirmRisks');
     }
 
     // Validation for redemption
     if (formData.adjustmentType === 'redeem') {
       const redeemUnits = parseFloat(formData.units);
       if (redeemUnits > investmentData.currentUnits) {
-        newErrors.units = `Cannot redeem more than ${investmentData.currentUnits} units`;
+        newErrors.units = t('iadj.err.cannotRedeem', { units: investmentData.currentUnits });
       }
     }
 
@@ -151,7 +153,7 @@ export default function InvestmentAdjust() {
       await new Promise(resolve => setTimeout(resolve, 2000));
 
       // In real app, would redirect to investment detail or list
-      alert('Investment adjustment submitted successfully!');
+      alert(t('iadj.submitSuccess'));
     } catch (error) {
       console.error('Error submitting adjustment:', error);
     } finally {
@@ -191,7 +193,7 @@ export default function InvestmentAdjust() {
         return {
           newValue: currentValue,
           newUnits: currentUnits,
-          impact: 'No change'
+          impact: t('iadj.noChange')
         };
     }
   };
@@ -207,33 +209,33 @@ export default function InvestmentAdjust() {
             to="/admin/investments"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Investments
+            <ArrowLeft className="w-4 h-4 me-2" />
+            {t('iadj.backToInvestments')}
           </Link>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Investment Adjustment</h1>
-        <p className="text-gray-600">Make manual adjustments to investment allocations</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('iadj.title')}</h1>
+        <p className="text-gray-600">{t('iadj.subtitle')}</p>
       </div>
 
       <div className="max-w-4xl mx-auto">
         {/* Investment Summary */}
         <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Current Investment Details</h2>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('iadj.currentDetails')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div>
-              <p className="text-sm text-gray-600">Investor</p>
+              <p className="text-sm text-gray-600">{t('iadj.investor')}</p>
               <p className="text-lg font-medium text-gray-900">{investmentData.investorName}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Product</p>
+              <p className="text-sm text-gray-600">{t('iadj.product')}</p>
               <p className="text-lg font-medium text-gray-900">{investmentData.productName}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Current Value</p>
+              <p className="text-sm text-gray-600">{t('iadj.currentValue')}</p>
               <p className="text-lg font-medium text-gray-900">{formatCurrency(investmentData.currentValue)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-600">Units Held</p>
+              <p className="text-sm text-gray-600">{t('iadj.unitsHeld')}</p>
               <p className="text-lg font-medium text-gray-900">{investmentData.currentUnits.toLocaleString()}</p>
             </div>
           </div>
@@ -241,20 +243,20 @@ export default function InvestmentAdjust() {
 
         {/* Adjustment Form */}
         <div className="bg-white rounded-lg border border-gray-200 p-8">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Adjustment Details</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">{t('iadj.adjustmentDetails')}</h2>
 
           <div className="space-y-6">
             {/* Adjustment Type */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">
-                Adjustment Type
+                {t('iadj.adjustmentType')}
               </label>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 {[
-                  { value: 'add', label: 'Additional Investment', icon: TrendingUp, color: 'green' },
-                  { value: 'redeem', label: 'Partial Redemption', icon: TrendingUp, color: 'red' },
-                  { value: 'rebalance', label: 'Rebalance Portfolio', icon: RefreshCw, color: 'blue' },
-                  { value: 'transfer', label: 'Transfer Between Products', icon: RefreshCw, color: 'purple' }
+                  { value: 'add', label: 'iadj.type.add', icon: TrendingUp, color: 'green' },
+                  { value: 'redeem', label: 'iadj.type.redeem', icon: TrendingUp, color: 'red' },
+                  { value: 'rebalance', label: 'iadj.type.rebalance', icon: RefreshCw, color: 'blue' },
+                  { value: 'transfer', label: 'iadj.type.transfer', icon: RefreshCw, color: 'purple' }
                 ].map((type) => (
                   <label key={type.value} className="relative">
                     <input
@@ -276,7 +278,7 @@ export default function InvestmentAdjust() {
                       <p className={`text-sm font-medium text-center ${
                         formData.adjustmentType === type.value ? `text-${type.color}-900` : 'text-gray-900'
                       }`}>
-                        {type.label}
+                        {t(type.label)}
                       </p>
                     </div>
                   </label>
@@ -288,7 +290,7 @@ export default function InvestmentAdjust() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Amount ({formData.adjustmentType === 'redeem' ? 'to redeem' : 'to invest'})
+                  {t('iadj.amountLabel', { ctx: formData.adjustmentType === 'redeem' ? t('iadj.toRedeem') : t('iadj.toInvest') })}
                 </label>
                 <div className="relative">
                   <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -297,7 +299,7 @@ export default function InvestmentAdjust() {
                     step="0.01"
                     value={formData.amount}
                     onChange={(e) => handleInputChange('amount', e.target.value)}
-                    className={`pl-10 pr-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
+                    className={`ps-10 pe-4 py-2 w-full border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
                       errors.amount ? 'border-red-300' : 'border-gray-300'
                     }`}
                     placeholder="0.00"
@@ -305,7 +307,7 @@ export default function InvestmentAdjust() {
                 </div>
                 {errors.amount && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    <AlertTriangle className="w-3 h-3 me-1" />
                     {errors.amount}
                   </p>
                 )}
@@ -313,7 +315,7 @@ export default function InvestmentAdjust() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Units
+                  {t('iadj.units')}
                 </label>
                 <input
                   type="number"
@@ -327,7 +329,7 @@ export default function InvestmentAdjust() {
                 />
                 {errors.units && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    <AlertTriangle className="w-3 h-3 me-1" />
                     {errors.units}
                   </p>
                 )}
@@ -335,7 +337,7 @@ export default function InvestmentAdjust() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price per Unit
+                  {t('iadj.pricePerUnit')}
                 </label>
                 <div className="space-y-2">
                   <input
@@ -353,14 +355,14 @@ export default function InvestmentAdjust() {
                       type="checkbox"
                       checked={formData.useCurrentPrice}
                       onChange={(e) => handleInputChange('useCurrentPrice', e.target.checked)}
-                      className="rounded border-gray-300 text-black focus:ring-gray-500 mr-2"
+                      className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
                     />
-                    Use current market price
+                    {t('iadj.useCurrentPrice')}
                   </label>
                 </div>
                 {errors.price && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    <AlertTriangle className="w-3 h-3 me-1" />
                     {errors.price}
                   </p>
                 )}
@@ -371,7 +373,7 @@ export default function InvestmentAdjust() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Reason for Adjustment *
+                  {t('iadj.reasonLabel')}
                 </label>
                 <select
                   value={formData.reason}
@@ -380,19 +382,19 @@ export default function InvestmentAdjust() {
                     errors.reason ? 'border-red-300' : 'border-gray-300'
                   }`}
                 >
-                  <option value="">Select a reason</option>
-                  <option value="client_request">Client Request</option>
-                  <option value="rebalancing">Portfolio Rebalancing</option>
-                  <option value="risk_management">Risk Management</option>
-                  <option value="market_opportunity">Market Opportunity</option>
-                  <option value="liquidity_needs">Liquidity Needs</option>
-                  <option value="compliance">Compliance Requirement</option>
-                  <option value="error_correction">Error Correction</option>
-                  <option value="other">Other</option>
+                  <option value="">{t('iadj.selectReason')}</option>
+                  <option value="client_request">{t('iadj.reason.clientRequest')}</option>
+                  <option value="rebalancing">{t('iadj.reason.rebalancing')}</option>
+                  <option value="risk_management">{t('iadj.reason.riskManagement')}</option>
+                  <option value="market_opportunity">{t('iadj.reason.marketOpportunity')}</option>
+                  <option value="liquidity_needs">{t('iadj.reason.liquidityNeeds')}</option>
+                  <option value="compliance">{t('iadj.reason.compliance')}</option>
+                  <option value="error_correction">{t('iadj.reason.errorCorrection')}</option>
+                  <option value="other">{t('iadj.reason.other')}</option>
                 </select>
                 {errors.reason && (
                   <p className="mt-1 text-sm text-red-600 flex items-center">
-                    <AlertTriangle className="w-3 h-3 mr-1" />
+                    <AlertTriangle className="w-3 h-3 me-1" />
                     {errors.reason}
                   </p>
                 )}
@@ -400,7 +402,7 @@ export default function InvestmentAdjust() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Effective Date
+                  {t('iadj.effectiveDate')}
                 </label>
                 <input
                   type="date"
@@ -414,39 +416,38 @@ export default function InvestmentAdjust() {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Additional Notes
+                {t('iadj.additionalNotes')}
               </label>
               <textarea
                 value={formData.notes}
                 onChange={(e) => handleInputChange('notes', e.target.value)}
                 rows={3}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                placeholder="Any additional notes or instructions..."
+                placeholder={t('iadj.notesPlaceholder')}
               />
             </div>
 
             {/* Risk Acknowledgment */}
             <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
               <div className="flex items-start">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3" />
+                <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 me-3" />
                 <div className="flex-1">
-                  <h3 className="text-sm font-medium text-yellow-800 mb-2">Risk Acknowledgment</h3>
+                  <h3 className="text-sm font-medium text-yellow-800 mb-2">{t('iadj.riskAck')}</h3>
                   <p className="text-sm text-yellow-700 mb-3">
-                    Investment adjustments may impact portfolio performance and risk profile.
-                    Please ensure all adjustments are authorized by the investor and comply with investment guidelines.
+                    {t('iadj.riskText')}
                   </p>
                   <label className="flex items-center text-sm">
                     <input
                       type="checkbox"
                       checked={formData.confirmRisks}
                       onChange={(e) => handleInputChange('confirmRisks', e.target.checked)}
-                      className="rounded border-gray-300 text-black focus:ring-gray-500 mr-2"
+                      className="rounded border-gray-300 text-black focus:ring-gray-500 me-2"
                     />
-                    I acknowledge the risks and confirm this adjustment is authorized
+                    {t('iadj.riskConfirm')}
                   </label>
                   {errors.confirmRisks && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertTriangle className="w-3 h-3 mr-1" />
+                      <AlertTriangle className="w-3 h-3 me-1" />
                       {errors.confirmRisks}
                     </p>
                   )}
@@ -458,20 +459,20 @@ export default function InvestmentAdjust() {
             {(formData.amount || formData.units) && (
               <div className="bg-gray-50 border border-gray-300 rounded-lg p-4">
                 <div className="flex items-start">
-                  <Calculator className="w-5 h-5 text-black mt-0.5 mr-3" />
+                  <Calculator className="w-5 h-5 text-black mt-0.5 me-3" />
                   <div className="flex-1">
-                    <h3 className="text-sm font-medium text-gray-900 mb-2">Impact Preview</h3>
+                    <h3 className="text-sm font-medium text-gray-900 mb-2">{t('iadj.impactPreview')}</h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
-                        <p className="text-gray-800">Current Value:</p>
+                        <p className="text-gray-800">{t('iadj.currentValueLabel')}</p>
                         <p className="font-medium text-blue-900">{formatCurrency(investmentData.currentValue)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-800">Projected Value:</p>
+                        <p className="text-gray-800">{t('iadj.projectedValue')}</p>
                         <p className="font-medium text-blue-900">{formatCurrency(newValues.newValue)}</p>
                       </div>
                       <div>
-                        <p className="text-gray-800">Impact:</p>
+                        <p className="text-gray-800">{t('iadj.impactLabel')}</p>
                         <p className="font-medium text-blue-900">{newValues.impact}</p>
                       </div>
                     </div>
@@ -486,8 +487,8 @@ export default function InvestmentAdjust() {
                 to="/admin/investments"
                 className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <X className="w-4 h-4 mr-2" />
-                Cancel
+                <X className="w-4 h-4 me-2" />
+                {t('common:cancel')}
               </Link>
 
               <div className="flex items-center space-x-3">
@@ -495,8 +496,8 @@ export default function InvestmentAdjust() {
                   onClick={handlePreview}
                   className="flex items-center px-6 py-2 text-sm font-medium text-gray-800 bg-gray-100 rounded-lg hover:bg-blue-200"
                 >
-                  <Calculator className="w-4 h-4 mr-2" />
-                  Preview Changes
+                  <Calculator className="w-4 h-4 me-2" />
+                  {t('iadj.previewChanges')}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -505,13 +506,13 @@ export default function InvestmentAdjust() {
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Processing...
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
+                      {t('iadj.processing')}
                     </>
                   ) : (
                     <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Submit Adjustment
+                      <Save className="w-4 h-4 me-2" />
+                      {t('iadj.submitAdjustment')}
                     </>
                   )}
                 </button>
@@ -525,31 +526,31 @@ export default function InvestmentAdjust() {
       {showPreview && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Adjustment Preview</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('iadj.previewTitle')}</h3>
             <div className="space-y-3 text-sm">
               <div className="flex justify-between">
-                <span className="text-gray-600">Type:</span>
-                <span className="font-medium capitalize">{formData.adjustmentType}</span>
+                <span className="text-gray-600">{t('iadj.typeColon')}</span>
+                <span className="font-medium">{t(`iadj.type.${formData.adjustmentType}`)}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Amount:</span>
+                <span className="text-gray-600">{t('iadj.amountColon')}</span>
                 <span className="font-medium">{formatCurrency(parseFloat(formData.amount))}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Units:</span>
+                <span className="text-gray-600">{t('iadj.unitsColon')}</span>
                 <span className="font-medium">{parseFloat(formData.units).toLocaleString()}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-gray-600">Price:</span>
+                <span className="text-gray-600">{t('iadj.priceColon')}</span>
                 <span className="font-medium">${parseFloat(formData.price)}</span>
               </div>
               <div className="border-t pt-3">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">New Total Value:</span>
+                  <span className="text-gray-600">{t('iadj.newTotalValue')}</span>
                   <span className="font-medium">{formatCurrency(newValues.newValue)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">New Total Units:</span>
+                  <span className="text-gray-600">{t('iadj.newTotalUnits')}</span>
                   <span className="font-medium">{newValues.newUnits.toLocaleString()}</span>
                 </div>
               </div>
@@ -559,13 +560,13 @@ export default function InvestmentAdjust() {
                 onClick={() => setShowPreview(false)}
                 className="flex-1 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={handleSubmit}
                 className="flex-1 px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700"
               >
-                Confirm
+                {t('iadj.confirm')}
               </button>
             </div>
           </div>

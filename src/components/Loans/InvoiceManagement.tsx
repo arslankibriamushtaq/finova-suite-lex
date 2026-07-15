@@ -12,8 +12,10 @@ import toast from "react-hot-toast";
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import Loader from "../Loader/Loader";
 import { NumberFormatter } from "../../App";
+import { useTranslation } from "react-i18next";
 
 const InvoiceManagement = () => {
+  const { t } = useTranslation("accountingLoans");
   const [searchValue, setSearchValue] = useState("");
   const [editRowId, setEditRowId] = useState(null);
   const [selectApplicable, setSelectApplicable] = useState<any>();
@@ -73,7 +75,7 @@ const InvoiceManagement = () => {
           </svg>
         }
       >
-        Loan Invoice
+        {t("invoiceMgmt.loanInvoice")}
       </Menu.Item>
       <Menu.Item
         key="view"
@@ -97,7 +99,7 @@ const InvoiceManagement = () => {
           </svg>
         }
       >
-        Activity Logs
+        {t("invoiceMgmt.activityLogs")}
       </Menu.Item>
     </Menu>
   );
@@ -117,29 +119,29 @@ const InvoiceManagement = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Product Name",
+      name: t("invoiceMgmt.col.productName"),
       selector: (row: any) => row.productName,
     },
     {
-      name: "Application Key",
+      name: t("invoiceMgmt.col.applicationKey"),
       selector: (row: any) => row.applicationKey,
     },
     {
-      name: "Loan Amount",
+      name: t("invoiceMgmt.col.loanAmount"),
       selector: (row: any) => <NumberFormatter value={row.billingTo} />, // Assuming billingTo is the customer name
     },
     {
-      name: "Invoice Date",
+      name: t("invoiceMgmt.col.invoiceDate"),
       selector: (row: any) => new Date(row.invoiceDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Invoice Date"),
     },
     {
-      name: "Due Date",
+      name: t("invoiceMgmt.col.dueDate"),
       selector: (row: any) => new Date(row.dueDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Due Date"),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -152,7 +154,7 @@ const InvoiceManagement = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -295,7 +297,7 @@ const InvoiceManagement = () => {
             className="d-flex align-items-center col-6 justify-content-between mt-1"
             style={{ fontSize: "18px", fontWeight: "Bold" }}
           >
-            Invoice Management
+            {t("invoiceMgmt.title")}
           </div>
           <div className="col-6 d-flex justify-content-end">
             <span className="pe-3">
@@ -305,7 +307,7 @@ const InvoiceManagement = () => {
                   setSelectApplicable(e);
                 }}
                 style={{ width: "100%", minWidth: "100px", height: "33px" }}
-                placeholder="Search Type"
+                placeholder={t("invoiceMgmt.searchType")}
               >
                 {applicableOption?.map((option) => (
                   <Select.Option value={option.value}>
@@ -316,7 +318,7 @@ const InvoiceManagement = () => {
             </span>
             <span className="pe-2">
               <Input
-                placeholder="Search"
+                placeholder={t("common:search")}
                 value={searchValue}
                 prefix={<SearchOutlined />}
                 onChange={(e: any) => {
@@ -336,7 +338,7 @@ const InvoiceManagement = () => {
               }}
               onClick={handleSubmitInvoice}
             >
-              Create Invoice
+              {t("invoiceMgmt.createInvoice")}
             </Button>
           </div>
         </div>
@@ -443,7 +445,7 @@ const InvoiceManagement = () => {
               className="d-flex justify-content-center mt-5"
               style={{ color: "var(--destructive)" }}
             >
-              No data found
+              {t("invoiceMgmt.noData")}
             </div>
           )}
         </div>

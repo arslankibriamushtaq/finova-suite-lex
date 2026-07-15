@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Dropdown, Menu, Modal } from "antd";
 import { DownOutlined } from "@ant-design/icons";
 import TableView from "../../../../components/TableView/TableView";
@@ -6,6 +7,7 @@ import toast from "react-hot-toast";
 import { getAllInvestments, approveInvestment, updateWalletBalance } from "../../../../redux/apis/apisInvestor";
 
 const ApproveInvestment = () => {
+  const { t } = useTranslation("investor");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -41,7 +43,7 @@ const ApproveInvestment = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || "Failed to fetch investments");
+      toast.error(error?.notificationMessage || error?.message || t("appinv.fetchError"));
       setSkelitonLoading(false);
     }
   };
@@ -54,7 +56,7 @@ const ApproveInvestment = () => {
 
   const handleApprove = async () => {
     if (!selectedInvestment) {
-      toast.error("Please select an investment");
+      toast.error(t("appinv.selectError"));
       return;
     }
 
@@ -69,7 +71,7 @@ const ApproveInvestment = () => {
 
       if (approveResult.success === false) {
         // Show notification message if approval fails
-        const errorMessage = approveResult.notificationMessage || "Failed to approve investment";
+        const errorMessage = approveResult.notificationMessage || t("appinv.approveError");
         toast.error(errorMessage);
         setApproving(false);
         return;
@@ -93,19 +95,19 @@ const ApproveInvestment = () => {
             )
           );
           
-          toast.success(walletUpdateResult?.data?.notificationMessage || walletUpdateResult?.message || "Investment approved and wallet balance updated successfully");
+          toast.success(walletUpdateResult?.data?.notificationMessage || walletUpdateResult?.message || t("appinv.success"));
           setApproveModalVisible(false);
           setSelectedInvestment(null);
           // Refresh the list to get latest data
           getInvestmentsList();
         } else {
           // Wallet update failed - don't update status or refresh list
-          toast.error(walletUpdateResult.error || "Investment approval failed: wallet balance could not be updated");
+          toast.error(walletUpdateResult.error || t("appinv.walletError"));
         }
       }
       setApproving(false);
     } catch (error: any) {
-      toast.error(error?.notificationMessage || error?.message || "Failed to approve investment");
+      toast.error(error?.notificationMessage || error?.message || t("appinv.approveError"));
       setApproving(false);
     }
   };
@@ -113,7 +115,7 @@ const ApproveInvestment = () => {
   const menu = (row: any) => (
     <Menu>
       <Menu.Item key="approve" onClick={() => handleApproveClick(row)}>
-        Approve
+        {t("appinv.approve")}
       </Menu.Item>
     </Menu>
   );
@@ -132,19 +134,19 @@ const ApproveInvestment = () => {
     //   width: "400px",
     // },
     {
-      name: "Product Name",
+      name: t("appinv.col.productName"),
       selector: (row: any) => row.productName || "-",
       sortable: true,
     //   width: "200px",
     },
     {
-      name: "Investment Amount",
+      name: t("appinv.col.investmentAmount"),
       selector: (row: any) => row.investmentAmount ? `SAR ${row.investmentAmount.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : "-",
       sortable: true,
     //   width: "150px",
     },
     {
-        name: "Investor Name",
+        name: t("appinv.col.investorName"),
         selector: (row: any) => row.investorName || "-",
         sortable: true,
         // width: "150px",
@@ -156,11 +158,11 @@ const ApproveInvestment = () => {
     //   width: "180px",
     // },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         // verificationStatus: 0 = Pending, > 0 = Approved
         const isVerified = row.verificationStatus !== undefined && row.verificationStatus !== 0;
-        const statusText = isVerified ? "Approved" : "Pending";
+        const statusText = isVerified ? t("appinv.status.approved") : t("appinv.status.pending");
         const statusColor = isVerified ? "var(--color-success)" : "var(--color-warning-amber)";
         return (
           <span
@@ -179,13 +181,13 @@ const ApproveInvestment = () => {
       sortable: true,
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) => row.createdAt ? new Date(row.createdAt).toLocaleString() : "-",
       sortable: true,
     //   width: "180px",
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => {
         // Check if already approved (verificationStatus !== 0)
         const isApproved = row.verificationStatus !== undefined && row.verificationStatus !== 0;
@@ -206,14 +208,14 @@ const ApproveInvestment = () => {
               }}
             >
               
-              Already Approved
+              {t("appinv.alreadyApproved")}
             </span>
           );
         }
         return (
           <Dropdown overlay={menu(row)} trigger={["click"]}>
             <Button type="primary" style={{ backgroundColor: "var(--foreground)" }}>
-              Select <DownOutlined />
+              {t("appinv.select")} <DownOutlined />
             </Button>
           </Dropdown>
         );
@@ -223,7 +225,7 @@ const ApproveInvestment = () => {
 
   return (
     <div className="service">
-      <h2 className="mb-3 mt-2 d-flex justify-content-start">Approve Investment</h2>
+      <h2 className="mb-3 mt-2 d-flex justify-content-start">{t("appinv.title")}</h2>
       <TableView
         header={Headers}
         data={data}
@@ -239,7 +241,7 @@ const ApproveInvestment = () => {
       />
 
       <Modal
-        title="Approve Investment"
+        title={t("appinv.title")}
         open={approveModalVisible}
         onOk={handleApprove}
         onCancel={() => {
@@ -248,15 +250,15 @@ const ApproveInvestment = () => {
         //   setAmount(0);
         }}
         confirmLoading={approving}
-        okText="Approve"
+        okText={t("appinv.approve")}
         okButtonProps={{ style: { backgroundColor: "var(--foreground)", borderColor: "var(--foreground)" } }}
       >
         {selectedInvestment && (
           <div className="mb-2">
-            <p className="mb-1"><strong>Investor Name:</strong> {selectedInvestment.investorName || "-"}</p>
-            <p className="mb-1"><strong>Product Name:</strong> {selectedInvestment.productName || "-"}</p>
-       
-            <p className="mb-0"><strong>Investment Amount:</strong> SAR {selectedInvestment.investmentAmount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</p>
+            <p className="mb-1"><strong>{t("appinv.modalInvestorName")}</strong> {selectedInvestment.investorName || "-"}</p>
+            <p className="mb-1"><strong>{t("appinv.modalProductName")}</strong> {selectedInvestment.productName || "-"}</p>
+
+            <p className="mb-0"><strong>{t("appinv.modalInvestmentAmount")}</strong> SAR {selectedInvestment.investmentAmount?.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) || "0.00"}</p>
           </div>
         )}
       </Modal>

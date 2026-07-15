@@ -16,8 +16,10 @@ import { Formik, Form, Field } from "formik";
 import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
 import Loader from "../Loader/Loader";
 import { NumberFormatter } from "../../App";
+import { useTranslation } from "react-i18next";
 
 const AccountInvoices = () => {
+  const { t } = useTranslation("accountingLoans");
   const [searchValue, setSearchValue] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [editFormData, setEditFormData] = useState<any>({});
@@ -107,7 +109,7 @@ const AccountInvoices = () => {
             setInvoiceNo(row.invoiceNumber);
           }}
         >
-          Update Due Date
+          {t("accInvoices.updateDueDate")}
         </Menu.Item>
 
         {row.paymentStatus !== 1 && (
@@ -117,7 +119,7 @@ const AccountInvoices = () => {
             }}
             icon={<EyeOutlined />}
           >
-            View
+            {t("accInvoices.viewInvoice")}
           </Menu.Item>
         )}
         {row.paymentStatus != 1 && (
@@ -128,7 +130,7 @@ const AccountInvoices = () => {
             }}
             icon={<EditOutlined />}
           >
-            Pay Manually
+            {t("accInvoices.payManually")}
           </Menu.Item>
         )}
         {row.payableStatus != 0 && (
@@ -139,7 +141,7 @@ const AccountInvoices = () => {
             }}
             icon={<EditOutlined />}
           >
-            Waive late charges
+            {t("accInvoices.waiveLateCharges")}
           </Menu.Item>
         )}
         {/* <Menu.Item
@@ -169,27 +171,27 @@ const AccountInvoices = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Invoice No",
+      name: t("accInvoices.col.invoiceNo"),
       selector: (row: any) => row.invoiceNumber,
       frozen: frozenColumns.includes("Invoice No"),
     },
     {
-      name: "Customer Name",
+      name: t("accInvoices.col.customerName"),
       selector: (row: any) => row.billingTo, // Assuming billingTo is the customer name
     },
 
     {
-      name: "Invoice Date",
+      name: t("accInvoices.col.invoiceDate"),
       selector: (row: any) => new Date(row.invoiceDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Invoice Date"),
     },
     {
-      name: "Due Date",
+      name: t("accInvoices.col.dueDate"),
       selector: (row: any) => new Date(row.dueDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Due Date"),
     },
     {
-      name: "Total",
+      name: t("accInvoices.col.total"),
       selector: (row: any) => row.totalAmountWithPenalty, // Assuming totalAmount is the total
       cell: (row: any) => (
         <div>
@@ -198,7 +200,7 @@ const AccountInvoices = () => {
       ),
     },
     {
-      name: "Payable Status",
+      name: t("accInvoices.col.payableStatus"),
       selector: (row: any) => row.payableStatus, // Assuming payableStatus holds "Early Settlement" or "Due Loans"
       cell: (row: any) => (
         <div
@@ -206,21 +208,21 @@ const AccountInvoices = () => {
           }}
         >
           {row.payableStatus === 0
-            ? "Early settlement"
+            ? t("accInvoices.payable.earlySettlement")
             : row.payableStatus === 1
-              ? "Due Loan"
+              ? t("accInvoices.payable.dueLoan")
               : row.payableStatus === 2
-                ? "Over due"
+                ? t("accInvoices.payable.overdue")
                 : row.payableStatus === 3
-                  ? "Non performing"
+                  ? t("accInvoices.payable.nonPerforming")
                   : row.payableStatus === 4
-                    ? " Write off"
-                    : "Broken promise"}
+                    ? t("accInvoices.payable.writeOff")
+                    : t("accInvoices.payable.brokenPromise")}
         </div>
       ),
     },
     {
-      name: "Payment Status",
+      name: t("accInvoices.col.paymentStatus"),
       selector: (row: any) => row.paymentStatus, // Assuming 'status' for active/inactive
       cell: (row: any) => (
         <div
@@ -231,12 +233,12 @@ const AccountInvoices = () => {
             color: "var(--primary-foreground)",
           }}
         >
-          {row.paymentStatus === 1 ? "Paid" : "Unpaid"}
+          {row.paymentStatus === 1 ? t("accInvoices.paymentStatus.paid") : t("accInvoices.paymentStatus.unpaid")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -249,7 +251,7 @@ const AccountInvoices = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -303,7 +305,7 @@ const AccountInvoices = () => {
       }
     } catch (error) {
       // Handle error case
-      toast.error("Failed to submit payment. Please try again.");
+      toast.error(t("pay.toast.submitFailed"));
     }
   };
   const handleSubmitWaiveAmount = async (values: any) => {
@@ -365,20 +367,20 @@ const AccountInvoices = () => {
       { value: 4, label: "Prefer_not_to_say" },
     ],
     RepaymentType: [
-      { value: 0, label: "invoice" },
-      { value: 1, label: "Promise" },
+      { value: 0, label: t("pay.optInvoice") },
+      { value: 1, label: t("pay.optPromise") },
     ],
     RepaymentStatus: [
-      { value: 0, label: "Pending" },
-      { value: 1, label: "Approved" },
-      { value: 2, label: "Rejected" },
+      { value: 0, label: t("pay.optPending") },
+      { value: 1, label: t("pay.optApproved") },
+      { value: 2, label: t("pay.optRejected") },
     ],
 
     RepaymentChannel: [
-      { value: 0, label: "Cheque" },
-      { value: 1, label: "Online" },
-      { value: 2, label: "Cash" },
-      { value: 3, label: "Gateway" },
+      { value: 0, label: t("pay.cheque") },
+      { value: 1, label: t("pay.online") },
+      { value: 2, label: t("pay.cash") },
+      { value: 3, label: t("txnHistory.mode.gateway") },
     ],
   };
   const handleAllReason = async () => {
@@ -499,7 +501,7 @@ const AccountInvoices = () => {
       {loader && <Loader />}
       <div>
         <div className="col-11 mb-4 ">
-          <h3>Account Other Invoices</h3>
+          <h3>{t("accInvoices.title")}</h3>
         </div>
         {/* <div className="col-12">
           <TableHeaderFilter
@@ -526,7 +528,7 @@ const AccountInvoices = () => {
               className="d-flex justify-content-center mt-5"
               style={{ color: "var(--destructive)" }}
             >
-              No data found
+              {t("accInvoices.noData")}
             </div>
           )}
         </div>
@@ -539,7 +541,7 @@ const AccountInvoices = () => {
             setSelectedInvoice(null);
           }}
         >
-          <Modal.Title>Pay Invoice Manually</Modal.Title>
+          <Modal.Title>{t("pay.title")}</Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{
@@ -604,7 +606,7 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Invoice No.
+                      {t("pay.invoiceNo")}
                     </label>
                     <Field name="invoiceNumber" className="form-control" />
                   </Col>
@@ -614,7 +616,7 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Amount
+                      {t("pay.amount")}
                     </label>
                     <Field name="totalAmount" className="form-control" />
                   </Col>
@@ -627,17 +629,17 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Payment Method
+                      {t("pay.paymentMethod")}
                     </label>
                     <Field
                       as="select"
                       name="paymentMethod"
                       className="form-control"
                     >
-                      <option label="Select Payment Method" value="" />
-                      <option value="Cheque">Cheque</option>
-                      <option value="Credit Card">Credit Card</option>
-                      <option value="Cash">Cash</option>
+                      <option label={t("pay.selectPaymentMethod")} value="" />
+                      <option value="Cheque">{t("pay.cheque")}</option>
+                      <option value="Credit Card">{t("pay.creditCard")}</option>
+                      <option value="Cash">{t("pay.cash")}</option>
                     </Field>
                   </Col>
                   {values.paymentMethod === "Cheque" && (
@@ -647,13 +649,13 @@ const AccountInvoices = () => {
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Cheque No.
+                        {t("pay.chequeNo")}
                       </label>
                       <Field
                         as="input"
                         name="chequeNo"
                         className="form-control"
-                        placeholder="Cheque Num..."
+                        placeholder={t("pay.chequeNumPlaceholder")}
                       />
                     </Col>
                   )}
@@ -664,13 +666,13 @@ const AccountInvoices = () => {
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Payer Name
+                        {t("pay.payerName")}
                       </label>
                       <Field
                         as="input"
                         name="payerName"
                         className="form-control"
-                        placeholder="Payer Name"
+                        placeholder={t("pay.payerName")}
                       />
                     </Col>
                   )}
@@ -682,7 +684,7 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Due Date
+                      {t("pay.dueDate")}
                     </label>
                     <Field
                       name="dueDate"
@@ -697,13 +699,13 @@ const AccountInvoices = () => {
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Bank Name
+                        {t("pay.bankName")}
                       </label>
                       <Field
                         as="input"
                         name="bankName"
                         className="form-control"
-                        placeholder="Bank Name"
+                        placeholder={t("pay.bankName")}
                       />
                     </Col>
                   )}
@@ -714,14 +716,14 @@ const AccountInvoices = () => {
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Repayment Types
+                        {t("pay.repaymentTypes")}
                       </label>
                       <Field
                         as="select"
                         name="repaymentTypes"
                         className="form-control"
                       >
-                        <option label="Select Type" value="" />
+                        <option label={t("pay.selectType")} value="" />
                         {enums.RepaymentType.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -740,13 +742,13 @@ const AccountInvoices = () => {
                           className="mb-2"
                           style={{ fontSize: "14px", fontWeight: 500 }}
                         >
-                          Branch Code
+                          {t("pay.branchCode")}
                         </label>
                         <Field
                           as="input"
                           name="branchCode"
                           className="form-control"
-                          placeholder="Branch Code"
+                          placeholder={t("pay.branchCode")}
                         />
                       </Col>
                       <Col>
@@ -762,7 +764,7 @@ const AccountInvoices = () => {
                           name="repaymentTypes"
                           className="form-control"
                         >
-                          <option label="Select Type" value="" />
+                          <option label={t("pay.selectType")} value="" />
                           {enums.RepaymentType.map((option) => (
                             <option key={option.value} value={option.value}>
                               {option.label}
@@ -780,10 +782,10 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Status
+                      {t("pay.status")}
                     </label>
                     <Field as="select" name="Status" className="form-control">
-                      <option label="Set Status" value="" />
+                      <option label={t("pay.setStatus")} value="" />
                       {enums.RepaymentStatus.map((option) => (
                         <option key={option.value} value={option.value}>
                           {option.label}
@@ -820,7 +822,7 @@ const AccountInvoices = () => {
                         className="mb-2"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Document
+                        {t("pay.document")}
                       </label>
                       <br />
                       {!fileName ? (
@@ -839,7 +841,7 @@ const AccountInvoices = () => {
                             color: "var(--muted-foreground)",
                           }}
                         >
-                          Click here to upload a file
+                          {t("pay.clickToUpload")}
                         </div>
                       ) : (
                         // Display this when a file is selected
@@ -893,7 +895,7 @@ const AccountInvoices = () => {
                       borderRadius: "2px",
                     }}
                   >
-                    Submit
+                    {t("common:submit")}
                   </button>
                 </div>
               </Form>
@@ -912,7 +914,7 @@ const AccountInvoices = () => {
         }}
       >
         <ModalHeader style={{ fontSize: "16px", fontWeight: 600 }} closeButton>
-          Update Due Date
+          {t("accInvoices.updateDueDate")}
         </ModalHeader>
 
         <ModalBody className="modal-body-scroll">
@@ -922,7 +924,7 @@ const AccountInvoices = () => {
                 className="d-flex mb-2"
                 style={{ fontSize: "14px", fontWeight: 600 }}
               >
-                Invoice No
+                {t("accInvoices.col.invoiceNo")}
               </label>
               <Input name="id" value={invoiceNo} disabled />
             </div>
@@ -931,7 +933,7 @@ const AccountInvoices = () => {
                 className="d-flex mb-2"
                 style={{ fontSize: "14px", fontWeight: 600 }}
               >
-                Due Date
+                {t("pay.dueDate")}
               </label>
               <Input
                 name="name"
@@ -947,7 +949,7 @@ const AccountInvoices = () => {
                 className="theme-btn-next"
                 onClick={() => handleUpdateDueDate()}
               >
-                Update
+                {t("common:update")}
               </button>
             </div>
           </div>
@@ -962,7 +964,7 @@ const AccountInvoices = () => {
         }}
       >
         <Modal.Header closeButton>
-          <Modal.Title>Waive Late Charges</Modal.Title>
+          <Modal.Title>{t("accInvoices.waiveLateTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body
           style={{
@@ -987,7 +989,7 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Invoice No.
+                      {t("pay.invoiceNo")}
                     </label>
                     <Field
                       name="invoiceNumber"
@@ -1002,7 +1004,7 @@ const AccountInvoices = () => {
                       className="mb-2"
                       style={{ fontSize: "14px", fontWeight: 500 }}
                     >
-                      Penalty Amount
+                      {t("accInvoices.penaltyAmount")}
                     </label>
                     <Field
                       name="totalAmount"
@@ -1027,7 +1029,7 @@ const AccountInvoices = () => {
                       borderRadius: "2px",
                     }}
                   >
-                    Submit
+                    {t("common:submit")}
                   </button>
                 </div>
               </Form>

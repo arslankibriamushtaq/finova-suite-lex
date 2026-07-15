@@ -5,7 +5,9 @@ import { getDayBookReport } from "../../../redux/apis/apisCrudLms";
 import {
   SearchOutlined,
 } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 const Customers = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -19,24 +21,24 @@ const Customers = () => {
 
   const getAllReportsReport = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       width: "25%",
 
       selector: (row: { srNo: string }) => row.srNo || "-",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       width: "25%",
 
       selector: (row: { name: string }) => row.name || "-",
     },
     {
-      name: "Contact No",
+      name: t("fields.contactNo"),
       width: "25%",
       selector: (row: { contactNo: string }) => row.contactNo || "-",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       width: "25%",
       selector: (row: { status: string }) => row.status || "-",
     },
@@ -77,11 +79,11 @@ const Customers = () => {
     <>
       <div className="d-flex col-12 justify-content-between align-items-center">
         <div className="col-8">
-          <h5 className="mb-0">Customers</h5>
+          <h5 className="mb-0">{t("customers.title")}</h5>
         </div>
         <div className="col-4 text-end">
         <Input
-            placeholder="Search by name"
+            placeholder={t("fields.searchByName")}
             value={searchValue}
             prefix={<SearchOutlined />} style={{ width: "300px", height: "33px", marginRight: "10px" }}
             onChange={(e: any) => {

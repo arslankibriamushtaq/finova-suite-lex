@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Form, Row, Col } from "react-bootstrap";
 
 import {
@@ -20,6 +21,7 @@ import { Images } from "../../Config/Images";
 
 
 const Channels = () => {
+    const { t } = useTranslation("notifications");
     const [dashboardData, setDashboardData] = useState<any>();
     const [showModal, setShowModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -45,17 +47,17 @@ const Channels = () => {
 
     const Activity_Loans_Header = [
         {
-            name: "Sr:",
+            name: t("shared.sr"),
             selector: (row: { user_id: any }) => row.user_id,
             sortable: true,
         },
         {
-            name: "Name",
+            name: t("common:name"),
             selector: (row: { name: any }) => row.name,
             sortable: true,
         },
         {
-            name: "Supports Read Status",
+            name: t("channels.col.supportsReadStatus"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -68,13 +70,13 @@ const Channels = () => {
                         color: "white",
                     }}
                 >
-                    {row.supportsReadStatus ? "Yes" : "No"}
+                    {row.supportsReadStatus ? t("common:yes") : t("common:no")}
                 </div>
             ),
             width: "190px",
         },
         {
-            name: "Rate Limit",
+            name: t("channels.col.rateLimit"),
             selector: (row: { rateLimit: any }) => row.rateLimit,
             sortable: true,
             width: "140px",
@@ -85,7 +87,7 @@ const Channels = () => {
         //   wrap: true,
         // },
         {
-            name: "Active",
+            name: t("common:active"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -96,13 +98,13 @@ const Channels = () => {
                         color: "white",
                     }}
                 >
-                    {row.active ? "Active" : "Inactive"}
+                    {row.active ? t("common:active") : t("common:inactive")}
                 </div>
             ),
             width: "130px",
         },
         {
-            name: "Allow User Pref",
+            name: t("channels.col.allowUserPref"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -115,13 +117,13 @@ const Channels = () => {
                         color: "white",
                     }}
                 >
-                    {row.allowUserPref ? "Yes" : "No"}
+                    {row.allowUserPref ? t("common:yes") : t("common:no")}
                 </div>
             ),
             width: "180px",
         },
         {
-            name: "System Allow",
+            name: t("channels.col.systemAllow"),
             cell: (row: any) => (
                 <div
                     style={{
@@ -134,14 +136,14 @@ const Channels = () => {
                         color: "white",
                     }}
                 >
-                    {row.systemAllow ? "Yes" : "No"}
+                    {row.systemAllow ? t("common:yes") : t("common:no")}
                 </div>
             ),
             width: "170px",
         },
 
         {
-            name: "Actions",
+            name: t("common:actions"),
 
             cell: (row: any) => (
                 <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -156,7 +158,7 @@ const Channels = () => {
                             padding: "10px 20px",
                         }}
                     >
-                        Select <img src={arrowDown} alt="" />
+                        {t("common:select")} <img src={arrowDown} alt="" />
                     </Button>
                 </Dropdown>
             ),
@@ -187,14 +189,14 @@ const Channels = () => {
                     setSelectedItem("edit");
                 }}
             >
-                Edit
+                {t("common:edit")}
             </Menu.Item>
             <Menu.Item
                 key="delete"
                 icon={<DeleteOutlined />}
                 onClick={() => handleMenuClick("delete", row)}
             >
-                Delete
+                {t("common:delete")}
             </Menu.Item>
         </Menu>
     );
@@ -272,9 +274,9 @@ const Channels = () => {
                         systemAllow: false,
                     });
                     await getList();
-                    return "Channel updated successfully!";
+                    return t("channels.toast.updated");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to update");
+                    throw new Error(response?.data?.errors || t("shared.failedUpdate"));
                 }
             } else {
                 const response = await createChannels(body);
@@ -289,17 +291,17 @@ const Channels = () => {
                         allowUserPref: false,
                         systemAllow: false,
                     });
-                    return "Channel added successfully!";
+                    return t("channels.toast.added");
                 } else {
-                    throw new Error(response?.data?.errors || "Failed to add");
+                    throw new Error(response?.data?.errors || t("shared.failedAdd"));
                 }
             }
         };
 
         toast.promise(savePromise(), {
-            loading: isEditing ? "Updating Channel..." : "Adding Channel...",
+            loading: isEditing ? t("channels.toast.updating") : t("channels.toast.adding"),
             success: (msg) => msg,
-            error: (err) => err.message || "Something went wrong",
+            error: (err) => err.message || t("shared.somethingWentWrong"),
         });
     };
 
@@ -311,16 +313,16 @@ const Channels = () => {
                      setIsDeleteModalVisible(false);
                      await getList();
                      setEditRowId(null);
-                     return "Channel deleted successfully!";
+                     return t("channels.toast.deleted");
                  } else {
-                     throw new Error(response?.data?.errors || "Failed to delete");
+                     throw new Error(response?.data?.errors || t("shared.failedDelete"));
                  }
              };
 
              toast.promise(deletePromise(), {
-                 loading: "Deleting Channel...",
+                 loading: t("channels.toast.deleting"),
                  success: (msg) => msg,
-                 error: (err) => err.message || "Something went wrong",
+                 error: (err) => err.message || t("shared.somethingWentWrong"),
              });
          } catch (error: any) {
              toast.error(error.message);
@@ -353,7 +355,7 @@ const Channels = () => {
                         mode="tags"
                         style={{ width: "15%", borderTopRightRadius: "0px" }}
                         // onChange={handleChange}
-                        placeholder="Filter"
+                        placeholder={t("common:filter")}
                         tokenSeparators={[","]}
                         suffixIcon={<FaFilter />}
 
@@ -371,7 +373,7 @@ const Channels = () => {
                                     background: "transparent",
                                 }}
                                 className="p-2"
-                                placeholder="Search..."
+                                placeholder={t("shared.searchPlaceholder")}
                             />
                         </div>
 
@@ -391,7 +393,7 @@ const Channels = () => {
                                 setSelectedItem(null);
                             }}
                         >
-                            Add New Channel
+                            {t("channels.addNew")}
                         </button>
                     </div>
                 </div>
@@ -414,13 +416,13 @@ const Channels = () => {
                 className="custom-mod"
                 visible={showModal}
                 onCancel={() => setShowModal(false)}
-                title={editRowId ? "Edit Channel" : "Add New Channel"}
+                title={editRowId ? t("channels.editTitle") : t("channels.addNew")}
                 footer={[
                     <Button key="close" onClick={() => setShowModal(false)}>
-                        Close
+                        {t("common:close")}
                     </Button>,
                     <Button key="save" type="primary" onClick={handleSave}>
-                        {selectedItem === "edit" ? "Update" : "Submit"}
+                        {selectedItem === "edit" ? t("common:update") : t("common:submit")}
                     </Button>,
                 ]}
             >
@@ -428,11 +430,11 @@ const Channels = () => {
                     <Row>
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Name <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("common:name")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="text"
                                     className="custom-input"
-                                    placeholder="Enter name"
+                                    placeholder={t("channels.ph.name")}
                                     name="name"
                                     value={formData.name}
                                     onChange={(e: any) => {
@@ -447,11 +449,11 @@ const Channels = () => {
 
                         <Col md={6}>
                             <Form.Group className="mb-2 custom-input-box">
-                                <Form.Label className="px-2 mt-2">Rate Limit <span style={{ color: "red" }}>*</span></Form.Label>
+                                <Form.Label className="px-2 mt-2">{t("channels.col.rateLimit")} <span style={{ color: "red" }}>*</span></Form.Label>
                                 <Input
                                     type="number"
                                     className="custom-input"
-                                    placeholder="Rate Limit"
+                                    placeholder={t("channels.col.rateLimit")}
                                     name="rateLimit"
                                     value={formData.rateLimit}
                                     onChange={(e: any) => {
@@ -470,7 +472,7 @@ const Channels = () => {
 
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">Supports Read Status</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("channels.col.supportsReadStatus")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) =>
@@ -478,15 +480,15 @@ const Channels = () => {
                                         }
                                         value={formData.supportsReadStatus}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
                         </Col>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">System Allow?</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("channels.label.systemAllow")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) =>
@@ -494,8 +496,8 @@ const Channels = () => {
                                         }
                                         value={formData.systemAllow}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
@@ -504,7 +506,7 @@ const Channels = () => {
                     <Row>
                         <Col md={6}>
                             <div className="mt-2 d-flex align-items-center">
-                                <Form.Label className="px-2 mt-2 col-6">Allow User Pref?</Form.Label>
+                                <Form.Label className="px-2 mt-2 col-6">{t("channels.label.allowUserPref")}</Form.Label>
                                 <div className="d-flex justify-content-end col-6">
                                     <Radio.Group
                                         onChange={(e) =>
@@ -512,8 +514,8 @@ const Channels = () => {
                                         }
                                         value={formData.allowUserPref}
                                     >
-                                        <Radio value={true}>Yes</Radio>
-                                        <Radio value={false}>No</Radio>
+                                        <Radio value={true}>{t("common:yes")}</Radio>
+                                        <Radio value={false}>{t("common:no")}</Radio>
                                     </Radio.Group>
                                 </div>
                             </div>
@@ -548,10 +550,10 @@ const Channels = () => {
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"
                 style={{ maxWidth: "632px" }}
-                 title={"Delete Channel"}
+                 title={t("channels.delete.title")}
                 footer={[
                     <Button key="no" onClick={() => setIsDeleteModalVisible(false)}>
-                        No
+                        {t("common:no")}
                     </Button>,
                     <Button
                         key="yes"
@@ -560,13 +562,12 @@ const Channels = () => {
                             handleDelete(editRowId);
                         }}
                     >
-                        Yes
+                        {t("common:yes")}
                     </Button>,
                 ]}
             >
                 <Form>
-                    {`
-               Are you sure you want to delete this Channel?`}
+                    {t("channels.delete.confirm")}
                 </Form>
             </Modal>
         </div>

@@ -4,8 +4,10 @@ import TableView from "../TableView/TableView";
 import { getActivityLogs } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import { formatDate } from "../../App";
+import { useTranslation } from "react-i18next";
 
 const ActivityLogFinancing = () => {
+  const { t } = useTranslation("financing");
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const [skelitonLoading, setSkelitonLoading] = useState(false);
@@ -19,37 +21,37 @@ const ActivityLogFinancing = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "ID",
+      name: t("col.id"),
       selector: (row: { id: any }) => row.id,
       sortable: true,
       width: "80px",
     },
     {
-      name: "Application No.",
+      name: t("col.applicationNo"),
       selector: (row: { application_no: any }) => row.application_no,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Time",
+      name: t("col.time"),
       selector: (row: { time: any }) => row.time,
       sortable: true,
       width: "120px",
     },
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { date: any }) => row.date,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Updated By",
+      name: t("col.updatedBy"),
       selector: (row: { updated_by: any }) => row.updated_by,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Event",
+      name: t("col.event"),
       cell: (row: { event: any }) => (
         <div style={{ whiteSpace: "normal", padding: "8px 0", lineHeight: "1.5" }}>
           {row.event}
@@ -58,7 +60,7 @@ const ActivityLogFinancing = () => {
       width: "300px",
     },
     {
-      name: "Changes",
+      name: t("col.changes"),
       cell: (row: { changes: any }) => (
         <div style={{ whiteSpace: "normal", padding: "8px 0", lineHeight: "1.5" }}>
           {row.changes}
@@ -88,7 +90,7 @@ const ActivityLogFinancing = () => {
         setTotalPage(response?.data?.data?.last_page || 0);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch activity logs");
+      toast.error(error?.message || t("toast.fetchActivityLogsFailed"));
       setSkelitonLoading(false);
     } finally {
       setSkelitonLoading(false);
@@ -148,7 +150,7 @@ const ActivityLogFinancing = () => {
         <div className="d-flex gap-2 align-items-center">
           <DatePicker
             className="date-picker"
-            placeholder="From"
+            placeholder={t("common:from")}
             value={fromDate}
             onChange={(date) => {
               setFromDate(date);
@@ -157,7 +159,7 @@ const ActivityLogFinancing = () => {
           />
           <DatePicker
             className="date-picker"
-            placeholder="To"
+            placeholder={t("common:to")}
             value={toDate}
             onChange={(date) => {
               setToDate(date);

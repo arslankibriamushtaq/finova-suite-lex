@@ -4,6 +4,7 @@ import { DatePicker, Dropdown, Menu, Button } from "antd";
 import DynamicHeaderStructure from "../../components/DynamicHeaderStructure";
 import TableHeaderFilter from "../TableHeaderFilter";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 import { useState } from "react";
 import { DownOutlined, EditOutlined, EyeOutlined } from "@ant-design/icons";
@@ -70,18 +71,23 @@ const data = [
     Action: "--",
   },
 ];
-const button = [{ title: "Edit" }, { title: "View" }, { title: "Audit" }];
-const buttonSub2 = [{ title: "Audit" }];
-const buttonSub = [
-  { title: "Save and Add" },
-  { title: "Save and Stay" },
-  { title: "Save and Return" },
-  { title: "Return" },
-];
 const actionSelect = [{ label: "View", img: Images.listIcon, Link: "" }];
 
 const CheckList = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("customerManagement");
+  const button = [
+    { title: t("common:edit") },
+    { title: t("common:view") },
+    { title: t("checkList.audit") },
+  ];
+  const buttonSub2 = [{ title: t("checkList.audit") }];
+  const buttonSub = [
+    { title: t("checkList.saveAndAdd") },
+    { title: t("checkList.saveAndStay") },
+    { title: t("checkList.saveAndReturn") },
+    { title: t("checkList.return") },
+  ];
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -97,56 +103,56 @@ const CheckList = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<EyeOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
     </Menu>
   );
   const Call_Activity_Header = [
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Customer: any }) => row.Customer,
     },
     {
-      name: "Action",
+      name: t("checkList.col.action"),
       selector: (row: { ApplicationNo: any }) => row.ApplicationNo,
     },
     {
-      name: "Result",
+      name: t("checkList.col.result"),
       selector: (row: { ProductName: any }) => row.ProductName,
     },
     {
-      name: "Contact",
+      name: t("checkList.col.contact"),
       selector: (row: { CrNumber: any }) => row.CrNumber,
     },
     {
-      name: "Reason",
+      name: t("checkList.col.reason"),
       selector: (row: { Email: any }) => row.Email,
     },
     {
-      name: "Promise Date",
+      name: t("checkList.col.promiseDate"),
       selector: (row: { Phone: any }) => row.Phone,
     },
     {
-      name: "Promise Amt",
+      name: t("checkList.col.promiseAmt"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Current Amount Due",
+      name: t("checkList.col.currentAmountDue"),
       selector: (row: { ParentStatus: any }) => row.ParentStatus,
     },
     {
-      name: "Condition",
+      name: t("checkList.col.condition"),
       selector: (row: { Status: any }) => row.Status,
     },
     {
-      name: "Appointment",
+      name: t("checkList.col.appointment"),
       selector: (row: { Action: any }) => row.Action,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -160,7 +166,7 @@ const CheckList = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("checkList.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -169,7 +175,7 @@ const CheckList = () => {
   return (
     <>
       <div className="cs-table p-3">
-        <DynamicHeaderStructure title={"Checklist Type"} button={button} />
+        <DynamicHeaderStructure title={t("checkList.title")} button={button} />
         <TableHeaderFilter />
         <TableView
           setPage={setPage}
@@ -178,22 +184,22 @@ const CheckList = () => {
           header={Call_Activity_Header}
           data={data}
         />
-        <DynamicHeaderStructure title={"Checklist Type"} button={buttonSub} />
+        <DynamicHeaderStructure title={t("checkList.title")} button={buttonSub} />
       </div>
       <div className="border-bottom"></div>
       <div className="d-flex p-3">
         <div className="col-md-2 pt-3">
           <h2 className="col-md-12 pt-4 d-flex align-items-center  fs-6 fw-bold">
-            {"Checklist Action"}
+            {t("checkList.action.title")}
           </h2>
           <div
             className="theme-btn-checklist-active"
             style={{ marginTop: "2.3rem" }}
           >
-            Action - Regular
+            {t("checkList.action.regular")}
           </div>
           <div className="theme-btn-checklist-Inactive mt-1">
-            Action - Regular
+            {t("checkList.action.regular")}
           </div>
         </div>
         <div className="col-md-10">

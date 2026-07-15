@@ -5,8 +5,10 @@ import TableView from "../TableView/TableView";
 import { getCashFlowReport } from "../../redux/apis/apisCrudLms";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 const CashFlowReport = () => {
+  const { t } = useTranslation("reports");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -24,11 +26,11 @@ const CashFlowReport = () => {
 
   const columns = [
     {
-      name: "Metric",
+      name: t('cashFlow.col.metric'),
       selector: (row: any) => row.metric || "-",
     },
     {
-      name: "Value",
+      name: t('cashFlow.col.value'),
       selector: (row: any) => row.value || 0,
       cell: (row: any) => <b>{row.value != null ? `${Number(row.value).toLocaleString()} SAR` : "-"}</b>
     },
@@ -46,10 +48,10 @@ const CashFlowReport = () => {
           // It's a summary object
           setTotals(data);
           const summaryRows = [
-            { metric: "Total Inflows", value: data.totalInflows },
-            { metric: "Total Outflows", value: data.totalOutflows },
-            { metric: "Net Position", value: data.netPosition },
-            { metric: "Bank Balance", value: data.bankBalance },
+            { metric: t('cashFlow.summary.totalInflows'), value: data.totalInflows },
+            { metric: t('cashFlow.summary.totalOutflows'), value: data.totalOutflows },
+            { metric: t('cashFlow.summary.netPosition'), value: data.netPosition },
+            { metric: t('cashFlow.summary.bankBalance'), value: data.bankBalance },
           ];
           setReportData(summaryRows);
           setTotalRows(summaryRows.length);
@@ -67,7 +69,7 @@ const CashFlowReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching cash flow report:", error);
-      toast.error(error?.message || "Failed to fetch report");
+      toast.error(error?.message || t('cashFlow.toast.fetchError'));
       setReportData([]);
       setTotals(null);
     } finally {
@@ -77,7 +79,7 @@ const CashFlowReport = () => {
 
   const exportToCSV = () => {
     if (!reportData || reportData.length === 0) {
-      toast.error("No data available to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
 
@@ -108,7 +110,7 @@ const CashFlowReport = () => {
           <span className="pro-head-badge">
             <TrendingUp className="h-4 w-4" />
           </span>
-          Cash Flow Report
+          {t('cashFlow.title')}
         </h3>
       </div>
 
@@ -118,7 +120,7 @@ const CashFlowReport = () => {
           <DatePicker
             onChange={(d) => setDate(d)}
             format="YYYY-MM-DD"
-            placeholder="Date"
+            placeholder={t('common:date')}
             style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <Button
@@ -127,14 +129,14 @@ const CashFlowReport = () => {
             loading={loading}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Fetch Report
+            {t('cashFlow.fetchReport')}
           </Button>
           <Button
             className="theme-btn-next"
             onClick={exportToCSV}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t('action.exportCsv')}
           </Button>
         </div>
       </div>
@@ -143,7 +145,7 @@ const CashFlowReport = () => {
         <div className="row mb-3 g-3">
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Inflows</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.totalInflows')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.totalInflows?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -151,7 +153,7 @@ const CashFlowReport = () => {
           </div>
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Total Outflows</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.totalOutflows')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.totalOutflows?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -159,7 +161,7 @@ const CashFlowReport = () => {
           </div>
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Net Position</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.netPosition')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.netPosition?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
               </div>
@@ -167,7 +169,7 @@ const CashFlowReport = () => {
           </div>
           <div className="col-md-3 col-sm-6">
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14, fontWeight: 600 }}>Bank Balance</div>
+              <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.bankBalance')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                 {totals.bankBalance?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
               </div>

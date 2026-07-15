@@ -3,11 +3,23 @@ import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Images } from "../Config/Images";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
 
+// Map each English sidebar label (kept as the item's stable identity, used for
+// active/comparison logic) to its translation key so labels can be translated
+// only at render time without altering any logic.
+const SIDEBAR_LABEL_KEYS: Record<string, string> = {
+  "Accounting & Financing": "accountingFinancing",
+  "Loan Reports": "loanReports",
+};
+
 const DasbhboardSidebar = () => {
+  const { t } = useTranslation("sidebar");
+  const tr = (label?: string) =>
+    label && SIDEBAR_LABEL_KEYS[label] ? t(SIDEBAR_LABEL_KEYS[label]) : label;
   const dispatch = useDispatch();
   const navigate = useNavigate();
   let tokenValue = localStorage.getItem("accessToken");
@@ -91,7 +103,7 @@ const DasbhboardSidebar = () => {
 
   const renderSubmenu = (item: any) => (
     <div className="menu-items" key={item.label}>
-      <SubMenu label={item.label} onClick={() => setActiveBar(item.label)}>
+      <SubMenu label={tr(item.label)} onClick={() => setActiveBar(item.label)}>
         {item.menu.map((submenuItem: any, subIndex: any) => (
           <Link
             to={`${submenuItem.Link}`}
@@ -115,7 +127,7 @@ const DasbhboardSidebar = () => {
               key={subIndex}
               onClick={() => setActiveSubBar(submenuItem.label)}
             >
-              {submenuItem.label}
+              {tr(submenuItem.label)}
             </MenuItem>
           </Link>
         ))}
@@ -181,7 +193,7 @@ const DasbhboardSidebar = () => {
                           />
                         }
                       >
-                        {item.label}
+                        {tr(item.label)}
                       </MenuItem>
                     </Link>
                   </div>

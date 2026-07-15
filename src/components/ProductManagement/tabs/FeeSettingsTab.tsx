@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
 import { Label } from "../../ui/label"
@@ -22,6 +23,7 @@ export default function FeeSettingsTab({
   onPrevious,
   productTypeName = "",
 }: FeeSettingsTabProps) {
+  const { t } = useTranslation("productManagement2")
   // Check if product type is individual or company
   // Product type can be stored as name (e.g., "individual", "company") or as ID
   const isIndividual = productTypeName.toLowerCase() === "individual" || productTypeName === "1"
@@ -31,41 +33,41 @@ export default function FeeSettingsTab({
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Fee Settings</CardTitle>
+          <CardTitle>{t("fee.title")}</CardTitle>
           <p className="text-muted-foreground">
-            Configure financing amounts, VAT, revenue eligibility, and DBR settings.
+            {t("fee.subtitle")}
           </p>
         </CardHeader>
         <CardContent className="space-y-6">
           {/* Age and Other Settings */}
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium mb-4">Eligibility Settings</h3>
+            <h3 className="text-lg font-medium mb-4">{t("fee.eligibilityHeading")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>{isCompany ? "Company Minimum Age" : "Minimum Age"}</Label>
+                <Label>{isCompany ? t("fee.companyMinAge") : t("fee.minAge")}</Label>
                 <Input
                   type="number"
                   placeholder="18"
                   value={formData.min_age}
                   onChange={(e) => updateFormData("min_age", Number(e.target.value))}
                 />
-                <p className="text-xs text-muted-foreground">{isCompany ? "Minimum company age requirement" : "Minimum customer age requirement"}</p>
+                <p className="text-xs text-muted-foreground">{isCompany ? t("fee.companyMinAgeHint") : t("fee.minAgeHint")}</p>
               </div>
 
               <div className="space-y-2">
-                <Label>{isCompany ? "Company Maximum Age" : "Maximum Age"}</Label>
+                <Label>{isCompany ? t("fee.companyMaxAge") : t("fee.maxAge")}</Label>
                 <Input
                   type="number"
                   placeholder="65"
                   value={formData.max_age}
                   onChange={(e) => updateFormData("max_age", Number(e.target.value))}
                 />
-                <p className="text-xs text-muted-foreground">{isCompany ? "Maximum company age requirement" : "Maximum customer age requirement"}</p>
+                <p className="text-xs text-muted-foreground">{isCompany ? t("fee.companyMaxAgeHint") : t("fee.maxAgeHint")}</p>
               </div>
 
 
               <div className="space-y-2">
-                <Label>GDBR Percentage</Label>
+                <Label>{t("fee.gdbrLabel")}</Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -73,16 +75,16 @@ export default function FeeSettingsTab({
                   value={formData.gdbr_percentage}
                   onChange={(e) => updateFormData("gdbr_percentage", Number(e.target.value))}
                 />
-                <p className="text-xs text-muted-foreground">Gross Debt-to-Business Revenue ratio</p>
+                <p className="text-xs text-muted-foreground">{t("fee.gdbrHint")}</p>
               </div>
             </div>
           </div>
 
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium mb-4">DBR (Debt-to-Income Ratio) Configuration</h3>
+            <h3 className="text-lg font-medium mb-4">{t("fee.dbrHeading")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>{isIndividual ? "Product DBR Percentage *" : "Maximum DBR Percentage *"}</Label>
+                <Label>{isIndividual ? t("fee.productDbrLabel") : t("fee.maxDbrLabel")}</Label>
                 <Input
                   type="number"
                   step="0.1"
@@ -92,13 +94,13 @@ export default function FeeSettingsTab({
                   className={errors.dbr_percentage ? "border-destructive" : ""}
                 />
                 {errors.dbr_percentage && <p className="text-sm text-destructive">{errors.dbr_percentage}</p>}
-                <p className="text-xs text-muted-foreground">{isIndividual ? "Product debt-to-income ratio" : "Maximum allowed debt-to-income ratio"}</p>
+                <p className="text-xs text-muted-foreground">{isIndividual ? t("fee.productDbrHint") : t("fee.maxDbrHint")}</p>
               </div>
               <div className="space-y-2">
-                <Label>Maximum DTI (Debt-to-Income)</Label>
+                <Label>{t("fee.maxDtiLabel")}</Label>
                 <Input
                   type="number"
-                  placeholder="Enter Maximum DTI"
+                  placeholder={t("fee.maxDtiPlaceholder")}
                   value={formData.max_dti}
                   onChange={(e) => updateFormData("max_dti", Number(e.target.value))}
                   className={errors.max_dti ? "border-destructive" : ""}
@@ -143,10 +145,10 @@ export default function FeeSettingsTab({
           
           {/* Penalty Waiver Settings */}
           <div className="border-t pt-6">
-            <h3 className="text-lg font-medium mb-4">Penalty Waiver Settings</h3>
+            <h3 className="text-lg font-medium mb-4">{t("fee.penaltyHeading")}</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label>Allow Penalty Waivers</Label>
+                <Label>{t("fee.allowPenaltyWaivers")}</Label>
                 <div className="flex items-center space-x-2">
                   <Switch
                     checked={!!formData.penalty_waiver_allowed}
@@ -156,17 +158,17 @@ export default function FeeSettingsTab({
                     }}
                   />
                   <span className="text-sm text-muted-foreground">
-                    {formData.penalty_waiver_allowed ? "Enabled" : "Disabled"}
+                    {formData.penalty_waiver_allowed ? t("common:enabled") : t("common:disabled")}
                   </span>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Allow customers to request penalty waivers on this product
+                  {t("fee.penaltyWaiverHint")}
                 </p>
               </div>
 
               {formData.penalty_waiver_allowed && (
                 <div className="space-y-2">
-                  <Label>Max Penalty Waivers Allowed</Label>
+                  <Label>{t("fee.maxPenaltyWaivers")}</Label>
                   <Input
                     type="number"
                     min={1}
@@ -180,7 +182,7 @@ export default function FeeSettingsTab({
                     }
                   />
                   <p className="text-xs text-muted-foreground">
-                    Maximum number of penalty waivers a customer may receive for this product
+                    {t("fee.maxPenaltyWaiversHint")}
                   </p>
                 </div>
               )}
@@ -194,10 +196,10 @@ export default function FeeSettingsTab({
       <div className="flex justify-between gap-3 pt-4">
         <Button variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </Button>
         <Button onClick={onNext} className="gap-2">
-          Next: Fee Slabs
+          {t("fee.next")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

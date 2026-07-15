@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { getDocumentsByInvestorId, approveDocument, approveKyc, approveKyb, Document, ApproveDocumentRequest, ApproveKycRequest, ApproveKybRequest } from '../../../../redux/apis/apisInvestor';
 
 
@@ -21,6 +22,7 @@ import {
 import toast from 'react-hot-toast';
 
 export default function DocumentPreview() {
+  const { t } = useTranslation('investor');
   const { investorId } = useParams<{ investorId: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -71,7 +73,7 @@ export default function DocumentPreview() {
   // Load documents
   const loadDocuments = async () => {
     if (!investorId) {
-      toast.error('Investor ID is required');
+      toast.error(t('dpv.investorIdRequired'));
       return;
     }
 
@@ -91,10 +93,10 @@ export default function DocumentPreview() {
           setDocuments([]);
         }
       } else {
-        toast.error(result.notificationMessage || 'Failed to fetch documents');
+        toast.error(result.notificationMessage || t('doc.fetchError'));
       }
     } catch (error: any) {
-      toast.error('An error occurred while loading documents');
+      toast.error(t('doc.loadError'));
       console.error('Error loading documents:', error);
     } finally {
       setLoading(false);
@@ -119,13 +121,13 @@ export default function DocumentPreview() {
   const getStatusText = (verificationStatus: number) => {
     switch (verificationStatus) {
       case 0:
-        return 'Pending';
+        return t('doc.status.pending');
       case 1:
-        return 'Verified';
+        return t('doc.status.verified');
       case 2:
-        return 'Rejected';
+        return t('doc.status.rejected');
       default:
-        return 'Pending';
+        return t('doc.status.pending');
     }
   };
 
@@ -202,7 +204,7 @@ export default function DocumentPreview() {
           await approveKyb(kybRequest);
         }
         
-        toast.success(documentResult.notificationMessage || 'Document approved successfully');
+        toast.success(documentResult.notificationMessage || t('doc.approveSuccess'));
         // Reload documents
         loadDocuments();
       } else {
@@ -211,11 +213,11 @@ export default function DocumentPreview() {
             toast.error(error);
           });
         } else {
-          toast.error(documentResult.notificationMessage || 'Failed to approve document');
+          toast.error(documentResult.notificationMessage || t('doc.approveError'));
         }
       }
     } catch (error: any) {
-      toast.error('An error occurred while approving document');
+      toast.error(t('doc.approveErrorGeneric'));
       console.error('Error approving document:', error);
     }
   };
@@ -247,7 +249,7 @@ export default function DocumentPreview() {
           await approveKyb(kybRequest);
         }
         
-        toast.success(documentResult.notificationMessage || 'Document rejected successfully');
+        toast.success(documentResult.notificationMessage || t('doc.rejectSuccess'));
         // Reload documents
         loadDocuments();
       } else {
@@ -256,11 +258,11 @@ export default function DocumentPreview() {
             toast.error(error);
           });
         } else {
-          toast.error(documentResult.notificationMessage || 'Failed to reject document');
+          toast.error(documentResult.notificationMessage || t('doc.rejectError'));
         }
       }
     } catch (error: any) {
-      toast.error('An error occurred while rejecting document');
+      toast.error(t('doc.rejectErrorGeneric'));
       console.error('Error rejecting document:', error);
     }
   };
@@ -273,7 +275,7 @@ export default function DocumentPreview() {
       newSearchParams.set('docId', doc.id.toString());
       navigate(`?${newSearchParams.toString()}`, { replace: true });
     } else {
-      toast.error('Document URL not available');
+      toast.error(t('dpv.urlNotAvailable'));
     }
   };
 
@@ -333,7 +335,7 @@ export default function DocumentPreview() {
       link.click();
       document.body.removeChild(link);
     } else {
-      toast.error('Document URL not available');
+      toast.error(t('dpv.urlNotAvailable'));
     }
   };
 
@@ -346,11 +348,11 @@ export default function DocumentPreview() {
               to="/admin/investors"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-5 h-5 mr-2" />
-              Back to Investors
+              <ArrowLeft className="w-5 h-5 me-2" />
+              {t('kycd.backToInvestors')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Document Preview</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{t('dpv.title')}</h1>
             </div>
           </div>
         </div>
@@ -364,10 +366,10 @@ export default function DocumentPreview() {
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
               <input
                 type="text"
-                placeholder="Search documents..."
+                placeholder={t('doc.searchPlaceholder')}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -377,13 +379,13 @@ export default function DocumentPreview() {
       {/* Documents Grid */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <div className="text-gray-500">Loading documents...</div>
+          <div className="text-gray-500">{t('kycd.loading')}</div>
         </div>
       ) : filteredDocuments.length === 0 ? (
         <div className="text-center py-12">
           <FileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No documents found</h3>
-          <p className="text-gray-500">No documents match your current filters.</p>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">{t('doc.noDocuments')}</h3>
+          <p className="text-gray-500">{t('dpv.noMatch')}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -433,8 +435,8 @@ export default function DocumentPreview() {
                     <div className="mb-2">
                       <FileText className="w-12 h-12 text-gray-400 mx-auto" />
                     </div>
-                    <p className="text-sm text-gray-500 font-medium">No Image Found</p>
-                    <p className="text-xs text-gray-400 mt-1">Image path may be incorrect</p>
+                    <p className="text-sm text-gray-500 font-medium">{t('dpv.noImageFound')}</p>
+                    <p className="text-xs text-gray-400 mt-1">{t('dpv.imagePathIncorrect')}</p>
                   </div>
                 </div>
                 
@@ -453,7 +455,7 @@ export default function DocumentPreview() {
               {/* Document Info */}
               <div className="p-4">
                 <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-sm font-medium text-gray-900 truncate flex-1 mr-2">
+                  <h3 className="text-sm font-medium text-gray-900 truncate flex-1 me-2">
                     {document.documentName}
                   </h3>
                   <span className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${getStatusColor(document.verificationStatus)}`}>
@@ -463,15 +465,15 @@ export default function DocumentPreview() {
                 
                 <div className="space-y-2 text-xs text-gray-500 mb-4">
                   <div className="flex items-center">
-                    <FileText className="w-3 h-3 mr-1" />
+                    <FileText className="w-3 h-3 me-1" />
                     <span>{document.fileType}</span>
                   </div>
                   <div className="flex items-center">
-                    <Calendar className="w-3 h-3 mr-1" />
+                    <Calendar className="w-3 h-3 me-1" />
                     <span>{new Date(document.createdAt).toLocaleDateString()}</span>
                   </div>
                   <div className="text-xs">
-                    Size: {formatFileSize(document.fileSize)}
+                    {t('dpv.sizeLabel', { value: formatFileSize(document.fileSize) })}
                   </div>
                 </div>
 
@@ -481,16 +483,16 @@ export default function DocumentPreview() {
                     onClick={() => handlePreviewDocument(document)}
                     className="flex-1 px-3 py-2 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 flex items-center justify-center"
                   >
-                    <Eye className="w-3 h-3 mr-1" />
-                    Preview
+                    <Eye className="w-3 h-3 me-1" />
+                    {t('doc.preview')}
                   </button>
-                  
+
                   <button
                     onClick={() => handleDownloadDocument(document)}
                     className="flex-1 px-3 py-2 text-xs font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 flex items-center justify-center"
                   >
-                    <Download className="w-3 h-3 mr-1" />
-                    Download
+                    <Download className="w-3 h-3 me-1" />
+                    {t('doc.download')}
                   </button>
                 </div>
 
@@ -501,18 +503,18 @@ export default function DocumentPreview() {
                       onClick={() => handleApproveDocument(document)}
                       className="flex-1 px-3 py-2 text-xs font-medium text-green-600 bg-green-50 rounded-lg hover:bg-green-100 flex items-center justify-center"
                     >
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Approve
+                      <CheckCircle className="w-3 h-3 me-1" />
+                      {t('common:approve')}
                     </button>
                   )}
-                  
+
                   {document.verificationStatus !== 2 && (
                     <button
                       onClick={() => handleRejectDocument(document)}
                       className="flex-1 px-3 py-2 text-xs font-medium text-red-600 bg-red-50 rounded-lg hover:bg-red-100 flex items-center justify-center"
                     >
-                      <XCircle className="w-3 h-3 mr-1" />
-                      Reject
+                      <XCircle className="w-3 h-3 me-1" />
+                      {t('common:reject')}
                     </button>
                   )}
                 </div>
@@ -526,15 +528,15 @@ export default function DocumentPreview() {
       {filteredDocuments.length > 0 && (
         <div className="mt-8 flex items-center justify-between">
           <div className="text-sm text-gray-500">
-            Showing {((currentPage - 1) * itemsPerPage) + 1} to {Math.min(currentPage * itemsPerPage, filteredDocuments.length)} of {filteredDocuments.length} documents
+            {t('doc.showing', { from: ((currentPage - 1) * itemsPerPage) + 1, to: Math.min(currentPage * itemsPerPage, filteredDocuments.length), total: filteredDocuments.length })}
           </div>
           <div className="flex items-center space-x-2">
-            <button 
+            <button
               onClick={handlePreviousPage}
               disabled={currentPage === 1}
               className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Previous
+              {t('common:previous')}
             </button>
             
             {/* Page numbers */}
@@ -557,7 +559,7 @@ export default function DocumentPreview() {
               disabled={currentPage === getTotalPages()}
               className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Next
+              {t('common:next')}
             </button>
           </div>
         </div>
@@ -569,13 +571,13 @@ export default function DocumentPreview() {
           <div className="relative w-full h-full flex flex-col bg-white">
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-white">
-              <h2 className="text-lg font-semibold text-gray-900 truncate flex-1 mr-4">
+              <h2 className="text-lg font-semibold text-gray-900 truncate flex-1 me-4">
                 {previewDocument.documentName}
               </h2>
               <button
                 onClick={closePreview}
                 className="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Close preview"
+                aria-label={t('dpv.closePreview')}
               >
                 {/* <X className="w-6 h-6 text-gray-600" /> */}
               </button>

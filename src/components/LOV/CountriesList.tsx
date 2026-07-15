@@ -1,4 +1,5 @@
 import { SetStateAction, useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
 
@@ -18,6 +19,7 @@ import {
 
 
 const CountriesList = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
 
@@ -75,20 +77,20 @@ const CountriesList = () => {
     //   // width: "15%",
     // },
     {
-      name: "Country Name",
+      name: t("countriesList.col.countryName"),
       selector: (row: { country_name: any }) => row.country_name,
       // sortable: true,
        width: "25%",
     },
-    
+
      {
-      name: "Factor Weight",
+      name: t("countriesList.col.factorWeight"),
       selector: (row: { factor_weight: any }) => row.factor_weight,
       // sortable: true,
       width: "25%",
     },
     {
-      name: "Risk",
+      name: t("countriesList.col.risk"),
       cell: (row: any) => {
         const riskStatus = row.risk || "low";
         const displayRisk = normalizeRiskDisplay(riskStatus);
@@ -113,7 +115,7 @@ const CountriesList = () => {
       width: "25%",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -130,7 +132,7 @@ const CountriesList = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 || row.status === true ? "Active" : "Inactive"}
+          {row.status == 1 || row.status === true ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
@@ -320,7 +322,7 @@ const CountriesList = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -336,7 +338,7 @@ const CountriesList = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -355,7 +357,7 @@ const CountriesList = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 

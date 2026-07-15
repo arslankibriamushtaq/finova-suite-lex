@@ -10,6 +10,7 @@ import { uploadStepDocuments } from "../../utils/uploadStepDocuments";
 import RequiredDocFields from "./RequiredDocFields";
 import toast from "react-hot-toast";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 import "./Landing.css";
 
 interface Invoice {
@@ -30,6 +31,7 @@ interface Invoice {
 }
 
 const FactoringInfo = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
   const businessFormData = (location.state as any)?.businessFormData;
@@ -150,7 +152,7 @@ const FactoringInfo = () => {
       .then((values) => {
         const docFile = currentDocFile || editingInvoice?.documentFile || null;
         if (!docFile) {
-          toast.error("Please upload an invoice document.");
+          toast.error(t("factoring.toast.uploadDoc"));
           return;
         }
 
@@ -206,7 +208,7 @@ const FactoringInfo = () => {
 
   const handleSubmit = async () => {
     if (invoices.length === 0) {
-      toast.error("Please add at least one invoice.");
+      toast.error(t("factoring.toast.addInvoice"));
       return;
     }
 
@@ -250,11 +252,11 @@ const FactoringInfo = () => {
 
       const res = await storeFactoringInfo(fd);
       if (!res?.data?.success) {
-        toast.error(res?.data?.message || "Failed to store factoring information.");
+        toast.error(res?.data?.message || t("factoring.toast.storeFailed"));
         return;
       }
 
-      toast.success(res?.data?.message || "Factoring information stored successfully.");
+      toast.success(res?.data?.message || t("factoring.toast.storeSuccess"));
 
       // Upload dynamic required documents for this step
       const docsOk = await uploadStepDocuments(7, requiredDocuments, docFiles);
@@ -268,7 +270,7 @@ const FactoringInfo = () => {
       });
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || error?.message || "Something went wrong!");
+      toast.error(error?.response?.data?.message || error?.message || t("common.somethingWentWrong"));
     } finally {
       setSubmitting(false);
     }
@@ -278,40 +280,40 @@ const FactoringInfo = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4 style={{ fontWeight: 600, fontSize: "24px", margin: 0 }}>
-          Financial Details
+          {t("factoring.title")}
         </h4>
         <Button
           type="primary"
           onClick={showModal}
           style={{ background: "#1963b9", borderColor:"#1963b9", height:"38px", lineHeight:"38px", padding:"0 16px"}}
         >
-          + Add Invoice
+          {t("factoring.addInvoice")}
         </Button>
       </div>
 
       <div className="mb-4">
         <h5 style={{ fontWeight: 600, fontSize: "18px", marginBottom: "16px" }}>
-          Invoices <Badge count={invoices.length} style={{ backgroundColor: "#1890ff" }} />
+          {t("factoring.invoices")} <Badge count={invoices.length} style={{ backgroundColor: "#1890ff" }} />
         </h5>
 
         <div style={{ overflowX: "auto" }}>
           <table className="table table-bordered" style={{ minWidth: "100%" }}>
             <thead style={{ backgroundColor: "#f0f2f5" }}>
               <tr>
-                <th style={{ padding: "12px" }}>Invoice Number</th>
-                <th style={{ padding: "12px" }}>Invoice Start Date</th>
-                <th style={{ padding: "12px" }}>Due Date</th>
-                <th style={{ padding: "12px" }}>Invoice Amount</th>
-                <th style={{ padding: "12px" }}>Invoice Factoring Amount</th>
-                <th style={{ padding: "12px" }}>Deduction Details</th>
-                <th style={{ padding: "12px" }}>Action</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.invoiceNumber")}</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.invoiceStartDate")}</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.dueDate")}</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.invoiceAmount")}</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.factoringAmount")}</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.deductionDetails")}</th>
+                <th style={{ padding: "12px" }}>{t("factoring.table.action")}</th>
               </tr>
             </thead>
             <tbody>
               {invoices.length === 0 ? (
                 <tr>
                   <td colSpan={7} style={{ textAlign: "center", padding: "40px", color: "#999" }}>
-                    No invoices created yet.
+                    {t("factoring.empty")}
                   </td>
                 </tr>
               ) : (
@@ -327,10 +329,10 @@ const FactoringInfo = () => {
                       {invoice.invoiceFactoringAmount.toFixed(2)} SAR
                     </td>
                     <td style={{ padding: "12px", fontSize: "12px" }}>
-                      <div>Admin Fee: {invoice.deductionDetails.adminFee.toFixed(2)} SAR</div>
-                      <div>Processing Fee: {invoice.deductionDetails.processingFee.toFixed(2)} SAR</div>
-                      <div>Profit Amount: {invoice.deductionDetails.profitAmount.toFixed(2)} SAR</div>
-                      <div>VAT Amount: {invoice.deductionDetails.vatAmount.toFixed(2)} SAR</div>
+                      <div>{t("factoring.deduction.adminFee")}: {invoice.deductionDetails.adminFee.toFixed(2)} SAR</div>
+                      <div>{t("factoring.deduction.processingFee")}: {invoice.deductionDetails.processingFee.toFixed(2)} SAR</div>
+                      <div>{t("factoring.deduction.profitAmount")}: {invoice.deductionDetails.profitAmount.toFixed(2)} SAR</div>
+                      <div>{t("factoring.deduction.vatAmount")}: {invoice.deductionDetails.vatAmount.toFixed(2)} SAR</div>
                     </td>
                     <td style={{ padding: "12px" }}>
                       <div className="d-flex gap-2">
@@ -359,12 +361,12 @@ const FactoringInfo = () => {
 
         <div className="mt-3">
           <p style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
-            Total Amount:{" "}
+            {t("factoring.totalAmount")}:{" "}
             <span style={{ color: "#52c41a" }}>{totalAmount.toFixed(2)} SAR</span>
           </p>
           {invoices.length > 0 && (
             <p style={{ fontWeight: 600, fontSize: "16px", marginBottom: "8px" }}>
-              Factoring Amount:{" "}
+              {t("factoring.factoringAmount")}:{" "}
               <span style={{ color: "#1890ff" }}>{totalFactoringAmount.toFixed(2)} SAR</span>
             </p>
           )}
@@ -373,12 +375,12 @@ const FactoringInfo = () => {
 
       {/* Modal for Add/Edit Invoice */}
       <Modal
-        title="Create Invoice"
+        title={t("factoring.modal.title")}
         open={isModalVisible}
         onOk={handleModalOk}
         onCancel={handleModalCancel}
         width={800}
-        okText={editingInvoice ? "Update" : "Save"}
+        okText={editingInvoice ? t("common:update") : t("common:save")}
         okButtonProps={{
           style: { 
             background: "#1963b9", 
@@ -400,18 +402,18 @@ const FactoringInfo = () => {
           <Row>
             <Col md={6} className="pe-2">
               <Form.Item
-                label="Invoice Document Number"
+                label={t("factoring.form.invoiceDocNumber")}
                 name="invoiceNumber"
-                rules={[{ required: true, message: "Please enter invoice document number" }]}
+                rules={[{ required: true, message: t("factoring.form.invoiceDocNumber.required") }]}
               >
-                <Input placeholder="Enter Invoice Document Number" />
+                <Input placeholder={t("factoring.form.invoiceDocNumber.placeholder")} />
               </Form.Item>
             </Col>
             <Col md={6} className="ps-2">
               <Form.Item
-                label="Invoice Date"
+                label={t("factoring.form.invoiceDate")}
                 name="invoiceStartDate"
-                rules={[{ required: true, message: "Please select invoice date" }]}
+                rules={[{ required: true, message: t("factoring.form.invoiceDate.required") }]}
               >
                 <DatePicker className="w-100" format="MM/DD/YYYY" />
               </Form.Item>
@@ -421,22 +423,22 @@ const FactoringInfo = () => {
           <Row>
             <Col md={6} className="pe-2">
               <Form.Item
-                label="Due Date"
+                label={t("factoring.form.dueDate")}
                 name="dueDate"
-                rules={[{ required: true, message: "Please select due date" }]}
+                rules={[{ required: true, message: t("factoring.form.dueDate.required") }]}
               >
                 <DatePicker className="w-100" format="MM/DD/YYYY" />
               </Form.Item>
             </Col>
             <Col md={6} className="ps-2">
               <Form.Item
-                label="Invoice Amount"
+                label={t("factoring.form.invoiceAmount")}
                 name="invoiceAmount"
-                rules={[{ required: true, message: "Please enter invoice amount" }]}
+                rules={[{ required: true, message: t("factoring.form.invoiceAmount.required") }]}
               >
                 <Input
                   type="number"
-                  placeholder="Enter Amount"
+                  placeholder={t("factoring.form.invoiceAmount.placeholder")}
                   onChange={(e) => debouncedValidate(e.target.value)}
                 />
               </Form.Item>
@@ -445,7 +447,7 @@ const FactoringInfo = () => {
 
           <Row>
             <Col md={12}>
-              <Form.Item label="Upload Invoice Document" required>
+              <Form.Item label={t("factoring.form.uploadDoc")} required>
                 <input
                   type="file"
                   ref={fileInputRef}
@@ -478,26 +480,26 @@ const FactoringInfo = () => {
                 <Spin />
               </div>
             )}
-            <h6 style={{ fontWeight: 600, marginBottom: "15px", color: "#666" }}>Deduction Summary</h6>
+            <h6 style={{ fontWeight: 600, marginBottom: "15px", color: "#666" }}>{t("factoring.deductionSummary")}</h6>
             
             <Row className="mb-3">
               <Col md={6}>
                 <div className="d-flex justify-content-between mb-2">
-                  <span style={{ color: "#999" }}>Admin Fee:</span>
+                  <span style={{ color: "#999" }}>{t("factoring.deduction.adminFee")}:</span>
                   <span style={{ fontWeight: 500 }}>{deductionSummary.adminFee.toFixed(2)} SAR</span>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <span style={{ color: "#999" }}>Profit Amount:</span>
+                  <span style={{ color: "#999" }}>{t("factoring.deduction.profitAmount")}:</span>
                   <span style={{ fontWeight: 500 }}>{deductionSummary.profitAmount.toFixed(2)} SAR</span>
                 </div>
               </Col>
               <Col md={6}>
                 <div className="d-flex justify-content-between mb-2">
-                  <span style={{ color: "#999" }}>Processing Fee:</span>
+                  <span style={{ color: "#999" }}>{t("factoring.deduction.processingFee")}:</span>
                   <span style={{ fontWeight: 500 }}>{deductionSummary.processingFee.toFixed(2)} SAR</span>
                 </div>
                 <div className="d-flex justify-content-between">
-                  <span style={{ color: "#999" }}>VAT Amount:</span>
+                  <span style={{ color: "#999" }}>{t("factoring.deduction.vatAmount")}:</span>
                   <span style={{ fontWeight: 500 }}>{deductionSummary.vatAmount.toFixed(2)} SAR</span>
                 </div>
               </Col>
@@ -509,7 +511,7 @@ const FactoringInfo = () => {
               marginTop: "15px" 
             }}>
               <div className="d-flex justify-content-between align-items-center">
-                <span style={{ fontWeight: 600, fontSize: "16px" }}>Invoice Factoring Amount:</span>
+                <span style={{ fontWeight: 600, fontSize: "16px" }}>{t("factoring.invoiceFactoringAmount")}:</span>
                 <span style={{ 
                   fontWeight: 600, 
                   fontSize: "18px", 
@@ -543,15 +545,15 @@ const FactoringInfo = () => {
             });
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
-        <button 
-          className="step-buttons" 
+        <button
+          className="step-buttons"
           style={{ background: "#1963b9", padding: "10px 5px", borderRadius: "0", minWidth: "100px",lineHeight:"24px" }}
           onClick={handleSubmit}
           disabled={submitting}
         >
-          {submitting ? "Submitting..." : "Next Step"}
+          {submitting ? t("action.submitting") : t("action.nextStep")}
         </button>
       </div>
     </>

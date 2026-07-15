@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Input, Dropdown, Menu } from "antd";
 import TableView from "../../../components/TableView/TableView";
 import {
@@ -16,6 +17,7 @@ import Loader from "../../../components/Loader/Loader";
 import { formatDate, NumberFormatter } from "../../../App";
 
 const CollateralManagement = () => {
+  const { t } = useTranslation("loanManagement");
   const [searchValue, setSearchValue] = useState("");
   const [totalDataCollectrol, setTotalDataCollectrol] = useState<any>("");
   const [pageSize, setPageSize] = useState(10);
@@ -53,7 +55,7 @@ const CollateralManagement = () => {
     //     editRowId === row.id ? <Input name="Collateral ID" /> : row.id,
     // },
     {
-      name: "Application Key",
+      name: t("collateral.colApplicationKey"),
       selector: (row: any) =>
         editRowId === row.applicationKey ? (
           <Input name="Application ID" />
@@ -62,7 +64,7 @@ const CollateralManagement = () => {
         ),
     },
     {
-      name: "Account Key",
+      name: t("collateral.colAccountKey"),
       selector: (row: any) =>
         editRowId === row.accountKey ? (
           <Input name="Account ID" />
@@ -71,20 +73,20 @@ const CollateralManagement = () => {
         ),
     },
     {
-      name: "Collateral Type",
+      name: t("collateral.colCollateralType"),
       selector: (row: any) =>
         editRowId === row.collateralType ? (
           <Input name="Collateral Type" />
         ) : row.collateralType == 1 ? (
-          "Vehicle"
+          t("collateral.typeVehicle")
         ) : row.collateralType == 2 ? (
-          "Cash&Cash"
+          t("collateral.typeCashCash")
         ) : (
-          "Property"
+          t("collateral.typeProperty")
         ),
     },
     {
-      name: "Market Value",
+      name: t("field.marketValue"),
       selector: (row: any) =>
         editRowId === row.marketValue ? (
           <Input name="Market Value" />
@@ -93,7 +95,7 @@ const CollateralManagement = () => {
         ),
     },
     {
-      name: "Valuation Amount",
+      name: t("field.valuationAmount"),
       selector: (row: any) =>
         editRowId === row.valuationAmount ? (
           <Input
@@ -107,7 +109,7 @@ const CollateralManagement = () => {
     },
 
     {
-      name: "Valuation Date",
+      name: t("field.valuationDate"),
       selector: (row: any) =>
         editRowId === row.valuationDate ? (
           <Input
@@ -121,7 +123,7 @@ const CollateralManagement = () => {
     },
 
     {
-      name: "Availability",
+      name: t("collateral.colAvailability"),
       width: "150px",
       cell: (row: any) => (
         <div
@@ -142,15 +144,15 @@ const CollateralManagement = () => {
           }}
         >
           {row.availabilityStatus == "1"
-            ? "Locked"
+            ? t("collateral.availLocked")
             : row.availabilityStatus == "2"
-              ? "Release"
-              : "Available"}
+              ? t("collateral.availRelease")
+              : t("collateral.availAvailable")}
         </div>
       ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       width: "150px",
       cell: (row: any) => (
         <div
@@ -163,13 +165,13 @@ const CollateralManagement = () => {
             cursor: row.Status ? "pointer" : "default",
           }}
         >
-          {row.Status ? "Active" : "Inactive"}
+          {row.Status ? t("collateral.statusActive") : t("collateral.statusInactive")}
         </div>
       ),
     },
 
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -181,7 +183,7 @@ const CollateralManagement = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -233,13 +235,13 @@ const CollateralManagement = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="ApplicationView" icon={<EditOutlined />}>
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item key="Edit" icon={<EyeOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="Delete" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -284,7 +286,7 @@ const CollateralManagement = () => {
   // data
   const customSearchInput = (
     <Input
-      placeholder="Search"
+      placeholder={t("common:search")}
       value={searchValue}
       prefix={<FaSearch />}
       onChange={(e) => setSearchValue(e.target.value)}
@@ -315,7 +317,7 @@ const CollateralManagement = () => {
     <div className="service collateral-management-page">
       {loading && <Loader />}
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Collaterals</h3>
+        <h3 className="mb-0 fw-bold text-dark">{t("collateral.title")}</h3>
       </div>
 
       {/* Filters card */}
@@ -333,7 +335,7 @@ const CollateralManagement = () => {
             className="application-btn"
             onClick={() => navigate("/lms/addcollateral/collateralmanagement")}
           >
-            Add Collateral
+            {t("collateral.addCollateral")}
           </Button>
         </div>
       </div>
@@ -363,7 +365,7 @@ const CollateralManagement = () => {
             className="d-flex justify-content-center py-5"
             style={{ color: "var(--destructive)" }}
           >
-            No data found
+            {t("common:noData")}
           </div>
         )}
       </div>

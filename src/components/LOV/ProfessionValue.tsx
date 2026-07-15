@@ -27,8 +27,10 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { useTranslation } from "react-i18next";
 
 const ProfessionValue = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -86,14 +88,14 @@ const ProfessionValue = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -106,25 +108,25 @@ const ProfessionValue = () => {
     //   // width: "15%",
     // },
     {
-      name: "Code",
+      name: t("professionValue.col.code"),
       selector: (row: { code: any }) => row.code,
       width: "100px",
       // sortable: true,
     },
      {
-      name: "Description (English)",
+      name: t("professionValue.col.descriptionEn"),
       selector: (row: { descriptionEn: any }) => row.descriptionEn,
       width: "200px",
       // sortable: true,
     },
      {
-      name: "Description (Arabic)",
+      name: t("professionValue.col.descriptionAr"),
       selector: (row: { descriptionAr: any }) => row.descriptionAr,
       // sortable: true,
       width: "300px",
     },
      {
-      name: "Risk",
+      name: t("professionValue.col.risk"),
       cell: (row: any) => {
         const risk = row.risk || "";
         const getRiskColor = (risk: string) => {
@@ -150,17 +152,17 @@ const ProfessionValue = () => {
       },
     },
      {
-      name: "Factor Id",
+      name: t("professionValue.col.factorId"),
       selector: (row: { factorId: any }) => row.factorId,
       // sortable: true,
     },
     {
-      name: "Factor Weight",
+      name: t("professionValue.col.factorWeight"),
       selector: (row: { factorWeight: any }) => row.factorWeight,
       // sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -177,16 +179,16 @@ const ProfessionValue = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 || row.status === true ? "Active" : "Inactive"}
+          {row.status == 1 || row.status === true ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       width: "100px",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button className="gradient-btn" type="primary">Select <img src={arrowDown} alt="" /></Button>
+          <Button className="gradient-btn" type="primary">{t("common:select")} <img src={arrowDown} alt="" /></Button>
         </Dropdown>
       ),
     },
@@ -196,13 +198,13 @@ const ProfessionValue = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteProfession(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("professionValue.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("professionValue.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("professionValue.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -213,13 +215,13 @@ const ProfessionValue = () => {
    const handleSave = async () => {
     // Validate required fields
     if (!formData.descriptionEn || formData.descriptionEn.trim() === "") {
-      toast.error("Description (English) is required");
+      toast.error(t("professionValue.validation.descriptionEn"));
       setShowConfirmModal(false);
       setShowModal(true);
       return;
     }
     if (!formData.descriptionAr || formData.descriptionAr.trim() === "") {
-      toast.error("Description (Arabic) is required");
+      toast.error(t("professionValue.validation.descriptionAr"));
       setShowConfirmModal(false);
       setShowModal(true);
       return;
@@ -237,7 +239,7 @@ const ProfessionValue = () => {
           factor_weight: formData.factorWeight ? Number(formData.factorWeight) : 0
         };
         await toast.promise(updateProfession(currentSourceId, updateBody), {
-          loading: "Updating...",
+          loading: t("professionValue.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -253,9 +255,9 @@ const ProfessionValue = () => {
               status: false 
              });
             getList();
-            return "Updated successfully";
+            return t("professionValue.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("professionValue.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         // Create API body: code, description, risk, factor_weight, is_pep, and status
@@ -271,7 +273,7 @@ const ProfessionValue = () => {
           status: formData.status
         };
         await toast.promise(createProfession(createBody), {
-          loading: "Adding new profession...",
+          loading: t("professionValue.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -287,9 +289,9 @@ const ProfessionValue = () => {
               status: false 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("professionValue.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("professionValue.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -367,7 +369,7 @@ const ProfessionValue = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -387,16 +389,16 @@ const ProfessionValue = () => {
       formDataToSend.append("file", file);
 
       await toast.promise(importProfessions(formDataToSend), {
-        loading: "Importing professions...",
+        loading: t("professionValue.toast.importing"),
         success: (response: any) => {
           getList();
           // Reset file input
           if (fileInputRef.current) {
             fileInputRef.current.value = "";
           }
-          return response?.data?.message || "Professions imported successfully";
+          return response?.data?.message || t("professionValue.toast.imported");
         },
-        error: (err) => err?.response?.data?.message || "Failed to import professions",
+        error: (err) => err?.response?.data?.message || t("professionValue.toast.importFailed"),
       });
     } catch (error) {
       console.error("Import error:", error);
@@ -416,7 +418,7 @@ const ProfessionValue = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -435,7 +437,7 @@ const ProfessionValue = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -444,7 +446,7 @@ const ProfessionValue = () => {
               onClick={handleImportClick}
               disabled={isImporting}
             >
-              {isImporting ? "Importing..." : "Import"}
+              {isImporting ? t("professionValue.importing") : t("common:import")}
             </button>
 
             <input
@@ -471,7 +473,7 @@ const ProfessionValue = () => {
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -493,13 +495,13 @@ const ProfessionValue = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Profession Value" : "Add Profession Value"
+            selectedItem === "edit" ? t("professionValue.modal.editTitle") : t("professionValue.modal.addTitle")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -507,18 +509,18 @@ const ProfessionValue = () => {
               onClick={() => {
                 // Validate required fields before showing confirmation modal
                 if (!formData.descriptionEn || formData.descriptionEn.trim() === "") {
-                  toast.error("Description (English) is required");
+                  toast.error(t("professionValue.validation.descriptionEn"));
                   return;
                 }
                 if (!formData.descriptionAr || formData.descriptionAr.trim() === "") {
-                  toast.error("Description (Arabic) is required");
+                  toast.error(t("professionValue.validation.descriptionAr"));
                   return;
                 }
                 setShowConfirmModal(true);
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -527,24 +529,24 @@ const ProfessionValue = () => {
               <Row className="">
                 
                   <Col className="px-2 py-2" md={12}>
-                    <label className="fw-400">Code</label>
+                    <label className="fw-400">{t("professionValue.label.code")}</label>
                     <Input
                       type="text"
                       className="fs-6"
-                      placeholder="Enter Code"
+                      placeholder={t("professionValue.ph.code")}
                       value={formData.code}
                       onChange={(e: any) =>
                         setFormData({ ...formData, code: e.target.value })
                       }
                     />
                   </Col>
-                
+
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Description (English) <span style={{ color: "red" }}>*</span></label>
+                <label className="fw-400">{t("professionValue.label.descriptionEn")} <span style={{ color: "red" }}>*</span></label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Description (English)"
+                  placeholder={t("professionValue.ph.descriptionEn")}
                   value={formData.descriptionEn}
                   onChange={(e: any) =>
                     setFormData({ ...formData, descriptionEn: e.target.value })
@@ -553,11 +555,11 @@ const ProfessionValue = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Description (Arabic) <span style={{ color: "red" }}>*</span></label>
+                <label className="fw-400">{t("professionValue.label.descriptionAr")} <span style={{ color: "red" }}>*</span></label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Description (Arabic)"
+                  placeholder={t("professionValue.ph.descriptionAr")}
                   value={formData.descriptionAr}
                   onChange={(e: any) =>
                     setFormData({ ...formData, descriptionAr: e.target.value })
@@ -566,57 +568,57 @@ const ProfessionValue = () => {
                 />
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Risk</label>
+                <label className="fw-400">{t("professionValue.label.risk")}</label>
                 <Select
                   className="fs-6"
-                  placeholder="Select Risk"
+                  placeholder={t("professionValue.ph.selectRisk")}
                   value={formData.risk}
                   onChange={(e: any) =>
                     setFormData({ ...formData, risk: e})
                   }
                 >
-                  <option value="Low">Low</option> 
-                  <option value="Medium">Medium</option>      
-                  <option value="High">High</option>      
+                  <option value="Low">{t("professionValue.risk.low")}</option>
+                  <option value="Medium">{t("professionValue.risk.medium")}</option>
+                  <option value="High">{t("professionValue.risk.high")}</option>
                 </Select>
                 </Col>
                 <Col className="px-2 py-2" md={12}>
-                <label className="fw-400">Factor Weight</label>
+                <label className="fw-400">{t("professionValue.label.factorWeight")}</label>
                 <Input
                   type="number"
                   className="fs-6"
-                  placeholder="Enter Factor Weight"
+                  placeholder={t("professionValue.ph.factorWeight")}
                   value={formData.factorWeight}
                   onChange={(e: any) =>
                     setFormData({ ...formData, factorWeight: e.target.value })
                   }
                 />
                 </Col>
-                
+
                   <Col className = "px-2 py-2" md={12}>
-                    <label className="fw-400">Pep</label>
+                    <label className="fw-400">{t("professionValue.label.pep")}</label>
                     <Select
                       className="fs-6"
-                      placeholder="Select type"
+                      placeholder={t("professionValue.ph.selectType")}
                       value={formData.isPep ? "true" : "false"}
                       onChange={(e: any) =>
                         setFormData({ ...formData, isPep: e === "true"})
                       }
                     >
-                      <option value="true">True</option> 
-                      <option value="false">False</option>      
+                      <option value="true">{t("professionValue.opt.true")}</option>
+                      <option value="false">{t("professionValue.opt.false")}</option>
                     </Select>
                   </Col>
-                
-                
-                  <Col md={12} className="px-2 py-4" style={{ marginTop: "20px" }} >            
-                    <Checkbox 
+
+
+                  <Col md={12} className="px-2 py-4" style={{ marginTop: "20px" }} >
+                    <Checkbox
                       checked={formData.status}
                       onChange={(e: any) =>
                         setFormData({ ...formData, status: e.target.checked })
                       }
                     >
-                      Status
+                      {t("common:status")}
                     </Checkbox>
                   </Col>
                 
@@ -631,14 +633,14 @@ const ProfessionValue = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("professionValue.modal.editRecordTitle")
               : selectedItem === "add"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("professionValue.modal.deleteRecordTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -647,17 +649,17 @@ const ProfessionValue = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("professionValue.confirmUpdate")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("professionValue.confirmAdd")
+                : t("professionValue.confirmDelete")
             }`}
           </Form>
         </Modal>

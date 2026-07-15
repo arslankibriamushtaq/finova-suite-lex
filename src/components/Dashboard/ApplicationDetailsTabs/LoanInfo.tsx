@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType } from "../../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import Loader from "../../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 interface FieldConfig {
   key: string;
@@ -14,6 +15,7 @@ interface FieldConfig {
 }
 
 function LoanInformation({ applicationData, fullDetail }: any) {
+  const { t } = useTranslation("financing");
   const [loanAmountData, setLoanAmountData] = useState<any>(null);
   const [loanApplicationData, setLoanApplicationData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -275,7 +277,7 @@ function LoanInformation({ applicationData, fullDetail }: any) {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch loan information");
+      toast.error(t("toast.fetchLoanInfoFailed"));
       setLoanAmountData(null);
       setLoanApplicationData(null);
     } finally {
@@ -312,7 +314,7 @@ function LoanInformation({ applicationData, fullDetail }: any) {
 
         {isLoanAmountDataEmpty ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-            No response found
+            {t("detail.noResponseFound")}
           </div>
         ) : (
           <div>
@@ -361,7 +363,7 @@ function LoanInformation({ applicationData, fullDetail }: any) {
 
         {isLoanApplicationDataEmpty ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-            No response found
+            {t("detail.noResponseFound")}
           </div>
         ) : (
           <div>

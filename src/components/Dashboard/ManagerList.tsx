@@ -7,8 +7,10 @@ import TableView from "../TableView/TableView";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import MaskedValue from "../MaskedValue";
+import { useTranslation } from "react-i18next";
 
 const ManagerList = () => {
+  const { t } = useTranslation("dashboard");
   const [managerData, setManagerData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -29,7 +31,7 @@ const ManagerList = () => {
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error fetching manager list:", error);
-      toast.error("Failed to fetch manager list");
+      toast.error(t("managerList.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -37,23 +39,23 @@ const ManagerList = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "التسلسل",
+      name: t("managerList.col.serial"),
       selector: (row: { serial: any }) => row.serial,
       sortable: true,
       width: "100px",
     },
     {
-      name: "الاسم",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
     },
     {
-      name: "المنصب",
+      name: t("managerList.col.position"),
       selector: (row: { position: any }) => row.position,
       sortable: true,
     },
     {
-      name: "الهوية الوطنية/الإقامة",
+      name: t("managerList.col.nationalId"),
       cell: (row: any) => (
         <MaskedValue value={row.nationalId} showToggle={false} unmaskedCount={4} />
       ),
@@ -61,12 +63,12 @@ const ManagerList = () => {
       sortable: true,
     },
     {
-      name: "تاريخ الميلاد",
+      name: t("managerList.col.birthDate"),
       selector: (row: { birthDate: any }) => row.birthDate,
       sortable: true,
     },
     {
-      name: "الجنسية",
+      name: t("managerList.col.nationality"),
       selector: (row: { nationality: any }) => row.nationality,
       sortable: true,
     },

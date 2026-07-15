@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft,
   Download,
@@ -28,26 +29,26 @@ const analyticsData = {
     informationRatio: 0.68
   },
   assetAllocation: [
-    { name: 'Equity', value: 65, amount: 1560000000, color: '#3B82F6' },
-    { name: 'Fixed Income', value: 25, amount: 600000000, color: '#10B981' },
-    { name: 'Alternative', value: 8, amount: 192000000, color: '#F59E0B' },
-    { name: 'Cash', value: 2, amount: 48000000, color: '#6B7280' }
+    { name: 'pa.asset.equity', value: 65, amount: 1560000000, color: '#3B82F6' },
+    { name: 'pa.asset.fixedIncome', value: 25, amount: 600000000, color: '#10B981' },
+    { name: 'pa.asset.alternative', value: 8, amount: 192000000, color: '#F59E0B' },
+    { name: 'pa.asset.cash', value: 2, amount: 48000000, color: '#6B7280' }
   ],
   geographicAllocation: [
-    { name: 'North America', value: 55, amount: 1320000000 },
-    { name: 'Europe', value: 25, amount: 600000000 },
-    { name: 'Asia Pacific', value: 15, amount: 360000000 },
-    { name: 'Emerging Markets', value: 5, amount: 120000000 }
+    { name: 'pa.geo.northAmerica', value: 55, amount: 1320000000 },
+    { name: 'pa.geo.europe', value: 25, amount: 600000000 },
+    { name: 'pa.geo.asiaPacific', value: 15, amount: 360000000 },
+    { name: 'pa.geo.emergingMarkets', value: 5, amount: 120000000 }
   ],
   sectorBreakdown: [
-    { name: 'Technology', value: 22, amount: 528000000 },
-    { name: 'Healthcare', value: 18, amount: 432000000 },
-    { name: 'Financial Services', value: 15, amount: 360000000 },
-    { name: 'Consumer Goods', value: 12, amount: 288000000 },
-    { name: 'Industrial', value: 10, amount: 240000000 },
-    { name: 'Real Estate', value: 8, amount: 192000000 },
-    { name: 'Energy', value: 8, amount: 192000000 },
-    { name: 'Others', value: 7, amount: 168000000 }
+    { name: 'pa.sector.technology', value: 22, amount: 528000000 },
+    { name: 'pa.sector.healthcare', value: 18, amount: 432000000 },
+    { name: 'pa.sector.financialServices', value: 15, amount: 360000000 },
+    { name: 'pa.sector.consumerGoods', value: 12, amount: 288000000 },
+    { name: 'pa.sector.industrial', value: 10, amount: 240000000 },
+    { name: 'pa.sector.realEstate', value: 8, amount: 192000000 },
+    { name: 'pa.sector.energy', value: 8, amount: 192000000 },
+    { name: 'pa.sector.others', value: 7, amount: 168000000 }
   ],
   performanceTrends: [
     { month: 'Jan 2024', return: 3.2, benchmark: 2.8, cumulative: 3.2 },
@@ -58,10 +59,10 @@ const analyticsData = {
     { month: 'Jun 2024', return: 1.5, benchmark: 1.8, cumulative: 11.5 }
   ],
   riskMetrics: [
-    { metric: 'Value at Risk (95%)', value: '$24.5M', threshold: '$30M', status: 'Normal' },
-    { metric: 'Concentration Risk', value: '22%', threshold: '25%', status: 'Warning' },
-    { metric: 'Leverage Ratio', value: '1.15x', threshold: '1.5x', status: 'Normal' },
-    { metric: 'Liquidity Coverage', value: '85%', threshold: '80%', status: 'Good' }
+    { metric: 'pa.risk.var', value: '$24.5M', threshold: '$30M', status: 'Normal' },
+    { metric: 'pa.risk.concentration', value: '22%', threshold: '25%', status: 'Warning' },
+    { metric: 'pa.risk.leverage', value: '1.15x', threshold: '1.5x', status: 'Normal' },
+    { metric: 'pa.risk.liquidity', value: '85%', threshold: '80%', status: 'Good' }
   ],
   topHoldings: [
     { name: 'Apple Inc.', symbol: 'AAPL', weight: 4.2, value: 100800000, return: 28.5 },
@@ -73,6 +74,7 @@ const analyticsData = {
 };
 
 export default function PortfolioAnalytics() {
+  const { t } = useTranslation('investor');
   const [timeRange, setTimeRange] = useState('6m');
   const [activeChart, setActiveChart] = useState('performance');
 
@@ -104,15 +106,15 @@ export default function PortfolioAnalytics() {
             to="/admin/reports"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Reports
+            <ArrowLeft className="w-4 h-4 me-2" />
+            {t('pl.backToReports')}
           </Link>
         </div>
 
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Portfolio Analytics</h1>
-            <p className="text-gray-600">Advanced performance metrics and risk analysis</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('pa.title')}</h1>
+            <p className="text-gray-600">{t('pa.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <select
@@ -120,23 +122,23 @@ export default function PortfolioAnalytics() {
               onChange={(e) => setTimeRange(e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
             >
-              <option value="1m">1 Month</option>
-              <option value="3m">3 Months</option>
-              <option value="6m">6 Months</option>
-              <option value="1y">1 Year</option>
-              <option value="3y">3 Years</option>
+              <option value="1m">{t('pa.range.1m')}</option>
+              <option value="3m">{t('pa.range.3m')}</option>
+              <option value="6m">{t('pa.range.6m')}</option>
+              <option value="1y">{t('pa.range.1y')}</option>
+              <option value="3y">{t('pa.range.3y')}</option>
             </select>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('common:refresh')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <Share className="w-4 h-4 mr-2" />
-              Share
+              <Share className="w-4 h-4 me-2" />
+              {t('pl.share')}
             </button>
             <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-              <Download className="w-4 h-4 mr-2" />
-              Export Report
+              <Download className="w-4 h-4 me-2" />
+              {t('pa.exportReport')}
             </button>
           </div>
         </div>
@@ -146,63 +148,63 @@ export default function PortfolioAnalytics() {
       <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-8">
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Sharpe Ratio</p>
+            <p className="text-sm text-gray-600">{t('pa.metric.sharpeRatio')}</p>
             <Target className="w-5 h-5 text-gray-700" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{analyticsData.performanceMetrics.sharpeRatio}</p>
-          <p className="text-xs text-green-600 mt-1">Above benchmark</p>
+          <p className="text-xs text-green-600 mt-1">{t('pa.metric.sharpeRatioHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Volatility</p>
+            <p className="text-sm text-gray-600">{t('pa.metric.volatility')}</p>
             <Activity className="w-5 h-5 text-orange-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{analyticsData.performanceMetrics.volatility}%</p>
-          <p className="text-xs text-gray-500 mt-1">Annualized</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pa.metric.volatilityHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Max Drawdown</p>
+            <p className="text-sm text-gray-600">{t('pa.metric.maxDrawdown')}</p>
             <TrendingDown className="w-5 h-5 text-red-500" />
           </div>
           <p className="text-2xl font-bold text-red-600">{analyticsData.performanceMetrics.maxDrawdown}%</p>
-          <p className="text-xs text-gray-500 mt-1">Worst period</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pa.metric.maxDrawdownHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Beta</p>
+            <p className="text-sm text-gray-600">{t('pa.metric.beta')}</p>
             <BarChart3 className="w-5 h-5 text-purple-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{analyticsData.performanceMetrics.beta}</p>
-          <p className="text-xs text-gray-500 mt-1">vs S&P 500</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pa.metric.betaHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Alpha</p>
+            <p className="text-sm text-gray-600">{t('pa.metric.alpha')}</p>
             <TrendingUp className="w-5 h-5 text-green-500" />
           </div>
           <p className="text-2xl font-bold text-green-600">{analyticsData.performanceMetrics.alpha}%</p>
-          <p className="text-xs text-green-600 mt-1">Excess return</p>
+          <p className="text-xs text-green-600 mt-1">{t('pa.metric.alphaHint')}</p>
         </div>
 
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-gray-600">Info Ratio</p>
+            <p className="text-sm text-gray-600">{t('pa.metric.infoRatio')}</p>
             <Target className="w-5 h-5 text-indigo-500" />
           </div>
           <p className="text-2xl font-bold text-gray-900">{analyticsData.performanceMetrics.informationRatio}</p>
-          <p className="text-xs text-gray-500 mt-1">Risk-adj return</p>
+          <p className="text-xs text-gray-500 mt-1">{t('pa.metric.infoRatioHint')}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
         {/* Asset Allocation */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Asset Allocation</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('pa.assetAllocation')}</h3>
           <div className="space-y-4">
             {analyticsData.assetAllocation.map((asset, index) => (
               <div key={index} className="flex items-center justify-between">
@@ -211,9 +213,9 @@ export default function PortfolioAnalytics() {
                     className="w-4 h-4 rounded-full"
                     style={{ backgroundColor: asset.color }}
                   />
-                  <span className="text-sm font-medium text-gray-900">{asset.name}</span>
+                  <span className="text-sm font-medium text-gray-900">{t(asset.name)}</span>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <div className="text-sm font-medium text-gray-900">{asset.value}%</div>
                   <div className="text-xs text-gray-500">{formatCurrency(asset.amount)}</div>
                 </div>
@@ -224,12 +226,12 @@ export default function PortfolioAnalytics() {
 
         {/* Geographic Allocation */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Geographic Allocation</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('pa.geographicAllocation')}</h3>
           <div className="space-y-4">
             {analyticsData.geographicAllocation.map((geo, index) => (
               <div key={index}>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-900">{geo.name}</span>
+                  <span className="text-sm font-medium text-gray-900">{t(geo.name)}</span>
                   <span className="text-sm text-gray-600">{geo.value}%</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
@@ -246,19 +248,19 @@ export default function PortfolioAnalytics() {
 
         {/* Risk Metrics */}
         <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Risk Metrics</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('pa.riskMetrics')}</h3>
           <div className="space-y-4">
             {analyticsData.riskMetrics.map((risk, index) => (
               <div key={index} className="border-b border-gray-100 pb-3 last:border-b-0 last:pb-0">
                 <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-gray-900">{risk.metric}</span>
+                  <span className="text-sm font-medium text-gray-900">{t(risk.metric)}</span>
                   <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(risk.status)}`}>
-                    {risk.status}
+                    {t(`pa.rstatus.${risk.status}`)}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">{risk.value}</span>
-                  <span className="text-xs text-gray-500">Limit: {risk.threshold}</span>
+                  <span className="text-xs text-gray-500">{t('pa.limit', { value: risk.threshold })}</span>
                 </div>
               </div>
             ))}
@@ -268,12 +270,12 @@ export default function PortfolioAnalytics() {
 
       {/* Sector Breakdown */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-8">
-        <h3 className="text-lg font-semibold text-gray-900 mb-6">Sector Breakdown</h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('pa.sectorBreakdown')}</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {analyticsData.sectorBreakdown.map((sector, index) => (
             <div key={index} className="border border-gray-200 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
-                <h4 className="text-sm font-medium text-gray-900">{sector.name}</h4>
+                <h4 className="text-sm font-medium text-gray-900">{t(sector.name)}</h4>
                 <span className="text-sm font-semibold text-black">{sector.value}%</span>
               </div>
               <div className="text-sm text-gray-600 mb-2">{formatCurrency(sector.amount)}</div>
@@ -291,26 +293,26 @@ export default function PortfolioAnalytics() {
       {/* Top Holdings */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden mb-8">
         <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Top Holdings</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('pa.topHoldings')}</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Security
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('pa.col.security')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Weight
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('pa.col.weight')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Market Value
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('pa.col.marketValue')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  YTD Return
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('pa.col.ytdReturn')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -331,11 +333,11 @@ export default function PortfolioAnalytics() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center text-sm font-medium text-green-600">
-                      <TrendingUp className="w-4 h-4 mr-1" />
+                      <TrendingUp className="w-4 h-4 me-1" />
                       +{holding.return}%
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <button className="text-black hover:text-blue-900">
                       <Eye className="w-4 h-4" />
                     </button>
@@ -350,7 +352,7 @@ export default function PortfolioAnalytics() {
       {/* Performance Chart Placeholder */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Performance Trends</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('pa.performanceTrends')}</h3>
           <div className="flex items-center bg-gray-100 rounded-lg p-1">
             <button
               onClick={() => setActiveChart('performance')}
@@ -358,7 +360,7 @@ export default function PortfolioAnalytics() {
                 activeChart === 'performance' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              Performance
+              {t('pa.chart.performance')}
             </button>
             <button
               onClick={() => setActiveChart('risk')}
@@ -366,18 +368,18 @@ export default function PortfolioAnalytics() {
                 activeChart === 'risk' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
               }`}
             >
-              Risk Analysis
+              {t('pa.chart.risk')}
             </button>
           </div>
         </div>
 
         <div className="text-center py-12 border-2 border-dashed border-gray-300 rounded-lg">
           <BarChart3 className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-          <h4 className="text-lg font-medium text-gray-900 mb-2">Interactive Charts</h4>
+          <h4 className="text-lg font-medium text-gray-900 mb-2">{t('pa.interactiveCharts')}</h4>
           <p className="text-gray-600 mb-4">
             {activeChart === 'performance'
-              ? 'Performance vs benchmark comparison over time'
-              : 'Risk metrics and volatility analysis'
+              ? t('pa.perfVsBenchmark')
+              : t('pa.riskVolatility')
             }
           </p>
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4 max-w-2xl mx-auto">
@@ -385,7 +387,7 @@ export default function PortfolioAnalytics() {
               <div key={index} className="text-center">
                 <div className="text-xs text-gray-500 mb-1">{trend.month.split(' ')[0]}</div>
                 <div className="text-sm font-medium text-green-600">+{trend.return}%</div>
-                <div className="text-xs text-gray-400">Bench: {trend.benchmark}%</div>
+                <div className="text-xs text-gray-400">{t('pa.benchLabel', { value: trend.benchmark })}</div>
               </div>
             ))}
           </div>

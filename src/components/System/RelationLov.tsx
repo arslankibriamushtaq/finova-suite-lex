@@ -1,5 +1,6 @@
 import { useEffect,  useState } from "react";
 import { Button, Dropdown, Menu, Select, Modal, Input, Form } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -17,6 +18,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const RelationLov = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -41,23 +43,23 @@ const RelationLov = () => {
       await toast.promise(
         deleteRelationLov(rowData?.id), // API call
         {
-          loading: "Deleting Relation LOV...",
+          loading: t("relationLov.deleting"),
           success: (response) => {
             if (response?.data?.success) {
               getList();
               setIsDeleteModalVisible(false);
-              return "Relation LOV deleted successfully";
+              return t("relationLov.deleteSuccess");
             } else {
               throw new Error(
                 response?.data?.errors?.[0] ||
                   response?.data?.message ||
-                  "Failed to deleting Relation LOV."
+                  t("relationLov.deleteFailed")
               );
             }
           },
           error: (err) =>
             err?.message ||
-            "Something went wrong while deleting the Relation LOV.",
+            t("relationLov.deleteError"),
         }
       );
     } catch (error: any) {
@@ -94,19 +96,19 @@ const RelationLov = () => {
   }, [page, pageSize]);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "15%",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "75%",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -121,7 +123,7 @@ const RelationLov = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -135,14 +137,14 @@ const RelationLov = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -206,29 +208,29 @@ const RelationLov = () => {
         await toast.promise(
           editRelationLov(updateBody), // Pass the body with ID included
           {
-            loading: "Updating complaint type...",
+            loading: t("relationLov.updating"),
             success: (response: any) => {
               if (response?.data?.success) {
                 getList();
                 setIsModalVisible(false);
-                return "Relation LOV updated successfully";
+                return t("relationLov.updateSuccess");
               } else {
                 throw new Error(
                   response?.response?.data?.errors?.[0] ||
-                    "Failed to update complaint type."
+                    t("relationLov.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating the complaint type.",
+              t("relationLov.updateError"),
           }
         );
       } else {
         await toast.promise(
           createRelationLov(formValues), // API call
           {
-            loading: "Adding Relation LOV...",
+            loading: t("relationLov.adding"),
             success: (response) => {
               if (response?.data?.success) {
                 setFormValues({
@@ -237,18 +239,18 @@ const RelationLov = () => {
                 });
                 getList();
                 setIsModalVisible(false);
-                return "New Relation LOV added successfully";
+                return t("relationLov.addSuccess");
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.message ||
-                    "Failed to Relation LOV."
+                    t("relationLov.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding the Relation LOV.",
+              t("relationLov.addError"),
           }
         );
       }
@@ -302,7 +304,7 @@ const RelationLov = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -320,11 +322,11 @@ const RelationLov = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -332,11 +334,11 @@ const RelationLov = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New Relation LOV
+            {t("relationLov.addNew")}
           </button>
         </div>
       </div>
@@ -358,14 +360,14 @@ const RelationLov = () => {
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={
-          selectedItem === "edit" ? "Edit Relation LOV" : "Add New Relation LOV"
+          selectedItem === "edit" ? t("relationLov.editTitle") : t("relationLov.addNew")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
           <div className="w-100">
             <Button key="close" onClick={handleCancel}>
-              Close
+              {t("common:close")}
             </Button>
             ,
             <button
@@ -374,7 +376,7 @@ const RelationLov = () => {
               disabled={isLoading}
               onClick={handleOk}
             >
-              {selectedItem === "edit" ? "Edit" : "Add"}
+              {selectedItem === "edit" ? t("common:edit") : t("common:add")}
             </button>
             ,
           </div>,
@@ -386,9 +388,9 @@ const RelationLov = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
-                    placeholder="Enter complaint type"
+                    placeholder={t("relationLov.namePlaceholder")}
                     className="fs-6"
                     value={formValues.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -417,7 +419,7 @@ const RelationLov = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -432,7 +434,7 @@ const RelationLov = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -446,7 +448,7 @@ const RelationLov = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure you want to delete this Relation LOV?
+            {t("relationLov.deleteConfirm")}
           </p>
         </div>
       </Modal>

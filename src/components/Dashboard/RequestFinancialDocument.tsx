@@ -5,8 +5,10 @@ import TableView from "../TableView/TableView";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const RequestFinancialDocument = () => {
+  const { t } = useTranslation("dashboard");
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [documents, setDocuments] = useState<any[]>([]);
@@ -33,11 +35,11 @@ const RequestFinancialDocument = () => {
         const docs = Array.isArray(response.data.data.data) ? response.data.data.data : [];
         setDocuments(docs);
       } else {
-        toast.error("Failed to load documents");
+        toast.error(t("reqDoc.toast.loadFailed"));
       }
     } catch (error: any) {
       console.error("API Error:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load documents");
+      toast.error(error?.response?.data?.message || error?.message || t("reqDoc.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -64,12 +66,12 @@ const RequestFinancialDocument = () => {
 
   const handleRequestDocument = async () => {
     if (!id) {
-      toast.error("Application ID is required");
+      toast.error(t("reqDoc.toast.appIdRequired"));
       return;
     }
 
     if (selectedDocs.length === 0) {
-      toast.error("Please select at least one document");
+      toast.error(t("reqDoc.toast.selectOne"));
       return;
     }
 
@@ -83,15 +85,15 @@ const RequestFinancialDocument = () => {
       const response = await requestDoc(body);
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success(response?.data?.message || "Documents requested successfully!");
+        toast.success(response?.data?.message || t("reqDoc.toast.requested"));
         setSelectedDocs([]);
         await fetchDocuments();
       } else {
-        toast.error(response?.data?.message || "Failed to request documents");
+        toast.error(response?.data?.message || t("reqDoc.toast.requestFailed"));
       }
     } catch (error: any) {
       console.error("Request Document Error:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to request documents");
+      toast.error(error?.response?.data?.message || error?.message || t("reqDoc.toast.requestFailed"));
     } finally {
       setRequesting(false);
     }
@@ -142,7 +144,7 @@ const RequestFinancialDocument = () => {
             disabled={requesting || selectedDocs.length === 0}
             style={{ opacity: requesting || selectedDocs.length === 0 ? 0.6 : 1 }}
           >
-            {requesting ? "Requesting..." : "Request Financial Document"}
+            {requesting ? t("reqDoc.requesting") : t("reqDoc.button")}
           </button>
         </div>
 
@@ -155,7 +157,7 @@ const RequestFinancialDocument = () => {
           </div>
         ) : (
           <div className="text-center p-4" style={{ color: "#6C6C6C" }}>
-            No documents available
+            {t("reqDoc.noDocuments")}
           </div>
         )}
       </div>

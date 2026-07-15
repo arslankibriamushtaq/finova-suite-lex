@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Input, Select, Switch, DatePicker } from "antd";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getPartnerAdminById, updatePartnerAdmin } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
@@ -9,6 +10,7 @@ import moment from "moment";
 const { Option } = Select;
 
 const UpdatePartnerAdmin = () => {
+  const { t } = useTranslation("partner");
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const partnerId = searchParams.get("partnerId");
@@ -31,7 +33,7 @@ const UpdatePartnerAdmin = () => {
     if (partnerId && adminId) {
       fetchAdminData();
     } else {
-      toast.error("Partner ID or Admin ID is missing");
+      toast.error(t("toast.partnerOrAdminIdMissing"));
       navigate("/PartnerManagement/PartnersList");
     }
   }, [partnerId, adminId]);
@@ -56,14 +58,14 @@ const UpdatePartnerAdmin = () => {
           send_details_via_mail: admin?.send_details_via_mail || false, */
         });
 
-        toast.success("Admin data loaded successfully");
+        toast.success(t("toast.adminLoaded"));
       } else {
-        toast.error(response?.data?.message || "Failed to fetch admin data");
+        toast.error(response?.data?.message || t("toast.adminFetchFailed"));
         navigate(`/PartnerManagement/PartnerAdminList?id=${partnerId}`);
       }
     } catch (error: any) {
       console.error("Error fetching admin data:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch admin data");
+      toast.error(error?.response?.data?.message || t("toast.adminFetchFailed"));
       navigate(`/PartnerManagement/PartnerAdminList?id=${partnerId}`);
     } finally {
       setLoading(false);
@@ -82,7 +84,7 @@ const UpdatePartnerAdmin = () => {
         return;
       } */
       if (!partnerId || !adminId) {
-        toast.error("Partner ID or Admin ID is missing");
+        toast.error(t("toast.partnerOrAdminIdMissing"));
         return;
       }
 
@@ -103,14 +105,14 @@ const UpdatePartnerAdmin = () => {
       const response = await updatePartnerAdmin(partnerId, adminId, submitData);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "Partner admin updated successfully");
+        toast.success(response?.data?.message || t("toast.adminUpdated"));
         navigate(`/PartnerManagement/PartnerAdminList?id=${partnerId}`);
       } else {
-        toast.error(response?.data?.message || "Failed to update partner admin");
+        toast.error(response?.data?.message || t("toast.adminUpdateFailed"));
       }
     } catch (error: any) {
       console.error("Error updating partner admin:", error);
-      toast.error(error?.response?.data?.message || "Failed to update partner admin");
+      toast.error(error?.response?.data?.message || t("toast.adminUpdateFailed"));
     } finally {
       setLoading(false);
     }
@@ -122,14 +124,14 @@ const UpdatePartnerAdmin = () => {
 
   return (
     <div className="service" style={{ background: "white", padding: "2rem", borderRadius: "2px" }}>
-      <h4 style={{ marginBottom: "2rem" }}>Update Partner Admin</h4>
+      <h4 style={{ marginBottom: "2rem" }}>{t("form.updatePartnerAdmin")}</h4>
 
       <div className="row">
         {/* Name */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Name</label>
+          <label className="form-label">{t("common:name")}</label>
           <Input
-            placeholder="Name"
+            placeholder={t("form.namePlaceholder")}
             value={formData.name}
             onChange={(e) => handleInputChange("name", e.target.value)}
             style={{ height: "40px" }}
@@ -138,10 +140,10 @@ const UpdatePartnerAdmin = () => {
 
         {/* Email */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Email</label>
+          <label className="form-label">{t("common:email")}</label>
           <Input
             type="email"
-            placeholder="Email"
+            placeholder={t("common:email")}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             style={{ height: "40px" }}
@@ -162,10 +164,10 @@ const UpdatePartnerAdmin = () => {
 
         {/* Phone */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Phone</label>
+          <label className="form-label">{t("common:phone")}</label>
           <Input
             addonBefore="+966"
-            placeholder="Phone"
+            placeholder={t("common:phone")}
             value={formData.phone}
             onChange={(e) => handleInputChange("phone", e.target.value)}
             style={{ height: "40px" }}
@@ -174,9 +176,9 @@ const UpdatePartnerAdmin = () => {
 
         {/* Address */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Address</label>
+          <label className="form-label">{t("form.address")}</label>
           <Input
-            placeholder="Address"
+            placeholder={t("form.address")}
             value={formData.address}
             onChange={(e) => handleInputChange("address", e.target.value)}
             style={{ height: "40px" }}
@@ -185,9 +187,9 @@ const UpdatePartnerAdmin = () => {
 
         {/* DOB */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">DOB</label>
+          <label className="form-label">{t("form.dob")}</label>
           <DatePicker
-            placeholder="yyyy-mm-dd"
+            placeholder={t("form.dobPlaceholder")}
             value={formData.dob ? moment(formData.dob) : null}
             onChange={(date) => handleInputChange("dob", date ? date.format("YYYY-MM-DD") : "")}
             style={{ width: "100%", height: "40px" }}
@@ -197,13 +199,13 @@ const UpdatePartnerAdmin = () => {
 
         {/* Country */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Country</label>
+          <label className="form-label">{t("form.country")}</label>
           <Select
             value={formData.country_id}
             onChange={(value) => handleInputChange("country_id", value)}
             style={{ width: "100%" }}
           >
-            <Option value="1">Saudi Arabia</Option>
+            <Option value="1">{t("form.saudiArabia")}</Option>
             {/* <Option value="2">UAE</Option>
             <Option value="3">Kuwait</Option> */}
           </Select>
@@ -240,7 +242,7 @@ const UpdatePartnerAdmin = () => {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "Updating..." : "Update"}
+          {loading ? t("form.updating") : t("common:update")}
         </button>
       </div>
     </div>

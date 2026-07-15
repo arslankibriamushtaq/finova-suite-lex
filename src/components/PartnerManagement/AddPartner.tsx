@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Input, Select, Switch } from "antd";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { store } from "../../redux/store";
@@ -18,6 +19,7 @@ const generateSecretKey = () => {
 };
 
 const AddPartner = () => {
+  const { t } = useTranslation("partner");
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const logoInputRef = useRef<HTMLInputElement>(null);
@@ -56,7 +58,7 @@ const AddPartner = () => {
     try {
       // Validation
       if (!formData.name_en || !formData.name_ar || !formData.email || !formData.contact_no) {
-        toast.error("Please fill all required fields");
+        toast.error(t("toast.fillRequired"));
         return;
       }
 
@@ -106,10 +108,10 @@ const AddPartner = () => {
       );
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "Partner added successfully");
+        toast.success(response?.data?.message || t("toast.partnerAdded"));
         navigate("/LOS/PartnerManagement/PartnersList");
       } else {
-        toast.error(response?.data?.errors?.errors[0] || "Failed to add partner");
+        toast.error(response?.data?.errors?.errors[0] || t("toast.partnerAddFailed"));
       }
     } catch (error: any) {
       console.error("Error adding partner:", error);
@@ -128,7 +130,7 @@ const AddPartner = () => {
         });
       } else {
         // Display general error message
-        toast.error(error?.response?.data?.message || "Failed to add partner");
+        toast.error(error?.response?.data?.message || t("toast.partnerAddFailed"));
       }
     } finally {
       setLoading(false);
@@ -142,9 +144,9 @@ const AddPartner = () => {
       <div className="row">
         {/* Name */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Name</label>
+          <label className="form-label">{t("common:name")}</label>
           <Input
-            placeholder="Name"
+            placeholder={t("form.namePlaceholder")}
             value={formData.name_en}
             onChange={(e) => handleInputChange("name_en", e.target.value)}
             style={{ height: "40px" }}
@@ -166,10 +168,10 @@ const AddPartner = () => {
 
         {/* Partner Email */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Partner Email</label>
+          <label className="form-label">{t("form.partnerEmail")}</label>
           <Input
             type="email"
-            placeholder="Partner Email"
+            placeholder={t("form.partnerEmail")}
             value={formData.email}
             onChange={(e) => handleInputChange("email", e.target.value)}
             style={{ height: "40px" }}
@@ -178,10 +180,10 @@ const AddPartner = () => {
 
         {/* Contact No */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Contact No.</label>
+          <label className="form-label">{t("form.contactNo")}</label>
           <Input
             addonBefore="+966"
-            placeholder="Contact No"
+            placeholder={t("form.contactNoPlaceholder")}
             value={formData.contact_no}
             onChange={(e) => handleInputChange("contact_no", e.target.value)}
             style={{ height: "40px" }}
@@ -190,13 +192,13 @@ const AddPartner = () => {
 
         {/* Country */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Country</label>
+          <label className="form-label">{t("form.country")}</label>
           <Select
             value={formData.country_id}
             onChange={(value) => handleInputChange("country_id", value)}
             style={{ width: "100%" }}
           >
-            <Option value="1">Saudi Arabia</Option>
+            <Option value="1">{t("form.saudiArabia")}</Option>
             {/* <Option value="2">UAE</Option>
             <Option value="3">Kuwait</Option> */}
           </Select>
@@ -204,7 +206,7 @@ const AddPartner = () => {
 
         {/* Choose Brand Color */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Choose Brand Color</label>
+          <label className="form-label">{t("form.chooseBrandColor")}</label>
           <div className="d-flex gap-2">
             <Input
               type="color"
@@ -222,9 +224,9 @@ const AddPartner = () => {
 
         {/* Affiliation URL */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Affiliation URL</label>
+          <label className="form-label">{t("form.affiliationUrl")}</label>
           <Input
-            placeholder="Affiliation URL"
+            placeholder={t("form.affiliationUrl")}
             value={formData.affiliation_url}
             onChange={(e) => handleInputChange("affiliation_url", e.target.value)}
             style={{ height: "40px" }}
@@ -233,9 +235,9 @@ const AddPartner = () => {
 
         {/* Affiliation Code */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Affiliation Code</label>
+          <label className="form-label">{t("form.affiliationCode")}</label>
           <Input
-            placeholder="Affiliation Code"
+            placeholder={t("form.affiliationCode")}
             value={formData.affiliation_code}
             onChange={(e) => handleInputChange("affiliation_code", e.target.value)}
             style={{ height: "40px" }}
@@ -244,7 +246,7 @@ const AddPartner = () => {
 
         {/* Logo */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Logo</label>
+          <label className="form-label">{t("form.logo")}</label>
           <div style={{ position: "relative" }}>
             <input
               ref={logoInputRef}
@@ -288,7 +290,7 @@ const AddPartner = () => {
                   padding: 0,
                   zIndex: 10,
                 }}
-                title="Remove logo"
+                title={t("form.removeLogo")}
               >
                 ×
               </button>
@@ -301,7 +303,7 @@ const AddPartner = () => {
                 width={150}
                 height={150}
                 style={{ objectFit: "contain" }}
-                alt="Logo preview"
+                alt={t("form.logoPreview")}
               />
             </div>
           ) : null}
@@ -309,7 +311,7 @@ const AddPartner = () => {
 
         {/* Favicon */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Favicon</label>
+          <label className="form-label">{t("form.favicon")}</label>
           <div style={{ position: "relative" }}>
             <input
               ref={faviconInputRef}
@@ -353,7 +355,7 @@ const AddPartner = () => {
                   padding: 0,
                   zIndex: 10,
                 }}
-                title="Remove favicon"
+                title={t("form.removeFavicon")}
               >
                 ×
               </button>
@@ -366,7 +368,7 @@ const AddPartner = () => {
                 width={150}
                 height={150}
                 style={{ objectFit: "contain" }}
-                alt="Favicon preview"
+                alt={t("form.faviconPreview")}
               />
             </div>
           ) : null}
@@ -374,9 +376,9 @@ const AddPartner = () => {
 
         {/* API Secret Key */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">API Secret Key</label>
+          <label className="form-label">{t("form.apiSecretKey")}</label>
           <Input
-            placeholder="Auto-generated key"
+            placeholder={t("form.autoGeneratedKey")}
             value={formData.secret_key}
             onChange={(e) => handleInputChange("secret_key", e.target.value)}
             style={{ height: "40px", backgroundColor: "var(--color-surface-subtle)" }}
@@ -386,7 +388,7 @@ const AddPartner = () => {
 
         {/* Revenue Verification Method */}
         <div className="col-md-6 mb-3">
-          <label className="form-label">Revenue Verification Method</label>
+          <label className="form-label">{t("form.revenueVerificationMethod")}</label>
           <Select
             value={formData.revenue_verification_method}
             onChange={(value) => {
@@ -399,10 +401,10 @@ const AddPartner = () => {
             }}
             style={{ width: "100%" }}
           >
-            <Option value="Manual">Manual</Option>
-            <Option value="Verify_Through_Api">Verify Through Api</Option>
-            <Option value="Email_Triggering">Email Triggering</Option>
-            <Option value="Both_Api_Email">Both(Verify Through Api & Email Triggering)</Option>
+            <Option value="Manual">{t("form.manual")}</Option>
+            <Option value="Verify_Through_Api">{t("form.verifyThroughApi")}</Option>
+            <Option value="Email_Triggering">{t("form.emailTriggering")}</Option>
+            <Option value="Both_Api_Email">{t("form.bothApiEmail")}</Option>
           </Select>
         </div>
 
@@ -411,18 +413,18 @@ const AddPartner = () => {
           formData.revenue_verification_method === "Both(Verify_Through_Api_And_Email_Triggering)") && (
           <>
             <div className="col-md-6 mb-3">
-              <label className="form-label">Get Revenue URL</label>
+              <label className="form-label">{t("form.getRevenueUrl")}</label>
               <Input
-                placeholder="Get Revenue URL"
+                placeholder={t("form.getRevenueUrl")}
                 value={formData.get_revenue_url}
                 onChange={(e) => handleInputChange("get_revenue_url", e.target.value)}
                 style={{ height: "40px" }}
               />
             </div>
             <div className="col-md-6 mb-3">
-              <label className="form-label">Get Revenue Secret Key</label>
+              <label className="form-label">{t("form.getRevenueSecretKey")}</label>
               <Input
-                placeholder="Get Revenue Secret Key"
+                placeholder={t("form.getRevenueSecretKey")}
                 value={formData.get_revenue_secret_key}
                 onChange={(e) => handleInputChange("get_revenue_secret_key", e.target.value)}
                 style={{ height: "40px" }}
@@ -439,7 +441,7 @@ const AddPartner = () => {
               checked={formData.enable_api}
               onChange={(checked) => handleInputChange("enable_api", checked)}
             />
-            <label className="form-label mb-0">Enable API</label>
+            <label className="form-label mb-0">{t("form.enableApi")}</label>
           </div>
         </div>
 
@@ -451,7 +453,7 @@ const AddPartner = () => {
               checked={formData.status}
               onChange={(checked) => handleInputChange("status", checked)}
             />
-            <label className="form-label mb-0">Status</label>
+            <label className="form-label mb-0">{t("common:status")}</label>
           </div>
         </div>
 
@@ -459,7 +461,7 @@ const AddPartner = () => {
         <div className="col-md-6 mb-3">
           <div className="d-flex align-items-center gap-2">
             <Switch className="red-switch" />
-            <label className="form-label mb-0">Send Details Via Mail</label>
+            <label className="form-label mb-0">{t("form.sendDetailsViaMail")}</label>
           </div>
         </div>
       </div>
@@ -471,7 +473,7 @@ const AddPartner = () => {
           onClick={handleSubmit}
           disabled={loading}
         >
-          {loading ? "Saving..." : "Save"}
+          {loading ? t("form.saving") : t("common:save")}
         </button>
       </div>
     </div>

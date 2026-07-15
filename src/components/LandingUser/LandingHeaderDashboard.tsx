@@ -5,8 +5,10 @@ import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
 // import SuperAdmin from "./SuperAdmin";
 import { themeStyle } from "../Config/Theme";
+import { useTranslation } from "react-i18next";
 
 const LandingHeaderDashboard = () => {
+  const { t } = useTranslation("landingUser");
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
   const [showSuperAdmin, setShowSuperAdmin] = useState(false);
   const [viewLayout, setViewLayout] = useState(false);
@@ -44,7 +46,7 @@ const LandingHeaderDashboard = () => {
               className="col-2 d-flex justify-content-end simple-text"
             >
               {/* <img src={Images.searchIconWhite} alt="" width={13} height={13} /> */}
-              <div className="ps-1">Search</div>
+              <div className="ps-1">{t("common:search")}</div>
             </div>
             <div
               style={{
@@ -55,7 +57,7 @@ const LandingHeaderDashboard = () => {
               }}
               className="col-2 d-flex justify-content-end simple-text"
             >
-              Support
+              {t("nav.support")}
             </div>
             <div
               style={{
@@ -66,7 +68,7 @@ const LandingHeaderDashboard = () => {
               }}
               className="col-2 d-flex justify-content-end simple-text px-3"
             >
-              About
+              {t("nav.about")}
             </div>
             <div
               style={{
@@ -77,7 +79,7 @@ const LandingHeaderDashboard = () => {
               }}
               className="col-2 d-flex justify-content-end simple-text"
             >
-              Contact Us
+              {t("nav.contactUs")}
             </div>
           </div>
         </div>

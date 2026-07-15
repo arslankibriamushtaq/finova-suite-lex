@@ -29,7 +29,9 @@ import {
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/rootReducer";
+import { useTranslation } from "react-i18next";
 const References = () => {
+  const { t } = useTranslation("customerManagement");
   const [relation, setRelation] = useState<any>("");
   const [country, setCountry] = useState<any>("");
   const [city, setCity] = useState<any>("");
@@ -47,21 +49,21 @@ const References = () => {
   const handleClose = () => setShow(false);
 
   const statusOptions = [
-    { value: 1, label: "Initiated" },
-    { value: 2, label: "Pending" },
-    { value: 3, label: "InProgress" },
-    { value: 4, label: "Completed" },
-    { value: 5, label: "Verified" },
-    { value: 6, label: "Failed" },
-    { value: 7, label: "Cancelled" },
-    { value: 8, label: "OnHold" },
-    { value: 9, label: "Reassigned" },
-    { value: 10, label: "Escalated" },
-    { value: 11, label: "AwaitingCustomerResponse" },
-    { value: 12, label: "Review" },
-    { value: 13, label: "Closed" },
-    { value: 14, label: "DiscrepancyFound" },
-    { value: 15, label: "NotApplicable" },
+    { value: 1, label: t("references.status.initiated") },
+    { value: 2, label: t("references.status.pending") },
+    { value: 3, label: t("references.status.inProgress") },
+    { value: 4, label: t("references.status.completed") },
+    { value: 5, label: t("references.status.verified") },
+    { value: 6, label: t("references.status.failed") },
+    { value: 7, label: t("references.status.cancelled") },
+    { value: 8, label: t("references.status.onHold") },
+    { value: 9, label: t("references.status.reassigned") },
+    { value: 10, label: t("references.status.escalated") },
+    { value: 11, label: t("references.status.awaitingCustomerResponse") },
+    { value: 12, label: t("references.status.review") },
+    { value: 13, label: t("references.status.closed") },
+    { value: 14, label: t("references.status.discrepancyFound") },
+    { value: 15, label: t("references.status.notApplicable") },
   ];
 
   const handleSubmit = async (fieldValue: any) => {
@@ -188,10 +190,10 @@ const References = () => {
         }}
       >
         <Menu.Item key="edit" icon={<EditOutlined />}>
-          Edit
+          {t("common:edit")}
         </Menu.Item>
         <Menu.Item key="delete" icon={<DeleteOutlined />}>
-          Delete
+          {t("common:delete")}
         </Menu.Item>
       </Menu>
     </>
@@ -267,7 +269,7 @@ const References = () => {
 
   const button = [
     {
-      title: "Add",
+      title: t("common:add"),
       onClick: () => {
         setShow(true);
       },
@@ -283,24 +285,24 @@ const References = () => {
 
   const Reference_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { Name: any }) => row.Name,
     },
     {
-      name: "Country",
+      name: t("references.col.country"),
       selector: (row: { Country: any }) => row.Country,
     },
     {
-      name: "City",
+      name: t("references.col.city"),
       selector: (row: { City: any }) => row.City,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { Status: any }) => row.Status,
     },
 
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -313,7 +315,7 @@ const References = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -324,7 +326,7 @@ const References = () => {
   return (
     <>
       <div className="cs-table p-2">
-        <DynamicHeaderStructure title={"References"} button={button} />
+        <DynamicHeaderStructure title={t("references.title")} button={button} />
         <TableHeaderFilter />
         <TableView
           setPage={setPage}
@@ -343,7 +345,7 @@ const References = () => {
         dialogClassName="custom-modal"
       >
         <ModalHeader style={{ fontWeight: 620, fontSize: 20 }} closeButton>
-          Reference
+          {t("references.modalTitle")}
         </ModalHeader>
 
         {loading ? (
@@ -376,7 +378,7 @@ const References = () => {
                 <div className="col-md-12 d-flex w-100">
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Relationship
+                      {t("references.form.relationship")}
                     </div>
                     <div className="pt-1">
                       <Field
@@ -386,7 +388,7 @@ const References = () => {
                           setFieldValue("relationshipId", value)
                         }
                       >
-                        <option label="Select Relation"></option>
+                        <option label={t("references.form.selectRelation")}></option>
                         {relation?.map((item) => (
                           <option key={item.id} value={item.id}>
                             {item.name}
@@ -397,7 +399,7 @@ const References = () => {
                   </div>
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Zip Extension
+                      {t("references.form.zipExtension")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="zipExtension" id="zipExtension" />
@@ -408,7 +410,7 @@ const References = () => {
                 <div className="col-md-12 d-flex pt-3">
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Name
+                      {t("common:name")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="name" />
@@ -416,7 +418,7 @@ const References = () => {
                   </div>
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Phone
+                      {t("common:phone")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="phone" />
@@ -427,7 +429,7 @@ const References = () => {
                 <div className="col-md-12 d-flex pt-3">
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Status
+                      {t("common:status")}
                     </div>
                     <div className="pt-1">
                       <Field
@@ -435,7 +437,7 @@ const References = () => {
                         name="status"
                         onChange={(value) => setFieldValue("status", value)}
                       >
-                        <option value="" label="Select Status" />
+                        <option value="" label={t("references.form.selectStatus")} />
                         {statusOptions?.map((item) => (
                           <option key={item.value} value={item.value}>
                             {item.label}
@@ -446,7 +448,7 @@ const References = () => {
                   </div>
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Extension
+                      {t("references.form.extension")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="extension" />
@@ -457,7 +459,7 @@ const References = () => {
                 <div className="col-md-12 d-flex pt-3">
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Months
+                      {t("references.form.months")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="months" />
@@ -465,7 +467,7 @@ const References = () => {
                   </div>
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Years
+                      {t("references.form.years")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="years" />
@@ -475,7 +477,7 @@ const References = () => {
                 <div className="col-md-12 d-flex pt-3">
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Secondary Phone
+                      {t("references.form.secondaryPhone")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="secondaryPhone" />
@@ -483,7 +485,7 @@ const References = () => {
                   </div>
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Zip Code
+                      {t("references.form.zipCode")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="zip" />
@@ -493,7 +495,7 @@ const References = () => {
                 <div className="col-md-12 d-flex pt-3 align-items-center">
                   <div className="col-md-6 px-2">
                     <div className="simple-text" style={{ fontWeight: 500 }}>
-                      Comments
+                      {t("references.form.comments")}
                     </div>
                     <div className="pt-1">
                       <Field as={Input} name="comment" />
@@ -506,27 +508,27 @@ const References = () => {
                         className="ps-2 simple-text"
                         style={{ fontWeight: 500 }}
                       >
-                        Permission to Call
+                        {t("references.form.permissionToCall")}
                       </div>
                     </div>
-                    <div className="d-flex align-items-center ml-3 p-2">
+                    <div className="d-flex align-items-center ms-3 p-2">
                       <Field type="checkbox" name="permissionToText" />
                       <div
                         className="ps-2 simple-text"
                         style={{ fontWeight: 500 }}
                       >
-                        Permission to Text
+                        {t("references.form.permissionToText")}
                       </div>
                     </div>
                   </div>
                 </div>
 
                 <div className="col-md-12">
-                  <h5 className="pt-4 pb-3 px-2">Address</h5>
+                  <h5 className="pt-4 pb-3 px-2">{t("references.form.addressSection")}</h5>
                   <div className="d-flex">
                     <div className="col-md-6 px-2">
                       <div className="simple-text" style={{ fontWeight: 500 }}>
-                        Country
+                        {t("references.form.country")}
                       </div>
                       <div className="pt-1">
                         <Field
@@ -536,10 +538,10 @@ const References = () => {
                             setFieldValue("countryId", value)
                           }
                         >
-                          <option label="Select Country"></option>
+                          <option label={t("references.form.selectCountry")}></option>
                           {country?.map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.name || "Unknown Country"}
+                              {item.name || t("references.form.unknownCountry")}
                             </option>
                           ))}
                         </Field>
@@ -547,7 +549,7 @@ const References = () => {
                     </div>
                     <div className="col-md-6 px-2">
                       <div className="simple-text" style={{ fontWeight: 500 }}>
-                        State
+                        {t("references.form.state")}
                       </div>
                       <div className="pt-1">
                         <Field
@@ -555,10 +557,10 @@ const References = () => {
                           name="stateId"
                           onChange={(value) => setFieldValue("stateId", value)}
                         >
-                          <option label="Select State"></option>
+                          <option label={t("references.form.selectState")}></option>
                           {states?.map((item: any) => (
                             <option key={item.id} value={item.id}>
-                              {item.name || "Unknown State"}
+                              {item.name || t("references.form.unknownState")}
                             </option>
                           ))}
                         </Field>
@@ -569,7 +571,7 @@ const References = () => {
                   <div className="d-flex pt-3">
                     <div className="col-md-6 px-2">
                       <div className="simple-text" style={{ fontWeight: 500 }}>
-                        City
+                        {t("references.form.city")}
                       </div>
                       <div className="pt-1">
                         <Field
@@ -577,10 +579,10 @@ const References = () => {
                           name="cityId"
                           onChange={(value) => setFieldValue("cityId", value)}
                         >
-                          <option value="" label="Select City" />
+                          <option value="" label={t("references.form.selectCity")} />
                           {city?.map((item) => (
                             <option key={item.id} value={item.id}>
-                              {item.name || "Unknown City"}
+                              {item.name || t("references.form.unknownCity")}
                             </option>
                           ))}
                         </Field>
@@ -588,7 +590,7 @@ const References = () => {
                     </div>
                     <div className="col-md-6 px-2">
                       <div className="simple-text" style={{ fontWeight: 500 }}>
-                        Address
+                        {t("references.form.address")}
                       </div>
                       <div className="pt-1">
                         <Field as={Input} name="address" />
@@ -603,7 +605,7 @@ const References = () => {
                     className="btn theme-btn-next"
                     onClick={handleClose}
                   >
-                    Save
+                    {t("common:save")}
                   </button>
                 </div>
               </Form>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
@@ -54,7 +55,7 @@ const getFullImageUrl = (url: string, API_BASE_URL: string) => {
 };
 
 const FinancialStatementsSettings = () => {
-  
+  const { t } = useTranslation('webPages');
   // UI States
   const [showTextEditor, setShowTextEditor] = useState(false);
   const [editingFieldPath, setEditingFieldPath] = useState<any>('');
@@ -187,13 +188,13 @@ const FinancialStatementsSettings = () => {
           const result = await response.json();
           const fileUrl = `${API_BASE_URL}${result.data.path}`;
           updateFormValue(fieldPath, fileUrl);
-          toast.success('File uploaded successfully!');
+          toast.success(t('toast.fileUploaded'));
         } else {
-          toast.error('Failed to upload file');
+          toast.error(t('toast.failedUploadFile'));
         }
       } catch (err) {
         console.error('Error uploading file:', err);
-        toast.error('Error uploading file');
+        toast.error(t('toast.errorUploadingFile'));
       }
     };
     input.click();
@@ -219,7 +220,7 @@ const FinancialStatementsSettings = () => {
       setStatementToDelete(null);
       
       // Show success message
-      toast.success(locale === 'ar' ? 'تم حذف البيان بنجاح!' : 'Statement deleted successfully!');
+      toast.success(t('toast.statementDeleted'));
     }
   };
 
@@ -252,7 +253,7 @@ const FinancialStatementsSettings = () => {
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'var(--theme-secondary)';
             }}
-            title={locale === 'ar' ? 'حذف البيان' : 'Delete Statement'}
+            title={t('financial.deleteStatement')}
           >
             {/* Trash/Delete Icon SVG (same as FaqPageSettings) */}
             <svg 
@@ -391,7 +392,7 @@ const FinancialStatementsSettings = () => {
     fieldPath: string,
     value: any,
     fieldType: string,
-    placeholder: string = 'Enter value'
+    placeholder: string = t('field.enterValue')
   ) => {
     const isEditing = editingFieldPath === fieldPath;
 
@@ -517,18 +518,18 @@ const FinancialStatementsSettings = () => {
       if (response.status === 200) {
         const result = response.data;
         
-        toast.success('Financial Statements published successfully!');
+        toast.success(t('toast.financialPublished'));
         
         // Re-fetch data to reflect changes
         await fetchPageData(locale);
       } else {
         const errorText = response.data?.message || 'Unknown error';
         console.error('❌ Publish failed:', errorText);
-        toast.error('Failed to publish financial statements');
+        toast.error(t('toast.failedPublishFinancial'));
       }
     } catch (err) {
       console.error('Error publishing financial statements:', err);
-      toast.error('Error publishing financial statements');
+      toast.error(t('toast.errorPublishingFinancial'));
     } finally {
       setIsLoading(false);
     }
@@ -543,7 +544,7 @@ const FinancialStatementsSettings = () => {
       {/* Header with Language Switcher */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          {locale === 'ar' ? 'صفحة البيانات المالية' : 'Financial Statements Page'}
+          {t('header.financialStatementsPage')}
         </h2>
         {/* Language Switcher */}
         <div
@@ -578,7 +579,7 @@ const FinancialStatementsSettings = () => {
       {/* Publish Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
         <div className="header-footer-settings__publish-text">
-          {isLoading ? 'Publishing...' : 'PUBLISH'}
+          {isLoading ? t('publishing') : t('publish')}
         </div>
       </div>
 
@@ -638,7 +639,7 @@ const FinancialStatementsSettings = () => {
             e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
           }}
         >
-          {formValue.financial_statement_hero?.hero_image?.url ? 'Change Hero Image' : 'Upload Hero Image'}
+          {formValue.financial_statement_hero?.hero_image?.url ? t('changeHeroImage') : t('uploadHeroImage')}
         </button>
       </section>
 
@@ -699,7 +700,7 @@ const FinancialStatementsSettings = () => {
               fontWeight: '600',
               color: 'var(--color-text-dark)'
             }}>
-              {locale === 'ar' ? 'البيانات المالية' : 'Financial Statements'}
+              {t('financial.financialStatements')}
             </h3>
             <button
               className="theme-btn-next"
@@ -728,7 +729,7 @@ const FinancialStatementsSettings = () => {
                 fontWeight: '500'
               }}
             >
-              {locale === 'ar' ? 'إضافة بيان' : 'Add Statement'}
+              {t('financial.addStatement')}
             </button>
         </div>
           
@@ -844,7 +845,7 @@ const FinancialStatementsSettings = () => {
             maxHeight: '90vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Content</h3>
+            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>{t('modal.editContent')}</h3>
             <div style={{
               border: '1px solid var(--color-border-light)',
               borderRadius: '2px',
@@ -892,7 +893,7 @@ const FinancialStatementsSettings = () => {
                   setEditingFieldPath('');
                 }}
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 style={{
@@ -909,7 +910,7 @@ const FinancialStatementsSettings = () => {
                   setEditingFieldPath('');
                 }}
               >
-                Save
+                {t('common:save')}
               </button>
             </div>
           </div>
@@ -952,7 +953,7 @@ const FinancialStatementsSettings = () => {
               fontWeight: 'bold',
               color: 'var(--color-text-dark)'
             }}>
-              {locale === 'ar' ? 'حذف البيان' : 'Delete Statement'}
+              {t('financial.deleteStatement')}
             </h3>
             <p style={{
               margin: '0 0 25px 0',
@@ -960,7 +961,7 @@ const FinancialStatementsSettings = () => {
               color: 'var(--color-text-muted)',
               lineHeight: '1.5'
             }}>
-              {locale === 'ar' ? 'هل أنت متأكد أنك تريد حذف هذا البيان؟ لا يمكن التراجع عن هذا الإجراء.' : 'Are you sure you want to delete this statement? This action cannot be undone.'}
+              {t('financial.deleteConfirm')}
             </p>
             <div style={{
               display: 'flex',
@@ -989,7 +990,7 @@ const FinancialStatementsSettings = () => {
                   e.currentTarget.style.backgroundColor = 'var(--background)';
                 }}
               >
-                {locale === 'ar' ? 'إلغاء' : 'Cancel'}
+                {t('common:cancel')}
               </button>
               <button
                 onClick={confirmDeleteStatement}
@@ -1010,7 +1011,7 @@ const FinancialStatementsSettings = () => {
                   e.currentTarget.style.backgroundColor = 'var(--theme-secondary)';
                 }}
               >
-                {locale === 'ar' ? 'حذف' : 'Delete'}
+                {t('common:delete')}
               </button>
             </div>
           </div>

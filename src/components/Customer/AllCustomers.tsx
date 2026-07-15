@@ -21,9 +21,11 @@ import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { useTranslation } from "react-i18next";
 
 
 const AllCustomers = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -92,36 +94,36 @@ const AllCustomers = () => {
   };
   const Activity_Loans_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       cell: (row: any) => row.name,
       sortable: true,
       width: "200px",
     },
     {
-      name: "ID",
+      name: t("allCustomers.col.id"),
       selector: (row: any) => row.nationalId || "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "CIF",
+      name: t("allCustomers.col.cif"),
       selector: (row: any) => row.cif || "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: any) => row.email,
       sortable: true,
     },
     {
-      name: "Phone",
+      name: t("common:phone"),
       selector: (row: any) => row.phone,
       sortable: true,
       width: "180px",
     },
     {
-      name: "Nationality",
+      name: t("allCustomers.col.nationality"),
       selector: (row: any) => row.nationality || "-",
       sortable: true,
       width: "120px",
@@ -153,7 +155,7 @@ const AllCustomers = () => {
     //   width: "140px",
     // },
     {
-      name: "Stage",
+      name: t("allCustomers.col.stage"),
       cell: (row: any) => {
         const stage = row.lifecycleStage || "-";
         const color = stage === "QUALIFIED" ? "var(--color-success)" : stage === "LEAD" ? "var(--color-info)" : "var(--color-warning)";
@@ -216,7 +218,7 @@ const AllCustomers = () => {
     //   width: "100px",
     // },
     {
-      name: "Created",
+      name: t("allCustomers.col.created"),
       sortable: true,
       cell: (row: any) => (
         <div>
@@ -226,17 +228,17 @@ const AllCustomers = () => {
       width: "120px",
     },
     {
-      name: "Is Blocked",
+      name: t("allCustomers.col.isBlocked"),
       cell: (row: any) => {
         const blocked = row.isBlocked;
         return blocked
-          ? <span onClick={() => handleBlockButtonClick(row)} style={{ padding: "4px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: "var(--color-error)", color: "var(--primary-foreground)", fontWeight: 600, whiteSpace: "nowrap", cursor: "pointer" }}>Blocked</span>
-          : <span onClick={() => handleBlockButtonClick(row)} style={{ padding: "4px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: "var(--color-success)", color: "var(--primary-foreground)", fontWeight: 500, whiteSpace: "nowrap", cursor: "pointer" }}>Unblocked</span>;
+          ? <span onClick={() => handleBlockButtonClick(row)} style={{ padding: "4px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: "var(--color-error)", color: "var(--primary-foreground)", fontWeight: 600, whiteSpace: "nowrap", cursor: "pointer" }}>{t("allCustomers.status.blocked")}</span>
+          : <span onClick={() => handleBlockButtonClick(row)} style={{ padding: "4px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: "var(--color-success)", color: "var(--primary-foreground)", fontWeight: 500, whiteSpace: "nowrap", cursor: "pointer" }}>{t("allCustomers.status.unblocked")}</span>;
       },
       width: "130px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -250,7 +252,7 @@ const AllCustomers = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("allCustomers.select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -263,7 +265,7 @@ const AllCustomers = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
       {/* <Menu.Item
         key="changeRisk"
@@ -291,7 +293,7 @@ const AllCustomers = () => {
         icon={<Users size={14} />}
         onClick={() => handleMenuClick("checkBeneficiaries", row)}
       >
-        Check Beneficiary List
+        {t("allCustomers.menu.checkBeneficiaries")}
       </Menu.Item>
       {/* <Menu.Item
         key="manageBlockCodes"
@@ -377,32 +379,32 @@ const AllCustomers = () => {
     setSelectedBlockCodes((prev) => prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]);
 
   const handleBlockSelected = async () => {
-    if (!currentUserId || selectedBlockCodes.length === 0) { toast.error("Select at least one block code"); return; }
+    if (!currentUserId || selectedBlockCodes.length === 0) { toast.error(t("allCustomers.toast.selectBlockCode")); return; }
     try {
       await assignBlockToCustomer(currentUserId, selectedBlockCodes);
-      toast.success(`${selectedBlockCodes.length} block code(s) assigned`);
+      toast.success(t("allCustomers.toast.blockCodesAssigned", { count: selectedBlockCodes.length }));
       setIsBlockModalVisible(false);
       setSelectedBlockCodes([]);
       setCurrentUserId(null);
       getLeadsList();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to block");
+      toast.error(error?.response?.data?.message || t("allCustomers.toast.blockFailed"));
     }
   };
 
   const handleUnblockSelected = async () => {
     if (!currentUserId || selectedBlockCodes.length === 0) {
-      toast.error("Select at least one block code");
+      toast.error(t("allCustomers.toast.selectBlockCode"));
       return;
     }
     try {
       await removeBlockFromCustomer(currentUserId, selectedBlockCodes);
-      toast.success(`${selectedBlockCodes.length} block code(s) removed`);
+      toast.success(t("allCustomers.toast.blockCodesRemoved", { count: selectedBlockCodes.length }));
       setSelectedBlockCodes([]);
       setBlockCodes((prev) => prev.map((c) => selectedBlockCodes.includes(c.id) ? { ...c, blocked: false } : c));
       getLeadsList();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to unblock");
+      toast.error(error?.response?.data?.message || t("allCustomers.toast.unblockFailed"));
     }
   };
 
@@ -432,17 +434,17 @@ const AllCustomers = () => {
       });
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || `Status changed to ${newStatus} successfully`);
+        toast.success(response?.data?.message || t("allCustomers.toast.statusChanged", { status: newStatus }));
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change status");
+        toast.error(response?.data?.message || t("allCustomers.toast.statusChangeFailed"));
         // Revert the switch if API call failed
         getLeadsList();
       }
     } catch (error: any) {
       console.error("Error changing status:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change status");
+      toast.error(error?.response?.data?.message || error?.message || t("allCustomers.toast.statusChangeFailed"));
       // Revert the switch if API call failed
       getLeadsList();
     }
@@ -451,7 +453,7 @@ const AllCustomers = () => {
   // Handle status change
   const handleStatusChange = async () => {
     if (!selectedUserForStatusChange || !newStatus) {
-      toast.error("Please select a status");
+      toast.error(t("allCustomers.toast.selectStatus"));
       return;
     }
 
@@ -463,16 +465,16 @@ const AllCustomers = () => {
       });
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || `Status changed to ${newStatus} successfully`);
+        toast.success(response?.data?.message || t("allCustomers.toast.statusChanged", { status: newStatus }));
         handleChangeStatusModalClose();
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change status");
+        toast.error(response?.data?.message || t("allCustomers.toast.statusChangeFailed"));
       }
     } catch (error: any) {
       console.error("Error changing status:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change status");
+      toast.error(error?.response?.data?.message || error?.message || t("allCustomers.toast.statusChangeFailed"));
     } finally {
       setIsChangingStatus(false);
     }
@@ -489,7 +491,7 @@ const AllCustomers = () => {
   // Handle risk change
   const handleRiskChange = async () => {
     if (!selectedUserForRiskChange || !newRisk) {
-      toast.error("Please select a risk level");
+      toast.error(t("allCustomers.toast.selectRisk"));
       return;
     }
 
@@ -498,16 +500,16 @@ const AllCustomers = () => {
       const response = await updateKycRisk(selectedUserForRiskChange.id, newRisk);
 
       if (response?.status >= 200 && response?.status < 300) {
-        toast.success(response?.data?.message || `Risk changed to ${newRisk} successfully`);
+        toast.success(response?.data?.message || t("allCustomers.toast.riskChanged", { risk: newRisk }));
         handleChangeRiskModalClose();
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change risk");
+        toast.error(response?.data?.message || t("allCustomers.toast.riskChangeFailed"));
       }
     } catch (error: any) {
       console.error("Error changing risk:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change risk");
+      toast.error(error?.response?.data?.message || error?.message || t("allCustomers.toast.riskChangeFailed"));
     } finally {
       setIsChangingRisk(false);
     }
@@ -578,7 +580,7 @@ const AllCustomers = () => {
   const toValue = Math.min(page * pageSize, totalRows);
   const exportToCSV = async () => {
     try {
-      toast.loading("Exporting CSV...", { id: "export-csv" });
+      toast.loading(t("allCustomers.toast.exportingCsv"), { id: "export-csv" });
 
       let allData: any[] = [];
 
@@ -591,7 +593,7 @@ const AllCustomers = () => {
       }
 
       if (allData.length === 0) {
-        toast.error("No data to export", { id: "export-csv" });
+        toast.error(t("allCustomers.toast.noData"), { id: "export-csv" });
         return;
       }
 
@@ -640,10 +642,10 @@ const AllCustomers = () => {
       link.click();
       document.body.removeChild(link);
 
-      toast.success(`CSV exported successfully! (${allData.length} records)`, { id: "export-csv" });
+      toast.success(t("allCustomers.toast.csvExported", { count: allData.length }), { id: "export-csv" });
     } catch (error: any) {
       console.error("Error exporting CSV:", error);
-      toast.error(error?.message || "Failed to export CSV", { id: "export-csv" });
+      toast.error(error?.message || t("allCustomers.toast.exportCsvFailed"), { id: "export-csv" });
     }
   };
 
@@ -694,7 +696,7 @@ const AllCustomers = () => {
           <span className="pro-head-badge">
             <Users className="h-4 w-4" />
           </span>
-          Customer List
+          {t("allCustomers.title")}
         </h3>
       </div>
 
@@ -703,14 +705,14 @@ const AllCustomers = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search..."
+            placeholder={t("allCustomers.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e: any) => setSearch(e.target.value)}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <DatePicker
-            placeholder="From"
+            placeholder={t("common:from")}
             value={fromDate}
             onChange={(date: any) => {
               setFromDate(date);
@@ -730,7 +732,7 @@ const AllCustomers = () => {
             }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t("common:to")}
             value={toDate}
             onChange={(date: any) => {
               setToDate(date);
@@ -757,7 +759,7 @@ const AllCustomers = () => {
               onClick={exportToCSV}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              Export CSV
+              {t("allCustomers.exportCsv")}
             </button>
           )}
         </div>
@@ -810,7 +812,7 @@ const AllCustomers = () => {
 
       {/* Block Codes Management Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Manage Block Codes for User</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.blockModal.title")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
         footer={null}
@@ -821,15 +823,15 @@ const AllCustomers = () => {
           {isLoadingBlockCodes ? (
             <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "300px", gap: "20px" }}>
               <PulseLoading size="lg" />
-              <p style={{ fontSize: "16px", color: "var(--muted-foreground)", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--muted-foreground)", margin: 0 }}>{t("allCustomers.blockModal.loading")}</p>
             </div>
           ) : (
             <>
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", padding: "10px 0" }}>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>Block Code Selection</h3>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>{t("allCustomers.blockModal.selectionHeading")}</h3>
                 <div style={{ display: "flex", gap: "10px" }}>
-                  <Button type="primary" style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }} onClick={handleSelectAll}>✓ Select All</Button>
-                  <Button style={{ backgroundColor: "var(--color-warning)", borderColor: "var(--color-warning)", color: "var(--primary-foreground)" }} onClick={handleDeselectAll}>⊘ Deselect All</Button>
+                  <Button type="primary" style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }} onClick={handleSelectAll}>{t("allCustomers.blockModal.selectAll")}</Button>
+                  <Button style={{ backgroundColor: "var(--color-warning)", borderColor: "var(--color-warning)", color: "var(--primary-foreground)" }} onClick={handleDeselectAll}>{t("allCustomers.blockModal.deselectAll")}</Button>
                 </div>
               </div>
               <div style={{ border: "1px solid var(--border)", borderRadius: "2px", overflow: "hidden", maxHeight: "400px", overflowY: "auto" }}>
@@ -839,9 +841,9 @@ const AllCustomers = () => {
                       <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", width: "50px" }}>
                         <Checkbox checked={selectedBlockCodes.length === blockCodes.length && blockCodes.length > 0} indeterminate={selectedBlockCodes.length > 0 && selectedBlockCodes.length < blockCodes.length} onChange={(e: any) => e.target.checked ? handleSelectAll() : handleDeselectAll()} />
                       </th>
-                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>Block Code</th>
-                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>Type</th>
-                      <th style={{ padding: "12px 16px", textAlign: "center", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>Action</th>
+                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>{t("allCustomers.blockModal.colBlockCode")}</th>
+                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>{t("common:type")}</th>
+                      <th style={{ padding: "12px 16px", textAlign: "center", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>{t("allCustomers.blockModal.colAction")}</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -856,7 +858,7 @@ const AllCustomers = () => {
                         </td>
                         <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", textAlign: "center" }}>
                           <button style={{ backgroundColor: code.blocked ? "var(--color-error)" : "var(--color-success)", color: "var(--primary-foreground)", border: "none", padding: "6px 16px", borderRadius: "2px", fontSize: "12px", fontWeight: "500", cursor: "default", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                            {code.blocked ? "⊘ Blocked" : "✓ Active"}
+                            {code.blocked ? t("allCustomers.blockModal.blocked") : t("allCustomers.blockModal.activeState")}
                           </button>
                         </td>
                       </tr>
@@ -865,11 +867,11 @@ const AllCustomers = () => {
                 </table>
               </div>
               <div style={{ display: "flex", gap: "10px", marginTop: "20px", paddingTop: "20px", borderTop: "1px solid var(--border)" }}>
-                <Button type="primary" danger disabled={selectedBlockCodes.length === 0} onClick={handleBlockSelected} style={{ backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)", borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)" }}>⊘ Block Selected</Button>
-                <Button type="primary" disabled={selectedBlockCodes.length === 0} onClick={handleUnblockSelected} style={{ backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning)", borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning)" }}>⊙ Unblock Selected</Button>
+                <Button type="primary" danger disabled={selectedBlockCodes.length === 0} onClick={handleBlockSelected} style={{ backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)", borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)" }}>{t("allCustomers.blockModal.blockSelected")}</Button>
+                <Button type="primary" disabled={selectedBlockCodes.length === 0} onClick={handleUnblockSelected} style={{ backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning)", borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning)" }}>{t("allCustomers.blockModal.unblockSelected")}</Button>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px", paddingTop: "20px", borderTop: "1px solid var(--border)" }}>
-                <Button onClick={handleModalClose} style={{ backgroundColor: "var(--color-disabled)", borderColor: "var(--color-disabled)", color: "var(--primary-foreground)" }}>Close</Button>
+                <Button onClick={handleModalClose} style={{ backgroundColor: "var(--color-disabled)", borderColor: "var(--color-disabled)", color: "var(--primary-foreground)" }}>{t("common:close")}</Button>
               </div>
             </>
           )}
@@ -878,7 +880,7 @@ const AllCustomers = () => {
 
       {/* Change Status Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Status</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.statusModal.title")}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
         footer={null}
@@ -889,10 +891,10 @@ const AllCustomers = () => {
           {selectedUserForStatusChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("allCustomers.statusModal.userName")}</p>
                 <p style={{ marginBottom: "16px", color: "var(--muted-foreground)" }}>{selectedUserForStatusChange.name || "-"}</p>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Status:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("allCustomers.statusModal.currentStatus")}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -907,19 +909,19 @@ const AllCustomers = () => {
                       display: "inline-block"
                     }}
                   >
-                    {selectedUserForStatusChange.status === "active" ? "Active" : "Inactive"}
+                    {selectedUserForStatusChange.status === "active" ? t("common:active") : t("common:inactive")}
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Status:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("allCustomers.statusModal.newStatus")}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newStatus}
                   onChange={(value: any) => setNewStatus(value)}
-                  placeholder="Select Status"
+                  placeholder={t("allCustomers.statusModal.selectStatus")}
                 >
-                  <Select.Option value="active">Active</Select.Option>
-                  <Select.Option value="inactive">Inactive</Select.Option>
+                  <Select.Option value="active">{t("common:active")}</Select.Option>
+                  <Select.Option value="inactive">{t("common:inactive")}</Select.Option>
                 </Select>
               </div>
 
@@ -940,7 +942,7 @@ const AllCustomers = () => {
                     color: "var(--primary-foreground)"
                   }}
                 >
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
                 <Button
                   type="primary"
@@ -952,7 +954,7 @@ const AllCustomers = () => {
                     borderColor: "var(--color-action)"
                   }}
                 >
-                  {isChangingStatus ? "Changing..." : "Change Status"}
+                  {isChangingStatus ? t("allCustomers.changing") : t("allCustomers.statusModal.changeStatus")}
                 </Button>
               </div>
             </>
@@ -962,7 +964,7 @@ const AllCustomers = () => {
 
       {/* Change Risk Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Risk</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.riskModal.title")}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}
         footer={null}
@@ -973,10 +975,10 @@ const AllCustomers = () => {
           {selectedUserForRiskChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("allCustomers.statusModal.userName")}</p>
                 <p style={{ marginBottom: "16px", color: "var(--muted-foreground)" }}>{selectedUserForRiskChange.name || "-"}</p>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Risk:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("allCustomers.riskModal.currentRisk")}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -993,21 +995,21 @@ const AllCustomers = () => {
                       textTransform: "capitalize"
                     }}
                   >
-                    {selectedUserForRiskChange.risk_status || "Low"}
+                    {selectedUserForRiskChange.risk_status || t("allCustomers.risk.low")}
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Risk:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t("allCustomers.riskModal.newRisk")}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newRisk}
                   onChange={(value: any) => setNewRisk(value)}
-                  placeholder="Select Risk Level"
+                  placeholder={t("allCustomers.riskModal.selectRisk")}
                 >
-                  <Select.Option value="high">High</Select.Option>
-                  <Select.Option value="low">Low</Select.Option>
-                  <Select.Option value="medium">Medium</Select.Option>
-                  <Select.Option value="pep">PEP</Select.Option>
+                  <Select.Option value="high">{t("allCustomers.risk.high")}</Select.Option>
+                  <Select.Option value="low">{t("allCustomers.risk.low")}</Select.Option>
+                  <Select.Option value="medium">{t("allCustomers.risk.medium")}</Select.Option>
+                  <Select.Option value="pep">{t("allCustomers.risk.pep")}</Select.Option>
                 </Select>
               </div>
 
@@ -1024,7 +1026,7 @@ const AllCustomers = () => {
                   disabled={isChangingRisk}
                   className="invoice-btn"
                 >
-                  Cancel
+                  {t("common:cancel")}
                 </button>
                 <button
 
@@ -1033,7 +1035,7 @@ const AllCustomers = () => {
                   disabled={!newRisk || newRisk === selectedUserForRiskChange.risk_status}
                   className="theme-btn"
                 >
-                  {isChangingRisk ? "Changing..." : "Change Risk"}
+                  {isChangingRisk ? t("allCustomers.changing") : t("allCustomers.riskModal.changeRisk")}
                 </button>
               </div>
             </>

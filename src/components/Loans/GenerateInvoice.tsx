@@ -7,8 +7,10 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { Images } from "../Config/Images";
 import { themeStyle } from "../Config/Theme";
+import { useTranslation } from "react-i18next";
 
 function GenerateInvoice() {
+  const { t } = useTranslation("accountingLoans");
   const [invoiceData, setInvoiceData] = useState<any>([]);
   const [tableData, setTableData] = useState<
     {
@@ -114,7 +116,7 @@ function GenerateInvoice() {
           className="d-flex justify-content-between align-items-center mb-3"
           style={{ maxWidth: "900px", marginInline: 'auto', padding: "0 20px" }}
         >
-          <h5 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>Invoice View</h5>
+          <h5 style={{ fontSize: "20px", fontWeight: 700, margin: 0 }}>{t("genInvoice.title")}</h5>
           <Button
             type="primary"
             onClick={downloadPDF}
@@ -126,7 +128,7 @@ function GenerateInvoice() {
               fontWeight: 500
             }}
           >
-            Download
+            {t("genInvoice.download")}
           </Button>
         </div>
 
@@ -159,28 +161,28 @@ function GenerateInvoice() {
           <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "25px" }}>
             {/* Left side - Company Info */}
             <div style={{ flex: 1 }}>
-              <p style={{ fontWeight: 600, fontSize: "15px", marginBottom: "6px", color: "var(--foreground)" }}>{invoiceData?.company?.name || "Company Name"}</p>
+              <p style={{ fontWeight: 600, fontSize: "15px", marginBottom: "6px", color: "var(--foreground)" }}>{invoiceData?.company?.name || t("genInvoice.companyName")}</p>
               <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>{invoiceData?.company?.address}</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>Email: {invoiceData?.company?.email}</p>
-              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>VAT: {invoiceData?.company?.vatNumber}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>{t("genInvoice.email")} {invoiceData?.company?.email}</p>
+              <p style={{ margin: "3px 0", fontSize: "13px", color: "var(--foreground)" }}>{t("genInvoice.vat")} {invoiceData?.company?.vatNumber}</p>
             </div>
 
             {/* Right side - Invoice Details */}
             <div style={{ minWidth: "270px" }}>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Invoice No.:</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>{t("genInvoice.invoiceNo")}</span>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{invoiceData?.invoiceNumber || "FINV184058"}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Date</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>{t("genInvoice.date")}</span>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{invoiceData?.invoiceDate || new Date().toISOString().slice(0, 10)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Due Date</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>{t("genInvoice.dueDate")}</span>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{formatDate(invoiceData?.dueDate)}</span>
               </div>
               <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "5px" }}>
-                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>Type</span>
+                <span style={{ fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>{t("genInvoice.type")}</span>
                 <span style={{ fontSize: "13px", fontWeight: 600, color: "var(--foreground)" }}>{invoiceData?.invoiceType || "B2C"}</span>
               </div>
             </div>
@@ -188,10 +190,10 @@ function GenerateInvoice() {
 
           {/* Customer Info */}
           <div style={{ marginBottom: "25px" }}>
-            <p style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px", color: "var(--foreground)" }}>To:</p>
+            <p style={{ fontWeight: 600, fontSize: "13px", marginBottom: "8px", color: "var(--foreground)" }}>{t("genInvoice.to")}</p>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
               <p style={{ margin: 0, fontWeight: 600, fontSize: "13px", color: "var(--foreground)" }}>
-                {invoiceData?.customer?.name || "Customer Name"}
+                {invoiceData?.customer?.name || t("genInvoice.customerName")}
               </p>
               <div style={{ display: "flex", justifyContent: "start" }}>
                 <p style={{ margin: 0, fontSize: "13px", fontWeight: 400, color: "var(--muted-foreground)" }}>{invoiceData?.customer?.email}</p>
@@ -212,10 +214,10 @@ function GenerateInvoice() {
               fontWeight: 600,
               fontSize: "13px"
             }}>
-              <div>Description</div>
-              <div style={{ textAlign: "center" }}>Quantity</div>
-              <div style={{ textAlign: "center" }}>Unit Price</div>
-              <div style={{ textAlign: "center" }}>VAT %</div>
+              <div>{t("genInvoice.description")}</div>
+              <div style={{ textAlign: "center" }}>{t("genInvoice.quantity")}</div>
+              <div style={{ textAlign: "center" }}>{t("genInvoice.unitPrice")}</div>
+              <div style={{ textAlign: "center" }}>{t("genInvoice.vatPercent")}</div>
             </div>
 
             {/* Table Rows */}
@@ -251,7 +253,7 @@ function GenerateInvoice() {
                 padding: "6px 0",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Installment Amount</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>{t("genInvoice.installmentAmount")}</span>
                 <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{Number(invoiceData?.installmentAmount || 0).toFixed(2)}</span>
               </div>
 
@@ -273,7 +275,7 @@ function GenerateInvoice() {
                 padding: "6px 0",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Penalty</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>{t("genInvoice.penalty")}</span>
                 <span style={{ fontWeight: 500, color: "var(--foreground)" }}>{Number(invoiceData?.delinquency?.latePenaltyAmount || 0).toFixed(2)}</span>
               </div>
 
@@ -288,7 +290,7 @@ function GenerateInvoice() {
                 marginBottom: "10px",
                 fontSize: "13px"
               }}>
-                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>Payable</span>
+                <span style={{ fontWeight: 600, color: "var(--foreground)" }}>{t("genInvoice.payable")}</span>
                 <span style={{ fontWeight: 600, color: "var(--foreground)" }}>
                   {(() => {
                     const status = invoiceData?.paymentStatus;

@@ -15,12 +15,14 @@ import {
 } from "../../redux/apis/apisCrud";
 import { EditOutlined, SendOutlined, UnorderedListOutlined, UserOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { useNavigate } from "react-router-dom";
 import { usePermissions, useWorkflowActions, PARTNER_PERMISSIONS, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions";
 import { CheckCircleOutlined, CloseCircleOutlined, SafetyCertificateOutlined, StopOutlined } from "@ant-design/icons";
 
 const PartnersList = () => {
+  const { t } = useTranslation("partner");
   // Permissions
   const { hasPermission, canUpdate, canVerifyModule, canRejectAsChecker, canApproveModule, canRejectAsApprover } = usePermissions();
   const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions();
@@ -63,13 +65,13 @@ const PartnersList = () => {
             item.id === partnerId ? { ...item, status: newStatus } : item
           )
         );
-        toast.success(response?.data?.message || "Partner status updated successfully");
+        toast.success(response?.data?.message || t("toast.partnerStatusUpdated"));
       } else {
-        toast.error(response?.data?.message || "Failed to update partner status");
+        toast.error(response?.data?.message || t("toast.partnerStatusFailed"));
       }
     } catch (error: any) {
       console.error("Error updating partner status:", error);
-      toast.error(error?.response?.data?.message || "Failed to update partner status");
+      toast.error(error?.response?.data?.message || t("toast.partnerStatusFailed"));
     }
   };
 
@@ -118,7 +120,7 @@ const PartnersList = () => {
           icon={<EditOutlined />}
           onClick={() => handleMenuClick("edit", row)}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
       )}
       <Menu.Item
@@ -126,7 +128,7 @@ const PartnersList = () => {
         icon={<UnorderedListOutlined />}
         onClick={() => handleMenuClick("adminList", row)}
       >
-        Admin List
+        {t("menu.adminList")}
       </Menu.Item>
       {canVerifyPartner && (
         <Menu.Item
@@ -134,7 +136,7 @@ const PartnersList = () => {
           icon={<CheckCircleOutlined style={{ color: "var(--color-success)" }} />}
           onClick={() => handleVerify(row)}
         >
-          Verify
+          {t("menu.verify")}
         </Menu.Item>
       )}
       {canCheckerRejectPartner && (
@@ -143,7 +145,7 @@ const PartnersList = () => {
           icon={<CloseCircleOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleCheckerReject(row)}
         >
-          Reject (Checker)
+          {t("menu.rejectChecker")}
         </Menu.Item>
       )}
       {canApprovePartner && (
@@ -152,7 +154,7 @@ const PartnersList = () => {
           icon={<SafetyCertificateOutlined style={{ color: "var(--color-action)" }} />}
           onClick={() => handleApprove(row)}
         >
-          Approve
+          {t("common:approve")}
         </Menu.Item>
       )}
       {canApproverRejectPartner && (
@@ -161,14 +163,14 @@ const PartnersList = () => {
           icon={<StopOutlined style={{ color: "var(--color-error)" }} />}
           onClick={() => handleApproverReject(row)}
         >
-          Reject (Approver)
+          {t("menu.rejectApprover")}
         </Menu.Item>
       )}
     </Menu>
   );
   const Activity_Loans_Header = [
   {
-    name: "Name",
+    name: t("common:name"),
     selector: (row: { name_en: any }) => row.name_en,
     sortable: true,
     width: "150px",
@@ -180,39 +182,39 @@ const PartnersList = () => {
     width: "150px",
   },
   {
-    name: "Email",
+    name: t("common:email"),
     selector: (row: { email: any }) => row.email,
     sortable: true,
     width: "250px",
   },
   {
-    name: "Logo",
+    name: t("col.logo"),
     cell: (row: any) => (
       row.logo ? <img src={row.logo} alt="logo" style={{ width: "30px", height: "30px" }} /> : "-"
     ),
     width: "120px",
   },
   {
-    name: "Favicon",
+    name: t("col.favicon"),
     cell: (row: any) => (
       row.favicon ? <img src={row.favicon} alt="favicon" style={{ width: "20px", height: "20px" }} /> : "-"
     ),
     width: "100px",
   },
   {
-    name: "Affiliation URL",
+    name: t("col.affiliationUrl"),
     selector: (row: { affiliation_url: any }) => row.affiliation_url || "-",
     sortable: true,
     width: "320px",
   },
   {
-    name: "Commission",
+    name: t("col.commission"),
     selector: (row: { commission_value: any }) => row.commission_value ? `${row.commission_value}%` : "0%",
     sortable: true,
     width: "120px",
   },
   {
-    name: "Secret Key",
+    name: t("col.secretKey"),
     cell: (row: any) => (
       <div
         style={{
@@ -228,7 +230,7 @@ const PartnersList = () => {
     width: "350px",
   },
   {
-    name: "Status",
+    name: t("common:status"),
     cell: (row: any) => (
       <Switch
         checked={row.status === "Active"}
@@ -241,7 +243,7 @@ const PartnersList = () => {
   },
   // Only include Action column if user has any action permission
   ...(hasAnyAction ? [{
-    name: "Action",
+    name: t("col.action"),
     cell: (row: any) => (
       <Dropdown overlay={menu(row)} trigger={["click"]}>
         <Button
@@ -253,7 +255,7 @@ const PartnersList = () => {
             padding: "8px",
           }}
         >
-          Action
+          {t("col.action")}
           <img src={arrowDown} alt="" />
         </Button>
       </Dropdown>
@@ -278,13 +280,13 @@ const PartnersList = () => {
         setTo(partnersData.length || 0);
         setPage(1);
         setTotalPage(Math.ceil(partnersData.length / pageSize) || 1);
-        toast.success(response?.data?.message || "Partners fetched successfully");
+        toast.success(response?.data?.message || t("toast.partnersFetched"));
       } else {
-        toast.error(response?.data?.message || "Failed to fetch partners");
+        toast.error(response?.data?.message || t("toast.partnersFetchFailed"));
       }
     } catch (error: any) {
       console.error("Error fetching partners:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch partners");
+      toast.error(error?.response?.data?.message || t("toast.partnersFetchFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -316,7 +318,7 @@ const PartnersList = () => {
         style={{ background: "white", padding: "1rem", borderRadius: "2px" }}
       >
         <div className="d-flex justify-content-between align-items-center mb-3">
-          <h4 style={{ margin: 0 }}>Partner List</h4>
+          <h4 style={{ margin: 0 }}>{t("partnerList.title")}</h4>
           <div className="d-flex gap-2 align-items-center">
             {/* <div className="d-flex flex-column">
               <label style={{ fontSize: "12px", marginBottom: "4px" }}>From</label>
@@ -346,7 +348,7 @@ const PartnersList = () => {
                 style={{ marginTop: "20px", padding: "0.6rem" }}
                 onClick={() => navigate("/LOS/PartnerManagement/AddPartner")}
               >
-                Add Partner
+                {t("partnerList.add")}
               </button>
             )}
           </div>

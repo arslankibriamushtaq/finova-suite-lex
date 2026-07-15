@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { GetVatReport } from "../../redux/apis/apisCrudLms";
 const VatAccount = () => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -80,28 +82,28 @@ const VatAccount = () => {
 
   const Call_Activity_Header = [
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date || "-",
     },
     {
-      name: "Transaction Type",
+      name: t("col.transactionType"),
       selector: (row: { transactionType: any }) => row.transactionType || "-",
     },
     {
-      name: "Base Amount",
+      name: t("col.baseAmount"),
       selector: (row: { baseAmount: any }) => row.baseAmount || "-",
     },
     {
-      name: "VAT(15%)",
+      name: t("col.vat"),
       selector: (row: { vat: any }) => row.vat || "-",
     },
 
     {
-      name: "Total Amount",
+      name: t("col.totalAmount"),
       selector: (row: { totalAmount: any }) => row.totalAmount || "-",
     },
     {
-      name: "ZATCA Remittance Status",
+      name: t("col.zatcaRemittanceStatus"),
       selector: (row: { zatcaRemittanceStatus: any }) =>
         row.zatcaRemittanceStatus || "-",
     },

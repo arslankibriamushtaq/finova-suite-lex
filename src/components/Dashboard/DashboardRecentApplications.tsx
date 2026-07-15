@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Button, Dropdown, Menu } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { EyeOutlined, LogoutOutlined, SyncOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
@@ -7,6 +8,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loading?: boolean }> = ({ recentApplications, loading }) => {
+  const { t } = useTranslation("dashboard");
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
   const [from, setFrom] = useState(0);
@@ -30,30 +32,30 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
 
   const Activity_Loans_Header = [
     {
-      name: "Application Number",
+      name: t("recent.col.applicationNumber"),
       selector: (row: { applicationNumber: any }) => row.applicationNumber || "--",
       sortable: true,
       width: "180px",
     },
     {
-      name: "National ID",
+      name: t("recent.col.nationalId"),
       selector: (row: { nationalId: any }) => row.nationalId || "--",
       sortable: true,
     },
     {
-      name: "Product Name",
+      name: t("recent.col.productName"),
       selector: (row: { productName: any }) => row.productName || "--",
       sortable: true,
     },
     {
-      name: "Requested Amount",
+      name: t("recent.col.requestedAmount"),
       selector: (row: { requestedAmount: any }) => {
         return row.requestedAmount ? `SAR ${row.requestedAmount.toLocaleString()}` : "--";
       },
       sortable: true,
     },
     {
-      name: "Created Date",
+      name: t("recent.col.createdDate"),
       selector: (row: { createdAt: any }) => {
         if (!row.createdAt) return "--";
         const date = new Date(row.createdAt);
@@ -67,7 +69,7 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
       width: "150px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -114,21 +116,21 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
       <Menu.Item
         key="change"
         icon={<SyncOutlined />}
         onClick={() => handleMenuClick("change", row)}
       >
-        Change Status
+        {t("recent.menu.changeStatus")}
       </Menu.Item>
       <Menu.Item
         key="logout"
         icon={<LogoutOutlined />}
         onClick={() => handleMenuClick("logout", row)}
       >
-        Force Logout
+        {t("recent.menu.forceLogout")}
       </Menu.Item>
     </Menu>
   );
@@ -170,11 +172,11 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
     const doc = new jsPDF();
 
     const tableColumn = [
-      "Application Number",
-      "National ID",
-      "Product Name",
-      "Requested Amount",
-      "Status",
+      t("recent.col.applicationNumber"),
+      t("recent.col.nationalId"),
+      t("recent.col.productName"),
+      t("recent.col.requestedAmount"),
+      t("common:status"),
     ];
 
     const tableRows = mappedData?.map((item: any) => [
@@ -204,7 +206,7 @@ const DashboardRecentApplications: React.FC<{ recentApplications?: any[]; loadin
           marginBottom: 20,
         }}
       >
-        <h5 className="mt-4" style={{ fontWeight: 600, fontSize: "20px", margin: 0 }}>Recent Applications</h5>
+        <h5 className="mt-4" style={{ fontWeight: 600, fontSize: "20px", margin: 0 }}>{t("recent.title")}</h5>
        
       </div>
       <TableView

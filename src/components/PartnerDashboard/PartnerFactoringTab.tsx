@@ -3,17 +3,19 @@ import React, { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import PartnerFactoringInformation from "./PartnerFactoringInformation";
 import PartnerFactoringApproval from "./PartnerFactoringApproval";
+import { useTranslation } from "react-i18next";
 
 function PartnerFactoringTab({ setActiveTab }: any) {
+  const { t } = useTranslation("partner");
   const [active, setActive] = useState("FactoringInformation");
   const tabOptions = [
     {
-      title: "Factoring Information",
+      title: t("factoringTab.factoringInformation"),
       key: "FactoringInformation",
       component: <PartnerFactoringInformation setActiveTab={setActiveTab} />,
     },
     {
-      title: "Factoring Approval",
+      title: t("factoringTab.factoringApproval"),
       key: "Factoring Approval",
       component: <PartnerFactoringApproval setActiveTab={setActiveTab} />,
     },

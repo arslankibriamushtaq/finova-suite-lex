@@ -82,7 +82,7 @@ export default function Dashboard() {
             </div>
             <div className="mt-4 flex items-center">
               <span className="text-sm font-medium text-green-600">{stat.change}</span>
-              <span className="text-sm text-gray-500 ml-1">from last month</span>
+              <span className="text-sm text-gray-500 ms-1">from last month</span>
             </div>
           </div>
         ))}

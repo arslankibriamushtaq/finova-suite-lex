@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import enTranslations from "../../locales/en.json";
 import arTranslations from "../../locales/ar.json";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function BusinessInformation() {
+  const { t } = useTranslation("dashboard");
   const [businessData, setBusinessData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
@@ -46,7 +48,7 @@ function BusinessInformation() {
       // dispatch(setCRNumber({crNumber: response.data.data.businessInfo_english.crNumber}));
     } catch (error) {
       console.error("Error fetching business data:", error);
-      toast.error("Failed to fetch business information");
+      toast.error(t("businessInfo.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }

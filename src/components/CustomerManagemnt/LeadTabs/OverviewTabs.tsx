@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { getProductById } from "../../../redux/apis/apisCrud";
 import { setProductData } from "../../../redux/apis/apisSlice";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import SettingProductAppliation from "../../ProductManagement/SettingProductAppliation";
 import SettingsTermsConditions from "../../ProductManagement/settingTermsConditions";
 import FeeSettings from "../../ProductManagement/feeSettings";
@@ -14,6 +15,7 @@ import CustomerInformation from "./CustomerInformation";
 import FinancingInformation from "./FinancingInformation";
 
 const OverviewTabs = ({setActiveTab}:any) => {
+  const { t } = useTranslation("customerManagement");
   localStorage.setItem("tabs", "BusinessInformation");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
@@ -45,7 +47,7 @@ const OverviewTabs = ({setActiveTab}:any) => {
             dispatch(setProductData(response.data.data));
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load product data");
+          toast.error(error?.response?.data?.message || t("leadTabs.overview.failedToLoadProductData"));
         }
       }
     };
@@ -54,17 +56,17 @@ const OverviewTabs = ({setActiveTab}:any) => {
 
   const tapOptions = [
     {
-      title: "Business Information",
+      title: t("leadTabs.overview.tab.businessInformation"),
       key: "BusinessInformation",
       folder: <BusinessInfoTab setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Customer Information",
+      title: t("leadTabs.overview.tab.customerInformation"),
       key: "CustomerInformation",
       folder: <CustomerInformation setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Factoring Information",
+      title: t("leadTabs.overview.tab.factoringInformation"),
       key: "FinancingInformation",
       folder: <FinancingInformation setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     }

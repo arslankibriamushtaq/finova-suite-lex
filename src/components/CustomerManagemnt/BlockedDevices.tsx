@@ -3,6 +3,7 @@ import { Button, Input, Select, Modal, Form, Dropdown, Menu } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined, DownOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import {
   getBlockEntities,
   createBlockEntity,
@@ -13,6 +14,7 @@ import {
 } from "../../redux/apis/apisCrud";
 
 const BlockedDevices = () => {
+  const { t } = useTranslation("customerManagement");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(15);
   const [page, setPage] = useState(1);
@@ -60,7 +62,7 @@ const BlockedDevices = () => {
       }
     } catch (error: any) {
       console.error("Error fetching blocked devices:", error);
-      toast.error(error?.response?.data?.notificationMessage || "Failed to fetch blocked devices");
+      toast.error(error?.response?.data?.notificationMessage || t("blockedDevices.toast.fetchDevicesError"));
       setSkelitonLoading(false);
     } finally {
       setSkelitonLoading(false);
@@ -76,7 +78,7 @@ const BlockedDevices = () => {
       }
     } catch (error: any) {
       console.error("Error fetching block types:", error);
-      toast.error(error?.response?.data?.notificationMessage || "Failed to fetch block types");
+      toast.error(error?.response?.data?.notificationMessage || t("blockedDevices.toast.fetchTypesError"));
     } finally {
       setLoadingTypes(false);
     }
@@ -92,7 +94,7 @@ const BlockedDevices = () => {
             setShowViewModal(true);
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.notificationMessage || "Failed to fetch entity details");
+          toast.error(error?.response?.data?.notificationMessage || t("blockedDevices.toast.fetchDetailsError"));
         }
         break;
       case "edit":
@@ -118,14 +120,14 @@ const BlockedDevices = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteBlockEntity(deleteTargetId), {
-        loading: "Deleting block entity...",
+        loading: t("blockedDevices.toast.deleting"),
         success: (response) => {
           getData();
           setShowConfirmModal(false);
           setDeleteTargetId(null);
-          return response?.data?.notificationMessage || "Block entity deleted successfully";
+          return response?.data?.notificationMessage || t("blockedDevices.toast.deleted");
         },
-        error: (err) => err?.response?.data?.notificationMessage || err?.message || "Failed to delete block entity",
+        error: (err) => err?.response?.data?.notificationMessage || err?.message || t("blockedDevices.toast.deleteError"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -145,14 +147,14 @@ const BlockedDevices = () => {
 
       if (selectedItem === "edit" && currentEntityId !== null) {
         await toast.promise(updateBlockEntity(currentEntityId, body), {
-          loading: "Updating block entity...",
+          loading: t("blockedDevices.toast.updating"),
           success: (response) => {
             setShowModal(false);
             form.resetFields();
             setCurrentEntityId(null);
             setSelectedItem(null);
             getData();
-            return response?.data?.notificationMessage || "Block entity updated successfully";
+            return response?.data?.notificationMessage || t("blockedDevices.toast.updated");
           },
           error: (err) => {
             const errors = err?.response?.data?.errors;
@@ -160,18 +162,18 @@ const BlockedDevices = () => {
               const allMessages = Object.values(errors).flat();
               allMessages.forEach((msg: any) => toast.error(msg));
             }
-            return err?.response?.data?.notificationMessage || err?.message || "Failed to update block entity";
+            return err?.response?.data?.notificationMessage || err?.message || t("blockedDevices.toast.updateError");
           },
         });
       } else if (selectedItem === "add") {
         await toast.promise(createBlockEntity(body), {
-          loading: "Creating block entity...",
+          loading: t("blockedDevices.toast.creating"),
           success: (response) => {
             setShowModal(false);
             form.resetFields();
             setSelectedItem(null);
             getData();
-            return response?.data?.notificationMessage || "Block entity created successfully";
+            return response?.data?.notificationMessage || t("blockedDevices.toast.created");
           },
           error: (err) => {
             const errors = err?.response?.data?.errors;
@@ -179,7 +181,7 @@ const BlockedDevices = () => {
               const allMessages = Object.values(errors).flat();
               allMessages.forEach((msg: any) => toast.error(msg));
             }
-            return err?.response?.data?.notificationMessage || err?.message || "Failed to create block entity";
+            return err?.response?.data?.notificationMessage || err?.message || t("blockedDevices.toast.createError");
           },
         });
       }
@@ -195,21 +197,21 @@ const BlockedDevices = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View
+        {t("common:view")}
       </Menu.Item>
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -230,19 +232,19 @@ const BlockedDevices = () => {
 
   const tableHeaders = [
     {
-      name: "ID",
+      name: t("blockedDevices.col.id"),
       selector: (row: any) => row.id || "-",
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) => row.type || "-",
     },
     {
-      name: "Values",
+      name: t("blockedDevices.col.values"),
       selector: (row: any) => row.values || "-",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
  
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -257,7 +259,7 @@ const BlockedDevices = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -278,7 +280,7 @@ const BlockedDevices = () => {
               setShowModal(true);
             }}
           >
-            Add Block Entity
+            {t("blockedDevices.addButton")}
           </Button>
         </div>
         <div className="cs-table p-2 mt-3">
@@ -300,7 +302,7 @@ const BlockedDevices = () => {
 
       {/* Add/Edit Modal */}
       <Modal
-        title={selectedItem === "edit" ? "Edit Block Entity" : "Add Block Entity"}
+        title={selectedItem === "edit" ? t("blockedDevices.editTitle") : t("blockedDevices.addButton")}
         visible={showModal}
         onCancel={() => {
           setShowModal(false);
@@ -315,7 +317,7 @@ const BlockedDevices = () => {
             setSelectedItem(null);
             setCurrentEntityId(null);
           }}>
-            Cancel
+            {t("common:cancel")}
           </Button>,
           <Button
             key="save"
@@ -323,19 +325,19 @@ const BlockedDevices = () => {
             className="theme-btn-next"
             onClick={handleSave}
           >
-            {selectedItem === "edit" ? "Update" : "Save"}
+            {selectedItem === "edit" ? t("common:update") : t("common:save")}
           </Button>,
         ]}
         width={600}
       >
         <Form form={form} layout="vertical">
           <Form.Item
-            label="Block Entity Type"
+            label={t("blockedDevices.form.typeLabel")}
             name="type"
-            rules={[{ required: true, message: "Please select block entity type" }]}
+            rules={[{ required: true, message: t("blockedDevices.form.typeRequired") }]}
           >
             <Select
-              placeholder="Select Block Entity Type"
+              placeholder={t("blockedDevices.form.typePlaceholder")}
               loading={loadingTypes}
               showSearch
               optionFilterProp="children"
@@ -353,18 +355,18 @@ const BlockedDevices = () => {
             </Select>
           </Form.Item>
           <Form.Item
-            label="Value"
+            label={t("blockedDevices.form.valueLabel")}
             name="values"
-            rules={[{ required: true, message: "Please enter value" }]}
+            rules={[{ required: true, message: t("blockedDevices.form.valueRequired") }]}
           >
-            <Input placeholder="Enter value" />
+            <Input placeholder={t("blockedDevices.form.valuePlaceholder")} />
           </Form.Item>
         </Form>
       </Modal>
 
       {/* View Modal */}
       <Modal
-        title="View Block Entity"
+        title={t("blockedDevices.viewTitle")}
         visible={showViewModal}
         onCancel={() => {
           setShowViewModal(false);
@@ -375,7 +377,7 @@ const BlockedDevices = () => {
             setShowViewModal(false);
             setViewData(null);
           }}>
-            Close
+            {t("common:close")}
           </Button>,
         ]}
         width={600}
@@ -383,22 +385,22 @@ const BlockedDevices = () => {
         {viewData && (
           <div>
             <div className="mb-3">
-              <strong>ID:</strong> {viewData.id || "-"}
+              <strong>{t("blockedDevices.col.id")}:</strong> {viewData.id || "-"}
             </div>
             <div className="mb-3">
-              <strong>Type:</strong> {viewData.type || "-"}
+              <strong>{t("common:type")}:</strong> {viewData.type || "-"}
             </div>
             <div className="mb-3">
-              <strong>Values:</strong> {viewData.values || "-"}
+              <strong>{t("blockedDevices.col.values")}:</strong> {viewData.values || "-"}
             </div>
             {viewData.created_at && (
               <div className="mb-3">
-                <strong>Created At:</strong> {formatDate(viewData.created_at)}
+                <strong>{t("common:createdAt")}:</strong> {formatDate(viewData.created_at)}
               </div>
             )}
             {viewData.updated_at && (
               <div className="mb-3">
-                <strong>Updated At:</strong> {formatDate(viewData.updated_at)}
+                <strong>{t("common:updatedAt")}:</strong> {formatDate(viewData.updated_at)}
               </div>
             )}
           </div>
@@ -407,18 +409,18 @@ const BlockedDevices = () => {
 
       {/* Delete Confirmation Modal */}
       <Modal
-        title="Confirm Delete"
+        title={t("common:confirmDelete")}
         visible={showConfirmModal}
         onOk={handleDeleteConfirmed}
         onCancel={() => {
           setShowConfirmModal(false);
           setDeleteTargetId(null);
         }}
-        okText="Delete"
+        okText={t("common:delete")}
         okButtonProps={{ danger: true }}
-        cancelText="Cancel"
+        cancelText={t("common:cancel")}
       >
-        <p>Are you sure you want to delete this block entity? This action cannot be undone.</p>
+        <p>{t("blockedDevices.deleteConfirmMessage")}</p>
       </Modal>
     </>
   );

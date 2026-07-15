@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 // URL for external RTL stylesheet
 const rtlCssUrl = new URL('../../styles/arabic-rtl.css', import.meta.url).href;
@@ -63,6 +64,7 @@ interface ContactUsPageData {
 }
 
 const ContactUs = () => {
+  const { t } = useTranslation('webPages');
   const [pageData, setPageData] = useState<ContactUsPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -435,7 +437,7 @@ const ContactUs = () => {
         flexDirection: 'column',
         gap: '10px'
       }}>
-        <div>Error: {error}</div>
+        <div>{t('errorWithMessage', { message: error })}</div>
         <button 
           onClick={() => fetchPageData(locale)}
           style={{
@@ -463,7 +465,7 @@ const ContactUs = () => {
         fontSize: '18px',
         color: '#666'
       }}>
-        No data available
+        {t('state.noDataAvailableShort')}
       </div>
     );
   }

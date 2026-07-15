@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Form, Input, Select, Switch, Modal } from "antd";
 import toast from "react-hot-toast";
 import { getCountries, createAdmin, updateAdmin } from "../../redux/apis/apisCrud";
 import { useNavigate } from "react-router-dom";
 import { getCountriesThirdParty } from "../../redux/apis/apisThirdParty";
 
-const AddAdmin = ({ 
+const AddAdmin = ({
   visible, 
   onClose, 
   onSuccess, 
@@ -14,6 +15,7 @@ const AddAdmin = ({
   adminId = null, 
   initialData = null 
 }: any) => {
+  const { t } = useTranslation("productManagement2");
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
   const [countries, setCountries] = useState<any[]>([]);
@@ -45,7 +47,7 @@ const navigate = useNavigate();
         setCountries(response?.data?.data || []);
       }
     } catch (error: any) {
-      toast.error("Failed to fetch countries");
+      toast.error(t("admin.fetchCountriesFailed"));
     }
   };
 
@@ -65,17 +67,17 @@ const navigate = useNavigate();
 
       if (isEdit) {
         await updateAdmin(adminId, adminData);
-        toast.success("Admin updated successfully");
+        toast.success(t("admin.updated"));
       } else {
         await createAdmin(productId, adminData);
-        toast.success("Admin created successfully");
+        toast.success(t("admin.created"));
       }
-      
+
       onSuccess && onSuccess();
       onClose && onClose();
-      
+
     } catch (error: any) {
-      toast.error(error?.message || "Failed to save admin");
+      toast.error(error?.message || t("admin.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -84,9 +86,9 @@ const navigate = useNavigate();
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-4">
-        <h4>{isEdit ? "Edit Admin" : isView ? "View Admin" : "Add Admin"}</h4>
+        <h4>{isEdit ? t("admin.editAdmin") : isView ? t("admin.viewAdmin") : t("admin.addAdmin")}</h4>
         <Button onClick={() => navigate(`/ProductManagement/AdminList?mode=view&id=${productId}`)}>
-          Back to Admin List
+          {t("admin.backToAdminList")}
         </Button>
       </div>
 
@@ -100,23 +102,23 @@ const navigate = useNavigate();
         <div className="row">
           <div className="col-md-6">
             <Form.Item
-              label="Name"
+              label={t("common:name")}
               name="name"
-              rules={[{ required: true, message: "Please enter admin name" }]}
+              rules={[{ required: true, message: t("admin.nameRequired") }]}
             >
-              <Input placeholder="Enter admin name" />
+              <Input placeholder={t("admin.enterAdminName")} />
             </Form.Item>
           </div>
           <div className="col-md-6">
             <Form.Item
-              label="Email"
+              label={t("common:email")}
               name="email"
               rules={[
-                { required: true, message: "Please enter email" },
-                { type: "email", message: "Please enter valid email" }
+                { required: true, message: t("admin.emailRequired") },
+                { type: "email", message: t("admin.emailInvalid") }
               ]}
             >
-              <Input placeholder="Enter email address" />
+              <Input placeholder={t("admin.enterEmail")} />
             </Form.Item>
           </div>
         </div>
@@ -124,18 +126,18 @@ const navigate = useNavigate();
         <div className="row">
           <div className="col-md-6">
             <Form.Item
-              label="Phone"
+              label={t("common:phone")}
               name="phone"
-              rules={[{ required: true, message: "Please enter phone number" }]}
+              rules={[{ required: true, message: t("admin.phoneRequired") }]}
             >
-              <Input placeholder="Enter phone number" />
+              <Input placeholder={t("admin.enterPhone")} />
             </Form.Item>
           </div>
           <div className="col-md-6">
             <Form.Item
-              label="Date of Birth"
+              label={t("admin.dob")}
               name="dob"
-              rules={[{ required: true, message: "Please select date of birth" }]}
+              rules={[{ required: true, message: t("admin.dobRequired") }]}
             >
               <Input type="date" />
             </Form.Item>
@@ -145,20 +147,20 @@ const navigate = useNavigate();
         <div className="row">
           <div className="col-md-6">
             <Form.Item
-              label="Address"
+              label={t("admin.address")}
               name="address"
-              rules={[{ required: true, message: "Please enter address" }]}
+              rules={[{ required: true, message: t("admin.addressRequired") }]}
             >
-              <Input.TextArea placeholder="Enter address" rows={3} />
+              <Input.TextArea placeholder={t("admin.enterAddress")} rows={3} />
             </Form.Item>
           </div>
           <div className="col-md-6">
             <Form.Item
-              label="Country"
+              label={t("field.country")}
               name="country"
-              rules={[{ required: true, message: "Please select country" }]}
+              rules={[{ required: true, message: t("admin.countryRequired") }]}
             >
-              <Select placeholder="Select country">
+              <Select placeholder={t("admin.selectCountry")}>
                 {countries&&countries.map((country: any) => (
                   <Select.Option key={country.id} value={country.id}>
                     {country.name}
@@ -172,7 +174,7 @@ const navigate = useNavigate();
         <div className="row">
           <div className="col-md-6">
             <Form.Item
-              label="Status"
+              label={t("common:status")}
               name="status"
               valuePropName="checked"
             >
@@ -184,10 +186,10 @@ const navigate = useNavigate();
         {!isView && (
           <div className="d-flex justify-content-end gap-2">
             <Button onClick={() => navigate(`/ProductManagement/AdminList?mode=view&id=${productId}`)}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button type="primary" htmlType="submit" loading={loading}>
-              {isEdit ? "Update Admin" : "Create Admin"}
+              {isEdit ? t("admin.updateAdmin") : t("admin.createAdmin")}
             </Button>
           </div>
         )}

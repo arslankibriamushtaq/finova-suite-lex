@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react"
+import { useTranslation } from "react-i18next"
 import { useRouter } from "../../lib/router"
 import { useSearchParams } from "../../lib/router"
 import { ArrowLeft, ArrowRight, HelpCircle, Upload, Package, FileText, X } from "lucide-react"
@@ -69,6 +70,7 @@ const LOCAL_STORAGE_KEY = "productBasicInfoFormData"
 
 export default function CreateBasicInfo() {
   const { isRTL } = useLanguage()
+  const { t } = useTranslation("productManagement2")
   const router = useRouter()
   const [searchParams] = useSearchParams()
   const templateId = searchParams.get("template")
@@ -338,7 +340,7 @@ export default function CreateBasicInfo() {
       }
     } catch (error: any) {
       console.error("Error loading product data:", error)
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load product data")
+      toast.error(error?.response?.data?.message || error?.message || t("settingsTabs.loadFailed"))
     } finally {
       setIsLoadingProductData(false)
     }
@@ -355,12 +357,12 @@ export default function CreateBasicInfo() {
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {}
 
-    if (!formData.name.trim()) newErrors.name = "Product name (English) is required"
-    if (!formData.name_ar.trim()) newErrors.name_ar = "Product name (Arabic) is required"
+    if (!formData.name.trim()) newErrors.name = t("basicInfo.nameEnRequired")
+    if (!formData.name_ar.trim()) newErrors.name_ar = t("basicInfo.nameArRequired")
     if (!formData.notification_email.trim()) {
-      newErrors.notification_email = "Notification email is required"
+      newErrors.notification_email = t("basicInfo.emailRequired")
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.notification_email)) {
-      newErrors.notification_email = "Please enter a valid email address"
+      newErrors.notification_email = t("basicInfo.emailInvalid")
     }
     // if (!formData.country) newErrors.country = "Country is required"
     // if (formData.customer_types.length === 0) newErrors.customer_types = "At least one customer type is required"
@@ -433,7 +435,7 @@ export default function CreateBasicInfo() {
             console.error("Failed to update product status:", statusError)
           }
 
-          toast.success(isEditMode ? "Product updated successfully!" : "Product created successfully!")
+          toast.success(isEditMode ? t("basicInfo.updatedSuccess") : t("basicInfo.createdSuccess"))
 
           // Map response back to form data for localStorage persistence
           const apiFormData: ProductFormData = {
@@ -464,9 +466,9 @@ export default function CreateBasicInfo() {
           if (resData?.errors) {
             const mapped = mapApiErrorsToFormFields(resData.errors)
             setErrors(mapped)
-            toast.error(Object.values(mapped)[0] || resData?.message || "Validation failed")
+            toast.error(Object.values(mapped)[0] || resData?.message || t("basicInfo.validationFailed"))
           } else {
-            toast.error(resData?.message || `Failed to ${isEditMode ? "update" : "create"} product`)
+            toast.error(resData?.message || (isEditMode ? t("basicInfo.updateFailed") : t("basicInfo.createFailed")))
           }
         }
       } catch (error: any) {
@@ -475,9 +477,9 @@ export default function CreateBasicInfo() {
         if (errData?.errors) {
           const mapped = mapApiErrorsToFormFields(errData.errors)
           setErrors(mapped)
-          toast.error(Object.values(mapped)[0] || errData?.message || "Validation failed")
+          toast.error(Object.values(mapped)[0] || errData?.message || t("basicInfo.validationFailed"))
         } else {
-          toast.error(errData?.message || error?.message || `Failed to ${isEditMode ? "update" : "create"} product`)
+          toast.error(errData?.message || error?.message || (isEditMode ? t("basicInfo.updateFailed") : t("basicInfo.createFailed")))
         }
       } finally {
         setIsLoading(false)
@@ -497,14 +499,14 @@ export default function CreateBasicInfo() {
       // Validate file type
       const validTypes = ['image/png', 'image/jpeg', 'image/jpg', 'image/webp']
       if (!validTypes.includes(file.type)) {
-        setErrors((prev) => ({ ...prev, logo: 'Please upload a PNG, JPG, or WEBP image' }))
+        setErrors((prev) => ({ ...prev, logo: t("basicInfo.logoInvalidType") }))
         return
       }
 
       // Validate file size (max 5MB)
       const maxSize = 5 * 1024 * 1024 // 5MB
       if (file.size > maxSize) {
-        setErrors((prev) => ({ ...prev, logo: 'Image size should not exceed 5MB' }))
+        setErrors((prev) => ({ ...prev, logo: t("basicInfo.logoTooLarge") }))
         return
       }
 
@@ -553,11 +555,11 @@ export default function CreateBasicInfo() {
               <div className={`flex items-center gap-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
                 <Button variant="ghost" size="sm" onClick={handleBackToProducts} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Products
+                  {t("createCategories.backToProducts")}
                 </Button>
                 {templateId && (
                   <Badge variant="outline" className="gap-1">
-                    Using Template
+                    {t("basicInfo.usingTemplate")}
                   </Badge>
                 )}
               </div>
@@ -566,7 +568,7 @@ export default function CreateBasicInfo() {
               <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Package className="h-4 w-4" />
               </span>
-              {isEditMode ? "Edit Product" : "Create Product"}
+              {isEditMode ? t("createDocs.editProduct") : t("createDocs.createProduct")}
             </h1>
             <ProductCreateEditTabs
               activeTab="basic-info"
@@ -586,10 +588,10 @@ export default function CreateBasicInfo() {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                     <FileText className="h-4 w-4" />
                   </span>
-                  Product Details
+                  {t("basicInfo.productDetails")}
                 </CardTitle>
                 <p className="text-muted-foreground">
-                  Enter the basic information for your new product. All fields marked with * are required.
+                  {t("basicInfo.productDetailsDesc")}
                 </p>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -597,19 +599,19 @@ export default function CreateBasicInfo() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="name">Product Name (English) *</Label>
+                      <Label htmlFor="name">{t("basicInfo.nameEnLabel")}</Label>
                       <Tooltip>
                         <TooltipTrigger>
                           <HelpCircle className="h-4 w-4 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Enter the primary product name in English (max 120 characters)</p>
+                          <p>{t("basicInfo.nameEnTooltip")}</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
                     <Input
                       id="name"
-                      placeholder="e.g., Home Financing Plus"
+                      placeholder={t("basicInfo.nameEnPlaceholder")}
                       value={formData.name}
                       onChange={(e) => updateFormData("name", e.target.value)}
                       maxLength={120}
@@ -620,19 +622,19 @@ export default function CreateBasicInfo() {
 
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
-                      <Label htmlFor="name_ar">Product Name (Arabic) *</Label>
+                      <Label htmlFor="name_ar">{t("basicInfo.nameArLabel")}</Label>
                       <Tooltip>
                         <TooltipTrigger>
                           <HelpCircle className="h-4 w-4 text-muted-foreground" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          <p>Enter the product name in Arabic (max 120 characters)</p>
+                          <p>{t("basicInfo.nameArTooltip")}</p>
                         </TooltipContent>
                       </Tooltip>
                     </div>
                     <Input
                       id="name_ar"
-                      placeholder="مثال: التمويل العقاري بلس"
+                      placeholder={t("basicInfo.nameArPlaceholder")}
                       value={formData.name_ar}
                       onChange={(e) => updateFormData("name_ar", e.target.value)}
                       maxLength={120}
@@ -646,20 +648,20 @@ export default function CreateBasicInfo() {
                 {/* Notification Email */}
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <Label htmlFor="email">Notification Email *</Label>
+                    <Label htmlFor="email">{t("basicInfo.notificationEmailLabel")}</Label>
                     <Tooltip>
                       <TooltipTrigger>
                         <HelpCircle className="h-4 w-4 text-muted-foreground" />
                       </TooltipTrigger>
                       <TooltipContent>
-                        <p>Email address for product-related notifications and alerts</p>
+                        <p>{t("basicInfo.notificationEmailTooltip")}</p>
                       </TooltipContent>
                     </Tooltip>
                   </div>
                   <Input
                     id="email"
                     type="email"
-                    placeholder="product-notify@bank.com"
+                    placeholder={t("basicInfo.notificationEmailPlaceholder")}
                     value={formData.notification_email}
                     onChange={(e) => updateFormData("notification_email", e.target.value)}
                     className={errors.notification_email ? "border-destructive" : ""}
@@ -670,10 +672,10 @@ export default function CreateBasicInfo() {
                 {/* Country and Product Type */}
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div className="space-y-2">
-                    <Label>Country *</Label>
+                    <Label>{t("basicInfo.countryLabel")}</Label>
                     <Select value={formData.country || undefined} onValueChange={(value) => updateFormData("country", value)}>
                       <SelectTrigger className={`w-full ${errors.country ? "border-destructive" : ""}`}>
-                        <SelectValue placeholder="Select country" />
+                        <SelectValue placeholder={t("admin.selectCountry")} />
                       </SelectTrigger>
                       <SelectContent>
                         {countries?.map((country:any) => (
@@ -687,10 +689,10 @@ export default function CreateBasicInfo() {
                   </div>
                   
                   <div className="space-y-2">
-                    <Label>Product Type</Label>
+                    <Label>{t("basicInfo.productTypeLabel")}</Label>
                     <Select value={formData.product_type_id} onValueChange={(value) => updateFormData("product_type_id", value)}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select product type" />
+                        <SelectValue placeholder={t("addProduct.selectProductType")} />
                       </SelectTrigger>
                       <SelectContent>
                         {PRODUCT_TYPES.map((type) => (
@@ -706,7 +708,7 @@ export default function CreateBasicInfo() {
                 {/* Sub-categories */}
                 {availableSubCategories.length > 0 && (
                   <div className="space-y-2">
-                    <Label>Sub-categories</Label>
+                    <Label>{t("basicInfo.subCategories")}</Label>
                     <div className="flex flex-wrap gap-2">
                       {availableSubCategories.map((category) => (
                         <Badge
@@ -719,7 +721,7 @@ export default function CreateBasicInfo() {
                         </Badge>
                       ))}
                     </div>
-                    <p className="text-xs text-muted-foreground">Click to select/deselect sub-categories</p>
+                    <p className="text-xs text-muted-foreground">{t("basicInfo.subCategoriesHint")}</p>
                   </div>
                 )}
 
@@ -746,19 +748,19 @@ export default function CreateBasicInfo() {
                 {/* Status and Logo */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label>Status</Label>
+                    <Label>{t("common:status")}</Label>
                     <div className="flex items-center space-x-2">
                       <Switch
                         checked={formData.status === "active"}
                         onCheckedChange={(checked) => updateFormData("status", checked ? "active" : "draft")}
                       />
-                      <Label className="text-sm">{formData.status === "active" ? "Active" : "Draft"}</Label>
+                      <Label className="text-sm">{formData.status === "active" ? t("common:active") : t("basicInfo.draft")}</Label>
                     </div>
-                    <p className="text-xs text-muted-foreground">Draft products are not visible to customers</p>
+                    <p className="text-xs text-muted-foreground">{t("basicInfo.statusHint")}</p>
                   </div>
 
                   <div className="space-y-2 w-full">
-                    <Label>Logo</Label>
+                    <Label>{t("basicInfo.logo")}</Label>
                     <div className="flex items-center gap-3">
                       <Avatar className="h-12 w-12">
                         <AvatarImage src={formData.logo_url || "/placeholder.svg"} />
@@ -781,13 +783,13 @@ export default function CreateBasicInfo() {
                         onClick={handleLogoClick}
                       >
                         <Upload className="h-4 w-4" />
-                        {formData.logo_url ? 'Change Logo' : 'Upload Logo'}
+                        {formData.logo_url ? t("basicInfo.changeLogo") : t("addProduct.uploadLogo")}
                       </Button>
                     </div>
                     {errors.logo && (
                       <p className="text-xs text-red-500">{errors.logo}</p>
                     )}
-                    <p className="text-xs text-muted-foreground">Recommended: 200x200px, PNG or JPG (Max 5MB)</p>
+                    <p className="text-xs text-muted-foreground">{t("basicInfo.logoHint")}</p>
                   </div>
                 </div>
 
@@ -864,12 +866,12 @@ export default function CreateBasicInfo() {
                 </Button> */}
                 <Button variant="outline" onClick={handleCancel} className="gap-2">
                   <X className="h-4 w-4" />
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
               </div>
 
               <Button onClick={handleNext} disabled={isLoading} className="gap-2">
-                {isLoading ? (isEditMode ? "Updating..." : "Saving...") : (isEditMode ? "Update & Next: Settings" : "Next: Settings")}
+                {isLoading ? (isEditMode ? t("basicInfo.updating") : t("creditScoring.saving")) : (isEditMode ? t("basicInfo.updateNextSettings") : t("basicInfo.nextSettings"))}
                 <ArrowRight className="h-4 w-4" />
               </Button>
             </div>

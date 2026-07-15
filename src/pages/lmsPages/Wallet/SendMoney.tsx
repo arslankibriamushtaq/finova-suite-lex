@@ -3,6 +3,7 @@ import toast from "react-hot-toast";
 import { Send, History } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -82,6 +83,7 @@ const StatusBadge = ({ status }: { status?: string }) => (
 );
 
 const SendMoney = () => {
+  const { t } = useTranslation("walletBlocks");
   const [rail, setRail] = useState<Rail>("FT");
 
   // FT form
@@ -116,15 +118,15 @@ const SendMoney = () => {
   const [isHistoryLoading, setIsHistoryLoading] = useState(false);
 
   const submitFt = async () => {
-    if (!ft.senderMobile.trim()) return toast.error("Sender mobile is required");
+    if (!ft.senderMobile.trim()) return toast.error(t("send.valid.senderMobile"));
     if (!ft.counterpartyName.trim())
-      return toast.error("Beneficiary name is required");
+      return toast.error(t("send.valid.beneficiaryName"));
     if (!ft.counterpartyAccount.trim())
-      return toast.error("Beneficiary account is required");
+      return toast.error(t("send.valid.beneficiaryAccount"));
     if (!ft.counterpartyBankCode.trim())
-      return toast.error("Bank code is required");
+      return toast.error(t("send.valid.bankCode"));
     if (!Number(ft.amount) || Number(ft.amount) <= 0)
-      return toast.error("Enter a valid amount");
+      return toast.error(t("send.valid.amount"));
 
     const body: AdminExternalFtRequest = {
       senderMobile: ft.senderMobile.trim(),
@@ -140,7 +142,7 @@ const SendMoney = () => {
     setIsSubmitting(true);
     try {
       await adminSendExternalFt(body);
-      toast.success("FT transfer initiated");
+      toast.success(t("send.toast.ftInitiated"));
       setFt((s) => ({
         ...s,
         counterpartyName: "",
@@ -155,22 +157,22 @@ const SendMoney = () => {
       loadHistory(body.senderMobile, "FT");
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to send FT transfer");
+      toast.error(error?.response?.data?.message || t("send.toast.ftFailed"));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const submitIbft = async () => {
-    if (!ibft.senderMobile.trim()) return toast.error("Sender mobile is required");
+    if (!ibft.senderMobile.trim()) return toast.error(t("send.valid.senderMobile"));
     if (!ibft.institutionNumber.trim())
-      return toast.error("Institution number is required");
+      return toast.error(t("send.valid.institutionNumber"));
     if (!ibft.accountNumber.trim())
-      return toast.error("Account number is required");
+      return toast.error(t("send.valid.accountNumber"));
     if (!ibft.beneficiaryName.trim())
-      return toast.error("Beneficiary name is required");
+      return toast.error(t("send.valid.beneficiaryName"));
     if (!Number(ibft.amount) || Number(ibft.amount) <= 0)
-      return toast.error("Enter a valid amount");
+      return toast.error(t("send.valid.amount"));
 
     const body: AdminIbftRequest = {
       senderMobile: ibft.senderMobile.trim(),
@@ -186,7 +188,7 @@ const SendMoney = () => {
     setIsSubmitting(true);
     try {
       await adminSendIbft(body);
-      toast.success("IBFT transfer initiated");
+      toast.success(t("send.toast.ibftInitiated"));
       setIbft((s) => ({
         ...s,
         accountNumber: "",
@@ -202,7 +204,7 @@ const SendMoney = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to send IBFT transfer"
+        error?.response?.data?.message || t("send.toast.ibftFailed")
       );
     } finally {
       setIsSubmitting(false);
@@ -211,7 +213,7 @@ const SendMoney = () => {
 
   const loadHistory = async (mobileArg?: string, railArg?: Rail) => {
     const mobile = (typeof mobileArg === "string" ? mobileArg : historyMobile).trim();
-    if (!mobile) return toast.error("Enter a sender mobile");
+    if (!mobile) return toast.error(t("send.toast.enterMobile"));
     const activeRail = railArg || rail;
     setIsHistoryLoading(true);
     try {
@@ -228,7 +230,7 @@ const SendMoney = () => {
       setHistory(Array.isArray(rows) ? rows : []);
     } catch (error: any) {
       console.error(error);
-      toast.error("Failed to load transfer history");
+      toast.error(t("send.toast.loadHistoryFailed"));
       setHistory([]);
     } finally {
       setIsHistoryLoading(false);
@@ -237,7 +239,7 @@ const SendMoney = () => {
 
   const historyHeaders = [
     {
-      name: "Reference",
+      name: t("send.col.reference"),
       cell: (row: any) => (
         <span className="font-mono text-xs">
           {row.transferNumber || row.reference || row.id || "-"}
@@ -246,7 +248,7 @@ const SendMoney = () => {
       width: "200px",
     },
     {
-      name: "Beneficiary",
+      name: t("send.col.beneficiary"),
       cell: (row: any) => (
         <span className="text-sm">
           {row.counterpartyName || row.beneficiaryName || "-"}
@@ -255,19 +257,19 @@ const SendMoney = () => {
       width: "180px",
     },
     {
-      name: "Amount",
+      name: t("send.col.amount"),
       cell: (row: any) => (
         <span className="font-medium">{formatMoney(row.amount, row.currency)}</span>
       ),
       width: "150px",
     },
     {
-      name: "Status",
+      name: t("send.col.status"),
       cell: (row: any) => <StatusBadge status={row.status} />,
       width: "140px",
     },
     {
-      name: "Date",
+      name: t("send.col.date"),
       cell: (row: any) => (
         <span className="text-sm text-muted-foreground">
           {formatDate(row.createdAt)}
@@ -284,11 +286,10 @@ const SendMoney = () => {
           <span className="pro-head-badge">
             <Send className="h-4 w-4" />
           </span>
-          Send Money
+          {t("send.title")}
         </h3>
         <p className="mb-0 mt-1 text-sm text-muted-foreground">
-          Send funds out of a customer wallet (identified by sender mobile) to an
-          external bank account.
+          {t("send.subtitle")}
         </p>
       </div>
 
@@ -298,24 +299,24 @@ const SendMoney = () => {
             <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
               <Send className="h-4 w-4" />
             </span>
-            New Transfer
+            {t("send.newTransfer")}
           </CardTitle>
         </CardHeader>
         <CardContent>
           <Tabs value={rail} onValueChange={(v) => setRail(v as Rail)}>
             <TabsList className="mb-4 coa-tabs">
               <TabsTrigger value="FT" className="coa-tab-trigger">
-                FT (Scotia RTP)
+                {t("send.tab.ft")}
               </TabsTrigger>
               <TabsTrigger value="IBFT" className="coa-tab-trigger">
-                IBFT (Scotia EFT)
+                {t("send.tab.ibft")}
               </TabsTrigger>
             </TabsList>
 
             {/* FT form */}
             <TabsContent value="FT">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
-                <FormField label="Sender Mobile" required>
+                <FormField label={t("send.field.senderMobile")} required>
                   <Input
                     placeholder="+9665XXXXXXXX"
                     value={ft.senderMobile}
@@ -324,16 +325,16 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Beneficiary Name" required>
+                <FormField label={t("send.field.beneficiaryName")} required>
                   <Input
-                    placeholder="John Doe"
+                    placeholder={t("send.ph.beneficiaryName")}
                     value={ft.counterpartyName}
                     onChange={(e) =>
                       setFt((s) => ({ ...s, counterpartyName: e.target.value }))
                     }
                   />
                 </FormField>
-                <FormField label="Beneficiary Account" required>
+                <FormField label={t("send.field.beneficiaryAccount")} required>
                   <Input
                     placeholder="1234567"
                     value={ft.counterpartyAccount}
@@ -342,7 +343,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Bank Code" required>
+                <FormField label={t("send.field.bankCode")} required>
                   <Input
                     placeholder="002"
                     value={ft.counterpartyBankCode}
@@ -354,7 +355,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Beneficiary Email">
+                <FormField label={t("send.field.beneficiaryEmail")}>
                   <Input
                     placeholder="john@example.com"
                     value={ft.counterpartyEmail}
@@ -363,7 +364,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Amount" required>
+                <FormField label={t("send.field.amount")} required>
                   <Input
                     type="number"
                     placeholder="0.00"
@@ -373,7 +374,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Currency">
+                <FormField label={t("send.field.currency")}>
                   <Input
                     value={ft.currency}
                     onChange={(e) =>
@@ -381,9 +382,9 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Purpose Note" className="md:col-span-2">
+                <FormField label={t("send.field.purposeNote")} className="md:col-span-2">
                   <Textarea
-                    placeholder="Invoice payment"
+                    placeholder={t("send.ph.purposeNoteFt")}
                     rows={2}
                     value={ft.purposeNote}
                     onChange={(e) =>
@@ -399,7 +400,7 @@ const SendMoney = () => {
                   disabled={isSubmitting}
                 >
                   <Send className="h-4 w-4" />
-                  {isSubmitting ? "Sending..." : "Send FT Transfer"}
+                  {isSubmitting ? t("send.sending") : t("send.sendFt")}
                 </Button>
               </div>
             </TabsContent>
@@ -407,7 +408,7 @@ const SendMoney = () => {
             {/* IBFT form */}
             <TabsContent value="IBFT">
               <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
-                <FormField label="Sender Mobile" required>
+                <FormField label={t("send.field.senderMobile")} required>
                   <Input
                     placeholder="+9665XXXXXXXX"
                     value={ibft.senderMobile}
@@ -416,16 +417,16 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Beneficiary Name" required>
+                <FormField label={t("send.field.beneficiaryName")} required>
                   <Input
-                    placeholder="John Doe"
+                    placeholder={t("send.ph.beneficiaryName")}
                     value={ibft.beneficiaryName}
                     onChange={(e) =>
                       setIbft((s) => ({ ...s, beneficiaryName: e.target.value }))
                     }
                   />
                 </FormField>
-                <FormField label="Institution Number" required>
+                <FormField label={t("send.field.institutionNumber")} required>
                   <Input
                     placeholder="002"
                     value={ibft.institutionNumber}
@@ -434,7 +435,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Account Number" required>
+                <FormField label={t("send.field.accountNumber")} required>
                   <Input
                     placeholder="1234567"
                     value={ibft.accountNumber}
@@ -443,7 +444,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Bank Name">
+                <FormField label={t("send.field.bankName")}>
                   <Input
                     placeholder="Scotiabank"
                     value={ibft.bankName}
@@ -452,7 +453,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Amount" required>
+                <FormField label={t("send.field.amount")} required>
                   <Input
                     type="number"
                     placeholder="0.00"
@@ -462,7 +463,7 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Currency">
+                <FormField label={t("send.field.currency")}>
                   <Input
                     value={ibft.currency}
                     onChange={(e) =>
@@ -470,9 +471,9 @@ const SendMoney = () => {
                     }
                   />
                 </FormField>
-                <FormField label="Purpose Note" className="md:col-span-2">
+                <FormField label={t("send.field.purposeNote")} className="md:col-span-2">
                   <Textarea
-                    placeholder="Transfer"
+                    placeholder={t("send.ph.purposeNoteIbft")}
                     rows={2}
                     value={ibft.purposeNote}
                     onChange={(e) =>
@@ -488,7 +489,7 @@ const SendMoney = () => {
                   disabled={isSubmitting}
                 >
                   <Send className="h-4 w-4" />
-                  {isSubmitting ? "Sending..." : "Send IBFT Transfer"}
+                  {isSubmitting ? t("send.sending") : t("send.sendIbft")}
                 </Button>
               </div>
             </TabsContent>
@@ -503,11 +504,11 @@ const SendMoney = () => {
               <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <History className="h-4 w-4" />
               </span>
-              Transfer History ({rail})
+              {t("send.history.title", { rail })}
             </span>
             <AntInput
               allowClear
-              placeholder="Search by sender mobile"
+              placeholder={t("send.history.searchPlaceholder")}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={historyMobile}
               onChange={(e) => setHistoryMobile(e.target.value)}

@@ -21,6 +21,7 @@ import {
   getstatusWiseApplications,
 } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 // const productsData = [
 //   "Quick Finance",
@@ -34,23 +35,23 @@ import toast from "react-hot-toast";
 // ];
 const tabOptions = [
   {
-    title: "Application Type",
-    subTitle: "Type Wise",
+    title: "productDetails.tab.applicationType",
+    subTitle: "productDetails.sub.typeWise",
     key: "applicationType",
   },
   {
-    title: "Application Status",
-    subTitle: "Department Wise",
+    title: "productDetails.tab.applicationStatus",
+    subTitle: "productDetails.sub.departmentWise",
     key: "departmentWise",
   },
   {
-    title: "Application Status",
-    subTitle: "Product Wise",
+    title: "productDetails.tab.applicationStatus",
+    subTitle: "productDetails.sub.productWise",
     key: "productWise",
   },
   {
-    title: "Compliance Credit",
-    subTitle: "Approval Average",
+    title: "productDetails.tab.complianceCredit",
+    subTitle: "productDetails.sub.approvalAverage",
     key: "approvalAverage",
   },
 ];
@@ -65,6 +66,7 @@ interface CategoryConfig {
 }
 type FinanceData = Record<string, number>;
 const DashboardProductDetails = () => {
+  const { t } = useTranslation("dashboard");
   const [activeTab, setActiveTab] = useState("applicationType");
   const [activeObject, setActiveObject] = useState<any>(tabOptions[0]);
   const [applicationData, setApplicationData] = useState<any>([]);
@@ -155,11 +157,11 @@ const DashboardProductDetails = () => {
 
       // Mapping: original key => display name + color
       const labelColorMap: Record<string, { name: string; color: string }> = {
-        "REVENUE-APPROVED": { name: "Approved", color: "#73E98D" },
-        PENDING: { name: "Pending", color: "#FFCC6A" },
-        REJECTED: { name: "Rejected", color: "#ff6961" },
-        DISBURSED: { name: "Disbursed", color: "#80D1FF" },
-        "NON-DISBURSED": { name: "Non Disbursed", color: "#FFA07A" },
+        "REVENUE-APPROVED": { name: t("common:approved"), color: "#73E98D" },
+        PENDING: { name: t("common:pending"), color: "#FFCC6A" },
+        REJECTED: { name: t("common:rejected"), color: "#ff6961" },
+        DISBURSED: { name: t("bar.disbursed"), color: "#80D1FF" },
+        "NON-DISBURSED": { name: t("productDetails.nonDisbursed"), color: "#FFA07A" },
       };
 
       // Transform to array format
@@ -183,11 +185,11 @@ const DashboardProductDetails = () => {
 
       // Mapping: original key => display name + color
       const labelColorMap: Record<string, { name: string; color: string }> = {
-        "REVENUE-APPROVED": { name: "Approved", color: "#73E98D" },
-        PENDING: { name: "Pending", color: "#FFCC6A" },
-        REJECTED: { name: "Rejected", color: "#ff6961" },
-        DISBURSED: { name: "Disbursed", color: "#80D1FF" },
-        "NON-DISBURSED": { name: "Non Disbursed", color: "#FFA07A" },
+        "REVENUE-APPROVED": { name: t("common:approved"), color: "#73E98D" },
+        PENDING: { name: t("common:pending"), color: "#FFCC6A" },
+        REJECTED: { name: t("common:rejected"), color: "#ff6961" },
+        DISBURSED: { name: t("bar.disbursed"), color: "#80D1FF" },
+        "NON-DISBURSED": { name: t("productDetails.nonDisbursed"), color: "#FFA07A" },
       };
 
       // Transform to array format
@@ -223,8 +225,8 @@ const DashboardProductDetails = () => {
 
       // Define mapping: original key -> desired label and color
       const labelMap: Record<string, { name: string; color: string }> = {
-        averageComplianceTimes: { name: "Compliance", color: "#73E98D" },
-        averageCreditTimes: { name: "Credit", color: "#ff6961" },
+        averageComplianceTimes: { name: t("appApproval.check.compliance"), color: "#73E98D" },
+        averageCreditTimes: { name: t("appApproval.check.credit"), color: "#ff6961" },
       };
 
       // Convert to array format
@@ -303,7 +305,7 @@ const DashboardProductDetails = () => {
       left: "center",
       top: "center",
       style: {
-        text: `Total \n${totalApplications.toLocaleString()}`, // Display "Total Tickets" and the value
+        text: `${t("onboarding.total")} \n${totalApplications.toLocaleString()}`, // Display "Total Tickets" and the value
         fontSize: 20, // Font size for the text
         fontWeight: "500",
         fill: "#828282", // Text color
@@ -400,9 +402,9 @@ const DashboardProductDetails = () => {
           {/* Left side */}
           <div style={{ flex: 1 }}>
             <Card className="p-4 mb-4 h-100 dashboard-card">
-              <h5 className="fs-20 fw-600">{activeObject?.title}</h5>
+              <h5 className="fs-20 fw-600">{t(activeObject?.title)}</h5>
               <small className="fw-medium fs-14 mb-3">
-                {activeObject?.subTitle}
+                {t(activeObject?.subTitle)}
               </small>
               <Tabs
                 activeKey={activeTab}
@@ -410,7 +412,7 @@ const DashboardProductDetails = () => {
                 onSelect={handleSelect}
               >
                 {tabOptions.map((tab) => (
-                  <Tab key={tab.key} eventKey={tab.key} title={tab.title}>
+                  <Tab key={tab.key} eventKey={tab.key} title={t(tab.title)}>
                     {activeTab === tab.key && (
                       <Row>
                         <Col md={8}>
@@ -464,7 +466,7 @@ const DashboardProductDetails = () => {
           <div style={{ width: "30%", minWidth: "367px" }}>
             <Card className="p-4 mb-4 dashboard-card">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h5>Products</h5>
+                <h5>{t("productDetails.products")}</h5>
                 <Select
                   value={year}
                   className="custom-ant-select"
@@ -480,7 +482,7 @@ const DashboardProductDetails = () => {
                   <Option value="2023">2023</Option>
                 </Select>
               </div>
-              <h4>Total Financing</h4>
+              <h4>{t("productDetails.totalFinancing")}</h4>
               <h2 className="text-danger mb-4">
                 SAR {totalFinancing.toLocaleString()}
               </h2>
@@ -511,22 +513,22 @@ const DashboardProductDetails = () => {
           <Col md={6}>
             <Card className="p-4 mb-4 dashboard-card">
               <ApplicationStatusBarChart
-                title="Department Wise Applications"
+                title={t("productDetails.deptWiseApplications")}
                 data={realDepartmentData}
                 categories={departmentCategories}
                 showYearSelector={true}
-                yearSelectorText="This Year"
+                yearSelectorText={t("rewards.thisYear")}
               />
             </Card>
           </Col>
           <Col md={6}>
             <Card className="p-4 mb-4 dashboard-card">
               <ApplicationStatusBarChart
-                title="Status Wise Applications"
+                title={t("productDetails.statusWiseApplications")}
                 data={realStatusData}
                 categories={statusCategories}
                 showYearSelector={true}
-                yearSelectorText="This Year"
+                yearSelectorText={t("rewards.thisYear")}
               />
             </Card>
           </Col>

@@ -13,9 +13,11 @@ import { v4 as uuidv4 } from "uuid";
 import Loader from "../../../components/Loader/Loader";
 import * as Yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const CollateralManagementView = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("loanManagement");
   const [files, setFiles] = useState<any>([]);
   const [reportFiles, setReportFiles] = useState<any>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -70,19 +72,19 @@ const CollateralManagementView = () => {
   const [applications, setApplications] = useState<any>();
   const CollateralType = [
     {
-      label: "Property",
+      label: t("collateralForm.typeProperty"),
       type: "radio",
       name: "Property",
       value: "property",
     },
     {
-      label: "Vehicle",
+      label: t("collateralForm.typeVehicle"),
       type: "radio",
       name: "Property",
       value: "vehicle",
     },
     {
-      label: "Cash & Cash equivalents",
+      label: t("collateralForm.typeCash"),
       type: "radio",
       name: "Property",
       value: "cash",
@@ -90,13 +92,13 @@ const CollateralManagementView = () => {
   ];
   const CollateralDetails = [
     {
-      label: "Property Address",
+      label: t("field.propertyAddress"),
       type: "text",
       name: "propertyAddress",
       Placeholder: "Placeholder",
     },
     {
-      label: "Market Value",
+      label: t("field.marketValue"),
       type: "number",
       name: "marketValue",
       Placeholder: "Placeholder",
@@ -104,13 +106,13 @@ const CollateralManagementView = () => {
   ];
   const cashDetails = [
     {
-      label: "Market Value",
+      label: t("field.marketValue"),
       type: "number",
       name: "marketValue",
       Placeholder: "Placeholder",
     },
     {
-      label: "Collateral Amount",
+      label: t("field.collateralAmount"),
       type: "number",
       name: "collateralAmount",
       Placeholder: "Placeholder",
@@ -118,25 +120,25 @@ const CollateralManagementView = () => {
   ];
   const collectrolOwnerDetails = [
     {
-      label: "Name",
+      label: t("field.name"),
       type: "text",
       name: "collateralOwnerName",
       Placeholder: "1324567",
     },
     {
-      label: "Mobile No",
+      label: t("field.mobileNo"),
       type: "number",
       name: "mobileNo",
       Placeholder: "Placeholder",
     },
     {
-      label: "Nid",
+      label: t("field.nidLabel"),
       type: "text",
       name: "nid",
       Placeholder: "Placeholder",
     },
     {
-      label: "Email",
+      label: t("common:email"),
       type: "email",
       name: "email",
       Placeholder: "Placeholder",
@@ -145,19 +147,19 @@ const CollateralManagementView = () => {
   ];
   const souceInfoDetails = [
     {
-      label: "Bank Name",
+      label: t("field.bankName"),
       type: "text",
       name: "bankName",
       Placeholder: "1324567",
     },
     {
-      label: "Branch Code",
+      label: t("field.branchCode"),
       type: "text",
       name: "branchCode",
       Placeholder: "Placeholder",
     },
     {
-      label: "Account No.",
+      label: t("field.accountNoDot"),
       type: "text",
       name: "accountNo",
       Placeholder: "Placeholder",
@@ -166,52 +168,52 @@ const CollateralManagementView = () => {
   const enum1 = [
     {
       value: 0,
-      label: "Car",
+      label: t("collateralForm.vehCar"),
     },
     {
       value: 1,
-      label: "Motorcycle",
+      label: t("collateralForm.vehMotorcycle"),
     },
     {
       value: 2,
-      label: "Truck",
+      label: t("collateralForm.vehTruck"),
     },
     {
       value: 3,
-      label: "Bus",
+      label: t("collateralForm.vehBus"),
     },
     {
       value: 4,
-      label: "Bicycle",
+      label: t("collateralForm.vehBicycle"),
     },
     {
       value: 5,
-      label: "Scooter",
+      label: t("collateralForm.vehScooter"),
     },
     {
       value: 6,
-      label: "Van",
+      label: t("collateralForm.vehVan"),
     },
     {
       value: 7,
-      label: "SUV",
+      label: t("collateralForm.vehSuv"),
     },
   ];
   const vehicleDetails = [
     {
-      label: "Collateral ID",
+      label: t("field.collateralId"),
       type: "text",
       name: "registrationNumber",
       Placeholder: "1324567",
     },
     {
-      label: "Vehicle registration",
+      label: t("field.vehicleRegistration"),
       type: "text",
       name: "registrationNumber",
       Placeholder: "Placeholder",
     },
     {
-      label: "Vehicle Type",
+      label: t("field.vehicleType"),
       type: "select",
       name: "vehicleType",
       Placeholder: "Placeholder",
@@ -220,7 +222,7 @@ const CollateralManagementView = () => {
       onChange: (e: any) => handleChangeType(e),
     },
     {
-      label: "Market Value",
+      label: t("field.marketValue"),
       type: "number",
       name: "marketValue",
       Placeholder: "Placeholder",
@@ -229,19 +231,19 @@ const CollateralManagementView = () => {
 
   const CollateralValuation = [
     {
-      label: "External Agency Name",
+      label: t("field.externalAgencyName"),
       type: "text",
       name: "externalAgencyName",
       Placeholder: "Placeholder",
     },
     {
-      label: "Valuation Amount",
+      label: t("field.valuationAmount"),
       type: "number",
       name: "valuationAmount",
       Placeholder: "Placeholder",
     },
     {
-      label: "Valuation Date",
+      label: t("field.valuationDate"),
       type: "date",
       name: "valuationDate",
       Placeholder: "Placeholder",
@@ -252,10 +254,14 @@ const CollateralManagementView = () => {
     switch (type) {
       case "property":
         return Yup.object().shape({
-          accountNumber: Yup.string().required("Account Number is required"),
-          applicationID: Yup.string().required("Application ID is required"),
+          accountNumber: Yup.string().required(
+            t("collateralForm.valAccountNumberRequired")
+          ),
+          applicationID: Yup.string().required(
+            t("collateralForm.valApplicationIdRequired")
+          ),
           propertyAddress: Yup.string().required(
-            "Property Address is required"
+            t("collateralForm.valPropertyAddressRequired")
           ),
           /* marketValue: Yup.number()
             .typeError("Market Value must be a number")
@@ -273,14 +279,18 @@ const CollateralManagementView = () => {
 
       case "vehicle":
         return Yup.object().shape({
-          accountNumber: Yup.string().required("Account Number is required"),
-          applicationID: Yup.string().required("Application ID is required"),
+          accountNumber: Yup.string().required(
+            t("collateralForm.valAccountNumberRequired")
+          ),
+          applicationID: Yup.string().required(
+            t("collateralForm.valApplicationIdRequired")
+          ),
           registrationNumber: Yup.string().required(
-            "Vehicle Registration Number is required"
+            t("collateralForm.valVehicleRegRequired")
           ),
           vehicleType: Yup.number()
-            .typeError("Vehicle Type must be selected")
-            .required("Vehicle Type is required"),
+            .typeError(t("collateralForm.valVehicleTypeSelected"))
+            .required(t("collateralForm.valVehicleTypeRequired")),
           /* marketValue: Yup.number()
             .typeError("Market Value must be a number")
             .required("Market Value is required"),
@@ -297,27 +307,37 @@ const CollateralManagementView = () => {
 
       case "cash":
         return Yup.object().shape({
-          accountNumber: Yup.string().required("Account Number is required"),
-          applicationID: Yup.string().required("Application ID is required"),
+          accountNumber: Yup.string().required(
+            t("collateralForm.valAccountNumberRequired")
+          ),
+          applicationID: Yup.string().required(
+            t("collateralForm.valApplicationIdRequired")
+          ),
           /* marketValue: Yup.number()
             .typeError("Market Value must be a number")
             .required("Market Value is required"), */
           collateralAmount: Yup.number()
-            .typeError("Collateral Amount must be a number")
-            .required("Collateral Amount is required"),
+            .typeError(t("collateralForm.valCollateralAmountNumber"))
+            .required(t("collateralForm.valCollateralAmountRequired")),
           collateralOwnerName: Yup.string().required(
-            "Collateral Owner Name is required"
+            t("collateralForm.valCollateralOwnerRequired")
           ),
           mobileNumber: Yup.string()
-            .matches(/^\d{10,15}$/, "Enter a valid Mobile Number")
-            .required("Mobile Number is required"),
-          nid: Yup.string().required("NID is required"),
+            .matches(/^\d{10,15}$/, t("collateralForm.valValidMobile"))
+            .required(t("collateralForm.valMobileRequired")),
+          nid: Yup.string().required(t("collateralForm.valNidRequired")),
           email: Yup.string()
-            .email("Enter a valid Email Address")
-            .required("Email is required"),
-          bankName: Yup.string().required("Bank Name is required"),
-          branchCode: Yup.string().required("Branch Code is required"),
-          accountNo: Yup.string().required("Account Number is required"),
+            .email(t("collateralForm.valValidEmail"))
+            .required(t("collateralForm.valEmailRequired")),
+          bankName: Yup.string().required(
+            t("collateralForm.valBankNameRequired")
+          ),
+          branchCode: Yup.string().required(
+            t("collateralForm.valBranchCodeRequired")
+          ),
+          accountNo: Yup.string().required(
+            t("collateralForm.valAccountNumberRequired")
+          ),
         });
 
       default:
@@ -571,13 +591,13 @@ const CollateralManagementView = () => {
       );
       if (response) {
         setLoader(false);
-        toast.success("Collateral submitted successfully");
+        toast.success(t("collateralForm.toastSubmitted"));
         navigate("/lms/LoanManagement/CollateralManagement");
       }
     } catch (error) {
       console.error("Error:", error);
       setLoader(false);
-      toast.error("Failed to submit collateral");
+      toast.error(t("collateralForm.toastFailed"));
     }
   };
 
@@ -590,7 +610,7 @@ const CollateralManagementView = () => {
         className="d-flex align-items-center justify-content-between mt-1 mb-3"
         style={{ fontSize: "15px", fontWeight: "Bold" }}
       >
-        Collateral Management
+        {t("collateralForm.heading")}
       </div>
       <div
         className="p-4"
@@ -599,7 +619,7 @@ const CollateralManagementView = () => {
         <div className="col-12 mt-5">
           <div className="col-8 d-flex justify-content-start mb-5">
             <div className="me-2 w-100">
-              <label>Account Number</label>
+              <label>{t("field.accountNumber")}</label>
               <span style={{ color: "red" }}> *</span>
               <Input
                 name="accountNumber" // Updated to match API key
@@ -636,7 +656,7 @@ const CollateralManagementView = () => {
               </Select> */}
             </div>
             <div className="w-100">
-              <label>Application ID</label>
+              <label>{t("field.applicationId")}</label>
               <Select
                 size="large"
                 className="mt-2"
@@ -671,7 +691,7 @@ const CollateralManagementView = () => {
         <hr />
 
         <Row>
-          <Form.Label className="mt-2 fw-bold">Collateral Type</Form.Label>
+          <Form.Label className="mt-2 fw-bold">{t("collateralForm.sectionCollateralType")}</Form.Label>
           {CollateralType.map((field: any, index) => (
             <Col md={3} className="mb-3" key={index}>
               <Form.Group>
@@ -698,7 +718,7 @@ const CollateralManagementView = () => {
         <hr />
 
         <Row>
-          <Form.Label className="mt-2 fw-bold">Collateral Details</Form.Label>
+          <Form.Label className="mt-2 fw-bold">{t("collateralForm.sectionCollateralDetails")}</Form.Label>
           {radioInputValue == "vehicle" ? (
             <>
               {" "}
@@ -840,7 +860,7 @@ const CollateralManagementView = () => {
                   </Col>
                 </>
               ))}
-              <div className="mt-2 fw-bold">Collateral Owner</div>
+              <div className="mt-2 fw-bold">{t("collateralForm.collateralOwner")}</div>
               {collectrolOwnerDetails.map((field: any, index) => (
                 <>
                   <Col md={4} className="mb-3" key={index}>
@@ -876,7 +896,7 @@ const CollateralManagementView = () => {
                   </Col>
                 </>
               ))}
-              <div className="mt-2 fw-bold">Source Account Information</div>
+              <div className="mt-2 fw-bold">{t("collateralForm.sourceAccountInfo")}</div>
               {souceInfoDetails.map((field: any, index) => (
                 <>
                   <Col md={4} className="mb-3" key={index}>
@@ -960,7 +980,7 @@ const CollateralManagementView = () => {
                   className="mt-2 "
                   style={{ fontSize: "16px", fontWeight: "600" }}
                 >
-                  Upload Documents
+                  {t("collateralForm.uploadDocuments")}
                 </Form.Label>
                 <Form.Control
                   type="file"
@@ -975,7 +995,7 @@ const CollateralManagementView = () => {
                 <>
                   {" "}
                   <span style={{ color: "var(--color-danger-action)" }}>
-                    {files.length} documents uploaded
+                    {t("collateralForm.documentsUploaded", { count: files.length })}
                   </span>
                 </>
               )}
@@ -1012,7 +1032,7 @@ const CollateralManagementView = () => {
         <hr />
 
         <Row>
-          <Form.Label className="mt-2 fw-bold">Collateral Valuation</Form.Label>
+          <Form.Label className="mt-2 fw-bold">{t("collateralForm.sectionCollateralValuation")}</Form.Label>
           {CollateralValuation.map((field: any, index) => (
             <Col md={4} className="mb-3" key={index}>
               <Form.Group>
@@ -1052,7 +1072,7 @@ const CollateralManagementView = () => {
                   className="mt-2"
                   style={{ fontSize: "16px", fontWeight: "600" }}
                 >
-                  Upload Valuation Report
+                  {t("collateralForm.uploadValuationReport")}
                 </Form.Label>
                 <Form.Control
                   type="file"
@@ -1067,7 +1087,7 @@ const CollateralManagementView = () => {
                 <>
                   {" "}
                   <span style={{ color: "var(--color-danger-action)" }}>
-                    {reportFiles.length} documents uploaded
+                    {t("collateralForm.documentsUploaded", { count: reportFiles.length })}
                   </span>
                 </>
               )}
@@ -1111,7 +1131,7 @@ const CollateralManagementView = () => {
                 border: "none",
               }}
             >
-              Submit
+              {t("common:submit")}
             </button>
           </div>
         </Row>
@@ -1131,13 +1151,13 @@ const CollateralManagementView = () => {
             </div>
 
             <div className="text-center">
-              <h3 className="mt-4 fw-bold">Collateral Under Review</h3>
+              <h3 className="mt-4 fw-bold">{t("collateralForm.underReviewTitle")}</h3>
               <p
                 className="mt-4 mb-5"
                 style={{ lineHeight: "24px", fontSize: "20px" }}
               >
-                Collateral is under review. Your application will be <br />{" "}
-                processed after the collateral details are verified.
+                {t("collateralForm.underReviewBody1")} <br />{" "}
+                {t("collateralForm.underReviewBody2")}
               </p>
             </div>
             <div className="text-center">
@@ -1149,7 +1169,7 @@ const CollateralManagementView = () => {
                   borderRadius: "2px",
                 }}
               >
-                ok
+                {t("common:ok")}
               </button>
             </div>
           </Modal.Body>

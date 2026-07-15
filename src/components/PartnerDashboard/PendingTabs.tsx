@@ -8,32 +8,34 @@ import PartnerFinancingInfo from "./PartnerFinancingInfo";
 import PartnerSalaryInfo from "./PartnerSalaryInfo";
 import PartnerDisclaimerInfo from "./PartnerDislcaimerInfo";
 import PromissoryNoteInfo from "./PromissoryNoteInfo";
+import { useTranslation } from "react-i18next";
 
 function PendingTabs({ setActiveTab }: any) {
+  const { t } = useTranslation("partner");
   const [active, setActive] = useState("ManagerPartnerTabs");
   const tabOptions = [
     {
-      title: "Manager Information",
+      title: t("pendingTabs.managerInformation"),
       key: "ManagerPartnerTabs",
       component: <ManagerPartnerTabs setActiveTab={setActiveTab} />,
     },
     {
-      title: "Financing Information",
+      title: t("pendingTabs.financingInformation"),
       key: "FinancingInformation",
       component: <PartnerFinancingInfo setActiveTab={setActiveTab} />,
     },
     {
-      title: "Salary Information",
+      title: t("pendingTabs.salaryInformation"),
       key: "SalaryInformation",
       component: <PartnerSalaryInfo setActiveTab={setActiveTab} />,
     },
     {
-      title: "Disclaimer",
+      title: t("pendingTabs.disclaimer"),
       key: "Disclaimer",
       component: <PartnerDisclaimerInfo setActiveTab={setActiveTab} />,
     },
     {
-      title: "E-Promissory Note",
+      title: t("pendingTabs.epromissoryNote"),
       key: "E-PromissoryNote",
       component: <PromissoryNoteInfo setActiveTab={setActiveTab} />,
     },

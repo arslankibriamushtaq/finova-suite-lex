@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 // Format date to dd/mm/yyyy
 const formatDateToDDMMYYYY = (dateString: string | null | undefined) => {
@@ -44,6 +45,7 @@ const blockCodesData = [
   { id: 8, code: "213213", type: "Compliance", blocked: true },
 ];
 const HighRiskUsers = () => {
+  const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -123,18 +125,18 @@ const HighRiskUsers = () => {
   };
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t('highRiskUsers.col.sr'),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
     },
     {
-      name: "Name",
+      name: t('common:name'),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "350px",
     },
     {
-      name: "NID",
+      name: t('highRiskUsers.col.nid'),
       cell: (row: any) => (
         <MaskedValue value={row.nid} showToggle={true} unmaskedCount={4} />
       ),
@@ -142,24 +144,24 @@ const HighRiskUsers = () => {
       sortable: true,
     },
     {
-      name: "CIF",
+      name: t('highRiskUsers.col.cif'),
       selector: (row: { cif: any }) => row.cif || "-",
       sortable: true,
       width: "220px",
     },
     {
-      name: "Email",
+      name: t('common:email'),
       selector: (row: { email: any }) => row.email,
       sortable: true,
     },
     {
-      name: "Phone",
+      name: t('common:phone'),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
       width: "150px",
     },
     {
-      name: "Created Date",
+      name: t('highRiskUsers.col.createdDate'),
       cell: (row: any) => (
         <div>
           {row.created_at && row.created_at !== "-" ? row.created_at : "-"}
@@ -217,7 +219,7 @@ const HighRiskUsers = () => {
       sortable: true,
     }, */
     {
-      name: "Is Blocked",
+      name: t('highRiskUsers.col.isBlocked'),
       selector: (row: { is_blocked: any }) => row.is_blocked,
       sortable: true,
       cell: (row: any) => (
@@ -233,12 +235,12 @@ const HighRiskUsers = () => {
             display: "inline-block",
           }}
         >
-          {row.is_blocked ? "Blocked" : "Unblocked"}
+          {row.is_blocked ? t('highRiskUsers.status.blocked') : t('highRiskUsers.status.unblocked')}
         </span>
       ),
     },
     {
-      name: "Status",
+      name: t('common:status'),
       cell: (row: { status: any }) => {
         const getStatusColor = (status: string) => {
           switch (status?.toLowerCase()) {
@@ -259,12 +261,12 @@ const HighRiskUsers = () => {
           switch (status?.toLowerCase()) {
             case "approved":
             case "approved":
-              return "Approved";
+              return t('common:approved');
             case "reject":
             case "rejected":
-              return "Rejected";
+              return t('common:rejected');
             case "pending":
-              return "Pending";
+              return t('common:pending');
             default:
               return status || "-";
           }
@@ -288,7 +290,7 @@ const HighRiskUsers = () => {
       },
     },
     {
-      name: "Actions",
+      name: t('common:actions'),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -303,7 +305,7 @@ const HighRiskUsers = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t('common:select')} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -316,21 +318,21 @@ const HighRiskUsers = () => {
         icon={<EyeOutlined />}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t('common:viewDetails')}
       </Menu.Item>
       <Menu.Item
         key="change"
         icon={<SyncOutlined />}
         onClick={() => handleMenuClick("change", row)}
       >
-        Change Status
+        {t('highRiskUsers.changeStatus')}
       </Menu.Item>
       <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
         onClick={() => handleMenuClick("changeRisk", row)}
       >
-        Change Risk
+        {t('highRiskUsers.changeRisk')}
       </Menu.Item>
       {/* <Menu.Item
         key="view"
@@ -435,12 +437,12 @@ const HighRiskUsers = () => {
   // Handle block selected codes
   const handleBlockSelected = async () => {
     if (!currentUserId) {
-      toast.error("User ID not found");
+      toast.error(t('highRiskUsers.toast.userIdNotFound'));
       return;
     }
 
     if (selectedBlockCodes.length === 0) {
-      toast.error("Please select at least one block code");
+      toast.error(t('highRiskUsers.toast.selectBlockCode'));
       return;
     }
 
@@ -459,7 +461,7 @@ const HighRiskUsers = () => {
             selectedBlockCodes.includes(code.id) ? { ...code, blocked: true } : code
           )
         );
-        toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been blocked`);
+        toast.success(response?.data?.message || t('highRiskUsers.toast.blocked', { count: selectedBlockCodes.length }));
         setSelectedBlockCodes([]);
         
         // Refresh the list to get updated data
@@ -480,23 +482,23 @@ const HighRiskUsers = () => {
           console.error("Error refreshing block codes:", error);
         }
       } else {
-        toast.error(response?.data?.message || "Failed to block codes");
+        toast.error(response?.data?.message || t('highRiskUsers.toast.blockFailed'));
       }
     } catch (error: any) {
       console.error("Error blocking codes:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to block codes");
+      toast.error(error?.response?.data?.message || error?.message || t('highRiskUsers.toast.blockFailed'));
     }
   };
 
   // Handle unblock selected codes
   const handleUnblockSelected = async () => {
     if (!currentUserId) {
-      toast.error("User ID not found");
+      toast.error(t('highRiskUsers.toast.userIdNotFound'));
       return;
     }
 
     if (selectedBlockCodes.length === 0) {
-      toast.error("Please select at least one block code");
+      toast.error(t('highRiskUsers.toast.selectBlockCode'));
       return;
     }
 
@@ -515,7 +517,7 @@ const HighRiskUsers = () => {
             selectedBlockCodes.includes(code.id) ? { ...code, blocked: false } : code
           )
         );
-        toast.success(response?.data?.message || `${selectedBlockCodes.length} block code(s) have been unblocked`);
+        toast.success(response?.data?.message || t('highRiskUsers.toast.unblocked', { count: selectedBlockCodes.length }));
         setSelectedBlockCodes([]);
         
         // Refresh the list to get updated data
@@ -536,11 +538,11 @@ const HighRiskUsers = () => {
           console.error("Error refreshing block codes:", error);
         }
       } else {
-        toast.error(response?.data?.message || "Failed to unblock codes");
+        toast.error(response?.data?.message || t('highRiskUsers.toast.unblockFailed'));
       }
     } catch (error: any) {
       console.error("Error unblocking codes:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to unblock codes");
+      toast.error(error?.response?.data?.message || error?.message || t('highRiskUsers.toast.unblockFailed'));
     }
   };
 
@@ -563,7 +565,7 @@ const HighRiskUsers = () => {
   // Handle status change
   const handleStatusChange = async () => {
     if (!selectedUserForStatusChange || !newStatus) {
-      toast.error("Please select a status");
+      toast.error(t('highRiskUsers.toast.selectStatus'));
       return;
     }
 
@@ -575,16 +577,16 @@ const HighRiskUsers = () => {
       });
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || `Status changed to ${newStatus} successfully`);
+        toast.success(response?.data?.message || t('highRiskUsers.toast.statusChanged', { status: newStatus }));
         handleChangeStatusModalClose();
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change status");
+        toast.error(response?.data?.message || t('highRiskUsers.toast.statusFailed'));
       }
     } catch (error: any) {
       console.error("Error changing status:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change status");
+      toast.error(error?.response?.data?.message || error?.message || t('highRiskUsers.toast.statusFailed'));
     } finally {
       setIsChangingStatus(false);
     }
@@ -601,7 +603,7 @@ const HighRiskUsers = () => {
   // Handle risk change
   const handleRiskChange = async () => {
     if (!selectedUserForRiskChange || !newRisk) {
-      toast.error("Please select a risk level");
+      toast.error(t('highRiskUsers.toast.selectRisk'));
       return;
     }
 
@@ -610,16 +612,16 @@ const HighRiskUsers = () => {
       const response = await updateKycRisk(selectedUserForRiskChange.id, newRisk);
 
       if (response?.status >= 200 && response?.status < 300) {
-        toast.success(response?.data?.message || `Risk changed to ${newRisk} successfully`);
+        toast.success(response?.data?.message || t('highRiskUsers.toast.riskChanged', { risk: newRisk }));
         handleChangeRiskModalClose();
         // Refresh the leads list to get updated data
         getLeadsList();
       } else {
-        toast.error(response?.data?.message || "Failed to change risk");
+        toast.error(response?.data?.message || t('highRiskUsers.toast.riskFailed'));
       }
     } catch (error: any) {
       console.error("Error changing risk:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to change risk");
+      toast.error(error?.response?.data?.message || error?.message || t('highRiskUsers.toast.riskFailed'));
     } finally {
       setIsChangingRisk(false);
     }
@@ -669,7 +671,7 @@ const HighRiskUsers = () => {
         email: item?.email || "-",
         phone: item?.phone || "-",
         cnic: item?.cnic || "-",
-        pep: item?.pep ? "Yes" : "No",
+        pep: item?.pep ? t('common:yes') : t('common:no'),
         accountBalance: item?.balance || "-",
         UpdatedBy: item?.updated_at || "-",
         accountType: item?.user_type || "-",
@@ -683,11 +685,11 @@ const HighRiskUsers = () => {
     });
     const exportCSV = async () => {
       try {
-        toast.loading("Exporting High Risk Users...", { id: "export-high-risk-users" });
+        toast.loading(t('highRiskUsers.toast.exporting'), { id: "export-high-risk-users" });
         const response = await exportHighRiskUsers();
-        
+
         if (!response || !response.data) {
-          throw new Error("Failed to download file");
+          throw new Error(t('highRiskUsers.toast.downloadFailed'));
         }
         
         // Convert server response to a Blob (binary file)
@@ -729,13 +731,13 @@ const HighRiskUsers = () => {
         link.remove();
         window.URL.revokeObjectURL(url);
         
-        toast.success("High Risk Users exported successfully", { id: "export-high-risk-users" });
+        toast.success(t('highRiskUsers.toast.exportSuccess'), { id: "export-high-risk-users" });
       } catch (error: any) {
         console.error("Export error:", error);
         toast.error(
-          error?.response?.data?.message || 
-          error?.message || 
-          "Failed to export High Risk Users",
+          error?.response?.data?.message ||
+          error?.message ||
+          t('highRiskUsers.toast.exportFailed'),
           { id: "export-high-risk-users" }
         );
       }
@@ -746,25 +748,25 @@ const HighRiskUsers = () => {
       <div className="d-flex justify-content-end col-12 filter-select">
         <Select
           style={{ width: "120px", marginRight: "8px" }}
-          placeholder="PEP"
+          placeholder={t('highRiskUsers.filter.pep')}
           allowClear
           value={pep || undefined}
           onChange={(value) => setPep(value || '')}
         >
-          <Select.Option value="1">Yes</Select.Option>
-          <Select.Option value="0">No</Select.Option>
+          <Select.Option value="1">{t('common:yes')}</Select.Option>
+          <Select.Option value="0">{t('common:no')}</Select.Option>
         </Select>
 
         <Select
           style={{ width: "120px", borderTopRightRadius: "0px" }}
-          placeholder="Status"
+          placeholder={t('common:status')}
           allowClear
           value={status || undefined}
           onChange={(value) => setStatus(value || '')}
           suffixIcon={<FaFilter />}
         >
-          <Select.Option value="active">Active</Select.Option>
-          <Select.Option value="inactive">Inactive</Select.Option>
+          <Select.Option value="active">{t('common:active')}</Select.Option>
+          <Select.Option value="inactive">{t('common:inactive')}</Select.Option>
         </Select>
 
         <div className="d-flex gap-2 w-100" style={{ height: 40 }}>
@@ -778,7 +780,7 @@ const HighRiskUsers = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t('highRiskUsers.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -790,7 +792,7 @@ const HighRiskUsers = () => {
             >
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t('common:from')}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -804,7 +806,7 @@ const HighRiskUsers = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t('common:to')}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -821,8 +823,8 @@ const HighRiskUsers = () => {
             </div>
           </div>
           <button className="theme-btn-next" onClick={exportCSV}>
-              Export CSV
-          </button> 
+              {t('highRiskUsers.exportCsv')}
+          </button>
         </div>
       </div>
 
@@ -842,7 +844,7 @@ const HighRiskUsers = () => {
 
       {/* Block Codes Management Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Manage Block Codes for User</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('highRiskUsers.blockModal.title')}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
         footer={null}
@@ -861,7 +863,7 @@ const HighRiskUsers = () => {
               gap: "20px"
             }}>
               <PulseLoading size="lg" />
-              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>Loading block codes...</p>
+              <p style={{ fontSize: "16px", color: "var(--color-text-muted)", margin: 0 }}>{t('highRiskUsers.blockModal.loading')}</p>
             </div>
           ) : (
             <>
@@ -873,14 +875,14 @@ const HighRiskUsers = () => {
                 marginBottom: "20px",
                 padding: "10px 0"
               }}>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>Block Code Selection</h3>
+                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>{t('highRiskUsers.blockModal.heading')}</h3>
                 <div style={{ display: "flex", gap: "10px" }}>
                   <Button
                     type="primary"
                     style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }}
                     onClick={handleSelectAll}
                   >
-                    ✓ Select All
+                    ✓ {t('common:selectAll')}
                   </Button>
                   <Button
                     style={{
@@ -890,7 +892,7 @@ const HighRiskUsers = () => {
                     }}
                     onClick={handleDeselectAll}
                   >
-                    ⊘ Deselect All
+                    ⊘ {t('highRiskUsers.blockModal.deselectAll')}
                   </Button>
                 </div>
               </div>
@@ -929,7 +931,7 @@ const HighRiskUsers = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Block Code
+                    {t('highRiskUsers.blockModal.colCode')}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -937,7 +939,7 @@ const HighRiskUsers = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Type
+                    {t('common:type')}
                   </th>
                   <th style={{
                     padding: "12px 16px",
@@ -945,7 +947,7 @@ const HighRiskUsers = () => {
                     borderBottom: "1px solid var(--color-surface-muted)",
                     fontWeight: "600"
                   }}>
-                    Action
+                    {t('highRiskUsers.blockModal.colAction')}
                   </th>
                 </tr>
               </thead>
@@ -1003,7 +1005,7 @@ const HighRiskUsers = () => {
                         alignItems: "center",
                         gap: "6px"
                       }}>
-                        {code.blocked ? "⊘" : "✓"} {code.blocked ? "Blocked" : "Active"}
+                        {code.blocked ? "⊘" : "✓"} {code.blocked ? t('highRiskUsers.blockModal.blocked') : t('common:active')}
                       </button>
                     </td>
                   </tr>
@@ -1030,7 +1032,7 @@ const HighRiskUsers = () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)"
               }}
             >
-              ⊘ Block Selected
+              ⊘ {t('highRiskUsers.blockModal.blockSelected')}
             </Button>
             <Button
               type="primary"
@@ -1041,7 +1043,7 @@ const HighRiskUsers = () => {
                 borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning-gold)"
               }}
             >
-              ⊙ Unblock Selected
+              ⊙ {t('highRiskUsers.blockModal.unblockSelected')}
             </Button>
           </div>
 
@@ -1061,7 +1063,7 @@ const HighRiskUsers = () => {
                     color: "white"
                   }}
                 >
-                  Close
+                  {t('common:close')}
                 </Button>
               </div>
             </>
@@ -1071,7 +1073,7 @@ const HighRiskUsers = () => {
 
       {/* Change Status Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Status</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('highRiskUsers.statusModal.title')}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
         footer={null}
@@ -1082,10 +1084,10 @@ const HighRiskUsers = () => {
           {selectedUserForStatusChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('highRiskUsers.field.userName')}</p>
                 <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForStatusChange.name || "-"}</p>
-                
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Status:</p>
+
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('highRiskUsers.field.currentStatus')}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -1106,24 +1108,24 @@ const HighRiskUsers = () => {
                     }}
                   >
                     {selectedUserForStatusChange.status?.toLowerCase() === "approved" || selectedUserForStatusChange.status?.toLowerCase() === "approved"
-                      ? "Approved"
+                      ? t('common:approved')
                       : selectedUserForStatusChange.status?.toLowerCase() === "reject" || selectedUserForStatusChange.status?.toLowerCase() === "rejected"
-                      ? "Rejected"
+                      ? t('common:rejected')
                       : selectedUserForStatusChange.status?.toLowerCase() === "pending"
-                      ? "Pending"
+                      ? t('common:pending')
                       : selectedUserForStatusChange.status || "-"}
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Status:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('highRiskUsers.field.newStatus')}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newStatus}
                   onChange={(value) => setNewStatus(value)}
-                  placeholder="Select Status"
+                  placeholder={t('highRiskUsers.placeholder.selectStatus')}
                 >
-                  <Select.Option value="approved">Approved</Select.Option>
-                  <Select.Option value="rejected">Reject</Select.Option>
+                  <Select.Option value="approved">{t('common:approved')}</Select.Option>
+                  <Select.Option value="rejected">{t('common:reject')}</Select.Option>
                   {/* <Select.Option value="pending">Pending</Select.Option> */}
                 </Select>
               </div>
@@ -1141,16 +1143,16 @@ const HighRiskUsers = () => {
                   disabled={isChangingStatus}
                className="invoice-btn"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
-            
+
                   onClick={handleStatusChange}
-                
+
                   disabled={!newStatus || newStatus.toLowerCase() === selectedUserForStatusChange.status?.toLowerCase()}
               className="theme-btn"
                 >
-                  {isChangingStatus ? "Changing..." : "Change Status"}
+                  {isChangingStatus ? t('highRiskUsers.changing') : t('highRiskUsers.changeStatus')}
                 </button>
               </div>
             </>
@@ -1160,7 +1162,7 @@ const HighRiskUsers = () => {
 
       {/* Change Risk Modal */}
       <Modal
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>Change User Risk</div>}
+        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('highRiskUsers.riskModal.title')}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}
         footer={null}
@@ -1171,10 +1173,10 @@ const HighRiskUsers = () => {
           {selectedUserForRiskChange && (
             <>
               <div style={{ marginBottom: "20px" }}>
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>User Name:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('highRiskUsers.field.userName')}</p>
                 <p style={{ marginBottom: "16px", color: "var(--color-text-muted)" }}>{selectedUserForRiskChange.name || "-"}</p>
-                
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>Current Risk:</p>
+
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('highRiskUsers.field.currentRisk')}</p>
                 <div style={{ marginBottom: "16px" }}>
                   <span
                     style={{
@@ -1191,17 +1193,17 @@ const HighRiskUsers = () => {
                   </span>
                 </div>
 
-                <p style={{ marginBottom: "8px", fontWeight: "500" }}>New Risk:</p>
+                <p style={{ marginBottom: "8px", fontWeight: "500" }}>{t('highRiskUsers.field.newRisk')}</p>
                 <Select
                   style={{ width: "100%", marginBottom: "20px" }}
                   value={newRisk}
                   onChange={(value) => setNewRisk(value)}
-                  placeholder="Select Risk Level"
+                  placeholder={t('highRiskUsers.placeholder.selectRisk')}
                 >
-                  <Select.Option value="high">High</Select.Option>
-                  <Select.Option value="low">Low</Select.Option>
-                  <Select.Option value="medium">Medium</Select.Option>
-                  <Select.Option value="pep">PEP</Select.Option>
+                  <Select.Option value="high">{t('highRiskUsers.risk.high')}</Select.Option>
+                  <Select.Option value="low">{t('highRiskUsers.risk.low')}</Select.Option>
+                  <Select.Option value="medium">{t('highRiskUsers.risk.medium')}</Select.Option>
+                  <Select.Option value="pep">{t('highRiskUsers.risk.pep')}</Select.Option>
                 </Select>
               </div>
 
@@ -1218,16 +1220,16 @@ const HighRiskUsers = () => {
                   disabled={isChangingRisk}
               className="invoice-btn"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
-                
+
                   onClick={handleRiskChange}
-               
+
                   disabled={!newRisk || newRisk === selectedUserForRiskChange.risk_status}
                className="theme-btn"
                 >
-                  {isChangingRisk ? "Changing..." : "Change Risk"}
+                  {isChangingRisk ? t('highRiskUsers.changing') : t('highRiskUsers.changeRisk')}
                 </button>
               </div>
             </>

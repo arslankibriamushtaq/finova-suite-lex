@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   CalendarX,
   AlertTriangle,
@@ -17,17 +18,18 @@ type ReportCard = { label: string; link: string; color: string; Icon: LucideIcon
 
 function Loans() {
   const navigate = useNavigate();
+  const { t } = useTranslation("reports");
 
   const buttonLabels: ReportCard[] = [
-    { label: "Over Due Loans Report", link: "overdue", color: "#f43f5e", Icon: CalendarX },
-    { label: "Non Performing Loans Report", link: "performingLoans", color: "#f59e0b", Icon: AlertTriangle },
-    { label: "Due Loans Reports", link: "due", color: "#06b6d4", Icon: Clock },
-    { label: "Early Settlement Reports", link: "earlySettlement", color: "#10b981", Icon: BadgeCheck },
-    { label: "Write Off Loans Report", link: "writeOff", color: "#f97316", Icon: FileX2 },
-    { label: "Loan Disbursement Report", link: "disbursement", color: "#22c55e", Icon: Banknote },
-    { label: "Repayment Schedule Report", link: "repaymentScheduleReport", color: "#14b8a6", Icon: CalendarDays },
-    { label: "Loan Balance & Outstanding Report", link: "loanBalanceReport", color: "#6366f1", Icon: Scale },
-    { label: "Daily Transaction Summary", link: "dailyTransactionSummary", color: "#8b5cf6", Icon: Activity },
+    { label: t('loans.card.overdue'), link: "overdue", color: "#f43f5e", Icon: CalendarX },
+    { label: t('loans.card.nonPerforming'), link: "performingLoans", color: "#f59e0b", Icon: AlertTriangle },
+    { label: t('loans.card.due'), link: "due", color: "#06b6d4", Icon: Clock },
+    { label: t('loans.card.earlySettlement'), link: "earlySettlement", color: "#10b981", Icon: BadgeCheck },
+    { label: t('loans.card.writeOff'), link: "writeOff", color: "#f97316", Icon: FileX2 },
+    { label: t('loans.card.disbursement'), link: "disbursement", color: "#22c55e", Icon: Banknote },
+    { label: t('loans.card.repaymentSchedule'), link: "repaymentScheduleReport", color: "#14b8a6", Icon: CalendarDays },
+    { label: t('loans.card.loanBalance'), link: "loanBalanceReport", color: "#6366f1", Icon: Scale },
+    { label: t('loans.card.dailyTransactionSummary'), link: "dailyTransactionSummary", color: "#8b5cf6", Icon: Activity },
   ];
 
   const handleButtonClick = (link: string) => {
@@ -48,7 +50,7 @@ function Loans() {
           <span className="pro-head-badge">
             <Banknote className="h-4 w-4" />
           </span>
-          Loan Reports
+          {t('loans.title')}
         </h3>
       </div>
 

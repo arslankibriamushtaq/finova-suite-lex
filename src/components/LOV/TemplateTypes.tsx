@@ -22,10 +22,12 @@ import {
 import { ChevronDown, Pencil, Trash2, Plus, ListChecks } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const CATEGORIES = ["contract_type", "notification_type"];
 
 const TemplateTypes = () => {
+  const { t } = useTranslation("lov");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +72,7 @@ const TemplateTypes = () => {
         setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch template types");
+      toast.error(error?.response?.data?.message || t("templateTypes.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +98,7 @@ const TemplateTypes = () => {
 
   const handleSave = async () => {
     if (!formData.name.trim()) {
-      toast.error("Name is required");
+      toast.error(t("templateTypes.validation.name"));
       return;
     }
 
@@ -115,7 +117,7 @@ const TemplateTypes = () => {
               : item
           )
         );
-        toast.success("Updated successfully");
+        toast.success(t("templateTypes.toast.updated"));
       } else {
         const res = await createTemplateType({
           nameEn: formData.name.trim(),
@@ -124,11 +126,11 @@ const TemplateTypes = () => {
         const newItem = res?.data?.data || res?.data;
         if (newItem) setData((prev) => [...prev, newItem]);
         else fetchData();
-        toast.success("Created successfully");
+        toast.success(t("templateTypes.toast.created"));
       }
       setShowFormModal(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+      toast.error(error?.response?.data?.message || (modalMode === "edit" ? t("templateTypes.toast.updateFailed") : t("templateTypes.toast.createFailed")));
     } finally {
       setIsSaving(false);
     }
@@ -139,11 +141,11 @@ const TemplateTypes = () => {
     try {
       setIsDeleting(true);
       await deleteTemplateType(deleteTarget.id);
-      toast.success("Deleted successfully");
+      toast.success(t("templateTypes.toast.deleted"));
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
+      toast.error(error?.response?.data?.message || t("templateTypes.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -152,22 +154,22 @@ const TemplateTypes = () => {
 
   const headers = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) => row.nameEn || row.name || "-",
       sortable: true,
     },
     {
-      name: "Category",
+      name: t("common:category"),
       selector: (row: any) => row.category || "-",
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = row.isActive ?? row.active ?? true;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </span>
         );
       },
@@ -175,14 +177,14 @@ const TemplateTypes = () => {
       width: "100px",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) =>
         row.createdAt ? new Date(row.createdAt).toLocaleDateString() : "-",
       sortable: true,
       width: "140px",
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -195,7 +197,7 @@ const TemplateTypes = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -207,7 +209,7 @@ const TemplateTypes = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -217,7 +219,7 @@ const TemplateTypes = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -234,7 +236,7 @@ const TemplateTypes = () => {
           <span className="pro-head-badge">
             <ListChecks className="h-4 w-4" />
           </span>
-          Template Types
+          {t("templateTypes.heading")}
         </h3>
       </div>
 
@@ -242,7 +244,7 @@ const TemplateTypes = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
-          placeholder="Search by name or category"
+          placeholder={t("templateTypes.ph.search")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => {
@@ -253,7 +255,7 @@ const TemplateTypes = () => {
         />
         <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
-          Add New Template Type
+          {t("templateTypes.addNew")}
         </Button>
         </div>
       </div>
@@ -278,25 +280,25 @@ const TemplateTypes = () => {
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
         <DialogContent className="max-w-[500px]">
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Template Type" : "Add New Template Type"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? t("templateTypes.modal.editTitle") : t("templateTypes.addNew")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label>Name *</Label>
+              <Label>{t("templateTypes.label.name")} *</Label>
               <Input
-                placeholder="e.g. Promissory Note"
+                placeholder={t("templateTypes.ph.name")}
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
             <div className="space-y-2">
-              <Label>Category *</Label>
+              <Label>{t("templateTypes.label.category")} *</Label>
               <Select
                 value={formData.category}
                 onValueChange={(val) => setFormData({ ...formData, category: val })}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder={t("templateTypes.ph.category")} />
                 </SelectTrigger>
                 <SelectContent>
                   {CATEGORIES.map((cat) => (
@@ -313,16 +315,16 @@ const TemplateTypes = () => {
                   checked={formData.active}
                   onCheckedChange={(checked) => setFormData({ ...formData, active: !!checked })}
                 />
-                <span className="text-sm">Active</span>
+                <span className="text-sm">{t("common:active")}</span>
               </label>
             )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+              {isSaving ? t("templateTypes.saving") : modalMode === "edit" ? t("common:update") : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -332,19 +334,19 @@ const TemplateTypes = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Template Type</DialogTitle>
+            <DialogTitle>{t("templateTypes.modal.deleteTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
-            <span className="font-medium text-foreground">{deleteTarget?.name}</span>?
-            This action cannot be undone.
+            {t("templateTypes.confirmDeleteBefore")}{" "}
+            <span className="font-medium text-foreground">{deleteTarget?.name}</span>
+            {t("templateTypes.confirmDeleteAfter")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("templateTypes.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

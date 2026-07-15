@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Form, Row } from "react-bootstrap";
 import { Select, Input, Button, Tag, Card } from "antd";
 import toast from "react-hot-toast";
@@ -11,6 +12,7 @@ import {
 } from "../../redux/apis/apisCrudLms"; // 👈 add `getLoanFees`
 import { CloseOutlined } from "@ant-design/icons";
 const ProductFee = () => {
+  const { t } = useTranslation("settings");
   const [products, setProducts] = useState<any[]>([]);
   const [fees, setFees] = useState<any[]>([]);
   const [feeData, setFeeData] = useState<any[]>([]);
@@ -37,7 +39,7 @@ const ProductFee = () => {
       );
       setFeeData(flatDetails);
     } catch (error: any) {
-      toast.error(error?.message || "Failed to load product fees");
+      toast.error(error?.message || t("productFee.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -66,7 +68,7 @@ const ProductFee = () => {
         }));
       }
     } catch (error: any) {
-      toast.error(error?.message || "Error fetching data");
+      toast.error(error?.message || t("productFee.toast.fetchError"));
     }
   };
 
@@ -87,22 +89,22 @@ const ProductFee = () => {
   try {
     // ✅ Basic validation
     if (!formValues?.loanFeeId) {
-      toast.error("Please select a fee type.");
+      toast.error(t("productFee.toast.selectFee"));
       return;
     }
     if (!formValues?.productId) {
-      toast.error("Please select a product.");
+      toast.error(t("productFee.toast.selectProduct"));
       return;
     }
     if (
       !formValues?.isAppliedToLoan &&
       (formValues?.invoiceSr === undefined)
     ) {
-      toast.error("Please enter Invoice Sr when fee is applied to invoice.");
+      toast.error(t("productFee.toast.enterInvoiceSr"));
       return;
     }
     if (formValues?.amount === undefined || formValues?.amount === 0) {
-      toast.error("Please enter an amount.");
+      toast.error(t("productFee.toast.enterAmount"));
       return;
     }
 
@@ -122,7 +124,7 @@ const ProductFee = () => {
     const res = await AddProductFee(body); // <-- replace with your actual API function
 
     if (res?.data?.success) {
-      toast.success("Product fee added successfully!");
+      toast.success(t("productFee.toast.added"));
       // Optionally reset or refresh data
     //   setFormValues({
     //     loanFeeId: "",
@@ -134,11 +136,11 @@ const ProductFee = () => {
     //   // Optionally re-fetch fees
       fetchProductFees(formValues?.productId);
     } else {
-      toast.error(res?.data?.message || "Failed to add product fee.");
+      toast.error(res?.data?.message || t("productFee.toast.addFailed"));
     }
   } catch (error: any) {
     console.error("Error submitting fee:", error);
-    toast.error(error?.message || "An error occurred while submitting.");
+    toast.error(error?.message || t("productFee.toast.submitError"));
   }
 };
 
@@ -147,13 +149,13 @@ const ProductFee = () => {
       setLoading(true);
       const res = await DeleteProductFee(id); // <-- replace with your actual API function
       if (res?.data?.success) {
-        toast.success("Fee deleted successfully!");
+        toast.success(t("productFee.toast.deleted"));
         setFeeData((prev) => prev.filter((fee) => fee.id !== id));
       } else {
-        toast.error("Failed to delete fee");
+        toast.error(t("productFee.toast.deleteFailed"));
       }
     } catch (err: any) {
-      toast.error(err?.message || "Error deleting fee");
+      toast.error(err?.message || t("productFee.toast.deleteError"));
     } finally {
       setLoading(false);
     }
@@ -162,7 +164,7 @@ const ProductFee = () => {
   return (
     <div>
       <h2 className="col-md-12 pt-2 pb-2 d-flex align-items-center fs-6 fw-bold">
-        Product Fee Management
+        {t("productFee.title")}
       </h2>
 
       <Row>
@@ -170,12 +172,12 @@ const ProductFee = () => {
         <Col md={4} className="mb-3">
           <Form.Group>
             <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-              Select Product
+              {t("productFee.field.selectProduct")}
             </Form.Label>
             <Select
               value={formValues.productId}
               style={{ width: "100%" }}
-              placeholder="Select Product"
+              placeholder={t("productFee.ph.selectProduct")}
               onChange={(value) => handleSelectChange("productId", value)}
             >
               {products.map((item) => (
@@ -191,12 +193,12 @@ const ProductFee = () => {
         <Col md={4} className="mb-3">
           <Form.Group>
             <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-              Select Fee
+              {t("productFee.field.selectFee")}
             </Form.Label>
             <Select
               value={formValues.loanFeeId}
               style={{ width: "100%" }}
-              placeholder="Select Fee"
+              placeholder={t("productFee.ph.selectFee")}
               onChange={(value) => handleSelectChange("loanFeeId", value)}
             >
               {fees.map((item) => (
@@ -212,11 +214,11 @@ const ProductFee = () => {
         <Col md={4} className="mb-3">
           <Form.Group>
             <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-              Amount
+              {t("common:amount")}
             </Form.Label>
             <Input
               type="number"
-              placeholder="Enter amount"
+              placeholder={t("productFee.ph.amount")}
               value={formValues.amount}
               onChange={(e) =>
                 handleInputChange("amount", Number(e.target.value))
@@ -229,7 +231,7 @@ const ProductFee = () => {
         <Col md={4} className="mb-3">
           <Form.Group>
             <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-              Apply Fee On
+              {t("productFee.field.applyFeeOn")}
             </Form.Label>
             <Select
               value={formValues.isAppliedToLoan ? "loan" : "invoice"}
@@ -238,9 +240,9 @@ const ProductFee = () => {
                 handleSelectChange("isAppliedToLoan", value === "loan")
               }
             >
-              <Select.Option value="loan">Fee applied on Loan</Select.Option>
+              <Select.Option value="loan">{t("productFee.opt.loan")}</Select.Option>
               <Select.Option value="invoice">
-                Fee applied on Invoice
+                {t("productFee.opt.invoice")}
               </Select.Option>
             </Select>
           </Form.Group>
@@ -251,11 +253,11 @@ const ProductFee = () => {
           <Col md={4} className="mb-3">
             <Form.Group>
               <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                Invoice Serial
+                {t("productFee.field.invoiceSerial")}
               </Form.Label>
               <Input
                 type="number"
-                placeholder="Enter Invoice Sr"
+                placeholder={t("productFee.ph.invoiceSr")}
                 value={formValues.invoiceSr}
                 onChange={(e) =>
                   handleInputChange("invoiceSr", Number(e.target.value))
@@ -267,10 +269,10 @@ const ProductFee = () => {
       </Row>
       <div className="d-flex justify-content-end">
         <Button className="application-btn mb-2" onClick={handleSubmit}>
-          Create Product Fee
+          {t("productFee.create")}
         </Button>
       </div>
-      <h2 className="fw-bold text-start my-3 fs-6">Product Fee Details</h2>
+      <h2 className="fw-bold text-start my-3 fs-6">{t("productFee.detailsTitle")}</h2>
 
       <Row style={{ rowGap: 20 }}>
         {[feeData].length > 0 ? (
@@ -291,36 +293,36 @@ const ProductFee = () => {
                     />
                   </div>
                 <p className="mb-1">
-                  <strong>Fee Name:</strong> {detail.feeName}{" "}
+                  <strong>{t("productFee.card.feeName")}</strong> {detail.feeName}{" "}
                 </p>
                 <p className="mb-1">
-                  <strong>Amount:</strong> {detail.amount}{" "}
+                  <strong>{t("productFee.card.amount")}</strong> {detail.amount}{" "}
                   {detail.isPercentage ? "%" : "SAR"}
                 </p>
 
                 <p className="mb-1">
-                  <strong>Applied On:</strong>{" "}
+                  <strong>{t("productFee.card.appliedOn")}</strong>{" "}
                   {detail.isAppliedToLoan ? (
-                    <Tag color="blue">Loan</Tag>
+                    <Tag color="blue">{t("productFee.tag.loan")}</Tag>
                   ) : (
-                    <Tag color="green">Invoice #{detail.invoiceNumber}</Tag>
+                    <Tag color="green">{t("productFee.tag.invoice", { number: detail.invoiceNumber })}</Tag>
                   )}
                 </p>
 
                 <p className="mb-1">
-                  <strong>VAT Inclusive:</strong>{" "}
-                  {detail.isVatInclusive ? "Yes" : "No"}
+                  <strong>{t("productFee.card.vatInclusive")}</strong>{" "}
+                  {detail.isVatInclusive ? t("common:yes") : t("common:no")}
                 </p>
 
                 <p className="mb-0 text-muted" style={{ fontSize: 12 }}>
-                  Created: {new Date(detail.created).toLocaleString()}
+                  {t("productFee.card.created")} {new Date(detail.created).toLocaleString()}
                 </p>
               </Card>
             </Col>
           ))
         ) : (
           <Col span={24} className="text-center py-5 text-muted">
-            No fee details found.
+            {t("productFee.noDetails")}
           </Col>
         )}
       </Row>

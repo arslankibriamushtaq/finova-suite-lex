@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Form, Input, Menu, Modal, Select } from "antd";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
@@ -13,6 +14,7 @@ import autoTable from "jspdf-autotable";
 
 
 const BarqFlex = () => {
+  const { t } = useTranslation("walletBlocks");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -30,35 +32,35 @@ const BarqFlex = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("accountTypes.col.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "100px"
     },
     {
-      name: "Name",
+      name: t("accountTypes.col.name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "250px"
     },
     {
-      name: "Phone Number",
+      name: t("accountTypes.col.phone"),
       selector: (row: { phone: any }) => row.phone,
       sortable: true,
       width: "200px"
     },
     {
-      name: "Gender",
+      name: t("accountTypes.col.gender"),
       selector: (row: { gender: any }) => row.gender,
       sortable: true,
     },
     {
-        name: "Age",
+        name: t("accountTypes.col.age"),
         selector: (row: { age: any }) => row.age,
         sortable: true,
     },
     {
-      name: "City",
+      name: t("accountTypes.col.city"),
       selector: (row: { city: any }) => row.city,
       sortable: true,
     },
@@ -86,8 +88,8 @@ const BarqFlex = () => {
       ),
     }, */
     {
-      name: "Actions",
-  
+      name: t("accountTypes.col.actions"),
+
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -101,7 +103,7 @@ const BarqFlex = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("wallets.select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -114,14 +116,14 @@ const BarqFlex = () => {
         icon={<EyeOutlined/>}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Change Status
+        {t("accountTypes.menu.changeStatus")}
       </Menu.Item>
     </Menu>
   );
@@ -247,12 +249,12 @@ const BarqFlex = () => {
       const doc = new jsPDF();
   
       const tableColumn = [
-      "Sr:",
-      "Name",
-      "Phone Number",
-      "Gender",
-      "Age",
-      "City",
+      t("accountTypes.col.sr"),
+      t("accountTypes.col.name"),
+      t("accountTypes.col.phone"),
+      t("accountTypes.col.gender"),
+      t("accountTypes.col.age"),
+      t("accountTypes.col.city"),
       ];
   
       const tableRows = mappedData?.map((item: any) => [
@@ -279,7 +281,7 @@ const BarqFlex = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -297,12 +299,12 @@ const BarqFlex = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("accountTypes.searchPlaceholder")}
             />
           </div>
 
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("accountTypes.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -310,21 +312,21 @@ const BarqFlex = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("accountTypes.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("accountTypes.print")}</button>
         </div>
       </div>
 
       <Modal
         className="custom-mod"
-        title={selectedItem === "edit" ? "Change Status" : "Enter Your Details"}
+        title={selectedItem === "edit" ? t("accountTypes.modal.changeStatus") : t("accountTypes.modal.enterDetails")}
         visible={isModalVisible}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={[
           <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>,
           <Button
             key="save"
@@ -335,14 +337,14 @@ const BarqFlex = () => {
                 : handleOk();
             }}
           >
-            {selectedItem === "edit" ? "Save" : "Submit"}
+            {selectedItem === "edit" ? t("common:save") : t("common:submit")}
           </Button>,
         ]}
       >
         <div className={selectedItem === "edit" ? "cust-drop" : "Ente-details"}>
           {selectedItem === "edit" ? (
             <>
-              <label>Status</label>
+              <label>{t("common:status")}</label>
               <Select
                 defaultValue={rowData?.accountStatus}
                 value={rowData?.accountStatus}
@@ -354,25 +356,25 @@ const BarqFlex = () => {
                   });
                 }}
               >
-                <option value="active">Active</option>
-                <option value="inactive">Inactive</option>
-                <option value="pending">Pending</option>
+                <option value="active">{t("accountTypes.status.active")}</option>
+                <option value="inactive">{t("accountTypes.status.inactive")}</option>
+                <option value="pending">{t("accountTypes.status.pending")}</option>
               </Select>
-              <p className="edit-mod">Edit modal content</p>
+              <p className="edit-mod">{t("accountTypes.editModalContent")}</p>
             </>
           ) : (
             <>
               <Form>
                 <Form.Item name="username">
                   <div className="custom-input-container">
-                    <label className="input-label">Username</label>
-                    <Input placeholder="Enter your username" />
+                    <label className="input-label">{t("accountTypes.form.username")}</label>
+                    <Input placeholder={t("accountTypes.ph.username")} />
                   </div>
                 </Form.Item>
                 <Form.Item name="password">
                   <div className="custom-input-container">
-                    <label className="input-label">Password</label>
-                    <Input.Password placeholder="Enter your password" />
+                    <label className="input-label">{t("accountTypes.form.password")}</label>
+                    <Input.Password placeholder={t("accountTypes.ph.password")} />
                   </div>
                 </Form.Item>
               </Form>

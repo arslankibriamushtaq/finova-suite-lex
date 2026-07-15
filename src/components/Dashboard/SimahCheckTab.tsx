@@ -6,26 +6,28 @@ import ConsumerInquiry from "./ConsumerInquiry";
 import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function SimahCheckTab({ fullDetail }: any) {
+  const { t } = useTranslation("dashboard");
   const [active, setActive] = useState("ConsumerInquiry");
   const [simahData, setSimahData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const tabOptions = [
     {
-      title: "Consumer Inquiry",
+      title: t("simahTab.tab.consumerInquiry"),
       key: "ConsumerInquiry",
       component: <ConsumerInquiry simahData={simahData} />,
     },
     {
-      title: "Upload Simah Consumer Document",
+      title: t("simahTab.tab.uploadDocument"),
       key: "UploadSimahConsumerDocument",
       // component: <UploadSimahConsumerDocument />,
       component: <></>,
     },
     {
-      title: "Approve Simah Info",
+      title: t("simahTab.tab.approveInfo"),
       key: "ApproveSimahInfo",
       // component: <ApproveSimahInfo />,
       component: <></>,

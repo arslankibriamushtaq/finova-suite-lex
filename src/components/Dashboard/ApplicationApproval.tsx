@@ -4,6 +4,7 @@ import { getApplicationDetailsByType, applicationApprovalChecks } from '../../re
 import Loader from '../Loader/Loader';
 import toast from 'react-hot-toast';
 import { Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 type StatusRow = {
   checks: string;
@@ -16,6 +17,7 @@ type StatusRow = {
 const EmptyCell = () => <span>--</span>;
 
 const ApplicationApproval = ({ fullDetail }: any) => {
+  const { t } = useTranslation('dashboard');
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
   const [rows, setRows] = useState<StatusRow[]>([]);
@@ -33,10 +35,10 @@ const ApplicationApproval = ({ fullDetail }: any) => {
     if (fullDetail?.approval) {
       const a = fullDetail.approval;
       const list: StatusRow[] = [];
-      list.push({ checks: 'Application Status', status: a.applicationStatus || '--', processedDate: '', processedBy: '', comment: '' });
-      list.push({ checks: 'Loan Status', status: a.loanStatus || '--', processedDate: a.disbursementDate || '', processedBy: '', comment: '' });
-      list.push({ checks: 'OTP Verified', status: a.otpVerified ? 'Approved' : 'Not Approved', processedDate: '', processedBy: '', comment: '' });
-      list.push({ checks: 'IVR Verified', status: a.ivrVerified ? 'Approved' : 'Not Approved', processedDate: '', processedBy: '', comment: '' });
+      list.push({ checks: t('approval.applicationStatus'), status: a.applicationStatus || '--', processedDate: '', processedBy: '', comment: '' });
+      list.push({ checks: t('appApproval.check.loanStatus'), status: a.loanStatus || '--', processedDate: a.disbursementDate || '', processedBy: '', comment: '' });
+      list.push({ checks: t('appApproval.check.otpVerified'), status: a.otpVerified ? t('common:approved') : t('appApproval.notApproved'), processedDate: '', processedBy: '', comment: '' });
+      list.push({ checks: t('appApproval.check.ivrVerified'), status: a.ivrVerified ? t('common:approved') : t('appApproval.notApproved'), processedDate: '', processedBy: '', comment: '' });
       setRows(list);
       if (a.applicationStatus === 'APPROVED') setIsApproved(true);
       if (a.applicationStatus === 'REJECTED') setIsRejected(true);
@@ -71,7 +73,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           if (typeof value === 'boolean') {
             list.push({
               checks,
-              status: value ? 'Approved' : 'Not Approved',
+              status: value ? t('common:approved') : t('appApproval.notApproved'),
               processedDate: '',
               processedBy: '',
               comment: '',
@@ -81,7 +83,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           
           // Handle object format (for backward compatibility)
           if (value && typeof value === 'object') {
-            const status = value?.application_status || 'Not Approved';
+            const status = value?.application_status || t('appApproval.notApproved');
             list.push({
               checks,
               status: String(status),
@@ -93,9 +95,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           }
           
           // Default case
-          list.push({ 
-            checks, 
-            status: 'Not Approved', 
+          list.push({
+            checks,
+            status: t('appApproval.notApproved'),
             processedDate: '', 
             processedBy: '', 
             comment: '' 
@@ -103,11 +105,11 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         };
 
         // Map API data to the required checks
-        pushRow('Financial Statement', data?.financial_statement);
-        pushRow('Credit', data?.credit);
-        pushRow('Compliance', data?.compliance);
-        pushRow('Salary', data?.salary);
-        pushRow('Simah', data?.simah);
+        pushRow(t('appApproval.check.financialStatement'), data?.financial_statement);
+        pushRow(t('appApproval.check.credit'), data?.credit);
+        pushRow(t('appApproval.check.compliance'), data?.compliance);
+        pushRow(t('appApproval.check.salary'), data?.salary);
+        pushRow(t('appApproval.check.simah'), data?.simah);
 
         setRows(list);
 
@@ -115,12 +117,12 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         setRejectedHistory(data?.rejected_history || null);
 
       } else {
-        toast.error("Failed to load approval data");
+        toast.error(t('appApproval.toast.loadFailed'));
       }
     } catch (error: any) {
       console.error("API Error:", error);
-      setError(error?.message || 'Failed to load approval statuses');
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load approval data");
+      setError(error?.message || t('appApproval.error.loadFailed'));
+      toast.error(error?.response?.data?.message || error?.message || t('appApproval.toast.loadFailed'));
     } finally {
       setLoading(false);
     }
@@ -128,7 +130,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
 
   const handleApprove = async () => {
     if (!id) {
-      toast.error('Application number is required');
+      toast.error(t('appApproval.toast.appNoRequired'));
       return;
     }
 
@@ -142,7 +144,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
       });
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success('Application approved successfully!');
+        toast.success(t('appApproval.toast.approved'));
         await fetchData(); // Refresh data from API first
         setIsApproved(true);
         setApprovalReason(response?.data?.message || 'Application has been approved');
@@ -155,9 +157,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           const firstError = Array.isArray(apiErrors[firstErrorKey]) 
             ? apiErrors[firstErrorKey][0] 
             : apiErrors[firstErrorKey]
-          toast.error(firstError || response?.data?.message || 'Failed to approve application')
+          toast.error(firstError || response?.data?.message || t('appApproval.toast.approveFailed'))
         } else {
-          toast.error(response?.data?.message || 'Failed to approve application');
+          toast.error(response?.data?.message || t('appApproval.toast.approveFailed'));
         }
       }
     } catch (error: any) {
@@ -168,9 +170,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         const firstError = Array.isArray(apiErrors[firstErrorKey]) 
           ? apiErrors[firstErrorKey][0] 
           : apiErrors[firstErrorKey]
-        toast.error(firstError || error?.response?.data?.message || error?.message || 'Failed to approve application')
+        toast.error(firstError || error?.response?.data?.message || error?.message || t('appApproval.toast.approveFailed'))
       } else {
-        toast.error(error?.response?.data?.message || error?.message || 'Failed to approve application');
+        toast.error(error?.response?.data?.message || error?.message || t('appApproval.toast.approveFailed'));
       }
     } finally {
       setApproving(false);
@@ -184,12 +186,12 @@ const ApplicationApproval = ({ fullDetail }: any) => {
 
   const handleReject = async () => {
     if (!id) {
-      toast.error('Application number is required');
+      toast.error(t('appApproval.toast.appNoRequired'));
       return;
     }
 
     if (!rejectComment.trim()) {
-      toast.error('Please enter a reason for rejection');
+      toast.error(t('appApproval.toast.enterReason'));
       return;
     }
 
@@ -203,7 +205,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
       });
 
       if (response?.data?.success || response?.status === 200) {
-        toast.success('Application rejected successfully!');
+        toast.success(t('appApproval.toast.rejected'));
         setShowRejectModal(false);
         setRejectComment('');
         await fetchData(); // Refresh data from API first
@@ -218,9 +220,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
           const firstError = Array.isArray(apiErrors[firstErrorKey]) 
             ? apiErrors[firstErrorKey][0] 
             : apiErrors[firstErrorKey]
-          toast.error(firstError || response?.data?.message || 'Failed to reject application')
+          toast.error(firstError || response?.data?.message || t('appApproval.toast.rejectFailed'))
         } else {
-          toast.error(response?.data?.message || 'Failed to reject application');
+          toast.error(response?.data?.message || t('appApproval.toast.rejectFailed'));
         }
       }
     } catch (error: any) {
@@ -231,9 +233,9 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         const firstError = Array.isArray(apiErrors[firstErrorKey]) 
           ? apiErrors[firstErrorKey][0] 
           : apiErrors[firstErrorKey]
-        toast.error(firstError || error?.response?.data?.message || error?.message || 'Failed to reject application')
+        toast.error(firstError || error?.response?.data?.message || error?.message || t('appApproval.toast.rejectFailed'))
       } else {
-        toast.error(error?.response?.data?.message || error?.message || 'Failed to reject application');
+        toast.error(error?.response?.data?.message || error?.message || t('appApproval.toast.rejectFailed'));
       }
     } finally {
       setRejecting(false);
@@ -267,35 +269,35 @@ const ApplicationApproval = ({ fullDetail }: any) => {
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
-          }}>Checks</div>
+          }}>{t('appApproval.col.checks')}</div>
           <div style={{
             padding: "12px 16px",
             background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
-          }}>Status</div>
+          }}>{t('common:status')}</div>
           <div style={{
             padding: "12px 16px",
             background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
-          }}>Processed Date</div>
+          }}>{t('approval.processedDate')}</div>
           <div style={{
             padding: "12px 16px",
             background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
-          }}>Processed By</div>
+          }}>{t('appApproval.col.processedBy')}</div>
           <div style={{
             padding: "12px 16px",
             background: "#059669",
             color: "#fff",
             fontWeight: "600",
             fontSize: "14px"
-          }}>Comment</div>
+          }}>{t('approval.comment')}</div>
 
           {/* Data Rows */}
           {rows.map((r, idx) => (
@@ -385,7 +387,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
 
         {/* Reject Modal */}
         <Modal
-          title="Enter Reason of Rejection"
+          title={t('appApproval.rejectModalTitle')}
           open={showRejectModal}
           onCancel={handleCancelReject}
           centered
@@ -408,7 +410,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
                 marginRight: '8px'
               }}
             >
-              Cancel
+              {t('common:cancel')}
             </button>,
             <button
               key="reject"
@@ -425,7 +427,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
                 cursor: rejecting || !rejectComment.trim() ? 'not-allowed' : 'pointer'
               }}
             >
-              {rejecting ? 'Rejecting...' : 'Reject'}
+              {rejecting ? t('approval.rejecting') : t('common:reject')}
             </button>
           ]}
         >
@@ -436,12 +438,12 @@ const ApplicationApproval = ({ fullDetail }: any) => {
               fontSize: '14px',
               fontWeight: '500'
             }}>
-              Comment Box
+              {t('approval.commentBox')}
             </label>
             <textarea
               value={rejectComment}
               onChange={(e) => setRejectComment(e.target.value)}
-              placeholder="Write comment here"
+              placeholder={t('approval.writeComment')}
               style={{
                 width: '100%',
                 minHeight: '120px',

@@ -50,7 +50,7 @@ export default function SystemSettings() {
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw className="w-4 h-4 me-2" />
               Reset to Defaults
             </button>
             <button
@@ -60,12 +60,12 @@ export default function SystemSettings() {
             >
               {isSaving ? (
                 <>
-                  <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                  <RefreshCw className="w-4 h-4 me-2 animate-spin" />
                   Saving...
                 </>
               ) : (
                 <>
-                  <Save className="w-4 h-4 mr-2" />
+                  <Save className="w-4 h-4 me-2" />
                   Save Changes
                 </>
               )}
@@ -76,7 +76,7 @@ export default function SystemSettings() {
 
       <div className="flex">
         {/* Sidebar Navigation */}
-        <div className="w-64 mr-8">
+        <div className="w-64 me-8">
           <nav className="space-y-1">
             {sections.map((section) => (
               <button
@@ -88,7 +88,7 @@ export default function SystemSettings() {
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
               >
-                <section.icon className="w-5 h-5 mr-3" />
+                <section.icon className="w-5 h-5 me-3" />
                 {section.name}
               </button>
             ))}
@@ -183,7 +183,7 @@ export default function SystemSettings() {
               <div className="space-y-6">
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
                   <div className="flex items-start">
-                    <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 mr-3" />
+                    <AlertTriangle className="w-5 h-5 text-yellow-600 mt-0.5 me-3" />
                     <div>
                       <h3 className="text-sm font-medium text-yellow-800">Warning</h3>
                       <p className="text-sm text-yellow-700 mt-1">
@@ -232,15 +232,15 @@ export default function SystemSettings() {
                   <h3 className="text-lg font-medium text-gray-900 mb-3">Performance Settings</h3>
                   <div className="space-y-3">
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                       <span className="text-sm text-gray-700">Enable query caching</span>
                     </label>
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                       <span className="text-sm text-gray-700">Enable connection pooling</span>
                     </label>
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                       <span className="text-sm text-gray-700">Enable slow query logging</span>
                     </label>
                   </div>
@@ -261,7 +261,7 @@ export default function SystemSettings() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                          <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center me-3">
                             <DollarSign className="w-5 h-5 text-black" />
                           </div>
                           <div>
@@ -296,7 +296,7 @@ export default function SystemSettings() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3">
+                          <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center me-3">
                             <BarChart3 className="w-5 h-5 text-purple-600" />
                           </div>
                           <div>
@@ -321,7 +321,7 @@ export default function SystemSettings() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center mr-3">
+                          <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center me-3">
                             <Mail className="w-5 h-5 text-red-600" />
                           </div>
                           <div>
@@ -356,7 +356,7 @@ export default function SystemSettings() {
                     <div className="border border-gray-200 rounded-lg p-4">
                       <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center">
-                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                          <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center me-3">
                             <MessageSquare className="w-5 h-5 text-green-600" />
                           </div>
                           <div>
@@ -487,15 +487,15 @@ export default function SystemSettings() {
                     </div>
                     <div className="space-y-3">
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Require API key authentication</span>
                       </label>
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Enable CORS protection</span>
                       </label>
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Log all API requests</span>
                       </label>
                     </div>
@@ -506,15 +506,15 @@ export default function SystemSettings() {
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Data Encryption</h3>
                   <div className="space-y-3">
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                       <span className="text-sm text-gray-700">Encrypt data at rest</span>
                     </label>
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                       <span className="text-sm text-gray-700">Encrypt data in transit (TLS 1.3)</span>
                     </label>
                     <label className="flex items-center">
-                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                      <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                       <span className="text-sm text-gray-700">Enable database encryption</span>
                     </label>
                   </div>
@@ -591,15 +591,15 @@ export default function SystemSettings() {
                     </div>
                     <div className="space-y-3">
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Enable automated backups</span>
                       </label>
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Compress backup files</span>
                       </label>
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Encrypt backup files</span>
                       </label>
                     </div>
@@ -629,15 +629,15 @@ export default function SystemSettings() {
                     </div>
                     <div className="space-y-3">
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Automatic database optimization</span>
                       </label>
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
                         <span className="text-sm text-gray-700">Clear temporary files</span>
                       </label>
                       <label className="flex items-center">
-                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
+                        <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
                         <span className="text-sm text-gray-700">Automatic system updates</span>
                       </label>
                     </div>
@@ -648,15 +648,15 @@ export default function SystemSettings() {
                   <h3 className="text-lg font-medium text-gray-900 mb-4">Manual Actions</h3>
                   <div className="flex flex-wrap gap-3">
                     <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700">
-                      <HardDrive className="w-4 h-4 mr-2" />
+                      <HardDrive className="w-4 h-4 me-2" />
                       Backup Now
                     </button>
                     <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800">
-                      <RefreshCw className="w-4 h-4 mr-2" />
+                      <RefreshCw className="w-4 h-4 me-2" />
                       Optimize Database
                     </button>
                     <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-                      <CheckCircle className="w-4 h-4 mr-2" />
+                      <CheckCircle className="w-4 h-4 me-2" />
                       System Health Check
                     </button>
                   </div>

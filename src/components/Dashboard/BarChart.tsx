@@ -14,6 +14,7 @@ import { Select, Dropdown, Menu, Button, Spin, DatePicker } from "antd";
 import { getLosDashboardStatistics } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const { Option } = Select;
 
 // Chart palette — hex kept intentionally: SVG fill attributes don't resolve CSS custom properties
@@ -31,6 +32,7 @@ interface CustomerData {
   disbursed: number;
 }
 const CustomBarChart = () => {
+  const { t } = useTranslation("dashboard");
   const [data, setData] = useState<CustomerData[]>([]);
   const [loading, setLoading] = useState(false);
   const [fromDate, setFromDate] = useState<any>(dayjs().startOf("month"));
@@ -69,7 +71,7 @@ const CustomBarChart = () => {
       }
     } catch (error: any) {
       console.error("Error fetching LOS dashboard statistics:", error);
-      toast.error(error?.message || "Failed to fetch dashboard statistics");
+      toast.error(error?.message || t("bar.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -198,7 +200,7 @@ const CustomBarChart = () => {
             marginRight: 5,
           }}
         />
-        <span style={{ fontSize: 13 }}>Applied</span>
+        <span style={{ fontSize: 13 }}>{t("bar.applied")}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
@@ -210,7 +212,7 @@ const CustomBarChart = () => {
             marginRight: 5,
           }}
         />
-        <span style={{ fontSize: 13 }}>Approved</span>
+        <span style={{ fontSize: 13 }}>{t("bar.approved")}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
@@ -222,7 +224,7 @@ const CustomBarChart = () => {
             marginRight: 5,
           }}
         />
-        <span style={{ fontSize: 13 }}>Rejected</span>
+        <span style={{ fontSize: 13 }}>{t("bar.rejected")}</span>
       </div>
       <div style={{ display: "flex", alignItems: "center" }}>
         <div
@@ -234,26 +236,26 @@ const CustomBarChart = () => {
             marginRight: 5,
           }}
         />
-        <span style={{ fontSize: 13 }}>Disbursed</span>
+        <span style={{ fontSize: 13 }}>{t("bar.disbursed")}</span>
       </div>
     </div>
   );
   return (
     <>
       <div>
-      <h5 style={{ fontWeight: 600, margin: 0 }}>Finance Statistics</h5>
+      <h5 style={{ fontWeight: 600, margin: 0 }}>{t("bar.title")}</h5>
         <div style={{ display: "flex", justifyContent: "end", alignItems: "center", marginBottom: 20 }}>
         
           <div className="d-flex gap-3 justify-content-end">
              <DatePicker
-               placeholder="From Date"
+               placeholder={t("bar.fromDate")}
                defaultValue={dayjs().startOf("month")}
                value={fromDate ? dayjs(fromDate) : null}
                onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : dayjs().startOf("month").format("YYYY-MM-DD"))}
                style={{ width: "150px" }}
              />
           <DatePicker
-            placeholder="To Date"
+            placeholder={t("bar.toDate")}
             defaultValue={dayjs().endOf("month")}
             value={toDate ? dayjs(toDate) : null}
             onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : dayjs().endOf("month").format("YYYY-MM-DD"))}
@@ -325,7 +327,7 @@ const CustomBarChart = () => {
               />
               <YAxis
                 tick={{ fontSize: 11, fill: "var(--muted-foreground)" }}
-                label={{ value: "Amount", angle: -90, position: "insideLeft", style: { fill: "var(--muted-foreground)", fontSize: 11 } }}
+                label={{ value: t("bar.yAxisAmount"), angle: -90, position: "insideLeft", style: { fill: "var(--muted-foreground)", fontSize: 11 } }}
                 axisLine={false}
                 tickLine={false}
               />
@@ -349,10 +351,10 @@ const CustomBarChart = () => {
                       }}
                     >
                       <div style={{ color: "var(--foreground)", fontWeight: 600, marginBottom: 6 }}>{label}</div>
-                      <div style={{ color: CHART_COLORS.applied, marginBottom: 2 }}>Applied: {get("applied")}</div>
-                      <div style={{ color: CHART_COLORS.approved, marginBottom: 2 }}>Approved: {get("approved")}</div>
-                      <div style={{ color: CHART_COLORS.rejected, marginBottom: 2 }}>Rejected: {get("rejected")}</div>
-                      <div style={{ color: CHART_COLORS.disbursed }}>Disbursed: {get("disbursed")}</div>
+                      <div style={{ color: CHART_COLORS.applied, marginBottom: 2 }}>{t("bar.applied")}: {get("applied")}</div>
+                      <div style={{ color: CHART_COLORS.approved, marginBottom: 2 }}>{t("bar.approved")}: {get("approved")}</div>
+                      <div style={{ color: CHART_COLORS.rejected, marginBottom: 2 }}>{t("bar.rejected")}: {get("rejected")}</div>
+                      <div style={{ color: CHART_COLORS.disbursed }}>{t("bar.disbursed")}: {get("disbursed")}</div>
                     </div>
                   );
                 }}

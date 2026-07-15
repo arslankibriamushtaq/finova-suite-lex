@@ -23,6 +23,7 @@ import {
 import { DownOutlined, SearchOutlined } from "@ant-design/icons";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 
 const Account = ({
   loader,
@@ -33,6 +34,7 @@ const Account = ({
   searchValue: searchValueProp,
   fromDate: fromDateProp,
 }: any) => {
+  const { t } = useTranslation("accountingLoans");
   // Use props when provided, fall back to local state for any caller that
   // doesn't pass them in.
   const [localSearchValue] = useState("");
@@ -67,17 +69,17 @@ const Account = ({
       accountNameAr: accountNameAr,
     };
     toast.promise(updateAccountLedger(editRowId.id, body), {
-      loading: "Updating account...",
+      loading: t("account.toast.updating"),
       success: (response) => {
         if (response?.data?.message === "success" || response?.status === 200) {
           setUpdateModel(false);
           ledgerAccount();
-          return "Account updated successfully.";
+          return t("account.toast.updateSuccess");
         } else {
-          throw new Error(response?.data?.message || "Update failed");
+          throw new Error(response?.data?.message || t("account.toast.updateFailed"));
         }
       },
-      error: (error) => error?.message || "Update failed",
+      error: (error) => error?.message || t("account.toast.updateFailed"),
     });
   };
 
@@ -105,7 +107,7 @@ const Account = ({
           key="edit"
           icon={<FaPencilAlt />}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
         <Menu.Item
           onClick={() => {
@@ -115,7 +117,7 @@ const Account = ({
           icon={<RiDeleteBin6Line />}
           danger={isActive}
         >
-          {isActive ? "Deactivate" : "Activate"}
+          {isActive ? t("common:deactivate") : t("common:activate")}
         </Menu.Item>
       </Menu>
     );
@@ -123,21 +125,21 @@ const Account = ({
 
   const Account_Documents_List_Header = [
     {
-      name: "Account Code",
+      name: t("account.col.code"),
       selector: (row: { accountCode: any }) => row.accountCode,
     },
     {
-      name: "Account Name",
+      name: t("account.col.name"),
       cell: (row: { accountTitle: any }) => (
         <span style={{ whiteSpace: "break-spaces" }}>{row.accountTitle}</span>
       ),
     },
     {
-      name: "Account Type",
+      name: t("account.col.type"),
       selector: (row: { accountType: any }) => row.accountType,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
         return (
@@ -153,13 +155,13 @@ const Account = ({
               width: "80px",
             }}
           >
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </div>
         );
       },
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -171,7 +173,7 @@ const Account = ({
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -180,22 +182,28 @@ const Account = ({
 
   const toggleAccountStatus = async (row: any) => {
     const isActive = row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
-    const action = isActive ? "Deactivating" : "Activating";
     const apiCall = isActive ? deleteChartOfAccount(row?.id) : activateChartOfAccount(row?.id);
+    const failedMsg = isActive
+      ? t("account.toast.deactivateFailed")
+      : t("account.toast.activateFailed");
 
     toast.promise(apiCall, {
-      loading: `${action} account...`,
+      loading: isActive
+        ? t("account.toast.deactivatingAccount")
+        : t("account.toast.activatingAccount"),
       success: (response) => {
         if (response?.data?.message === "success" || response?.status === 200 || response?.status === 204) {
           ledgerAccount();
           setShowPopup(false);
           setEditRowId("");
-          return `Account ${isActive ? "deactivated" : "activated"} successfully.`;
+          return isActive
+            ? t("account.toast.deactivatedSuccess")
+            : t("account.toast.activatedSuccess");
         } else {
-          throw new Error(response?.data?.message || `${action} failed!`);
+          throw new Error(response?.data?.message || failedMsg);
         }
       },
-      error: (error) => error?.message || `${action} failed`,
+      error: (error) => error?.message || failedMsg,
     });
   };
 
@@ -319,11 +327,10 @@ const Account = ({
                 className="d-flex justify-content-center"
                 style={{ fontSize: "20px", fontWeight: "600" }}
               >
-                Are you Sure?
+                {t("common:areYouSure")}
               </div>
               <p className="text-center pt-3">
-                This action cannot be undone. All values associated with this
-                record will be lost.
+                {t("account.cannotUndo")}
               </p>
               {/* Add more details as needed */}
             </div>
@@ -335,7 +342,7 @@ const Account = ({
                 toggleAccountStatus(editRowId);
               }}
             >
-              Yes
+              {t("common:yes")}
             </Button>
 
             <Button
@@ -344,14 +351,14 @@ const Account = ({
                 setShowPopup(false);
               }}
             >
-              No
+              {t("common:no")}
             </Button>
           </div>
         </Modal.Body>
       </Modal>
       <Modal show={updateModel} onHide={()=>{setUpdateModel(false)}}  centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title className="modal-title">Update Account</Modal.Title>
+          <Modal.Title className="modal-title">{t("account.updateTitle")}</Modal.Title>
           <div className="cursor-pointer" onClick={() => setUpdateModel(false)}>
             <img /* src={Images.closeBtn} */ alt="" />
           </div>
@@ -359,7 +366,7 @@ const Account = ({
         <Modal.Body className="">
           <div className="row py-2">
             <div className="col-6">
-              <h6 className="">Account Name</h6>
+              <h6 className="">{t("account.name")}</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -368,7 +375,7 @@ const Account = ({
               />
             </div>
             <div className="col-6">
-              <h6 className="">Account Name (Arabic)</h6>
+              <h6 className="">{t("account.nameArabic")}</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -383,7 +390,7 @@ const Account = ({
             className="theme-btn-next"
             onClick={() => updateAccount()}
           >
-            Update Account
+            {t("account.updateBtn")}
           </button>
         </Modal.Body>
       </Modal>
@@ -399,6 +406,7 @@ const Account = ({
 
 export default Account;
 function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
+  const { t } = useTranslation("accountingLoans");
   const [accountCode, setaccountCode] = useState<any>(null);
   const [accountTitle, setaccountTitle] = useState<any>(null);
   const [accountNameAr, setAccountNameAr] = useState<any>(null);
@@ -420,23 +428,23 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
     };
 
     toast.promise(addAccountLedger(body), {
-      loading: "Processing...",
+      loading: t("account.toast.processing"),
       success: (response) => {
         if (response?.data?.message === "success" || response?.status === 201 || response?.status === 200) {
           setAddGroupMod(false);
-          return "Account created successfully.";
+          return t("account.toast.createSuccess");
         } else {
-          throw new Error(response?.data?.message || "Creation failed");
+          throw new Error(response?.data?.message || t("account.toast.createFailed"));
         }
       },
-      error: (error) => error?.message || "Creation failed",
+      error: (error) => error?.message || t("account.toast.createFailed"),
     });
   };
 
   return (
     <Modal show={modal} centered onHide={()=>{setModal(false)}} size="lg">
       <Modal.Header closeButton>
-        <Modal.Title className="modal-title">Add Account</Modal.Title>
+        <Modal.Title className="modal-title">{t("account.addTitle")}</Modal.Title>
         <div className="cursor-pointer" onClick={() => setModal(false)}>
           <img /* src={Images.closeBtn} */ alt="" />
         </div>
@@ -445,7 +453,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
         <form className="container" onSubmit={(e) => addAccount(e)}>
           <div className="row py-2">
             <div className="col">
-              <h6 className="">Account Code</h6>
+              <h6 className="">{t("account.code")}</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -454,7 +462,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
               />
             </div>
             <div className="col">
-              <h6 className="">Account Name</h6>
+              <h6 className="">{t("account.name")}</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -466,7 +474,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
 
           <div className="row py-2">
             <div className="col">
-              <h6 className="">Account Name (Arabic)</h6>
+              <h6 className="">{t("account.nameArabic")}</h6>
               <Input
                 type="text"
                 className="w-3/4 border p-2"
@@ -475,30 +483,30 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
               />
             </div>
             <div className="col">
-              <h6 className="">Account Type</h6>
+              <h6 className="">{t("account.type")}</h6>
               <Select
                 className="w-full"
                 value={accountType}
                 onChange={(value: any) => setAccountType(value)}
-                placeholder="Select Account Type"
+                placeholder={t("account.selectType")}
               >
-                <Option value="ASSET">Asset</Option>
-                <Option value="LIABILITY">Liability</Option>
-                <Option value="INCOME">Income</Option>
-                <Option value="EXPENSE">Expense</Option>
-                <Option value="EQUITY">Equity</Option>
+                <Option value="ASSET">{t("account.typeAsset")}</Option>
+                <Option value="LIABILITY">{t("account.typeLiability")}</Option>
+                <Option value="INCOME">{t("account.typeIncome")}</Option>
+                <Option value="EXPENSE">{t("account.typeExpense")}</Option>
+                <Option value="EQUITY">{t("account.typeEquity")}</Option>
               </Select>
             </div>
           </div>
           <div className="row py-2">
             <div className="col">
-              <h6 className="">Parent Account Code</h6>
+              <h6 className="">{t("account.parentCode")}</h6>
               <Select
                 showSearch
                 className="w-full"
                 value={parentAccountCode}
                 onChange={(value: any) => setParentAccountCode(value)}
-                placeholder="Select Parent Account (Optional)"
+                placeholder={t("account.selectParent")}
                 allowClear
               >
                 {mappedData?.map((item: any) => (
@@ -513,7 +521,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 checked={isHeader}
                 onChange={(e: any) => setIsHeader(e.target.checked)}
               />
-              <h6 className="mb-0">Is Header Account</h6>
+              <h6 className="mb-0">{t("account.isHeader")}</h6>
             </div>
           </div>
 
@@ -522,7 +530,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
             style={{ float: "right" }}
             className="theme-btn-next"
           >
-            Add Account
+            {t("account.addBtn")}
           </button>
         </form>
       </Modal.Body>

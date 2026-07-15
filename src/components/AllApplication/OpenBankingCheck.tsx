@@ -1,22 +1,24 @@
 import React, { useState } from "react";
 import { Container, Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import BankStatement from "./BankStatement";
 
 const OpenBankingCheck = () => {
+  const { t } = useTranslation("allApplication");
   const [selectTab, setSelectedTab] = useState("BankStatement");
   const tapOptions = [
     {
-      title: "Bank Statement",
+      title: t("openBanking.tab.bankStatement"),
       key: "BankStatement",
       folder: <BankStatement />,
     },
     {
-      title: "Request Financial Document",
+      title: t("openBanking.tab.requestFinancialDocument"),
       key: "RequestFinancialDocument",
       folder: "",
     },
     {
-      title: "Approve Banking Statement",
+      title: t("openBanking.tab.approveBankingStatement"),
       key: "ApproveBankingStatement",
       folder: "",
     },

@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import { CopyOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { getAllApis, getPartnerAllApis } from "../../redux/apis/apisCrud";
+import { useTranslation } from "react-i18next";
 function EnabledApis({ apisData, partnerData }: any) {
+  const { t } = useTranslation("partner");
   const [copied, setCopied] = useState(false);
   // const [partnerData, setPartnerData] = useState<any>(null);
   // const [apisData, setApisData] = useState<any>([]);
@@ -32,19 +34,19 @@ function EnabledApis({ apisData, partnerData }: any) {
   // }, []);
   const Activity_Loans_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) => row.name,
     },
     {
-      name: "Base Url",
+      name: t("col.baseUrl"),
       selector: (row: any) => row.base_url,
     },
     {
-      name: "Endpoint",
+      name: t("col.endpoint"),
       selector: (row: any) => row.path,
     },
     {
-      name: "Method",
+      name: t("col.method"),
       selector: (row: any) => row.method,
     },
   ];
@@ -63,14 +65,14 @@ function EnabledApis({ apisData, partnerData }: any) {
     <div className="p-3  my-box">
       <div className="col-4 d-flex gap-2">
         <span>
-          Secret <br /> key
+          {t("enabledApis.secret")} <br /> {t("enabledApis.key")}
         </span>
         <Input
           style={{ background: "#e9ecef" }}
           readOnly
           value={partnerData?.secret_key || ""}
         />
-        <Tooltip title={copied ? "Copied!" : "Copy"}>
+        <Tooltip title={copied ? t("enabledApis.copied") : t("enabledApis.copy")}>
           <Button
             icon={<CopyOutlined />}
             onClick={handleCopy}

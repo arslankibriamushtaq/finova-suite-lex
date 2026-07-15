@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Switch } from "antd";
 import TableView from "../TableView/TableView";
 import { getAllApis, updateApiStatus } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 
 const AllApis = () => {
+  const { t } = useTranslation("adminMisc");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [from, setFrom] = useState(0);
@@ -35,36 +37,36 @@ const AllApis = () => {
             item.id === apiId ? { ...item, status: newStatus } : item
           )
         );
-        toast.success(response?.data?.message || "API status updated successfully");
+        toast.success(response?.data?.message || t("allApis.toast.statusUpdated"));
       } else {
-        toast.error(response?.data?.message || "Failed to update API status");
+        toast.error(response?.data?.message || t("allApis.toast.statusFailed"));
       }
     } catch (error: any) {
       console.error("Error updating API status:", error);
-      toast.error(error?.response?.data?.message || "Failed to update API status");
+      toast.error(error?.response?.data?.message || t("allApis.toast.statusFailed"));
     }
   };
   const Activity_Loans_Header = [
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width: "25%",
     },
     {
-      name: "URL",
+      name: t("allApis.col.url"),
       selector: (row: { url: any }) => row.url,
       sortable: true,
       width: "50%",
     },
     {
-      name: "Method",
+      name: t("allApis.col.method"),
       selector: (row: { method: any }) => row.method,
       sortable: true,
       width: "15%",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <Switch
           checked={row.status === "active" || row.status === 1}
@@ -91,13 +93,13 @@ const AllApis = () => {
         setTo(apisData.length || 0);
         setPage(1);
         setTotalPage(Math.ceil(apisData.length / pageSize) || 1);
-        toast.success(response?.data?.message || "APIs fetched successfully");
+        toast.success(response?.data?.message || t("allApis.toast.fetchSuccess"));
       } else {
-        toast.error(response?.data?.message || "Failed to fetch APIs");
+        toast.error(response?.data?.message || t("allApis.toast.fetchFailed"));
       }
     } catch (error: any) {
       console.error("Error fetching APIs:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch APIs");
+      toast.error(error?.response?.data?.message || t("allApis.toast.fetchFailed"));
     } finally {
       setSkelitonLoading(false);
     }

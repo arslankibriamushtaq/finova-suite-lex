@@ -6,6 +6,7 @@ import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { getPartnerAllApplications, leadsList } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
@@ -17,6 +18,7 @@ import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { Button } from "react-bootstrap";
 const PartnerAllApplication = () => {
+  const { t } = useTranslation("partner");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -32,49 +34,49 @@ const PartnerAllApplication = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Application No.",
+      name: t("col.applicationNo"),
       selector: (row: any) => row.applicationNumber,
       sortable: true,
       width: "220px",
     },
     {
-      name: "Customer Name",
+      name: t("col.customerName"),
       selector: (row: any) => row.customerName,
       sortable: true,
       width: "220px",
     },
     {
-      name: "Product",
+      name: t("col.product"),
       selector: (row: any) => row.product,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Phone No.",
+      name: t("col.phoneNo"),
       selector: (row: any) => row.phoneNo,
       sortable: true,
       width: "140px",
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: any) => row.email,
       sortable: true,
       width: "260px",
     },
     {
-      name: "Application Date",
+      name: t("col.applicationDate"),
       selector: (row: any) => row.applicationDate,
       sortable: true,
       width: "220px",
     },
     {
-      name: "Financing Amount",
+      name: t("col.financingAmount"),
       selector: (row: any) => row.financingAmount,
       sortable: true,
       width: "190px",
     },
     {
-      name: "Parent Status",
+      name: t("col.parentStatus"),
       cell: (row: any) => (
         <span
           style={{
@@ -94,7 +96,7 @@ const PartnerAllApplication = () => {
       width: "160px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -337,7 +339,7 @@ const PartnerAllApplication = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("filter.filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -355,7 +357,7 @@ const PartnerAllApplication = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("filter.search")}
             />
           </div>
           <div className="d-flex align-items-center">
@@ -367,7 +369,7 @@ const PartnerAllApplication = () => {
               <Select>search</Select>
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t("filter.from")}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -381,7 +383,7 @@ const PartnerAllApplication = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t("filter.to")}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -398,7 +400,7 @@ const PartnerAllApplication = () => {
             </div>
           </div>
           <button className="theme-btn-next" onClick={exportToExcel}>
-            Export CSV
+            {t("filter.exportCsv")}
           </button>
         </div>
       </div>

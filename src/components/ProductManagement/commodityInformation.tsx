@@ -1,5 +1,6 @@
 import { Checkbox, Input, Select } from "antd";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { useSelector } from "react-redux";
@@ -7,6 +8,7 @@ import { UpdateProductCommodity } from "../../redux/apis/apisCrud";
 import { useNavigate } from "react-router-dom";
 
 const CommodityInfo = ({ setSelectedTab }: any) => {
+  const { t } = useTranslation("productManagement2");
   const product = useSelector((s: any) => s.block.productData);
   const navigate = useNavigate();
   const [formValues, setFormValues] = useState({
@@ -42,7 +44,7 @@ const CommodityInfo = ({ setSelectedTab }: any) => {
       if (res?.data?.success) navigate("/ProductManagement/applicationSteps");
       return res?.data?.message;
     } catch (err) {
-      toast.error("Failed to save commodity info");
+      toast.error(t("commodityInfo.saveFailed"));
     }
   };
 
@@ -56,7 +58,7 @@ const CommodityInfo = ({ setSelectedTab }: any) => {
             onChange={(e) => handleChange("has_commodity", e.target.checked)}
           />
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Has Commodity?
+            {t("commodityInfo.hasCommodity")}
           </label>
         </Col>
       </Row>
@@ -66,28 +68,28 @@ const CommodityInfo = ({ setSelectedTab }: any) => {
           <Row className="mb-4">
             <Col md={6}>
               <label className="mb-1" style={{ fontWeight: 400 }}>
-                Commodity Type
+                {t("commodityInfo.commodityType")}
               </label>
               <Select
-                placeholder="Select Type"
+                placeholder={t("commodityInfo.selectType")}
                 className="fs-6 w-100"
                 value={formValues.commodity_type_id}
                 onChange={(value) => handleChange("commodity_type_id", value)}
                 options={[
-                  { label: "Gold", value: 1 },
-                  { label: "Silver", value: 2 },
-                  { label: "Other", value: 3 },
+                  { label: t("commodityInfo.typeGold"), value: 1 },
+                  { label: t("commodityInfo.typeSilver"), value: 2 },
+                  { label: t("commodityInfo.typeOther"), value: 3 },
                 ]}
               />
             </Col>
             <Col md={6}>
               <label className="mb-1" style={{ fontWeight: 400 }}>
-                Commodity Quantity
+                {t("commodityInfo.commodityQuantity")}
               </label>
               <Input
                 type="number"
                 min={0}
-                placeholder="Enter Quantity"
+                placeholder={t("commodityInfo.enterQuantity")}
                 className="fs-6"
                 value={formValues.quantity}
                 onChange={(e) => handleChange("quantity", e.target.value)}
@@ -99,19 +101,19 @@ const CommodityInfo = ({ setSelectedTab }: any) => {
             className="pt-4 pb-3"
             style={{ fontSize: "18px", fontWeight: "bold" }}
           >
-            Payment Breakdown:
+            {t("commodityInfo.paymentBreakdown")}
           </h1>
 
           <Row className="mb-4">
             <Col md={6}>
               <label className="mb-1" style={{ fontWeight: 400 }}>
-                Advance Payment (%)
+                {t("commodityInfo.advancePayment")}
               </label>
               <Input
                 type="number"
                 min={0}
                 max={100}
-                placeholder="Enter Advance Payment"
+                placeholder={t("commodityInfo.enterAdvancePayment")}
                 className="fs-6"
                 value={formValues.advance_payment}
                 onChange={(e) =>
@@ -121,13 +123,13 @@ const CommodityInfo = ({ setSelectedTab }: any) => {
             </Col>
             <Col md={6}>
               <label className="mb-1" style={{ fontWeight: 400 }}>
-                Balloon Payment (%)
+                {t("commodityInfo.balloonPayment")}
               </label>
               <Input
                 type="number"
                 min={0}
                 max={100}
-                placeholder="Enter Balloon Payment"
+                placeholder={t("commodityInfo.enterBalloonPayment")}
                 className="fs-6"
                 value={formValues.balloon_payment}
                 onChange={(e) =>
@@ -139,9 +141,9 @@ const CommodityInfo = ({ setSelectedTab }: any) => {
         </>
       )}
       <div className="d-flex justify-content-end">
-        <button className="step-buttons me-2" onClick={() => navigate("/ProductManagement/AddProduct")}>Previous</button>
+        <button className="step-buttons me-2" onClick={() => navigate("/ProductManagement/AddProduct")}>{t("common:previous")}</button>
         <button className="step-buttons" onClick={handleSubmit}>
-          Next
+          {t("common:next")}
         </button>
       </div>
     </div>

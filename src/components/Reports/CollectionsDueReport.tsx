@@ -8,7 +8,9 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const CollectionsDueReport = () => {
+  const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<any>("");
   const [toDate, setToDate] = useState<any>("");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
@@ -69,35 +71,35 @@ const CollectionsDueReport = () => {
   }, [id, page, pageSize, fromDate]);
   const Call_Activity_Header = [
     {
-      name: "Customer",
+      name: t('collectionsDue.col.customer'),
       cell: (row: any) => row.customerName,
     },
     {
-      name: "Installment Amount",
+      name: t('collectionsDue.col.installmentAmount'),
       selector: (row: { installmentAmount: any }) => row.installmentAmount,
     },
     {
-      name: "Principal Due",
+      name: t('collectionsDue.col.principalDue'),
       selector: (row: { principalDue: any }) => row.principalDue,
     },
     {
-      name: "Profit Due",
+      name: t('collectionsDue.col.profitDue'),
       selector: (row: { profitDue: any }) => row.profitDue,
     },
     {
-      name: "Penalty Due",
+      name: t('collectionsDue.col.penaltyDue'),
       selector: (row: { penaltyDue: any }) => row.penaltyDue,
     },
     {
-      name: "Total Amount Due",
+      name: t('collectionsDue.col.totalAmountDue'),
       selector: (row: { totalAmountDue: any }) => row.totalAmountDue,
     },
     {
-      name: "Days Past Due",
+      name: t('collectionsDue.col.daysPastDue'),
       selector: (row: { daysPastDue: any }) => row.daysPastDue,
     },
     {
-      name: "Due Date",
+      name: t('collectionsDue.col.dueDate'),
       selector: (row: { dueDate: any }) => row.dueDate,
     },
   ];
@@ -150,31 +152,31 @@ const CollectionsDueReport = () => {
     <>
       <div className="col-12">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Loan Disbursment Report</h3>
+          <h3 className="mb-0 fw-bold text-dark">{t('collectionsDue.title')}</h3>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
             {/* From Date */}
             <div className="col-md-4">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t('common:from')}
               </label>
               <DatePicker
                 onChange={(e: any) => {
                   handleFromDateChange(e);
                 }}
-                placeholder="Select From Date"
+                placeholder={t('collectionsDue.selectFromDate')}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-4">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t('common:to')}
               </label>
               <DatePicker
                 onChange={handleToDateChange}
-                placeholder="Select To Date"
+                placeholder={t('collectionsDue.selectToDate')}
               />
             </div>
 
@@ -191,7 +193,7 @@ const CollectionsDueReport = () => {
                   setToDate("");
                 }}
               >
-                Clear
+                {t('common:clear')}
               </button>
             </div>
 
@@ -221,7 +223,7 @@ const CollectionsDueReport = () => {
                 exportToCSV(allCallActivity, "OverDueLoans");
               }}
             >
-              Export CSV
+              {t('action.exportCsv')}
             </button>
           </div>
         </div>

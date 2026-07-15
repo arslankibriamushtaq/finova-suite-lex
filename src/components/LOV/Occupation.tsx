@@ -22,8 +22,10 @@ import {
 import { ChevronDown, Pencil, Trash2, Plus, CheckCircle2, Ban, ListChecks } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const Occupation = () => {
+  const { t } = useTranslation("lov");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -73,7 +75,7 @@ const Occupation = () => {
         setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch occupations");
+      toast.error(error?.response?.data?.message || t("occupation.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -113,11 +115,11 @@ const Occupation = () => {
 
   const handleSave = async () => {
     if (!formData.code.trim()) {
-      toast.error("Code is required");
+      toast.error(t("occupation.validation.code"));
       return;
     }
     if (!formData.name_en.trim()) {
-      toast.error("English name is required");
+      toast.error(t("occupation.validation.nameEn"));
       return;
     }
 
@@ -134,7 +136,7 @@ const Occupation = () => {
           score: Number(formData.score) || 0,
         };
         await updateOccupation(currentItemId, editBody);
-        toast.success("Updated successfully");
+        toast.success(t("occupation.toast.updated"));
       } else {
         const createBody = {
           code: formData.code.trim(),
@@ -146,13 +148,13 @@ const Occupation = () => {
           score: Number(formData.score) || 0,
         };
         await createOccupation(createBody);
-        toast.success("Created successfully");
+        toast.success(t("occupation.toast.created"));
       }
 
       setShowFormModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+      toast.error(error?.response?.data?.message || (modalMode === "edit" ? t("occupation.toast.updateFailed") : t("occupation.toast.createFailed")));
     } finally {
       setIsSaving(false);
     }
@@ -165,14 +167,14 @@ const Occupation = () => {
     try {
       if (isActive) {
         await deactivateOccupation(id);
-        toast.success("Deactivated successfully");
+        toast.success(t("occupation.toast.deactivated"));
       } else {
         await activateOccupation(id);
-        toast.success("Activated successfully");
+        toast.success(t("occupation.toast.activated"));
       }
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${isActive ? "deactivate" : "activate"}`);
+      toast.error(error?.response?.data?.message || (isActive ? t("occupation.toast.deactivateFailed") : t("occupation.toast.activateFailed")));
     }
   };
 
@@ -181,11 +183,11 @@ const Occupation = () => {
     try {
       setIsDeleting(true);
       await deleteOccupation(deleteTarget.id);
-      toast.success("Deleted successfully");
+      toast.success(t("occupation.toast.deleted"));
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
+      toast.error(error?.response?.data?.message || t("occupation.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -193,27 +195,27 @@ const Occupation = () => {
 
   const headers = [
     {
-      name: "Code",
+      name: t("occupation.col.code"),
       selector: (row: any) => row.code || "-",
       sortable: true,
     },
     {
-      name: "Name (EN)",
+      name: t("occupation.col.nameEn"),
       selector: (row: any) => row.nameEn || row.name_en || "-",
       sortable: true,
     },
     {
-      name: "Name (AR)",
+      name: t("occupation.col.nameAr"),
       selector: (row: any) => row.nameAr || row.name_ar || "-",
       sortable: true,
     },
     {
-      name: "Description (EN)",
+      name: t("occupation.col.descriptionEn"),
       selector: (row: any) => row.descriptionEn || row.description_en || "-",
       sortable: true,
     },
     {
-      name: "Display Order",
+      name: t("occupation.col.displayOrder"),
       selector: (row: any) => row.displayOrder ?? row.display_order ?? "-",
       sortable: true,
       width: "130px",
@@ -227,12 +229,12 @@ const Occupation = () => {
     },
     */
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = row.isActive ?? row.is_active;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </span>
         );
       },
@@ -240,7 +242,7 @@ const Occupation = () => {
       width: "100px",
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -253,7 +255,7 @@ const Occupation = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -265,7 +267,7 @@ const Occupation = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               {(row.isActive ?? row.is_active) ? (
                 <DropdownMenuItem
@@ -275,7 +277,7 @@ const Occupation = () => {
                   }}
                 >
                   <Ban className="h-4 w-4" />
-                  Deactivate
+                  {t("common:deactivate")}
                 </DropdownMenuItem>
               ) : (
                 <DropdownMenuItem
@@ -285,7 +287,7 @@ const Occupation = () => {
                   }}
                 >
                   <CheckCircle2 className="h-4 w-4" />
-                  Activate
+                  {t("common:activate")}
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -296,7 +298,7 @@ const Occupation = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -313,7 +315,7 @@ const Occupation = () => {
           <span className="pro-head-badge">
             <ListChecks className="h-4 w-4" />
           </span>
-          Occupation
+          {t("occupation.heading")}
         </h3>
       </div>
 
@@ -321,7 +323,7 @@ const Occupation = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by code or name"
+            placeholder={t("occupation.ph.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => {
@@ -332,7 +334,7 @@ const Occupation = () => {
           />
           <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
             <Plus className="h-4 w-4" />
-            Add New Record
+            {t("shared.addNewRecord")}
           </Button>
         </div>
       </div>
@@ -357,21 +359,21 @@ const Occupation = () => {
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
         <DialogContent className="sm:max-w-[640px]">
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Occupation" : "Add Occupation"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? t("occupation.modal.editTitle") : t("occupation.modal.addTitle")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Code *</Label>
+                <Label>{t("occupation.label.code")} *</Label>
                 <Input
-                  placeholder="e.g. EMPLOYED_PRIVATE"
+                  placeholder={t("occupation.ph.code")}
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   disabled={modalMode === "edit"}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Display Order</Label>
+                <Label>{t("occupation.label.displayOrder")}</Label>
                 <Input
                   type="number"
                   placeholder="0"
@@ -380,33 +382,33 @@ const Occupation = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Name (EN) *</Label>
+                <Label>{t("occupation.label.nameEn")} *</Label>
                 <Input
-                  placeholder="English name"
+                  placeholder={t("occupation.ph.nameEn")}
                   value={formData.name_en}
                   onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Name (AR)</Label>
+                <Label>{t("occupation.label.nameAr")}</Label>
                 <Input
-                  placeholder="Arabic name"
+                  placeholder={t("occupation.ph.nameAr")}
                   value={formData.name_ar}
                   onChange={(e) => setFormData({ ...formData, name_ar: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (EN)</Label>
+                <Label>{t("occupation.label.descriptionEn")}</Label>
                 <Input
-                  placeholder="English description"
+                  placeholder={t("occupation.ph.descriptionEn")}
                   value={formData.description_en}
                   onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (AR)</Label>
+                <Label>{t("occupation.label.descriptionAr")}</Label>
                 <Input
-                  placeholder="Arabic description"
+                  placeholder={t("occupation.ph.descriptionAr")}
                   value={formData.description_ar}
                   onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
                 />
@@ -426,10 +428,10 @@ const Occupation = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+              {isSaving ? t("occupation.saving") : modalMode === "edit" ? t("common:update") : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -439,21 +441,21 @@ const Occupation = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="sm:max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Occupation</DialogTitle>
+            <DialogTitle>{t("occupation.modal.deleteTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
+            {t("occupation.confirmDeleteBefore")}{" "}
             <span className="font-medium text-foreground">
               {deleteTarget?.nameEn || deleteTarget?.name_en || deleteTarget?.code}
             </span>
-            ? This action cannot be undone.
+            {t("occupation.confirmDeleteAfter")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("occupation.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

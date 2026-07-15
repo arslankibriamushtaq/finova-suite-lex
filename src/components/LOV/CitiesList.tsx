@@ -3,6 +3,7 @@ import { SetStateAction, useEffect, useRef, useState } from "react";
 import {
   Select,
 } from "antd";
+import { useTranslation } from "react-i18next";
 
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
@@ -14,6 +15,7 @@ import {
 
 
 const CitiesList = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,27 +29,27 @@ const CitiesList = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "City ID",
+      name: t("citiesList.col.cityId"),
       selector: (row: { cityId: any }) => row.cityId,
       width: "100px",
     },
     {
-      name: "Region ID",
+      name: t("citiesList.col.regionId"),
       selector: (row: { regionId: any }) => row.regionId,
       width: "100px",
     },
     {
-      name: "City Name (English)",
+      name: t("citiesList.col.cityNameEn"),
       selector: (row: { cityNameEn: any }) => row.cityNameEn,
       width: "200px",
     },
     {
-      name: "City Name (Arabic)",
+      name: t("citiesList.col.cityNameAr"),
       selector: (row: { cityNameAr: any }) => row.cityNameAr,
       width: "200px",
     },
     {
-      name: "Risk Score",
+      name: t("citiesList.col.riskScore"),
       cell: (row: any) => {
         const riskScore = row.riskScore || "";
         const getRiskColor = (risk: string) => {
@@ -73,22 +75,22 @@ const CitiesList = () => {
       },
     },
     {
-      name: "Country Name",
+      name: t("citiesList.col.countryName"),
       selector: (row: { countryName: any }) => row.countryName,
       width: "200px",
     },
     {
-      name: "Factor",
+      name: t("citiesList.col.factor"),
       selector: (row: { factorName: any }) => row.factorName,
       width: "150px",
     },
     {
-      name: "Factor Weight",
+      name: t("citiesList.col.factorWeight"),
       selector: (row: { factorWeight: any }) => row.factorWeight,
       width: "120px",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -105,7 +107,7 @@ const CitiesList = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 || row.status === true ? "Active" : "Inactive"}
+          {row.status == 1 || row.status === true ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
@@ -258,7 +260,7 @@ const CitiesList = () => {
       };
     });
 
-  const options = [{ label: "Name", value: "name" }];
+  const options = [{ label: t("common:name"), value: "name" }];
   const handleChange = (value: SetStateAction<undefined>[]) => {
     setSelectedFilters(value[0]);
     // You can trigger filtering logic here
@@ -274,7 +276,7 @@ const CitiesList = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -293,7 +295,7 @@ const CitiesList = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 

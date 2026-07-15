@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Input } from "antd";
 import { Col, Row } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
@@ -6,6 +7,7 @@ import { saveSteps, getProductById } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import { useNavigate, useLocation } from "react-router-dom";
 function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
+  const { t } = useTranslation("productManagement2");
   const product = useSelector((s: any) => s.block.productData);
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,7 +63,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
             setFormStepsAr(response.data.data?.ar || stepsAr);
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load application steps data");
+          toast.error(error?.response?.data?.message || t("appSettings.loadFailed"));
         }
       } else {
         setFormStepsEn(product?.application_steps?.en || stepsEn);
@@ -108,7 +110,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         toast.success(res?.data?.message);
       }
     }catch(err: any){
-      toast.error(err?.response?.data?.message || "Failed to save steps")
+      toast.error(err?.response?.data?.message || t("appSettings.saveFailed"))
     }
   }
   return (
@@ -118,7 +120,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 01
+              {t("appSettings.step", { num: "01" })}
             </label>
             <Input
               // placeholder="Select Partner"
@@ -133,11 +135,11 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 01
+              {t("appSettings.stepAr", { num: "01" })}
             </label>
             <Input
         
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6 "
               value={formStepsAr[0]}
               onChange={(e) => handleChangeAr(0, e.target.value)}
@@ -148,10 +150,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 02
+              {t("appSettings.step", { num: "02" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[1]}
               onChange={(e) => handleChangeEn(1, e.target.value)}
@@ -163,10 +165,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 02
+              {t("appSettings.stepAr", { num: "02" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[1]}
               onChange={(e) => handleChangeAr(1, e.target.value)}
@@ -177,10 +179,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 03
+              {t("appSettings.step", { num: "03" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[2]}
               onChange={(e) => handleChangeEn(2, e.target.value)}
@@ -192,10 +194,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 03
+              {t("appSettings.stepAr", { num: "03" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[2]}
               onChange={(e) => handleChangeAr(2, e.target.value)}
@@ -206,10 +208,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 04
+              {t("appSettings.step", { num: "04" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[3]}
               onChange={(e) => handleChangeEn(3, e.target.value)}
@@ -221,10 +223,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 04
+              {t("appSettings.stepAr", { num: "04" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[3]}
               onChange={(e) => handleChangeAr(3, e.target.value)}
@@ -235,10 +237,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 05
+              {t("appSettings.step", { num: "05" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[4]}
               onChange={(e) => handleChangeEn(4, e.target.value)}
@@ -250,10 +252,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 05
+              {t("appSettings.stepAr", { num: "05" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[4]}
               onChange={(e) => handleChangeAr(4, e.target.value)}
@@ -264,10 +266,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 06
+              {t("appSettings.step", { num: "06" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[5]}
               onChange={(e) => handleChangeEn(5, e.target.value)}
@@ -279,10 +281,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 06
+              {t("appSettings.stepAr", { num: "06" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[5]}
               onChange={(e) => handleChangeAr(5, e.target.value)}
@@ -293,10 +295,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 07
+              {t("appSettings.step", { num: "07" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[6]}
               onChange={(e) => handleChangeEn(6, e.target.value)}
@@ -308,10 +310,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 07
+              {t("appSettings.stepAr", { num: "07" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[6]}
               onChange={(e) => handleChangeAr(6, e.target.value)}
@@ -322,10 +324,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 08
+              {t("appSettings.step", { num: "08" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[7]}
               onChange={(e) => handleChangeEn(7, e.target.value)}
@@ -337,10 +339,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 08
+              {t("appSettings.stepAr", { num: "08" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[7]}
               onChange={(e) => handleChangeAr(7, e.target.value)}
@@ -351,10 +353,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 09
+              {t("appSettings.step", { num: "09" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[8]}
               onChange={(e) => handleChangeEn(8, e.target.value)}
@@ -366,10 +368,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 09
+              {t("appSettings.stepAr", { num: "09" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[8]}
               onChange={(e) => handleChangeAr(8, e.target.value)}
@@ -380,10 +382,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 10
+              {t("appSettings.step", { num: "10" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[9]}
               onChange={(e) => handleChangeEn(9, e.target.value)}
@@ -395,10 +397,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 10
+              {t("appSettings.stepAr", { num: "10" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[9]}
               onChange={(e) => handleChangeAr(9, e.target.value)}
@@ -409,10 +411,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
         <Row className="mb-4">
           <Col md={6}>
             <label className="mb-1" style={{ fontWeight: 400 }}>
-              Step 11
+              {t("appSettings.step", { num: "11" })}
             </label>
             <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsEn[10]}
               onChange={(e) => handleChangeEn(10, e.target.value)}
@@ -424,10 +426,10 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
               className="d-flex justify-content-end mb-1"
               style={{ fontWeight: 400 }}
             >
-              الخطوة 11
+              {t("appSettings.stepAr", { num: "11" })}
             </label>
             <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={formStepsAr[10]}
               onChange={(e) => handleChangeAr(10, e.target.value)}
@@ -436,16 +438,16 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
           </Col>
         </Row>
         <div className="d-flex justify-content-end">
-        <button className="step-buttons me-2" onClick={() => navigate("/ProductManagement/commodity")}>Previous</button>
+        <button className="step-buttons me-2" onClick={() => navigate("/ProductManagement/commodity")}>{t("common:previous")}</button>
         <button className="step-buttons" onClick={handleSubmit}>
-          Next
+          {t("common:next")}
         </button>
       </div>
         {/* <Row className="mb-4">
       <Col md={6}>
       <label className="mb-1" style={{fontWeight: 400}}>Step 01</label>
           <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={product?.application_steps?.en[11]}
               
@@ -455,7 +457,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
       <Col md={6}>
       <label className="d-flex justify-content-end mb-1" style={{fontWeight: 400}}>الخطوة 01</label>
           <Input
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value=""
               //onChange={(e) => handleChange("name", e.target.value)}
@@ -466,7 +468,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
       <Col md={6}>
       <label className="mb-1" style={{fontWeight: 400}}>Step 01</label>
           <Input
-              placeholder="Select Partner"
+              placeholder={t("appSettings.selectPartner")}
               className="fs-6"
               value={product?.application_steps?.en[12]}
               
@@ -477,7 +479,7 @@ function SettingProductAppliation({ readOnly = false,setSelectedTab }: any) {
       <label className="d-flex justify-content-end mb-1" style={{fontWeight: 400}}>الخطوة 01</label>
           <Input
               className="fs-6"
-              placeholder="حدد الشريك"
+              placeholder={t("appSettings.selectPartner")}
               value=""
               //onChange={(e) => handleChange("name", e.target.value)}
           />

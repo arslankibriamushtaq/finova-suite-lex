@@ -13,6 +13,7 @@ import {
   CheckCircle
 } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Product,
   createProductConfiguration,
@@ -118,17 +119,23 @@ const initialConfigData: ConfigurationData = {
 export default function ProductConfiguration() {
   const { productId } = useParams<{ productId: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation('investor');
 
   // Helper function to get product status text
   const getProductStatusText = (status: number) => {
     const statusMap = {
-      0: 'Active',
-      1: 'Inactive', 
-      2: 'Closed',
-      3: 'Suspended',
-      4: 'Launching'
+      0: 'pln.status.active',
+      1: 'pln.status.inactive',
+      2: 'pln.status.closed',
+      3: 'pln.status.suspended',
+      4: 'pln.status.launching'
     };
-    return statusMap[status as keyof typeof statusMap] || 'Unknown';
+    const key = statusMap[status as keyof typeof statusMap];
+    return key ? t(key) : t('pln.status.unknown');
+  };
+  const tenureUnitLabel = (v: string) => {
+    const m: Record<string, string> = { Months: 'pc.unit.months', Years: 'pc.unit.years', Days: 'pc.unit.days' };
+    return m[v] ? t(m[v]) : '';
   };
   const [activeTab, setActiveTab] = useState('amounts');
   const [product, setProduct] = useState<Product | null>(null);
@@ -142,12 +149,12 @@ export default function ProductConfiguration() {
   const [loadingConfiguration, setLoadingConfiguration] = useState(false);
 
   const tabs = [
-    { id: 'amounts', label: 'Amounts', icon: DollarSign },
-    { id: 'tenure', label: 'Tenure', icon: Clock },
-    { id: 'period', label: 'Period', icon: Calendar },
-    { id: 'returns', label: 'Returns', icon: TrendingUp },
-    { id: 'investors', label: 'Investors', icon: Users },
-    { id: 'advanced', label: 'Advanced', icon: Settings }
+    { id: 'amounts', label: t('pc.tab.amounts'), icon: DollarSign },
+    { id: 'tenure', label: t('pc.tab.tenure'), icon: Clock },
+    { id: 'period', label: t('pc.tab.period'), icon: Calendar },
+    { id: 'returns', label: t('pc.tab.returns'), icon: TrendingUp },
+    { id: 'investors', label: t('pc.tab.investors'), icon: Users },
+    { id: 'advanced', label: t('pc.tab.advanced'), icon: Settings }
   ];
 
   // Validation function - only validate when user has entered invalid values
@@ -156,53 +163,53 @@ export default function ProductConfiguration() {
 
     // Only show errors if user has entered values but they are invalid
     if (configData.minimumInvestment < 0) {
-      errors.minimumInvestment = 'Enter valid minimum investment amount.';
+      errors.minimumInvestment = t('pc.err.minInvestment');
     }
 
     if (configData.maximumInvestment < 0) {
-      errors.maximumInvestment = 'Enter valid maximum investment amount.';
+      errors.maximumInvestment = t('pc.err.maxInvestment');
     }
 
     if (configData.minimumTenure < 0) {
-      errors.minimumTenure = 'Enter valid minimum investment tenure.';
+      errors.minimumTenure = t('pc.err.minTenure');
     }
 
     if (configData.maximumTenure < 0) {
-      errors.maximumTenure = 'Enter valid maximum investment tenure.';
+      errors.maximumTenure = t('pc.err.maxTenure');
     }
 
     // Validate relationships only if both values are provided
     if (configData.minimumInvestment > 0 && configData.maximumInvestment > 0) {
       if (configData.maximumInvestment <= configData.minimumInvestment) {
-        errors.maximumInvestment = 'Maximum investment must be greater than minimum investment';
+        errors.maximumInvestment = t('pc.err.maxGtMin');
       }
     }
 
     if (configData.minimumTenure > 0 && configData.maximumTenure > 0) {
       if (configData.maximumTenure <= configData.minimumTenure) {
-        errors.maximumTenure = 'Maximum tenure must be greater than minimum tenure';
+        errors.maximumTenure = t('pc.err.maxTenureGtMin');
       }
     }
 
     // Validate returns based on return type
     if (configData.returnType === 'fixed') {
       if (configData.fixedReturnPercentage <= 0) {
-        errors.fixedReturnPercentage = 'Fixed return percentage is required';
+        errors.fixedReturnPercentage = t('pc.err.fixedRequired');
       }
       if (configData.fixedReturnPercentage > 100) {
-        errors.fixedReturnPercentage = 'Fixed return percentage cannot exceed 100%';
+        errors.fixedReturnPercentage = t('pc.err.fixedMax');
       }
     } else if (configData.returnType === 'average') {
       if (configData.expectedReturnMin > 0 && configData.expectedReturnMax > 0) {
         if (configData.expectedReturnMax <= configData.expectedReturnMin) {
-          errors.expectedReturnMax = 'Maximum return must be greater than minimum return';
+          errors.expectedReturnMax = t('pc.err.maxReturnGtMin');
         }
       }
     }
 
     if (configData.maxInvestors > 0 && configData.minInvestorsToActivate > 0) {
       if (configData.minInvestorsToActivate > configData.maxInvestors) {
-        errors.minInvestorsToActivate = 'Minimum investors to activate must be less than or equal to maximum investors';
+        errors.minInvestorsToActivate = t('pc.err.minInvestorsLe');
       }
     }
 
@@ -253,7 +260,7 @@ export default function ProductConfiguration() {
            
             } else {
             
-              toast.error('Failed to load product data');
+              toast.error(t('pc.toast.loadProductFailed'));
               // Set fallback product data
               setProduct({
                 id: productId,
@@ -274,7 +281,7 @@ export default function ProductConfiguration() {
             }
           } catch (error) {
         
-            toast.error('Error loading product data');
+            toast.error(t('pc.toast.loadProductError'));
             // Set fallback product data
             setProduct({
               id: productId,
@@ -297,7 +304,7 @@ export default function ProductConfiguration() {
 
       } catch (err) {
         console.error('Error fetching currencies:', err);
-        toast.error('Failed to load currencies');
+        toast.error(t('pc.toast.loadCurrenciesFailed'));
       } finally {
         setLoading(false);
       }
@@ -313,7 +320,7 @@ export default function ProductConfiguration() {
       setSaving(true);
 
       if (!productId) {
-        toast.error('Product ID is required');
+        toast.error(t('pc.toast.productIdRequired'));
         return;
       }
       if (activeTab !== 'advanced') {
@@ -325,7 +332,7 @@ export default function ProductConfiguration() {
           await new Promise(resolve => setTimeout(resolve, 500));
 
           setActiveTab(nextTab.id);
-          toast.success(`Configuration saved! Moving to ${nextTab.label} tab`);
+          toast.success(t('pc.toast.savedMovingTo', { tab: nextTab.label }));
         } else {
           // This shouldn't happen, but just in case
           // toast.info('All tabs completed!');
@@ -383,7 +390,7 @@ export default function ProductConfiguration() {
       
         
         if (response.success) {
-          toast.success(response.notificationMessage || 'Configuration updated successfully!');
+          toast.success(response.notificationMessage || t('pc.toast.updated'));
           navigate('/InvestorDashboard/Products');
         } else {
           if (response.errors && Array.isArray(response.errors)) {
@@ -391,7 +398,7 @@ export default function ProductConfiguration() {
               toast.error(error);
             });
           } else {
-            toast.error(response?.notificationMessage || 'Failed to update configuration');
+            toast.error(response?.notificationMessage || t('pc.toast.updateFailed'));
           }
         }
       } else {
@@ -427,7 +434,7 @@ export default function ProductConfiguration() {
         const response = await createProductConfiguration(apiPayload);
      
         if (response.data) {
-          toast.success(response.notificationMessage || 'Configuration saved successfully!');
+          toast.success(response.notificationMessage || t('pc.toast.saved'));
           navigate('/InvestorDashboard/Products');
         } else {
           if (response.errors && Array.isArray(response.errors)) {
@@ -435,7 +442,7 @@ export default function ProductConfiguration() {
               toast.error(error);
             });
           } else {
-            toast.error(response?.notificationMessage || 'Failed to save configuration');
+            toast.error(response?.notificationMessage || t('pc.toast.saveFailed'));
           }
         }
       }
@@ -446,7 +453,7 @@ export default function ProductConfiguration() {
           toast.error(error);
         });
       } else {
-        toast.error(err?.response?.errors || 'An error occurred while saving configuration');
+        toast.error(err?.response?.errors || t('pc.toast.saveError'));
       }
     } finally {
       setSaving(false);
@@ -460,7 +467,7 @@ export default function ProductConfiguration() {
   // Fetch existing configuration and pre-fill fields
   const handleEditConfiguration = async () => {
     if (!productId) {
-      toast.error('Product ID is required');
+      toast.error(t('pc.toast.productIdRequired'));
       return;
     }
 
@@ -528,16 +535,16 @@ export default function ProductConfiguration() {
             regulatoryApprovalRequired: false
           });
           
-          toast.success(response?.notificationMessage || 'Configuration loaded successfully. You can now edit the fields.');
+          toast.success(response?.notificationMessage || t('pc.toast.loaded'));
         } else {
-          toast.error('Failed to load configuration details');
+          toast.error(t('pc.toast.loadDetailsFailed'));
         }
       } else {
-        toast.error('No existing configuration found for this product');
+        toast.error(t('pc.toast.noConfig'));
       }
     } catch (error: any) {
       console.error('Error fetching configuration:', error);
-      toast.error(error?.message || 'Failed to load existing configuration');
+      toast.error(error?.message || t('pc.toast.loadConfigFailed'));
     } finally {
       setLoadingConfiguration(false);
     }
@@ -556,13 +563,13 @@ export default function ProductConfiguration() {
 
   // Helper function to convert enum values to display text
   const getRiskLevelText = (value: number) => {
-    const riskLevels = ['Low', 'Medium', 'High', 'Very High', 'Extreme'];
-    return riskLevels[value] || 'Low';
+    const riskLevels = ['pc.risk.low', 'pc.risk.medium', 'pc.risk.high', 'pc.risk.veryHigh', 'pc.risk.extreme'];
+    return t(riskLevels[value] || 'pc.risk.low');
   };
 
   const getReturnTermText = (value: number) => {
-    const returnTerms = ['Quarterly', 'SemiAnnually', 'Annually', 'OnMaturity'];
-    return returnTerms[value] || 'Quarterly';
+    const returnTerms = ['pc.freq.quarterly', 'pc.freq.semiAnnually', 'pc.freq.annually', 'pc.freq.onMaturity'];
+    return t(returnTerms[value] || 'pc.freq.quarterly');
   };
 
   const renderTabContent = () => {
@@ -573,7 +580,7 @@ export default function ProductConfiguration() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Minimum Investment Amount *
+                  {t('pc.amounts.minLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -605,13 +612,13 @@ export default function ProductConfiguration() {
                   <p className="text-xs text-red-600 mt-1">{validationErrors.minimumInvestment}</p>
                 )}
                 {!validationErrors.minimumInvestment && (
-                  <p className="text-xs text-black mt-1">The minimum amount an investor can invest</p>
+                  <p className="text-xs text-black mt-1">{t('pc.amounts.minHelp')}</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Maximum Investment Amount *
+                  {t('pc.amounts.maxLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -640,13 +647,13 @@ export default function ProductConfiguration() {
                   <p className="text-xs text-red-600 mt-1">{validationErrors.maximumInvestment}</p>
                 )}
                 {!validationErrors.maximumInvestment && (
-                  <p className="text-xs text-black mt-1">The maximum amount an investor can invest</p>
+                  <p className="text-xs text-black mt-1">{t('pc.amounts.maxHelp')}</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Investment Increment
+                  {t('pc.amounts.incrementLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -667,12 +674,12 @@ export default function ProductConfiguration() {
                     ))}
                   </select>
                 </div>
-                <p className="text-xs text-black mt-1">Investment must be in multiples of this amount</p>
+                <p className="text-xs text-black mt-1">{t('pc.amounts.incrementHelp')}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Base Currency
+                  {t('pc.amounts.baseCurrencyLabel')}
                 </label>
                 <select
                   value={configData.baseCurrency}
@@ -685,7 +692,7 @@ export default function ProductConfiguration() {
                     </option>
                   ))}
                 </select>
-                <p className="text-xs text-black mt-1">Primary currency for this investment product</p>
+                <p className="text-xs text-black mt-1">{t('pc.amounts.baseCurrencyHelp')}</p>
               </div>
             </div>
           </div>
@@ -695,14 +702,14 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">Investment Tenure Configuration</h3>
-              <p className="text-sm text-black mb-6">Set minimum and maximum investment tenure periods</p>
+              <h3 className="text-lg font-medium text-black mb-2">{t('pc.tenure.title')}</h3>
+              <p className="text-sm text-black mb-6">{t('pc.tenure.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Minimum Investment Tenure *
+                  {t('pc.tenure.minLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -720,23 +727,23 @@ export default function ProductConfiguration() {
                     onChange={(e) => setConfigData(prev => ({ ...prev, tenureUnit: e.target.value }))}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
                   >
-                    <option value="0">Select Unit</option>
-                    <option value="Months">Months</option>
-                    <option value="Years">Years</option>
-                    <option value="Days">Days</option>
+                    <option value="0">{t('pc.unit.selectUnit')}</option>
+                    <option value="Months">{t('pc.unit.months')}</option>
+                    <option value="Years">{t('pc.unit.years')}</option>
+                    <option value="Days">{t('pc.unit.days')}</option>
                   </select>
                 </div>
                 {validationErrors.minimumTenure && (
                   <p className="text-xs text-red-600 mt-1">{validationErrors.minimumTenure}</p>
                 )}
                 {!validationErrors.minimumTenure && (
-                  <p className="text-xs text-black mt-1">Minimum time investment must be held</p>
+                  <p className="text-xs text-black mt-1">{t('pc.tenure.minHelp')}</p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Maximum Investment Tenure *
+                  {t('pc.tenure.maxLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -754,17 +761,17 @@ export default function ProductConfiguration() {
                     onChange={(e) => setConfigData(prev => ({ ...prev, tenureUnit: e.target.value }))}
                     className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-transparent border-none text-black focus:outline-none"
                   >
-                    <option value="0">Select Unit</option>
-                    <option value="Months">Months</option>
-                    <option value="Years">Years</option>
-                    <option value="Days">Days</option>
+                    <option value="0">{t('pc.unit.selectUnit')}</option>
+                    <option value="Months">{t('pc.unit.months')}</option>
+                    <option value="Years">{t('pc.unit.years')}</option>
+                    <option value="Days">{t('pc.unit.days')}</option>
                   </select>
                 </div>
                 {validationErrors.maximumTenure && (
                   <p className="text-xs text-red-600 mt-1">{validationErrors.maximumTenure}</p>
                 )}
                 {!validationErrors.maximumTenure && (
-                  <p className="text-xs text-black mt-1">Maximum time investment can be held</p>
+                  <p className="text-xs text-black mt-1">{t('pc.tenure.maxHelp')}</p>
                 )}
               </div>
             </div>
@@ -778,16 +785,16 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, earlyWithdrawalAllowed: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <label htmlFor="earlyWithdrawal" className="ml-2 text-sm font-medium text-black">
-                  Allow Early Withdrawal
+                <label htmlFor="earlyWithdrawal" className="ms-2 text-sm font-medium text-black">
+                  {t('pc.tenure.allowEarly')}
                 </label>
               </div>
-              <p className="text-xs text-black mb-4">Permit investors to withdraw before tenure completion</p>
+              <p className="text-xs text-black mb-4">{t('pc.tenure.allowEarlyHelp')}</p>
 
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Early Withdrawal Penalty (%)
+                    {t('pc.tenure.penaltyLabel')}
                   </label>
                   <div className="relative">
                     <input
@@ -800,22 +807,22 @@ export default function ProductConfiguration() {
                     />
                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">Percentage penalty applied on early withdrawal</p>
+                  <p className="text-xs text-black mt-1">{t('pc.tenure.penaltyHelp')}</p>
                 </div>
               </div>
             </div>
 
             {/* Tenure Summary */}
             <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Tenure Summary</h4>
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.tenure.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">Min Tenure:</span>
-                  <span className="ml-2 text-black">{configData.minimumTenure} {configData.tenureUnit.toLowerCase()}</span>
+                  <span className="font-medium text-black">{t('pc.tenure.minTenure')}</span>
+                  <span className="ms-2 text-black">{configData.minimumTenure} {tenureUnitLabel(configData.tenureUnit)}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">Max Tenure:</span>
-                  <span className="ml-2 text-black">{configData.maximumTenure} {configData.tenureUnit.toLowerCase()}</span>
+                  <span className="font-medium text-black">{t('pc.tenure.maxTenure')}</span>
+                  <span className="ms-2 text-black">{configData.maximumTenure} {tenureUnitLabel(configData.tenureUnit)}</span>
                 </div>
               </div>
             </div>
@@ -836,21 +843,21 @@ export default function ProductConfiguration() {
                     onChange={(e) => setConfigData(prev => ({ ...prev, autoRenewal: e.target.checked }))}
                     className="rounded border-gray-300 text-black focus:ring-gray-500"
                   />
-                  <label htmlFor="autoRenewal" className="ml-2 text-sm font-medium text-black">
-                    Auto-Renewal
+                  <label htmlFor="autoRenewal" className="ms-2 text-sm font-medium text-black">
+                    {t('pc.period.autoRenewal')}
                   </label>
                 </div>
-                <p className="text-xs text-black">Automatically renew investment at maturity</p>
+                <p className="text-xs text-black">{t('pc.period.autoRenewalHelp')}</p>
               </div>
             </div>
 
             <div className="border-t pt-6">
-              <h4 className="text-lg font-medium text-black mb-4">Principal Withdrawal Settings</h4>
+              <h4 className="text-lg font-medium text-black mb-4">{t('pc.period.principalSettings')}</h4>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Principal Withdrawal Percentage at Maturity (%)
+                    {t('pc.period.principalPctLabel')}
                   </label>
                   <div className="relative">
                     <input
@@ -862,12 +869,12 @@ export default function ProductConfiguration() {
                     />
                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">Percentage of principal amount investor can withdraw at maturity</p>
+                  <p className="text-xs text-black mt-1">{t('pc.period.principalPctHelp')}</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Withdrawal Processing Time (Days)
+                    {t('pc.period.processingLabel')}
                   </label>
                   <input
                     value={configData.withdrawalProcessingDays}
@@ -875,7 +882,7 @@ export default function ProductConfiguration() {
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
                     placeholder="0"
                   />
-                  <p className="text-xs text-black mt-1">Number of days to process withdrawal requests</p>
+                  <p className="text-xs text-black mt-1">{t('pc.period.processingHelp')}</p>
                 </div>
               </div>
 
@@ -888,25 +895,25 @@ export default function ProductConfiguration() {
                     onChange={(e) => setConfigData(prev => ({ ...prev, allowPartialWithdrawal: e.target.checked }))}
                     className="rounded border-gray-300 text-black focus:ring-gray-500"
                   />
-                  <label htmlFor="partialWithdrawal" className="ml-2 text-sm font-medium text-black">
-                    Allow Partial Withdrawal
+                  <label htmlFor="partialWithdrawal" className="ms-2 text-sm font-medium text-black">
+                    {t('pc.period.partial')}
                   </label>
                 </div>
-                <p className="text-xs text-black">Allow investors to withdraw partial principal amount</p>
+                <p className="text-xs text-black">{t('pc.period.partialHelp')}</p>
               </div>
             </div>
 
             {/* Investment Period Summary */}
             <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Investment Period Summary</h4>
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.period.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">Principal Withdrawal:</span>
-                  <span className="ml-2 text-black">{configData.principalWithdrawalPercentage || 0}% at maturity</span>
+                  <span className="font-medium text-black">{t('pc.period.principalWithdrawal')}</span>
+                  <span className="ms-2 text-black">{t('pc.period.atMaturity', { value: configData.principalWithdrawalPercentage || 0 })}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">Processing Time:</span>
-                  <span className="ml-2 text-black">{configData.withdrawalProcessingDays || 0} days</span>
+                  <span className="font-medium text-black">{t('pc.period.processingTime')}</span>
+                  <span className="ms-2 text-black">{t('pc.period.days', { value: configData.withdrawalProcessingDays || 0 })}</span>
                 </div>
               </div>
             </div>
@@ -917,13 +924,13 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">Returns & Profit Distribution</h3>
-              <p className="text-sm text-black mb-6">Configure expected returns and profit distribution settings</p>
+              <h3 className="text-lg font-medium text-black mb-2">{t('pc.returns.title')}</h3>
+              <p className="text-sm text-black mb-6">{t('pc.returns.subtitle')}</p>
             </div>
 
             {/* Return Type Selection */}
             <div className="mb-6">
-              <label className="block text-sm font-medium text-black mb-3">Return Type *</label>
+              <label className="block text-sm font-medium text-black mb-3">{t('pc.returns.typeLabel')}</label>
               <div className="flex gap-6">
                 <label className="flex items-center">
                   <input
@@ -932,10 +939,10 @@ export default function ProductConfiguration() {
                     value="fixed"
                     checked={configData.returnType === 'fixed'}
                     onChange={() => setConfigData(prev => ({ ...prev, returnType: 'fixed' as 'fixed' | 'average' }))}
-                    className="text-[#10B981] border-gray-300 mr-2"
+                    className="text-[#10B981] border-gray-300 me-2"
                     style={{ accentColor: 'var(--foreground)' }}
                   />
-                  <span className="text-sm text-black ml-2">Fixed Return</span>
+                  <span className="text-sm text-black ms-2">{t('pc.returns.fixed')}</span>
                 </label>
                 <label className="flex items-center">
                   <input
@@ -944,10 +951,10 @@ export default function ProductConfiguration() {
                     value="average"
                     checked={configData.returnType === 'average'}
                     onChange={() => setConfigData(prev => ({ ...prev, returnType: 'average' as 'fixed' | 'average' }))}
-                    className="text-[#10B981] border-gray-300  mr-2"
+                    className="text-[#10B981] border-gray-300  me-2"
                     style={{ accentColor: 'var(--foreground)' }}
                   />
-                  <span className="text-sm  text-black ml-2">Average Return</span>
+                  <span className="text-sm  text-black ms-2">{t('pc.returns.average')}</span>
                 </label>
               </div>
             </div>
@@ -957,7 +964,7 @@ export default function ProductConfiguration() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Fixed Return Percentage *
+                    {t('pc.returns.fixedPctLabel')}
                   </label>
                   <div className="relative">
                     <input
@@ -978,7 +985,7 @@ export default function ProductConfiguration() {
                     />
                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">Fixed return percentage (cannot exceed 100%)</p>
+                  <p className="text-xs text-black mt-1">{t('pc.returns.fixedPctHelp')}</p>
                 </div>
               </div>
             )}
@@ -988,7 +995,7 @@ export default function ProductConfiguration() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Expected Return (Min %) *
+                    {t('pc.returns.minLabel')}
                   </label>
                   <div className="relative">
                     <input
@@ -1002,12 +1009,12 @@ export default function ProductConfiguration() {
                     />
                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">Minimum expected annual return percentage</p>
+                  <p className="text-xs text-black mt-1">{t('pc.returns.minHelp')}</p>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Expected Return (Max %) *
+                    {t('pc.returns.maxLabel')}
                   </label>
                   <div className="relative">
                     <input
@@ -1021,7 +1028,7 @@ export default function ProductConfiguration() {
                     />
                     <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
                   </div>
-                  <p className="text-xs text-black mt-1">Maximum expected annual return percentage</p>
+                  <p className="text-xs text-black mt-1">{t('pc.returns.maxHelp')}</p>
                 </div>
               </div>
             )}
@@ -1029,7 +1036,7 @@ export default function ProductConfiguration() {
             <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Profit Distribution Frequency *
+                  {t('pc.returns.freqLabel')}
                 </label>
                 <select
                   value={configData.profitDistributionFrequency}
@@ -1037,12 +1044,12 @@ export default function ProductConfiguration() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                   required
                 >
-                  <option value={0}>Quarterly</option>
-                  <option value={1}>SemiAnnually</option>
-                  <option value={2}>Annually</option>
-                  <option value={3}>OnMaturity</option>
+                  <option value={0}>{t('pc.freq.quarterly')}</option>
+                  <option value={1}>{t('pc.freq.semiAnnually')}</option>
+                  <option value={2}>{t('pc.freq.annually')}</option>
+                  <option value={3}>{t('pc.freq.onMaturity')}</option>
                 </select>
-                <p className="text-xs text-black mt-1">How often profits are distributed to investors</p>
+                <p className="text-xs text-black mt-1">{t('pc.returns.freqHelp')}</p>
               </div>
             </div>
 
@@ -1055,11 +1062,11 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, guaranteedReturn: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   <label htmlFor="guaranteedReturn" className="text-sm font-medium text-black">
-                    Guaranteed Return
+                    {t('pc.returns.guaranteed')}
                   </label>
-                  <p className="text-xs text-black">Return rate is guaranteed regardless of performance</p>
+                  <p className="text-xs text-black">{t('pc.returns.guaranteedHelp')}</p>
                 </div>
               </div>
 
@@ -1071,31 +1078,31 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, enableCompounding: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   <label htmlFor="enableCompounding" className="text-sm font-medium text-black">
-                    Enable Compounding
+                    {t('pc.returns.compounding')}
                   </label>
-                  <p className="text-xs text-black">Allow profits to be reinvested automatically</p>
+                  <p className="text-xs text-black">{t('pc.returns.compoundingHelp')}</p>
                 </div>
               </div>
             </div>
 
             {/* Returns Summary */}
             <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Returns Summary</h4>
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.returns.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">Expected Return:</span>
-                  <span className="ml-2 text-black">
-                    {configData.returnType === 'fixed' 
-                      ? `${configData.fixedReturnPercentage || 0}% (Fixed)`
-                      : `${configData.expectedReturnMin || 0}% - ${configData.expectedReturnMax || 0}% (Average)`
+                  <span className="font-medium text-black">{t('pc.returns.expectedReturn')}</span>
+                  <span className="ms-2 text-black">
+                    {configData.returnType === 'fixed'
+                      ? t('pc.returns.summaryFixed', { value: configData.fixedReturnPercentage || 0 })
+                      : t('pc.returns.summaryAverage', { min: configData.expectedReturnMin || 0, max: configData.expectedReturnMax || 0 })
                     }
                   </span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">Distribution:</span>
-                  <span className="ml-2 text-black">{getReturnTermText(configData.profitDistributionFrequency)}</span>
+                  <span className="font-medium text-black">{t('pc.returns.distribution')}</span>
+                  <span className="ms-2 text-black">{getReturnTermText(configData.profitDistributionFrequency)}</span>
                 </div>
               </div>
             </div>
@@ -1106,14 +1113,14 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">Investor Settings</h3>
-              <p className="text-sm text-black mb-6">Configure investor limits and participation rules</p>
+              <h3 className="text-lg font-medium text-black mb-2">{t('pc.investors.title')}</h3>
+              <p className="text-sm text-black mb-6">{t('pc.investors.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Maximum Number of Investors *
+                  {t('pc.investors.maxLabel')}
                 </label>
                 <input
                   value={configData.maxInvestors}
@@ -1121,12 +1128,12 @@ export default function ProductConfiguration() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
                   placeholder="0"
                 />
-                <p className="text-xs text-black mt-1">Maximum number of investors allowed for this product</p>
+                <p className="text-xs text-black mt-1">{t('pc.investors.maxHelp')}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Min Investors to Activate
+                  {t('pc.investors.minLabel')}
                 </label>
                 <input
                   value={configData.minInvestorsToActivate}
@@ -1134,7 +1141,7 @@ export default function ProductConfiguration() {
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black placeholder:text-black"
                   placeholder="0"
                 />
-                <p className="text-xs text-black mt-1">Minimum investors required before product activation</p>
+                <p className="text-xs text-black mt-1">{t('pc.investors.minHelp')}</p>
               </div>
             </div>
 
@@ -1147,18 +1154,18 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, allowMultipleInvestments: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   <label htmlFor="allowMultipleInvestments" className="text-sm font-medium text-black">
-                    Allow Multiple Investments per User
+                    {t('pc.investors.allowMultiple')}
                   </label>
-                  <p className="text-xs text-black">User can make multiple investments in this product</p>
+                  <p className="text-xs text-black">{t('pc.investors.allowMultipleHelp')}</p>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-1 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-black mb-2">
-                    Maximum Investments per User
+                    {t('pc.investors.maxPerUserLabel')}
                   </label>
                   <input
                     value={configData.maxInvestmentsPerUser}
@@ -1167,22 +1174,22 @@ export default function ProductConfiguration() {
                     placeholder="0"
                     disabled={!configData.allowMultipleInvestments}
                   />
-                  <p className="text-xs text-black mt-1">Maximum number of investments a single user can make</p>
+                  <p className="text-xs text-black mt-1">{t('pc.investors.maxPerUserHelp')}</p>
                 </div>
               </div>
             </div>
 
             {/* Investor Settings Summary */}
             <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Investor Settings Summary</h4>
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.investors.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">Max Investors:</span>
-                  <span className="ml-2 text-black">{configData.maxInvestors.toLocaleString()}</span>
+                  <span className="font-medium text-black">{t('pc.investors.maxInvestors')}</span>
+                  <span className="ms-2 text-black">{configData.maxInvestors.toLocaleString()}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">Min to Activate:</span>
-                  <span className="ml-2 text-black">{configData.minInvestorsToActivate || 0}</span>
+                  <span className="font-medium text-black">{t('pc.investors.minToActivate')}</span>
+                  <span className="ms-2 text-black">{configData.minInvestorsToActivate || 0}</span>
                 </div>
               </div>
             </div>
@@ -1193,32 +1200,32 @@ export default function ProductConfiguration() {
         return (
           <div className="space-y-6">
             <div>
-              <h3 className="text-lg font-medium text-black mb-2">Advanced Configuration</h3>
-              <p className="text-sm text-black mb-6">Additional settings and compliance requirements</p>
+              <h3 className="text-lg font-medium text-black mb-2">{t('pc.advanced.title')}</h3>
+              <p className="text-sm text-black mb-6">{t('pc.advanced.subtitle')}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Risk Level
+                  {t('pc.advanced.riskLabel')}
                 </label>
                 <select
                   value={configData.riskLevel}
                   onChange={(e) => setConfigData(prev => ({ ...prev, riskLevel: Number(e.target.value) }))}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-black"
                 >
-                  <option value={0}>Low</option>
-                  <option value={1}>Medium</option>
-                  <option value={2}>High</option>
-                  <option value={3}>Very High</option>
-                  <option value={4}>Extreme</option>
+                  <option value={0}>{t('pc.risk.low')}</option>
+                  <option value={1}>{t('pc.risk.medium')}</option>
+                  <option value={2}>{t('pc.risk.high')}</option>
+                  <option value={3}>{t('pc.risk.veryHigh')}</option>
+                  <option value={4}>{t('pc.risk.extreme')}</option>
                 </select>
-                <p className="text-xs text-black mt-1">Risk classification for this investment product</p>
+                <p className="text-xs text-black mt-1">{t('pc.advanced.riskHelp')}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  Processing Fee *
+                  {t('pc.advanced.processingFeeLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -1233,11 +1240,11 @@ export default function ProductConfiguration() {
                   />
                 
                 </div>
-                <p className="text-xs text-black mt-1">Processing fee charged for this product</p>
+                <p className="text-xs text-black mt-1">{t('pc.advanced.processingFeeHelp')}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                 Investment Collection Limit 
+                 {t('pc.advanced.collectionLimitLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -1252,12 +1259,12 @@ export default function ProductConfiguration() {
                   />
                  
                 </div>
-                <p className="text-xs text-black mt-1">Processing fee charged for this product</p>
+                <p className="text-xs text-black mt-1">{t('pc.advanced.processingFeeHelp')}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-black mb-2">
-                  VAT *
+                  {t('pc.advanced.vatLabel')}
                 </label>
                 <div className="relative">
                   <input
@@ -1272,7 +1279,7 @@ export default function ProductConfiguration() {
                   />
                   <span className="absolute right-2 top-1/2 transform -translate-y-1/2 text-black">%</span>
                 </div>
-                <p className="text-xs text-black mt-1">VAT percentage applied to this product</p>
+                <p className="text-xs text-black mt-1">{t('pc.advanced.vatHelp')}</p>
               </div>
             </div>
 
@@ -1285,11 +1292,11 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, shariahCompliant: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   <label htmlFor="shariahCompliant" className="text-sm font-medium text-black">
-                    Shariah Compliant
+                    {t('pc.advanced.shariah')}
                   </label>
-                  <p className="text-xs text-black">Product follows Shariah compliance principles</p>
+                  <p className="text-xs text-black">{t('pc.advanced.shariahHelp')}</p>
                 </div>
               </div>
 
@@ -1301,11 +1308,11 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, kycRequired: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   <label htmlFor="kycRequired" className="text-sm font-medium text-black">
-                    KYC Required
+                    {t('pc.advanced.kyc')}
                   </label>
-                  <p className="text-xs text-black">Require KYC verification before investment</p>
+                  <p className="text-xs text-black">{t('pc.advanced.kycHelp')}</p>
                 </div>
               </div>
 
@@ -1317,11 +1324,11 @@ export default function ProductConfiguration() {
                   onChange={(e) => setConfigData(prev => ({ ...prev, regulatoryApprovalRequired: e.target.checked }))}
                   className="rounded border-gray-300 text-black focus:ring-gray-500"
                 />
-                <div className="ml-2">
+                <div className="ms-2">
                   <label htmlFor="regulatoryApprovalRequired" className="text-sm font-medium text-black">
-                    Regulatory Approval Required
+                    {t('pc.advanced.regApproval')}
                   </label>
-                  <p className="text-xs text-black">Require regulatory approval before activation</p>
+                  <p className="text-xs text-black">{t('pc.advanced.regApprovalHelp')}</p>
                 </div>
               </div>
 
@@ -1330,19 +1337,19 @@ export default function ProductConfiguration() {
 
             {/* Advanced Settings Summary */}
             <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Advanced Settings Summary</h4>
+              <h4 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.advanced.summary')}</h4>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                 <div>
-                  <span className="font-medium text-black">Risk Level:</span>
-                  <span className="ml-2 text-black">{getRiskLevelText(configData.riskLevel)}</span>
+                  <span className="font-medium text-black">{t('pc.advanced.riskLevel')}</span>
+                  <span className="ms-2 text-black">{getRiskLevelText(configData.riskLevel)}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">Processing Fee:</span>
-                  <span className="ml-2 text-black">SAR {configData.processingFee.toLocaleString()}</span>
+                  <span className="font-medium text-black">{t('pc.advanced.processingFee')}</span>
+                  <span className="ms-2 text-black">SAR {configData.processingFee.toLocaleString()}</span>
                 </div>
                 <div>
-                  <span className="font-medium text-black">VAT:</span>
-                  <span className="ml-2 text-black">{configData.vat}%</span>
+                  <span className="font-medium text-black">{t('pc.advanced.vat')}</span>
+                  <span className="ms-2 text-black">{configData.vat}%</span>
                 </div>
               </div>
             </div>
@@ -1383,13 +1390,13 @@ export default function ProductConfiguration() {
             onClick={handleCancel}
             className="flex items-center text-black hover:text-black"
           >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Back
+            <ArrowLeft className="w-5 h-5 me-2" />
+            {t('common:back')}
           </button>
           <div>
             <div className="flex items-center space-x-3">
-              <h1 className="text-2xl font-bold text-black mr-2 ml-2">
-                {isEditMode ? 'Edit Investment Configuration' : 'Investment Configuration'}
+              <h1 className="text-2xl font-bold text-black me-2 ms-2">
+                {isEditMode ? t('pc.header.editTitle') : t('pc.header.title')}
               </h1>
               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                 product?.productStatus === 0 ? 'bg-green-100 text-green-800' : // Active
@@ -1399,8 +1406,8 @@ export default function ProductConfiguration() {
                 product?.productStatus === 4 ? 'bg-gray-100 text-gray-900' : // Launching
                 'bg-gray-100 text-gray-800' // Default
               }`}>
-                <CheckCircle className="w-3 h-3 mr-1" />
-                {product ? getProductStatusText(product.productStatus) : 'Loading...'}
+                <CheckCircle className="w-3 h-3 me-1" />
+                {product ? getProductStatusText(product.productStatus) : t('pc.header.loading')}
               </span>
             </div>
           </div>
@@ -1418,8 +1425,8 @@ export default function ProductConfiguration() {
               </>
             ) : (
               <>
-                <Settings className="w-4 h-4 mr-2" />
-                Edit Configuration
+                <Settings className="w-4 h-4 me-2" />
+                {t('pc.header.editConfig')}
               </>
             )}
           </button>
@@ -1435,9 +1442,9 @@ export default function ProductConfiguration() {
               <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
             </svg>
           </div>
-          <div className="ml-3">
+          <div className="ms-3">
             <p className="text-sm text-gray-800">
-              <strong>Important:</strong> Changes to investment configuration will only apply to new investments. Existing investments will continue with their original settings.
+              <strong>{t('pc.banner.important')}</strong> {t('pc.banner.text')}
             </p>
           </div>
         </div>
@@ -1459,7 +1466,7 @@ export default function ProductConfiguration() {
                 }`}
                 style={{ color: 'var(--theme-heading-text-color)' }}
               >
-                <Icon className="w-4 h-4 mr-2" />
+                <Icon className="w-4 h-4 me-2" />
                 {tab.label}
               </button>
             );
@@ -1475,11 +1482,11 @@ export default function ProductConfiguration() {
       {/* Configuration Summary - Only show on Amounts tab */}
       {activeTab === 'amounts' && (
         <div style={{ backgroundColor: 'var(--color-surface-mint)' }} className="border border-gray-200 rounded-lg p-6">
-          <h3 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>Configuration Summary</h3>
+          <h3 className="text-lg font-medium text-black mb-4" style={{ color: 'var(--theme-heading-text-color)' }}>{t('pc.summary.title')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
             <div>
-              <span className="font-medium text-black">Min Investment:</span>
-              <span className="ml-2 text-black">
+              <span className="font-medium text-black">{t('pc.summary.minInvestment')}</span>
+              <span className="ms-2 text-black">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   const currencyDisplay = selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1488,8 +1495,8 @@ export default function ProductConfiguration() {
               </span>
             </div>
             <div>
-              <span className="font-medium text-black">Max Investment:</span>
-              <span className="ml-2 text-black">
+              <span className="font-medium text-black">{t('pc.summary.maxInvestment')}</span>
+              <span className="ms-2 text-black">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   const currencyDisplay = selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1498,8 +1505,8 @@ export default function ProductConfiguration() {
               </span>
             </div>
             <div>
-              <span className="font-medium text-black">Increment:</span>
-              <span className="ml-2 text-black">
+              <span className="font-medium text-black">{t('pc.summary.increment')}</span>
+              <span className="ms-2 text-black">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   const currencyDisplay = selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1508,8 +1515,8 @@ export default function ProductConfiguration() {
               </span>
             </div>
             <div>
-              <span className="font-medium text-black">Currency:</span>
-              <span className="ml-2 text-black">
+              <span className="font-medium text-black">{t('pc.summary.currency')}</span>
+              <span className="ms-2 text-black">
                 {(() => {
                   const selectedCurrency = currencies.find(c => c.id === configData.baseCurrency);
                   return selectedCurrency ? `${selectedCurrency.symbol || ''} ${selectedCurrency.name || selectedCurrency.currencyCode}` : configData.baseCurrency;
@@ -1526,7 +1533,7 @@ export default function ProductConfiguration() {
           onClick={handleCancel}
           className="px-4 py-2 text-sm font-medium text-black bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
         >
-          Cancel
+          {t('common:cancel')}
         </button>
         <button
           onClick={handleSave}
@@ -1536,15 +1543,15 @@ export default function ProductConfiguration() {
           {saving ? (
             <>
               <Loader />
-              {activeTab === 'advanced' ? 'Saving...' : 'Processing...'}
+              {activeTab === 'advanced' ? t('pc.action.saving') : t('pc.action.processing')}
             </>
           ) : (
             <>
-              <Save className="w-4 h-4 mr-2" />
-              {activeTab === 'advanced' ? 'Save Configuration' : (() => {
+              <Save className="w-4 h-4 me-2" />
+              {activeTab === 'advanced' ? t('pc.action.saveConfig') : (() => {
                 const currentTabIndex = tabs.findIndex(tab => tab.id === activeTab);
                 const nextTab = tabs[currentTabIndex + 1];
-                return `Continue to ${nextTab.label}`;
+                return t('pc.action.continueTo', { tab: nextTab.label });
               })()}
             </>
           )}

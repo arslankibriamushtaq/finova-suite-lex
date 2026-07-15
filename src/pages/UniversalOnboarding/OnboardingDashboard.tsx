@@ -902,7 +902,7 @@ const OnboardingDashboard: React.FC = () => {
                                <div className="space-y-3">
                                   {(step.fields || []).map((field: any, fIdx: number) => (
                                     <div key={fIdx} className="space-y-1">
-                                       <label className="text-[9px] font-bold text-slate-500 ml-1 uppercase">{field.fieldLabel || field.label}</label>
+                                       <label className="text-[9px] font-bold text-slate-500 ms-1 uppercase">{field.fieldLabel || field.label}</label>
                                        {field.fieldType === 'BUTTON' ? (
                                          <Button size="small" type="primary" block className="rounded-lg text-[10px] h-8">{field.fieldLabel || 'Action Button'}</Button>
                                        ) : field.fieldType === 'DOCUMENT_SCAN' ? (

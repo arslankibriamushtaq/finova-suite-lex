@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Input } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -167,6 +168,22 @@ const StatusBadge = ({ status }: { status: string }) => (
 );
 
 const WalletDashboard = () => {
+  const { t } = useTranslation("walletBlocks");
+  // Status filter labels are keyed by the (identifier) status value; the enum
+  // VALUES stay in code and are translated only at render.
+  const statusLabel = (v: string) => {
+    const map: Record<string, string> = {
+      ALL: "wallets.status.all",
+      PENDING_ACTIVATION: "wallets.status.pendingActivation",
+      ACTIVE: "wallets.status.active",
+      FROZEN: "wallets.status.frozen",
+      SUSPENDED: "wallets.status.suspended",
+      CLOSED: "wallets.status.closed",
+    };
+    return map[v] ? t(map[v]) : v;
+  };
+  // Lifecycle action labels keyed by the action identifier (freeze, close, …).
+  const actionLabel = (a: WalletLifecycleAction) => t(`wallets.action.${a}`);
   const [data, setData] = useState<WalletResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -230,7 +247,7 @@ const WalletDashboard = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load wallet transactions"
+        error?.response?.data?.message || t("wallets.toast.loadTxFailed")
       );
       setTransactions([]);
     } finally {
@@ -276,7 +293,7 @@ const WalletDashboard = () => {
       setTotalPage(pg?.totalPages ?? (Math.ceil(total / pageSize) || 1));
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load wallets");
+      toast.error(t("wallets.toast.loadWalletsFailed"));
       setData([]);
     } finally {
       setIsLoading(false);
@@ -292,7 +309,7 @@ const WalletDashboard = () => {
       if (live) setDetail(live);
     } catch (error) {
       console.error(error);
-      toast.error("Failed to load live wallet detail");
+      toast.error(t("wallets.toast.loadDetailFailed"));
     } finally {
       setIsDetailLoading(false);
     }
@@ -311,7 +328,9 @@ const WalletDashboard = () => {
         reason: actionReason.trim() || undefined,
       });
       toast.success(
-        `Wallet ${ACTION_META[actionTarget.action].label.toLowerCase()} successful`
+        t("wallets.toast.actionSuccess", {
+          action: actionLabel(actionTarget.action).toLowerCase(),
+        })
       );
       setActionTarget(null);
       loadWallets();
@@ -319,7 +338,7 @@ const WalletDashboard = () => {
       console.error(error);
       toast.error(
         error?.response?.data?.message ||
-          `Failed to ${actionTarget.action} wallet`
+          t("wallets.toast.actionFailed", { action: actionTarget.action })
       );
     } finally {
       setIsActing(false);
@@ -328,28 +347,28 @@ const WalletDashboard = () => {
 
   const headers = [
     {
-      name: "Wallet Number",
+      name: t("wallets.col.walletNumber"),
       cell: (row: WalletResponse) => (
         <span className="font-medium text-foreground">{row.walletNumber || "-"}</span>
       ),
       width: "170px",
     },
     {
-      name: "Account Number",
+      name: t("wallets.col.accountNumber"),
       cell: (row: WalletResponse) => (
         <span className="font-mono text-xs">{row.accountNumber || "-"}</span>
       ),
       width: "180px",
     },
     {
-      name: "Name",
+      name: t("wallets.col.name"),
       cell: (row: WalletResponse) => (
         <span className="text-sm">{row.maskedName || "-"}</span>
       ),
       width: "150px",
     },
     {
-      name: "Available Balance",
+      name: t("wallets.col.availableBalance"),
       cell: (row: WalletResponse) => (
         <span className="font-medium">
           {formatMoney(row.availableBalance, row.currency)}
@@ -358,12 +377,12 @@ const WalletDashboard = () => {
       width: "180px",
     },
     {
-      name: "Status",
+      name: t("wallets.col.status"),
       cell: (row: WalletResponse) => <StatusBadge status={row.status} />,
       width: "140px",
     },
     {
-      name: "Created At",
+      name: t("wallets.col.createdAt"),
       cell: (row: WalletResponse) => (
         <span className="text-sm text-muted-foreground">
           {formatDate(row.createdAt)}
@@ -372,7 +391,7 @@ const WalletDashboard = () => {
       width: "170px",
     },
     {
-      name: "Actions",
+      name: t("wallets.col.actions"),
       cell: (row: WalletResponse) => {
         const lifecycleActions = ACTIONS_BY_STATUS[row.status] || [];
         return (
@@ -387,7 +406,7 @@ const WalletDashboard = () => {
                   type="button"
                   className="wallet-brand-btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg px-4 py-2 text-sm font-medium shadow-sm transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
-                  Select
+                  {t("wallets.select")}
                   <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                 </button>
               </DropdownMenuTrigger>
@@ -402,21 +421,21 @@ const WalletDashboard = () => {
                   className="cursor-pointer gap-2"
                 >
                   <Eye className="h-4 w-4" />
-                  <span>View Detail</span>
+                  <span>{t("wallets.viewDetail")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => openTransactions(row)}
                   className="cursor-pointer gap-2"
                 >
                   <ArrowLeftRight className="h-4 w-4" />
-                  <span>Transactions</span>
+                  <span>{t("wallets.transactions")}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => setBeneficiaryCustomerId(row.customerId)}
                   className="cursor-pointer gap-2"
                 >
                   <Users className="h-4 w-4" />
-                  <span>Beneficiaries</span>
+                  <span>{t("wallets.beneficiaries")}</span>
                 </DropdownMenuItem>
                 {lifecycleActions.length > 0 && <DropdownMenuSeparator />}
                 {lifecycleActions.map((action) => {
@@ -432,7 +451,7 @@ const WalletDashboard = () => {
                       }`}
                     >
                       <meta.Icon className="h-4 w-4" />
-                      <span>{meta.label}</span>
+                      <span>{actionLabel(action)}</span>
                     </DropdownMenuItem>
                   );
                 })}
@@ -462,19 +481,19 @@ const WalletDashboard = () => {
     txCurrentPage * txSize
   );
   const txFilters: { key: "ALL" | "IN" | "OUT"; label: string }[] = [
-    { key: "ALL", label: `All (${transactions.length})` },
-    { key: "IN", label: `Received (${receivedCount})` },
-    { key: "OUT", label: `Sent (${sentCount})` },
+    { key: "ALL", label: t("wallets.tx.filter.all", { count: transactions.length }) },
+    { key: "IN", label: t("wallets.tx.filter.received", { count: receivedCount }) },
+    { key: "OUT", label: t("wallets.tx.filter.sent", { count: sentCount }) },
   ];
 
   const txHeaders = [
     {
-      name: "#",
+      name: t("wallets.tx.col.index"),
       cell: (_row: any, index: number) => (txCurrentPage - 1) * txSize + index + 1,
       width: "60px",
     },
     {
-      name: "Date",
+      name: t("wallets.tx.col.date"),
       cell: (row: any) => (
         <span className="text-xs text-muted-foreground">
           {formatDate(txGet(row, ["createdAt", "transactionDate", "timestamp", "date"], null))}
@@ -483,7 +502,7 @@ const WalletDashboard = () => {
       width: "170px",
     },
     {
-      name: "Type",
+      name: t("wallets.tx.col.type"),
       cell: (row: any) => {
         const dir = txDirection(row);
         return (
@@ -506,7 +525,7 @@ const WalletDashboard = () => {
       width: "180px",
     },
     {
-      name: "Reference",
+      name: t("wallets.tx.col.reference"),
       cell: (row: any) => (
         <span className="font-mono text-xs text-muted-foreground break-all">
           {txGet(row, ["reference", "transactionReference", "referenceNumber", "id"], "-")}
@@ -514,7 +533,7 @@ const WalletDashboard = () => {
       ),
     },
     {
-      name: "Transfer Number",
+      name: t("wallets.tx.col.transferNumber"),
       cell: (row: any) => (
         <span className="font-mono text-xs text-muted-foreground break-all">
           {txGet(row, ["transferNumber", "transfer_number"], "-")}
@@ -523,7 +542,7 @@ const WalletDashboard = () => {
       width: "180px",
     },
     {
-      name: "Amount",
+      name: t("wallets.tx.col.amount"),
       cell: (row: any) => {
         const dir = txDirection(row);
         const amount = txGet(row, ["amount", "transactionAmount"], null);
@@ -549,7 +568,7 @@ const WalletDashboard = () => {
       width: "160px",
     },
     {
-      name: "Balance After",
+      name: t("wallets.tx.col.balanceAfter"),
       cell: (row: any) =>
         formatMoney(
           txGet(row, ["balanceAfter", "runningBalance", "balance"], null),
@@ -558,7 +577,7 @@ const WalletDashboard = () => {
       width: "150px",
     },
     {
-      name: "Status",
+      name: t("wallets.tx.col.status"),
       cell: (row: any) => (
         <span className="inline-flex items-center rounded-md bg-muted px-2 py-0.5 text-xs font-medium text-foreground">
           {String(txGet(row, ["status", "state"], "-")).replace(/_/g, " ")}
@@ -567,7 +586,7 @@ const WalletDashboard = () => {
       width: "130px",
     },
     {
-      name: "Purpose Note",
+      name: t("wallets.tx.col.purposeNote"),
       cell: (row: any) => {
         const note = txGet(row, ["purposeNote", "purpose_note", "note", "description"], "-");
         return (
@@ -584,12 +603,12 @@ const WalletDashboard = () => {
     <div className="service">
       <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
         <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
-          Wallets
+          {t("wallets.title")}
         </h3>
         <div className="d-flex align-items-center gap-2">
           <Input
             allowClear
-            placeholder="Search..."
+            placeholder={t("wallets.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
@@ -604,12 +623,12 @@ const WalletDashboard = () => {
               }}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Filter by status" />
+                <SelectValue placeholder={t("wallets.filterByStatus")} />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_OPTIONS.map((opt) => (
                   <SelectItem key={opt.value} value={opt.value}>
-                    {opt.label}
+                    {statusLabel(opt.value)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -622,7 +641,7 @@ const WalletDashboard = () => {
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("common:refresh")}
           </Button>
         </div>
       </div>
@@ -661,13 +680,13 @@ const WalletDashboard = () => {
         >
           {/* Header */}
           <DialogHeader
-            className="relative border-b px-6 pt-5 pb-3 text-left"
+            className="relative border-b px-6 pt-5 pb-3 text-start"
             style={{ borderColor: "var(--border)" }}
           >
             <button
               type="button"
               onClick={() => setDetail(null)}
-              aria-label="Close"
+              aria-label={t("common:close")}
               className="absolute flex items-center justify-center rounded-full transition-colors"
               style={{
                 top: 16,
@@ -697,13 +716,13 @@ const WalletDashboard = () => {
               <span className="wallet-brand-bg inline-flex h-9 w-9 items-center justify-center rounded-lg">
                 <WalletIcon className="h-5 w-5" />
               </span>
-              Wallet Detail
+              {t("wallets.detail.title")}
               {isDetailLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
               )}
             </DialogTitle>
             <DialogDescription style={{ marginTop: 2 }}>
-              Live balance enriched from the ledger.
+              {t("wallets.detail.subtitle")}
             </DialogDescription>
           </DialogHeader>
 
@@ -717,7 +736,7 @@ const WalletDashboard = () => {
                       className="text-xs font-medium uppercase tracking-wide"
                       style={{ opacity: 0.85 }}
                     >
-                      Available Balance
+                      {t("wallets.detail.availableBalance")}
                     </div>
                     <div style={{ fontSize: "1.75rem", fontWeight: 700, lineHeight: 1.2 }}>
                       {formatMoney(detail.availableBalance, detail.currency)}
@@ -730,13 +749,13 @@ const WalletDashboard = () => {
                   style={{ borderColor: "rgba(255,255,255,0.25)" }}
                 >
                   <div>
-                    <span style={{ opacity: 0.8 }}>Reserved: </span>
+                    <span style={{ opacity: 0.8 }}>{t("wallets.detail.reserved")}</span>
                     <span style={{ fontWeight: 600 }}>
                       {formatMoney(detail.reservedBalance, detail.currency)}
                     </span>
                   </div>
                   <div>
-                    <span style={{ opacity: 0.8 }}>Total: </span>
+                    <span style={{ opacity: 0.8 }}>{t("wallets.detail.total")}</span>
                     <span style={{ fontWeight: 600 }}>
                       {formatMoney(detail.totalBalance, detail.currency)}
                     </span>
@@ -749,12 +768,12 @@ const WalletDashboard = () => {
                 className="grid grid-cols-2 gap-x-6 gap-y-3 rounded-xl border p-4"
                 style={{ borderColor: "var(--border)" }}
               >
-                <Field label="Wallet Number" value={detail.walletNumber} />
-                <Field label="Account Number" value={detail.accountNumber} mono />
-                <Field label="Customer ID" value={detail.customerId} mono />
-                <Field label="Currency" value={detail.currency} />
-                <Field label="Created At" value={formatDate(detail.createdAt)} />
-                <Field label="Updated At" value={formatDate(detail.updatedAt)} />
+                <Field label={t("wallets.field.walletNumber")} value={detail.walletNumber} />
+                <Field label={t("wallets.field.accountNumber")} value={detail.accountNumber} mono />
+                <Field label={t("wallets.field.customerId")} value={detail.customerId} mono />
+                <Field label={t("wallets.field.currency")} value={detail.currency} />
+                <Field label={t("wallets.field.createdAt")} value={formatDate(detail.createdAt)} />
+                <Field label={t("wallets.field.updatedAt")} value={formatDate(detail.updatedAt)} />
               </div>
             </div>
           )}
@@ -764,7 +783,7 @@ const WalletDashboard = () => {
             style={{ borderColor: "var(--border)" }}
           >
             <Button variant="outline" onClick={() => setDetail(null)}>
-              Close
+              {t("common:close")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -784,18 +803,18 @@ const WalletDashboard = () => {
                     const Icon = ACTION_META[actionTarget.action].Icon;
                     return <Icon className="w-5 h-5" />;
                   })()}
-                  {ACTION_META[actionTarget.action].label} Wallet
+                  {t("wallets.actionDialog.title", { action: actionLabel(actionTarget.action) })}
                 </>
               )}
             </DialogTitle>
             <DialogDescription>
-              {actionTarget?.wallet.walletNumber} — provide an optional audit note.
+              {t("wallets.actionDialog.auditNote", { wallet: actionTarget?.wallet.walletNumber })}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
-            <Label>Reason (optional)</Label>
+            <Label>{t("wallets.actionDialog.reasonLabel")}</Label>
             <Textarea
-              placeholder="e.g. AML hold / review cleared"
+              placeholder={t("wallets.actionDialog.reasonPlaceholder")}
               value={actionReason}
               onChange={(e) => setActionReason(e.target.value)}
               rows={3}
@@ -803,7 +822,7 @@ const WalletDashboard = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setActionTarget(null)}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               variant={
@@ -820,10 +839,10 @@ const WalletDashboard = () => {
               disabled={isActing}
             >
               {isActing
-                ? "Processing..."
+                ? t("wallets.actionDialog.processing")
                 : actionTarget
-                ? ACTION_META[actionTarget.action].label
-                : "Confirm"}
+                ? actionLabel(actionTarget.action)
+                : t("common:confirm")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -848,13 +867,13 @@ const WalletDashboard = () => {
           }}
         >
           <DialogHeader
-            className="relative border-b px-6 pt-5 pb-3 text-left"
+            className="relative border-b px-6 pt-5 pb-3 text-start"
             style={{ borderColor: "var(--border)", flexShrink: 0 }}
           >
             <button
               type="button"
               onClick={() => setTxWallet(null)}
-              aria-label="Close"
+              aria-label={t("common:close")}
               className="absolute flex items-center justify-center rounded-full transition-colors"
               style={{
                 top: 16,
@@ -876,7 +895,7 @@ const WalletDashboard = () => {
               <span className="wallet-brand-bg inline-flex h-9 w-9 items-center justify-center rounded-lg">
                 <ArrowLeftRight className="h-5 w-5" />
               </span>
-              Wallet Transactions
+              {t("wallets.tx.title")}
               {isTxLoading && (
                 <RefreshCw className="h-4 w-4 animate-spin text-muted-foreground" />
               )}

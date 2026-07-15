@@ -4,8 +4,10 @@ import { getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
 import toast from "react-hot-toast";
 import TableView from "../TableView/TableView";
+import { useTranslation } from "react-i18next";
 
 function BayaanFinancialReport() {
+  const { t } = useTranslation("dashboard");
   const { id } = useParams();
   const [selectedYear, setSelectedYear] = useState("2015");
   const [loading, setLoading] = useState(false);
@@ -29,11 +31,11 @@ function BayaanFinancialReport() {
       if (response?.data?.success && response?.data?.data) {
         setFinancialData(response.data.data);
       } else {
-        toast.error("Failed to load financial data");
+        toast.error(t("bayaanReport.toast.loadFailed"));
       }
     } catch (error: any) {
       console.error("API Error:", error);
-      toast.error(error?.response?.data?.message || error?.message || "Failed to load financial data");
+      toast.error(error?.response?.data?.message || error?.message || t("bayaanReport.toast.loadFailed"));
     } finally {
       setLoading(false);
     }
@@ -76,17 +78,17 @@ function BayaanFinancialReport() {
 
   // Dynamic section data
   const companyInfoSection = {
-    heading: "Company Information",
+    heading: t("bayaanReport.companyInfo"),
     ...convertToTwoColumns(financialData?.company_information)
   };
 
   const generalInfoSection = {
-    heading: "General Information",
+    heading: t("bayaanReport.generalInfo"),
     ...convertToTwoColumns(financialData?.general_information)
   };
 
   const capitalInfoSection = {
-    heading: "Capital Information",
+    heading: t("bayaanReport.capitalInfo"),
     ...convertToTwoColumns(financialData?.capital_information)
   };
 
@@ -129,7 +131,7 @@ function BayaanFinancialReport() {
           <TableView className="mt-3" header={headers} data={data} />
         ) : (
           <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-            No data available
+            {t("common:noData")}
           </div>
         )}
       </div>
@@ -166,7 +168,7 @@ function BayaanFinancialReport() {
           </div>
         ) : (
           <div className="p-3 text-center" style={{ color: "#6C6C6C" }}>
-            No data available
+            {t("common:noData")}
           </div>
         )}
       </div>
@@ -186,7 +188,7 @@ function BayaanFinancialReport() {
           value={selectedYear}
           onChange={(e) => setSelectedYear(e.target.value)}
         >
-          <option value="">Select Year</option>
+          <option value="">{t("bayaanReport.selectYear")}</option>
           <option value="2015">2015</option>
           <option value="2016">2016</option>
           <option value="2017">2017</option>
@@ -194,7 +196,7 @@ function BayaanFinancialReport() {
           <option value="2019">2019</option>
           <option value="2020">2020</option>
         </select>
-        <button className="theme-btn-next">Fetch New Record</button>
+        <button className="theme-btn-next">{t("bayaanReport.fetchNewRecord")}</button>
       </div>
 
       <div className="profile-sec mt-3 mb-3">
@@ -202,7 +204,7 @@ function BayaanFinancialReport() {
           <div className="col-12">
           <div className="px-4">
             <h6 className="px-3 py-3" style={{ fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px", color: "#000000" }}>
-                Company Information
+                {t("bayaanReport.companyInfo")}
               </h6>
             </div>
             {/* Company Information Section */}
@@ -223,7 +225,7 @@ function BayaanFinancialReport() {
             {/* Financial Indicators Section */}
             <div className="px-4 mt-5">
               <h6 className="mb-3 px-3 py-3" style={{ color: "#000000", fontWeight: "700", backgroundColor: "rgb(240, 240, 240)", padding: "10px" }}>
-                Financial Indicators
+                {t("bayaanReport.financialIndicators")}
               </h6>
               
               <div className="p-3" style={{ backgroundColor: "#F8F8F8" }}>
@@ -256,21 +258,21 @@ function BayaanFinancialReport() {
 
             {/* Members of the Board of directors */}
             <div className="px-4 mt-4">
-              {membersData.length > 0 && renderTable(membersData, "Memebers of the Board of directors")}
+              {membersData.length > 0 && renderTable(membersData, t("bayaanReport.boardMembers"))}
             </div>
 
             {/* Financial Statements Section */}
             <div className="px-4 mt-5">
               <h6 className="mb-4 py-3 px-3" style={{ color: "#000000", fontWeight: "700",  backgroundColor: "rgb(240, 240, 240)", padding: "10px" }}>
-                Financial Statements
+                {t("bayaanReport.financialStatements")}
               </h6>
 
               {/* All financial statement tables rendered dynamically */}
-              {renderTable(financialPositionData, "Financial Position")}
-              {renderTable(incomeStatementData, "Income Statement")}
-              {renderTable(comprehensiveIncomeData, "Comprehensive Income")}
-              {renderTable(changesInEquityData, "Changes in Equity")}
-              {renderTable(cashFlowStatementData, "Cash Flow Statement")}
+              {renderTable(financialPositionData, t("bayaanReport.financialPosition"))}
+              {renderTable(incomeStatementData, t("bayaanReport.incomeStatement"))}
+              {renderTable(comprehensiveIncomeData, t("bayaanReport.comprehensiveIncome"))}
+              {renderTable(changesInEquityData, t("bayaanReport.changesInEquity"))}
+              {renderTable(cashFlowStatementData, t("bayaanReport.cashFlowStatement"))}
             </div>
           </div>
         </div>

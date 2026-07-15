@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Select } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 import { getAirBooking, getBusBooking } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
@@ -9,6 +10,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 const AirBooking = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -46,37 +48,37 @@ const AirBooking = () => {
   }, []);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "80px",
     },
 
     {
-      name: "TID",
+      name: t("sales.tid"),
       selector: (row: { trx_id: any }) => row.trx_id,
       sortable: true,
     },
     {
-      name: "Air Service",
+      name: t("airBooking.airService"),
       selector: (row: { service_name: any }) => row.service_name,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
     },
     {
-      name: "From",
+      name: t("range.from"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
     },
     {
-      name: "To",
+      name: t("range.to"),
       selector: (row: { mobileNumber: any }) => row.mobileNumber,
       sortable: true,
       width: "200px",
@@ -101,21 +103,21 @@ const AirBooking = () => {
     //   width: "170px",
     // },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount,
       sortable: true,
       width: "280px",
     },
 
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
       width: "380px",
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -132,7 +134,7 @@ const AirBooking = () => {
             cursor: row.status === "active" ? "pointer" : "default",
           }}
         >
-          {row.status === "completed" ? "paid" : "unpaid"}
+          {row.status === "completed" ? t("sales.paid") : t("sales.unpaid")}
         </div>
       ),
     },
@@ -164,15 +166,15 @@ const AirBooking = () => {
       const doc = new jsPDF();
   
       const tableColumn = [
-       "Sr:",
-        "TID",
-        "Air Service",
-        "Name",
-        "From",
-        "To",
-        "Amount",
-        "Created At",
-        "Status",
+       t("shared.sr"),
+        t("sales.tid"),
+        t("airBooking.airService"),
+        t("common:name"),
+        t("range.from"),
+        t("range.to"),
+        t("common:amount"),
+        t("common:createdAt"),
+        t("common:status"),
       ];
   
       const tableRows = mappedData?.map((item: any) => [
@@ -183,7 +185,7 @@ const AirBooking = () => {
         item.mobileNumber,
         item.amount,
         item.created_at,
-        item.status === "completed" ? "paid" : "unpaid",
+        item.status === "completed" ? t("sales.paid") : t("sales.unpaid"),
       ]);
   
       autoTable(doc, {
@@ -202,7 +204,7 @@ const AirBooking = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             // onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
 
@@ -220,11 +222,11 @@ const AirBooking = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
             <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -232,9 +234,9 @@ const AirBooking = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-            <button className="invoice-btn">Print</button>
+            <button className="invoice-btn">{t("common:print")}</button>
           </div>
         </div>
 

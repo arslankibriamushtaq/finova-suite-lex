@@ -10,6 +10,7 @@ import {
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const formatAmount = (n: number | string | undefined | null) =>
   Number(n || 0).toLocaleString(undefined, {
@@ -18,6 +19,7 @@ const formatAmount = (n: number | string | undefined | null) =>
   });
 
 const Ledger = () => {
+  const { t } = useTranslation("reports");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -113,24 +115,24 @@ const Ledger = () => {
 
   const columns = [
     {
-      name: "S No",
+      name: t('ledger.col.sNo'),
       selector: (row: { Sr: number }) => row.Sr,
       sortable: true,
       width: "70px",
     },
     {
-      name: "Date",
+      name: t('common:date'),
       selector: (row: any) => row.entryDate,
       sortable: true,
       width: "110px",
     },
     {
-      name: "Voucher #",
+      name: t('ledger.col.voucherNo'),
       selector: (row: any) => row.voucherNumber,
       sortable: true,
     },
     {
-      name: "Account",
+      name: t('ledger.col.account'),
       cell: (row: any) => (
         <div className="d-flex flex-column">
           <span className="fw-bold">{row.accountCode}</span>
@@ -140,35 +142,35 @@ const Ledger = () => {
       sortable: true,
     },
     {
-      name: "Type",
+      name: t('common:type'),
       selector: (row: any) => row.transactionType,
       sortable: true,
     },
     {
-      name: "Description",
+      name: t('common:description'),
       selector: (row: any) => row.description,
       wrap: true,
       grow: 2,
     },
     {
-      name: "Debit",
+      name: t('ledger.col.debit'),
       selector: (row: any) => formatAmount(row.debitAmount),
       sortable: true,
       right: true,
     },
     {
-      name: "Credit",
+      name: t('ledger.col.credit'),
       selector: (row: any) => formatAmount(row.creditAmount),
       sortable: true,
       right: true,
     },
     {
-      name: "Running Balance",
+      name: t('ledger.col.runningBalance'),
       selector: (row: any) => formatAmount(row.runningBalance),
       right: true,
     },
     {
-      name: "Status",
+      name: t('common:status'),
       selector: (row: any) => row.status,
     },
   ];
@@ -200,7 +202,7 @@ const Ledger = () => {
       }
     } catch (error: any) {
       console.error("Error fetching ledger:", error);
-      toast.error(error?.message || "Failed to fetch ledger report");
+      toast.error(error?.message || t('ledger.toast.fetchError'));
       setAccounts([]);
     } finally {
       setLoading(false);
@@ -268,7 +270,7 @@ const Ledger = () => {
             <span className="pro-head-badge">
               <Library className="h-4 w-4" />
             </span>
-            Ledger Report
+            {t('ledger.title')}
           </h3>
         </div>
 
@@ -276,7 +278,7 @@ const Ledger = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search by account, voucher, description, or type"
+            placeholder={t('ledger.searchPlaceholder')}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -286,14 +288,14 @@ const Ledger = () => {
             value={fromDate}
             onChange={(date) => setFromDate(date)}
             format="YYYY-MM-DD"
-            placeholder="From Date"
+            placeholder={t('filter.fromDate')}
             style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40 }}
           />
           <DatePicker
             value={toDate}
             onChange={(date) => setToDate(date)}
             format="YYYY-MM-DD"
-            placeholder="To Date"
+            placeholder={t('filter.toDate')}
             style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40 }}
           />
           <button
@@ -303,7 +305,7 @@ const Ledger = () => {
             disabled={filteredRows.length === 0}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t('action.exportCsv')}
           </button>
         </div>
       </div>
@@ -311,7 +313,7 @@ const Ledger = () => {
         <AntRow gutter={[16, 16]} className="mb-3">
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Total Entries</div>
+              <div style={{ fontSize: 14 }}>{t('ledger.summary.totalEntries')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {totalRows.toLocaleString()}
               </div>
@@ -319,7 +321,7 @@ const Ledger = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Total Debits</div>
+              <div style={{ fontSize: 14 }}>{t('ledger.summary.totalDebits')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(visibleTotals.debits)}
               </div>
@@ -327,7 +329,7 @@ const Ledger = () => {
           </AntCol>
           <AntCol xs={24} sm={12} lg={8}>
             <div className="card-product p-4 text-dark h-100">
-              <div style={{ fontSize: 14 }}>Total Credits</div>
+              <div style={{ fontSize: 14 }}>{t('ledger.summary.totalCredits')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(visibleTotals.credits)}
               </div>

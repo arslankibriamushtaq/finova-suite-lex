@@ -19,6 +19,7 @@ import {
   User
 } from 'lucide-react';
 import { cn } from '../../../../lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const investorStatements = [
   {
@@ -110,21 +111,21 @@ const investorStatements = [
 const statementTemplates = [
   {
     id: 1,
-    name: 'Monthly Portfolio Statement',
+    name: 'ist.tmpl.monthly',
     type: 'Monthly',
     lastModified: '2024-01-10',
     usage: 'Active'
   },
   {
     id: 2,
-    name: 'Quarterly Summary',
+    name: 'ist.tmpl.quarterly',
     type: 'Quarterly',
     lastModified: '2023-12-28',
     usage: 'Active'
   },
   {
     id: 3,
-    name: 'Annual Report',
+    name: 'ist.tmpl.annual',
     type: 'Annual',
     lastModified: '2023-12-15',
     usage: 'Active'
@@ -132,6 +133,9 @@ const statementTemplates = [
 ];
 
 export default function InvestorStatements() {
+  const { t } = useTranslation('investor');
+  const deliveryKey: Record<string, string> = { 'Email + Portal': 'ist.delivery.emailPortal', 'Email': 'ist.delivery.email', 'Portal Only': 'ist.delivery.portalOnly' };
+  const tDelivery = (v: string) => (deliveryKey[v] ? t(deliveryKey[v]) : v);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [periodFilter, setPeriodFilter] = useState('All Periods');
@@ -181,23 +185,23 @@ export default function InvestorStatements() {
   };
 
   const handleResendStatement = (statement: any) => {
-    alert(`Statement resent to ${statement.investorName}`);
+    alert(t('ist.resent', { name: statement.investorName }));
   };
 
   const handleDownloadStatement = (statement: any) => {
-    alert(`Downloading statement for ${statement.investorName}`);
+    alert(t('ist.downloading', { name: statement.investorName }));
   };
 
   const handleGenerateStatements = () => {
-    alert('Generating statements for all investors...');
+    alert(t('ist.generating'));
   };
 
   const handleBulkEmail = () => {
-    alert('Sending statements to all investors via email...');
+    alert(t('ist.bulkEmailSending'));
   };
 
   const formatDateTime = (dateString: string | null) => {
-    if (!dateString) return 'Never';
+    if (!dateString) return t('ist.never');
     return new Date(dateString).toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -217,32 +221,32 @@ export default function InvestorStatements() {
               to="/admin/reports"
               className="flex items-center text-gray-600 hover:text-gray-900"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Reports
+              <ArrowLeft className="w-4 h-4 me-2" />
+              {t('pl.backToReports')}
             </Link>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Investor Statements</h1>
-              <p className="text-gray-600">Individual account statements and performance reports</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('ist.title')}</h1>
+              <p className="text-gray-600">{t('ist.subtitle')}</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
             <button className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
+              <RefreshCw className="w-4 h-4 me-2" />
+              {t('common:refresh')}
             </button>
-            <button 
+            <button
               onClick={handleBulkEmail}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Mail className="w-4 h-4 mr-2" />
-              Bulk Email
+              <Mail className="w-4 h-4 me-2" />
+              {t('ist.bulkEmail')}
             </button>
-            <button 
+            <button
               onClick={handleGenerateStatements}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              Generate Statements
+              <FileText className="w-4 h-4 me-2" />
+              {t('ist.generateStatements')}
             </button>
           </div>
         </div>
@@ -253,9 +257,9 @@ export default function InvestorStatements() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Statements</p>
+              <p className="text-sm text-gray-600">{t('ist.totalStatements')}</p>
               <p className="text-2xl font-bold text-gray-900">{investorStatements.length}</p>
-              <p className="text-xs text-gray-500 mt-1">This period</p>
+              <p className="text-xs text-gray-500 mt-1">{t('ist.thisPeriod')}</p>
             </div>
             <FileText className="w-8 h-8 text-gray-700" />
           </div>
@@ -263,9 +267,9 @@ export default function InvestorStatements() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Delivered</p>
+              <p className="text-sm text-gray-600">{t('ist.delivered')}</p>
               <p className="text-2xl font-bold text-gray-900">{investorStatements.filter(s => s.status === 'Delivered').length}</p>
-              <p className="text-xs text-green-600 mt-1">Successfully sent</p>
+              <p className="text-xs text-green-600 mt-1">{t('ist.successfullySent')}</p>
             </div>
             <CheckCircle className="w-8 h-8 text-green-500" />
           </div>
@@ -273,9 +277,9 @@ export default function InvestorStatements() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Failed</p>
+              <p className="text-sm text-gray-600">{t('ist.failed')}</p>
               <p className="text-2xl font-bold text-gray-900">{investorStatements.filter(s => s.status === 'Failed').length}</p>
-              <p className="text-xs text-red-600 mt-1">Require attention</p>
+              <p className="text-xs text-red-600 mt-1">{t('ist.requireAttention')}</p>
             </div>
             <AlertTriangle className="w-8 h-8 text-red-500" />
           </div>
@@ -283,9 +287,9 @@ export default function InvestorStatements() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Access Rate</p>
+              <p className="text-sm text-gray-600">{t('ist.accessRate')}</p>
               <p className="text-2xl font-bold text-gray-900">78%</p>
-              <p className="text-xs text-gray-500 mt-1">Investors viewed</p>
+              <p className="text-xs text-gray-500 mt-1">{t('ist.investorsViewed')}</p>
             </div>
             <Eye className="w-8 h-8 text-purple-500" />
           </div>
@@ -299,10 +303,10 @@ export default function InvestorStatements() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search investors..."
+              placeholder={t('ist.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
             />
           </div>
           <select
@@ -310,29 +314,29 @@ export default function InvestorStatements() {
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
-            <option value="All Status">All Status</option>
-            <option value="Delivered">Delivered</option>
-            <option value="Pending">Pending</option>
-            <option value="Failed">Failed</option>
-            <option value="Processing">Processing</option>
+            <option value="All Status">{t('ist.allStatus')}</option>
+            <option value="Delivered">{t('ist.status.Delivered')}</option>
+            <option value="Pending">{t('ist.status.Pending')}</option>
+            <option value="Failed">{t('ist.status.Failed')}</option>
+            <option value="Processing">{t('ist.status.Processing')}</option>
           </select>
           <select
             value={periodFilter}
             onChange={(e) => setPeriodFilter(e.target.value)}
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
-            <option value="All Periods">All Periods</option>
+            <option value="All Periods">{t('ist.allPeriods')}</option>
             <option value="December 2023">December 2023</option>
             <option value="November 2023">November 2023</option>
             <option value="October 2023">October 2023</option>
           </select>
           <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter className="w-4 h-4 mr-2" />
-            More Filters
+            <Filter className="w-4 h-4 me-2" />
+            {t('ist.moreFilters')}
           </button>
         </div>
         <div className="text-sm text-gray-500">
-          {filteredStatements.length} of {investorStatements.length} statements
+          {t('ist.countLabel', { shown: filteredStatements.length, total: investorStatements.length })}
         </div>
       </div>
 
@@ -342,29 +346,29 @@ export default function InvestorStatements() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Investor
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.investor')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Period
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.period')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Portfolio Value
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.portfolioValue')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Performance
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.performance')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:status')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Delivery
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.delivery')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Accessed
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.lastAccessed')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -375,7 +379,7 @@ export default function InvestorStatements() {
                   <tr key={statement.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
                           <User className="w-5 h-5 text-gray-600" />
                         </div>
                         <div>
@@ -386,7 +390,7 @@ export default function InvestorStatements() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">{statement.period}</div>
-                      <div className="text-sm text-gray-500">Generated: {new Date(statement.statementDate).toLocaleDateString()}</div>
+                      <div className="text-sm text-gray-500">{t('ist.generatedLabel', { date: new Date(statement.statementDate).toLocaleDateString() })}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm font-medium text-gray-900">
@@ -396,52 +400,52 @@ export default function InvestorStatements() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        Month: {statement.monthlyReturn > 0 ? '+' : ''}{statement.monthlyReturn}%
+                        {t('ist.monthLabel', { value: `${statement.monthlyReturn > 0 ? '+' : ''}${statement.monthlyReturn}%` })}
                       </div>
                       <div className={`text-sm ${statement.ytdReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                        YTD: {statement.ytdReturn > 0 ? '+' : ''}{statement.ytdReturn}%
+                        {t('ist.ytdLabel', { value: `${statement.ytdReturn > 0 ? '+' : ''}${statement.ytdReturn}%` })}
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <StatusIcon className="w-4 h-4 mr-2 text-gray-400" />
+                        <StatusIcon className="w-4 h-4 me-2 text-gray-400" />
                         <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(statement.status))}>
-                          {statement.status}
+                          {t(`ist.status.${statement.status}`)}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{statement.deliveryMethod}</div>
+                      <div className="text-sm text-gray-900">{tDelivery(statement.deliveryMethod)}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {formatDateTime(statement.lastAccessed)}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                       <div className="flex items-center space-x-2">
                         <button 
                           onClick={() => handleViewStatement(statement)}
-                          className="text-black hover:text-blue-900" 
-                          title="View Statement"
+                          className="text-black hover:text-blue-900"
+                          title={t('ist.viewStatement')}
                         >
                           <Eye className="w-4 h-4" />
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleDownloadStatement(statement)}
-                          className="text-gray-600 hover:text-gray-900" 
-                          title="Download"
+                          className="text-gray-600 hover:text-gray-900"
+                          title={t('doc.download')}
                         >
                           <Download className="w-4 h-4" />
                         </button>
                         {statement.status === 'Failed' && (
-                          <button 
+                          <button
                             onClick={() => handleResendStatement(statement)}
-                            className="text-green-600 hover:text-green-900" 
-                            title="Resend"
+                            className="text-green-600 hover:text-green-900"
+                            title={t('ist.resend')}
                           >
                             <Send className="w-4 h-4" />
                           </button>
                         )}
-                        <button className="text-gray-400 hover:text-gray-500" title="More">
+                        <button className="text-gray-400 hover:text-gray-500" title={t('common:more')}>
                           <MoreHorizontal className="w-4 h-4" />
                         </button>
                       </div>
@@ -457,30 +461,30 @@ export default function InvestorStatements() {
       {/* Statement Templates */}
       <div className="mt-8 bg-white rounded-lg border border-gray-200 overflow-hidden">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Statement Templates</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('ist.templatesTitle')}</h3>
           <button className="flex items-center px-4 py-2 text-sm font-medium text-black border border-black rounded-lg hover:bg-gray-50">
-            <FileText className="w-4 h-4 mr-2" />
-            Manage Templates
+            <FileText className="w-4 h-4 me-2" />
+            {t('ist.manageTemplates')}
           </button>
         </div>
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Template Name
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.templateName')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:type')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Modified
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ist.col.lastModified')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('common:status')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -488,25 +492,25 @@ export default function InvestorStatements() {
               {statementTemplates.map((template) => (
                 <tr key={template.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{template.name}</div>
+                    <div className="text-sm font-medium text-gray-900">{t(template.name)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{template.type}</div>
+                    <div className="text-sm text-gray-900">{t(`reports.freq.${template.type}`)}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     {new Date(template.lastModified).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      {template.usage}
+                      {t('ist.usage.active')}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <div className="flex items-center space-x-2">
-                      <button className="text-black hover:text-blue-900" title="Edit Template">
+                      <button className="text-black hover:text-blue-900" title={t('ist.editTemplate')}>
                         <FileText className="w-4 h-4" />
                       </button>
-                      <button className="text-green-600 hover:text-green-900" title="Preview">
+                      <button className="text-green-600 hover:text-green-900" title={t('ist.preview')}>
                         <Eye className="w-4 h-4" />
                       </button>
                     </div>
@@ -523,7 +527,7 @@ export default function InvestorStatements() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Statement Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ist.detailsTitle')}</h3>
               <button
                 onClick={() => setShowDetailsModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -535,53 +539,53 @@ export default function InvestorStatements() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Investor</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.col.investor')}</label>
                   <p className="text-sm text-gray-900">{selectedStatement.investorName}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Investor ID</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.investorId')}</label>
                   <p className="text-sm text-gray-900">{selectedStatement.investorId}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Period</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.col.period')}</label>
                   <p className="text-sm text-gray-900">{selectedStatement.period}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Generated Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.generatedDate')}</label>
                   <p className="text-sm text-gray-900">{new Date(selectedStatement.statementDate).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Value</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.col.portfolioValue')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedStatement.portfolioValue)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Monthly Return</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.monthlyReturn')}</label>
                   <p className={`text-sm ${selectedStatement.monthlyReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {selectedStatement.monthlyReturn > 0 ? '+' : ''}{selectedStatement.monthlyReturn}%
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">YTD Return</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.ytdReturn')}</label>
                   <p className={`text-sm ${selectedStatement.ytdReturn >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                     {selectedStatement.ytdReturn > 0 ? '+' : ''}{selectedStatement.ytdReturn}%
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">File Size</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.fileSize')}</label>
                   <p className="text-sm text-gray-900">{selectedStatement.fileSize}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Delivery Method</label>
-                  <p className="text-sm text-gray-900">{selectedStatement.deliveryMethod}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.deliveryMethod')}</label>
+                  <p className="text-sm text-gray-900">{tDelivery(selectedStatement.deliveryMethod)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:status')}</label>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedStatement.status)}`}>
-                    {selectedStatement.status}
+                    {t(`ist.status.${selectedStatement.status}`)}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Accessed</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ist.col.lastAccessed')}</label>
                   <p className="text-sm text-gray-900">{formatDateTime(selectedStatement.lastAccessed)}</p>
                 </div>
               </div>
@@ -592,7 +596,7 @@ export default function InvestorStatements() {
                 onClick={() => setShowDetailsModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
               <button
                 onClick={() => {
@@ -601,7 +605,7 @@ export default function InvestorStatements() {
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
               >
-                Download Statement
+                {t('ist.downloadStatement')}
               </button>
             </div>
           </div>

@@ -29,7 +29,7 @@ export const useFraudForegroundListener = () => {
                     navigate(`/fraud-alerts/${payload.data!.customerId}`);
                     toast.dismiss(t.id);
                 }}
-                className="ml-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
+                className="ms-2 px-2 py-1 bg-blue-500 text-white rounded text-xs"
               >
                 View
               </button>

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Select } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
+import { useTranslation } from "react-i18next";
 import { Images } from "../Config/Images";
 import { getIbft } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
@@ -9,6 +10,7 @@ import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 const IBFT = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
@@ -46,72 +48,72 @@ const IBFT = () => {
   }, []);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       cell: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width: "80px",
     },
 
     {
-      name: "TID",
+      name: t("sales.tid"),
       selector: (row: { trx_id: any }) => row.trx_id,
       sortable: true,
     },
     {
-      name: "RRN",
+      name: t("ibft.rrn"),
       selector: (row: { rrn: any }) => row.rrn,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Sender Name",
+      name: t("ibft.senderName"),
       selector: (row: { sender_account_name: any }) => row.sender_account_name,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Sender Account",
+      name: t("ibft.senderAccount"),
       selector: (row: { sender_account_no: any }) => row.sender_account_no,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Reciever Name",
+      name: t("ibft.receiverName"),
       selector: (row: { receiver_account_name: any }) =>
         row.receiver_account_name,
       sortable: true,
       width: "200px",
     },
     {
-      name: "Reciever Account",
+      name: t("ibft.receiverAccount"),
       selector: (row: { receiver_account: any }) => row.receiver_account,
       sortable: true,
       width: "170px",
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount,
       sortable: true,
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { trx_type: any }) => row.trx_type,
       sortable: true,
     },
     {
-      name: "Fee",
+      name: t("ibft.fee"),
       selector: (row: { Fee: any }) => row.Fee,
       sortable: true,
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: { created_at: any }) => row.created_at,
       sortable: true,
       width: "210px",
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: { status: any }) => (
         <div
           style={{
@@ -165,18 +167,18 @@ const IBFT = () => {
     const doc = new jsPDF();
 
     const tableColumn = [
-      "Sr",
-      "TID",
-      "RRN",
-      "Sender Name",
-      "Sender Account",
-      "Reciever Name",
-      "Reciever Account",
-      "Amount",
-      "Type",
-      "Fee",
-      "Created At",
-      "Status",
+      t("shared.sr"),
+      t("sales.tid"),
+      t("ibft.rrn"),
+      t("ibft.senderName"),
+      t("ibft.senderAccount"),
+      t("ibft.receiverName"),
+      t("ibft.receiverAccount"),
+      t("common:amount"),
+      t("common:type"),
+      t("ibft.fee"),
+      t("common:createdAt"),
+      t("common:status"),
     ];
 
     const tableRows = mappedData?.map((item: any) => [
@@ -210,7 +212,7 @@ const IBFT = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             // onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
 
@@ -228,11 +230,11 @@ const IBFT = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
             <button className="invoice-btn" onClick={exportToExcel}>
-              Excel
+              {t("shared.excel")}
             </button>
             <button
               className="invoice-btn"
@@ -240,9 +242,9 @@ const IBFT = () => {
                 exportToPDF();
               }}
             >
-              PDF
+              {t("shared.pdf")}
             </button>
-            <button className="invoice-btn">Print</button>
+            <button className="invoice-btn">{t("common:print")}</button>
           </div>
         </div>
 

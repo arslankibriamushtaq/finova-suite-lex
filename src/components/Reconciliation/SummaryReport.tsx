@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { GetReconciliationSummary } from "../../redux/apis/apisCrudLms";
 const SummaryReport = ({formValues}: any) => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -88,32 +90,32 @@ const SummaryReport = ({formValues}: any) => {
 
   const Call_Activity_Header = [
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Total Transactions",
+      name: t("col.totalTransactions"),
       selector: (row: { totalTransactions: any }) => row.totalTransactions,
     },
     {
-      name: "Matched",
+      name: t("col.matched"),
       selector: (row: { matchedTransactions: any }) => row.matchedTransactions,
     },
 
     {
-      name: "Unmatched",
+      name: t("col.unmatched"),
       cell: (row: { unmatchedTransactions: any }) => row.unmatchedTransactions,
     },
     {
-      name: "Match %",
+      name: t("col.matchPercent"),
       selector: (row: { machedPercent: any }) => row.machedPercent,
     },
     {
-      name: "Total Value (PKR)",
+      name: t("col.totalValuePkr"),
       selector: (row: { totalAmount: any }) => row.totalAmount,
     },
     {
-      name: "Exceptions",
+      name: t("col.exceptions"),
       selector: (row: { exceptions: any }) => row.exceptions,
     },
   ];
@@ -136,7 +138,7 @@ const SummaryReport = ({formValues}: any) => {
           />
           {tableData?.length == 0 && !skelitonLoading && (
             <div className="d-flex justify-content-center mt-5 bg-red">
-              No data found
+              {t("common:noData")}
             </div>
           )}
         </div>

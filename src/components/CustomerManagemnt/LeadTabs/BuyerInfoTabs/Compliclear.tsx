@@ -1,16 +1,18 @@
 import { useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 function Compliclear() {
+  const { t } = useTranslation("customerManagement");
   const [selectTab, setSelectedTab] = useState<string>("GetClientRiskScore");
 
   const tabOptions = [
     {
-      title: "Get Client Risk Score",
+      title: t("leadTabs.buyerCompliclear.tab.getClientRiskScore"),
       key: "GetClientRiskScore",
     },
     {
-      title: "Approve Buyer Compliclear",
+      title: t("leadTabs.buyerCompliclear.tab.approveBuyerCompliclear"),
       key: "ApproveBuyerCompliclear",
     },
   ];
@@ -29,7 +31,7 @@ function Compliclear() {
           <Tab key={item.key} eventKey={item.key} title={item.title}>
             {selectTab === item.key && (
               <div style={{ padding: "20px", color: "var(--color-text-muted)", fontSize: "14px" }}>
-                No record found
+                {t("leadTabs.buyerCompliclear.noRecordFound")}
               </div>
             )}
           </Tab>

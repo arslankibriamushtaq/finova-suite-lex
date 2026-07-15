@@ -13,6 +13,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import PulseLoading from "../../../components/Loader/PulseLoader";
+import { useTranslation } from "react-i18next";
 import { DatePicker } from "antd";
 import dayjs from "dayjs";
 import {
@@ -147,6 +148,7 @@ const STATUS_BADGE: Record<string, { bg: string; color: string }> = {
 };
 
 const WalletHome = () => {
+  const { t } = useTranslation("walletBlocks");
   const [loading, setLoading] = useState(false);
   const [dashboard, setDashboard] = useState<WalletDashboardData | null>(null);
   const [fromDate, setFromDate] = useState<any>(null);
@@ -162,7 +164,7 @@ const WalletHome = () => {
       });
       setDashboard(res?.data?.data ?? null);
     } catch (error: any) {
-      if (!silent) toast.error(error?.message || "Failed to load wallet statistics");
+      if (!silent) toast.error(error?.message || t("dashboard.toast.loadStatsFailed"));
     } finally {
       if (!silent) setLoading(false);
     }
@@ -202,14 +204,14 @@ const WalletHome = () => {
   const defs: Array<
     Omit<StatCard, "series" | "chip"> & { metric: number; chipKind: ChipKind }
   > = [
-    { title: "Total Wallets", value: summary?.totalWallets ?? 0, icon: Wallet, theme: "emerald", metric: summary?.totalWallets ?? 0, chipKind: "growth" },
-    { title: "Active Wallets", value: summary?.activeWallets ?? 0, icon: BadgeCheck, theme: "teal", metric: summary?.activeWallets ?? 0, chipKind: "share" },
-    { title: "Pending Activation", value: summary?.pendingActivation ?? 0, icon: Clock, theme: "amber", metric: summary?.pendingActivation ?? 0, chipKind: "share" },
-    { title: `Total Balance (${CURRENCY})`, value: fmt(summary?.totalBalance ?? 0), icon: Banknote, theme: "green", metric: summary?.totalBalance ?? 0, chipKind: "none" },
-    { title: "Frozen Wallets", value: summary?.frozenWallets ?? 0, icon: Snowflake, theme: "cyan", metric: summary?.frozenWallets ?? 0, chipKind: "share" },
-    { title: "Closed Wallets", value: summary?.closedWallets ?? 0, icon: XCircle, theme: "rose", metric: summary?.closedWallets ?? 0, chipKind: "share" },
-    { title: "Total Customers", value: summary?.totalCustomers ?? 0, icon: Users, theme: "indigo", metric: summary?.totalCustomers ?? 0, chipKind: "none" },
-    { title: "Wallet Accounts", value: summary?.walletAccounts ?? 0, icon: ArrowLeftRight, theme: "violet", metric: summary?.walletAccounts ?? 0, chipKind: "growth" },
+    { title: t("dashboard.totalWallets"), value: summary?.totalWallets ?? 0, icon: Wallet, theme: "emerald", metric: summary?.totalWallets ?? 0, chipKind: "growth" },
+    { title: t("dashboard.activeWallets"), value: summary?.activeWallets ?? 0, icon: BadgeCheck, theme: "teal", metric: summary?.activeWallets ?? 0, chipKind: "share" },
+    { title: t("dashboard.pendingActivation"), value: summary?.pendingActivation ?? 0, icon: Clock, theme: "amber", metric: summary?.pendingActivation ?? 0, chipKind: "share" },
+    { title: t("dashboard.totalBalance", { currency: CURRENCY }), value: fmt(summary?.totalBalance ?? 0), icon: Banknote, theme: "green", metric: summary?.totalBalance ?? 0, chipKind: "none" },
+    { title: t("dashboard.frozenWallets"), value: summary?.frozenWallets ?? 0, icon: Snowflake, theme: "cyan", metric: summary?.frozenWallets ?? 0, chipKind: "share" },
+    { title: t("dashboard.closedWallets"), value: summary?.closedWallets ?? 0, icon: XCircle, theme: "rose", metric: summary?.closedWallets ?? 0, chipKind: "share" },
+    { title: t("dashboard.totalCustomers"), value: summary?.totalCustomers ?? 0, icon: Users, theme: "indigo", metric: summary?.totalCustomers ?? 0, chipKind: "none" },
+    { title: t("dashboard.walletAccounts"), value: summary?.walletAccounts ?? 0, icon: ArrowLeftRight, theme: "violet", metric: summary?.walletAccounts ?? 0, chipKind: "growth" },
   ];
 
   const cards: StatCard[] = defs.map(({ metric, chipKind, ...rest }) => {
@@ -217,14 +219,17 @@ const WalletHome = () => {
     if (chipKind === "share" && total > 0) {
       const pct = (metric / total) * 100;
       chip = {
-        text: `${pctText(pct)} of total`,
-        title: `${metric.toLocaleString()} of ${total.toLocaleString()} wallets`,
+        text: t("dashboard.chipOfTotal", { pct: pctText(pct) }),
+        title: t("dashboard.chipOfTotalTitle", {
+          metric: metric.toLocaleString(),
+          total: total.toLocaleString(),
+        }),
         tone: "neutral",
       };
     } else if (chipKind === "growth" && periodGrowth !== null) {
       chip = {
         text: `${periodGrowth >= 0 ? "▲" : "▼"} ${pctText(Math.abs(periodGrowth))}`,
-        title: `${newInPeriod.toLocaleString()} new in selected period`,
+        title: t("dashboard.chipNewInPeriod", { count: newInPeriod.toLocaleString() }),
         tone: periodGrowth >= 0 ? "up" : "down",
       };
     }
@@ -250,7 +255,7 @@ const WalletHome = () => {
       {/* Header + date filters */}
       <div className="col-12 py-3 d-flex flex-wrap justify-content-between align-items-center gap-3">
         <h3 className="mb-0" style={{ color: "var(--foreground)", fontSize: "22px", fontWeight: 600 }}>
-          Dashboard
+          {t("dashboard.title")}
         </h3>
         <div className="d-flex align-items-end gap-1 flex-wrap">
           <div style={{ minWidth: 160 }}>
@@ -260,7 +265,7 @@ const WalletHome = () => {
             <DatePicker
               value={fromDate}
               onChange={setFromDate}
-              placeholder="Select From Date"
+              placeholder={t("dashboard.fromPlaceholder")}
               style={{ width: "100%" }}
               format="YYYY-MM-DD"
             />
@@ -272,7 +277,7 @@ const WalletHome = () => {
             <DatePicker
               value={toDate}
               onChange={setToDate}
-              placeholder="Select To Date"
+              placeholder={t("dashboard.toPlaceholder")}
               style={{ width: "100%" }}
               format="YYYY-MM-DD"
               disabledDate={(current) =>
@@ -323,7 +328,7 @@ const WalletHome = () => {
       {/* Chart */}
       <div style={cardWrap}>
         <h5 style={{ fontWeight: 700, margin: "0 0 14px", color: "var(--foreground)" }}>
-          Wallets Created
+          {t("dashboard.walletsCreated")}
         </h5>
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
@@ -351,7 +356,7 @@ const WalletHome = () => {
             />
             <Bar
               dataKey="count"
-              name="Wallets"
+              name={t("dashboard.walletsBar")}
               fill="#10b981"
               radius={[4, 4, 0, 0]}
               maxBarSize={36}
@@ -363,13 +368,13 @@ const WalletHome = () => {
       {/* Recent wallets table */}
       <div style={{ ...cardWrap, padding: 0, overflow: "hidden" }}>
         <h5 style={{ fontWeight: 700, margin: 0, padding: "18px 20px 12px", color: "var(--foreground)" }}>
-          Recent Wallets
+          {t("dashboard.recentWallets")}
         </h5>
         <div style={{ overflowX: "auto" }}>
           <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13.5 }}>
             <thead>
               <tr style={{ background: "#059669", color: "#fff" }}>
-                {["Wallet Number", "Account Number", "Name", `Balance (${CURRENCY})`, "Status", "Created At"].map((h) => (
+                {[t("dashboard.col.walletNumber"), t("dashboard.col.accountNumber"), t("dashboard.col.name"), t("dashboard.col.balance", { currency: CURRENCY }), t("dashboard.col.status"), t("dashboard.col.createdAt")].map((h) => (
                   <th key={h} style={{ textAlign: "left", padding: "12px 16px", fontWeight: 600 }}>
                     {h}
                   </th>
@@ -380,7 +385,7 @@ const WalletHome = () => {
               {recent.length === 0 ? (
                 <tr>
                   <td colSpan={6} style={{ padding: "24px 16px", textAlign: "center", color: "var(--muted-foreground)" }}>
-                    {loading ? "Loading…" : "No wallets found"}
+                    {loading ? t("dashboard.loadingRow") : t("dashboard.noWallets")}
                   </td>
                 </tr>
               ) : (

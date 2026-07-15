@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button } from "antd";
 import TableView from "../../../components/TableView/TableView";
 import { useNavigate, useParams } from "react-router-dom";
@@ -17,6 +18,7 @@ import { useDispatch } from "react-redux";
 import { setPayInvoices } from "../../../redux/apis/apisSlice";
 
 const RetryTransaction = () => {
+  const { t } = useTranslation("loanManagement");
   const dispatch = useDispatch();
 
   const [allTableList, setTableList] = useState<any>();
@@ -31,34 +33,34 @@ const RetryTransaction = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Debit Account",
+      name: t("retry.colDebitAccount"),
       selector: (row: any) => row.DebitAccountNumber,
     },
 
     {
-      name: "Credit Account",
+      name: t("retry.colCreditAccount"),
       selector: (row: any) => row.CreditAccountNumber,
     },
     {
-      name: "Beneficiary Name",
+      name: t("retry.colBeneficiaryName"),
       selector: (row: any) => row.BeneficiaryName,
     },
     {
-      name: "BIC",
+      name: t("retry.colBic"),
       selector: (row: any) => row.DestinationBank_BIC,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: any) => row.LoanAmount,
     },
 
     {
-      name: "Transaction Status",
+      name: t("retry.colTransactionStatus"),
       selector: (row: any) => row.TransactionStatus,
     },
 
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Button
@@ -76,7 +78,7 @@ const RetryTransaction = () => {
             color: "white",
           }}
         >
-          Retry
+          {t("retry.retry")}
         </Button>
       ),
     },
@@ -179,7 +181,7 @@ const RetryTransaction = () => {
       <div className="service retry-transaction-page">
         <div className="mb-3 pb-2 border-bottom">
           <h3 className="mb-0 fw-bold text-dark">
-            {params.type === "1" ? "Disburse History" : "Repay History"}
+            {params.type === "1" ? t("retry.disburseHistory") : t("retry.repayHistory")}
           </h3>
         </div>
 
@@ -208,7 +210,7 @@ const RetryTransaction = () => {
               className="d-flex justify-content-center py-5"
               style={{ color: "var(--destructive)" }}
             >
-              No data found
+              {t("common:noData")}
             </div>
           )}
         </div>

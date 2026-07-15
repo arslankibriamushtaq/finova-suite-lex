@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Col } from "antd";
 
 import { Images } from "../../../components/Config/Images";
@@ -12,6 +13,7 @@ import { v4 as uuidv4 } from "uuid";
 import * as echarts from "echarts/core";
 import { themeStyle } from "../../../components/Config/Theme";
 const CollateralAllocation = () => {
+  const { t } = useTranslation("loanManagement");
   const id = useParams();
   const [collectrolData, setCollectrolData] = useState<any>(null);
   const [loans, setLoans] = useState<any[]>([]);
@@ -42,18 +44,18 @@ const CollateralAllocation = () => {
 
   const Header = [
     {
-      name: "File Name",
+      name: t("collateralAllocation.colFileName"),
       selector: (row: { name: any }) => row.name,
       width: "300px",
     },
     {
-      name: "Tracking No.",
+      name: t("collateralAllocation.colTrackingNo"),
       selector: (row: { age: any }) => row.age,
       width: "300px",
     },
 
     {
-      name: "Received Date",
+      name: t("collateralAllocation.colReceivedDate"),
       selector: (row: { address: any }) => row.address,
       width: "200px",
     },
@@ -62,7 +64,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       width: "220px",
       cell: (row: any) => (
         <div
@@ -77,7 +79,7 @@ const CollateralAllocation = () => {
             cursor: row.Status ? "pointer" : "default",
           }}
         >
-          {row.Status ? "Active" : "Inactive"}
+          {row.Status ? t("collateralAllocation.statusActive") : t("collateralAllocation.statusInactive")}
         </div>
       ),
     },
@@ -87,7 +89,7 @@ const CollateralAllocation = () => {
     },
 
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -100,7 +102,7 @@ const CollateralAllocation = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -131,7 +133,7 @@ const CollateralAllocation = () => {
 
   const linkedApplicationscolumns = [
     {
-      name: "Application ID",
+      name: t("collateralAllocation.colApplicationId"),
       selector: (row: { applicationID: any }) => row.applicationID,
     },
     {
@@ -139,7 +141,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Account ID",
+      name: t("collateralAllocation.colAccountId"),
       selector: (row: { accountID: any }) => row.accountID,
     },
     {
@@ -147,7 +149,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Locked Amount",
+      name: t("collateralAllocation.colLockedAmount"),
       selector: (row: { lockedAmount: any }) => row.lockedAmount,
     },
     {
@@ -155,7 +157,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Pledged Amount",
+      name: t("collateralAllocation.colPledgedAmount"),
       selector: (row: { pledgedAmount: any }) => row.pledgedAmount,
     },
     {
@@ -163,7 +165,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Expiry Date",
+      name: t("field.expiryDate"),
       selector: (row: { expiryDate: any }) => row.expiryDate,
     },
     {
@@ -171,7 +173,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Availability",
+      name: t("collateral.colAvailability"),
       width: "150px",
       cell: (row: any) => (
         <div
@@ -184,7 +186,7 @@ const CollateralAllocation = () => {
             cursor: row.Status ? "pointer" : "default",
           }}
         >
-          {row.Status ? "Locked" : "unlocked"}
+          {row.Status ? t("collateralAllocation.locked") : t("collateralAllocation.unlocked")}
         </div>
       ),
     },
@@ -193,7 +195,7 @@ const CollateralAllocation = () => {
       // selector: (row: {}) => row,
     },
     {
-      name: "Action",
+      name: t("applications.colAction"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -206,7 +208,7 @@ const CollateralAllocation = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -239,39 +241,39 @@ const CollateralAllocation = () => {
     if (collectrolData) {
       setLoans([
         {
-          title: "Collateral ID",
+          title: t("field.collateralId"),
           value: "649582124",
         },
         {
-          title: "Collateral Type",
+          title: t("collateralAllocation.collateralType"),
           value:
             collectrolData.collateralType === 1
-              ? "Vehicle"
+              ? t("collateral.typeVehicle")
               : collectrolData.collateralType == 2
-              ? "Cash&Cash"
-              : "Property",
+              ? t("collateral.typeCashCash")
+              : t("collateral.typeProperty"),
         },
         {
-          title: "Status",
-          value: collectrolData.status ? "Active" : "Inactive",
+          title: t("common:status"),
+          value: collectrolData.status ? t("collateral.statusActive") : t("collateral.statusInactive"),
         },
       ]);
 
       setProducer([
         {
-          title: "Valuation Amount",
+          title: t("collateralAllocation.cardValuationAmount"),
           value: `SAR ${collectrolData.collateralValuation?.valuationAmount}`,
           icon: <img src={Images.ValuationAmount} alt="" />,
           cardType: "default",
         },
         {
-          title: "Locked Amount",
+          title: t("collateralAllocation.cardLockedAmount"),
           value: "SAR 600,000",
           icon: <img src={Images.LockedAmount} alt="" />,
           cardType: "default",
         },
         {
-          title: "Available Balance",
+          title: t("collateralAllocation.cardAvailableBalance"),
           value: "SAR 400,000",
           icon: <img src={Images.AvailableBalance} alt="" />,
           cardType: "default",
@@ -282,13 +284,13 @@ const CollateralAllocation = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="Edit" icon={<EyeOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="loanInvoice" icon={<EditOutlined />}>
-        Loan Invoice
+        {t("collateralAllocation.menuLoanInvoice")}
       </Menu.Item>
       <Menu.Item key="activitylogs" icon={<EditOutlined />}>
-        Activity Logs
+        {t("collateralAllocation.menuActivityLogs")}
       </Menu.Item>
     </Menu>
   );
@@ -371,16 +373,16 @@ const CollateralAllocation = () => {
   };
   const getChainData = [
     {
-      name: "Available",
+      name: t("collateralAllocation.legendAvailable"),
       value: 4,
       color: themeStyle.primary,
     },
-    { name: "Locked", value: 6, color: "#D1D1D1" },
-    { name: "Pleadge", value: 0, color: themeStyle.secondary },
+    { name: t("collateralAllocation.legendLocked"), value: 6, color: "#D1D1D1" },
+    { name: t("collateralAllocation.legendPledge"), value: 0, color: themeStyle.secondary },
   ];
   return (
     <>
-      <h6 className="mt-3 fw-bold">Collateral Allocation</h6>
+      <h6 className="mt-3 fw-bold">{t("collateralAllocation.title")}</h6>
       <div className="d-flex mt-3 col-12 gap-2 mb-3">
         <div
           className="d-flex col-12 p-5 justify-content-center"
@@ -506,7 +508,7 @@ const CollateralAllocation = () => {
 
       <div className="col-12">
         <div className="cs-table p-2">
-          <h6 className="mt-3">Documents</h6>
+          <h6 className="mt-3">{t("collateralAllocation.documents")}</h6>
           <TableView
             data={documentsData}
             header={Header}
@@ -520,7 +522,7 @@ const CollateralAllocation = () => {
 
       <div className="col-12">
         <div className="cs-table p-2">
-          <h6 className="mt-3">Linked Applications</h6>
+          <h6 className="mt-3">{t("collateralAllocation.linkedApplications")}</h6>
           <TableView
             data={linkedApplications}
             header={linkedApplicationscolumns}

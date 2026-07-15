@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import { Reference } from "yup";
 import CallActivity from "../CustomerManagemnt/CallActivity";
@@ -16,26 +17,27 @@ import DeliquencyManagement from "./Deliquency/DeliquencyManagement";
 import EditDeliquencyManagement from "./Deliquency/EditDeliquencyManagement";
 
 const EditProduct = () => {
+  const { t } = useTranslation("productManagement2");
   const [selectTab, setSelectedTab] = useState("productName");
   const [productId, setProductId] = useState("");
 
   const tapOptions = [
     {
-      title: "Product Name",
+      title: t("productForm.tabProductName"),
       key: "productName",
       folder: (
         <ProductNameTab tabs={setSelectedTab} setProductId={setProductId} />
       ),
     },
     {
-      title: "Settings",
+      title: t("productForm.tabSettings"),
       key: "settings",
       folder: (
         <ProductSettingsTab tabs={setSelectedTab} productId={productId} />
       ),
     },
     {
-      title: "Deliquency",
+      title: t("productForm.tabDelinquency"),
       key: "deliquency",
       folder: (
         <EditDeliquencyManagement tabs={setSelectedTab} productId={productId} />
@@ -46,7 +48,7 @@ const EditProduct = () => {
     <>
       <div className="">
         <h2 className="col-md-12 pt-2 pb-2 d-flex align-items-center fs-6 fw-bold">
-          {"Add New Product"}
+          {t("productForm.addNewProduct")}
         </h2>
         <Tabs
           id="controlled-tab-example"
@@ -69,6 +71,7 @@ const EditProduct = () => {
 export default EditProduct;
 
 function ProductNameTab({ tabs, setProductId }) {
+  const { t } = useTranslation("productManagement2");
   const [name, setName] = useState("");
   const [arabicName, setArabicName] = useState("");
   const [load, setLoad] = useState(false);
@@ -144,13 +147,13 @@ function ProductNameTab({ tabs, setProductId }) {
     <>
       {load && <Loader />}
       <div className="container py-4 my-4 border rounded">
-        <h5>Product Name</h5>
+        <h5>{t("productForm.productName")}</h5>
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Product Name</div>
+            <div className="py-2">{t("productForm.productName")}</div>
             <Input
               type="text"
-              placeholder="Name"
+              placeholder={t("productForm.namePlaceholder")}
               className="w-3/4 border p-2"
               value={name}
               onChange={(e) => {
@@ -159,7 +162,7 @@ function ProductNameTab({ tabs, setProductId }) {
             />
             {errors.includes("name") ? (
               <div style={{ fontSize: "12px" }} className="text-danger pt-1">
-                Please enter a vaild name.
+                {t("productForm.errName")}
               </div>
             ) : (
               <div
@@ -172,10 +175,10 @@ function ProductNameTab({ tabs, setProductId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">اسم المنتج</div>
+            <div className="py-2">{t("productForm.nameArLabel")}</div>
             <Input
               type="text"
-              placeholder="اسم"
+              placeholder={t("productForm.nameArPlaceholder")}
               className="w-3/4 border p-2"
               value={arabicName}
               onChange={(e) => {
@@ -184,7 +187,7 @@ function ProductNameTab({ tabs, setProductId }) {
             />
             {errors.includes("arabicName") ? (
               <div style={{ fontSize: "12px" }} className="text-danger pt-1">
-                Please enter a vaild arabic.
+                {t("productForm.errArabicName")}
               </div>
             ) : (
               <div
@@ -209,7 +212,7 @@ function ProductNameTab({ tabs, setProductId }) {
           className={"theme-btn-next me-3 " + (load && " opacity-50")}
           onClick={() => saveName()}
         >
-          Save & Next
+          {t("productForm.saveNext")}
         </button>
         {/* )} */}
       </div>
@@ -218,6 +221,7 @@ function ProductNameTab({ tabs, setProductId }) {
 }
 
 function ProductSettingsTab({ tabs, productId }) {
+  const { t } = useTranslation("productManagement2");
   const navigate = useNavigate();
   const [load, setLoad] = useState(false);
 
@@ -379,10 +383,10 @@ function ProductSettingsTab({ tabs, productId }) {
     <>
       {load && <Loader />}
       <div className="container py-4 my-4 border rounded">
-        <h5>Financing Amount</h5>
+        <h5>{t("productForm.financingAmount")}</h5>
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Min Financing Amount</div>
+            <div className="py-2">{t("productForm.minFinancingAmount")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2"
@@ -393,7 +397,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("minFinancingAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid minFinancingAmount.
+                {t("productForm.errMinFinancing")}
               </div>
             ) : (
               <div
@@ -406,7 +410,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Max Financing Amount</div>
+            <div className="py-2">{t("productForm.maxFinancingAmount")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -417,7 +421,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("maxFinancingAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid maxFinancingAmount.
+                {t("productForm.errMaxFinancing")}
               </div>
             ) : (
               <div
@@ -432,7 +436,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Balloon Amount</div>
+            <div className="py-2">{t("productForm.balloonAmount")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -443,7 +447,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("ballonAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid ballonAmount.
+                {t("productForm.errBalloon")}
               </div>
             ) : (
               <div
@@ -456,7 +460,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Advance Amount</div>
+            <div className="py-2">{t("productForm.advanceAmount")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -467,7 +471,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("advanceAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid advanceAmount.
+                {t("productForm.errAdvance")}
               </div>
             ) : (
               <div
@@ -482,7 +486,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Suggest Amount</div>
+            <div className="py-2">{t("productForm.suggestAmount")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -493,7 +497,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("suggestedAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid suggestedAmount.
+                {t("productForm.errSuggested")}
               </div>
             ) : (
               <div
@@ -510,10 +514,10 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <hr className="my-4" />
 
-        <h5>Financing Fee</h5>
+        <h5>{t("productForm.financingFee")}</h5>
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Cost of Financing Amount</div>
+            <div className="py-2">{t("productForm.costOfFinancing")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -524,7 +528,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("costOfFinancingAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid costOfFinancingAmount.
+                {t("productForm.errCostFinancing")}
               </div>
             ) : (
               <div
@@ -537,7 +541,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Cost of Term Amount</div>
+            <div className="py-2">{t("productForm.costOfTerm")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -548,7 +552,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("costOfTermAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid costOfTermAmount.
+                {t("productForm.errCostTerm")}
               </div>
             ) : (
               <div
@@ -563,7 +567,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Early Settlement</div>
+            <div className="py-2">{t("productForm.earlySettlement")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -574,7 +578,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("earlySettlement") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid earlySettlement.
+                {t("productForm.errEarlySettlement")}
               </div>
             ) : (
               <div
@@ -587,7 +591,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Administrative Fee Amount</div>
+            <div className="py-2">{t("productForm.administrativeFee")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -598,7 +602,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("administrativeFeeAmount") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid administrativeFeeAmount.
+                {t("productForm.errAdminFee")}
               </div>
             ) : (
               <div
@@ -613,7 +617,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">VAT</div>
+            <div className="py-2">{t("productForm.vat")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -624,7 +628,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("vat") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid VAT.
+                {t("productForm.errVat")}
               </div>
             ) : (
               <div
@@ -637,7 +641,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Other Taxes</div>
+            <div className="py-2">{t("productForm.otherTaxes")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -648,7 +652,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("otherTaxes") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid other Taxes.
+                {t("productForm.errOtherTaxes")}
               </div>
             ) : (
               <div
@@ -664,14 +668,14 @@ function ProductSettingsTab({ tabs, productId }) {
         <hr className="my-4" />
 
         <div>
-          <h5 style={{ display: "inline" }}>Loan Tenure</h5>
+          <h5 style={{ display: "inline" }}>{t("productForm.loanTenure")}</h5>
           <span style={{ color: "red", fontSize: "0.9em", marginLeft: "8px" }}>
-            (In Months)
+            {t("productForm.inMonths")}
           </span>
         </div>
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Min Tenure</div>
+            <div className="py-2">{t("productForm.minTenure")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -682,7 +686,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("minTenure") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid minTenure.
+                {t("productForm.errMinTenure")}
               </div>
             ) : (
               <div
@@ -695,7 +699,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Max Tenure</div>
+            <div className="py-2">{t("productForm.maxTenure")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -706,7 +710,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("maxTenure") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid maxTenure.
+                {t("productForm.errMaxTenure")}
               </div>
             ) : (
               <div
@@ -721,10 +725,10 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <hr className="my-4" />
 
-        <h5>Configurations Fee</h5>
+        <h5>{t("productForm.configurationsFee")}</h5>
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">GDBR Percentage</div>
+            <div className="py-2">{t("productForm.gdbrPercentage")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -735,7 +739,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("gdbrPercentage") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid gdbrPercentage.
+                {t("productForm.errGdbr")}
               </div>
             ) : (
               <div
@@ -748,7 +752,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Credit Line Percentage</div>
+            <div className="py-2">{t("productForm.creditLinePercentage")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -759,7 +763,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("creditLinePercentage") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid creditLinePercentage.
+                {t("productForm.errCreditLine")}
               </div>
             ) : (
               <div
@@ -774,7 +778,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Bank Account Month (Manual Approval)</div>
+            <div className="py-2">{t("productForm.bankAccountManual")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -785,7 +789,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("bankAccountMonthManualApproval") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid bankAccountMonthManualApproval.
+                {t("productForm.errBankManual")}
               </div>
             ) : (
               <div
@@ -798,7 +802,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Bank Account Month (AUTO Approval)</div>
+            <div className="py-2">{t("productForm.bankAccountAuto")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -809,7 +813,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("bankAccountMonthAutoApproval") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid bankAccountMonthAutoApproval.
+                {t("productForm.errBankAuto")}
               </div>
             ) : (
               <div
@@ -824,7 +828,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Min Age</div>
+            <div className="py-2">{t("productForm.minAge")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -835,7 +839,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("minAge") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid minAge.
+                {t("productForm.errMinAge")}
               </div>
             ) : (
               <div
@@ -848,7 +852,7 @@ function ProductSettingsTab({ tabs, productId }) {
           </div>
 
           <div className="col">
-            <div className="py-2">Max Age</div>
+            <div className="py-2">{t("productForm.maxAge")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -859,7 +863,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("maxAge") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid maxAge.
+                {t("productForm.errMaxAge")}
               </div>
             ) : (
               <div
@@ -874,7 +878,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
         <div className="row py-2">
           <div className="col">
-            <div className="py-2">Income</div>
+            <div className="py-2">{t("productForm.income")}</div>
             <Input
               type="number"
               className="w-3/4 border p-2 input"
@@ -885,7 +889,7 @@ function ProductSettingsTab({ tabs, productId }) {
             />
             {errors.includes("income") ? (
               <div style={{ fontSize: "12px" }} className="pt-1 text-danger">
-                Enter a valid income.
+                {t("productForm.errIncome")}
               </div>
             ) : (
               <div
@@ -903,7 +907,7 @@ function ProductSettingsTab({ tabs, productId }) {
 
       <div className="d-flex justify-content-end align-items-center px-4">
         <button className="revert-btn me-3" onClick={() => tabs("productName")}>
-          Back
+          {t("common:back")}
         </button>
         {/* {index > 0 && (
         )}
@@ -915,7 +919,7 @@ function ProductSettingsTab({ tabs, productId }) {
           className={"theme-btn-next me-3 " + (load && " opacity-50")}
           onClick={() => saveSettings()}
         >
-          Save & Next
+          {t("productForm.saveNext")}
         </button>
         {/* )} */}
       </div>

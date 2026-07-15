@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -19,6 +20,7 @@ interface LimitsDialogProps {
 }
 
 const LimitsDialog = ({ card, onOpenChange, onUpdated }: LimitsDialogProps) => {
+  const { t } = useTranslation("cardManagement");
   const [dailyLimit, setDailyLimit] = useState("");
   const [monthlyLimit, setMonthlyLimit] = useState("");
   const [isSaving, setIsSaving] = useState(false);
@@ -36,17 +38,17 @@ const LimitsDialog = ({ card, onOpenChange, onUpdated }: LimitsDialogProps) => {
     if (dailyLimit !== "") body.dailyLimit = Number(dailyLimit);
     if (monthlyLimit !== "") body.monthlyLimit = Number(monthlyLimit);
     if (body.dailyLimit === undefined && body.monthlyLimit === undefined) {
-      return toast.error("Enter at least one limit");
+      return toast.error(t("limits.toast.enterAtLeastOne"));
     }
 
     try {
       setIsSaving(true);
       await updateAdminCardLimits(card.id, body);
-      toast.success("Limits updated successfully");
+      toast.success(t("limits.toast.updated"));
       onOpenChange(false);
       onUpdated();
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Failed to update limits");
+      if (!error?.response?.data?.message) toast.error(t("limits.toast.updateFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -56,11 +58,11 @@ const LimitsDialog = ({ card, onOpenChange, onUpdated }: LimitsDialogProps) => {
     <Dialog open={!!card} onOpenChange={(o) => !o && onOpenChange(false)}>
       <DialogContent className="pro-dialog sm:max-w-[460px]">
         <DialogHeader>
-          <DialogTitle>Edit Limits</DialogTitle>
+          <DialogTitle>{t("limits.title")}</DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label>Daily Limit</Label>
+            <Label>{t("limits.field.dailyLimit")}</Label>
             <Input
               type="number"
               value={dailyLimit}
@@ -68,7 +70,7 @@ const LimitsDialog = ({ card, onOpenChange, onUpdated }: LimitsDialogProps) => {
             />
           </div>
           <div className="space-y-2">
-            <Label>Monthly Limit</Label>
+            <Label>{t("limits.field.monthlyLimit")}</Label>
             <Input
               type="number"
               value={monthlyLimit}
@@ -78,10 +80,10 @@ const LimitsDialog = ({ card, onOpenChange, onUpdated }: LimitsDialogProps) => {
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={isSaving}>
-            {isSaving ? "Saving..." : "Update"}
+            {isSaving ? t("action.saving") : t("common:update")}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { store } from '../../redux/store';
 import { CKEditor } from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
@@ -67,6 +68,7 @@ interface LandingPageData {
 }
 
 const HomepageSettings: React.FC = () => {
+  const { t } = useTranslation('webPages');
   const BEARER_TOKEN = (store.getState() as any).block.token;
   const [pageData, setPageData] = useState<LandingPageData | null>(null);
   const [formValue, setFormValue] = useState<any>({});
@@ -206,7 +208,7 @@ const HomepageSettings: React.FC = () => {
         <EditableText 
           value={value || ''} 
           field={fieldPath} 
-          placeholder={label || 'Enter text'}
+          placeholder={label || t('field.enterText')}
         />
       );
     } else if (fieldType === 'date') {
@@ -239,7 +241,7 @@ const HomepageSettings: React.FC = () => {
             backgroundColor: 'var(--color-surface-subtle)',
             outline: 'none'
           }}
-          placeholder={label || 'Select date'}
+          placeholder={label || t('field.selectDate')}
         />
       );
     } else if (fieldType === 'textarea') {
@@ -262,7 +264,7 @@ const HomepageSettings: React.FC = () => {
             e.currentTarget.style.backgroundColor = 'transparent';
             e.currentTarget.style.borderColor = 'transparent';
           }}
-          dangerouslySetInnerHTML={{ __html: value || label || 'Click to edit' }}
+          dangerouslySetInnerHTML={{ __html: value || label || t('clickToEdit') }}
         >
         </span>
       );
@@ -285,7 +287,7 @@ const HomepageSettings: React.FC = () => {
           {value?.url ? (
             <img src={value.url} alt={value.alt || 'Image'} style={{ maxHeight: '50px', maxWidth: '100px', objectFit: 'cover' }} />
           ) : (
-            `Click to upload ${label || 'image'}`
+            t('clickToUpload', { label: label || t('field.icon').toLowerCase() })
           )}
         </div>
       );
@@ -402,7 +404,7 @@ const HomepageSettings: React.FC = () => {
               <EditableText 
                 value={typeof item === 'string' ? item : (typeof item === 'object' && item !== null ? (item as any)?.title || (item as any)?.text || JSON.stringify(item) : '')} 
                 field={`${fieldPath}.${index}`} 
-                placeholder={`Feature ${index + 1}`}
+                placeholder={t('field.featureN', { number: index + 1 })}
               />
             </div>
           ))}
@@ -438,7 +440,7 @@ const HomepageSettings: React.FC = () => {
                 <EditableText 
                   value={typeof item === 'string' ? item : (typeof item === 'object' && item !== null ? (item as any)?.title || (item as any)?.text || JSON.stringify(item) : '')} 
                   field={`${fieldPath}.${index}`} 
-                  placeholder={`Step ${index + 1}`}
+                  placeholder={t('field.stepN', { number: index + 1 })}
                 />
               </div>
             </div>
@@ -460,13 +462,13 @@ const HomepageSettings: React.FC = () => {
                 backgroundColor: 'var(--color-surface-cloud)'
               }}>
                 <h4 style={{ margin: '0 0 10px 0', fontSize: '14px', fontWeight: 'bold' }}>
-                  Criterion {index + 1}
+                  {t('field.criterionN', { number: index + 1 })}
                 </h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   {/* Icon field */}
                   <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>
-                      Icon:
+                      {t('field.icon')}:
                     </label>
                     <div
                       onClick={() => handleIconClick(fieldPath, index)}
@@ -497,13 +499,13 @@ const HomepageSettings: React.FC = () => {
                   {/* Title field */}
                   <div>
                     <label style={{ display: 'block', marginBottom: '5px', fontSize: '12px', fontWeight: 'bold' }}>
-                      Title:
+                      {t('field.title')}:
                     </label>
                     {renderFieldEditor(
                       `${fieldPath}.${index}.title`,
                       item.title,
                       schema.ui.fields.title.type || 'text',
-                      'Criteria Title',
+                      t('field.criteriaTitle'),
                       schema.ui.fields.title
                     )}
                   </div>
@@ -546,7 +548,7 @@ const HomepageSettings: React.FC = () => {
     } else if (fieldType === 'group') {
       // For group fields, render child fields directly based on their individual types
       if (!schema || !schema.ui || !schema.ui.fields) {
-        return <span>No schema available for group</span>;
+        return <span>{t('modal.noSchemaForGroup')}</span>;
       }
 
       return (
@@ -919,7 +921,7 @@ const HomepageSettings: React.FC = () => {
       const response = await updatePageData(1, requestBody);
 
       if (response.status === 200) {
-        toast.success('Page published successfully!');
+        toast.success(t('toast.pagePublished'));
         // Fetch updated data from API
         await fetchPageData();
       } else {
@@ -927,7 +929,7 @@ const HomepageSettings: React.FC = () => {
       }
     } catch (err) {
       console.error('Error publishing page:', err);
-      toast.error('Error publishing page');
+      toast.error(t('toast.errorPublishing'));
     } finally {
       setIsLoading(false);
     }
@@ -1129,14 +1131,14 @@ const HomepageSettings: React.FC = () => {
             } else if (fieldParts.includes('criteria')) {
               updateFormValue(`eligibility.criteria.${editingIconIndex}.icon`, fileUrl);
             }
-            toast.success('Icon uploaded successfully!');
+            toast.success(t('toast.iconUploaded'));
           } else {
-            toast.error('Failed to upload icon');
+            toast.error(t('toast.failedUploadIcon'));
             return; // Don't close modal if upload failed
           }
         } catch (err) {
           console.error('Error uploading icon:', err);
-          toast.error('Error uploading icon');
+          toast.error(t('toast.errorUploadingIcon'));
           return; // Don't close modal if upload failed
         }
       } else {
@@ -1242,7 +1244,7 @@ const HomepageSettings: React.FC = () => {
           }
         } catch (error) {
           console.error('Error uploading image:', error);
-          alert('Failed to upload image. Please try again.');
+          alert(t('toast.failedUploadImageRetry'));
         }
       }
     };
@@ -1346,7 +1348,7 @@ const HomepageSettings: React.FC = () => {
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
-        <h3>Error Loading Homepage</h3>
+        <h3>{t('state.errorLoadingHomepage')}</h3>
         <p>{error}</p>
         <button 
           onClick={() => fetchPageData(locale)}
@@ -1360,7 +1362,7 @@ const HomepageSettings: React.FC = () => {
             marginTop: '10px'
           }}
         >
-          Retry
+          {t('retry')}
         </button>
       </div>
     );
@@ -1376,7 +1378,7 @@ const HomepageSettings: React.FC = () => {
         margin: '20px',
         border: '1px solid var(--color-border-subtle)'
       }}>
-        No homepage data available.
+        {t('state.noHomepageData')}
       </div>
     );
   }
@@ -1386,7 +1388,7 @@ const HomepageSettings: React.FC = () => {
       {/* Header Section */}
       <div className="header-footer-settings__header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '20px', backgroundColor: 'var(--background)', borderBottom: '1px solid var(--color-border-subtle)' }}>
         <h2 className="header-footer-settings__header-title" style={{ margin: 0 }}>
-          Home Page
+          {t('header.homePage')}
         </h2>
         {/* Language Switcher */}
         <div 
@@ -1420,7 +1422,7 @@ const HomepageSettings: React.FC = () => {
 
       {/* PUBLISH Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
-        <div className="header-footer-settings__publish-text">PUBLISH</div>
+        <div className="header-footer-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Main Content Area */}
@@ -1463,7 +1465,7 @@ const HomepageSettings: React.FC = () => {
               e.currentTarget.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
             }}
           >
-            {formValue.hero?.hero_image?.url ? 'Change Hero Image' : 'Upload Hero Image'}
+            {formValue.hero?.hero_image?.url ? t('changeHeroImage') : t('uploadHeroImage')}
           </button>
           
           <div className="header-footer-settings__landing-hero-overlay">
@@ -1613,7 +1615,7 @@ const HomepageSettings: React.FC = () => {
           <EditableText 
                         value={typeof item.title === 'string' ? item.title : (typeof item.title === 'object' && item.title !== null ? (item.title as any)?.title || (item.title as any)?.text || JSON.stringify(item.title) : '')} 
                         field={`hero.finance_card_list.${index}.title`} 
-                        placeholder={`Finance Item ${index + 1}`}
+                        placeholder={t('field.financeItemN', { number: index + 1 })}
                       />
                     </span>
         </div>
@@ -1634,8 +1636,8 @@ const HomepageSettings: React.FC = () => {
             <span key={index} className="header-footer-settings__features-banner-item">
               <EditableText 
                 value={typeof feature === 'string' ? feature : (typeof feature === 'object' && feature !== null ? (feature as any)?.title || (feature as any)?.text || JSON.stringify(feature) : '')} 
-                field={`hero.features.${index}`} 
-                placeholder={`Feature ${index + 1}`}
+                field={`hero.features.${index}`}
+                placeholder={t('field.featureN', { number: index + 1 })}
               />
             </span>
           ))}
@@ -1793,7 +1795,7 @@ const HomepageSettings: React.FC = () => {
                     borderRadius: '2px'
                   }}>
                     <div>📱</div>
-                    <div style={{ fontSize: '14px', marginTop: '10px' }}>Click to upload background phone</div>
+                    <div style={{ fontSize: '14px', marginTop: '10px' }}>{t('home.clickToUploadBackgroundPhone')}</div>
             </div>
                 )}
         </div> */}
@@ -1831,7 +1833,7 @@ const HomepageSettings: React.FC = () => {
                     borderRadius: '2px'
                   }}>
                     <div>📱</div>
-                    <div style={{ fontSize: '14px', marginTop: '10px' }}>Click to upload main phone</div>
+                    <div style={{ fontSize: '14px', marginTop: '10px' }}>{t('home.clickToUploadMainPhone')}</div>
         </div>
             )}
           </div>
@@ -1840,8 +1842,8 @@ const HomepageSettings: React.FC = () => {
               <h2 className="header-footer-settings__landing-tracker-title">
           <EditableText 
                   value={typeof formValue.tracker?.heading === 'string' ? formValue.tracker?.heading : (typeof formValue.tracker?.heading === 'object' && formValue.tracker?.heading !== null ? (formValue.tracker?.heading as any)?.title || (formValue.tracker?.heading as any)?.text || JSON.stringify(formValue.tracker?.heading) : '')} 
-                  field="tracker.heading" 
-                  placeholder="Enter tracker heading"
+                  field="tracker.heading"
+                  placeholder={t('field.enterTrackerHeading')}
                 />
               </h2>
               <p className="header-footer-settings__landing-tracker-description">
@@ -1887,7 +1889,7 @@ const HomepageSettings: React.FC = () => {
                       `eligibility.criteria.${index}.title`,
                       typeof criterion.title === 'string' ? criterion.title : (typeof criterion.title === 'object' && criterion.title !== null ? (criterion.title as any)?.title || (criterion.title as any)?.text || JSON.stringify(criterion.title) : ''),
                       sectionsSchema.eligibility?.criteria?.ui?.fields?.title?.type || 'text',
-                      'Criteria Title',
+                      t('field.criteriaTitle'),
                       sectionsSchema.eligibility?.criteria?.ui?.fields?.title
                     )}
                   </span>
@@ -1906,8 +1908,8 @@ const HomepageSettings: React.FC = () => {
                     <span className="header-footer-settings__landing-eligibility-criterion-text">
           <EditableText 
                         value="The minimum of Salary SAR 5,000" 
-                        field="eligibility.criteria.0.title" 
-                        placeholder="Criterion 1"
+                        field="eligibility.criteria.0.title"
+                        placeholder={t('field.criterionN', { number: 1 })}
                       />
                     </span>
                     <div className="header-footer-settings__landing-eligibility-criterion-check">✓</div>
@@ -1923,8 +1925,8 @@ const HomepageSettings: React.FC = () => {
                     <span className="header-footer-settings__landing-eligibility-criterion-text">
           <EditableText 
                         value="The service period is more than 6 months" 
-                        field="eligibility.criteria.1.title" 
-                        placeholder="Criterion 2"
+                        field="eligibility.criteria.1.title"
+                        placeholder={t('field.criterionN', { number: 2 })}
                       />
                     </span>
                     <div className="header-footer-settings__landing-eligibility-criterion-check">✓</div>
@@ -1940,8 +1942,8 @@ const HomepageSettings: React.FC = () => {
                     <span className="header-footer-settings__landing-eligibility-criterion-text">
           <EditableText 
                         value="National ID or Iqama" 
-                        field="eligibility.criteria.2.title" 
-                        placeholder="Criterion 3"
+                        field="eligibility.criteria.2.title"
+                        placeholder={t('field.criterionN', { number: 3 })}
                       />
                     </span>
                     <div className="header-footer-settings__landing-eligibility-criterion-check">✓</div>
@@ -1957,8 +1959,8 @@ const HomepageSettings: React.FC = () => {
                     <span className="header-footer-settings__landing-eligibility-criterion-text">
           <EditableText 
                         value="Age between 18 - 60" 
-                        field="eligibility.criteria.3.title" 
-                        placeholder="Criterion 4"
+                        field="eligibility.criteria.3.title"
+                        placeholder={t('field.criterionN', { number: 4 })}
                       />
                     </span>
                     <div className="header-footer-settings__landing-eligibility-criterion-check">✓</div>
@@ -2059,7 +2061,7 @@ const HomepageSettings: React.FC = () => {
                   border: '2px dashed var(--color-teal-accent)'
                 }}>
                   <div style={{ fontSize: '48px', marginBottom: '20px' }}>📱</div>
-                  <div style={{ fontSize: '14px' }}>Click to upload apply steps image</div>
+                  <div style={{ fontSize: '14px' }}>{t('home.clickToUploadApplyStepsImage')}</div>
                 </div>
               )}
             </div>
@@ -2085,7 +2087,7 @@ const HomepageSettings: React.FC = () => {
           <div className="header-footer-settings__edit-modal">
             <div className="header-footer-settings__edit-modal-header">
               <h3 className="header-footer-settings__edit-modal-title">
-                Edit Button Details
+                {t('modal.editButtonDetails')}
               </h3>
               <button 
                 onClick={handleCloseModal}
@@ -2096,7 +2098,7 @@ const HomepageSettings: React.FC = () => {
             </div>
             <div className="header-footer-settings__edit-modal-content">
               <div className="header-footer-settings__edit-field">
-                <label className="header-footer-settings__edit-label">Button text</label>
+                <label className="header-footer-settings__edit-label">{t('field.buttonText')}</label>
                 <input
                   type="text"
                   value={editingText}
@@ -2105,7 +2107,7 @@ const HomepageSettings: React.FC = () => {
           />
         </div>
               <div className="header-footer-settings__edit-field">
-                <label className="header-footer-settings__edit-label">Button URL</label>
+                <label className="header-footer-settings__edit-label">{t('field.buttonUrl')}</label>
                 <input
                   type="text"
                   value={editingUrl}
@@ -2115,7 +2117,7 @@ const HomepageSettings: React.FC = () => {
         </div>
               {(editingField.includes('download_app_button') || editingField.includes('apply_steps')) && (
                 <div className="header-footer-settings__edit-field">
-                  <label className="header-footer-settings__edit-label">Button Icon</label>
+                  <label className="header-footer-settings__edit-label">{t('field.buttonIcon')}</label>
                   <div 
                     onClick={() => {
                       const fieldParts = editingField.split('.');
@@ -2158,7 +2160,7 @@ const HomepageSettings: React.FC = () => {
                 onClick={handleApply}
                 className="header-footer-settings__edit-apply-btn"
               >
-                Apply
+                {t('common:apply')}
               </button>
         </div>
       </div>
@@ -2194,7 +2196,7 @@ const HomepageSettings: React.FC = () => {
               alignItems: 'center',
               marginBottom: '20px'
             }}>
-              <h3 style={{ margin: 0, color: 'var(--color-text-dark)' }}>Edit Description</h3>
+              <h3 style={{ margin: 0, color: 'var(--color-text-dark)' }}>{t('modal.editDescription')}</h3>
               <button
                 onClick={handleTextEditorCancel}
                 style={{
@@ -2247,13 +2249,13 @@ const HomepageSettings: React.FC = () => {
                 onClick={handleTextEditorCancel}
                 className="theme-btn-next"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={handleTextEditorSave}
                 className="theme-btn-next"
               >
-                Apply
+                {t('common:apply')}
               </button>
         </div>
         </div>
@@ -2284,11 +2286,11 @@ const HomepageSettings: React.FC = () => {
             maxHeight: '80vh',
             overflow: 'auto'
           }}>
-            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>Edit Repeater</h3>
+            <h3 style={{ marginBottom: '20px', color: 'var(--color-text-dark)' }}>{t('modal.editRepeater')}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
               {editingRepeaterData.map((item, index) => (
                 <div key={index} style={{ border: '1px solid var(--color-border-light)', padding: '15px', borderRadius: '2px' }}>
-                  <h4>Item {index + 1}</h4>
+                  <h4>{t('modal.itemN', { number: index + 1 })}</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                     {Object.keys(item).map((key) => (
                       <div key={key}>
@@ -2321,7 +2323,7 @@ const HomepageSettings: React.FC = () => {
                     }}
                     className="theme-btn-next"
                   >
-                    Remove
+                    {t('modal.remove')}
               </button>
             </div>
               ))}
@@ -2332,7 +2334,7 @@ const HomepageSettings: React.FC = () => {
                 }}
                 className="theme-btn-next"
               >
-                + Add New Item
+                {t('modal.addNewItem')}
               </button>
             </div>
             <div style={{ marginTop: '20px', display: 'flex', gap: '10px', justifyContent: 'flex-end' }}>
@@ -2340,13 +2342,13 @@ const HomepageSettings: React.FC = () => {
                 onClick={handleRepeaterCancel}
                 className="theme-btn-next"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={handleRepeaterSave}
                 className="theme-btn-next"
               >
-                Save
+                {t('common:save')}
               </button>
             </div>
           </div>
@@ -2386,7 +2388,7 @@ const HomepageSettings: React.FC = () => {
               alignItems: 'center'
             }}>
               <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 'bold' }}>
-                {editingIconField.includes('download_app_button') ? 'Edit Button Details' : 'Edit Icon'}
+                {editingIconField.includes('download_app_button') ? t('modal.editButtonDetails') : t('modal.editIcon')}
               </h3>
               <button
                 onClick={handleIconModalCancel}
@@ -2420,13 +2422,13 @@ const HomepageSettings: React.FC = () => {
                     fontWeight: 'bold',
                     color: 'var(--color-text-dark)'
                   }}>
-                    Button URL
+                    {t('field.buttonUrl')}
                   </label>
                   <input
                     type="url"
                     value={tempIconUrl}
                     onChange={(e) => setTempIconUrl(e.target.value)}
-                    placeholder="Enter button URL"
+                    placeholder={t('field.enterButtonUrl')}
                     style={{
                       width: '100%',
                       padding: '12px',
@@ -2449,7 +2451,7 @@ const HomepageSettings: React.FC = () => {
                   fontWeight: 'bold',
                   color: 'var(--color-text-dark)'
                 }}>
-                  Icon
+                  {t('field.icon')}
                 </label>
                 <div style={{
                   border: '2px dashed var(--color-border-light)',
@@ -2482,7 +2484,7 @@ const HomepageSettings: React.FC = () => {
                           {tempIconFile.name}
                         </div>
                         <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)', marginTop: '5px' }}>
-                          Click to change
+                          {t('clickToChange')}
                         </div>
                       </div>
                     ) : isIconUrl(tempIcon) ? (
@@ -2498,10 +2500,10 @@ const HomepageSettings: React.FC = () => {
                           }}
                         />
                         <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '5px' }}>
-                          Current: Uploaded Image
+                          {t('modal.current', { value: t('modal.uploadedImage') })}
                         </div>
                         <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)' }}>
-                          Click to change
+                          {t('clickToChange')}
                         </div>
                       </div>
                     ) : (
@@ -2510,10 +2512,10 @@ const HomepageSettings: React.FC = () => {
                           {tempIcon || '🔗'}
                         </div>
                         <div style={{ fontSize: '12px', color: 'var(--color-text-muted)', marginBottom: '5px' }}>
-                          Current: {tempIcon || 'No icon selected'}
+                          {t('modal.current', { value: tempIcon || t('modal.noIconSelected') })}
                         </div>
                         <div style={{ fontSize: '10px', color: 'var(--color-text-subtle)' }}>
-                          Click to select image
+                          {t('clickToSelectImage')}
                         </div>
                       </div>
                     )}
@@ -2546,7 +2548,7 @@ const HomepageSettings: React.FC = () => {
                   }}
                   onClick={handleIconModalSave}
                 >
-                  Apply
+                  {t('common:apply')}
                 </button>
               </div>
             </div>

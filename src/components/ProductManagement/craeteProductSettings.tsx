@@ -4,6 +4,7 @@ import { ArrowLeft, Package } from "lucide-react"
 import { Button } from "../ui/button"
 import { Tab, Tabs } from "react-bootstrap"
 import { useLanguage } from "../../hooks/use-language"
+import { useTranslation } from "react-i18next"
 import toast from "react-hot-toast"
 import { createProductSettings, createProductTermsAndConditions, createAdminFeeSlabs, createDurationSettings, createApprovalWorkflowScenarios, getProductSettings, addSelectedNationalities, updateFeeSettings, updateAdminFeeSlabs, updateDurationSettings, updateApprovalWorkflows } from "../../redux/apis/apisCrudProductManagement"
 import { getProductCreditScoringCriteria, saveProductCreditScoringCriteria, deleteProductCreditScoringCriteria } from "../../redux/apis/apisRiskManagement"
@@ -367,6 +368,7 @@ const defaultFormData = {
 
 export default function CraeteProductSettings() {
   const { isRTL } = useLanguage()
+  const { t } = useTranslation("productManagement2")
   const router = useRouter()
 
   const [formData, setFormData] = useState<any>(defaultFormData)
@@ -607,7 +609,7 @@ export default function CraeteProductSettings() {
       sessionStorage.setItem("productId", effectiveProductId)
       loadProductSettings(effectiveProductId)
     } else {
-      toast.error("Product ID not found. Please start from Basic Information.")
+      toast.error(t("createDocs.startFromBasicInfo"))
       router.push("/Los/ProductManagement/Create/BasicInfo")
     }
   }, [productIdFromUrl])
@@ -1177,7 +1179,7 @@ export default function CraeteProductSettings() {
       const productId = sessionStorage.getItem("productId")
 
       if (!productId) {
-        toast.error("Product ID not found")
+        toast.error(t("requiredDoc.productIdNotFound"))
         return
       }
 
@@ -1196,10 +1198,10 @@ export default function CraeteProductSettings() {
 
       if (response?.data?.message === "success") {
         sessionStorage.setItem("settingsFormData", JSON.stringify(formData))
-        toast.success("Fee settings saved successfully!")
+        toast.success(t("productSettings.feeSaved"))
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save fee settings")
+      toast.error(error?.response?.data?.message || t("productSettings.feeSaveFailed"))
     } finally {
       setIsLoading(false)
     }
@@ -1212,7 +1214,7 @@ export default function CraeteProductSettings() {
       const productId = sessionStorage.getItem("productId")
       
       if (!productId) {
-        toast.error("Product ID not found")
+        toast.error(t("requiredDoc.productIdNotFound"))
         return
       }
 
@@ -1230,10 +1232,10 @@ export default function CraeteProductSettings() {
         }
         
         sessionStorage.setItem("settingsFormData", JSON.stringify(formData))
-        toast.success("Product rules saved successfully!")
+        toast.success(t("productSettings.rulesSaved"))
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save product rules")
+      toast.error(error?.response?.data?.message || t("productSettings.rulesSaveFailed"))
     } finally {
       setIsLoading(false)
     }
@@ -1246,7 +1248,7 @@ export default function CraeteProductSettings() {
       const productId = sessionStorage.getItem("productId")
       
       if (!productId) {
-        toast.error("Product ID not found")
+        toast.error(t("requiredDoc.productIdNotFound"))
         return
       }
 
@@ -1269,7 +1271,7 @@ export default function CraeteProductSettings() {
       
       if (response?.data?.message === "success") {
         sessionStorage.setItem("settingsFormData", JSON.stringify(formData))
-        toast.success("Eligibility criteria saved successfully!")
+        toast.success(t("productSettings.eligibilitySaved"))
         
         // Navigate to next tab (income-slabs)
         const currentIndex = tabOrder.indexOf("eligibility")
@@ -1278,7 +1280,7 @@ export default function CraeteProductSettings() {
         }
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to save eligibility criteria")
+      toast.error(error?.response?.data?.message || t("productSettings.eligibilityCriteriaFailed"))
     } finally {
       setIsLoading(false)
     }
@@ -1291,7 +1293,7 @@ export default function CraeteProductSettings() {
       const productId = sessionStorage.getItem("productId")
       
       if (!productId) {
-        toast.error("Product ID not found. Please complete Basic Information step first.")
+        toast.error(t("incomeSlabs.noProductId"))
         setIsLoading(false)
         return
       }
@@ -1401,7 +1403,7 @@ export default function CraeteProductSettings() {
             } catch (nationalitiesError: any) {
               console.error("Error saving nationalities:", nationalitiesError)
               // Don't fail the whole operation if nationalities save fails
-              toast.error(nationalitiesError?.response?.data?.message || "Product rules saved but failed to save nationalities")
+              toast.error(nationalitiesError?.response?.data?.message || t("productSettings.rulesSavedNationalitiesFailed"))
             }
           }
         }
@@ -1422,7 +1424,7 @@ export default function CraeteProductSettings() {
         })
 
         if (validFields.length === 0) {
-          toast.error("Please add at least one credit scoring field with a name and at least one rule")
+          toast.error(t("productSettings.addCreditField"))
           return
         }
 
@@ -1478,7 +1480,7 @@ export default function CraeteProductSettings() {
           setActiveTab(tabOrder[currentIndex + 1])
           toast.success(`${activeTab.replace(/-/g, " ")} saved successfully!`)
         } else {
-          toast.success("Settings saved successfully!")
+          toast.success(t("productSettings.settingsSaved"))
           router.push("/Los/ProductManagement/Create/ProductAffiliation")
         }
       } else {
@@ -1512,7 +1514,7 @@ export default function CraeteProductSettings() {
             if (firstErrorKey && Array.isArray(apiErrors[firstErrorKey]) && apiErrors[firstErrorKey].length > 0) {
               toast.error(apiErrors[firstErrorKey][0])
             } else {
-              toast.error(response?.data?.message || "Failed to save settings")
+              toast.error(response?.data?.message || t("productSettings.saveSettingsFailed"))
             }
           } else if (activeTab === "terms") {
             const termsErrors: Record<string, string> = {}
@@ -1533,7 +1535,7 @@ export default function CraeteProductSettings() {
             if (firstErrorKey && Array.isArray(apiErrors[firstErrorKey]) && apiErrors[firstErrorKey].length > 0) {
               toast.error(apiErrors[firstErrorKey][0])
             } else {
-              toast.error(response?.data?.message || "Failed to save terms and conditions")
+              toast.error(response?.data?.message || t("productSettings.termsSaveFailed"))
             }
           } else if (activeTab === "eligibility") {
             // Parse errors like "product_content.0.content" -> eligibility_en, "product_content.1.content" -> eligibility_ar
@@ -1562,7 +1564,7 @@ export default function CraeteProductSettings() {
             if (firstErrorKey && Array.isArray(apiErrors[firstErrorKey]) && apiErrors[firstErrorKey].length > 0) {
               toast.error(apiErrors[firstErrorKey][0])
             } else {
-              toast.error(response?.data?.message || "Failed to save eligibility")
+              toast.error(response?.data?.message || t("productSettings.eligibilityFailed"))
             }
           } else if (activeTab === "admin-fees") {
             // Handle validation errors for admin fee slabs
@@ -1583,7 +1585,7 @@ export default function CraeteProductSettings() {
             if (errorMessages.length > 0) {
               toast.error(errorMessages[0])
             } else {
-              toast.error(response?.data?.message || "Failed to save admin fee slabs")
+              toast.error(response?.data?.message || t("productSettings.adminFeeSaveFailed"))
             }
           } else if (activeTab === "product-rules") {
             // Handle validation errors for product rules (including simah check rules)
@@ -1632,10 +1634,10 @@ export default function CraeteProductSettings() {
             if (firstError) {
               toast.error(firstError)
             } else {
-              toast.error(response?.data?.message || "Failed to save product rules")
+              toast.error(response?.data?.message || t("productSettings.rulesSaveFailed"))
             }
           } else {
-            toast.error(response?.data?.message || "Failed to save settings")
+            toast.error(response?.data?.message || t("productSettings.saveSettingsFailed"))
           }
         } else if (activeTab === "credit-scoring") {
           // Handle validation errors for credit scoring
@@ -1654,7 +1656,7 @@ export default function CraeteProductSettings() {
           if (firstError) {
             toast.error(firstError)
           } else {
-            toast.error(response?.data?.message || "Failed to save credit scoring criteria")
+            toast.error(response?.data?.message || t("productSettings.creditSaveFailed"))
           }
         }
       }
@@ -1677,7 +1679,7 @@ export default function CraeteProductSettings() {
           const firstError = Object.values(errorMessages)[0]
           toast.error(firstError)
         } else {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to save credit scoring criteria")
+          toast.error(error?.response?.data?.message || error?.message || t("productSettings.creditSaveFailed"))
         }
       } else if (activeTab === "application-steps") {
         // Handle validation errors from catch block for application steps
@@ -1704,10 +1706,10 @@ export default function CraeteProductSettings() {
           if (firstErrorKey && Array.isArray(apiErrors[firstErrorKey]) && apiErrors[firstErrorKey].length > 0) {
             toast.error(apiErrors[firstErrorKey][0])
           } else {
-            toast.error(error?.response?.data?.message || error?.message || "Failed to save application steps")
+            toast.error(error?.response?.data?.message || error?.message || t("productSettings.appStepsSaveFailed"))
           }
         } else {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to save application steps")
+          toast.error(error?.response?.data?.message || error?.message || t("productSettings.appStepsSaveFailed"))
         }
       } else if (activeTab === "admin-fees") {
         // Handle validation errors from catch block for admin fee slabs
@@ -1729,7 +1731,7 @@ export default function CraeteProductSettings() {
         if (errorMessages.length > 0) {
           toast.error(errorMessages[0])
         } else {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to save admin fee slabs")
+          toast.error(error?.response?.data?.message || error?.message || t("productSettings.adminFeeSaveFailed"))
         }
       } else if (activeTab === "terms") {
         // Handle validation errors from catch block for terms and conditions
@@ -1751,10 +1753,10 @@ export default function CraeteProductSettings() {
           if (firstErrorKey && Array.isArray(apiErrors[firstErrorKey]) && apiErrors[firstErrorKey].length > 0) {
             toast.error(apiErrors[firstErrorKey][0])
           } else {
-            toast.error(error?.response?.data?.message || error?.message || "Failed to save terms and conditions")
+            toast.error(error?.response?.data?.message || error?.message || t("productSettings.termsSaveFailed"))
           }
         } else {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to save terms and conditions")
+          toast.error(error?.response?.data?.message || error?.message || t("productSettings.termsSaveFailed"))
         }
       } else if (activeTab === "eligibility") {
         // Handle validation errors from catch block for eligibility
@@ -1781,10 +1783,10 @@ export default function CraeteProductSettings() {
           if (firstErrorKey && Array.isArray(apiErrors[firstErrorKey]) && apiErrors[firstErrorKey].length > 0) {
             toast.error(apiErrors[firstErrorKey][0])
           } else {
-            toast.error(error?.response?.data?.message || error?.message || "Failed to save eligibility")
+            toast.error(error?.response?.data?.message || error?.message || t("productSettings.eligibilityFailed"))
           }
         } else {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to save eligibility")
+          toast.error(error?.response?.data?.message || error?.message || t("productSettings.eligibilityFailed"))
         }
       } else if (activeTab === "product-rules") {
         // Handle validation errors from catch block for product rules (including simah check rules)
@@ -1833,10 +1835,10 @@ export default function CraeteProductSettings() {
         if (firstError) {
           toast.error(firstError)
         } else {
-          toast.error(error?.response?.data?.message || error?.message || "Failed to save product rules")
+          toast.error(error?.response?.data?.message || error?.message || t("productSettings.rulesSaveFailed"))
         }
       } else {
-        toast.error(error?.response?.data?.message || error?.message || "Failed to save settings")
+        toast.error(error?.response?.data?.message || error?.message || t("productSettings.saveSettingsFailed"))
       }
     } finally {
       setIsLoading(false)
@@ -1892,7 +1894,7 @@ export default function CraeteProductSettings() {
               <div className={`flex items-center gap-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
                 <Button variant="ghost" size="sm" onClick={() => router.push("/Los/ProductManagement")} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Products
+                  {t("createCategories.backToProducts")}
                 </Button>
               </div>
             </div>
@@ -1900,7 +1902,7 @@ export default function CraeteProductSettings() {
               <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Package className="h-4 w-4" />
               </span>
-              Edit Product
+              {t("createDocs.editProduct")}
             </h1>
             <ProductCreateEditTabs
               activeTab="settings"
@@ -1937,7 +1939,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab> */}
 
-              <Tab eventKey="terms" title="Terms & Conditions">
+              <Tab eventKey="terms" title={t("terms.title")}>
                 {activeTab === "terms" && (
                   <TermsConditionsTab
                     formData={formData}
@@ -1949,7 +1951,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab>
 
-              <Tab eventKey="fee-settings" title="Fee Settings">
+              <Tab eventKey="fee-settings" title={t("fee.title")}>
                 {activeTab === "fee-settings" && (
                   <FeeSettingsTab
                     formData={formData}
@@ -1998,7 +2000,7 @@ export default function CraeteProductSettings() {
               </Tab>
               */}
 
-              <Tab eventKey="admin-fees" title="Fee Slabs">
+              <Tab eventKey="admin-fees" title={t("feeSlabs.title")}>
                 {activeTab === "admin-fees" && (
                   <AdminFeeSlabsTab
                     formData={formData}
@@ -2011,7 +2013,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab>
 
-              <Tab eventKey="duration" title="Duration Settings">
+              <Tab eventKey="duration" title={t("duration.title")}>
                 {activeTab === "duration" && (
                   <DurationSettingsTab
                     formData={formData}
@@ -2022,7 +2024,7 @@ export default function CraeteProductSettings() {
                 )}
               </Tab>
 
-              <Tab eventKey="approval-workflows" title="Approval Workflows">
+              <Tab eventKey="approval-workflows" title={t("workflows.title")}>
                 {activeTab === "approval-workflows" && (
                   <ApprovalWorkflowsTab
                     formData={formData}
@@ -2050,7 +2052,7 @@ export default function CraeteProductSettings() {
               </Tab>
 
                {/* Credit Scoring Engine tab */}
-              <Tab eventKey="credit-scoring" title="Credit Scoring Engine">
+              <Tab eventKey="credit-scoring" title={t("creditScoring.title")}>
                 {activeTab === "credit-scoring" && (
                   <CreditScoringTab
                     formData={formData}

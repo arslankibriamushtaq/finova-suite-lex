@@ -1,7 +1,9 @@
 import { Input } from "antd";
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function ErrorCodeSetting({ errorCodesData, }: any) {
+  const { t } = useTranslation("partner");
   const arabicdata = [
     {
       label: "خطا بالكود 1 (عربي) ",
@@ -19,15 +21,15 @@ function ErrorCodeSetting({ errorCodesData, }: any) {
   
   const data = [
     {
-      label: "Error Code 1 (English)",
+      label: t("errorCode.code1En"),
       value: errorCodesData[0]?.text_en || "-",
     },
     {
-      label: "Error Code 2 (English) ",
+      label: t("errorCode.code2En"),
       value: errorCodesData[1]?.text_en || "-",
     },
     {
-      label: "Error Code 3 (English) ",
+      label: t("errorCode.code3En"),
       value: errorCodesData[2]?.text_en || "-",
     },
   ];

@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../../../components/TableView/TableView";
 import Loader from "../../../../components/Loader/Loader";
 import { getAllLogs } from "../../../../redux/apis/apisInvestor";
 import toast from "react-hot-toast";
 
 const InvestorLogs = () => {
+  const { t } = useTranslation("investor");
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -101,14 +103,14 @@ const InvestorLogs = () => {
         setTo(Math.min(page * pageSize, totalCount));
         setTotalPage(Math.ceil(totalCount / pageSize));
       } else {
-        const errorMessage = response?.notificationMessage || response?.errors?.[0] || "Failed to fetch logs";
+        const errorMessage = response?.notificationMessage || response?.errors?.[0] || t("ilog.fetchError");
         toast.error(errorMessage);
         setData([]);
       }
       setLoading(false);
     } catch (error: any) {
       console.error("Error fetching logs:", error);
-      const errorMessage = error?.notificationMessage || error?.message || "Failed to fetch logs";
+      const errorMessage = error?.notificationMessage || error?.message || t("ilog.fetchError");
       toast.error(errorMessage);
       setLoading(false);
       setData([]);
@@ -159,110 +161,110 @@ const InvestorLogs = () => {
 
   const Headers = [
     {
-      name: "Sr",
+      name: t("ilog.col.sr"),
       selector: (row: any) => row.sr || "-",
       sortable: true,
       width: "60px",
     },
     {
-      name: "Level",
+      name: t("ilog.col.level"),
       selector: (row: any) => row.level || "-",
       sortable: true,
       width: "80px",
     },
     {
-      name: "Message",
+      name: t("ilog.col.message"),
       selector: (row: any) => row.message || "-",
       sortable: true,
       width: "250px",
     },
     {
-      name: "Channel",
+      name: t("ilog.col.channel"),
       selector: (row: any) => row.channel || "-",
       sortable: true,
       width: "120px",
     },
 
     {
-      name: "Return Amount",
+      name: t("ilog.col.returnAmount"),
       selector: (row: any) => row.returnAmount !== "-" ? row.returnAmount.toLocaleString() : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Net Return Amount",
+      name: t("ilog.col.netReturnAmount"),
       selector: (row: any) => row.netReturnAmount !== "-" ? row.netReturnAmount.toLocaleString() : "-",
       sortable: true,
       width: "150px",
     },
     {
-      name: "Return Type",
+      name: t("ilog.col.returnType"),
       selector: (row: any) => row.returnType || "-",
       sortable: true,
       width: "100px",
     },
     {
-      name: "ROI Rate",
+      name: t("ilog.col.roiRate"),
       selector: (row: any) => row.roiRate !== "-" ? `${row.roiRate}%` : "-",
       sortable: true,
       width: "100px",
     },
     {
-      name: "Return Status",
+      name: t("ilog.col.returnStatus"),
       selector: (row: any) => row.returnStatus || "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Reference No",
+      name: t("ilog.col.referenceNo"),
       selector: (row: any) => row.referenceNo || "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Calculated Date",
+      name: t("ilog.col.calculatedDate"),
       selector: (row: any) => row.calculatedDate !== "-" ? formatDate(row.calculatedDate) : "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Approved Date",
+      name: t("ilog.col.approvedDate"),
       selector: (row: any) => row.approvedDate !== "-" ? formatDate(row.approvedDate) : "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Paid Date",
+      name: t("ilog.col.paidDate"),
       selector: (row: any) => row.paidDate !== "-" ? formatDate(row.paidDate) : "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Tax Withheld",
+      name: t("ilog.col.taxWithheld"),
       selector: (row: any) => row.taxWithHeld !== "-" ? row.taxWithHeld.toLocaleString() : "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Tax Rate",
+      name: t("ilog.col.taxRate"),
       selector: (row: any) => row.taxRate !== "-" ? `${row.taxRate}%` : "-",
       sortable: true,
       width: "100px",
     },
     {
-      name: "Trace ID",
+      name: t("ilog.col.traceId"),
       selector: (row: any) => row.traceId || "-",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Transaction ID",
+      name: t("ilog.col.transactionId"),
       selector: (row: any) => row.transactionId || "-",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Created At",
+      name: t("common:createdAt"),
       selector: (row: any) => formatDate(row.createdAt),
       sortable: true,
       width: "180px",
@@ -281,31 +283,31 @@ const InvestorLogs = () => {
 
   return (
     <div className="service">
-      <h2 className="mb-3 mt-2 d-flex justify-content-start">Logs</h2>
-      
+      <h2 className="mb-3 mt-2 d-flex justify-content-start">{t("logs.title")}</h2>
+
       {/* Summary Cards */}
       <div className="row mb-4">
         <div className="col-md-3 col-sm-6 mb-3">
           <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">Total Logs</h6>
+            <h6 className="mb-2 text-black">{t("ilog.totalLogs")}</h6>
             <h3 className="mb-0 text-black">{summary.totalLogs.toLocaleString()}</h3>
           </div>
         </div>
         <div className="col-md-3 col-sm-6 mb-3">
           <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">Total Return Amount</h6>
+            <h6 className="mb-2 text-black">{t("ilog.totalReturnAmount")}</h6>
             <h3 className="mb-0 text-black">{summary.totalReturnAmount}</h3>
           </div>
         </div>
         <div className="col-md-3 col-sm-6 mb-3">
           <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">Total Net Return Amount</h6>
+            <h6 className="mb-2 text-black">{t("ilog.totalNetReturnAmount")}</h6>
             <h3 className="mb-0 text-black">{summary.totalNetReturnAmount}</h3>
           </div>
         </div>
         <div className="col-md-3 col-sm-6 mb-3">
           <div className="bg-white border rounded p-4 shadow-sm">
-            <h6 className="mb-2 text-black">Average Return Amount</h6>
+            <h6 className="mb-2 text-black">{t("ilog.averageReturnAmount")}</h6>
             <h3 className="mb-0 text-black">{summary.averageReturnAmount}</h3>
           </div>
         </div>

@@ -1,6 +1,8 @@
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/store";
 const NotificationBar = () => {
+  const { t } = useTranslation("dashboard");
   const themeBuilder = useSelector((state: RootState) => state?.block.theme);
   return (
     <div className="card-blocks right-side">
@@ -13,7 +15,7 @@ const NotificationBar = () => {
             className="text-20"
             style={{ color: themeBuilder?.color?.headingTextColor }}
           >
-            Notifications
+            {t("notification.title")}
           </h3>
           <span>
             <svg

@@ -4,8 +4,10 @@ import { Form, Button } from "react-bootstrap";
 import toast from "react-hot-toast";
 import { applicationApprovalChecks, getApplicationDetailsByType } from "../../redux/apis/apisCrud";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 const ApproveSimahInfo = () => {
+  const { t } = useTranslation("dashboard");
   const [comment, setComment] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { id } = useParams(); // Get application ID from URL
@@ -30,7 +32,7 @@ const ApproveSimahInfo = () => {
       }
     } catch (error) {
       console.error("Error fetching SIMAH data:", error);
-      toast.error("Failed to fetch SIMAH information");
+      toast.error(t("approveSimah.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -58,18 +60,18 @@ const ApproveSimahInfo = () => {
 
   const handleApprove = async () => {
     if (!comment.trim()) {
-      toast.error("Please enter a comment before approving");
+      toast.error(t("approveSimah.toast.enterCommentApprove"));
       return;
     }
 
     if (!id) {
-      toast.error("Application ID not found");
+      toast.error(t("factoringApproval.toast.appIdNotFound"));
       return;
     }
 
     try {
       setSubmitting(true);
-      
+
       const body = {
         types: "simah_approval",
         user_id: 1,
@@ -80,17 +82,17 @@ const ApproveSimahInfo = () => {
       const response = await applicationApprovalChecks(body);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "SIMAH information approved successfully");
+        toast.success(response?.data?.message || t("approveSimah.toast.approved"));
         setComment(""); // Clear comment after success
         await fetchSimahData(); // Refresh data to show updated status
       } else {
-        toast.error(response?.data?.message || "Failed to approve SIMAH information");
+        toast.error(response?.data?.message || t("approveSimah.toast.approveFailed"));
       }
     } catch (error: any) {
       console.error("Error approving SIMAH:", error);
       toast.error(
-        error?.response?.data?.message || 
-        "Failed to approve SIMAH information"
+        error?.response?.data?.message ||
+        t("approveSimah.toast.approveFailed")
       );
     } finally {
       setSubmitting(false);
@@ -100,12 +102,12 @@ const ApproveSimahInfo = () => {
   // Handle Reject action
   const handleReject = async () => {
     if (!comment.trim()) {
-      toast.error("Please enter a comment/reason before rejecting");
+      toast.error(t("approveSimah.toast.enterCommentReject"));
       return;
     }
 
     if (!id) {
-      toast.error("Application ID not found");
+      toast.error(t("factoringApproval.toast.appIdNotFound"));
       return;
     }
 
@@ -122,17 +124,17 @@ const ApproveSimahInfo = () => {
       const response = await applicationApprovalChecks(body);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "SIMAH information rejected");
+        toast.success(response?.data?.message || t("approveSimah.toast.rejected"));
         setComment(""); // Clear comment after success
         await fetchSimahData(); // Refresh data to show updated status
       } else {
-        toast.error(response?.data?.message || "Failed to reject SIMAH information");
+        toast.error(response?.data?.message || t("approveSimah.toast.rejectFailed"));
       }
     } catch (error: any) {
       console.error("Error rejecting SIMAH:", error);
       toast.error(
-        error?.response?.data?.message || 
-        "Failed to reject SIMAH information"
+        error?.response?.data?.message ||
+        t("approveSimah.toast.rejectFailed")
       );
     } finally {
       setSubmitting(false);
@@ -157,13 +159,13 @@ const ApproveSimahInfo = () => {
             }}
           >
             <h6 style={{ marginBottom: "15px", color: "#333", fontWeight: "600" }}>
-              Comment Box
+              {t("approval.commentBox")}
             </h6>
             <Form.Group>
               <Form.Control
                 as="textarea"
                 rows={4}
-                placeholder="Write comment here"
+                placeholder={t("approval.writeComment")}
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
                 disabled={submitting}
@@ -176,7 +178,7 @@ const ApproveSimahInfo = () => {
                 }}
               />
               <Form.Text className="text-muted" style={{ fontSize: "12px", marginTop: "10px" }}>
-                Please provide your comments or reasons for approval/rejection
+                {t("approveSimah.helper")}
               </Form.Text>
             </Form.Group>
           </div>
@@ -198,10 +200,10 @@ const ApproveSimahInfo = () => {
                   <div style={{ display: "inline-block", transform: "scale(0.3)", transformOrigin: "center", marginRight: "8px" }}>
                     <Loader />
                   </div>
-                  Processing...
+                  {t("approval.processing")}
                 </>
               ) : (
-                "Reject"
+                t("common:reject")
               )}
             </Button>
             <Button
@@ -219,10 +221,10 @@ const ApproveSimahInfo = () => {
                   <div style={{ display: "inline-block", transform: "scale(0.3)", transformOrigin: "center", marginRight: "8px" }}>
                     <Loader />
                   </div>
-                  Processing...
+                  {t("approval.processing")}
                 </>
               ) : (
-                "Approve"
+                t("common:approve")
               )}
             </Button>
           </div>
@@ -242,7 +244,7 @@ const ApproveSimahInfo = () => {
             <div className="row mb-3" style={{ borderBottom: "1px solid #f0f0f0", paddingBottom: "15px" }}>
               <div className="col-md-6 d-flex">
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                  Processor
+                  {t("approval.processor")}
                 </div>
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "600", flex: 1, textAlign: "right" }}>
                   {simahHistory?.processor || 'N/A'}
@@ -251,7 +253,7 @@ const ApproveSimahInfo = () => {
 
               <div className="col-md-6 d-flex">
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                  Processed Date
+                  {t("approval.processedDate")}
                 </div>
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", flex: 1, textAlign: "right" }}>
                   {formatDate(simahHistory?.processed_date)}
@@ -263,7 +265,7 @@ const ApproveSimahInfo = () => {
             <div className="row">
               <div className="col-md-6 d-flex align-items-center">
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                  Application Status
+                  {t("approval.applicationStatus")}
                 </div>
                 <div style={{ flex: 1, textAlign: "right" }}>
                   <span 
@@ -282,10 +284,10 @@ const ApproveSimahInfo = () => {
 
               <div className="col-md-6 d-flex">
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                  Comment
+                  {t("approval.comment")}
                 </div>
                 <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", flex: 1, textAlign: "right" }}>
-                  {simahHistory?.app_comment || 'No comment provided'}
+                  {simahHistory?.app_comment || t("approval.noComment")}
                 </div>
               </div>
             </div>

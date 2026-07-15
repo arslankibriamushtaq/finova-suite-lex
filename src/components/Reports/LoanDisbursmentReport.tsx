@@ -7,7 +7,9 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 const LoanDisbursmentReport = () => {
+  const { t } = useTranslation("reports");
   const [fromDate, setFromDate] = useState<any>("");
   const [toDate, setToDate] = useState<any>("");
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
@@ -27,7 +29,7 @@ const LoanDisbursmentReport = () => {
         setPage(1);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch loan disbursement report");
+      toast.error(error?.message || t('loanDisbursment.toast.fetchError'));
     } finally {
       setLoading(false);
     }
@@ -72,32 +74,32 @@ const LoanDisbursmentReport = () => {
   }, []);
   const Call_Activity_Header = [
     {
-      name: "Application Number",
+      name: t('loanDisbursment.col.applicationNumber'),
       selector: (row: { applicationNumber: any }) => row.applicationNumber,
     },
     {
-      name: "Customer Name",
+      name: t('loanDisbursment.col.customerName'),
       cell: (row: any) => row.customerName,
       width:'200px',
     },
     {
-      name: "Product Name",
+      name: t('loanDisbursment.col.productName'),
       selector: (row: { productName: any }) => row.productName,
     },
     {
-      name: "Disbursement Date",
+      name: t('loanDisbursment.col.disbursementDate'),
       selector: (row: { disbursementDate: any }) => row.disbursementDate,
     },
     {
-      name: "Disbursed Amount",
+      name: t('loanDisbursment.col.disbursedAmount'),
       selector: (row: { disbursedAmount: any }) => row.disbursedAmount,
     },
     {
-      name: "Tenure",
+      name: t('loanDisbursment.col.tenure'),
       selector: (row: { tenure: any }) => row.tenure,
     },
     {
-      name: "Status",
+      name: t('common:status'),
       cell: (row: { status: any }) => {
         const getStatusColor = (status: string) => {
           switch (status?.toLowerCase()) {
@@ -120,16 +122,16 @@ const LoanDisbursmentReport = () => {
         const getStatusLabel = (status: string) => {
           switch (status?.toLowerCase()) {
             case "paid":
-              return "Paid";
+              return t('loanDisbursment.status.paid');
             case "unpaid":
-              return "Unpaid";
+              return t('loanDisbursment.status.unpaid');
             case "pending":
-              return "Pending";
+              return t('common:pending');
             case "approved":
-              return "Approved";
+              return t('common:approved');
             case "rejected":
             case "reject":
-              return "Rejected";
+              return t('common:rejected');
             default:
               return status || "-";
           }
@@ -154,7 +156,7 @@ const LoanDisbursmentReport = () => {
       },
     },
     {
-      name: "Branch/Channel",
+      name: t('loanDisbursment.col.branchChannel'),
       selector: (row: { branchOrChannel: any }) => row.branchOrChannel,
     },
   ];
@@ -164,7 +166,7 @@ const LoanDisbursmentReport = () => {
   }, [fromDate, toDate]);
   const exportToCSV = (data: any[], fileName: string) => {
     if (!data || data.length === 0) {
-      toast.error("No data to export");
+      toast.error(t('toast.noExportData'));
       return;
     }
     const csvRows = [];
@@ -213,31 +215,31 @@ const LoanDisbursmentReport = () => {
     <>
       <div className="col-12">
         <div className="mb-3 pb-2 border-bottom">
-          <h3 className="mb-0 fw-bold text-dark">Loan Disbursment Report</h3>
+          <h3 className="mb-0 fw-bold text-dark">{t('loanDisbursment.title')}</h3>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
           <div className="row align-items-center">
             {/* From Date */}
             <div className="col-md-4">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t('common:from')}
               </label>
               <DatePicker
                 onChange={(e: any) => {
                   handleFromDateChange(e);
                 }}
-                placeholder="Select From Date"
+                placeholder={t('filter.selectFromDate')}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-4">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t('common:to')}
               </label>
               <DatePicker
                 onChange={handleToDateChange}
-                placeholder="Select To Date"
+                placeholder={t('filter.selectToDate')}
               />
             </div>
 
@@ -255,7 +257,7 @@ const LoanDisbursmentReport = () => {
                   handleSubmit();
                 }}
               >
-                Clear
+                {t('common:clear')}
               </button>
             </div>
 
@@ -285,7 +287,7 @@ const LoanDisbursmentReport = () => {
                 exportToCSV(mappedData, "LoanDisbursementReport");
               }}
             >
-              Export CSV
+              {t('action.exportCsv')}
             </button>
           </div>
         </div>

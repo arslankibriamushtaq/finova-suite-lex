@@ -27,7 +27,9 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { useTranslation } from "react-i18next";
 const ReasonsTypes = () => {
+  const { t } = useTranslation("lov");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -71,14 +73,14 @@ const ReasonsTypes = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -91,13 +93,13 @@ const ReasonsTypes = () => {
     //   // width: "15%",
     // },
     {
-      name: "Reason",
+      name: t("reasonsTypes.col.reason"),
       selector: (row: { reason: any }) => row.reason,
       // sortable: true,
       // width: "75%",
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <div
           style={{
@@ -114,12 +116,12 @@ const ReasonsTypes = () => {
             cursor: row.status === 1 ? "pointer" : "default",
           }}
         >
-          {row.status == 1 ? "Active" : "Inactive"}
+          {row.status == 1 ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Change Status",
+      name: t("shared.changeStatus"),
       cell: (row: any) => (
         <Switch
           className="red-switch"
@@ -151,7 +153,7 @@ const ReasonsTypes = () => {
       ),
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       width: "10%",
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -164,7 +166,7 @@ const ReasonsTypes = () => {
               padding: "8px",
             }}
           >
-            Select 
+            {t("common:select")}
             <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
@@ -176,13 +178,13 @@ const ReasonsTypes = () => {
     if (!deleteTargetId) return;
     try {
       await toast.promise(deleteTypeReasons(deleteTargetId), {
-        loading: "Deleting...",
+        loading: t("reasonsTypes.toast.deleting"),
         success: (response) => {
           getList();
           setShowConfirmModal(false);
-          return "Deleted successfully";
+          return t("reasonsTypes.toast.deleted");
         },
-        error: (err) => err?.message || "Failed to delete source",
+        error: (err) => err?.message || t("reasonsTypes.toast.deleteFailed"),
       });
     } catch (error) {
       console.error("Delete error:", error);
@@ -199,7 +201,7 @@ const ReasonsTypes = () => {
     try {
       if (selectedItem == "edit" && currentSourceId !== null) {
         await toast.promise(updateTypeReasons(currentSourceId, body), {
-          loading: "Updating...",
+          loading: t("reasonsTypes.toast.updating"),
           success: (response: any) => {
             setShowModal(false);
             setSelectedItem("");
@@ -211,13 +213,13 @@ const ReasonsTypes = () => {
               status: 0 
              });
             getList();
-            return "Updated successfully";
+            return t("reasonsTypes.toast.updated");
           },
-          error: (err) => err?.message || "Failed to update",
+          error: (err) => err?.message || t("reasonsTypes.toast.updateFailed"),
         });
       } else if (selectedItem == "add") {
         await toast.promise(createTypeReasons(body), {
-          loading: "Adding finance purpose...",
+          loading: t("reasonsTypes.toast.adding"),
           success: (response) => {
             setShowModal(false);
             setSelectedItem("");
@@ -229,9 +231,9 @@ const ReasonsTypes = () => {
                 status: 0 
               });
             getList();
-            return "Financing Purpose added successfully";
+            return t("reasonsTypes.toast.added");
           },
-          error: (err) => err?.message || "Failed to add new source",
+          error: (err) => err?.message || t("reasonsTypes.toast.addFailed"),
         });
       }
     } catch (error) {
@@ -304,7 +306,7 @@ const ReasonsTypes = () => {
             mode="tags"
             style={{ width: "15%", borderTopRightRadius: "0px" }}
             onChange={handleChange}
-            placeholder="Filter"
+            placeholder={t("common:filter")}
             tokenSeparators={[","]}
             suffixIcon={<FaFilter />}
             options={options}
@@ -323,7 +325,7 @@ const ReasonsTypes = () => {
                   background: "transparent",
                 }}
                 className="p-2"
-                placeholder="Search..."
+                placeholder={t("shared.searchPlaceholder")}
               />
             </div>
 
@@ -339,7 +341,7 @@ const ReasonsTypes = () => {
                 });
               }}
             >
-              Add New Record
+              {t("shared.addNewRecord")}
             </button>
           </div>
         </div>
@@ -361,13 +363,13 @@ const ReasonsTypes = () => {
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
-            selectedItem === "edit" ? "Edit Record" : "Add New Record"
+            selectedItem === "edit" ? t("reasonsTypes.modal.editTitle") : t("shared.addNewRecord")
           }
           visible={showModal}
           onCancel={() => setShowModal(false)}
           footer={[
             <Button key="close" onClick={() => setShowModal(false)}>
-              Cancel
+              {t("common:cancel")}
             </Button>,
             <Button
               key="save"
@@ -377,7 +379,7 @@ const ReasonsTypes = () => {
                 setShowModal(false);
               }}
             >
-              {selectedItem === "edit" ? "Save" : "Submit"}
+              {selectedItem === "edit" ? t("common:save") : t("common:submit")}
             </Button>,
           ]}
         >
@@ -385,11 +387,11 @@ const ReasonsTypes = () => {
             <Form>
               <Row className="">
                 <Col className="px-2" md={12}>
-                <label className="fw-400">Reason</label>
+                <label className="fw-400">{t("reasonsTypes.label.reason")}</label>
                 <Input
                   type="text"
                   className="fs-6"
-                  placeholder="Enter Reason"
+                  placeholder={t("reasonsTypes.ph.reason")}
                   value={formData.reason}
                   onChange={(e: any) =>
                     setFormData({ ...formData, reason: e.target.value })
@@ -397,10 +399,10 @@ const ReasonsTypes = () => {
                 />
                 </Col>
                 <Col className = "px-2" md={12}>
-                <label className="fw-400">Type</label>
+                <label className="fw-400">{t("common:type")}</label>
                 <Select
                   className="fs-6"
-                  placeholder="Select type"
+                  placeholder={t("reasonsTypes.ph.type")}
                   value={formData.type_id}
                   onChange={(e: any) =>
                     setFormData({ ...formData, type_id: e})
@@ -424,14 +426,14 @@ const ReasonsTypes = () => {
           style={{ maxWidth: "632px" }}
           title={
             selectedItem === "edit"
-              ? "Edit Record"
+              ? t("reasonsTypes.modal.editTitle")
               : selectedItem === "edit"
-              ? "Add New Record"
-              : "Delete Record"
+              ? t("shared.addNewRecord")
+              : t("reasonsTypes.modal.deleteTitle")
           }
           footer={[
             <Button key="no" onClick={() => setShowConfirmModal(false)}>
-              No
+              {t("common:no")}
             </Button>,
             <Button
               key="yes"
@@ -440,17 +442,17 @@ const ReasonsTypes = () => {
                 selectedItem == "delete" ? handleDeleteConfirmed : handleSave
               }
             >
-              Yes
+              {t("common:yes")}
             </Button>,
           ]}
         >
           <Form>
             {`${
               selectedItem == "edit"
-                ? "Are you sure you want to update this record?"
+                ? t("reasonsTypes.confirmUpdateBody")
                 : selectedItem == "add"
-                ? "Are you sure you want to add new record?"
-                : "Are you sure you want to delete this record?"
+                ? t("reasonsTypes.confirmAddBody")
+                : t("reasonsTypes.confirmDeleteBody")
             }`}
           </Form>
         </Modal>

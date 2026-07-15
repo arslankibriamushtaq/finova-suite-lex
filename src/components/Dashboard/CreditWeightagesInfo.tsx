@@ -3,6 +3,7 @@ import { Select } from "antd";
 import { calculateApplicationWeight } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import { DownOutlined, UpOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 interface Props {
   definitions: any[];
@@ -12,6 +13,7 @@ interface Props {
 }
 
 const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: Props) => {
+  const { t } = useTranslation("dashboard");
   const [selected, setSelected] = useState<Record<number, { label: string; value: string; weight: number }>>({});
   const [saving, setSaving] = useState(false);
   const [breakdownExpanded, setBreakdownExpanded] = useState(true);
@@ -207,7 +209,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             {totalScore}
           </div>
           <div style={{ fontSize: "10px", fontWeight: "500", marginTop: "4px", opacity: 0.9 }}>
-            SCORE
+            {t("creditWeight.score")}
           </div>
         </div>
 
@@ -220,14 +222,14 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
             margin: 0,
             marginBottom: "4px"
           }}>
-            Credit Score Analysis
+            {t("creditWeight.creditScoreAnalysis")}
           </h2>
           <p style={{ 
             fontSize: "14px", 
             color: "var(--muted-foreground)", 
             margin: 0 
           }}>
-            Current Application Weightage Assessment
+            {t("creditWeight.assessment")}
           </p>
         </div>
 
@@ -244,7 +246,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           boxShadow: "0 2px 8px rgba(32, 178, 170, 0.3)"
         }}>
           <div style={{ fontSize: "12px", fontWeight: "500", marginBottom: "4px", opacity: 0.9 }}>
-            Total Score
+            {t("creditWeight.totalScore")}
           </div>
           <div style={{ fontSize: "24px", fontWeight: "700", lineHeight: "1" }}>
             {totalScore}
@@ -260,12 +262,12 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
           color: "var(--foreground)", 
           marginBottom: "20px" 
         }}>
-          Credit Factor Breakdown
+          {t("creditWeight.factorBreakdown")}
         </h3>
         
         {grid.length === 0 ? (
           <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-            No credit factors available
+            {t("creditWeight.noFactors")}
           </div>
         ) : (
           <div style={{ 
@@ -410,14 +412,14 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
               margin: 0,
               marginBottom: "4px"
             }}>
-              Score Calculation Breakdown
+              {t("creditWeight.scoreCalcBreakdown")}
             </h3>
             <p style={{ 
               fontSize: "13px", 
               color: "var(--muted-foreground)", 
               margin: 0 
             }}>
-              View detailed formula and parameter contributions
+              {t("creditWeight.viewDetails")}
             </p>
           </div>
           <div style={{ color: "var(--muted-foreground)", fontSize: "14px" }}>
@@ -457,7 +459,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   color: "var(--foreground)", 
                   margin: 0 
                 }}>
-                  Scoring Formula
+                  {t("creditWeight.scoringFormula")}
                 </h4>
               </div>
               <div style={{ 
@@ -466,7 +468,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>Income = Basic Wage + Other Allowance + Housing Allowance</span>
+                {t("creditWeight.formula")} <span style={{ color: "var(--foreground)", fontWeight: "400" }}>Income = Basic Wage + Other Allowance + Housing Allowance</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
@@ -474,7 +476,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
+                {t("creditWeight.calculation")} <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   21450 + 3300 + 8250 = 33000
                 </span>
               </div>
@@ -486,7 +488,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 paddingTop: "8px",
                 borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>33000</span>
+                {t("creditWeight.total")} <span style={{ color: "var(--foreground)", fontWeight: "600" }}>33000</span>
               </div>
             </div>
 
@@ -515,7 +517,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   color: "var(--foreground)", 
                   margin: 0 
                 }}>
-                  DBR System Percentage
+                  {t("creditWeight.dbrSystemPercentage")}
                 </h4>
               </div>
               <div style={{ 
@@ -524,7 +526,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>( DBR Percentage / income ) * 100</span>
+                {t("creditWeight.formula")} <span style={{ color: "var(--foreground)", fontWeight: "400" }}>( DBR Percentage / income ) * 100</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
@@ -532,7 +534,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
+                {t("creditWeight.calculation")} <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   (10.00 / 33000) * 100 = 0.03030303030303
                 </span>
               </div>
@@ -544,7 +546,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 paddingTop: "8px",
                 borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>0.03030303030303</span>
+                {t("creditWeight.total")} <span style={{ color: "var(--foreground)", fontWeight: "600" }}>0.03030303030303</span>
               </div>
             </div>
 
@@ -573,7 +575,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   color: "var(--foreground)", 
                   margin: 0 
                 }}>
-                  Simmah Amount
+                  {t("creditWeight.simmahAmount")}
                 </h4>
               </div>
               <div style={{ 
@@ -582,7 +584,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>Simmah Amount = 16.666666666667</span>
+                {t("creditWeight.formula")} <span style={{ color: "var(--foreground)", fontWeight: "400" }}>Simmah Amount = 16.666666666667</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
@@ -590,7 +592,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
+                {t("creditWeight.calculation")} <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   16.666666666667
                 </span>
               </div>
@@ -602,7 +604,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 paddingTop: "8px",
                 borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>16.666666666667</span>
+                {t("creditWeight.total")} <span style={{ color: "var(--foreground)", fontWeight: "600" }}>16.666666666667</span>
               </div>
             </div>
 
@@ -631,7 +633,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   color: "var(--foreground)", 
                   margin: 0 
                 }}>
-                  Credit Lite Percentage
+                  {t("creditWeight.creditLitePercentage")}
                 </h4>
               </div>
               <div style={{ 
@@ -640,7 +642,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>( Credit Lite Percentage / income ) * 100</span>
+                {t("creditWeight.formula")} <span style={{ color: "var(--foreground)", fontWeight: "400" }}>( Credit Lite Percentage / income ) * 100</span>
               </div>
               <div style={{ 
                 fontSize: "13px", 
@@ -648,7 +650,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
+                {t("creditWeight.calculation")} <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   (10.00 / 33000) * 100 = 0.03030303030303
                 </span>
               </div>
@@ -660,7 +662,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 paddingTop: "8px",
                 borderTop: "1px solid var(--surface-border)"
               }}>
-                Total: <span style={{ color: "var(--foreground)", fontWeight: "600" }}>0.03030303030303</span>
+                {t("creditWeight.total")} <span style={{ color: "var(--foreground)", fontWeight: "600" }}>0.03030303030303</span>
               </div>
             </div>
 
@@ -690,7 +692,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                   color: "var(--foreground)", 
                   margin: 0 
                 }}>
-                  Final Score
+                  {t("creditWeight.finalScore")}
                 </h4>
               </div>
               <div style={{ 
@@ -699,7 +701,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 marginBottom: "6px",
                 lineHeight: "1.5"
               }}>
-                Formula: <span style={{ color: "var(--foreground)", fontWeight: "400" }}>
+                {t("creditWeight.formula")} <span style={{ color: "var(--foreground)", fontWeight: "400" }}>
                   income * System Define Percentage - Simmah Amount + Credit Lite Percentage
                 </span>
               </div>
@@ -709,7 +711,7 @@ const CreditWeightagesInfo = ({ definitions, applicationId, loading, onSave }: P
                 fontWeight: "400",
                 lineHeight: "1.5"
               }}>
-                Calculation: <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
+                {t("creditWeight.calculation")} <span style={{ color: "var(--foreground)", fontWeight: "500" }}>
                   33000 * 0.03030303030303 - 16.666666666667 + 0.03030303030303 = 983.36363636364
                 </span>
               </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 import type { RootState } from "../../../redux/rootReducer";
 import { Button, Dropdown, Form, Input, Menu, Modal, Switch, DatePicker, Select } from "antd";
 import { CalendarX } from "lucide-react";
@@ -32,6 +33,7 @@ enum Relationships {
 }
 
 export default function BrokenPromises() {
+  const { t } = useTranslation("loanManagement");
   // Selected Application row is saved into Redux when user clicks "Broken Promise" in Application Management
   const selectedApplication = useSelector(
     (state: RootState) => (state as any)?.block?.selectedPromiseApplication
@@ -63,7 +65,7 @@ const[editPromise, setEditPromise] = useState<any>(null);
         setTo(res?.data?.pageInfo?.totalItems || 0);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to load broken promises");
+      toast.error(error?.message || t("brokenPromises.toastLoadFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -77,20 +79,20 @@ const[editPromise, setEditPromise] = useState<any>(null);
 
 
     {
-      name: "Promised Amount",
+      name: t("brokenPromises.colPromisedAmount"),
       cell: (row: any) => row.promisedAmount ?? "-",
       sortable: true,
       width: "160px",
     },
 ,
     {
-      name: "Taken By",
+      name: t("brokenPromises.colTakenBy"),
       cell: (row: any) => row.takenBy ?? "-",
       sortable: true,
       width: "160px",
     },
     {
-      name: "Taken Date",
+      name: t("brokenPromises.colTakenDate"),
       sortable: true,
       cell: (row: any) => (
         <div>{row.takenDate ? new Date(row.takenDate).toLocaleString() : "-"}</div>
@@ -98,7 +100,7 @@ const[editPromise, setEditPromise] = useState<any>(null);
       width: "200px",
     },
     {
-      name: "Due On Taken Date",
+      name: t("brokenPromises.colDueOnTakenDate"),
       sortable: true,
       cell: (row: any) => (
         <div>{row.dueOnTakenDate ? formatDate(row.dueOnTakenDate) : "-"}</div>
@@ -106,28 +108,28 @@ const[editPromise, setEditPromise] = useState<any>(null);
       width: "200px",
     },
     {
-      name: "Collected Amount",
+      name: t("brokenPromises.colCollectedAmount"),
       cell: (row: any) => row.collectedAmount ?? "-",
       sortable: true,
       width: "170px",
     },
 
     {
-      name: "Cancelled",
+      name: t("brokenPromises.colCancelled"),
       width: "170px",
       cell: (row: any) => (
-        <Switch checked={!!row.isCancelledPromise} checkedChildren="Yes" unCheckedChildren="No" disabled />
+        <Switch checked={!!row.isCancelledPromise} checkedChildren={t("common:yes")} unCheckedChildren={t("common:no")} disabled />
       ),
     },
     {
-      name: "Contact",
+      name: t("brokenPromises.colContact"),
       cell: (row: any) => row.contact ?? "-",
       sortable: true,
       width: "170px",
     },
    
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -141,7 +143,7 @@ const[editPromise, setEditPromise] = useState<any>(null);
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("applications.select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -177,14 +179,14 @@ form.setFieldsValue({
     <Menu>
      
       <Menu.Item key="edit" onClick={() => handleEditPromise(_row)}>
-      Edit
+      {t("common:edit")}
       </Menu.Item>
     </Menu>
   );
 
   const openCreate = () => {
     if (!selectedApplication) {
-      toast.error("Please open Broken Promise from Application Management first.");
+      toast.error(t("brokenPromises.toastOpenFromApp"));
       return;
     }
 
@@ -244,19 +246,19 @@ form.setFieldsValue({
       if (editPromise) {
         payload.id = editPromise;
         const res = await updatePromise(payload);
-        toast.success((res as any)?.data?.notificationMessage || "Broken promise updated successfully");
+        toast.success((res as any)?.data?.notificationMessage || t("brokenPromises.toastUpdated"));
         setEditPromise(null);
       } else {
         // Creating new promise
         const res = await addPromise(payload);
-        toast.success((res as any)?.data?.notificationMessage || "Broken promise created successfully");
+        toast.success((res as any)?.data?.notificationMessage || t("brokenPromises.toastCreated"));
       }
 
       setIsCreateOpen(false);
       form.resetFields();
       getList();
     } catch (e: any) {
-      toast.error(e?.response?.data?.notificationMessage || e?.message || (editPromise ? "Failed to update broken promise" : "Failed to create broken promise"));
+      toast.error(e?.response?.data?.notificationMessage || e?.message || (editPromise ? t("brokenPromises.toastUpdateFailed") : t("brokenPromises.toastCreateFailed")));
     } finally {
       setIsSubmitting(false);
     }
@@ -269,7 +271,7 @@ form.setFieldsValue({
           <span className="pro-head-badge">
             <CalendarX className="h-4 w-4" />
           </span>
-          Broken Promises
+          {t("brokenPromises.title")}
         </h3>
       </div>
 
@@ -282,7 +284,7 @@ form.setFieldsValue({
             onClick={openCreate}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Create Broken Promise
+            {t("brokenPromises.create")}
           </Button>
         </div>
       </div>
@@ -307,7 +309,7 @@ form.setFieldsValue({
       </div>
 
       <Modal
-        title={editPromise ? "Edit Broken Promise" : "Create Broken Promise"}
+        title={editPromise ? t("brokenPromises.editTitle") : t("brokenPromises.create")}
         open={isCreateOpen}
         width={800}
        
@@ -323,7 +325,7 @@ form.setFieldsValue({
           <Row className="g-3">
             <Col md={6} className="col-6">
               <Form.Item
-                label="Amount"
+                label={t("common:amount")}
                 name="amount"
                 rules={[{  message: "Amount is required" }]}
               >
@@ -333,7 +335,7 @@ form.setFieldsValue({
 
             <Col md={6} className="col-6">
               <Form.Item
-                label="Promise Date"
+                label={t("brokenPromises.promiseDate")}
                 name="promiseDate"
                 rules={[{  message: "Promise Date is required" }]}
               >
@@ -342,120 +344,120 @@ form.setFieldsValue({
             </Col>
 
             <Col md={12} className="col-12">
-              <h6 style={{ marginBottom: "10px", fontWeight: 600 }}>Promised By (Customer)</h6>
+              <h6 style={{ marginBottom: "10px", fontWeight: 600 }}>{t("brokenPromises.promisedByCustomer")}</h6>
             </Col>
 
             <Col md={6} className="col-6">
               <Form.Item
-                label="Customer Name"
+                label={t("field.customerName")}
                 name="customerName"
                 rules={[{  message: "Customer Name is required" }]}
               >
-                <Input placeholder="Customer Name" />
+                <Input placeholder={t("field.customerName")} />
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-6">
               <Form.Item
-                label="Customer CIF"
+                label={t("brokenPromises.customerCif")}
                 name="customerCIF"
                 rules={[{  message: "Customer CIF is required" }]}
               >
-                <Input placeholder="Customer CIF" />
+                <Input placeholder={t("brokenPromises.customerCif")} />
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-6">
               <Form.Item
-                label="Customer Phone No"
+                label={t("brokenPromises.customerPhoneNo")}
                 name="customerPhoneNo"
                 rules={[{  message: "Customer Phone No is required" }]}
               >
-                <Input placeholder="Customer Phone No" />
+                <Input placeholder={t("brokenPromises.customerPhoneNo")} />
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-6">
               <Form.Item
-                label="Customer Relationship"
+                label={t("brokenPromises.customerRelationship")}
                 name="customerRelationship"
                 rules={[{  message: "Customer Relationship is required" }]}
               >
-                <Select placeholder="Select Relationship" style={{ width: "100%" }}>
-                  <Select.Option value={Relationships.Self}>Self</Select.Option>
-                  <Select.Option value={Relationships.Son}>Son</Select.Option>
-                  <Select.Option value={Relationships.Daughter}>Daughter </Select.Option>
-                  <Select.Option value={Relationships.Spouse}>Spouse </Select.Option>
-                  <Select.Option value={Relationships.Brother}>Brother</Select.Option>
-                  <Select.Option value={Relationships.Sister}>Sister</Select.Option>
-                  <Select.Option value={Relationships.Mother}>Mother </Select.Option>
-                  <Select.Option value={Relationships.Father}>Father </Select.Option>
+                <Select placeholder={t("brokenPromises.selectRelationship")} style={{ width: "100%" }}>
+                  <Select.Option value={Relationships.Self}>{t("brokenPromises.relSelf")}</Select.Option>
+                  <Select.Option value={Relationships.Son}>{t("brokenPromises.relSon")}</Select.Option>
+                  <Select.Option value={Relationships.Daughter}>{t("brokenPromises.relDaughter")}</Select.Option>
+                  <Select.Option value={Relationships.Spouse}>{t("brokenPromises.relSpouse")}</Select.Option>
+                  <Select.Option value={Relationships.Brother}>{t("brokenPromises.relBrother")}</Select.Option>
+                  <Select.Option value={Relationships.Sister}>{t("brokenPromises.relSister")}</Select.Option>
+                  <Select.Option value={Relationships.Mother}>{t("brokenPromises.relMother")}</Select.Option>
+                  <Select.Option value={Relationships.Father}>{t("brokenPromises.relFather")}</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
 
             <Col md={12} className="col-12">
-              <h6 style={{ marginBottom: "10px", marginTop: "10px", fontWeight: 600 }}>Promise With (Agent)</h6>
+              <h6 style={{ marginBottom: "10px", marginTop: "10px", fontWeight: 600 }}>{t("brokenPromises.promiseWithAgent")}</h6>
             </Col>
 
             <Col md={6} className="col-4">
               <Form.Item
-                label="Agent ID"
+                label={t("brokenPromises.agentId")}
                 name="agentId"
                 rules={[{  message: "Agent ID is required" }]}
               >
-                <Input placeholder="Agent ID" />
+                <Input placeholder={t("brokenPromises.agentId")} />
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-4">
               <Form.Item
-                label="Agent Name"
+                label={t("brokenPromises.agentName")}
                 name="agentName"
                 rules={[{  message: "Agent Name is required" }]}
               >
-                <Input placeholder="Agent Name" />
+                <Input placeholder={t("brokenPromises.agentName")} />
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-4">
               <Form.Item
-                label="Agent Email"
+                label={t("brokenPromises.agentEmail")}
                 name="agentEmail"
                 rules={[{  message: "Agent Email is required" }]}
               >
-                <Input type="email" placeholder="Agent Email" />
+                <Input type="email" placeholder={t("brokenPromises.agentEmail")} />
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-6">
               <Form.Item 
-                label="Status" 
-                name="status" 
+                label={t("common:status")}
+                name="status"
                 rules={[{  message: "Status is required" }]}
               >
-                <Select placeholder="Select Status" style={{ width: "100%" }}>
-                  <Select.Option value={PromiseStatus.Promised}>Promised</Select.Option>
-                  <Select.Option value={PromiseStatus.Completed}>Completed</Select.Option>
-                  <Select.Option value={PromiseStatus.Cancelled}>Cancelled</Select.Option>
-                  <Select.Option value={PromiseStatus.Broken}>Broken</Select.Option>
+                <Select placeholder={t("brokenPromises.selectStatus")} style={{ width: "100%" }}>
+                  <Select.Option value={PromiseStatus.Promised}>{t("brokenPromises.statusPromised")}</Select.Option>
+                  <Select.Option value={PromiseStatus.Completed}>{t("brokenPromises.statusCompleted")}</Select.Option>
+                  <Select.Option value={PromiseStatus.Cancelled}>{t("brokenPromises.statusCancelled")}</Select.Option>
+                  <Select.Option value={PromiseStatus.Broken}>{t("brokenPromises.statusBroken")}</Select.Option>
                 </Select>
               </Form.Item>
             </Col>
 
             <Col md={6} className="col-6">
               <Form.Item
-                label="Invoice Numbers (comma separated)"
+                label={t("brokenPromises.invoiceNumbersLabel")}
                 name="invoiceNumbers"
               >
-                <Input placeholder="e.g., FIN0697835, FIN0697836" />
-                <small className="text-muted">Enter invoice numbers separated by commas</small>
+                <Input placeholder={t("brokenPromises.invoiceNumbersPlaceholder")} />
+                <small className="text-muted">{t("brokenPromises.invoiceNumbersHint")}</small>
               </Form.Item>
             </Col>
 
             <Col md={12} className="col-12">
-              <Form.Item label="Comment" name="comment" rules={[{  message: "Comment is required" }]}>
-                <Input.TextArea rows={3} placeholder="Comment" />
+              <Form.Item label={t("brokenPromises.commentLabel")} name="comment" rules={[{  message: "Comment is required" }]}>
+                <Input.TextArea rows={3} placeholder={t("brokenPromises.commentPlaceholder")} />
               </Form.Item>
             </Col>
           </Row>
@@ -465,14 +467,14 @@ form.setFieldsValue({
               setIsCreateOpen(false);
               setEditPromise(null);
               form.resetFields();
-            }}>Cancel</Button>
+            }}>{t("common:cancel")}</Button>
             <button 
               type="submit"
               className="theme-btn-next"
               disabled={isSubmitting}
             >
               <span className="gradient-btn">
-                {editPromise ? "Update" : "Create"}
+                {editPromise ? t("common:update") : t("common:create")}
               </span>
             </button>
           </div>

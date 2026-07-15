@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Button, Dropdown, Input, Menu } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { CalendarClock } from "lucide-react";
@@ -102,6 +103,7 @@ const emptyField: FieldConfig = {
 };
 
 const RescheduleConfigManagement = () => {
+  const { t } = useTranslation("settings");
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -132,7 +134,7 @@ const RescheduleConfigManagement = () => {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to fetch reschedule configurations"
+          t("reschedule.toast.fetchFailed")
       );
     } finally {
       setLoading(false);
@@ -215,18 +217,18 @@ const RescheduleConfigManagement = () => {
 
   const validate = (state: FormState) => {
     const e: Record<string, string> = {};
-    if (!state.labelEn.trim()) e.labelEn = "Label (EN) is required";
+    if (!state.labelEn.trim()) e.labelEn = t("reschedule.val.labelEn");
     if (!state.rescheduleType.trim())
-      e.rescheduleType = "Reschedule type is required";
+      e.rescheduleType = t("reschedule.val.rescheduleType");
     state.fields.forEach((f, i) => {
-      if (!f.name.trim()) e[`field_${i}_name`] = "Field name is required";
-      if (!f.type.trim()) e[`field_${i}_type`] = "Field type is required";
+      if (!f.name.trim()) e[`field_${i}_name`] = t("reschedule.val.fieldName");
+      if (!f.type.trim()) e[`field_${i}_type`] = t("reschedule.val.fieldType");
     });
     if (state.rulesConfigText.trim()) {
       try {
         JSON.parse(state.rulesConfigText);
       } catch {
-        e.rulesConfigText = "Rules config must be valid JSON";
+        e.rulesConfigText = t("reschedule.val.rulesJson");
       }
     }
     setErrors(e);
@@ -236,7 +238,7 @@ const RescheduleConfigManagement = () => {
   const handleSave = async () => {
     if (!form) return;
     if (!validate(form)) {
-      toast.error("Please fix the highlighted errors");
+      toast.error(t("reschedule.toast.fixErrors"));
       return;
     }
     const payload = {
@@ -254,14 +256,14 @@ const RescheduleConfigManagement = () => {
     try {
       setSaving(true);
       await updateRescheduleConfig(form.rescheduleType, payload);
-      toast.success("Reschedule configuration updated");
+      toast.success(t("reschedule.toast.updated"));
       closeEdit();
       fetchData();
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message ||
           error?.message ||
-          "Failed to update reschedule configuration"
+          t("reschedule.toast.updateFailed")
       );
     } finally {
       setSaving(false);
@@ -270,24 +272,24 @@ const RescheduleConfigManagement = () => {
 
   const columns = [
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) => row.rescheduleType?.replace(/_/g, " ") || "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Label (EN)",
+      name: t("reschedule.col.labelEn"),
       selector: (row: any) => row.labelEn || "-",
       sortable: true,
       width: "180px",
     },
     {
-      name: "Label (AR)",
+      name: t("reschedule.col.labelAr"),
       selector: (row: any) => row.labelAr || "-",
       width: "160px",
     },
     {
-      name: "Description",
+      name: t("common:description"),
       cell: (row: any) => (
         <span
           title={row.descriptionEn || ""}
@@ -305,7 +307,7 @@ const RescheduleConfigManagement = () => {
       width: "260px",
     },
     {
-      name: "Active",
+      name: t("common:active"),
       cell: (row: any) => (
         <span
           style={{
@@ -319,29 +321,29 @@ const RescheduleConfigManagement = () => {
             color: "var(--primary-foreground)",
           }}
         >
-          {row.active ? "Active" : "Inactive"}
+          {row.active ? t("common:active") : t("common:inactive")}
         </span>
       ),
       width: "110px",
     },
     {
-      name: "Approval",
+      name: t("reschedule.col.approval"),
       cell: (row: any) => (
         <span style={{ fontSize: 12 }}>
           {row.requiresApproval
-            ? row.approverRole?.replace(/_/g, " ") || "Required"
-            : "Not required"}
+            ? row.approverRole?.replace(/_/g, " ") || t("reschedule.required")
+            : t("reschedule.notRequired")}
         </span>
       ),
       width: "180px",
     },
     {
-      name: "Updated",
+      name: t("reschedule.col.updated"),
       selector: (row: any) => formatDate(row.updatedAt),
       width: "180px",
     },
     {
-      name: "Action",
+      name: t("reschedule.col.action"),
       cell: (row: any) => (
         <Dropdown
           overlay={
@@ -351,7 +353,7 @@ const RescheduleConfigManagement = () => {
                 icon={<EditOutlined />}
                 onClick={() => openEdit(row)}
               >
-                Edit
+                {t("common:edit")}
               </Menu.Item>
             </Menu>
           }
@@ -366,7 +368,7 @@ const RescheduleConfigManagement = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -403,7 +405,7 @@ const RescheduleConfigManagement = () => {
           <span className="pro-head-badge">
             <CalendarClock className="h-4 w-4" />
           </span>
-          Rescheduling Configurations
+          {t("reschedule.title")}
         </h3>
       </div>
 
@@ -412,7 +414,7 @@ const RescheduleConfigManagement = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
             allowClear
-            placeholder="Search by type, label, description, approver, status"
+            placeholder={t("reschedule.searchPlaceholder")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -441,7 +443,7 @@ const RescheduleConfigManagement = () => {
 
       <Modal show={showEdit} onHide={closeEdit} centered size="lg" scrollable>
         <Modal.Header closeButton>
-          <Modal.Title>Edit Reschedule Configuration</Modal.Title>
+          <Modal.Title>{t("reschedule.modal.editTitle")}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {form && (
@@ -449,7 +451,7 @@ const RescheduleConfigManagement = () => {
               <Row>
                 <Col md={6} className="mb-3">
                   <Form.Group>
-                    <Form.Label>Reschedule Type</Form.Label>
+                    <Form.Label>{t("reschedule.field.rescheduleType")}</Form.Label>
                     <Form.Control
                       type="text"
                       value={form.rescheduleType}
@@ -457,7 +459,7 @@ const RescheduleConfigManagement = () => {
                         setFormValue("rescheduleType", e.target.value)
                       }
                       isInvalid={!!errors.rescheduleType}
-                      placeholder="e.g. PAYMENT_HOLIDAY"
+                      placeholder={t("reschedule.ph.rescheduleType")}
                     />
                     <Form.Control.Feedback type="invalid">
                       {errors.rescheduleType}
@@ -466,7 +468,7 @@ const RescheduleConfigManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Group>
-                    <Form.Label>Approver Role</Form.Label>
+                    <Form.Label>{t("reschedule.field.approverRole")}</Form.Label>
                     <Form.Select
                       value={form.approverRole}
                       onChange={(e) =>
@@ -484,7 +486,7 @@ const RescheduleConfigManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Group>
-                    <Form.Label>Label (EN)</Form.Label>
+                    <Form.Label>{t("reschedule.field.labelEn")}</Form.Label>
                     <Form.Control
                       type="text"
                       value={form.labelEn}
@@ -498,7 +500,7 @@ const RescheduleConfigManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Group>
-                    <Form.Label>Label (AR)</Form.Label>
+                    <Form.Label>{t("reschedule.field.labelAr")}</Form.Label>
                     <Form.Control
                       type="text"
                       value={form.labelAr}
@@ -509,7 +511,7 @@ const RescheduleConfigManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Group>
-                    <Form.Label>Description (EN)</Form.Label>
+                    <Form.Label>{t("reschedule.field.descEn")}</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
@@ -522,7 +524,7 @@ const RescheduleConfigManagement = () => {
                 </Col>
                 <Col md={6} className="mb-3">
                   <Form.Group>
-                    <Form.Label>Description (AR)</Form.Label>
+                    <Form.Label>{t("reschedule.field.descAr")}</Form.Label>
                     <Form.Control
                       as="textarea"
                       rows={3}
@@ -538,7 +540,7 @@ const RescheduleConfigManagement = () => {
                   <Form.Check
                     type="switch"
                     id="active-switch"
-                    label="Active"
+                    label={t("common:active")}
                     checked={form.active}
                     onChange={(e) => setFormValue("active", e.target.checked)}
                   />
@@ -547,7 +549,7 @@ const RescheduleConfigManagement = () => {
                   <Form.Check
                     type="switch"
                     id="requiresApproval-switch"
-                    label="Requires Approval"
+                    label={t("reschedule.field.requiresApproval")}
                     checked={form.requiresApproval}
                     onChange={(e) => {
                       const checked = e.target.checked;
@@ -568,14 +570,14 @@ const RescheduleConfigManagement = () => {
               <hr />
 
               <div className="d-flex justify-content-between align-items-center mb-2">
-                <h6 className="mb-0">Fields Configuration</h6>
+                <h6 className="mb-0">{t("reschedule.fieldsConfig")}</h6>
                 <Button
                   type="dashed"
                   icon={<PlusOutlined />}
                   onClick={addField}
                   size="small"
                 >
-                  Add Field
+                  {t("reschedule.addField")}
                 </Button>
               </div>
 
@@ -590,7 +592,7 @@ const RescheduleConfigManagement = () => {
                     color: "var(--muted-foreground)",
                   }}
                 >
-                  No fields defined. Click "Add Field" to define one.
+                  {t("reschedule.noFields")}
                 </div>
               )}
 
@@ -629,7 +631,7 @@ const RescheduleConfigManagement = () => {
                                 <div className="d-flex align-items-center gap-2">
                                   <span
                                     {...dragProvided.dragHandleProps}
-                                    title="Drag to reorder"
+                                    title={t("reschedule.dragToReorder")}
                                     style={{
                                       cursor: "grab",
                                       color: "var(--muted-foreground)",
@@ -641,7 +643,7 @@ const RescheduleConfigManagement = () => {
                                     <HolderOutlined />
                                   </span>
                                   <strong style={{ fontSize: 13 }}>
-                                    Field #{i + 1}
+                                    {t("reschedule.fieldNum", { num: i + 1 })}
                                   </strong>
                                 </div>
                                 <Button
@@ -650,12 +652,12 @@ const RescheduleConfigManagement = () => {
                                   icon={<DeleteOutlined />}
                                   onClick={() => removeField(i)}
                                 >
-                                  Remove
+                                  {t("common:remove")}
                                 </Button>
                               </div>
                   <Row>
                     <Col md={4} className="mb-2">
-                      <Form.Label style={{ fontSize: 12 }}>Name *</Form.Label>
+                      <Form.Label style={{ fontSize: 12 }}>{t("common:name")} *</Form.Label>
                       <Form.Control
                         size="sm"
                         value={f.name}
@@ -666,7 +668,7 @@ const RescheduleConfigManagement = () => {
                       />
                     </Col>
                     <Col md={4} className="mb-2">
-                      <Form.Label style={{ fontSize: 12 }}>Type *</Form.Label>
+                      <Form.Label style={{ fontSize: 12 }}>{t("common:type")} *</Form.Label>
                       <Form.Select
                         size="sm"
                         value={f.type}
@@ -684,7 +686,7 @@ const RescheduleConfigManagement = () => {
                     <Col md={4} className="mb-2 d-flex align-items-end">
                       <Form.Check
                         type="checkbox"
-                        label="Required"
+                        label={t("common:required")}
                         checked={!!f.required}
                         onChange={(e) =>
                           updateField(i, { required: e.target.checked })
@@ -693,7 +695,7 @@ const RescheduleConfigManagement = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <Form.Label style={{ fontSize: 12 }}>
-                        Label (EN)
+                        {t("reschedule.field.labelEn")}
                       </Form.Label>
                       <Form.Control
                         size="sm"
@@ -705,7 +707,7 @@ const RescheduleConfigManagement = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <Form.Label style={{ fontSize: 12 }}>
-                        Label (AR)
+                        {t("reschedule.field.labelAr")}
                       </Form.Label>
                       <Form.Control
                         size="sm"
@@ -718,7 +720,7 @@ const RescheduleConfigManagement = () => {
                     </Col>
                     <Col md={6} className="mb-2">
                       <Form.Label style={{ fontSize: 12 }}>
-                        Placeholder
+                        {t("reschedule.field.placeholder")}
                       </Form.Label>
                       <Form.Control
                         size="sm"
@@ -729,18 +731,18 @@ const RescheduleConfigManagement = () => {
                       />
                     </Col>
                     <Col md={6} className="mb-2">
-                      <Form.Label style={{ fontSize: 12 }}>Unit</Form.Label>
+                      <Form.Label style={{ fontSize: 12 }}>{t("reschedule.field.unit")}</Form.Label>
                       <Form.Control
                         size="sm"
                         value={f.unit || ""}
                         onChange={(e) =>
                           updateField(i, { unit: e.target.value })
                         }
-                        placeholder="e.g. months"
+                        placeholder={t("reschedule.ph.unit")}
                       />
                     </Col>
                     <Col md={12} className="mb-2">
-                      <Form.Label style={{ fontSize: 12 }}>Hint</Form.Label>
+                      <Form.Label style={{ fontSize: 12 }}>{t("reschedule.field.hint")}</Form.Label>
                       <Form.Control
                         size="sm"
                         value={f.hint || ""}
@@ -751,7 +753,7 @@ const RescheduleConfigManagement = () => {
                     </Col>
                     <Col md={12} className="mb-2">
                       <Form.Label style={{ fontSize: 12 }}>
-                        Validation (JSON)
+                        {t("reschedule.field.validationJson")}
                       </Form.Label>
                       <Form.Control
                         as="textarea"
@@ -778,7 +780,7 @@ const RescheduleConfigManagement = () => {
                     {f.type === "SELECT" && (
                       <Col md={12} className="mb-2">
                         <Form.Label style={{ fontSize: 12 }}>
-                          Options (JSON array)
+                          {t("reschedule.field.optionsJson")}
                         </Form.Label>
                         <Form.Control
                           as="textarea"
@@ -815,7 +817,7 @@ const RescheduleConfigManagement = () => {
             <hr />
 
               <Form.Group className="mb-2">
-                <Form.Label>Rules Config (JSON)</Form.Label>
+                <Form.Label>{t("reschedule.field.rulesConfigJson")}</Form.Label>
                 <Form.Control
                   as="textarea"
                   rows={4}
@@ -834,7 +836,7 @@ const RescheduleConfigManagement = () => {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={closeEdit}>Cancel</Button>
+          <Button onClick={closeEdit}>{t("common:cancel")}</Button>
           <Button
             className="gradient-btn"
             type="primary"
@@ -846,7 +848,7 @@ const RescheduleConfigManagement = () => {
               padding: "10px 20px",
             }}
           >
-            Save
+            {t("common:save")}
           </Button>
         </Modal.Footer>
       </Modal>

@@ -1,5 +1,6 @@
 import { Input } from "antd";
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Col, Row } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
 import toast from "react-hot-toast";
@@ -7,6 +8,7 @@ import { FeesSettings, getProductById } from "../../redux/apis/apisCrud";
 import { setProductData } from "../../redux/apis/apisSlice";
 import { useNavigate, useLocation } from "react-router-dom";
 const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
+  const { t } = useTranslation("productManagement2");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -43,7 +45,7 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
             });
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load fee settings data");
+          toast.error(error?.response?.data?.message || t("feeSettings.loadFailed"));
         }
       }
     };
@@ -86,15 +88,15 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
         className="pt-2 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Factoring Amount
+        {t("feeSettings.factoringAmount")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Min Factoring
+            {t("feeSettings.minFactoring")}
           </label>
           <Input
-            placeholder="Enter amount"
+            placeholder={t("feeSettings.enterAmount")}
             className="fs-6"
             value={formValues.min_financing_amount}
             onChange={(e) => handleChange("min_financing_amount", Number(e.target.value))}
@@ -104,10 +106,10 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Max Factoring
+            {t("feeSettings.maxFactoring")}
           </label>
           <Input
-            placeholder="Enter amount"
+            placeholder={t("feeSettings.enterAmount")}
             className="fs-6"
             value={formValues.max_financing_amount}
             onChange={(e) => handleChange("max_financing_amount", Number(e.target.value))}
@@ -119,10 +121,10 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            VAT %
+            {t("feeSettings.vat")}
           </label>
           <Input
-            placeholder="Enter VAT %"
+            placeholder={t("feeSettings.enterVat")}
             className="fs-6"
             value={formValues.vat}
             onChange={(e) => handleChange("vat", Number(e.target.value))}
@@ -135,15 +137,15 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
         className="pt-4 pb-3"
         style={{ fontSize: "16px", fontWeight: "bold" }}
       >
-        Revenue Eligibility for Factoring
+        {t("feeSettings.revenueEligibility")}
       </h1>
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Bi-Annual Factoring %
+            {t("feeSettings.biAnnualFactoring")}
           </label>
           <Input
-            placeholder="Enter %"
+            placeholder={t("feeSettings.enterPercent")}
             className="fs-6"
             value={formValues.bi_annual_financing_percentage}
             onChange={(e) => handleChange("bi_annual_financing_percentage", Number(e.target.value))}
@@ -153,10 +155,10 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
         </Col>
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Annual Factoring %
+            {t("feeSettings.annualFactoring")}
           </label>
           <Input
-            placeholder="Enter %"
+            placeholder={t("feeSettings.enterPercent")}
             className="fs-6"
             value={formValues.annual_financing_percentage}
             onChange={(e) => handleChange("annual_financing_percentage", Number(e.target.value))}
@@ -168,7 +170,7 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
       <Row className="mb-4">
         <Col md={6}>
           <label className="mb-1" style={{ fontWeight: 400 }}>
-            Bi-Annual to Annual Difference %
+            {t("feeSettings.biAnnualToAnnualDiff")}
           </label>
           <Input
 
@@ -185,7 +187,7 @@ const FeeSettings = ({ readOnly = false ,setSelectedTab}: any) => {
       <Row>
         <Col className="d-flex justify-content-end">
           {!readOnly && (
-            <button className="theme-btn-next" onClick={handleSubmit}>Save Fee Settings</button>
+            <button className="theme-btn-next" onClick={handleSubmit}>{t("feeSettings.saveFeeSettings")}</button>
           )}
         </Col>
       </Row>

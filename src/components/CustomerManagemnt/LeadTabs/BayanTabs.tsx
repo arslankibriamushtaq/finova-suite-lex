@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import { useLocation } from "react-router-dom";
 import { useDispatch } from "react-redux";
@@ -11,6 +12,7 @@ import FeeSettings from "../../ProductManagement/feeSettings";
 import BayaanFinancialReport from "./BayaanFinancialReport";
 
 const BayanTabs = ({setActiveTab}:any) => {
+  const { t } = useTranslation("customerManagement");
   localStorage.setItem("tabs", "BayaanFinancialReport");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
@@ -42,7 +44,7 @@ const BayanTabs = ({setActiveTab}:any) => {
             dispatch(setProductData(response.data.data));
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load product data");
+          toast.error(error?.response?.data?.message || t("bayaan.toast.loadFailed"));
         }
       }
     };
@@ -51,17 +53,17 @@ const BayanTabs = ({setActiveTab}:any) => {
 
   const tapOptions = [
     {
-      title: "Bayaan Financial Report",
+      title: t("bayaan.tab.financialReport"),
       key: "BayaanFinancialReport",
       folder: <BayaanFinancialReport setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Bayaan Credit Report",
+      title: t("bayaan.tab.creditReport"),
       key: "BayaanCreditReport",
     //   folder: <SettingsTermsConditions setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "New Applicant Enquiry",
+      title: t("bayaan.tab.newApplicantEnquiry"),
       key: "NewApplicantEnquiry",
     //   folder: <FeeSettings setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     }

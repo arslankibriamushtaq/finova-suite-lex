@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { ArrowLeft, ArrowRight, Plus, Trash2, Settings } from "lucide-react"
 import { Button } from "../../ui/button"
 import { Input } from "../../ui/input"
@@ -53,6 +54,7 @@ export default function CreditScoringTab({
   updateFormData,
   errors = {},
 }: CreditScoringTabProps) {
+  const { t } = useTranslation("productManagement2")
   const [fieldDefinitions, setFieldDefinitions] = useState<any[]>([])
   const [isLoadingDefinitions, setIsLoadingDefinitions] = useState(false)
 
@@ -86,7 +88,7 @@ export default function CreditScoringTab({
       setFieldDefinitions(definitions)
     } catch (error: any) {
       console.error("Failed to load field definitions:", error)
-      toast.error("Failed to load credit scoring field definitions")
+      toast.error(t("creditScoring.loadDefsFailed"))
     } finally {
       setIsLoadingDefinitions(false)
     }
@@ -125,10 +127,10 @@ export default function CreditScoringTab({
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Settings className="h-5 w-5" />
-                Credit Scoring Engine
+                {t("creditScoring.title")}
               </CardTitle>
               <p className="mt-2 text-muted-foreground">
-                Configure credit scoring criteria and rules for loan applications.
+                {t("creditScoring.subtitle")}
               </p>
             </div>
             <Button
@@ -138,7 +140,7 @@ export default function CreditScoringTab({
               className="gap-2"
             >
               <Plus className="h-4 w-4" />
-              Add Scoring Field
+              {t("creditScoring.addField")}
             </Button>
           </div>
         </CardHeader>
@@ -150,7 +152,7 @@ export default function CreditScoringTab({
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <CardTitle className="text-base">
-                      Criteria #{fieldIndex + 1}
+                      {t("creditScoring.criteria", { index: fieldIndex + 1 })}
                     </CardTitle>
                     <div className="flex items-center gap-3">
                       <div className="flex items-center gap-2">
@@ -159,7 +161,7 @@ export default function CreditScoringTab({
                           onCheckedChange={(checked) => handleEnabledChange(creditField.id, checked)}
                         />
                         <span className="text-sm text-muted-foreground">
-                          {creditField.enabled !== false ? "Enabled" : "Disabled"}
+                          {creditField.enabled !== false ? t("common:enabled") : t("common:disabled")}
                         </span>
                       </div>
                       {formData.credit_scoring_fields.length > 1 && (
@@ -178,7 +180,7 @@ export default function CreditScoringTab({
                 <CardContent className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Credit Scoring Field</Label>
+                      <Label>{t("creditScoring.field")}</Label>
                       {isLoadingDefinitions ? (
                         <div className="h-10 bg-muted animate-pulse rounded" />
                       ) : (
@@ -187,7 +189,7 @@ export default function CreditScoringTab({
                           onValueChange={(value) => handleFieldDefinitionChange(creditField.id, value)}
                         >
                           <SelectTrigger className={errors.name ? "border-red-500" : ""}>
-                            <SelectValue placeholder="Select a field definition" />
+                            <SelectValue placeholder={t("creditScoring.selectFieldPlaceholder")} />
                           </SelectTrigger>
                           <SelectContent>
                             {fieldDefinitions.map((def: any) => (
@@ -203,9 +205,9 @@ export default function CreditScoringTab({
                       )}
                     </div>
                     <div className="space-y-2">
-                      <Label>Custom Name</Label>
+                      <Label>{t("creditScoring.customName")}</Label>
                       <Input
-                        placeholder="Override display name"
+                        placeholder={t("creditScoring.customNamePlaceholder")}
                         value={creditField.field_name || ""}
                         onChange={(e) => updateCreditScoringFieldName(creditField.id, e.target.value)}
                       />
@@ -214,9 +216,9 @@ export default function CreditScoringTab({
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <h4 className="text-sm font-medium">Rules</h4>
+                      <h4 className="text-sm font-medium">{t("creditScoring.rules")}</h4>
                       <p className="text-xs text-muted-foreground mt-1">
-                        Define operator, value, weight, and percentage for each rule
+                        {t("creditScoring.rulesHint")}
                       </p>
                     </div>
                     <Button
@@ -226,13 +228,13 @@ export default function CreditScoringTab({
                       className="gap-2"
                     >
                       <Plus className="h-4 w-4" />
-                      Add Rule
+                      {t("creditScoring.addRule")}
                     </Button>
                   </div>
 
                   {creditField.rules && creditField.rules.length === 0 ? (
                     <div className="text-center py-4 text-sm text-muted-foreground border-2 border-dashed rounded bg-muted/30">
-                      No rules added. Click "Add Rule" to create scoring rules.
+                      {t("creditScoring.noRules")}
                     </div>
                   ) : (
                     <div className="space-y-2">
@@ -242,7 +244,7 @@ export default function CreditScoringTab({
                           className="grid grid-cols-1 md:grid-cols-5 gap-2 p-3 border rounded bg-background"
                         >
                           <div className="space-y-1">
-                            <Label className="text-xs">Operator</Label>
+                            <Label className="text-xs">{t("creditScoring.operator")}</Label>
                             <Select
                               value={rule.operator}
                               onValueChange={(value) =>
@@ -255,7 +257,7 @@ export default function CreditScoringTab({
                               <SelectContent>
                                 {OPERATORS.map((op) => (
                                   <SelectItem key={op.value} value={op.value}>
-                                    {op.label}
+                                    {t(`creditScoring.op.${op.value}`)}
                                   </SelectItem>
                                 ))}
                               </SelectContent>
@@ -263,7 +265,7 @@ export default function CreditScoringTab({
                           </div>
 
                           <div className="space-y-1">
-                            <Label className="text-xs">Value</Label>
+                            <Label className="text-xs">{t("creditScoring.value")}</Label>
                             <Input
                               placeholder={rule.operator === "BETWEEN" ? "e.g. 3000-7999" : "e.g. 750"}
                               value={rule.value}
@@ -275,7 +277,7 @@ export default function CreditScoringTab({
                           </div>
 
                           <div className="space-y-1">
-                            <Label className="text-xs">Weight</Label>
+                            <Label className="text-xs">{t("creditScoring.weight")}</Label>
                             <Input
                               type="number"
                               step="0.1"
@@ -290,7 +292,7 @@ export default function CreditScoringTab({
                           </div>
 
                           <div className="space-y-1">
-                            <Label className="text-xs">Percentage (%)</Label>
+                            <Label className="text-xs">{t("creditScoring.percentage")}</Label>
                             <Input
                               type="number"
                               step="0.1"
@@ -324,7 +326,7 @@ export default function CreditScoringTab({
               ))
             ) : (
               <div className="text-center py-8 text-sm text-muted-foreground border-2 border-dashed rounded bg-background">
-                No credit scoring criteria added. Click "Add Scoring Field" to create a new criteria.
+                {t("creditScoring.noCriteria")}
               </div>
             )}
           </div>
@@ -335,10 +337,10 @@ export default function CreditScoringTab({
       <div className="flex justify-between gap-3 pt-4">
         <Button variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </Button>
         <Button onClick={onComplete} disabled={isLoading} className="gap-2">
-          {isLoading ? "Saving..." : "Complete Settings"}
+          {isLoading ? t("creditScoring.saving") : t("creditScoring.complete")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

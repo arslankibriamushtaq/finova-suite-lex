@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   BarChart,
@@ -52,6 +53,7 @@ const StatCard = ({
 
 const CardsDashboard = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("cardManagement");
   const [stats, setStats] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,7 +62,7 @@ const CardsDashboard = () => {
     getAdminCardStats()
       .then((res) => setStats(res?.data?.data ?? res?.data))
       .catch((error: any) => {
-        if (!error?.response?.data?.message) toast.error("Failed to load card stats");
+        if (!error?.response?.data?.message) toast.error(t("dashboard.toast.loadStatsFailed"));
       })
       .finally(() => setIsLoading(false));
   }, []);
@@ -85,36 +87,36 @@ const CardsDashboard = () => {
           <span className="pro-head-badge">
             <CreditCard className="h-4 w-4" />
           </span>
-          Cards Dashboard
+          {t("dashboard.title")}
         </h3>
         <Button className="gap-2" onClick={() => navigate("/CardManagement/Cards")}>
           <Layers className="h-4 w-4" />
-          View all cards
+          {t("dashboard.viewAllCards")}
         </Button>
       </div>
 
       {/* Summary cards — matches the project's dashboard stat-card style */}
       <div className="dashboard-stats grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-4">
         <StatCard
-          label="Total Cards"
+          label={t("dashboard.stat.totalCards")}
           theme="emerald"
           value={isLoading ? "…" : stats?.total ?? 0}
           icon={<CreditCard strokeWidth={2} />}
         />
         <StatCard
-          label="Active"
+          label={t("dashboard.stat.active")}
           theme="teal"
           value={isLoading ? "…" : activeCount}
           icon={<CheckCircle2 strokeWidth={2} />}
         />
         <StatCard
-          label="Issued"
+          label={t("dashboard.stat.issued")}
           theme="indigo"
           value={isLoading ? "…" : issuedCount}
           icon={<Send strokeWidth={2} />}
         />
         <StatCard
-          label="Card Types"
+          label={t("dashboard.stat.cardTypes")}
           theme="amber"
           value={isLoading ? "…" : typeCount}
           icon={<Layers strokeWidth={2} />}
@@ -128,10 +130,10 @@ const CardsDashboard = () => {
             <span className="pro-head-badge">
               <BarChart3 className="h-4 w-4" />
             </span>
-            <p className="m-0 text-sm font-semibold leading-none text-foreground">Cards by Status</p>
+            <p className="m-0 text-sm font-semibold leading-none text-foreground">{t("dashboard.cardsByStatus")}</p>
           </div>
           {statusChartData.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">No data</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">{t("dashboard.noData")}</p>
           ) : (
             <ResponsiveContainer width="100%" height={280}>
               <BarChart data={statusChartData} margin={{ top: 8, right: 8, left: -12, bottom: 0 }}>
@@ -176,10 +178,10 @@ const CardsDashboard = () => {
             <span className="pro-head-badge">
               <PieChart className="h-4 w-4" />
             </span>
-            <p className="m-0 text-sm font-semibold leading-none text-foreground">Cards by Type</p>
+            <p className="m-0 text-sm font-semibold leading-none text-foreground">{t("dashboard.cardsByType")}</p>
           </div>
           {Object.keys(byType).length === 0 ? (
-            <p className="text-sm text-muted-foreground py-8 text-center">No data</p>
+            <p className="text-sm text-muted-foreground py-8 text-center">{t("dashboard.noData")}</p>
           ) : (
             <div className="space-y-3.5">
               {Object.entries(byType).map(([type, count], i) => {
@@ -212,7 +214,7 @@ const CardsDashboard = () => {
           {/* Status legend */}
           <div className="mt-5 pt-4 border-t">
             <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-2">
-              Status breakdown
+              {t("dashboard.statusBreakdown")}
             </p>
             <div className="flex flex-wrap gap-2">
               {Object.entries(byStatus).map(([status, count]) => (

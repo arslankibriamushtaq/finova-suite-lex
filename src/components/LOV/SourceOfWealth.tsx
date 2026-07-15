@@ -21,8 +21,10 @@ import {
 import { ChevronDown, Pencil, Trash2, Plus, ListChecks } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const SourceOfWealth = () => {
+  const { t } = useTranslation("lov");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -72,7 +74,7 @@ const SourceOfWealth = () => {
         setTotalPage(Math.ceil(list.length / pageSize) || 1);
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch source of wealth data");
+      toast.error(error?.response?.data?.message || t("sourceOfWealth.toast.fetchFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -112,11 +114,11 @@ const SourceOfWealth = () => {
 
   const handleSave = async () => {
     if (!formData.code.trim()) {
-      toast.error("Code is required");
+      toast.error(t("sourceOfWealth.validation.code"));
       return;
     }
     if (!formData.name_en.trim()) {
-      toast.error("English name is required");
+      toast.error(t("sourceOfWealth.validation.nameEn"));
       return;
     }
 
@@ -135,16 +137,16 @@ const SourceOfWealth = () => {
 
       if (modalMode === "edit" && currentItemId) {
         await updateSourceOfWealth(currentItemId, body);
-        toast.success("Updated successfully");
+        toast.success(t("sourceOfWealth.toast.updated"));
       } else {
         await createSourceOfWealth(body);
-        toast.success("Created successfully");
+        toast.success(t("sourceOfWealth.toast.created"));
       }
 
       setShowFormModal(false);
       fetchData();
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || `Failed to ${modalMode === "edit" ? "update" : "create"}`);
+      toast.error(error?.response?.data?.message || (modalMode === "edit" ? t("sourceOfWealth.toast.updateFailed") : t("sourceOfWealth.toast.createFailed")));
     } finally {
       setIsSaving(false);
     }
@@ -155,11 +157,11 @@ const SourceOfWealth = () => {
     try {
       setIsDeleting(true);
       await deleteSourceOfWealth(deleteTarget.id);
-      toast.success("Deleted successfully");
+      toast.success(t("sourceOfWealth.toast.deleted"));
       setData((prev) => prev.filter((item) => item.id !== deleteTarget.id));
       setDeleteTarget(null);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to delete");
+      toast.error(error?.response?.data?.message || t("sourceOfWealth.toast.deleteFailed"));
     } finally {
       setIsDeleting(false);
     }
@@ -168,27 +170,27 @@ const SourceOfWealth = () => {
 
   const headers = [
     {
-      name: "Code",
+      name: t("sourceOfWealth.col.code"),
       selector: (row: any) => row.code || "-",
       sortable: true,
     },
     {
-      name: "Name (EN)",
+      name: t("sourceOfWealth.col.nameEn"),
       selector: (row: any) => row.nameEn || row.name_en || "-",
       sortable: true,
     },
     {
-      name: "Name (AR)",
+      name: t("sourceOfWealth.col.nameAr"),
       selector: (row: any) => row.nameAr || row.name_ar || "-",
       sortable: true,
     },
     {
-      name: "Description (EN)",
+      name: t("sourceOfWealth.col.descriptionEn"),
       selector: (row: any) => row.descriptionEn || row.description_en || "-",
       sortable: true,
     },
     {
-      name: "Display Order",
+      name: t("sourceOfWealth.col.displayOrder"),
       selector: (row: any) => row.displayOrder ?? row.display_order ?? "-",
       sortable: true,
       width: "130px",
@@ -202,12 +204,12 @@ const SourceOfWealth = () => {
     },
     */
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = row.isActive ?? row.is_active;
         return (
           <span className={isActive ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </span>
         );
       },
@@ -215,7 +217,7 @@ const SourceOfWealth = () => {
       width: "100px",
     },
     {
-      name: "Action",
+      name: t("common:actions"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -228,7 +230,7 @@ const SourceOfWealth = () => {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -240,7 +242,7 @@ const SourceOfWealth = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
               <DropdownMenuItem
                 variant="destructive"
@@ -250,7 +252,7 @@ const SourceOfWealth = () => {
                 }}
               >
                 <Trash2 className="h-4 w-4" />
-                Delete
+                {t("common:delete")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -267,7 +269,7 @@ const SourceOfWealth = () => {
           <span className="pro-head-badge">
             <ListChecks className="h-4 w-4" />
           </span>
-          Source of Wealth
+          {t("sourceOfWealth.heading")}
         </h3>
       </div>
 
@@ -275,7 +277,7 @@ const SourceOfWealth = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <AntInput
           allowClear
-          placeholder="Search by code or name"
+          placeholder={t("sourceOfWealth.ph.search")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => {
@@ -286,7 +288,7 @@ const SourceOfWealth = () => {
         />
         <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
-          Add New Record
+          {t("shared.addNewRecord")}
         </Button>
         </div>
       </div>
@@ -311,21 +313,21 @@ const SourceOfWealth = () => {
       <Dialog open={showFormModal} onOpenChange={(open) => !open && setShowFormModal(false)}>
         <DialogContent className="max-w-[600px]">
           <DialogHeader>
-            <DialogTitle>{modalMode === "edit" ? "Edit Record" : "Add New Record"}</DialogTitle>
+            <DialogTitle>{modalMode === "edit" ? t("sourceOfWealth.modal.editTitle") : t("shared.addNewRecord")}</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Code *</Label>
+                <Label>{t("sourceOfWealth.label.code")} *</Label>
                 <Input
-                  placeholder="e.g. SALARY"
+                  placeholder={t("sourceOfWealth.ph.code")}
                   value={formData.code}
                   onChange={(e) => setFormData({ ...formData, code: e.target.value })}
                   disabled={modalMode === "edit"}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Display Order</Label>
+                <Label>{t("sourceOfWealth.label.displayOrder")}</Label>
                 <Input
                   type="number"
                   placeholder="0"
@@ -334,33 +336,33 @@ const SourceOfWealth = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Name (EN) *</Label>
+                <Label>{t("sourceOfWealth.label.nameEn")} *</Label>
                 <Input
-                  placeholder="English name"
+                  placeholder={t("sourceOfWealth.ph.nameEn")}
                   value={formData.name_en}
                   onChange={(e) => setFormData({ ...formData, name_en: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Name (AR)</Label>
+                <Label>{t("sourceOfWealth.label.nameAr")}</Label>
                 <Input
-                  placeholder="Arabic name"
+                  placeholder={t("sourceOfWealth.ph.nameAr")}
                   value={formData.name_ar}
                   onChange={(e) => setFormData({ ...formData, name_ar: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (EN)</Label>
+                <Label>{t("sourceOfWealth.label.descriptionEn")}</Label>
                 <Input
-                  placeholder="English description"
+                  placeholder={t("sourceOfWealth.ph.descriptionEn")}
                   value={formData.description_en}
                   onChange={(e) => setFormData({ ...formData, description_en: e.target.value })}
                 />
               </div>
               <div className="space-y-2">
-                <Label>Description (AR)</Label>
+                <Label>{t("sourceOfWealth.label.descriptionAr")}</Label>
                 <Input
-                  placeholder="Arabic description"
+                  placeholder={t("sourceOfWealth.ph.descriptionAr")}
                   value={formData.description_ar}
                   onChange={(e) => setFormData({ ...formData, description_ar: e.target.value })}
                 />
@@ -382,15 +384,15 @@ const SourceOfWealth = () => {
                 checked={formData.is_active}
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: !!checked })}
               />
-              <span className="text-sm">Active</span>
+              <span className="text-sm">{t("common:active")}</span>
             </label>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowFormModal(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={handleSave} disabled={isSaving}>
-              {isSaving ? "Saving..." : modalMode === "edit" ? "Update" : "Create"}
+              {isSaving ? t("sourceOfWealth.saving") : modalMode === "edit" ? t("common:update") : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -400,21 +402,21 @@ const SourceOfWealth = () => {
       <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
         <DialogContent className="max-w-[420px]">
           <DialogHeader>
-            <DialogTitle>Delete Record</DialogTitle>
+            <DialogTitle>{t("sourceOfWealth.modal.deleteTitle")}</DialogTitle>
           </DialogHeader>
           <p className="text-sm text-muted-foreground">
-            Are you sure you want to delete{" "}
+            {t("sourceOfWealth.confirmDeleteBefore")}{" "}
             <span className="font-medium text-foreground">
               {deleteTarget?.nameEn || deleteTarget?.name_en || deleteTarget?.code}
             </span>
-            ? This action cannot be undone.
+            {t("sourceOfWealth.confirmDeleteAfter")}
           </p>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
-              {isDeleting ? "Deleting..." : "Delete"}
+              {isDeleting ? t("sourceOfWealth.deleting") : t("common:delete")}
             </Button>
           </DialogFooter>
         </DialogContent>

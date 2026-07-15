@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   ArrowLeft,
@@ -114,6 +115,7 @@ const emptyTxn = {
 const CardDetail = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { t } = useTranslation("cardManagement");
   const [card, setCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -171,7 +173,7 @@ const CardDetail = () => {
   const saveTransaction = async () => {
     if (!id) return;
     if (txnForm.amount === "" || Number(txnForm.amount) <= 0)
-      return toast.error("A positive amount is required");
+      return toast.error(t("detail.toast.amountRequired"));
     try {
       setIsSaving(true);
       const body: any = {
@@ -184,11 +186,11 @@ const CardDetail = () => {
       if (txnForm.description.trim()) body.description = txnForm.description.trim();
       if (txnForm.reference.trim()) body.reference = txnForm.reference.trim();
       await recordAdminCardTransaction(id, body);
-      toast.success("Transaction recorded");
+      toast.success(t("detail.toast.recorded"));
       setShowRecord(false);
       loadTransactions();
     } catch (error: any) {
-      if (!error?.response?.data?.message) toast.error("Failed to record transaction");
+      if (!error?.response?.data?.message) toast.error(t("detail.toast.recordFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -201,7 +203,7 @@ const CardDetail = () => {
           <span className="pro-head-badge">
             <CreditCard className="h-4 w-4" />
           </span>
-          Card Details
+          {t("detail.title")}
           {card?.status && (
             <span
               className={`rounded-md px-2 py-0.5 text-xs font-medium ${cardStatusClasses(card.status)}`}
@@ -212,13 +214,13 @@ const CardDetail = () => {
         </h3>
         <Button variant="outline" className="gap-2" onClick={() => navigate("/CardManagement/Cards")}>
           <ArrowLeft className="h-4 w-4" />
-          Back to Cards
+          {t("detail.backToCards")}
         </Button>
       </div>
 
       {isLoading || !card ? (
         <p className="py-10 text-center text-sm text-muted-foreground">
-          {isLoading ? "Loading..." : "No details available"}
+          {isLoading ? t("common:loading") : t("detail.noDetails")}
         </p>
       ) : (
         <div className="mx-auto max-w-5xl space-y-4">
@@ -246,13 +248,13 @@ const CardDetail = () => {
             <div className="relative mt-5 flex items-end justify-between">
               <div>
                 <div className="text-[10px] font-medium uppercase tracking-wider text-white/70">
-                  Cardholder
+                  {t("detail.card.cardholder")}
                 </div>
                 <div className="text-sm font-semibold">{card.cardholderName || "-"}</div>
               </div>
-              <div className="text-right">
+              <div className="text-end">
                 <div className="text-[10px] font-medium uppercase tracking-wider text-white/70">
-                  Expires
+                  {t("detail.card.expires")}
                 </div>
                 <div className="text-sm font-semibold">
                   {card.expiryMonth ? `${card.expiryMonth}/${card.expiryYear}` : "-"}
@@ -261,44 +263,44 @@ const CardDetail = () => {
             </div>
           </div>
 
-          <Section icon={CreditCard} title="Card Information">
-            <Field label="Card Reference" value={card.cardReference} mono />
-            <Field label="Product Code" value={card.productCode} mono />
-            <Field label="BIN" value={card.bin} mono />
-            <Field label="Currency" value={card.currency} />
-            <Field label="PIN Set" value={card.pinSet ? "Yes" : "No"} />
-            <Field label="Contactless" value={card.contactlessEnabled ? "Yes" : "No"} />
+          <Section icon={CreditCard} title={t("detail.section.cardInformation")}>
+            <Field label={t("detail.field.cardReference")} value={card.cardReference} mono />
+            <Field label={t("detail.field.productCode")} value={card.productCode} mono />
+            <Field label={t("detail.field.bin")} value={card.bin} mono />
+            <Field label={t("detail.field.currency")} value={card.currency} />
+            <Field label={t("detail.field.pinSet")} value={card.pinSet ? t("common:yes") : t("common:no")} />
+            <Field label={t("detail.field.contactless")} value={card.contactlessEnabled ? t("common:yes") : t("common:no")} />
           </Section>
 
-          <Section icon={SlidersHorizontal} title="Limits">
-            <Field label="Daily Limit" value={formatMoney(card.dailyLimit, card.currency)} />
-            <Field label="Monthly Limit" value={formatMoney(card.monthlyLimit, card.currency)} />
-            <Field label="Requires Activation" value={card.requiresActivation ? "Yes" : "No"} />
+          <Section icon={SlidersHorizontal} title={t("detail.section.limits")}>
+            <Field label={t("detail.field.dailyLimit")} value={formatMoney(card.dailyLimit, card.currency)} />
+            <Field label={t("detail.field.monthlyLimit")} value={formatMoney(card.monthlyLimit, card.currency)} />
+            <Field label={t("detail.field.requiresActivation")} value={card.requiresActivation ? t("common:yes") : t("common:no")} />
           </Section>
 
-          <Section icon={Users} title="Ownership">
-            <Field label="Customer ID" value={card.customerId} mono />
-            <Field label="Owner User ID" value={card.ownerUserId} mono />
-            <Field label="Wallet ID" value={card.walletId} mono />
+          <Section icon={Users} title={t("detail.section.ownership")}>
+            <Field label={t("detail.field.customerId")} value={card.customerId} mono />
+            <Field label={t("detail.field.ownerUserId")} value={card.ownerUserId} mono />
+            <Field label={t("detail.field.walletId")} value={card.walletId} mono />
           </Section>
 
           {card.shipping && (
-            <Section icon={Truck} title="Shipping">
-              <Field label="Address" value={card.shipping.address} />
-              <Field label="City" value={card.shipping.city} />
-              <Field label="Postal Code" value={card.shipping.postalCode} />
-              <Field label="Delivery Method" value={prettyEnum(card.deliveryMethod)} />
-              <Field label="Carrier" value={card.carrier} />
-              <Field label="Tracking Number" value={card.trackingNumber} mono />
-              <Field label="Shipment Status" value={prettyEnum(card.shipmentStatus)} />
-              <Field label="Est. Delivery" value={formatDate(card.estimatedDeliveryDate)} />
+            <Section icon={Truck} title={t("detail.section.shipping")}>
+              <Field label={t("detail.field.address")} value={card.shipping.address} />
+              <Field label={t("detail.field.city")} value={card.shipping.city} />
+              <Field label={t("detail.field.postalCode")} value={card.shipping.postalCode} />
+              <Field label={t("detail.field.deliveryMethod")} value={prettyEnum(card.deliveryMethod)} />
+              <Field label={t("detail.field.carrier")} value={card.carrier} />
+              <Field label={t("detail.field.trackingNumber")} value={card.trackingNumber} mono />
+              <Field label={t("detail.field.shipmentStatus")} value={prettyEnum(card.shipmentStatus)} />
+              <Field label={t("detail.field.estDelivery")} value={formatDate(card.estimatedDeliveryDate)} />
             </Section>
           )}
 
-          <Section icon={Clock} title="Timeline">
-            <Field label="Issued At" value={formatDate(card.issuedAt)} />
-            <Field label="Activated At" value={formatDate(card.activatedAt)} />
-            <Field label="Created At" value={formatDate(card.createdAt)} />
+          <Section icon={Clock} title={t("detail.section.timeline")}>
+            <Field label={t("detail.field.issuedAt")} value={formatDate(card.issuedAt)} />
+            <Field label={t("detail.field.activatedAt")} value={formatDate(card.activatedAt)} />
+            <Field label={t("detail.field.createdAt")} value={formatDate(card.createdAt)} />
           </Section>
 
           {/* Transactions statement (§4.9) */}
@@ -308,37 +310,37 @@ const CardDetail = () => {
                 <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                   <Receipt className="size-4" />
                 </span>
-                <p className="m-0 text-sm font-semibold text-foreground">Transactions</p>
+                <p className="m-0 text-sm font-semibold text-foreground">{t("detail.txn.title")}</p>
               </div>
               <Button size="sm" className="h-8 gap-1.5 px-3 text-xs" onClick={openRecord}>
                 <Plus className="size-3.5" />
-                Record transaction
+                {t("detail.txn.record")}
               </Button>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="text-left" style={{ background: "var(--theme-table-background-color)" }}>
-                    <th className="px-3 py-2.5 text-xs font-semibold text-white">Date</th>
-                    <th className="px-3 py-2.5 text-xs font-semibold text-white">Type</th>
-                    <th className="px-3 py-2.5 text-xs font-semibold text-white">Merchant</th>
-                    <th className="px-3 py-2.5 text-xs font-semibold text-white">Reference</th>
-                    <th className="px-3 py-2.5 text-xs font-semibold text-white">Status</th>
-                    <th className="px-3 py-2.5 text-right text-xs font-semibold text-white">Amount</th>
+                  <tr className="text-start" style={{ background: "var(--theme-table-background-color)" }}>
+                    <th className="px-3 py-2.5 text-xs font-semibold text-white">{t("common:date")}</th>
+                    <th className="px-3 py-2.5 text-xs font-semibold text-white">{t("common:type")}</th>
+                    <th className="px-3 py-2.5 text-xs font-semibold text-white">{t("detail.txn.col.merchant")}</th>
+                    <th className="px-3 py-2.5 text-xs font-semibold text-white">{t("detail.txn.col.reference")}</th>
+                    <th className="px-3 py-2.5 text-xs font-semibold text-white">{t("common:status")}</th>
+                    <th className="px-3 py-2.5 text-end text-xs font-semibold text-white">{t("common:amount")}</th>
                   </tr>
                 </thead>
                 <tbody>
                   {isLoadingTxns ? (
                     <tr>
                       <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground">
-                        Loading...
+                        {t("common:loading")}
                       </td>
                     </tr>
                   ) : transactions.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="px-3 py-8 text-center text-muted-foreground">
-                        No transactions recorded
+                        {t("detail.txn.empty")}
                       </td>
                     </tr>
                   ) : (
@@ -398,16 +400,15 @@ const CardDetail = () => {
       <Dialog open={showRecord} onOpenChange={(o) => !o && setShowRecord(false)}>
         <DialogContent className="pro-dialog sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle>Record Transaction</DialogTitle>
+            <DialogTitle>{t("detail.txn.dialog.title")}</DialogTitle>
             <DialogDescription>
-              Add a card-level statement entry. Money moves on the linked wallet; this is the
-              card's own record.
+              {t("detail.txn.dialog.description")}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Type</Label>
+                <Label>{t("detail.txn.field.type")}</Label>
                 <Select value={txnForm.txnType} onValueChange={(v) => setTxnField("txnType", v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -422,7 +423,7 @@ const CardDetail = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Status</Label>
+                <Label>{t("detail.txn.field.status")}</Label>
                 <Select value={txnForm.status} onValueChange={(v) => setTxnField("status", v)}>
                   <SelectTrigger>
                     <SelectValue />
@@ -437,7 +438,7 @@ const CardDetail = () => {
                 </Select>
               </div>
               <div className="space-y-2">
-                <Label>Amount *</Label>
+                <Label>{t("detail.txn.field.amount")}</Label>
                 <Input
                   type="number"
                   placeholder="0.00"
@@ -446,7 +447,7 @@ const CardDetail = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label>Currency</Label>
+                <Label>{t("detail.txn.field.currency")}</Label>
                 <Input
                   placeholder={card?.currency || "CAD"}
                   value={txnForm.currency}
@@ -454,7 +455,7 @@ const CardDetail = () => {
                 />
               </div>
               <div className="space-y-2 col-span-2">
-                <Label>Merchant Name</Label>
+                <Label>{t("detail.txn.field.merchantName")}</Label>
                 <Input
                   placeholder="Amazon.ca"
                   value={txnForm.merchantName}
@@ -462,15 +463,15 @@ const CardDetail = () => {
                 />
               </div>
               <div className="space-y-2 col-span-2">
-                <Label>Description</Label>
+                <Label>{t("detail.txn.field.description")}</Label>
                 <Input
-                  placeholder="Online purchase"
+                  placeholder={t("detail.txn.placeholder.description")}
                   value={txnForm.description}
                   onChange={(e) => setTxnField("description", e.target.value)}
                 />
               </div>
               <div className="space-y-2 col-span-2">
-                <Label>Reference</Label>
+                <Label>{t("detail.txn.field.reference")}</Label>
                 <Input
                   placeholder="AUTH-8837123"
                   value={txnForm.reference}
@@ -481,10 +482,10 @@ const CardDetail = () => {
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowRecord(false)} disabled={isSaving}>
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button onClick={saveTransaction} disabled={isSaving}>
-              {isSaving ? "Saving..." : "Record"}
+              {isSaving ? t("action.saving") : t("detail.txn.submit")}
             </Button>
           </DialogFooter>
         </DialogContent>

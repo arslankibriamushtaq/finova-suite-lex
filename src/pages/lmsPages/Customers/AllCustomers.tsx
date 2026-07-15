@@ -32,8 +32,10 @@ import Loader from "../../../components/Loader/Loader";
 import { themeStyle } from "../../../components/Config/Theme";
 import { RootState } from "../../../redux/rootReducer";
 import { useSelector } from "react-redux";
+import { useTranslation } from "react-i18next";
 
 const AllCustomers = () => {
+  const { t } = useTranslation("customerManagement");
   const [currentTab, setCurrentTab] = useState("individualInfo");
   const tabOrder = [
     "individualInfo",
@@ -138,7 +140,7 @@ const AllCustomers = () => {
           await toast.promise(
             createIndividualsEmployee(payload1), // API call
             {
-              loading: "Creating individual account...", // While request is pending
+              loading: t("customersPage.toast.creatingIndividual"), // While request is pending
               success: (response) => {
                 if (
                   response?.data?.notificationMessage === "Operation successful."
@@ -150,16 +152,16 @@ const AllCustomers = () => {
                     setCurrentTab(tabOrder[currentIndex + 1]);
                   }
 
-                  return "Individual account created successfully";
+                  return t("customersPage.toast.individualCreated");
                 } else {
                   throw new Error(
-                    response?.data?.errors?.errors[0] || "Failed to create account."
+                    response?.data?.errors?.errors[0] || t("customersPage.toast.createAccountFailed")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while creating the individual account.",
+                t("customersPage.toast.individualError"),
             }
           );
           break;
@@ -194,7 +196,7 @@ const AllCustomers = () => {
           await toast.promise(
             createAdress(payload2), // API call
             {
-              loading: "Adding address details...", // While request is pending
+              loading: t("customersPage.toast.addingAddress"), // While request is pending
               success: (response) => {
                 if (
                   response?.data?.notificationMessage === "Operation successful."
@@ -204,16 +206,16 @@ const AllCustomers = () => {
                     setCurrentTab(tabOrder[currentIndex + 1]);
                   }
 
-                  return "Address details added successfully";
+                  return t("customersPage.toast.addressAdded");
                 } else {
                   throw new Error(
-                    response?.data?.errors?.errors[0] || "Failed to add address details."
+                    response?.data?.errors?.errors[0] || t("customersPage.toast.addressFailed")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while creating the adding address.",
+                t("customersPage.toast.addressError"),
             }
           );
           break;
@@ -247,22 +249,22 @@ const AllCustomers = () => {
           await toast.promise(
             createEmployement(payload3), // API call
             {
-              loading: "Adding employement details...", // While request is pending
+              loading: t("customersPage.toast.addingEmployment"), // While request is pending
               success: (response) => {
                 if (
                   response?.data?.notificationMessage === "Operation successful."
                 ) {
                   navigate("/lms/customers/individuals");
-                  return "Employement details added successfully";
+                  return t("customersPage.toast.employmentAdded");
                 } else {
                   throw new Error(
-                    response?.data?.errors?.errors[0] || "Failed to add employement details."
+                    response?.data?.errors?.errors[0] || t("customersPage.toast.employmentFailed")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while creating the adding employement details.",
+                t("customersPage.toast.employmentError"),
             }
           );
           break;
@@ -272,7 +274,7 @@ const AllCustomers = () => {
     return (
       <Button
         className="application-btn" onClick={handleStepSubmit}>
-        Submit Step
+        {t("customersPage.action.submitStep")}
       </Button>
     );
   };
@@ -352,8 +354,8 @@ const AllCustomers = () => {
   }, [pageSize, page]);
 
   const customerOptions = [
-    { label: "Individuals", value: "individuals" },
-    { label: "Businesses", value: "businesses" },
+    { label: t("customersPage.opt.individuals"), value: "individuals" },
+    { label: t("customersPage.opt.businesses"), value: "businesses" },
   ];
   const handleValueChange = (value: any) => {
     setCustomerValue(value);
@@ -406,7 +408,7 @@ const AllCustomers = () => {
         Edit
       </Menu.Item> */}
       <Menu.Item key="view" icon={<EyeOutlined />}>
-        View Applications
+        {t("customersPage.action.viewApplications")}
       </Menu.Item>
       {/* <Menu.Item key="accountTimeline" icon={<ClockCircleOutlined />}>
         Account Timeline
@@ -555,32 +557,32 @@ const AllCustomers = () => {
     await toast.promise(
       createIndividualsEmployee(body), // API call
       {
-        loading: "Creating individual account...", // While request is pending
+        loading: t("customersPage.toast.creatingIndividual"), // While request is pending
         success: (response) => {
           if (
             response?.data?.notificationMessage === "Operation successful."
           ) {
             navigate("/lms/customers/individuals");
-            return "Individual account created successfully";
+            return t("customersPage.toast.individualCreated");
           } else {
             throw new Error(
-              response?.data?.errors?.errors[0] || "Failed to create account."
+              response?.data?.errors?.errors[0] || t("customersPage.toast.createAccountFailed")
             );
           }
         },
         error: (err) =>
           err?.message ||
-          "Something went wrong while creating the individual account.",
+          t("customersPage.toast.individualError"),
       }
     );
   };
 
   const enums = {
     AddressType: [
-      { value: 1, label: "Office" },
-      { value: 2, label: "Home" },
-      { value: 3, label: "Billing" },
-      { value: 4, label: "Shipping" },
+      { value: 1, label: t("customersPage.enum.addressType.office") },
+      { value: 2, label: t("customersPage.enum.addressType.home") },
+      { value: 3, label: t("customersPage.enum.addressType.billing") },
+      { value: 4, label: t("customersPage.enum.addressType.shipping") },
     ],
     TimeZone: [
       { value: "UTC", label: "UTC" },
@@ -615,30 +617,30 @@ const AllCustomers = () => {
       { value: "SWIFT", label: "SWIFT" },
     ],
     Bankruptcy: [
-      { value: 1, label: "Yes" },
-      { value: 2, label: "No" },
+      { value: 1, label: t("common:yes") },
+      { value: 2, label: t("common:no") },
     ],
     Disability: [
-      { value: 1, label: "Yes" },
-      { value: 2, label: "No" },
+      { value: 1, label: t("common:yes") },
+      { value: 2, label: t("common:no") },
     ],
     Education: [
-      { value: 1, label: "Non_Schooling" },
-      { value: 2, label: "Primary_Education" },
-      { value: 3, label: "Secondary_Education" },
-      { value: 4, label: "Accociate_degree" },
-      { value: 5, label: "Bechelors_Degree" },
-      { value: 6, label: "Master_Degree" },
-      { value: 7, label: "Phd_Scholar" },
+      { value: 1, label: t("customersPage.enum.education.nonSchooling") },
+      { value: 2, label: t("customersPage.enum.education.primary") },
+      { value: 3, label: t("customersPage.enum.education.secondary") },
+      { value: 4, label: t("customersPage.enum.education.associate") },
+      { value: 5, label: t("customersPage.enum.education.bachelors") },
+      { value: 6, label: t("customersPage.enum.education.masters") },
+      { value: 7, label: t("customersPage.enum.education.phd") },
     ],
     Frequency: [
-      { value: 1, label: "Daily" },
-      { value: 2, label: "Weekly" },
-      { value: 3, label: "Bi_Weekly" },
-      { value: 4, label: "Semi_Monthly" },
-      { value: 5, label: "Monthly" },
-      { value: 6, label: "Quarterly" },
-      { value: 7, label: "Annually" },
+      { value: 1, label: t("customersPage.enum.frequency.daily") },
+      { value: 2, label: t("customersPage.enum.frequency.weekly") },
+      { value: 3, label: t("customersPage.enum.frequency.biWeekly") },
+      { value: 4, label: t("customersPage.enum.frequency.semiMonthly") },
+      { value: 5, label: t("customersPage.enum.frequency.monthly") },
+      { value: 6, label: t("customersPage.enum.frequency.quarterly") },
+      { value: 7, label: t("customersPage.enum.frequency.annually") },
     ],
     /*  NationalityEnum: [
        { value: 1, label: "United States" },
@@ -687,21 +689,21 @@ const AllCustomers = () => {
       { value: 30, label: "30" },
     ],
     Gender: [
-      { value: 1, label: "Male" },
-      { value: 2, label: "Female" },
-      { value: 3, label: "Non_Binary" },
-      { value: 4, label: "Prefer_not_to_say" },
+      { value: 1, label: t("customersPage.enum.gender.male") },
+      { value: 2, label: t("customersPage.enum.gender.female") },
+      { value: 3, label: t("customersPage.enum.gender.nonBinary") },
+      { value: 4, label: t("customersPage.enum.gender.preferNotToSay") },
     ],
     IsPoliticallyExposed: [
-      { value: 1, label: "Yes" },
-      { value: 2, label: "No" },
+      { value: 1, label: t("common:yes") },
+      { value: 2, label: t("common:no") },
     ],
     MaritalStatus: [
-      { value: 1, label: "Single" },
-      { value: 2, label: "Married" },
-      { value: 3, label: "Divorce" },
-      { value: 4, label: "Widowed" },
-      { value: 5, label: "Separated" },
+      { value: 1, label: t("customersPage.enum.maritalStatus.single") },
+      { value: 2, label: t("customersPage.enum.maritalStatus.married") },
+      { value: 3, label: t("customersPage.enum.maritalStatus.divorced") },
+      { value: 4, label: t("customersPage.enum.maritalStatus.widowed") },
+      { value: 5, label: t("customersPage.enum.maritalStatus.separated") },
     ],
     ReferanceStatus: [
       { value: 1, label: "Active" },
@@ -751,13 +753,13 @@ const AllCustomers = () => {
       { value: 11, label: "OutboundToInterface" },
     ],
     Type: [
-      { value: 1, label: "Regular" },
-      { value: 2, label: "SystemGenerated" },
-      { value: 3, label: "CustomerInitiated" },
-      { value: 4, label: "StaffInitiated" },
-      { value: 5, label: "Alert" },
-      { value: 6, label: "Inboundfrominterface" },
-      { value: 7, label: "OutboundToInterface" },
+      { value: 1, label: t("customersPage.enum.type.regular") },
+      { value: 2, label: t("customersPage.enum.type.systemGenerated") },
+      { value: 3, label: t("customersPage.enum.type.customerInitiated") },
+      { value: 4, label: t("customersPage.enum.type.staffInitiated") },
+      { value: 5, label: t("customersPage.enum.type.alert") },
+      { value: 6, label: t("customersPage.enum.type.inboundFromInterface") },
+      { value: 7, label: t("customersPage.enum.type.outboundToInterface") },
     ],
     VerificationType: [
       { value: 1, label: "Address" },
@@ -784,7 +786,7 @@ const AllCustomers = () => {
     //     ),
     // },
     {
-      name: "CIF",
+      name: t("customersPage.col.cif"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -795,7 +797,7 @@ const AllCustomers = () => {
         ):row.cif
         },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -808,7 +810,7 @@ const AllCustomers = () => {
         ),
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -821,7 +823,7 @@ const AllCustomers = () => {
         ),
     },
     {
-      name: "Customer ID",
+      name: t("customersPage.col.customerId"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -835,7 +837,7 @@ const AllCustomers = () => {
     },
 
     {
-      name: "Partner Name",
+      name: t("customersPage.col.partnerName"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -848,7 +850,7 @@ const AllCustomers = () => {
         ),
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -861,7 +863,7 @@ const AllCustomers = () => {
         ),
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: any) =>
         editRowId === row.id ? (
           <Input
@@ -885,28 +887,28 @@ const AllCustomers = () => {
             cursor: row.status === "Active" ? "pointer" : "default",
           }}
         >
-          {row.status ? "Active" : "Inactive"}
+          {row.status ? t("common:active") : t("common:inactive")}
         </div>
       ),
     },
     {
-      name: "Blocked",
+      name: t("customersPage.col.blocked"),
       cell: (row: any) => (
         row.isBlocked
-          ? <span style={{ padding: "0.22rem 0.75rem", borderRadius: "2px", backgroundColor: "var(--color-status-red, #fee2e2)", color: "#dc2626", fontSize: "0.75rem", fontWeight: 600 }}>Blocked</span>
-          : <span style={{ padding: "0.22rem 0.75rem", borderRadius: "2px", backgroundColor: "var(--color-status-green)", color: "var(--primary-foreground)", fontSize: "0.75rem", fontWeight: 600 }}>Clear</span>
+          ? <span style={{ padding: "0.22rem 0.75rem", borderRadius: "2px", backgroundColor: "var(--color-status-red, #fee2e2)", color: "#dc2626", fontSize: "0.75rem", fontWeight: 600 }}>{t("customersPage.status.blocked")}</span>
+          : <span style={{ padding: "0.22rem 0.75rem", borderRadius: "2px", backgroundColor: "var(--color-status-green)", color: "var(--primary-foreground)", fontSize: "0.75rem", fontWeight: 600 }}>{t("customersPage.status.clear")}</span>
       ),
       width: "110px",
     },
     {
-      name: "Block Code",
+      name: t("customersPage.col.blockCode"),
       cell: (row: any) => row.blockCode
         ? <span style={{ display: "inline-flex", alignItems: "center", borderRadius: "9999px", background: "var(--muted)", padding: "0.125rem 0.625rem", fontSize: "0.75rem", fontWeight: 500 }}>{row.blockCode}</span>
         : <span style={{ color: "var(--muted-foreground)", fontSize: "0.75rem" }}>—</span>,
       width: "140px",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -919,7 +921,7 @@ const AllCustomers = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -982,62 +984,62 @@ const AllCustomers = () => {
   }; */
 
   const validationSchema = Yup.object().shape({
-    name: Yup.string().required("Name is required"),
-    relationId: Yup.string().required("Relation is required"),
-    ssn: Yup.string().required("SSN is required"),
-    nationalId: Yup.string().required("National ID is required"),
+    name: Yup.string().required(t("customersPage.validation.nameRequired")),
+    relationId: Yup.string().required(t("customersPage.validation.relationRequired")),
+    ssn: Yup.string().required(t("customersPage.validation.ssnRequired")),
+    nationalId: Yup.string().required(t("customersPage.validation.nationalIdRequired")),
     nationalIdIssuanceDate: Yup.date().required(
-      "National ID issuance date is required"
+      t("customersPage.validation.nationalIdIssuanceDateRequired")
     ),
-    nidExpiryDate: Yup.date().required("National ID expiry date is required"),
-    dob: Yup.date().required("Date of birth is required"),
-    gender: Yup.number().required("Gender is required"),
-    email: Yup.string().email("Invalid email").required("Email is required"),
+    nidExpiryDate: Yup.date().required(t("customersPage.validation.nidExpiryDateRequired")),
+    dob: Yup.date().required(t("customersPage.validation.dobRequired")),
+    gender: Yup.number().required(t("customersPage.validation.genderRequired")),
+    email: Yup.string().email(t("customersPage.validation.emailInvalid")).required(t("customersPage.validation.emailRequired")),
     languageId: Yup.string()
-      .uuid("Invalid language ID")
-      .required("Language ID is required"),
+      .uuid(t("customersPage.validation.languageIdInvalid"))
+      .required(t("customersPage.validation.languageIdRequired")),
     maritalStatus: Yup.number()
-      .oneOf([1, 2, 3], "Invalid marital status")
-      .required("Marital status is required"),
+      .oneOf([1, 2, 3], t("customersPage.validation.maritalStatusInvalid"))
+      .required(t("customersPage.validation.maritalStatusRequired")),
     disability: Yup.number()
-      .oneOf([1, 2], "Disability status is required")
-      .required("Disability status is required"),
+      .oneOf([1, 2], t("customersPage.validation.disabilityStatusRequired"))
+      .required(t("customersPage.validation.disabilityStatusRequired")),
 
     activeMilitaryDuty: Yup.boolean().required(
-      "Active military duty status is required"
+      t("customersPage.validation.activeMilitaryDutyRequired")
     ),
-    timeZone: Yup.string().required("Time zone is required"),
-    motherMaidenName: Yup.string().required("Mother's maiden name is required"),
-    visaNumber: Yup.string().required("Visa number is required"),
-    licenseNumber: Yup.string().required("License number is required"),
-    licenseIssueDate: Yup.date().required("License issue date is required"),
-    licenseExpiryDate: Yup.date().required("License expiry date is required"),
-    passportNumber: Yup.string().required("Passport number is required"),
-    passportIssueDate: Yup.date().required("Passport issue date is required"),
-    passportExpiryDate: Yup.date().required("Passport expiry date is required"),
-    prNumber: Yup.string().required("PR number is required"),
+    timeZone: Yup.string().required(t("customersPage.validation.timeZoneRequired")),
+    motherMaidenName: Yup.string().required(t("customersPage.validation.motherMaidenNameRequired")),
+    visaNumber: Yup.string().required(t("customersPage.validation.visaNumberRequired")),
+    licenseNumber: Yup.string().required(t("customersPage.validation.licenseNumberRequired")),
+    licenseIssueDate: Yup.date().required(t("customersPage.validation.licenseIssueDateRequired")),
+    licenseExpiryDate: Yup.date().required(t("customersPage.validation.licenseExpiryDateRequired")),
+    passportNumber: Yup.string().required(t("customersPage.validation.passportNumberRequired")),
+    passportIssueDate: Yup.date().required(t("customersPage.validation.passportIssueDateRequired")),
+    passportExpiryDate: Yup.date().required(t("customersPage.validation.passportExpiryDateRequired")),
+    prNumber: Yup.string().required(t("customersPage.validation.prNumberRequired")),
     education: Yup.number()
-      .oneOf([1, 2, 3, 4, 5, 6, 7], "Invalid education level")
-      .required("Education level is required"),
+      .oneOf([1, 2, 3, 4, 5, 6, 7], t("customersPage.validation.educationLevelInvalid"))
+      .required(t("customersPage.validation.educationLevelRequired")),
     bankcruptcy: Yup.number()
-      .oneOf([1, 2], "Bankruptcy status must be 0 or 1")
-      .required("Bankruptcy status is required"),
-    nationality: Yup.string().required("Nationality is required"),
+      .oneOf([1, 2], t("customersPage.validation.bankruptcyStatusInvalid"))
+      .required(t("customersPage.validation.bankruptcyStatusRequired")),
+    nationality: Yup.string().required(t("customersPage.validation.nationalityRequired")),
     isPoliticallyExposed: Yup.number()
-      .oneOf([1, 2], "Politically exposed status must be 2 or 1")
-      .required("Politically exposed status is required"),
-    birthPlace: Yup.string().required("Birth place is required"),
-    birthCountry: Yup.string().required("Birth country is required"),
-    employer: Yup.string().required("Employer is required"),
-    title: Yup.string().required("Title is required"),
-    department: Yup.string().required("Department is required"),
-    address1: Yup.string().required("Address line 1 is required"),
+      .oneOf([1, 2], t("customersPage.validation.politicallyExposedInvalid"))
+      .required(t("customersPage.validation.politicallyExposedRequired")),
+    birthPlace: Yup.string().required(t("customersPage.validation.birthPlaceRequired")),
+    birthCountry: Yup.string().required(t("customersPage.validation.birthCountryRequired")),
+    employer: Yup.string().required(t("customersPage.validation.employerRequired")),
+    title: Yup.string().required(t("customersPage.validation.titleRequired")),
+    department: Yup.string().required(t("customersPage.validation.departmentRequired")),
+    address1: Yup.string().required(t("customersPage.validation.address1Required")),
     address2: Yup.string(),
-    zip: Yup.string().required("ZIP code is required"),
-    addrs: Yup.string().required("Address is required"),
-    phone: Yup.string().required("Phone number is required"),
-    postalAddressType: Yup.string().required("Postal address type is required"),
-    buildingNumber: Yup.string().required("Building number is required"),
+    zip: Yup.string().required(t("customersPage.validation.zipRequired")),
+    addrs: Yup.string().required(t("customersPage.validation.addressRequired")),
+    phone: Yup.string().required(t("customersPage.validation.phoneRequired")),
+    postalAddressType: Yup.string().required(t("customersPage.validation.postalAddressTypeRequired")),
+    buildingNumber: Yup.string().required(t("customersPage.validation.buildingNumberRequired")),
   });
 
   const handleCheckboxChange = (e: any, setFieldValue: any) => {
@@ -1161,7 +1163,7 @@ const AllCustomers = () => {
           <div className="col-10">
             <div className="d-flex align-items-center col-6 justify-content-between mt-1"
               style={{ fontSize: "15px", fontWeight: "Bold" }}>
-              All Customers
+              {t("customersPage.title")}
 
             </div>
           </div>
@@ -1173,7 +1175,7 @@ const AllCustomers = () => {
                 setIndividualModal(true);
               }}
             >
-              Add Customer
+              {t("customersPage.action.addCustomer")}
             </button>
           </div>
         </div>
@@ -1192,7 +1194,7 @@ const AllCustomers = () => {
         />
         {buisnessCustomers?.length == 0 && !skelitonLoading && (
           <div className="d-flex justify-content-center mt-5 bg-red">
-            No data found
+            {t("common:noData")}
           </div>
         )}
 
@@ -1208,12 +1210,12 @@ const AllCustomers = () => {
             style={{ fontSize: "16px", fontWeight: 600 }}
             closeButton
           >
-            Select Customer Type
+            {t("customersPage.modal.selectCustomerType")}
           </ModalHeader>
 
           <ModalBody className="modal-body-scroll">
             <div className="col-12">
-              <label className="d-flex mb-2 customer-fs-fw">Type</label>
+              <label className="d-flex mb-2 customer-fs-fw">{t("common:type")}</label>
               <Select
                 value={customerValue}
                 placeholder={customerValue}
@@ -1233,7 +1235,7 @@ const AllCustomers = () => {
                   onClick={handleControlModal}
                   style={{ backgroundColor: themeStyle.secondary }}
                 >
-                  Continue
+                  {t("customersPage.action.continue")}
                 </button>
               </div>
             </div>
@@ -1371,7 +1373,7 @@ const AllCustomers = () => {
                     >
                       <Tab
                         eventKey="individualInfo"
-                        title="Individual Information"
+                        title={t("customersPage.tab.individualInfo")}
                         style={{ marginRight: "10px" }}
                       >
                         <Row>
@@ -1380,10 +1382,10 @@ const AllCustomers = () => {
                               htmlFor="name"
                               className="mb-1 customer-fs-fw"
                             >
-                              Name<span className="bg-red"> *</span>
+                              {t("common:name")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Name"
+                              placeholder={t("common:name")}
                               id="name"
                               type="text"
                               name="name"
@@ -1400,16 +1402,16 @@ const AllCustomers = () => {
                               htmlFor="relationId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Relation<span className="bg-red"> *</span>
+                              {t("customersPage.field.relation")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Relation"
+                              placeholder={t("customersPage.field.relation")}
                               id="relationId"
                               name="relationId"
                               className="form-control"
                             >
-                              <option value="" label="Select relation" />
+                              <option value="" label={t("customersPage.opt.selectRelation")} />
                               {allRelations &&
                                 allRelations.map((reason: any) => (
                                   <option
@@ -1432,10 +1434,10 @@ const AllCustomers = () => {
                               htmlFor="dob"
                               className="mb-1 customer-fs-fw"
                             >
-                              DOB<span className="bg-red"> *</span>
+                              {t("customersPage.field.dob")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="DOB"
+                              placeholder={t("customersPage.field.dob")}
                               id="dob"
                               type="date"
                               name="dob"
@@ -1452,12 +1454,12 @@ const AllCustomers = () => {
                               htmlFor="maritalStatus"
                               className="mb-1 customer-fs-fw"
                             >
-                              Marital Status
+                              {t("customersPage.field.maritalStatus")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Marital Status"
+                              placeholder={t("customersPage.field.maritalStatus")}
                               id="maritalStatus"
                               name="maritalStatus"
                               className="form-control"
@@ -1470,7 +1472,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select marital status" />
+                              <option value="" label={t("customersPage.opt.selectMaritalStatus")} />
                               {enums.MaritalStatus.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -1490,16 +1492,16 @@ const AllCustomers = () => {
                               htmlFor="languageId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Language<span className="bg-red"> *</span>
+                              {t("customersPage.field.language")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Language"
+                              placeholder={t("customersPage.field.language")}
                               id="languageId"
                               name="languageId"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {language &&
                                 language.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -1518,11 +1520,11 @@ const AllCustomers = () => {
                               htmlFor="motherMaidenName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Mother Maiden Name
+                              {t("customersPage.field.motherMaidenName")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Mother Maiden Name"
+                              placeholder={t("customersPage.field.motherMaidenName")}
                               id="motherMaidenName"
                               type="text"
                               name="motherMaidenName"
@@ -1541,10 +1543,10 @@ const AllCustomers = () => {
                               htmlFor="email"
                               className="mb-1 customer-fs-fw"
                             >
-                              Email<span className="bg-red"> *</span>
+                              {t("common:email")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Email"
+                              placeholder={t("common:email")}
                               id="email"
                               type="text"
                               name="email"
@@ -1569,7 +1571,7 @@ const AllCustomers = () => {
                               htmlFor="stopCorrespondance"
                               className="mb-1 ms-3 customer-fs-fw"
                             >
-                              Stop Correspondence
+                              {t("customersPage.field.stopCorrespondence")}
                             </label>
                             <ErrorMessage
                               name="stopCorrespondance"
@@ -1584,11 +1586,11 @@ const AllCustomers = () => {
                               htmlFor="disability"
                               className="mb-1 customer-fs-fw"
                             >
-                              Disability<span className="bg-red"> *</span>
+                              {t("customersPage.field.disability")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Disability"
+                              placeholder={t("customersPage.field.disability")}
                               id="disability"
                               name="disability"
                               className="form-control"
@@ -1603,7 +1605,7 @@ const AllCustomers = () => {
                             >
                               <option
                                 value=""
-                                label="Select disability status"
+                                label={t("customersPage.opt.selectDisabilityStatus")}
                               />
                               {enums.Disability.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -1629,7 +1631,7 @@ const AllCustomers = () => {
                               htmlFor="skip"
                               className="mb-1 ms-3 customer-fs-fw"
                             >
-                              Skip
+                              {t("customersPage.field.skip")}
                             </label>
                             <ErrorMessage
                               name="skip"
@@ -1644,11 +1646,11 @@ const AllCustomers = () => {
                               htmlFor="bankruptcy"
                               className="mb-1 customer-fs-fw"
                             >
-                              Bankruptcy<span className="bg-red"> *</span>
+                              {t("customersPage.field.bankruptcy")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Bankruptcy"
+                              placeholder={t("customersPage.field.bankruptcy")}
                               id="bankcruptcy"
                               name="bankcruptcy"
                               className="form-control"
@@ -1663,7 +1665,7 @@ const AllCustomers = () => {
                             >
                               <option
                                 value=""
-                                label="Select bankruptcy status"
+                                label={t("customersPage.opt.selectBankruptcyStatus")}
                               />
                               {enums.Bankruptcy.map((option) => (
                                 <option key={option.value} value={option.value}>
@@ -1682,11 +1684,11 @@ const AllCustomers = () => {
                               htmlFor="gender"
                               className="mb-1 customer-fs-fw"
                             >
-                              Gender<span className="bg-red"> *</span>
+                              {t("customersPage.field.gender")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Gender"
+                              placeholder={t("customersPage.field.gender")}
                               id="gender"
                               name="gender"
                               className="form-control"
@@ -1699,7 +1701,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {enums.Gender.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -1719,16 +1721,16 @@ const AllCustomers = () => {
                               htmlFor="timeZone"
                               className="mb-1 customer-fs-fw"
                             >
-                              Time Zone<span className="bg-red"> *</span>
+                              {t("customersPage.field.timeZone")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Time Zone"
+                              placeholder={t("customersPage.field.timeZone")}
                               id="timeZone"
                               name="timeZone"
                               className="form-control"
                             >
-                              <option value="" label="Select Time Zone" />
+                              <option value="" label={t("customersPage.opt.selectTimeZone")} />
                               {enums.TimeZone.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -1746,11 +1748,11 @@ const AllCustomers = () => {
                               htmlFor="education"
                               className="mb-1 customer-fs-fw"
                             >
-                              Education<span className="bg-red"> *</span>
+                              {t("customersPage.field.education")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Education"
+                              placeholder={t("customersPage.field.education")}
                               id="education"
                               name="education"
                               className="form-control"
@@ -1763,7 +1765,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select education level" />
+                              <option value="" label={t("customersPage.opt.selectEducationLevel")} />
                               {enums.Education.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -1783,10 +1785,10 @@ const AllCustomers = () => {
                               htmlFor="deceaseDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              Decease Date
+                              {t("customersPage.field.deceaseDate")}
                             </label>
                             <Field
-                              placeholder="Decease Date"
+                              placeholder={t("customersPage.field.deceaseDate")}
                               id="deceaseDate"
                               type="date"
                               name="deceaseDate"
@@ -1800,7 +1802,7 @@ const AllCustomers = () => {
                           </Col>
                         </Row>
                       </Tab>
-                      <Tab eventKey="optional" title="Optional">
+                      <Tab eventKey="optional" title={t("customersPage.tab.optional")}>
                         <Row>
                           <Col md={4}>
                             <div className=" d-flex align-items-center">
@@ -1816,7 +1818,7 @@ const AllCustomers = () => {
                                 htmlFor="privacyOptOut"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Privacy Opt-in
+                                {t("customersPage.field.privacyOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1834,7 +1836,7 @@ const AllCustomers = () => {
                                 htmlFor="insuranceOptOut"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Insurance Opt-in
+                                {t("customersPage.field.insuranceOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1852,7 +1854,7 @@ const AllCustomers = () => {
                                 htmlFor="marketingOtpOut"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Marketing Opt-in
+                                {t("customersPage.field.marketingOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1870,7 +1872,7 @@ const AllCustomers = () => {
                                 htmlFor="sharedCreditOtpOut"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Share Credit Opt-in
+                                {t("customersPage.field.shareCreditOptIn")}
                               </label>
                             </div>
                           </Col>
@@ -1878,7 +1880,7 @@ const AllCustomers = () => {
                       </Tab>
                       <Tab
                         eventKey="identificationDetails"
-                        title="Identification Details"
+                        title={t("customersPage.tab.identificationDetails")}
                       >
                         <Row className="pt-2">
                           <Col md={6}>
@@ -1886,11 +1888,11 @@ const AllCustomers = () => {
                               htmlFor="passportNumber"
                               className="mb-1 customer-fs-fw"
                             >
-                              Passport Number
+                              {t("customersPage.field.passportNumber")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Passport Number"
+                              placeholder={t("customersPage.field.passportNumber")}
                               id="passportNumber"
                               type="text"
                               name="passportNumber"
@@ -1907,11 +1909,11 @@ const AllCustomers = () => {
                               htmlFor="passportIssueDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              Passport Issue Date
+                              {t("customersPage.field.passportIssueDate")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Passport Issue Date"
+                              placeholder={t("customersPage.field.passportIssueDate")}
                               id="passportIssueDate"
                               type="date"
                               name="passportIssueDate"
@@ -1931,11 +1933,11 @@ const AllCustomers = () => {
                               htmlFor="passportExpiryDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              Passport Expiry Date
+                              {t("customersPage.field.passportExpiryDate")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Passport Expiry Date"
+                              placeholder={t("customersPage.field.passportExpiryDate")}
                               id="passportExpiryDate"
                               type="date"
                               name="passportExpiryDate"
@@ -1952,11 +1954,11 @@ const AllCustomers = () => {
                               htmlFor="visaNumber"
                               className="mb-1 customer-fs-fw"
                             >
-                              Visa Number
+                              {t("customersPage.field.visaNumber")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Visa Number"
+                              placeholder={t("customersPage.field.visaNumber")}
                               id="visaNumber"
                               type="text"
                               name="visaNumber"
@@ -1976,11 +1978,11 @@ const AllCustomers = () => {
                               htmlFor="nationalId"
                               className="mb-1 customer-fs-fw"
                             >
-                              National ID
+                              {t("customersPage.field.nationalId")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="National ID"
+                              placeholder={t("customersPage.field.nationalId")}
                               id="nationalId"
                               type="text"
                               name="nationalId"
@@ -2000,7 +2002,7 @@ const AllCustomers = () => {
                                 fontWeight: 600,
                               }}
                             >
-                              Nationality
+                              {t("customersPage.field.nationality")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
@@ -2011,7 +2013,7 @@ const AllCustomers = () => {
                                 setFieldValue("nationality", e.target.value)
                               }
                             >
-                              <option label="Select Nationality" />
+                              <option label={t("customersPage.opt.selectNationality")} />
                               {/* Assuming languageId is an array from props */}
                               {country &&
                                 country.map((item: any) => (
@@ -2036,11 +2038,11 @@ const AllCustomers = () => {
                               htmlFor="nationalIdIssuanceDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              NID Issue Date
+                              {t("customersPage.field.nidIssueDate")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="NID Issue Date"
+                              placeholder={t("customersPage.field.nidIssueDate")}
                               id="nationalIdIssuanceDate"
                               type="date"
                               name="nationalIdIssuanceDate"
@@ -2057,11 +2059,11 @@ const AllCustomers = () => {
                               htmlFor="nidExpiryDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              NID Expiry Date
+                              {t("customersPage.field.nidExpiryDate")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="NID Expiry Date"
+                              placeholder={t("customersPage.field.nidExpiryDate")}
                               id="nidExpiryDate"
                               type="date"
                               name="nidExpiryDate"
@@ -2081,11 +2083,11 @@ const AllCustomers = () => {
                               htmlFor="licenseNumber"
                               className="mb-1 customer-fs-fw"
                             >
-                              License Number
+                              {t("customersPage.field.licenseNumber")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="License Number"
+                              placeholder={t("customersPage.field.licenseNumber")}
                               id="licenseNumber"
                               type="text"
                               name="licenseNumber"
@@ -2102,11 +2104,11 @@ const AllCustomers = () => {
                               htmlFor="licenseIssueDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              License Issue Date
+                              {t("customersPage.field.licenseIssueDate")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="License Issue Date"
+                              placeholder={t("customersPage.field.licenseIssueDate")}
                               id="licenseIssueDate"
                               type="date"
                               name="licenseIssueDate"
@@ -2126,11 +2128,11 @@ const AllCustomers = () => {
                               htmlFor="licenseExpiryDate"
                               className="mb-1 customer-fs-fw"
                             >
-                              License Expiry Date
+                              {t("customersPage.field.licenseExpiryDate")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="License Expiry Date"
+                              placeholder={t("customersPage.field.licenseExpiryDate")}
                               id="licenseExpiryDate"
                               type="date"
                               name="licenseExpiryDate"
@@ -2147,10 +2149,10 @@ const AllCustomers = () => {
                               htmlFor="ssn"
                               className="mb-1 customer-fs-fw"
                             >
-                              SSN
+                              {t("customersPage.field.ssn")}
                             </label>
                             <Field
-                              placeholder="SSN"
+                              placeholder={t("customersPage.field.ssn")}
                               id="ssn"
                               type="text"
                               name="ssn"
@@ -2170,10 +2172,10 @@ const AllCustomers = () => {
                               htmlFor="prNumber"
                               className="mb-1 customer-fs-fw"
                             >
-                              PR Number<span className="bg-red"> *</span>
+                              {t("customersPage.field.prNumber")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="PR Number"
+                              placeholder={t("customersPage.field.prNumber")}
                               id="prNumber"
                               type="text"
                               name="prNumber"
@@ -2199,7 +2201,7 @@ const AllCustomers = () => {
                               className="mb-1 ms-3"
                               style={{ fontSize: "14px" }}
                             >
-                              Active Military Duty
+                              {t("customersPage.field.activeMilitaryDuty")}
                             </label>
                             <ErrorMessage
                               name="activeMilitaryDuty"
@@ -2209,23 +2211,23 @@ const AllCustomers = () => {
                           </Col>
                         </Row>
                         <Row className="pt-2">
-                          <h3>FATCA Section</h3>
+                          <h3>{t("customersPage.section.fatca")}</h3>
                           <Col md={6}>
                             <label
                               htmlFor="birthPlace"
                               className="mb-1 customer-fs-fw"
                             >
-                              Birth Place
+                              {t("customersPage.field.birthPlace")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Birth Place"
+                              placeholder={t("customersPage.field.birthPlace")}
                               id="birthPlace"
                               name="birthPlace"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {cities &&
                                 cities.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -2245,17 +2247,17 @@ const AllCustomers = () => {
                               htmlFor="birthCountry"
                               className="mb-1 customer-fs-fw"
                             >
-                              Birth Country
+                              {t("customersPage.field.birthCountry")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Birth Country"
+                              placeholder={t("customersPage.field.birthCountry")}
                               id="birthCountry"
                               name="birthCountry"
                               className="form-control"
                             >
-                              <option label="Select Country"></option>
+                              <option label={t("customersPage.opt.selectCountry")}></option>
                               {country &&
                                 country.map((item: any) => (
                                   <option
@@ -2278,11 +2280,11 @@ const AllCustomers = () => {
                               htmlFor="isPoliticallyExposed"
                               className="mb-1 customer-fs-fw"
                             >
-                              Is Politically Exposed
+                              {t("customersPage.field.isPoliticallyExposed")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="Is Politically Exposed"
+                              placeholder={t("customersPage.field.isPoliticallyExposed")}
                               id="isPoliticallyExposed"
                               name="isPoliticallyExposed"
                               className="form-control"
@@ -2295,7 +2297,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {enums.IsPoliticallyExposed.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -2310,7 +2312,7 @@ const AllCustomers = () => {
                           </Col>
                         </Row>
                         <Row className="pt-2 p-2 col-12  border-bottom ">
-                          <h3>Power of Attorney</h3>
+                          <h3>{t("customersPage.section.powerOfAttorney")}</h3>
                           <Col md={6} className="mb-4">
                             <Checkbox
                               id="issueedPowerOfAttorney"
@@ -2323,7 +2325,7 @@ const AllCustomers = () => {
                               htmlFor="issueedPowerOfAttorney"
                               className="mb-1 ms-3 customer-fs-fw"
                             >
-                              Issued Power of Attorney
+                              {t("customersPage.field.issuedPowerOfAttorney")}
                             </label>
 
                             <ErrorMessage
@@ -2336,7 +2338,7 @@ const AllCustomers = () => {
                       </Tab>
                       <Tab
                         eventKey="personalAddressDetails"
-                        title="Personal Address Details"
+                        title={t("customersPage.tab.personalAddressDetails")}
                       >
                         <Row>
                           <Col md={6} className="mb-4">
@@ -2344,10 +2346,10 @@ const AllCustomers = () => {
                               htmlFor="addrs"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address<span className="bg-red"> *</span>
+                              {t("customersPage.field.address")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Address"
+                              placeholder={t("customersPage.field.address")}
                               id="addrs"
                               type="text"
                               name="addrs"
@@ -2365,10 +2367,10 @@ const AllCustomers = () => {
                               htmlFor="phone"
                               className="mb-1 customer-fs-fw"
                             >
-                              Phone<span className="bg-red"> *</span>
+                              {t("common:phone")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Phone"
+                              placeholder={t("common:phone")}
                               id="phone"
                               type="text"
                               name="phone"
@@ -2396,7 +2398,7 @@ const AllCustomers = () => {
                                 htmlFor="mailing"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Mailing
+                                {t("customersPage.field.mailing")}
                               </label>
                             </div>
                           </Col>
@@ -2414,7 +2416,7 @@ const AllCustomers = () => {
                                 htmlFor="current"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Current
+                                {t("customersPage.field.current")}
                               </label>
                             </div>
                           </Col>
@@ -2432,7 +2434,7 @@ const AllCustomers = () => {
                                 htmlFor="confirmed"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Confirmed
+                                {t("customersPage.field.confirmed")}
                               </label>
                             </div>
                           </Col>
@@ -2443,11 +2445,11 @@ const AllCustomers = () => {
                               htmlFor="type"
                               className="mb-1 customer-fs-fw"
                             >
-                              Type
+                              {t("common:type")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="Type"
+                              placeholder={t("common:type")}
                               id="type"
                               name="type"
                               className="form-control"
@@ -2460,7 +2462,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {enums.Type.map((item) => (
                                 <option key={item.value} value={item.value}>
                                   {item.label}
@@ -2478,19 +2480,19 @@ const AllCustomers = () => {
                               htmlFor="postalAddressType"
                               className="mb-1 customer-fs-fw"
                             >
-                              Postal Address Type
+                              {t("customersPage.field.postalAddressType")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Postal Address Type"
+                              placeholder={t("customersPage.field.postalAddressType")}
                               id="postalAddressType"
                               name="postalAddressType"
                               className="form-control"
                             >
                               <option
                                 value=""
-                                label="Select postal address type"
+                                label={t("customersPage.opt.selectPostalAddressType")}
                               />
                               {enums.AddressType.map((item) => (
                                 <option key={item.value} value={item.value}>
@@ -2520,7 +2522,7 @@ const AllCustomers = () => {
                                 htmlFor="permissionToCall"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Permission to Call
+                                {t("customersPage.field.permissionToCall")}
                               </label>
                             </div>
                           </Col>
@@ -2538,7 +2540,7 @@ const AllCustomers = () => {
                                 htmlFor="permissionToText"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Permission to Text
+                                {t("customersPage.field.permissionToText")}
                               </label>
                             </div>
                           </Col>
@@ -2549,16 +2551,16 @@ const AllCustomers = () => {
                               htmlFor="countryId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Country
+                              {t("customersPage.field.country")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="Country"
+                              placeholder={t("customersPage.field.country")}
                               id="countryId"
                               name="countryId"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {country &&
                                 country.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -2577,10 +2579,10 @@ const AllCustomers = () => {
                               htmlFor="streetPre"
                               className="mb-1 customer-fs-fw"
                             >
-                              Street Pre
+                              {t("customersPage.field.streetPre")}
                             </label>
                             <Field
-                              placeholder="Street Pre"
+                              placeholder={t("customersPage.field.streetPre")}
                               id="streetPre"
                               type="text"
                               name="streetPre"
@@ -2600,10 +2602,10 @@ const AllCustomers = () => {
                               htmlFor="streetName"
                               className="mb-1 customer-fs-fw"
                             >
-                              Street Name
+                              {t("customersPage.field.streetName")}
                             </label>
                             <Field
-                              placeholder="Street Name"
+                              placeholder={t("customersPage.field.streetName")}
                               id="streetName"
                               type="text"
                               name="streetName"
@@ -2620,10 +2622,10 @@ const AllCustomers = () => {
                               htmlFor="streetType"
                               className="mb-1 customer-fs-fw"
                             >
-                              Street Type
+                              {t("customersPage.field.streetType")}
                             </label>
                             <Field
-                              placeholder="Street Type"
+                              placeholder={t("customersPage.field.streetType")}
                               id="streetType"
                               type="text"
                               name="streetType"
@@ -2643,11 +2645,11 @@ const AllCustomers = () => {
                               htmlFor="buildingNumber"
                               className="mb-1 customer-fs-fw"
                             >
-                              Building Number
+                              {t("customersPage.field.buildingNumber")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Building Number"
+                              placeholder={t("customersPage.field.buildingNumber")}
                               id="buildingNumber"
                               type="text"
                               name="buildingNumber"
@@ -2664,10 +2666,10 @@ const AllCustomers = () => {
                               htmlFor="address1"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address 1<span className="bg-red"> *</span>
+                              {t("customersPage.field.address1")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Address 1"
+                              placeholder={t("customersPage.field.address1")}
                               id="address1"
                               type="text"
                               name="address1"
@@ -2687,10 +2689,10 @@ const AllCustomers = () => {
                               htmlFor="address2"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address 2<span className="bg-red"> *</span>
+                              {t("customersPage.field.address2")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Address 2"
+                              placeholder={t("customersPage.field.address2")}
                               id="address2"
                               type="text"
                               name="address2"
@@ -2707,10 +2709,10 @@ const AllCustomers = () => {
                               htmlFor="address3"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address 3
+                              {t("customersPage.field.address3")}
                             </label>
                             <Field
-                              placeholder="Address 3"
+                              placeholder={t("customersPage.field.address3")}
                               id="address3"
                               type="text"
                               name="address3"
@@ -2730,10 +2732,10 @@ const AllCustomers = () => {
                               htmlFor="zip"
                               className="mb-1 customer-fs-fw"
                             >
-                              Zip<span className="bg-red"> *</span>
+                              {t("customersPage.field.zip")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Zip"
+                              placeholder={t("customersPage.field.zip")}
                               id="zip"
                               type="text"
                               name="zip"
@@ -2750,10 +2752,10 @@ const AllCustomers = () => {
                               htmlFor="zipExtention"
                               className="mb-1 customer-fs-fw"
                             >
-                              Zip Extension
+                              {t("customersPage.field.zipExtension")}
                             </label>
                             <Field
-                              placeholder="Zip Extension"
+                              placeholder={t("customersPage.field.zipExtension")}
                               id="zipExtention"
                               type="text"
                               name="zipExtention"
@@ -2773,16 +2775,16 @@ const AllCustomers = () => {
                               htmlFor="cityId"
                               className="mb-1 customer-fs-fw"
                             >
-                              City
+                              {t("customersPage.field.city")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="City"
+                              placeholder={t("customersPage.field.city")}
                               id="cityId"
                               name="cityId"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {cities &&
                                 cities.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -2801,16 +2803,16 @@ const AllCustomers = () => {
                               htmlFor="timeZone"
                               className="mb-1 customer-fs-fw"
                             >
-                              Time Zone
+                              {t("customersPage.field.timeZone")}
                             </label>
                             <Field
-                              placeholder="Time Zone"
+                              placeholder={t("customersPage.field.timeZone")}
                               id="timeZone1"
                               as="select"
                               name="timeZone1"
                               className="form-control"
                             >
-                              <option value="" label="Select Time Zone" />
+                              <option value="" label={t("customersPage.opt.selectTimeZone")} />
                               {enums.TimeZone.map((option) => (
                                 <option key={option.value} value={option.value}>
                                   {option.label}
@@ -2831,10 +2833,10 @@ const AllCustomers = () => {
                               htmlFor="comment"
                               className="mb-1 customer-fs-fw"
                             >
-                              Comment
+                              {t("customersPage.field.comment")}
                             </label>
                             <Field
-                              placeholder="Comment"
+                              placeholder={t("customersPage.field.comment")}
                               id="comment"
                               type="text"
                               name="comment"
@@ -2850,7 +2852,7 @@ const AllCustomers = () => {
                       </Tab>
                       <Tab
                         eventKey="employementDetails"
-                        title="Current Employement Details"
+                        title={t("customersPage.tab.employmentDetails")}
                       >
                         <Row className="pt-3 p-2">
                           <Col md={6}>
@@ -2858,10 +2860,10 @@ const AllCustomers = () => {
                               htmlFor="address1"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address<span className="bg-red"> *</span>
+                              {t("customersPage.field.address")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="address"
+                              placeholder={t("customersPage.field.address")}
                               id="address4"
                               type="text"
                               name="address4"
@@ -2879,11 +2881,11 @@ const AllCustomers = () => {
                               htmlFor="phone"
                               className="mb-1 customer-fs-fw"
                             >
-                              Phone Number
+                              {t("customersPage.field.phoneNumber")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="phone"
+                              placeholder={t("customersPage.field.phoneNumber")}
                               id="phone1"
                               type="text"
                               name="phone1"
@@ -2910,7 +2912,7 @@ const AllCustomers = () => {
                                 htmlFor="current"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Current
+                                {t("customersPage.field.current")}
                               </label>
                             </div>
                           </Col>
@@ -2928,7 +2930,7 @@ const AllCustomers = () => {
                                 htmlFor="permissionToCall"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Permission to Call
+                                {t("customersPage.field.permissionToCall")}
                               </label>
                             </div>
                           </Col>
@@ -2946,7 +2948,7 @@ const AllCustomers = () => {
                                 htmlFor="permissionToText"
                                 className="ms-2 customer-fs-fw"
                               >
-                                Permission to Text
+                                {t("customersPage.field.permissionToText")}
                               </label>
                             </div>
                           </Col>
@@ -2958,11 +2960,11 @@ const AllCustomers = () => {
                               htmlFor="type"
                               className="mb-1 customer-fs-fw"
                             >
-                              Type<span className="bg-red"> *</span>
+                              {t("common:type")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Type"
+                              placeholder={t("common:type")}
                               id="type1"
                               name="type1"
                               className="form-control"
@@ -2975,7 +2977,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {enums.Type.map((item) => (
                                 <option key={item.value} value={item.value}>
                                   {item.label}
@@ -2993,10 +2995,10 @@ const AllCustomers = () => {
                               htmlFor="employer"
                               className="mb-1 customer-fs-fw"
                             >
-                              Employer<span className="bg-red"> *</span>
+                              {t("customersPage.field.employer")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Employer"
+                              placeholder={t("customersPage.field.employer")}
                               id="employer"
                               type="text"
                               name="employer"
@@ -3016,16 +3018,16 @@ const AllCustomers = () => {
                               htmlFor="occupationId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Occupation
+                              {t("customersPage.field.occupation")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="Occupation"
+                              placeholder={t("customersPage.field.occupation")}
                               id="occupationId"
                               name="occupationId"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {occupation &&
                                 occupation.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -3044,10 +3046,10 @@ const AllCustomers = () => {
                               htmlFor="title"
                               className="mb-1 customer-fs-fw"
                             >
-                              Title<span className="bg-red"> *</span>
+                              {t("customersPage.field.title")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Title"
+                              placeholder={t("customersPage.field.title")}
                               id="title"
                               type="text"
                               name="title"
@@ -3067,10 +3069,10 @@ const AllCustomers = () => {
                               htmlFor="department"
                               className="mb-1 customer-fs-fw"
                             >
-                              Department<span className="bg-red"> *</span>
+                              {t("customersPage.field.department")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="Department"
+                              placeholder={t("customersPage.field.department")}
                               id="department"
                               type="text"
                               name="department"
@@ -3087,16 +3089,16 @@ const AllCustomers = () => {
                               htmlFor="countryId"
                               className="mb-1 customer-fs-fw"
                             >
-                              Country<span className="bg-red"> *</span>
+                              {t("customersPage.field.country")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="Country"
+                              placeholder={t("customersPage.field.country")}
                               id="countryId1"
                               name="countryId1"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {country &&
                                 country.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -3118,10 +3120,10 @@ const AllCustomers = () => {
                               htmlFor="address2"
                               className="mb-1 customer-fs-fw"
                             >
-                              Address 1
+                              {t("customersPage.field.address1")}
                             </label>
                             <Field
-                              placeholder="Address"
+                              placeholder={t("customersPage.field.address")}
                               id="address5"
                               type="text"
                               name="address5"
@@ -3138,10 +3140,10 @@ const AllCustomers = () => {
                               htmlFor="zip"
                               className="mb-1 customer-fs-fw"
                             >
-                              ZIP<span className="bg-red"> *</span>
+                              {t("customersPage.field.zip")}<span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="ZIP"
+                              placeholder={t("customersPage.field.zip")}
                               id="zip1"
                               type="text"
                               name="zip1"
@@ -3161,11 +3163,11 @@ const AllCustomers = () => {
                               htmlFor="zipExtension"
                               className="mb-1 customer-fs-fw"
                             >
-                              ZIP Extension
+                              {t("customersPage.field.zipExtension")}
                               <span className="bg-red"> *</span>
                             </label>
                             <Field
-                              placeholder="ZIP Extension"
+                              placeholder={t("customersPage.field.zipExtension")}
                               id="zipExtention1"
                               type="text"
                               name="zipExtention1"
@@ -3182,16 +3184,16 @@ const AllCustomers = () => {
                               htmlFor="cityId"
                               className="mb-1 customer-fs-fw"
                             >
-                              City<span className="bg-red"> *</span>
+                              {t("customersPage.field.city")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="City"
+                              placeholder={t("customersPage.field.city")}
                               id="city2"
                               name="city2"
                               className="form-control"
                             >
-                              <option value="" label="Select type" />
+                              <option value="" label={t("customersPage.opt.selectType")} />
                               {cities &&
                                 cities.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -3213,16 +3215,16 @@ const AllCustomers = () => {
                               htmlFor="stateId"
                               className="mb-1 customer-fs-fw"
                             >
-                              State<span className="bg-red"> *</span>
+                              {t("customersPage.field.state")}<span className="bg-red"> *</span>
                             </label>
                             <Field
                               as="select"
-                              placeholder="State"
+                              placeholder={t("customersPage.field.state")}
                               id="stateId"
                               name="stateId"
                               className="form-control"
                             >
-                              <option value="" label="Select state" />
+                              <option value="" label={t("customersPage.opt.selectState")} />
                               {states &&
                                 states.map((item: any) => (
                                   <option key={item.id} value={item.id}>
@@ -3241,10 +3243,10 @@ const AllCustomers = () => {
                               htmlFor="extention"
                               className="mb-1 customer-fs-fw"
                             >
-                              Extension
+                              {t("customersPage.field.extension")}
                             </label>
                             <Field
-                              placeholder="Extension"
+                              placeholder={t("customersPage.field.extension")}
                               id="extention"
                               type="text"
                               name="extention"
@@ -3264,10 +3266,10 @@ const AllCustomers = () => {
                               htmlFor="comment"
                               className="mb-1 customer-fs-fw"
                             >
-                              Comment
+                              {t("customersPage.field.comment")}
                             </label>
                             <Field
-                              placeholder="Comment"
+                              placeholder={t("customersPage.field.comment")}
                               id="comment1"
                               type="text"
                               name="comment1"
@@ -3284,16 +3286,16 @@ const AllCustomers = () => {
                               htmlFor="payDay"
                               className="mb-1 customer-fs-fw"
                             >
-                              Pay Day
+                              {t("customersPage.field.payDay")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="Pay Day"
+                              placeholder={t("customersPage.field.payDay")}
                               id="payDay"
                               name="payDay"
                               className="form-control"
                             >
-                              <option value="" label="Select payday" />
+                              <option value="" label={t("customersPage.opt.selectPayday")} />
                               {enums.payday.map((item) => (
                                 <option key={item.value} value={item.value}>
                                   {item.label}
@@ -3314,10 +3316,10 @@ const AllCustomers = () => {
                               htmlFor="nextPayDay"
                               className="mb-1 customer-fs-fw"
                             >
-                              Next Pay Day
+                              {t("customersPage.field.nextPayDay")}
                             </label>
                             <Field
-                              placeholder="Next Pay Day"
+                              placeholder={t("customersPage.field.nextPayDay")}
                               id="nextPayDay"
                               type="date"
                               name="nextPayDay"
@@ -3334,11 +3336,11 @@ const AllCustomers = () => {
                               htmlFor="frequency"
                               className="mb-1 customer-fs-fw"
                             >
-                              Frequency
+                              {t("customersPage.field.frequency")}
                             </label>
                             <Field
                               as="select"
-                              placeholder="Frequency"
+                              placeholder={t("customersPage.field.frequency")}
                               id="frequency"
                               name="frequency"
                               className="form-control"
@@ -3351,7 +3353,7 @@ const AllCustomers = () => {
                                 })
                               }
                             >
-                              <option value="" label="Select frequency" />
+                              <option value="" label={t("customersPage.opt.selectFrequency")} />
                               {enums.Frequency.map((item) => (
                                 <option key={item.value} value={item.value}>
                                   {item.label}
@@ -3374,7 +3376,7 @@ const AllCustomers = () => {
                       onClick={handlePrevious}
                       disabled={currentTab === tabOrder[0]}
                     >
-                      Previous
+                      {t("common:previous")}
                     </Button>
                     {[
                       "identificationDetails",
@@ -3393,7 +3395,7 @@ const AllCustomers = () => {
                           )
                         }
                       >
-                        Next
+                        {t("common:next")}
                       </Button>
                     )}
                   </Modal.Footer>

@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../../components/TableView/TableView";
 import toast from "react-hot-toast";
 import { getAllApis } from "../../redux/apis/apisThirdParty";
 
 const AllEnvironment = () => {
+  const { t } = useTranslation("connector");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [page, setPage] = useState(1);
@@ -15,18 +17,18 @@ const AllEnvironment = () => {
 
   const AllEnvironment_Headers = [
     {
-      name: "ID",
+      name: t("allEnvironment.col.id"),
       selector: (row: { id: any }) => row.id,
       sortable: true,
       width: "100px",
     },
     {
-      name: "API Name",
+      name: t("allEnvironment.col.apiName"),
       selector: (row: { apiName: any }) => row.apiName,
       sortable: true,
     },
     {
-      name: "Service Name",
+      name: t("allEnvironment.col.serviceName"),
       selector: (row: { serviceName: any }) => row.serviceName,
       sortable: true,
     },
@@ -48,7 +50,7 @@ const AllEnvironment = () => {
       width: "120px",
     }, */
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -59,7 +61,7 @@ const AllEnvironment = () => {
             fontSize: "12px",
           }}
         >
-          {row.status === "Active" || row.status === 1 ? "Active" : "Inactive"}
+          {row.status === "Active" || row.status === 1 ? t("common:active") : t("common:inactive")}
         </span>
       ),
       sortable: true,
@@ -99,7 +101,7 @@ const AllEnvironment = () => {
       }
       setSkelitonLoading(false);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || error?.message || "Failed to fetch APIs");
+      toast.error(error?.response?.data?.message || error?.message || t("allEnvironment.toast.fetchFailed"));
       setSkelitonLoading(false);
     }
   };
@@ -117,7 +119,7 @@ const AllEnvironment = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>All Environment</h2>
+        <h2>{t("allEnvironment.title")}</h2>
       </div>
       <TableView
         header={AllEnvironment_Headers}

@@ -3,13 +3,66 @@ import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Images } from "../Config/Images";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/rootReducer";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { themeStyle } from "../Config/Theme";
 import { link } from "fs";
 import { getPermissionsByRolename } from "../../redux/apis/apisCrudLms";
 
+// Map each English sidebar label (kept as the item's stable identity, used for
+// permission filtering / active-state logic) to its translation key so labels
+// are translated only at render time without altering any logic.
+const SIDEBAR_LABEL_KEYS: Record<string, string> = {
+  Dashboard: "dashboard",
+  Customers: "customers",
+  "Loan Management": "loanManagement",
+  Applications: "applications",
+  "Other Fees/Charges": "otherFeesCharges",
+  "Department Management": "departmentManagement",
+  Department: "department",
+  "Department Permissions": "departmentPermissions",
+  Reports: "reports",
+  "Account Report": "accountReport",
+  "Accounting & Financing": "accountingFinancing",
+  Voucher: "voucher",
+  "Day Book": "dayBook",
+  "Trial Balance": "trialBalance",
+  Ledger: "ledger",
+  "Loans Reports": "loansReports",
+  "Overdue Loan": "overdueLoan",
+  "Non Performing Loan": "nonPerformingLoan",
+  "Due Loan": "dueLoan",
+  "Early Settlement": "earlySettlement",
+  "Write Off Loan": "writeOffLoan",
+  "Chart of account": "chartOfAccount",
+  "COA Configuration": "coaConfiguration",
+  Setting: "setting",
+  "Product Fee": "productFee",
+  Delinquency: "delinquency",
+  "Work Flow Mapping": "workFlowMapping",
+  "Invoice Setting": "invoiceSetting",
+  Logs: "logs",
+  "Api Logs": "apiLogs",
+  "Disburse Amount Api Logs": "disburseAmountApiLogs",
+  Reconciliation: "reconciliation",
+  "Reconciliation Dashboard": "reconciliationDashboard",
+  "Transactions Logs": "transactionsLogs",
+  "Operational Expenses": "operationalExpenses",
+  "Reconciliation Summary": "reconciliationSummary",
+  "Error Report": "errorReport",
+  "Transaction Accounts": "transactionAccounts",
+  LOS: "los",
+  Expenses: "expenses",
+  "Third Party Expense": "thirdPartyExpense",
+  "Loan Application Expenses": "loanApplicationExpenses",
+  "Onboarding Expenses": "onboardingExpenses",
+};
+
 const DasbhboardSidebarLms = () => {
+  const { t } = useTranslation("sidebar");
+  const tr = (label?: string) =>
+    label && SIDEBAR_LABEL_KEYS[label] ? t(SIDEBAR_LABEL_KEYS[label]) : label;
   const dispatch = useDispatch();
   const location = useLocation();
   const pathname = location.pathname;
@@ -517,7 +570,7 @@ const DasbhboardSidebarLms = () => {
             height={16}
           />
         }
-        label={item.label}
+        label={tr(item.label)}
         defaultOpen={item.active}
         onClick={() => setActiveBar(item.label)}
         onMouseEnter={() => setHoveredItem(item.label)}
@@ -530,7 +583,7 @@ const DasbhboardSidebarLms = () => {
           return hasNestedMenu ? (
             <SubMenu
               key={subIndex}
-              label={submenuItem.label}
+              label={tr(submenuItem.label)}
               style={{ fontSize: "12px" }}
               defaultOpen={submenuItem.active}
             >
@@ -560,7 +613,7 @@ const DasbhboardSidebarLms = () => {
                     }}
                     className={nestedItem.active ? "active" : ""}
                   >
-                    {nestedItem.label}
+                    {tr(nestedItem.label)}
                   </MenuItem>
                 </Link>
               ))}
@@ -591,7 +644,7 @@ const DasbhboardSidebarLms = () => {
                 }}
                 className={submenuItem.active ? "active" : ""}
               >
-                {submenuItem.label}
+                {tr(submenuItem.label)}
               </MenuItem>
             </Link>
           );
@@ -671,10 +724,10 @@ const DasbhboardSidebarLms = () => {
                           />
                         }
                       >
-                        {item.label}
+                        {tr(item.label)}
                       </MenuItem>
                     </Link>
-                 
+
                 </div>
               )}
             </React.Fragment>

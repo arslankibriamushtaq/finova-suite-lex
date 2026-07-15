@@ -24,6 +24,7 @@ import { Formik, Field, ErrorMessage, Form } from "formik";
 import { Col, Modal, ModalBody, ModalHeader, Row } from "react-bootstrap";
 import * as Yup from "yup";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 const verificationTypes = [
   { value: 1, label: "Address" },
   { value: 2, label: "Employment" },
@@ -67,6 +68,7 @@ const resultOptions = [
 const buttonSub = [{ title: "Add" }];
 
 const FieldInvestigation = () => {
+  const { t } = useTranslation("customerManagement");
   const [fieldData, setFieldData] = useState<any[]>([]);
   const [allResult, setAllResult] = useState<any[]>([]);
   const [editMode, setEditMode] = useState(false);
@@ -83,23 +85,23 @@ const FieldInvestigation = () => {
 
   const Field_List_Header = [
     {
-      name: "Customer Business",
+      name: t("fieldInvestigation.col.customerBusiness"),
       selector: (row: { customer: any }) => row.customer,
     },
     {
-      name: "Verification Type",
+      name: t("fieldInvestigation.verificationType"),
       selector: (row: { verificationType: any }) => row.verificationType,
     },
     {
-      name: "Verification Agency",
+      name: t("fieldInvestigation.verificationAgency"),
       selector: (row: { verificationAgency: any }) => row.verificationAgency,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       selector: (row: { status: any }) => row.status,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -113,7 +115,7 @@ const FieldInvestigation = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -192,10 +194,10 @@ const FieldInvestigation = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -309,21 +311,21 @@ const FieldInvestigation = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const button = [{ title: "Add Field", onClick: handleShow }];
+  const button = [{ title: t("fieldInvestigation.addField"), onClick: handleShow }];
   const validationSchema = Yup.object().shape({
-    customerType: Yup.string().required("Customer Type is required"),
-    verificationType: Yup.string().required("Verification Type is required"),
+    customerType: Yup.string().required(t("fieldInvestigation.validation.customerType")),
+    verificationType: Yup.string().required(t("fieldInvestigation.validation.verificationType")),
     verificationAgencyId: Yup.string().required(
-      "Verification Agency is required"
+      t("fieldInvestigation.validation.verificationAgency")
     ),
-    status: Yup.string().required("Status is required"),
-    spokeTo: Yup.string().required("Spoke To is required"),
-    callDate: Yup.date().required("Call Date is required"),
+    status: Yup.string().required(t("fieldInvestigation.validation.status")),
+    spokeTo: Yup.string().required(t("fieldInvestigation.validation.spokeTo")),
+    callDate: Yup.date().required(t("fieldInvestigation.validation.callDate")),
     numberOfAttempts: Yup.number()
-      .required("Number of Attempts is required")
+      .required(t("fieldInvestigation.validation.numberOfAttempts"))
       .positive()
       .integer(),
-    result: Yup.string().required("Result is required"),
+    result: Yup.string().required(t("fieldInvestigation.validation.result")),
   });
   return (
     <>
@@ -334,7 +336,7 @@ const FieldInvestigation = () => {
               className="d-flex align-items-center justify-content-between mt-1 mb-3"
               style={{ fontSize: "16px", fontWeight: "Bold" }}
             >
-              Field Investigation
+              {t("fieldInvestigation.title")}
             </div>
           </div>
           <div className="col-6 d-flex justify-content-end">
@@ -355,7 +357,7 @@ const FieldInvestigation = () => {
                   height={16}
                 />
               </div>
-              <div className="ps-1 d-flex align-items-center"> Add</div>
+              <div className="ps-1 d-flex align-items-center"> {t("common:add")}</div>
             </div>
           </div>
         </div>
@@ -378,7 +380,7 @@ const FieldInvestigation = () => {
           dialogClassName="custom-modal"
         >
           <Modal.Header closeButton>
-            <Modal.Title>Field Investigation</Modal.Title>
+            <Modal.Title>{t("fieldInvestigation.title")}</Modal.Title>
           </Modal.Header>
 
           <Formik
@@ -402,7 +404,7 @@ const FieldInvestigation = () => {
                   <Row>
                     <Col md={6}>
                       <label className="mb-1 customer-fs-fw">
-                        Customer/Business
+                        {t("fieldInvestigation.form.customerBusiness")}
                       </label>
                       <Field
                         as="select"
@@ -410,7 +412,7 @@ const FieldInvestigation = () => {
                         className="form-control"
                         id="customerType"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("fieldInvestigation.selectType")} />
                         {customerTypes.map((item) => (
                           <option key={item.value} value={item.value}>
                             {item.label}
@@ -425,7 +427,7 @@ const FieldInvestigation = () => {
                     </Col>
                     <Col md={6}>
                       <label className="mb-1 customer-fs-fw">
-                        Verification Type
+                        {t("fieldInvestigation.verificationType")}
                       </label>
                       <Field
                         as="select"
@@ -433,7 +435,7 @@ const FieldInvestigation = () => {
                         id="verificationType"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("fieldInvestigation.selectType")} />
                         {verificationTypes.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -450,7 +452,7 @@ const FieldInvestigation = () => {
                   <Row>
                     <Col md={6}>
                       <label className="mt-2 mb-1 customer-fs-fw">
-                        Verification Agency
+                        {t("fieldInvestigation.verificationAgency")}
                       </label>
                       <Field
                         as="select"
@@ -458,7 +460,7 @@ const FieldInvestigation = () => {
                         className="form-control"
                         id="verificationAgencyId"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("fieldInvestigation.selectType")} />
                         {allResult.map((item) => (
                           <option key={item.id} value={item.id}>
                             {item.agenecyName}
@@ -472,14 +474,14 @@ const FieldInvestigation = () => {
                       />
                     </Col>
                     <Col md={6}>
-                      <label className="mt-2 mb-1 customer-fs-fw">Status</label>
+                      <label className="mt-2 mb-1 customer-fs-fw">{t("common:status")}</label>
                       <Field
                         as="select"
                         name="status"
                         className="form-control"
                         id="status"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("fieldInvestigation.selectType")} />
                         {statusOptions.map((item) => (
                           <option key={item.value} value={item.value}>
                             {item.label}
@@ -496,7 +498,7 @@ const FieldInvestigation = () => {
                   <Row>
                     <Col md={6}>
                       <label className="mt-2 mb-1 customer-fs-fw">
-                        Spoke To
+                        {t("fieldInvestigation.form.spokeTo")}
                       </label>
                       <Field
                         type="text"
@@ -512,7 +514,7 @@ const FieldInvestigation = () => {
                     </Col>
                     <Col md={6}>
                       <label className="mt-2 mb-1 customer-fs-fw">
-                        Call Date
+                        {t("fieldInvestigation.form.callDate")}
                       </label>
                       <Field
                         type="date"
@@ -533,7 +535,7 @@ const FieldInvestigation = () => {
                         htmlFor="name"
                         className="mt-2 mb-1 customer-fs-fw"
                       >
-                        No. of Attempts
+                        {t("fieldInvestigation.form.numberOfAttempts")}
                       </label>
                       <Field
                         name="numberOfAttempts"
@@ -551,7 +553,7 @@ const FieldInvestigation = () => {
                         htmlFor="name"
                         className="mt-2 mb-1 customer-fs-fw"
                       >
-                        Result
+                        {t("fieldInvestigation.form.result")}
                       </label>
                       <Field
                         as="select"
@@ -559,7 +561,7 @@ const FieldInvestigation = () => {
                         className="form-control"
                         id="result"
                       >
-                        <option value="" label="Select result" />
+                        <option value="" label={t("fieldInvestigation.selectResult")} />
                         {allFieldResult &&
                           allFieldResult.map((item: any) => (
                             <option key={item.id} value={item.id}>
@@ -578,8 +580,8 @@ const FieldInvestigation = () => {
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
                       {editMode
-                        ? "Update Field Investigation"
-                        : "Add Field Investigation"}
+                        ? t("fieldInvestigation.submitUpdate")
+                        : t("fieldInvestigation.submitAdd")}
                     </button>
                   </div>
                 </Modal.Body>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 import { getGlobalSections } from '../../redux/apis/apisCrudWebPageManagement';
 import Loader from '../Loader/Loader';
@@ -15,6 +16,7 @@ interface GlobalSection {
 }
 
 const GlobalSections = () => {
+  const { t } = useTranslation('webPages');
   const navigate = useNavigate();
   const [showEditHeader, setShowEditHeader] = useState(false);
   const [showEditFooter, setShowEditFooter] = useState(false);
@@ -140,7 +142,7 @@ const GlobalSections = () => {
         fontSize: '18px',
         color: 'var(--theme-secondary)'
       }}>
-        Error: {error}
+        {t('errorWithMessage', { message: error })}
       </div>
     );
   }
@@ -187,7 +189,7 @@ const GlobalSections = () => {
                   fontWeight: 'bold'
                 }}
               >
-                Edit Header
+                {t('editHeader')}
               </button>
             </div>
           )}
@@ -306,7 +308,7 @@ const GlobalSections = () => {
                     fontWeight: 'bold'
                   }}
                 >
-                  Edit Footer
+                  {t('editFooter')}
                 </button>
               </div>
             )}
@@ -512,7 +514,7 @@ const GlobalSections = () => {
           textAlign: 'center',
           color: 'var(--color-text-muted)'
         }}>
-          No global sections found in the API response.
+          {t('state.noGlobalSectionsFound')}
         </div>
       )}
 

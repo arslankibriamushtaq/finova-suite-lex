@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Images } from '../Config/Images';
 // URL for external RTL stylesheet
 const rtlCssUrl = new URL('../../styles/arabic-rtl.css', import.meta.url).href;
@@ -43,6 +44,7 @@ interface AboutPageData {
 }
 
 const AboutPage = () => {
+  const { t } = useTranslation('webPages');
   const [pageData, setPageData] = useState<AboutPageData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -327,7 +329,7 @@ const AboutPage = () => {
         fontSize: '18px',
         color: '#e74c3c'
       }}>
-        Error: {error}
+        {t('errorWithMessage', { message: error })}
       </div>
     );
   }
@@ -342,7 +344,7 @@ const AboutPage = () => {
         fontSize: '18px',
         color: '#333'
       }}>
-        No data available
+        {t('state.noDataAvailableShort')}
       </div>
     );
   }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CreditCard, SlidersHorizontal, Users, Truck, Clock, type LucideIcon } from "lucide-react";
 import {
   Dialog,
@@ -61,6 +62,7 @@ const Section = ({
 );
 
 const CardDetailDialog = ({ cardId, onOpenChange }: CardDetailDialogProps) => {
+  const { t } = useTranslation("cardManagement");
   const [card, setCard] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -83,7 +85,7 @@ const CardDetailDialog = ({ cardId, onOpenChange }: CardDetailDialogProps) => {
       <DialogContent className="pro-dialog sm:max-w-[680px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            Card Details
+            {t("detail.title")}
             {card?.status && (
               <span
                 className={`rounded-md px-2 py-0.5 text-xs font-medium ${cardStatusClasses(
@@ -98,7 +100,7 @@ const CardDetailDialog = ({ cardId, onOpenChange }: CardDetailDialogProps) => {
 
         {isLoading || !card ? (
           <p className="text-sm text-muted-foreground py-8 text-center">
-            {isLoading ? "Loading..." : "No details available"}
+            {isLoading ? t("common:loading") : t("detail.noDetails")}
           </p>
         ) : (
           <div className="space-y-4">
@@ -126,13 +128,13 @@ const CardDetailDialog = ({ cardId, onOpenChange }: CardDetailDialogProps) => {
               <div className="relative mt-5 flex items-end justify-between">
                 <div>
                   <div className="text-[10px] font-medium uppercase tracking-wider text-white/70">
-                    Cardholder
+                    {t("detail.card.cardholder")}
                   </div>
                   <div className="text-sm font-semibold">{card.cardholderName || "-"}</div>
                 </div>
-                <div className="text-right">
+                <div className="text-end">
                   <div className="text-[10px] font-medium uppercase tracking-wider text-white/70">
-                    Expires
+                    {t("detail.card.expires")}
                   </div>
                   <div className="text-sm font-semibold">
                     {card.expiryMonth ? `${card.expiryMonth}/${card.expiryYear}` : "-"}
@@ -141,41 +143,41 @@ const CardDetailDialog = ({ cardId, onOpenChange }: CardDetailDialogProps) => {
               </div>
             </div>
 
-            <Section icon={CreditCard} title="Card Information">
-              <Field label="Card Reference" value={card.cardReference} mono />
-              <Field label="Currency" value={card.currency} />
-              <Field label="Contactless" value={card.contactlessEnabled ? "Yes" : "No"} />
+            <Section icon={CreditCard} title={t("detail.section.cardInformation")}>
+              <Field label={t("detail.field.cardReference")} value={card.cardReference} mono />
+              <Field label={t("detail.field.currency")} value={card.currency} />
+              <Field label={t("detail.field.contactless")} value={card.contactlessEnabled ? t("common:yes") : t("common:no")} />
             </Section>
 
-            <Section icon={SlidersHorizontal} title="Limits">
-              <Field label="Daily Limit" value={formatMoney(card.dailyLimit, card.currency)} />
-              <Field label="Monthly Limit" value={formatMoney(card.monthlyLimit, card.currency)} />
-              <Field label="Requires Activation" value={card.requiresActivation ? "Yes" : "No"} />
+            <Section icon={SlidersHorizontal} title={t("detail.section.limits")}>
+              <Field label={t("detail.field.dailyLimit")} value={formatMoney(card.dailyLimit, card.currency)} />
+              <Field label={t("detail.field.monthlyLimit")} value={formatMoney(card.monthlyLimit, card.currency)} />
+              <Field label={t("detail.field.requiresActivation")} value={card.requiresActivation ? t("common:yes") : t("common:no")} />
             </Section>
 
-            <Section icon={Users} title="Ownership">
-              <Field label="Customer ID" value={card.customerId} mono />
-              <Field label="Owner User ID" value={card.ownerUserId} mono />
-              <Field label="Wallet ID" value={card.walletId} mono />
+            <Section icon={Users} title={t("detail.section.ownership")}>
+              <Field label={t("detail.field.customerId")} value={card.customerId} mono />
+              <Field label={t("detail.field.ownerUserId")} value={card.ownerUserId} mono />
+              <Field label={t("detail.field.walletId")} value={card.walletId} mono />
             </Section>
 
             {card.shipping && (
-              <Section icon={Truck} title="Shipping">
-                <Field label="Address" value={card.shipping.address} />
-                <Field label="City" value={card.shipping.city} />
-                <Field label="Postal Code" value={card.shipping.postalCode} />
-                <Field label="Delivery Method" value={prettyEnum(card.deliveryMethod)} />
-                <Field label="Carrier" value={card.carrier} />
-                <Field label="Tracking Number" value={card.trackingNumber} mono />
-                <Field label="Shipment Status" value={prettyEnum(card.shipmentStatus)} />
-                <Field label="Est. Delivery" value={formatDate(card.estimatedDeliveryDate)} />
+              <Section icon={Truck} title={t("detail.section.shipping")}>
+                <Field label={t("detail.field.address")} value={card.shipping.address} />
+                <Field label={t("detail.field.city")} value={card.shipping.city} />
+                <Field label={t("detail.field.postalCode")} value={card.shipping.postalCode} />
+                <Field label={t("detail.field.deliveryMethod")} value={prettyEnum(card.deliveryMethod)} />
+                <Field label={t("detail.field.carrier")} value={card.carrier} />
+                <Field label={t("detail.field.trackingNumber")} value={card.trackingNumber} mono />
+                <Field label={t("detail.field.shipmentStatus")} value={prettyEnum(card.shipmentStatus)} />
+                <Field label={t("detail.field.estDelivery")} value={formatDate(card.estimatedDeliveryDate)} />
               </Section>
             )}
 
-            <Section icon={Clock} title="Timeline">
-              <Field label="Issued At" value={formatDate(card.issuedAt)} />
-              <Field label="Activated At" value={formatDate(card.activatedAt)} />
-              <Field label="Created At" value={formatDate(card.createdAt)} />
+            <Section icon={Clock} title={t("detail.section.timeline")}>
+              <Field label={t("detail.field.issuedAt")} value={formatDate(card.issuedAt)} />
+              <Field label={t("detail.field.activatedAt")} value={formatDate(card.activatedAt)} />
+              <Field label={t("detail.field.createdAt")} value={formatDate(card.createdAt)} />
             </Section>
           </div>
         )}

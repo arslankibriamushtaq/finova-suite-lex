@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { getPoolAcount } from "../../redux/apis/apisCrudLms";
 const PoolAccount = () => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -85,24 +87,24 @@ const PoolAccount = () => {
     // },
 
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date,
     },
     {
-      name: "Operation Type",
+      name: t("col.operationType"),
       selector: (row: { operationType: any }) => row.operationType,
     },
     {
-      name: "Amount",
+      name: t("common:amount"),
       selector: (row: { amount: any }) => row.amount,
     },
 
     {
-      name: "Customer ID",
+      name: t("col.customerId"),
       cell: (row: { customerId: any }) => row.customerId,
     },
     {
-      name: "Remaining Balance",
+      name: t("col.remainingBalance"),
       selector: (row: { remainingBlance: any }) => row.remainingBlance,
     },
   ];

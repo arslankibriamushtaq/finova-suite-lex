@@ -26,17 +26,23 @@ import {
 } from "../../redux/apis/apisCrud";
 import { themeStyle } from "../Config/Theme";
 import { Images } from "../Config/Images";
+import { useTranslation } from "react-i18next";
 
 const Comments = () => {
+  const { t } = useTranslation("customerManagement");
   const [editRowId, setEditRowId] = useState(null);
   const [editFormData, setEditFormData] = useState<any>({});
   const [AllComments, setAllComments] = useState<any>([]);
   const [modal, setModal] = useState(false);
   const [formModal, setFormModal] = useState<any>(false);
-  const [type, setType] = useState<any>(["Regular", "Special", "Custom"]);
+  const [type, setType] = useState<any>([
+    t("comments.type.regular"),
+    t("comments.type.special"),
+    t("comments.type.custom"),
+  ]);
   const [subType, setSubType] = useState<any>([
-    "Systemm Generated",
-    "User Generated",
+    t("comments.subType.systemGenerated"),
+    t("comments.subType.userGenerated"),
   ]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -127,10 +133,10 @@ const Comments = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="edit" icon={<EditOutlined />}>
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="view" icon={<DeleteOutlined />}>
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -217,7 +223,7 @@ const Comments = () => {
     //   button: true,
     // },
     {
-      name: "Alert",
+      name: t("comments.col.alert"),
       // selector: (row: { isAlert: any }) => row.isAlert,
       cell: (row: any) => (
         <>
@@ -226,27 +232,27 @@ const Comments = () => {
       ),
     },
     {
-      name: "Type",
+      name: t("common:type"),
       selector: (row: { type: any }) => row?.type,
     },
     {
-      name: "Sub-Type",
+      name: t("comments.col.subType"),
       selector: (row: { subType: any }) => row?.subType,
     },
     {
-      name: "Comments",
+      name: t("comments.col.comments"),
       selector: (row: { comments: any }) => row?.comments,
     },
     {
-      name: "Comment By",
+      name: t("comments.col.commentBy"),
       selector: (row: { commentedBy: any }) => row?.commentedBy,
     },
     {
-      name: "Comment Date",
+      name: t("comments.col.commentDate"),
       selector: (row: { timestamp: any }) => row?.timestamp,
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -260,7 +266,7 @@ const Comments = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -269,12 +275,16 @@ const Comments = () => {
 
   const validationSchema = Yup.object().shape({
     comments: Yup.string()
-      .required("Comment is required")
-      .max(255, "Comment must be at most 255 characters long"),
-    timeStamp: Yup.date().required("Comment Date is required").nullable(),
-    type: Yup.string().required("Type is required"),
-    subType: Yup.string().required("Sub-Type is required"),
-    commentedBy: Yup.string().required("Commented By is required"),
+      .required(t("comments.validation.commentRequired"))
+      .max(255, t("comments.validation.commentMax")),
+    timeStamp: Yup.date()
+      .required(t("comments.validation.commentDateRequired"))
+      .nullable(),
+    type: Yup.string().required(t("comments.validation.typeRequired")),
+    subType: Yup.string().required(t("comments.validation.subTypeRequired")),
+    commentedBy: Yup.string().required(
+      t("comments.validation.commentedByRequired")
+    ),
   });
   return (
     <>
@@ -286,7 +296,7 @@ const Comments = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>Update Comment</h3>
+          <h3>{t("comments.updateComment")}</h3>
         </ModalHeader>
 
         <Formik
@@ -310,10 +320,10 @@ const Comments = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-4">
                       <label htmlFor="comments" className="mb-1 fs-14">
-                        Enter Comment
+                        {t("comments.form.enterComment")}
                       </label>
                       <Field
-                        placeholder="Commennt"
+                        placeholder={t("comments.form.enterComment")}
                         type="text"
                         id="comments"
                         name="comments"
@@ -332,10 +342,10 @@ const Comments = () => {
                         className="mb-1"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Comment Date
+                        {t("comments.form.commentDate")}
                       </label>
                       <Field
-                        placeholder="Comment Date"
+                        placeholder={t("comments.form.commentDate")}
                         id="timeStamp"
                         type="date"
                         name="timeStamp"
@@ -352,16 +362,16 @@ const Comments = () => {
                   <Row className="pt-2">
                     <Col md={6} className="mb-4">
                       <label htmlFor="type" className="mb-1 fs-14">
-                        Type
+                        {t("common:type")}
                       </label>
                       <Field
                         as="select"
-                        placeholder="Select Type"
+                        placeholder={t("comments.form.selectTypePlaceholder")}
                         id="type"
                         name="type"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("comments.form.selectOption")} />
                         {type &&
                           type.map((item: any, id: any) => (
                             <option key={id} value={id}>
@@ -378,16 +388,16 @@ const Comments = () => {
 
                     <Col md={6} className="mb-4">
                       <label htmlFor="subType" className="mb-1 fs-14">
-                        Sub-Type
+                        {t("comments.form.subType")}
                       </label>
                       <Field
                         as="select"
-                        placeholder="Select Sub-Type"
+                        placeholder={t("comments.form.selectSubTypePlaceholder")}
                         id="subType"
                         name="subType"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("comments.form.selectOption")} />
                         {subType &&
                           subType.map((item: any, id: any) => (
                             <option key={id} value={id}>
@@ -410,10 +420,10 @@ const Comments = () => {
                         className="mb-1"
                         style={{ fontSize: "14px", fontWeight: 500 }}
                       >
-                        Commented By
+                        {t("comments.form.commentedBy")}
                       </label>
                       <Field
-                        placeholder="Commentor Name"
+                        placeholder={t("comments.form.commentorName")}
                         id="commentedBy"
                         type="text"
                         name="commentedBy"
@@ -438,7 +448,7 @@ const Comments = () => {
                           name="isAlert"
                           className="me-2"
                         />
-                        <span className="py-1">Is Alert</span>
+                        <span className="py-1">{t("comments.form.isAlert")}</span>
                       </label>
                       <ErrorMessage
                         name="isAlert"
@@ -450,7 +460,7 @@ const Comments = () => {
 
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
-                      Update Comment
+                      {t("comments.updateComment")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -468,7 +478,7 @@ const Comments = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>Add Comment</h3>
+          <h3>{t("comments.addComment")}</h3>
         </ModalHeader>
 
         <Formik
@@ -492,10 +502,10 @@ const Comments = () => {
                   <Row className="">
                     <Col md={6} className="">
                       <label htmlFor="comments" className="mb-1 fs-14">
-                        Enter Comment
+                        {t("comments.form.enterComment")}
                       </label>
                       <Field
-                        placeholder="Commennt"
+                        placeholder={t("comments.form.enterComment")}
                         type="text"
                         id="comments"
                         name="comments"
@@ -510,10 +520,10 @@ const Comments = () => {
 
                     <Col md={6}>
                       <label htmlFor="timeStamp" className="mb-1 fs-14">
-                        Comment Date
+                        {t("comments.form.commentDate")}
                       </label>
                       <Field
-                        placeholder="Comment Date"
+                        placeholder={t("comments.form.commentDate")}
                         id="timeStamp"
                         type="date"
                         name="timeStamp"
@@ -530,16 +540,16 @@ const Comments = () => {
                   <Row className="pt-2">
                     <Col md={6} className="">
                       <label htmlFor="type" className="mb-1 fs-14">
-                        Type
+                        {t("common:type")}
                       </label>
                       <Field
                         as="select"
-                        placeholder="Select Type"
+                        placeholder={t("comments.form.selectTypePlaceholder")}
                         id="type"
                         name="type"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("comments.form.selectOption")} />
                         {type &&
                           type.map((item: any, id: any) => (
                             <option key={id} value={id}>
@@ -556,16 +566,16 @@ const Comments = () => {
 
                     <Col md={6} className="">
                       <label htmlFor="subType" className="mb-1 fs-14">
-                        Sub-Type
+                        {t("comments.form.subType")}
                       </label>
                       <Field
                         as="select"
-                        placeholder="Select Sub-Type"
+                        placeholder={t("comments.form.selectSubTypePlaceholder")}
                         id="subType"
                         name="subType"
                         className="form-control"
                       >
-                        <option value="" label="Select type" />
+                        <option value="" label={t("comments.form.selectOption")} />
                         {subType &&
                           subType.map((item: any, id: any) => (
                             <option key={id} value={id}>
@@ -584,10 +594,10 @@ const Comments = () => {
                   <Row className="pt-2">
                     <Col md={6}>
                       <label htmlFor="commentedBy" className="mb-1 fs-14">
-                        Commented By
+                        {t("comments.form.commentedBy")}
                       </label>
                       <Field
-                        placeholder="Commentor Name"
+                        placeholder={t("comments.form.commentorName")}
                         id="commentedBy"
                         type="text"
                         name="commentedBy"
@@ -611,7 +621,7 @@ const Comments = () => {
                           name="isAlert"
                           className="me-2"
                         />
-                        <span className="py-1">Is Alert</span>
+                        <span className="py-1">{t("comments.form.isAlert")}</span>
                       </label>
                       <ErrorMessage
                         name="isAlert"
@@ -623,7 +633,7 @@ const Comments = () => {
 
                   <div className="d-flex mt-4 justify-content-end ">
                     <button className="theme-btn-next" type="submit">
-                      Add Comments
+                      {t("comments.addCommentsButton")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -652,7 +662,7 @@ const Comments = () => {
               />
             </div>
             <div className="ps-1 d-flex align-items-center cursor-pointer">
-              Add
+              {t("common:add")}
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { getApplicationDetailsByType } from "../../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
 import Loader from "../../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 interface DocumentItem {
   id: number;
@@ -15,6 +16,7 @@ interface DocumentItem {
 }
 
 function Document({ fullDetail }: any) {
+  const { t } = useTranslation("financing");
   const [documents, setDocuments] = useState<{
     NAFITH?: DocumentItem;
     EmdhaFinancingContract?: DocumentItem;
@@ -93,7 +95,7 @@ function Document({ fullDetail }: any) {
       }
     } catch (error) {
       console.error("Error fetching data:", error);
-      toast.error("Failed to fetch documents");
+      toast.error(t("toast.fetchDocsFailed"));
       setDocuments(null);
     } finally {
       setLoading(false);
@@ -129,14 +131,14 @@ function Document({ fullDetail }: any) {
       {/* Header Section */}
       <div style={{ marginBottom: "20px" }}>
         <h2 style={{ color: "var(--foreground)", fontWeight: 700, fontSize: "20px", margin: 0, marginBottom: "10px", textAlign: "left" }}>
-          Documents
+          {t("detail.documents")}
         </h2>
         <div style={{ borderBottom: "1px solid var(--surface-border)", marginBottom: "20px" }}></div>
       </div>
 
       {isDataEmpty ? (
         <div style={{ textAlign: "center", padding: "40px", color: "var(--foreground)" }}>
-          No response found
+          {t("detail.noResponseFound")}
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "30px" }}>
@@ -159,7 +161,7 @@ function Document({ fullDetail }: any) {
                 />
               ) : (
                 <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-                  Document not available
+                  {t("detail.documentNotAvailable")}
                 </div>
               )}
             </div>
@@ -184,7 +186,7 @@ function Document({ fullDetail }: any) {
                 />
               ) : (
                 <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-                  Document not available
+                  {t("detail.documentNotAvailable")}
                 </div>
               )}
             </div>
@@ -209,7 +211,7 @@ function Document({ fullDetail }: any) {
                 />
               ) : (
                 <div style={{ textAlign: "center", padding: "40px", color: "#666" }}>
-                  Document not available
+                  {t("detail.documentNotAvailable")}
                 </div>
               )}
             </div>

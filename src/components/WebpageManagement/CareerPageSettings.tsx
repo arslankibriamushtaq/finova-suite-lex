@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 // Types for API integration
 interface CareerPageData {
@@ -85,6 +86,7 @@ const DUMMY_CAREER_DATA: CareerPageData = {
 };
 
 const CareerPageSettings = () => {
+  const { t } = useTranslation('webPages');
   const navigate = useNavigate();
   
   // UI States
@@ -267,7 +269,7 @@ const CareerPageSettings = () => {
       <div className="header-footer-settings">
         <div className="header-footer-settings__loading">
           <div className="header-footer-settings__loading-spinner"></div>
-          <p>Loading career data...</p>
+          <p>{t('loading.career')}</p>
         </div>
       </div>
     );
@@ -278,13 +280,13 @@ const CareerPageSettings = () => {
       {/* Header Section */}
       <div className="header-footer-settings__header">
         <h2 className="header-footer-settings__header-title">
-          Career Page
+          {t('header.careerPage')}
         </h2>
       </div>
 
       {/* PUBLISH Bar */}
       <div className="header-footer-settings__publish-bar" onClick={handlePublish}>
-        <div className="header-footer-settings__publish-text">PUBLISH</div>
+        <div className="header-footer-settings__publish-text">{t('publish')}</div>
       </div>
 
       {/* Main Content Area */}
@@ -355,13 +357,13 @@ const CareerPageSettings = () => {
                         />
                       </h3>
                       <p className="header-footer-settings__career-job-date">
-                        Posted on: <EditableText 
+                        {t('career.postedOn')} <EditableText
                           field={`opportunities.jobs.${index}.postedDate`} 
                           value={job.postedDate}
                         />
                       </p>
                       <p className="header-footer-settings__career-job-location">
-                        Location: <EditableText 
+                        {t('career.location')} <EditableText
                           field={`opportunities.jobs.${index}.location`} 
                           value={job.location}
                         />
@@ -387,7 +389,7 @@ const CareerPageSettings = () => {
           <div className="header-footer-settings__edit-modal">
             <div className="header-footer-settings__edit-modal-header">
               <h3 className="header-footer-settings__edit-modal-title">
-                Edit Button Details
+                {t('modal.editButtonDetails')}
               </h3>
               <button 
                 onClick={handleCloseModal}
@@ -398,7 +400,7 @@ const CareerPageSettings = () => {
             </div>
             <div className="header-footer-settings__edit-modal-content">
               <div className="header-footer-settings__edit-field">
-                <label className="header-footer-settings__edit-label">Button text</label>
+                <label className="header-footer-settings__edit-label">{t('field.buttonText')}</label>
                 <input
                   type="text"
                   value={editingText}
@@ -412,7 +414,7 @@ const CareerPageSettings = () => {
                 onClick={handleApply}
                 className="header-footer-settings__edit-apply-btn"
               >
-                Apply
+                {t('common:apply')}
               </button>
             </div>
           </div>
@@ -426,9 +428,9 @@ const CareerPageSettings = () => {
             <div className="header-footer-settings__success-icon">
               ✓
             </div>
-            <h3 className="header-footer-settings__success-title">Career Page Published!</h3>
+            <h3 className="header-footer-settings__success-title">{t('success.careerTitle')}</h3>
             <p className="header-footer-settings__success-text">
-              Your career page has been successfully published.
+              {t('success.careerText')}
             </p>
             <button
               onClick={() => {
@@ -437,7 +439,7 @@ const CareerPageSettings = () => {
               }}
               className="theme-btn-next"
             >
-              OK
+              {t('common:ok')}
             </button>
           </div>
         </div>

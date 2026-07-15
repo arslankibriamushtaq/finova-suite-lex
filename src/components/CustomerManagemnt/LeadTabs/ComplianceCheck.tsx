@@ -1,7 +1,9 @@
 import React from "react";
 import { Row, Col, Divider } from "antd";
+import { useTranslation } from "react-i18next";
 
 const ComplianceCheck: React.FC = () => {
+  const { t } = useTranslation("customerManagement");
   return (
     <div
       style={{
@@ -22,8 +24,8 @@ const ComplianceCheck: React.FC = () => {
 
           }}
         >
-          <span style={{ color: "#555" }}>Is Beneficiary Business Owner?</span>
-          <strong>Yes</strong>
+          <span style={{ color: "#555" }}>{t("compliance.isBeneficiaryBusinessOwner")}</span>
+          <strong>{t("common:yes")}</strong>
         </Col>
         <Col
           span={12}
@@ -34,8 +36,8 @@ const ComplianceCheck: React.FC = () => {
             borderBottom: "1px solid var(--color-border-light)"
           }}
         >
-          <span style={{ color: "#555" }}>Legal Issue</span>
-          <strong>No</strong>
+          <span style={{ color: "#555" }}>{t("compliance.legalIssue")}</span>
+          <strong>{t("common:no")}</strong>
         </Col>
       </Row>
 
@@ -50,8 +52,8 @@ const ComplianceCheck: React.FC = () => {
              borderBottom: "1px solid var(--color-border-light)",
           }}
         >
-          <span style={{ color: "#555" }}>Is SIMAH Default?</span>
-          <strong>No</strong>
+          <span style={{ color: "#555" }}>{t("compliance.isSimahDefault")}</span>
+          <strong>{t("common:no")}</strong>
         </Col>
         <Col
           span={12}
@@ -63,9 +65,9 @@ const ComplianceCheck: React.FC = () => {
           }}
         >
           <span style={{ color: "#555" }}>
-            Are you Business Owner or Authorized Person?
+            {t("compliance.isBusinessOwnerOrAuthorized")}
           </span>
-          <strong>Yes</strong>
+          <strong>{t("common:yes")}</strong>
         </Col>
       </Row>
     </div>

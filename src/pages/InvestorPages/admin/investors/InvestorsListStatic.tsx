@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { 
+import { useTranslation } from 'react-i18next';
+import {
   Search, 
   Plus, 
   MoreHorizontal, 
@@ -162,6 +163,15 @@ const statusOptions = ['All Status', 'Active', 'Pending', 'Suspended', 'Inactive
 const kycStatusOptions = ['All KYC', 'Verified', 'Under Review', 'Pending', 'Rejected'];
 
 export default function InvestorsList() {
+  const { t } = useTranslation('investor');
+  const typeKey: Record<string, string> = { 'All Types': 'ilst.type.all', 'Individual': 'ilst.type.individual', 'Corporate': 'ilst.type.corporate', 'Trust': 'ilst.type.trust', 'Family Office': 'ilst.type.familyOffice', 'Institutional': 'ilst.type.institutional' };
+  const statusKey: Record<string, string> = { 'All Status': 'ilst.status.all', 'Active': 'ilst.status.active', 'Pending': 'ilst.status.pending', 'Suspended': 'ilst.status.suspended', 'Inactive': 'ilst.status.inactive' };
+  const kycKey: Record<string, string> = { 'All KYC': 'ilst.kyc.all', 'Verified': 'ilst.kyc.verified', 'Under Review': 'ilst.kyc.underReview', 'Pending': 'ilst.kyc.pending', 'Rejected': 'ilst.kyc.rejected' };
+  const riskKey: Record<string, string> = { 'Conservative': 'ilst.risk.conservative', 'Moderate': 'ilst.risk.moderate', 'Aggressive': 'ilst.risk.aggressive', 'Moderate-Aggressive': 'ilst.risk.moderateAggressive' };
+  const tType = (v: string) => (typeKey[v] ? t(typeKey[v]) : v);
+  const tStatus = (v: string) => (statusKey[v] ? t(statusKey[v]) : v);
+  const tKyc = (v: string) => (kycKey[v] ? t(kycKey[v]) : v);
+  const tRisk = (v: string) => (riskKey[v] ? t(riskKey[v]) : v);
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('All Types');
   const [statusFilter, setStatusFilter] = useState('All Status');
@@ -253,36 +263,36 @@ export default function InvestorsList() {
   };
 
   const handleCreateInvestor = () => {
-    alert('New investor created successfully!');
+    alert(t('ilst.alert.created'));
     setShowCreateModal(false);
   };
 
   const handleUpdateInvestor = () => {
-    alert('Investor updated successfully!');
+    alert(t('ilst.alert.updated'));
     setShowEditModal(false);
     setSelectedInvestor(null);
   };
 
   const confirmDeleteInvestor = () => {
-    alert(`Investor ${selectedInvestor?.name} deleted successfully!`);
+    alert(t('ilst.alert.deleted', { name: selectedInvestor?.name }));
     setShowDeleteModal(false);
     setSelectedInvestor(null);
   };
 
   const handleSendStatement = (investor: any) => {
-    alert(`Statement sent to ${investor.email}`);
+    alert(t('ilst.alert.statementSent', { email: investor.email }));
   };
 
   const handleExportData = () => {
-    alert('Investor data exported successfully!');
+    alert(t('ilst.alert.exported'));
   };
 
   const handleImportData = () => {
-    alert('Import data functionality initiated');
+    alert(t('ilst.alert.importInitiated'));
   };
 
   const handleBulkAction = (action: string) => {
-    alert(`Bulk ${action} action performed`);
+    alert(t('ilst.alert.bulkAction', { action }));
   };
 
   return (
@@ -291,30 +301,30 @@ export default function InvestorsList() {
       <div className="mb-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Investors</h1>
-            <p className="text-gray-600">Manage and oversee all investor accounts</p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('ilst.title')}</h1>
+            <p className="text-gray-600">{t('ilst.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-3">
             <button 
               onClick={handleImportData}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Upload className="w-4 h-4 mr-2" />
-              Import
+              <Upload className="w-4 h-4 me-2" />
+              {t('ilst.import')}
             </button>
             <button 
               onClick={handleExportData}
               className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
             >
-              <Download className="w-4 h-4 mr-2" />
-              Export Data
+              <Download className="w-4 h-4 me-2" />
+              {t('ilst.exportData')}
             </button>
             <button 
               onClick={() => setShowCreateModal(true)}
               className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
             >
-              <Plus className="w-4 h-4 mr-2" />
-              Add Investor
+              <Plus className="w-4 h-4 me-2" />
+              {t('ilst.addInvestor')}
             </button>
           </div>
         </div>
@@ -325,9 +335,9 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total Investors</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.totalInvestors')}</p>
               <p className="text-2xl font-bold text-gray-900">1,247</p>
-              <p className="text-xs text-green-600 mt-1">+8.2% this month</p>
+              <p className="text-xs text-green-600 mt-1">{t('ilst.stat.thisMonth')}</p>
             </div>
             <UserCheck className="w-8 h-8 text-gray-700" />
           </div>
@@ -335,9 +345,9 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Active Investors</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.activeInvestors')}</p>
               <p className="text-2xl font-bold text-gray-900">1,189</p>
-              <p className="text-xs text-gray-500 mt-1">95.3% of total</p>
+              <p className="text-xs text-gray-500 mt-1">{t('ilst.stat.ofTotal')}</p>
             </div>
             <div className="w-3 h-3 bg-green-500 rounded-full"></div>
           </div>
@@ -345,9 +355,9 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Total AUM</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.totalAum')}</p>
               <p className="text-2xl font-bold text-gray-900">$2.4B</p>
-              <p className="text-xs text-green-600 mt-1">+12.3% this quarter</p>
+              <p className="text-xs text-green-600 mt-1">{t('ilst.stat.thisQuarter')}</p>
             </div>
             <DollarSign className="w-8 h-8 text-purple-500" />
           </div>
@@ -355,9 +365,9 @@ export default function InvestorsList() {
         <div className="bg-white rounded-lg border border-gray-200 p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600">Pending KYC</p>
+              <p className="text-sm text-gray-600">{t('ilst.stat.pendingKyc')}</p>
               <p className="text-2xl font-bold text-gray-900">23</p>
-              <p className="text-xs text-yellow-600 mt-1">Requires review</p>
+              <p className="text-xs text-yellow-600 mt-1">{t('ilst.stat.requiresReview')}</p>
             </div>
             <AlertTriangle className="w-8 h-8 text-yellow-500" />
           </div>
@@ -371,10 +381,10 @@ export default function InvestorsList() {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input
               type="text"
-              placeholder="Search investors..."
+              placeholder={t('ilst.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
+              className="ps-10 pe-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent w-64"
             />
           </div>
           <select
@@ -383,7 +393,7 @@ export default function InvestorsList() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
             {investorTypes.map(type => (
-              <option key={type} value={type}>{type}</option>
+              <option key={type} value={type}>{tType(type)}</option>
             ))}
           </select>
           <select
@@ -392,7 +402,7 @@ export default function InvestorsList() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
             {statusOptions.map(status => (
-              <option key={status} value={status}>{status}</option>
+              <option key={status} value={status}>{tStatus(status)}</option>
             ))}
           </select>
           <select
@@ -401,16 +411,16 @@ export default function InvestorsList() {
             className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
           >
             {kycStatusOptions.map(status => (
-              <option key={status} value={status}>{status}</option>
+              <option key={status} value={status}>{tKyc(status)}</option>
             ))}
           </select>
           <button className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50">
-            <Filter className="w-4 h-4 mr-2" />
-            More Filters
+            <Filter className="w-4 h-4 me-2" />
+            {t('ilst.moreFilters')}
           </button>
         </div>
         <div className="text-sm text-gray-500">
-          {filteredInvestors.length} of {investors.length} investors
+          {t('ilst.countOf', { filtered: filteredInvestors.length, total: investors.length })}
         </div>
       </div>
 
@@ -420,29 +430,29 @@ export default function InvestorsList() {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Investor
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.investor')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Type & Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.typeStatus')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Portfolio Value
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.portfolioValue')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Unrealized Gains
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.unrealizedGains')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Risk Profile
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.riskProfile')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  KYC Status
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.kycStatus')}
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Last Activity
+                <th className="px-6 py-3 text-start text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  {t('ilst.col.lastActivity')}
                 </th>
                 <th className="relative px-6 py-3">
-                  <span className="sr-only">Actions</span>
+                  <span className="sr-only">{t('common:actions')}</span>
                 </th>
               </tr>
             </thead>
@@ -451,7 +461,7 @@ export default function InvestorsList() {
                 <tr key={investor.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
+                      <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center me-4">
                         <span className="text-sm font-medium text-gray-700">
                           {investor.name.split(' ').map(n => n[0]).join('')}
                         </span>
@@ -459,11 +469,11 @@ export default function InvestorsList() {
                       <div>
                         <div className="text-sm font-medium text-gray-900">{investor.name}</div>
                         <div className="text-sm text-gray-500 flex items-center">
-                          <Mail className="w-3 h-3 mr-1" />
+                          <Mail className="w-3 h-3 me-1" />
                           {investor.email}
                         </div>
                         <div className="text-sm text-gray-500 flex items-center">
-                          <Phone className="w-3 h-3 mr-1" />
+                          <Phone className="w-3 h-3 me-1" />
                           {investor.phone}
                         </div>
                       </div>
@@ -471,10 +481,10 @@ export default function InvestorsList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div>
-                      <span className="text-sm text-gray-900 font-medium">{investor.type}</span>
+                      <span className="text-sm text-gray-900 font-medium">{tType(investor.type)}</span>
                       <div className="mt-1">
                         <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getStatusColor(investor.status))}>
-                          {investor.status}
+                          {tStatus(investor.status)}
                         </span>
                       </div>
                     </div>
@@ -485,19 +495,19 @@ export default function InvestorsList() {
                         {formatCurrency(investor.portfolioValue)}
                       </div>
                       <div className="text-sm text-gray-500">
-                        Invested: {formatCurrency(investor.totalInvestment)}
+                        {t('ilst.invested', { amount: formatCurrency(investor.totalInvestment) })}
                       </div>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <TrendingUp className="w-4 h-4 text-green-500 mr-1" />
+                      <TrendingUp className="w-4 h-4 text-green-500 me-1" />
                       <span className="text-sm font-medium text-green-600">
                         {formatCurrency(investor.unrealizedGains)}
                       </span>
                     </div>
                     <div className="text-xs text-gray-500">
-                      {(((investor.portfolioValue - investor.totalInvestment) / investor.totalInvestment) * 100).toFixed(1)}% return
+                      {t('ilst.return', { value: (((investor.portfolioValue - investor.totalInvestment) / investor.totalInvestment) * 100).toFixed(1) })}
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
@@ -506,54 +516,54 @@ export default function InvestorsList() {
                       investor.riskProfile.includes('Moderate') ? 'bg-yellow-100 text-yellow-800' :
                       'bg-red-100 text-red-800'
                     )}>
-                      {investor.riskProfile}
+                      {tRisk(investor.riskProfile)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className={cn('inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium', getKycStatusColor(investor.kycStatus))}>
-                      {investor.kycStatus}
+                      {tKyc(investor.kycStatus)}
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex items-center">
-                      <Calendar className="w-3 h-3 mr-1" />
+                      <Calendar className="w-3 h-3 me-1" />
                       {new Date(investor.lastActivity).toLocaleDateString()}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className="px-6 py-4 whitespace-nowrap text-end text-sm font-medium">
                     <div className="flex items-center space-x-2">
                       <button 
                         onClick={() => handleViewInvestor(investor)}
                         className="text-black hover:text-blue-900" 
-                        title="View Details"
+                        title={t('ilst.action.viewDetails')}
                       >
                         <Eye className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleEditInvestor(investor)}
                         className="text-gray-600 hover:text-gray-900" 
-                        title="Edit Investor"
+                        title={t('ilst.action.editInvestor')}
                       >
                         <Edit className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleViewDocuments(investor)}
                         className="text-purple-600 hover:text-purple-900" 
-                        title="View Documents"
+                        title={t('ilst.action.viewDocuments')}
                       >
                         <FileText className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleSendStatement(investor)}
                         className="text-green-600 hover:text-green-900" 
-                        title="Send Statement"
+                        title={t('ilst.action.sendStatement')}
                       >
                         <Send className="w-4 h-4" />
                       </button>
                       <button 
                         onClick={() => handleDeleteInvestor(investor)}
                         className="text-red-600 hover:text-red-900" 
-                        title="Delete Investor"
+                        title={t('ilst.action.deleteInvestor')}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -569,11 +579,11 @@ export default function InvestorsList() {
       {/* Pagination */}
       <div className="mt-6 flex items-center justify-between">
         <div className="text-sm text-gray-500">
-          Showing 1 to {filteredInvestors.length} of {investors.length} results
+          {t('ilst.showingResults', { filtered: filteredInvestors.length, total: investors.length })}
         </div>
         <div className="flex items-center space-x-2">
           <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50">
-            Previous
+            {t('common:previous')}
           </button>
           <button className="px-3 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg">
             1
@@ -582,7 +592,7 @@ export default function InvestorsList() {
             2
           </button>
           <button className="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
-            Next
+            {t('common:next')}
           </button>
         </div>
       </div>
@@ -592,7 +602,7 @@ export default function InvestorsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Add New Investor</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ilst.createTitle')}</h3>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -604,18 +614,18 @@ export default function InvestorsList() {
             <form className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.fullName')}</label>
                   <input
                     type="text"
-                    placeholder="Enter full name"
+                    placeholder={t('ilst.ph.fullName')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.email')}</label>
                   <input
                     type="email"
-                    placeholder="Enter email address"
+                    placeholder={t('ilst.ph.email')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
                 </div>
@@ -623,59 +633,59 @@ export default function InvestorsList() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.phone')}</label>
                   <input
                     type="tel"
-                    placeholder="Enter phone number"
+                    placeholder={t('ilst.ph.phone')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Investor Type *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.investorType')}</label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option value="">Select type</option>
-                    <option value="Individual">Individual</option>
-                    <option value="Corporate">Corporate</option>
-                    <option value="Trust">Trust</option>
-                    <option value="Family Office">Family Office</option>
-                    <option value="Institutional">Institutional</option>
+                    <option value="">{t('ilst.selectType')}</option>
+                    <option value="Individual">{t('ilst.type.individual')}</option>
+                    <option value="Corporate">{t('ilst.type.corporate')}</option>
+                    <option value="Trust">{t('ilst.type.trust')}</option>
+                    <option value="Family Office">{t('ilst.type.familyOffice')}</option>
+                    <option value="Institutional">{t('ilst.type.institutional')}</option>
                   </select>
                 </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Risk Profile</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.riskProfile')}</label>
                   <select className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent">
-                    <option value="Conservative">Conservative</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="Moderate-Aggressive">Moderate-Aggressive</option>
-                    <option value="Aggressive">Aggressive</option>
+                    <option value="Conservative">{t('ilst.risk.conservative')}</option>
+                    <option value="Moderate">{t('ilst.risk.moderate')}</option>
+                    <option value="Moderate-Aggressive">{t('ilst.risk.moderateAggressive')}</option>
+                    <option value="Aggressive">{t('ilst.risk.aggressive')}</option>
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.country')}</label>
                   <input
                     type="text"
-                    placeholder="Enter country"
+                    placeholder={t('ilst.ph.country')}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Initial Investment Amount</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.initialInvestment')}</label>
                 <input
                   type="number"
-                  placeholder="Enter initial investment amount"
+                  placeholder={t('ilst.ph.initialInvestment')}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('ilst.field.notes')}</label>
                 <textarea
-                  placeholder="Add any notes about the investor"
+                  placeholder={t('ilst.ph.notes')}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                 />
@@ -683,16 +693,16 @@ export default function InvestorsList() {
 
               <div className="space-y-3">
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
-                  <span className="text-sm text-gray-700">Accredited Investor</span>
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
+                  <span className="text-sm text-gray-700">{t('ilst.chk.accredited')}</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" defaultChecked />
-                  <span className="text-sm text-gray-700">Send welcome email</span>
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" defaultChecked />
+                  <span className="text-sm text-gray-700">{t('ilst.chk.welcomeEmail')}</span>
                 </label>
                 <label className="flex items-center">
-                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 mr-3" />
-                  <span className="text-sm text-gray-700">Require KYC completion</span>
+                  <input type="checkbox" className="rounded border-gray-300 text-black focus:ring-gray-500 me-3" />
+                  <span className="text-sm text-gray-700">{t('ilst.chk.requireKyc')}</span>
                 </label>
               </div>
 
@@ -702,14 +712,14 @@ export default function InvestorsList() {
                   onClick={() => setShowCreateModal(false)}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Cancel
+                  {t('common:cancel')}
                 </button>
                 <button
                   type="button"
                   onClick={handleCreateInvestor}
                   className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
                 >
-                  Create Investor
+                  {t('ilst.createInvestor')}
                 </button>
               </div>
             </form>
@@ -722,7 +732,7 @@ export default function InvestorsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-4xl w-full mx-4 max-h-screen overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Investor Details</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('ilst.viewTitle')}</h3>
               <button
                 onClick={() => setShowViewModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -734,74 +744,74 @@ export default function InvestorsList() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.name')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.name}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.email')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.email}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.phone')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.phone}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                  <p className="text-sm text-gray-900">{selectedInvestor.type}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:type')}</label>
+                  <p className="text-sm text-gray-900">{tType(selectedInvestor.type)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('common:status')}</label>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(selectedInvestor.status)}`}>
-                    {selectedInvestor.status}
+                    {tStatus(selectedInvestor.status)}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">KYC Status</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.kycStatus')}</label>
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getKycStatusColor(selectedInvestor.kycStatus)}`}>
-                    {selectedInvestor.kycStatus}
+                    {tKyc(selectedInvestor.kycStatus)}
                   </span>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Risk Profile</label>
-                  <p className="text-sm text-gray-900">{selectedInvestor.riskProfile}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.riskProfile')}</label>
+                  <p className="text-sm text-gray-900">{tRisk(selectedInvestor.riskProfile)}</p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Total Investment</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.totalInvestment')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedInvestor.totalInvestment)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Value</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.portfolioValue')}</label>
                   <p className="text-sm text-gray-900">{formatCurrency(selectedInvestor.portfolioValue)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Unrealized Gains</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.unrealizedGains')}</label>
                   <p className="text-sm text-green-600">{formatCurrency(selectedInvestor.unrealizedGains)}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Onboarding Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.onboardingDate')}</label>
                   <p className="text-sm text-gray-900">{new Date(selectedInvestor.onboardingDate).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Last Activity</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.lastActivity')}</label>
                   <p className="text-sm text-gray-900">{new Date(selectedInvestor.lastActivity).toLocaleDateString()}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Country</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.country')}</label>
                   <p className="text-sm text-gray-900">{selectedInvestor.country}</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Accredited Investor</label>
-                  <p className="text-sm text-gray-900">{selectedInvestor.accreditedInvestor ? 'Yes' : 'No'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.accredited')}</label>
+                  <p className="text-sm text-gray-900">{selectedInvestor.accreditedInvestor ? t('common:yes') : t('common:no')}</p>
                 </div>
               </div>
             </div>
 
             <div className="mt-6 space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tags</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.tags')}</label>
                 <div className="flex flex-wrap gap-1">
                   {selectedInvestor.tags.map((tag: string, index: number) => (
                     <span key={index} className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-900">
@@ -812,25 +822,25 @@ export default function InvestorsList() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Portfolio Allocation</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.label.portfolioAllocation')}</label>
                 <div className="grid grid-cols-3 gap-4">
                   <div className="text-center">
                     <div className="text-lg font-semibold text-gray-900">{selectedInvestor.portfolioAllocation.equity}%</div>
-                    <div className="text-sm text-gray-500">Equity</div>
+                    <div className="text-sm text-gray-500">{t('ilst.label.equity')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-semibold text-gray-900">{selectedInvestor.portfolioAllocation.bonds}%</div>
-                    <div className="text-sm text-gray-500">Bonds</div>
+                    <div className="text-sm text-gray-500">{t('ilst.label.bonds')}</div>
                   </div>
                   <div className="text-center">
                     <div className="text-lg font-semibold text-gray-900">{selectedInvestor.portfolioAllocation.alternatives}%</div>
-                    <div className="text-sm text-gray-500">Alternatives</div>
+                    <div className="text-sm text-gray-500">{t('ilst.label.alternatives')}</div>
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('ilst.field.notes')}</label>
                 <p className="text-sm text-gray-900">{selectedInvestor.notes}</p>
               </div>
             </div>
@@ -840,7 +850,7 @@ export default function InvestorsList() {
                 onClick={() => setShowViewModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Close
+                {t('common:close')}
               </button>
               <button
                 onClick={() => {
@@ -849,7 +859,7 @@ export default function InvestorsList() {
                 }}
                 className="px-4 py-2 text-sm font-medium text-white bg-black border border-black rounded-lg hover:bg-gray-800"
               >
-                Edit Investor
+                {t('ilst.action.editInvestor')}
               </button>
             </div>
           </div>
@@ -861,7 +871,7 @@ export default function InvestorsList() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
             <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-semibold text-gray-900">Delete Investor</h3>
+              <h3 className="text-lg font-semibold text-gray-900">{t('ilst.deleteTitle')}</h3>
               <button
                 onClick={() => setShowDeleteModal(false)}
                 className="text-gray-400 hover:text-gray-500"
@@ -872,7 +882,7 @@ export default function InvestorsList() {
 
             <div className="mb-6">
               <p className="text-sm text-gray-600">
-                Are you sure you want to delete <strong>{selectedInvestor.name}</strong>? This action cannot be undone and will remove all associated data.
+                {t('ilst.deletePrefix')}<strong>{selectedInvestor.name}</strong>{t('ilst.deleteSuffix')}
               </p>
             </div>
 
@@ -881,13 +891,13 @@ export default function InvestorsList() {
                 onClick={() => setShowDeleteModal(false)}
                 className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                Cancel
+                {t('common:cancel')}
               </button>
               <button
                 onClick={confirmDeleteInvestor}
                 className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700"
               >
-                Delete Investor
+                {t('ilst.action.deleteInvestor')}
               </button>
             </div>
           </div>

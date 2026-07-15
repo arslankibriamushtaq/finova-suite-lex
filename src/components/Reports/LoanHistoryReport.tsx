@@ -7,8 +7,10 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
 import dayjs from "dayjs";
+import { useTranslation } from "react-i18next";
 
 const LoanHistoryReport = () => {
+  const { t } = useTranslation("reports");
   const [loanId, setLoanId] = useState<string>("");
   const [fromDate, setFromDate] = useState<string>("");
   const [toDate, setToDate] = useState<string>("");
@@ -23,7 +25,7 @@ const LoanHistoryReport = () => {
   const handleSubmit = async (targetId?: string) => {
     const idToUse = targetId || loanId;
     if (!idToUse) {
-      toast.error("Please enter a Loan ID to view history");
+      toast.error(t('loanHistory.toast.enterLoanId'));
       return;
     }
 
@@ -47,7 +49,7 @@ const LoanHistoryReport = () => {
         setViewMode("detail");
       }
     } catch (error: any) {
-      toast.error(error?.message || "Failed to fetch loan history");
+      toast.error(error?.message || t('loanHistory.toast.fetchError'));
       setAllCallActivity([]);
       setLoanSummary(null);
     } finally {
@@ -84,9 +86,9 @@ const LoanHistoryReport = () => {
   }, [mappedData, page, pageSize]);
 
   const Detail_Header = [
-    { name: "Event Date", selector: (row: any) => row.eventDate, sortable: true },
-    { 
-      name: "Event Type", 
+    { name: t('loanHistory.col.eventDate'), selector: (row: any) => row.eventDate, sortable: true },
+    {
+      name: t('loanHistory.col.eventType'),
       selector: (row: any) => row.eventType,
       cell: (row: any) => (
         <span className="badge bg-light text-dark border fw-bold text-uppercase" style={{ fontSize: "10px" }}>
@@ -94,14 +96,14 @@ const LoanHistoryReport = () => {
         </span>
       )
     },
-    { name: "Description", selector: (row: any) => row.description, grow: 2 },
-    { name: "Amount", selector: (row: any) => row.amount },
-    { name: "Balance After", selector: (row: any) => row.balanceAfter },
-    { name: "Performer", selector: (row: any) => row.performer },
+    { name: t('common:description'), selector: (row: any) => row.description, grow: 2 },
+    { name: t('common:amount'), selector: (row: any) => row.amount },
+    { name: t('loanHistory.col.balanceAfter'), selector: (row: any) => row.balanceAfter },
+    { name: t('loanHistory.col.performer'), selector: (row: any) => row.performer },
   ];
 
   const exportToCSV = (data: any[], fileName: string) => {
-    if (!data || data.length === 0) { toast.error("No data to export"); return; }
+    if (!data || data.length === 0) { toast.error(t('toast.noExportData')); return; }
     const headers = Object.keys(data[0]);
     const csvRows = [headers.join(",")];
     data.forEach((row) => {
@@ -117,7 +119,7 @@ const LoanHistoryReport = () => {
   return (
     <div className="service loan-history-page">
       <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark">Loan History Timeline</h3>
+        <h3 className="mb-0 fw-bold text-dark">{t('loanHistory.title')}</h3>
       </div>
 
       <div
@@ -130,18 +132,18 @@ const LoanHistoryReport = () => {
       >
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <Input
-            placeholder="Enter Loan UUID — e.g. 550e8400-e29b-41d4-a716-446655440000"
+            placeholder={t('loanHistory.loanIdPlaceholder')}
             value={loanId}
             onChange={(e) => setLoanId(e.target.value)}
             style={{ flex: "1 1 280px", minWidth: 220, height: 40, borderRadius: 2 }}
           />
           <DatePicker
-            placeholder="From"
+            placeholder={t('common:from')}
             onChange={(date) => setFromDate(date ? date.format("YYYY-MM-DD") : "")}
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
           <DatePicker
-            placeholder="To"
+            placeholder={t('common:to')}
             onChange={(date) => setToDate(date ? date.format("YYYY-MM-DD") : "")}
             style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
           />
@@ -151,7 +153,7 @@ const LoanHistoryReport = () => {
             loading={loading}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            View History
+            {t('loanHistory.viewHistory')}
           </Button>
           <button
             type="button"
@@ -159,7 +161,7 @@ const LoanHistoryReport = () => {
             onClick={() => exportToCSV(mappedData, "LoanHistory")}
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
           >
-            Export CSV
+            {t('action.exportCsv')}
           </button>
         </div>
       </div>
@@ -169,15 +171,15 @@ const LoanHistoryReport = () => {
           <div className="col-md-12">
             <div className="p-4 shadow-sm border bg-light rounded d-flex justify-content-between align-items-center">
               <div>
-                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">Customer Name</small>
+                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">{t('loanHistory.summary.customerName')}</small>
                 <h5 className="mb-0 fw-bold">{loanSummary.customerName || "-"}</h5>
               </div>
               <div className="text-end">
-                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">Loan Status</small>
+                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">{t('loanHistory.summary.loanStatus')}</small>
                 <span className="badge bg-success">{loanSummary.status || "ACTIVE"}</span>
               </div>
               <div className="text-end">
-                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">Total Disbursed</small>
+                <small className="text-uppercase opacity-75 fw-bold text-muted d-block">{t('loanHistory.summary.totalDisbursed')}</small>
                 <h5 className="mb-0 fw-bold">{formatCurrency(loanSummary.disbursedAmount)} SAR</h5>
               </div>
             </div>

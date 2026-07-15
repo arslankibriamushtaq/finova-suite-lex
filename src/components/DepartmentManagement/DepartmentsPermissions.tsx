@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Select, Switch, Button, Row, Col, Typography } from "antd";
 import {
   getDepartments,
@@ -14,6 +15,7 @@ const { Option } = Select;
 const { Text } = Typography;
 
 const DepartmentsPermissions: React.FC = () => {
+  const { t } = useTranslation("adminMisc");
   // Permissions
   const { hasPermission } = usePermissions();
   const canUpdateDeptPermissions = hasPermission(DEPARTMENT_PERMISSIONS_MODULE.UPDATE);
@@ -85,7 +87,7 @@ const DepartmentsPermissions: React.FC = () => {
     try {
       setSkelitonLoading(true);
       if (!selectedDepartment) {
-        return toast.error("Please select a department.");
+        return toast.error(t("deptPerm.selectDeptError"));
       }
 
       const body = {
@@ -100,7 +102,7 @@ const DepartmentsPermissions: React.FC = () => {
         toast.success(data?.message);
       }
     } catch (e: any) {
-      toast.error("Failed to update permissions.");
+      toast.error(t("deptPerm.updateFailed"));
     } finally {
       setSkelitonLoading(false);
     }
@@ -117,9 +119,9 @@ const DepartmentsPermissions: React.FC = () => {
       {skelitonLoading ? <Loader /> : (
       <>
         <div className="d-flex flex-column">
-          <Text>Departments</Text>
+          <Text>{t("deptPerm.departmentsLabel")}</Text>
           <Select
-            placeholder="Select Department"
+            placeholder={t("deptPerm.selectPlaceholder")}
             style={{ width: "100%", maxWidth: "562px", marginBottom: "56px" }}
             onChange={handleDepartmentChange}
             value={selectedDepartment}
@@ -171,7 +173,7 @@ const DepartmentsPermissions: React.FC = () => {
               handleDepartmentPermissions();
             }}
           >
-            Update
+            {t("common:update")}
           </Button>
         </div>
       {/* )} */}

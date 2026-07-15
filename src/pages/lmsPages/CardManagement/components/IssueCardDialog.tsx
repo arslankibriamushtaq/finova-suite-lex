@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   Dialog,
@@ -53,6 +54,7 @@ const emptyForm = {
 };
 
 const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps) => {
+  const { t } = useTranslation("cardManagement");
   const [form, setForm] = useState({ ...emptyForm });
   const [isSaving, setIsSaving] = useState(false);
 
@@ -67,11 +69,11 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
   const physical = isPhysical(form.cardType);
 
   const handleSubmit = async () => {
-    if (!form.walletId.trim()) return toast.error("Wallet ID is required");
-    if (!form.cardholderName.trim()) return toast.error("Cardholder name is required");
-    if (!form.cardType) return toast.error("Card type is required");
+    if (!form.walletId.trim()) return toast.error(t("issue.toast.walletIdRequired"));
+    if (!form.cardholderName.trim()) return toast.error(t("issue.toast.cardholderRequired"));
+    if (!form.cardType) return toast.error(t("validation.cardTypeRequired"));
     if (physical && (!form.address.trim() || !form.city.trim() || !form.postalCode.trim())) {
-      return toast.error("Shipping address, city and postal code are required for physical cards");
+      return toast.error(t("issue.toast.shippingRequired"));
     }
 
     const body: any = {
@@ -98,12 +100,12 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
     try {
       setIsSaving(true);
       await issueAdminCard(body);
-      toast.success("Card issued successfully");
+      toast.success(t("issue.toast.issued"));
       onOpenChange(false);
       onIssued();
     } catch (error: any) {
       // Interceptor already toasts business errors; guard for the rest.
-      if (!error?.response?.data?.message) toast.error("Failed to issue card");
+      if (!error?.response?.data?.message) toast.error(t("issue.toast.issueFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -113,33 +115,33 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
     <Dialog open={open} onOpenChange={(o) => !o && onOpenChange(false)}>
       <DialogContent className="pro-dialog sm:max-w-[720px] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>Issue New Card</DialogTitle>
+          <DialogTitle>{t("issue.title")}</DialogTitle>
           <DialogDescription>
-            Virtual cards are issued active instantly; physical cards start shipment automatically.
+            {t("issue.description")}
           </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Wallet ID *</Label>
+              <Label>{t("issue.field.walletId")}</Label>
               <Input
-                placeholder="Customer wallet UUID"
+                placeholder={t("issue.placeholder.walletId")}
                 value={form.walletId}
                 onChange={(e) => setField("walletId", e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label>Cardholder Name *</Label>
+              <Label>{t("issue.field.cardholderName")}</Label>
               <Input
-                placeholder="Embossed name"
+                placeholder={t("issue.placeholder.cardholderName")}
                 value={form.cardholderName}
                 onChange={(e) => setField("cardholderName", e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Card Type *</Label>
+              <Label>{t("issue.field.cardType")}</Label>
               <Select
                 value={form.cardType}
                 onValueChange={(v) => {
@@ -148,7 +150,7 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                 }}
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select card type" />
+                  <SelectValue placeholder={t("issue.placeholder.cardType")} />
                 </SelectTrigger>
                 <SelectContent>
                   {CARD_TYPES.map((t) => (
@@ -160,10 +162,10 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Tier</Label>
+              <Label>{t("issue.field.tier")}</Label>
               <Select value={form.tier} onValueChange={(v) => setField("tier", v)}>
                 <SelectTrigger>
-                  <SelectValue placeholder="Select tier" />
+                  <SelectValue placeholder={t("issue.placeholder.tier")} />
                 </SelectTrigger>
                 <SelectContent>
                   {CARD_TIERS.map((t) => (
@@ -176,24 +178,24 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
             </div>
 
             <div className="space-y-2">
-              <Label>Customer ID</Label>
+              <Label>{t("issue.field.customerId")}</Label>
               <Input
-                placeholder="Optional (recommended)"
+                placeholder={t("issue.placeholder.customerId")}
                 value={form.customerId}
                 onChange={(e) => setField("customerId", e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label>Owner User ID</Label>
+              <Label>{t("issue.field.ownerUserId")}</Label>
               <Input
-                placeholder="Optional Keycloak id"
+                placeholder={t("issue.placeholder.ownerUserId")}
                 value={form.ownerUserId}
                 onChange={(e) => setField("ownerUserId", e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Currency</Label>
+              <Label>{t("issue.field.currency")}</Label>
               <Input
                 placeholder="CAD"
                 value={form.currency}
@@ -206,24 +208,24 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                   checked={form.contactlessEnabled}
                   onCheckedChange={(c) => setField("contactlessEnabled", !!c)}
                 />
-                <span className="text-sm">Contactless enabled</span>
+                <span className="text-sm">{t("issue.field.contactlessEnabled")}</span>
               </label>
             </div>
 
             <div className="space-y-2">
-              <Label>Daily Limit</Label>
+              <Label>{t("issue.field.dailyLimit")}</Label>
               <Input
                 type="number"
-                placeholder="Default 5000"
+                placeholder={t("issue.placeholder.dailyLimit")}
                 value={form.dailyLimit}
                 onChange={(e) => setField("dailyLimit", e.target.value)}
               />
             </div>
             <div className="space-y-2">
-              <Label>Monthly Limit</Label>
+              <Label>{t("issue.field.monthlyLimit")}</Label>
               <Input
                 type="number"
-                placeholder="Default 50000"
+                placeholder={t("issue.placeholder.monthlyLimit")}
                 value={form.monthlyLimit}
                 onChange={(e) => setField("monthlyLimit", e.target.value)}
               />
@@ -232,10 +234,10 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
 
           {physical && (
             <div className="border-t pt-4 space-y-4">
-              <p className="text-sm font-semibold text-foreground">Shipping (physical card)</p>
+              <p className="text-sm font-semibold text-foreground">{t("issue.shippingTitle")}</p>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2 md:col-span-2">
-                  <Label>Address *</Label>
+                  <Label>{t("issue.field.address")}</Label>
                   <Input
                     placeholder="12 King St W, Unit 5"
                     value={form.address}
@@ -243,7 +245,7 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>City *</Label>
+                  <Label>{t("issue.field.city")}</Label>
                   <Input
                     placeholder="Toronto"
                     value={form.city}
@@ -251,7 +253,7 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Postal Code *</Label>
+                  <Label>{t("issue.field.postalCode")}</Label>
                   <Input
                     placeholder="M5H1A1"
                     value={form.postalCode}
@@ -259,7 +261,7 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Delivery Method</Label>
+                  <Label>{t("issue.field.deliveryMethod")}</Label>
                   <Select
                     value={form.deliveryMethod}
                     onValueChange={(v) => setField("deliveryMethod", v)}
@@ -283,10 +285,10 @@ const IssueCardDialog = ({ open, onOpenChange, onIssued }: IssueCardDialogProps)
 
         <DialogFooter>
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
-            Cancel
+            {t("common:cancel")}
           </Button>
           <Button onClick={handleSubmit} disabled={isSaving}>
-            {isSaving ? "Issuing..." : "Issue Card"}
+            {isSaving ? t("issue.submitting") : t("issue.submit")}
           </Button>
         </DialogFooter>
       </DialogContent>

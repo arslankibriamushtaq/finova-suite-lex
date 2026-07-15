@@ -1,14 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 const LoanApproval = () => {
+  const { t } = useTranslation("allApplication");
   const actionOptions = [
     {
       children: [
-        { label: "Requested Loan Amount:", value: "2,000.00" },
-        { label: "Processing Fee:", value: "SR 0.00" },
-        { label: "Profit (0 %):", value: "SR 0.00" },
-        { label: "Total Repayment Amount:", value: "SR 2,000.00" },
-        { label: "Total Payable Amount to Customer :", value: "SR 1,970.00" },
+        { label: t("loanApproval.requestedAmount"), value: "2,000.00" },
+        { label: t("loanApproval.processingFee"), value: "SR 0.00" },
+        { label: t("loanApproval.profit"), value: "SR 0.00" },
+        { label: t("loanApproval.totalRepayment"), value: "SR 2,000.00" },
+        { label: t("loanApproval.totalPayable"), value: "SR 1,970.00" },
       ],
     },
   ];

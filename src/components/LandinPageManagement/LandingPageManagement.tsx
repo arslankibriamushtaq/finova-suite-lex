@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { RootState } from "../../redux/rootReducer";
 import { Images } from "../Config/Images";
 
 const LandingPageManage = () => {
+  const { t } = useTranslation("webPages");
   const navigate = useNavigate();
   const themeBuilder = useSelector((state: RootState) => state.block.theme);
   const [showButton, setShowButton] = useState(false);
@@ -31,7 +33,7 @@ const LandingPageManage = () => {
       <div className="container-fluid ">
         <div className="col-md-12">
           <div className="page-header pb-2 align-items-center">
-            <h3 className="welcome-heading">Landing Page Management</h3>
+            <h3 className="welcome-heading">{t("header.landingPageManagement")}</h3>
             <div className="d-flex ">
               <a href="/HomePageManagement/home-page/setting">
                 <button
@@ -40,7 +42,7 @@ const LandingPageManage = () => {
                     backgroundColor: themeBuilder?.table?.backgroundColor,
                   }}
                 >
-                  Preview Home Page
+                  {t("previewHomePage")}
                 </button>
               </a>
               <a href="/HomePageManagement/home-page/setting">
@@ -50,7 +52,7 @@ const LandingPageManage = () => {
                     backgroundColor: themeBuilder?.table?.backgroundColor,
                   }}
                 >
-                  Preview Home Page
+                  {t("previewHomePage")}
                 </button>
               </a>
             </div>
@@ -96,7 +98,7 @@ const LandingPageManage = () => {
                               themeBuilder?.table?.backgroundColor,
                           }}
                         >
-                          Edit Template
+                          {t("editTemplate")}
                         </button>
                       </div>
                     ) : (
@@ -108,7 +110,7 @@ const LandingPageManage = () => {
                               themeBuilder?.table?.backgroundColor,
                           }}
                         >
-                          Use This Template
+                          {t("useThisTemplate")}
                         </button>
                       </div>
                     )}

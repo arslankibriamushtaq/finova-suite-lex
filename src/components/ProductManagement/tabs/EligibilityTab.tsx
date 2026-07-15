@@ -1,4 +1,5 @@
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 import { Button } from "../../ui/button"
 import { Label } from "../../ui/label"
 import { Textarea } from "../../ui/textarea"
@@ -19,18 +20,19 @@ export default function EligibilityTab({
   onPrevious,
   errors = {},
 }: EligibilityTabProps) {
+  const { t } = useTranslation("productManagement2")
   return (
     <div className="space-y-6">
       <Card>
         <CardHeader>
-          <CardTitle>Product Definitions</CardTitle>
-          <p className="text-muted-foreground">Define the product definitions for this product.</p>
+          <CardTitle>{t("eligibility.title")}</CardTitle>
+          <p className="text-muted-foreground">{t("eligibility.subtitle")}</p>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label>Eligibility (English)</Label>
+            <Label>{t("eligibility.labelEn")}</Label>
             <Textarea
-              placeholder="Enter the eligibility criteria in English..."
+              placeholder={t("eligibility.placeholderEn")}
               value={formData.eligibility_criteria_en || ""}
               onChange={(e) => updateFormData("eligibility_criteria_en", e.target.value)}
               rows={10}
@@ -41,9 +43,9 @@ export default function EligibilityTab({
             )}
           </div>
           <div className="space-y-2">
-            <Label>Eligibility (Arabic)</Label>
+            <Label>{t("eligibility.labelAr")}</Label>
             <Textarea
-              placeholder="أدخل معايير الأهلية باللغة العربية..."
+              placeholder={t("eligibility.placeholderAr")}
               value={formData.eligibility_criteria_ar || ""}
               onChange={(e) => updateFormData("eligibility_criteria_ar", e.target.value)}
               rows={10}
@@ -61,10 +63,10 @@ export default function EligibilityTab({
       <div className="flex justify-between gap-3 pt-4">
         <Button variant="outline" onClick={onPrevious} className="gap-2">
           <ArrowLeft className="h-4 w-4" />
-          Previous
+          {t("common:previous")}
         </Button>
         <Button onClick={onNext} className="gap-2">
-          Next: Affordablity Income Slabs
+          {t("eligibility.next")}
           <ArrowRight className="h-4 w-4" />
         </Button>
       </div>

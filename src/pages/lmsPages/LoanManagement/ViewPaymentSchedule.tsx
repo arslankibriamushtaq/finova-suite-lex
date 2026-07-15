@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Input, Button, Dropdown, Menu } from "antd";
 import { CalendarDays } from "lucide-react";
 import TableView from "../../../components/TableView/TableView";
@@ -11,6 +12,7 @@ import {
 import toast from "react-hot-toast";
 
 const LoanPaymentSchedule = () => {
+  const { t } = useTranslation("loanManagement");
   const [pageSize, setPageSize] = useState(40);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -75,39 +77,39 @@ const LoanPaymentSchedule = () => {
           navigate(`/lms/loanmanagement/generateInvoice/${row.invoiceId}`);
         }}
       >
-        View Details
+        {t("common:viewDetails")}
       </Menu.Item>
     </Menu>
   );
 
   const Customer_ALL_List_Header = [
     {
-      name: "Invoice No",
+      name: t("paymentSchedule.colInvoiceNo"),
       selector: (row: any) => row.invoiceNumber,
       frozen: frozenColumns.includes("Invoice No"),
     },
     {
-      name: "Customer Name",
+      name: t("field.customerName"),
       selector: (row: any) => row.billingTo, // Assuming billingTo is the customer name
     },
 
     {
-      name: "Invoice Date",
+      name: t("paymentSchedule.colInvoiceDate"),
       selector: (row: any) => new Date(row.invoiceDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Invoice Date"),
     },
     {
-      name: "Due Date",
+      name: t("paymentSchedule.colDueDate"),
       selector: (row: any) => new Date(row.dueDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Due Date"),
     },
     {
-      name: "Total",
+      name: t("common:total"),
       selector: (row: any) => row.totalAmount, // Assuming totalAmount is the total
       cell: (row: any) => <div>SAR {row?.totalAmount}</div>,
     },
     {
-      name: "Payable Status",
+      name: t("paymentSchedule.colPayableStatus"),
       selector: (row: any) => row.payableStatus, // Assuming payableStatus holds "Early Settlement" or "Due Loans"
       cell: (row: any) => (
         <div
@@ -115,21 +117,21 @@ const LoanPaymentSchedule = () => {
           }}
         >
           {row.payableStatus === 0
-            ? "Early settlement"
+            ? t("paymentSchedule.payableEarlySettlement")
             : row.payableStatus === 1
-              ? "Due Loan"
+              ? t("paymentSchedule.payableDueLoan")
               : row.payableStatus === 2
-                ? "Over due"
+                ? t("paymentSchedule.payableOverdue")
                 : row.payableStatus === 3
-                  ? "Non performing"
+                  ? t("paymentSchedule.payableNonPerforming")
                   : row.payableStatus === 4
-                    ? " Write off"
-                    : "Broken promise"}
+                    ? t("paymentSchedule.payableWriteOff")
+                    : t("paymentSchedule.payableBrokenPromise")}
         </div>
       ),
     },
     {
-      name: "Payment Status",
+      name: t("paymentSchedule.colPaymentStatus"),
       selector: (row: any) => row.paymentStatus, // Assuming 'status' for active/inactive
       cell: (row: any) => (
         <div
@@ -140,12 +142,12 @@ const LoanPaymentSchedule = () => {
             color: "white",
           }}
         >
-          {row.paymentStatus === 1 ? "Paid" : "Unpaid"}
+          {row.paymentStatus === 1 ? t("paymentSchedule.paid") : t("paymentSchedule.unpaid")}
         </div>
       ),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -158,7 +160,7 @@ const LoanPaymentSchedule = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("applications.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -224,7 +226,7 @@ const LoanPaymentSchedule = () => {
           <span className="pro-head-badge">
             <CalendarDays className="h-4 w-4" />
           </span>
-          Loan Payment Schedule
+          {t("paymentSchedule.title")}
         </h3>
       </div>
 
@@ -236,7 +238,7 @@ const LoanPaymentSchedule = () => {
             className="application-btn"
             onClick={() => navigate("/lms/LoanManagement/ApplicationManagement")}
           >
-            Back to Applications
+            {t("paymentSchedule.backToApplications")}
           </Button>
         </div>
       </div>

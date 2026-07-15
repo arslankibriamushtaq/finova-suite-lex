@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Save, X, Upload, AlertCircle, CheckCircle } from 'lucide-react';
 
 interface FormData {
@@ -38,6 +39,7 @@ interface FormData {
 }
 
 export default function AddInvestor() {
+  const { t } = useTranslation('investor');
   const navigate = useNavigate();
   const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState<FormData>({
@@ -79,21 +81,21 @@ export default function AddInvestor() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const steps = [
-    { id: 1, name: 'Personal Info', description: 'Basic personal information' },
-    { id: 2, name: 'Address', description: 'Contact and address details' },
-    { id: 3, name: 'Investor Profile', description: 'Investment preferences and profile' },
-    { id: 4, name: 'Compliance', description: 'KYC and compliance documentation' },
+    { id: 1, name: t('ai.step1.name'), description: t('ai.step1.desc') },
+    { id: 2, name: t('ai.step2.name'), description: t('ai.step2.desc') },
+    { id: 3, name: t('ai.step3.name'), description: t('ai.step3.desc') },
+    { id: 4, name: t('ai.step4.name'), description: t('ai.step4.desc') },
   ];
 
   const investmentObjectives = [
-    'Capital Preservation',
-    'Income Generation',
-    'Capital Appreciation',
-    'Diversification',
-    'Tax Efficiency',
-    'ESG/Sustainable Investing',
-    'Alternative Investments',
-    'Real Estate',
+    'ai.obj.capitalPreservation',
+    'ai.obj.incomeGeneration',
+    'ai.obj.capitalAppreciation',
+    'ai.obj.diversification',
+    'ai.obj.taxEfficiency',
+    'ai.obj.esg',
+    'ai.obj.alternative',
+    'ai.obj.realEstate',
   ];
 
   const validateStep = (step: number) => {
@@ -101,23 +103,23 @@ export default function AddInvestor() {
 
     switch (step) {
       case 1:
-        if (!formData.personalInfo.firstName) newErrors.firstName = 'First name is required';
-        if (!formData.personalInfo.lastName) newErrors.lastName = 'Last name is required';
-        if (!formData.personalInfo.email) newErrors.email = 'Email is required';
-        if (!formData.personalInfo.phone) newErrors.phone = 'Phone is required';
+        if (!formData.personalInfo.firstName) newErrors.firstName = t('ai.err.firstName');
+        if (!formData.personalInfo.lastName) newErrors.lastName = t('ai.err.lastName');
+        if (!formData.personalInfo.email) newErrors.email = t('ai.err.email');
+        if (!formData.personalInfo.phone) newErrors.phone = t('ai.err.phone');
         break;
       case 2:
-        if (!formData.addressInfo.street) newErrors.street = 'Street address is required';
-        if (!formData.addressInfo.city) newErrors.city = 'City is required';
-        if (!formData.addressInfo.state) newErrors.state = 'State is required';
-        if (!formData.addressInfo.zipCode) newErrors.zipCode = 'ZIP code is required';
+        if (!formData.addressInfo.street) newErrors.street = t('ai.err.street');
+        if (!formData.addressInfo.city) newErrors.city = t('ai.err.city');
+        if (!formData.addressInfo.state) newErrors.state = t('ai.err.state');
+        if (!formData.addressInfo.zipCode) newErrors.zipCode = t('ai.err.zipCode');
         break;
       case 3:
-        if (!formData.investorProfile.liquidNetWorth) newErrors.liquidNetWorth = 'Net worth is required';
-        if (!formData.investorProfile.annualIncome) newErrors.annualIncome = 'Annual income is required';
+        if (!formData.investorProfile.liquidNetWorth) newErrors.liquidNetWorth = t('ai.err.liquidNetWorth');
+        if (!formData.investorProfile.annualIncome) newErrors.annualIncome = t('ai.err.annualIncome');
         break;
       case 4:
-        if (!formData.complianceInfo.sourceOfFunds) newErrors.sourceOfFunds = 'Source of funds is required';
+        if (!formData.complianceInfo.sourceOfFunds) newErrors.sourceOfFunds = t('ai.err.sourceOfFunds');
         break;
     }
 
@@ -180,12 +182,12 @@ export default function AddInvestor() {
             to="/admin/investors"
             className="flex items-center text-gray-600 hover:text-gray-900"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Investors
+            <ArrowLeft className="w-4 h-4 me-2" />
+            {t('kycd.backToInvestors')}
           </Link>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Add New Investor</h1>
-        <p className="text-gray-600">Complete the form below to onboard a new investor</p>
+        <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('ai.title')}</h1>
+        <p className="text-gray-600">{t('ai.subtitle')}</p>
       </div>
 
       <div className="max-w-4xl mx-auto">
@@ -209,7 +211,7 @@ export default function AddInvestor() {
                     step.id
                   )}
                 </div>
-                <div className="ml-3">
+                <div className="ms-3">
                   <p className={`text-sm font-medium ${
                     step.id <= currentStep ? 'text-gray-900' : 'text-gray-500'
                   }`}>
@@ -218,7 +220,7 @@ export default function AddInvestor() {
                   <p className="text-xs text-gray-500">{step.description}</p>
                 </div>
                 {step.id < steps.length && (
-                  <div className={`ml-6 w-16 h-0.5 ${
+                  <div className={`ms-6 w-16 h-0.5 ${
                     step.id < currentStep ? 'bg-green-600' : 'bg-gray-200'
                   }`} />
                 )}
@@ -231,12 +233,12 @@ export default function AddInvestor() {
         <div className="bg-white rounded-lg border border-gray-200 p-8">
           {currentStep === 1 && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('ai.personalInfo')}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    First Name *
+                    {t('ai.firstName')}
                   </label>
                   <input
                     type="text"
@@ -248,7 +250,7 @@ export default function AddInvestor() {
                   />
                   {errors.firstName && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.firstName}
                     </p>
                   )}
@@ -256,7 +258,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Last Name *
+                    {t('ai.lastName')}
                   </label>
                   <input
                     type="text"
@@ -268,7 +270,7 @@ export default function AddInvestor() {
                   />
                   {errors.lastName && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.lastName}
                     </p>
                   )}
@@ -276,7 +278,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Address *
+                    {t('ai.emailAddr')}
                   </label>
                   <input
                     type="email"
@@ -288,7 +290,7 @@ export default function AddInvestor() {
                   />
                   {errors.email && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.email}
                     </p>
                   )}
@@ -296,7 +298,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Phone Number *
+                    {t('ai.phoneNum')}
                   </label>
                   <input
                     type="tel"
@@ -308,7 +310,7 @@ export default function AddInvestor() {
                   />
                   {errors.phone && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.phone}
                     </p>
                   )}
@@ -316,7 +318,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date of Birth
+                    {t('ai.dob')}
                   </label>
                   <input
                     type="date"
@@ -328,7 +330,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Nationality
+                    {t('ai.nationality')}
                   </label>
                   <input
                     type="text"
@@ -340,14 +342,14 @@ export default function AddInvestor() {
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Tax Identification Number
+                    {t('ai.taxId')}
                   </label>
                   <input
                     type="text"
                     value={formData.personalInfo.taxId}
                     onChange={(e) => updateFormData('personalInfo', 'taxId', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    placeholder="SSN, EIN, or other tax ID"
+                    placeholder={t('ai.taxIdPlaceholder')}
                   />
                 </div>
               </div>
@@ -356,12 +358,12 @@ export default function AddInvestor() {
 
           {currentStep === 2 && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Address Information</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('ai.addressInfo')}</h2>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Street Address *
+                    {t('ai.street')}
                   </label>
                   <input
                     type="text"
@@ -373,7 +375,7 @@ export default function AddInvestor() {
                   />
                   {errors.street && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.street}
                     </p>
                   )}
@@ -381,7 +383,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    City *
+                    {t('ai.city')}
                   </label>
                   <input
                     type="text"
@@ -393,7 +395,7 @@ export default function AddInvestor() {
                   />
                   {errors.city && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.city}
                     </p>
                   )}
@@ -401,7 +403,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    State/Province *
+                    {t('ai.state')}
                   </label>
                   <input
                     type="text"
@@ -413,7 +415,7 @@ export default function AddInvestor() {
                   />
                   {errors.state && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.state}
                     </p>
                   )}
@@ -421,7 +423,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    ZIP/Postal Code *
+                    {t('ai.zip')}
                   </label>
                   <input
                     type="text"
@@ -433,7 +435,7 @@ export default function AddInvestor() {
                   />
                   {errors.zipCode && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.zipCode}
                     </p>
                   )}
@@ -441,20 +443,20 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Country
+                    {t('ai.country')}
                   </label>
                   <select
                     value={formData.addressInfo.country}
                     onChange={(e) => updateFormData('addressInfo', 'country', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   >
-                    <option value="USA">United States</option>
-                    <option value="CAN">Canada</option>
-                    <option value="GBR">United Kingdom</option>
-                    <option value="DEU">Germany</option>
-                    <option value="FRA">France</option>
-                    <option value="JPN">Japan</option>
-                    <option value="AUS">Australia</option>
+                    <option value="USA">{t('ai.country.usa')}</option>
+                    <option value="CAN">{t('ai.country.can')}</option>
+                    <option value="GBR">{t('ai.country.gbr')}</option>
+                    <option value="DEU">{t('ai.country.deu')}</option>
+                    <option value="FRA">{t('ai.country.fra')}</option>
+                    <option value="JPN">{t('ai.country.jpn')}</option>
+                    <option value="AUS">{t('ai.country.aus')}</option>
                   </select>
                 </div>
               </div>
@@ -463,61 +465,61 @@ export default function AddInvestor() {
 
           {currentStep === 3 && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Investor Profile</h2>
-              
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('ai.investorProfile')}</h2>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Investor Type
+                    {t('ai.investorType')}
                   </label>
                   <select
                     value={formData.investorProfile.type}
                     onChange={(e) => updateFormData('investorProfile', 'type', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   >
-                    <option value="Individual">Individual</option>
-                    <option value="Corporate">Corporate</option>
-                    <option value="Trust">Trust</option>
-                    <option value="Family Office">Family Office</option>
-                    <option value="Institutional">Institutional</option>
+                    <option value="Individual">{t('ai.type.individual')}</option>
+                    <option value="Corporate">{t('ai.type.corporate')}</option>
+                    <option value="Trust">{t('ai.type.trust')}</option>
+                    <option value="Family Office">{t('ai.type.familyOffice')}</option>
+                    <option value="Institutional">{t('ai.type.institutional')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Risk Profile
+                    {t('ai.riskProfile')}
                   </label>
                   <select
                     value={formData.investorProfile.riskProfile}
                     onChange={(e) => updateFormData('investorProfile', 'riskProfile', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   >
-                    <option value="Conservative">Conservative</option>
-                    <option value="Moderate">Moderate</option>
-                    <option value="Moderate-Aggressive">Moderate-Aggressive</option>
-                    <option value="Aggressive">Aggressive</option>
+                    <option value="Conservative">{t('ai.risk.conservative')}</option>
+                    <option value="Moderate">{t('ai.risk.moderate')}</option>
+                    <option value="Moderate-Aggressive">{t('ai.risk.moderateAggressive')}</option>
+                    <option value="Aggressive">{t('ai.risk.aggressive')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Investment Experience
+                    {t('ai.investmentExperience')}
                   </label>
                   <select
                     value={formData.investorProfile.investmentExperience}
                     onChange={(e) => updateFormData('investorProfile', 'investmentExperience', e.target.value)}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
                   >
-                    <option value="Novice">Novice</option>
-                    <option value="Intermediate">Intermediate</option>
-                    <option value="Advanced">Advanced</option>
-                    <option value="Professional">Professional</option>
+                    <option value="Novice">{t('ai.exp.novice')}</option>
+                    <option value="Intermediate">{t('ai.exp.intermediate')}</option>
+                    <option value="Advanced">{t('ai.exp.advanced')}</option>
+                    <option value="Professional">{t('ai.exp.professional')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Liquid Net Worth *
+                    {t('ai.liquidNetWorth')}
                   </label>
                   <input
                     type="text"
@@ -530,7 +532,7 @@ export default function AddInvestor() {
                   />
                   {errors.liquidNetWorth && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.liquidNetWorth}
                     </p>
                   )}
@@ -538,7 +540,7 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Annual Income *
+                    {t('ai.annualIncome')}
                   </label>
                   <input
                     type="text"
@@ -551,7 +553,7 @@ export default function AddInvestor() {
                   />
                   {errors.annualIncome && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.annualIncome}
                     </p>
                   )}
@@ -559,7 +561,7 @@ export default function AddInvestor() {
 
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Investment Objectives
+                    {t('ai.investmentObjectives')}
                   </label>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                     {investmentObjectives.map((objective) => (
@@ -570,7 +572,7 @@ export default function AddInvestor() {
                           onChange={() => toggleInvestmentObjective(objective)}
                           className="rounded border-gray-300 text-black focus:ring-gray-500"
                         />
-                        <span className="text-sm text-gray-700">{objective}</span>
+                        <span className="text-sm text-gray-700">{t(objective)}</span>
                       </label>
                     ))}
                   </div>
@@ -584,10 +586,10 @@ export default function AddInvestor() {
                       onChange={(e) => updateFormData('investorProfile', 'accreditedInvestor', e.target.checked)}
                       className="rounded border-gray-300 text-black focus:ring-gray-500"
                     />
-                    <span className="text-sm font-medium text-gray-700">Accredited Investor</span>
+                    <span className="text-sm font-medium text-gray-700">{t('ai.accreditedInvestor')}</span>
                   </label>
                   <p className="text-xs text-gray-500 mt-1">
-                    I certify that I meet the criteria for an accredited investor as defined by SEC regulations
+                    {t('ai.accreditedNote')}
                   </p>
                 </div>
               </div>
@@ -596,27 +598,27 @@ export default function AddInvestor() {
 
           {currentStep === 4 && (
             <div className="space-y-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Compliance & Documentation</h2>
-              
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('ai.compliance')}</h2>
+
               <div className="space-y-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    KYC Documents
+                    {t('ai.kycDocuments')}
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
                     <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-sm text-gray-600 mb-2">
-                      Upload identification documents, proof of address, and financial statements
+                      {t('ai.kycUploadText')}
                     </p>
                     <button className="text-black hover:text-gray-800 font-medium">
-                      Choose Files
+                      {t('ai.chooseFiles')}
                     </button>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Source of Funds *
+                    {t('ai.sourceOfFunds')}
                   </label>
                   <textarea
                     value={formData.complianceInfo.sourceOfFunds}
@@ -625,11 +627,11 @@ export default function AddInvestor() {
                     className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent ${
                       errors.sourceOfFunds ? 'border-red-300' : 'border-gray-300'
                     }`}
-                    placeholder="Describe the source of investment funds..."
+                    placeholder={t('ai.sourcePlaceholder')}
                   />
                   {errors.sourceOfFunds && (
                     <p className="mt-1 text-sm text-red-600 flex items-center">
-                      <AlertCircle className="w-3 h-3 mr-1" />
+                      <AlertCircle className="w-3 h-3 me-1" />
                       {errors.sourceOfFunds}
                     </p>
                   )}
@@ -637,14 +639,14 @@ export default function AddInvestor() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Regulatory Restrictions or Notes
+                    {t('ai.regulatoryRestrictions')}
                   </label>
                   <textarea
                     value={formData.complianceInfo.regulatoryRestrictions}
                     onChange={(e) => updateFormData('complianceInfo', 'regulatoryRestrictions', e.target.value)}
                     rows={3}
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent"
-                    placeholder="Any regulatory restrictions or special considerations..."
+                    placeholder={t('ai.regulatoryPlaceholder')}
                   />
                 </div>
 
@@ -658,7 +660,7 @@ export default function AddInvestor() {
                       className="rounded border-gray-300 text-black focus:ring-gray-500"
                     />
                     <label htmlFor="pep" className="text-sm text-gray-700">
-                      Politically Exposed Person (PEP) or related to PEP
+                      {t('ai.pep')}
                     </label>
                   </div>
 
@@ -671,7 +673,7 @@ export default function AddInvestor() {
                       className="rounded border-gray-300 text-black focus:ring-gray-500"
                     />
                     <label htmlFor="sanctions" className="text-sm text-gray-700">
-                      Subject to economic sanctions or restrictions
+                      {t('ai.sanctions')}
                     </label>
                   </div>
                 </div>
@@ -687,7 +689,7 @@ export default function AddInvestor() {
                   onClick={handlePrevious}
                   className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
-                  Previous
+                  {t('common:previous')}
                 </button>
               )}
             </div>
@@ -697,8 +699,8 @@ export default function AddInvestor() {
                 to="/admin/investors"
                 className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
               >
-                <X className="w-4 h-4 mr-2" />
-                Cancel
+                <X className="w-4 h-4 me-2" />
+                {t('common:cancel')}
               </Link>
 
               {currentStep < steps.length ? (
@@ -706,7 +708,7 @@ export default function AddInvestor() {
                   onClick={handleNext}
                   className="flex items-center px-6 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
                 >
-                  Next
+                  {t('common:next')}
                 </button>
               ) : (
                 <button
@@ -716,13 +718,13 @@ export default function AddInvestor() {
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                      Creating...
+                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin me-2" />
+                      {t('ai.creating')}
                     </>
                   ) : (
                     <>
-                      <Save className="w-4 h-4 mr-2" />
-                      Create Investor
+                      <Save className="w-4 h-4 me-2" />
+                      {t('ai.createInvestor')}
                     </>
                   )}
                 </button>

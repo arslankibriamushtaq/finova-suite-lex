@@ -1,14 +1,16 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 function PartnerBusinessinfo({ setSelectedTab, packageDetails }: any) {
+  const { t } = useTranslation("partner");
   const customerDetails = [
-    { label: "CR Name", value: packageDetails?.customer_name || "-" },
-    { label: "CR Number", value: packageDetails?.cr_number || "-" },
-    { label: "Issue Date", value: packageDetails?.issue_date || "-" },
-    { label: "Expiry Date", value: packageDetails?.expiry_date || "-" },
-    { label: "isEcommerce", value: packageDetails?.is_ecommerce || "-" },
+    { label: t("businessInfo.crName"), value: packageDetails?.customer_name || "-" },
+    { label: t("businessInfo.crNumber"), value: packageDetails?.cr_number || "-" },
+    { label: t("businessInfo.issueDate"), value: packageDetails?.issue_date || "-" },
+    { label: t("businessInfo.expiryDate"), value: packageDetails?.expiry_date || "-" },
+    { label: t("businessInfo.isEcommerce"), value: packageDetails?.is_ecommerce || "-" },
     {
-      label: "Unified National Number",
+      label: t("businessInfo.unifiedNationalNumber"),
       value: packageDetails?.unified_national_number || "-",
     },
   ];

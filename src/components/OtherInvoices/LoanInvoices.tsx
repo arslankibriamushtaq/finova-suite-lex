@@ -8,8 +8,10 @@ import toast from "react-hot-toast";
 
 import { DownOutlined, EyeOutlined } from "@ant-design/icons";
 import { NumberFormatter } from "../../App";
+import { useTranslation } from "react-i18next";
 
 const LoanInvoices = () => {
+  const { t } = useTranslation("accountingLoans");
   const [searchValue, setSearchValue] = useState("");
   const [editRowId, setEditRowId] = useState(null);
   const [selectApplicable, setSelectApplicable] = useState<any>();
@@ -52,7 +54,7 @@ const LoanInvoices = () => {
           <EyeOutlined/>
         }
       >
-       View
+       {t("otherLoan.view")}
       </Menu.Item>
     </Menu>
   );
@@ -72,29 +74,29 @@ const LoanInvoices = () => {
 
   const Customer_ALL_List_Header = [
     {
-      name: "Product Name",
+      name: t("otherLoan.col.productName"),
       selector: (row: any) => row.productName,
     },
     {
-      name: "Application Key",
+      name: t("otherLoan.col.applicationKey"),
       selector: (row: any) => row.applicationKey,
     },
     {
-      name: "Loan Amount",
+      name: t("otherLoan.col.loanAmount"),
       selector: (row: any) => <NumberFormatter value={row.billingTo} />, // Assuming billingTo is the customer name
     },
     {
-      name: "Invoice Date",
+      name: t("otherLoan.col.invoiceDate"),
       selector: (row: any) => new Date(row.invoiceDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Invoice Date"),
     },
     {
-      name: "Due Date",
+      name: t("otherLoan.col.dueDate"),
       selector: (row: any) => new Date(row.dueDate).toLocaleDateString(),
       frozen: frozenColumns.includes("Due Date"),
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -107,7 +109,7 @@ const LoanInvoices = () => {
               padding: "10px 20px",
             }}
           >
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -200,7 +202,7 @@ const LoanInvoices = () => {
               className="d-flex justify-content-center mt-5"
               style={{ color: "red" }}
             >
-              No data found
+              {t("otherLoan.noData")}
             </div>
           )}
         </div>

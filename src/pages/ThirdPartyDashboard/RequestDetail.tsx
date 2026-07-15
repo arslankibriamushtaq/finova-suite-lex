@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useNavigate } from "react-router-dom";
 import { Card, Spin, Alert, Input, Row, Col, Button } from "antd";
 import toast from "react-hot-toast";
@@ -7,6 +8,7 @@ import { getRequestDetail } from "../../redux/apis/apisThirdParty";
 const { TextArea } = Input;
 
 const RequestDetail = () => {
+  const { t } = useTranslation("connector");
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const requestId = id ? parseInt(id) : 0;
@@ -54,12 +56,12 @@ const RequestDetail = () => {
           setResponseFormat(formatJSON(requestDetail.responses));
         }
       } else {
-        toast.error("Request not found");
+        toast.error(t("requestDetail.notFound"));
         setData(null);
       }
       setLoading(false);
     } catch (error: any) {
-      const errorMessage = error?.response?.data?.message || error?.message || "Failed to fetch request details";
+      const errorMessage = error?.response?.data?.message || error?.message || t("requestDetail.toast.fetchFailed");
       toast.error(errorMessage);
       setLoading(false);
       setData(null);
@@ -86,7 +88,7 @@ const RequestDetail = () => {
   if (!data) {
     return (
       <div className="service">
-        <Alert message="Request not found" type="error" />
+        <Alert message={t("requestDetail.notFound")} type="error" />
       </div>
     );
   }
@@ -94,8 +96,8 @@ const RequestDetail = () => {
   return (
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h2>Request Detail</h2>
-        <Button onClick={() => navigate(-1)}>Back</Button>
+        <h2>{t("requestDetail.title")}</h2>
+        <Button onClick={() => navigate(-1)}>{t("common:back")}</Button>
       </div>
       
       <Card
@@ -111,7 +113,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                ID
+                {t("requestDetail.label.id")}
               </label>
               <Input value={data.id || "-"} readOnly className="form-control" />
             </div>
@@ -120,10 +122,10 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Status
+                {t("requestDetail.label.status")}
               </label>
               <Input
-                value={data.status || "Pending"}
+                value={data.status || t("common:pending")}
                 readOnly
                 className="form-control"
               />
@@ -133,7 +135,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Client
+                {t("requestDetail.label.client")}
               </label>
               <Input value={data.client?.name || "-"} readOnly className="form-control" />
             </div>
@@ -142,7 +144,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Service
+                {t("requestDetail.label.service")}
               </label>
               <Input value={data.api?.service?.name || "-"} readOnly className="form-control" />
             </div>
@@ -151,7 +153,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                API
+                {t("requestDetail.label.api")}
               </label>
               <Input value={data.api?.name || "-"} readOnly className="form-control" />
             </div>
@@ -160,7 +162,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Created At
+                {t("requestDetail.label.createdAt")}
               </label>
               <Input
                 value={data.created_at ? new Date(data.created_at).toLocaleString() : "-"}
@@ -173,7 +175,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Request ID
+                {t("requestDetail.label.requestId")}
               </label>
               <Input value={data.request_id || "-"} readOnly className="form-control" />
             </div>
@@ -182,7 +184,7 @@ const RequestDetail = () => {
           <Col xs={24} sm={12}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                NID
+                {t("requestDetail.label.nid")}
               </label>
               <Input value={data.nid || "-"} readOnly className="form-control" />
             </div>
@@ -192,7 +194,7 @@ const RequestDetail = () => {
             <Col xs={24} sm={12}>
               <div className="mb-3">
                 <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                  Callback
+                  {t("requestDetail.label.callback")}
                 </label>
                 <Input value={data.callback} readOnly className="form-control" />
               </div>
@@ -203,7 +205,7 @@ const RequestDetail = () => {
             <Col xs={24} sm={12}>
               <div className="mb-3">
                 <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                  Contract Number
+                  {t("requestDetail.label.contractNumber")}
                 </label>
                 <Input value={data.contract_number} readOnly className="form-control" />
               </div>
@@ -213,7 +215,7 @@ const RequestDetail = () => {
           <Col xs={24}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Request Body
+                {t("requestDetail.label.requestBody")}
               </label>
               <TextArea
                 value={requestResponse}
@@ -231,7 +233,7 @@ const RequestDetail = () => {
           <Col xs={24}>
             <div className="mb-3">
               <label className="form-label" style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}>
-                Response Body
+                {t("requestDetail.label.responseBody")}
               </label>
               <TextArea
                 value={responseFormat}

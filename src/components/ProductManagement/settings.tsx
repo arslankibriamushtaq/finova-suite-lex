@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Tab, Tabs } from "react-bootstrap";
 import FeeSettings from "./feeSettings";
 import AdminFeeSlabs from "./adminFeeSlabs";
@@ -13,6 +14,7 @@ import { setProductData } from "../../redux/apis/apisSlice";
 import toast from "react-hot-toast";
 
 const Settings = ({setActiveTab}:any) => {
+  const { t } = useTranslation("productManagement2");
   localStorage.setItem("tabs", "ApplicationSteps");
   const getTabs = localStorage.getItem("tabs");
   const [selectTab, setSelectedTab] = useState<any>(getTabs);
@@ -48,7 +50,7 @@ const Settings = ({setActiveTab}:any) => {
             // The individual tab components will handle their own data
           }
         } catch (error: any) {
-          toast.error(error?.response?.data?.message || "Failed to load product data");
+          toast.error(error?.response?.data?.message || t("settingsTabs.loadFailed"));
         }
       }
     };
@@ -57,32 +59,32 @@ const Settings = ({setActiveTab}:any) => {
 
   const tapOptions = [
     {
-      title: "Application Steps",
+      title: t("settingsTabs.applicationSteps"),
       key: "ApplicationSteps",
       folder: <SettingProductAppliation setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Terms and Conditions",
+      title: t("settingsTabs.termsAndConditions"),
       key: "TermsAndConditions",
       folder: <SettingsTermsConditions setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Fee Settings",
+      title: t("settingsTabs.feeSettings"),
       key: "FeeSettings",
       folder: <FeeSettings setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Fee Slabs",
+      title: t("settingsTabs.feeSlabs"),
       key: "AdminFeeSlabs",
       folder: <AdminFeeSlabs setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Environment Configuration",
+      title: t("settingsTabs.envConfig"),
       key: "EnvConfig",
       folder: <EnvConfig setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },
     {
-      title: "Request Duration Settings",
+      title: t("settingsTabs.durationSettings"),
       key: "DurationSettings",
       folder: <DurationSettings setActiveTab={setActiveTab} setSelectedTab={setSelectedTab} readOnly={readOnly} />,
     },

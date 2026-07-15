@@ -10,8 +10,10 @@ import { setDob, setNationID } from "../../redux/apis/apisSlice";
 import DatePicker from "react-multi-date-picker";
 import arabic from "react-date-object/calendars/arabic";
 // import arabic_ar from "react-date-object/locales/arabic_ar";
+import { useTranslation } from "react-i18next";
 
 const AuthorizedInfo = () => {
+  const { t } = useTranslation("landingUser");
   const navigate = useNavigate();
   const location = useLocation();
   const dispatch = useDispatch();
@@ -87,7 +89,7 @@ const AuthorizedInfo = () => {
           className="mt-2 mb-3"
           style={{ fontWeight: 600, fontSize: "20px" }}
         >
-          Authorized Person
+          {t("authorized.title")}
         </label>
 
         <Row className="mt-2 mb-2">
@@ -96,10 +98,10 @@ const AuthorizedInfo = () => {
               className="mb-1 required-asterisk"
               style={{ fontWeight: 500 }}
             >
-              National Id
+              {t("authorized.nationalId")}
             </label>
             <Input
-              placeholder="Enter NID"
+              placeholder={t("authorized.nationalId.placeholder")}
               className="form-control"
               minLength={10}
               maxLength={10}
@@ -115,7 +117,7 @@ const AuthorizedInfo = () => {
               className="mb-1 required-asterisk"
               style={{ fontWeight: 500 }}
             >
-              Legal Form
+              {t("authorized.legalForm")}
             </label>
             <Input
               className="form-control"
@@ -130,7 +132,7 @@ const AuthorizedInfo = () => {
               className="mb-1 required-asterisk"
               style={{ fontWeight: 500 }}
             >
-              Date of Birth
+              {t("authorized.dob")}
             </label>
             <DatePicker
               calendar={arabic}
@@ -168,7 +170,7 @@ const AuthorizedInfo = () => {
             });
           }}
         >
-          Previous
+          {t("common:previous")}
         </button>
         <button
           type="button"
@@ -177,7 +179,7 @@ const AuthorizedInfo = () => {
             handleSubmit();
           }}
         >
-          Next Step
+          {t("action.nextStep")}
         </button>
       </div>
     </>

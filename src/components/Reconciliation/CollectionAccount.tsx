@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { getCollectionAccount } from "../../redux/apis/apisCrudLms";
 const CollectionAccount = () => {
+  const { t } = useTranslation("reconciliation");
   const [tableData, setTableData] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -85,24 +87,24 @@ const CollectionAccount = () => {
     // },
 
     {
-      name: "Date",
+      name: t("common:date"),
       selector: (row: { Date: any }) => row.Date || "-",
     },
     {
-      name: "Customer ID",
+      name: t("col.customerId"),
       cell: (row: any) => row.customerId || "-",
     },
     {
-      name: "Amount Paid",
+      name: t("col.amountPaid"),
       selector: (row: { amountPaid: any }) => row.amountPaid || "-",
     },
     {
-      name: "Transfer Number",
+      name: t("col.transferNumber"),
       selector: (row: { transferNumber: any }) => row.transferNumber || "-",
     },
 
     {
-      name: "Collection Status",
+      name: t("col.collectionStatus"),
       selector: (row: { collectionStatus: any }) => row.collectionStatus || "-",
     },
   ];

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { DatePicker, Select } from "antd";
 import TableView from "../../../../components/TableView/TableView";
@@ -11,6 +12,7 @@ import moment from "moment";
 import { saveAs } from "file-saver";
 
 const InvestorLedger = () => {
+  const { t } = useTranslation("investor");
 
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -29,48 +31,48 @@ const InvestorLedger = () => {
 
   const getAllDaybookReport = [
     {
-      name: "S No",
+      name: t("led.col.sNo"),
       selector: (row: { Sr: number }) => row.Sr,
       sortable: true,
       width: "60px",
     },
     {
-      name: "ID",
+      name: t("led.col.id"),
       selector: (row: { id: string }) => row.id,
       omit: true, // Hide ID column
     },
     {
-      name: "Customer",
+      name: t("led.col.customer"),
       selector: (row: { customer: string }) => row.customer,
     },
     {
-      name: "Transaction Date",
+      name: t("led.col.transactionDate"),
       selector: (row: { transactionDate: string }) =>
         formatDate(row.transactionDate),
     },
     {
-      name: "Application No",
+      name: t("led.col.applicationNo"),
       selector: (row: { applicationNo: string }) => row.applicationNo,
     },
     {
-      name: "Voucher No",
+      name: t("led.col.voucherNo"),
       selector: (row: { voucherNo: string }) => row.voucherNo,
     },
     {
-      name: "Account Code",
+      name: t("led.col.accountCode"),
       selector: (row: { accountCode: string }) => row.accountCode,
     },
     {
-      name: "Account",
+      name: t("led.col.account"),
       cell: (row: any) => <span>{row.account}</span>,
     },
 
     {
-      name: "Debit",
+      name: t("led.col.debit"),
       selector: (row: { debit: number }) => row.debit,
     },
     {
-      name: "Credit",
+      name: t("led.col.credit"),
       selector: (row: { credit: number }) => row.credit,
     },
   ];
@@ -137,7 +139,7 @@ const InvestorLedger = () => {
       }
     } catch (error: any) {
       setLoading(false);
-      toast.error(error?.message || "Failed to fetch ledger data");
+      toast.error(error?.message || t("led.fetchError"));
     }
   };
 
@@ -206,7 +208,7 @@ const InvestorLedger = () => {
       <div className="col-12">
         <div className="d-flex justify-content-between align-items-center">
           <div className="col-10">
-            <h3 className="mb-0">Ledger</h3>
+            <h3 className="mb-0">{t("led.title")}</h3>
           </div>
         </div>
         <div className="d-flex mt-3 justify-content-between align-items-center">
@@ -214,39 +216,39 @@ const InvestorLedger = () => {
             {/* From Date */}
             <div className="col-md-3 d-grid">
               <label htmlFor="fromDate" className="form-label">
-                From
+                {t("common:from")}
               </label>
               <DatePicker
                 value={fromDate ? moment(fromDate) : null}
                 onChange={(date: any, dateString: string | string[]) => {
                   setFromDate(dateString || null);
                 }}
-                placeholder="Select From Date"
+                placeholder={t("led.selectFromDate")}
               />
             </div>
 
             {/* To Date */}
             <div className="col-md-3 d-grid">
               <label htmlFor="toDate" className="form-label">
-                To
+                {t("common:to")}
               </label>
               <DatePicker
                 value={toDate ? moment(toDate) : null}
                 onChange={(date, dateString: string | string[]) => {
                   setToDate(dateString || null);
                 }}
-                placeholder="Select To Date"
+                placeholder={t("led.selectToDate")}
               />
             </div>
 
             <div className="col-md-4">
               <label htmlFor="Accounts" className="form-label">
-                Accounts
+                {t("led.accounts")}
               </label>
               <Select
                 size="middle"
                 className="ledger-account"
-                placeholder="Select Account Name"
+                placeholder={t("led.selectAccountName")}
                 onChange={(value) => {
                   setSearchValue(value);
                   if (fromDate && toDate) {
@@ -256,7 +258,7 @@ const InvestorLedger = () => {
                   }
                 }}
               >
-                <Select.Option value="all">All</Select.Option>
+                <Select.Option value="all">{t("common:all")}</Select.Option>
                 {customerData?.map((option) => (
                   <Select.Option key={option.accountCode} value={option.accountCode}>
                     {option?.accountName}
@@ -273,7 +275,7 @@ const InvestorLedger = () => {
                 exportToCSV(ledgerData, "ledgerData");
               }}
             >
-              Export CSV
+              {t("led.exportCsv")}
             </button>
           </div>
         </div>
@@ -296,16 +298,16 @@ const InvestorLedger = () => {
         />
         {ledgerData?.length !== 0 && !loading && (
           <div className="d-flex justify-content-between p-3 border-top border-bottom">
-            <strong>Overall Total</strong>
+            <strong>{t("led.overallTotal")}</strong>
             <span className="d-flex gap-4">
-              <strong>Debit: {responseData?.totalDebitAmount}</strong>
-              <strong>Credit: {responseData?.toalCreditAmount}</strong>
+              <strong>{t("led.debitLabel", { value: responseData?.totalDebitAmount })}</strong>
+              <strong>{t("led.creditLabel", { value: responseData?.toalCreditAmount })}</strong>
             </span>
           </div>
         )}
         {ledgerData?.length == 0 && !loading && (
           <div className="d-flex justify-content-center mt-5 bg-red">
-            No data found
+            {t("led.noData")}
           </div>
         )}
       </div>

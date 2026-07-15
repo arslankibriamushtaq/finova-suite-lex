@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Select, Skeleton } from "antd";
 import { Row, Col, Form } from "react-bootstrap";
 import toast from "react-hot-toast";
@@ -12,6 +13,7 @@ import { setProdId } from "../redux/apis/apisSlice";
 import { color } from "echarts";
 
 const Calculator = () => {
+  const { t } = useTranslation("adminMisc");
   // const [prodId, setProdId] = useState<any>();
   const [loading, setLoading] = useState<any>(false);
   const [calculatorData, setCalculatorData] = useState<any>();
@@ -136,7 +138,7 @@ const Calculator = () => {
     } catch (error) {
       setLoading(false);
       console.error("Error saving data", error);
-      setErrors({ api: "Failed to save data, please try again later" });
+      setErrors({ api: t("calc.toast.saveFailed") });
     }
   };
 
@@ -145,13 +147,13 @@ const Calculator = () => {
       symbolSize: 0.5,
       data: [
         {
-          name: "Principle Amount",
+          name: t("calc.principleAmount"),
           value:
             calculatorData?.totalPayment - calculatorData?.totalInterest || 0,
         },
-        { name: "Total Fees", value: calculatorData?.totalInterest || 0 },
+        { name: t("calc.totalFees"), value: calculatorData?.totalInterest || 0 },
       ],
-      name: "Amount",
+      name: t("common:amount"),
       type: "pie",
       radius: ["100%"],
       center: ["50%", "50%"],
@@ -223,16 +225,23 @@ const Calculator = () => {
           />
         ),
       }));
+  const chainNameKey: Record<string, string> = {
+    "Down Payment": "calc.chain.downPayment",
+    "Balloon Payment": "calc.chain.balloonPayment",
+    "Monthly Payment": "calc.chain.monthlyPayment",
+    "Total Interest": "calc.chain.totalInterest",
+    "Final Amount": "calc.chain.finalAmount",
+  };
   return (
     <div>
       <h2 className="col-md-12 pt-2 pb-2 d-flex align-items-center fs-6 fw-bold">
-        {"Calculator"}
+        {t("calc.title")}
       </h2>
       <Row>
         <Col md={6} className="mb-3">
           <Form.Group>
             <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-              Select Product
+              {t("calc.selectProduct")}
             </Form.Label>
             <Select
               value={formValues.productName}
@@ -244,7 +253,7 @@ const Calculator = () => {
               }}
               defaultValue={formValues?.productId}
               style={{ width: "100%" }}
-              placeholder="Select Product"
+              placeholder={t("calc.selectProductPlaceholder")}
             >
               {prodId?.map((option,index) => (
                 <Select.Option key={index} value={option?.id}>
@@ -295,17 +304,11 @@ const Calculator = () => {
           </div>
           {formValues?.productId == 1 ? (
             <div className="d-flex align-items-center invoice-value justify-content-between mt-1 mb-3">
-              {formValues?.productName} is the fastest facility, It is a quick
-              fix for your business problems. This facility can be availed
-              within 24 hours and can be utilised for 3 months. Below are the
-              salient features for {formValues?.productName} product
+              {t("calc.desc.threeMonths", { name: formValues?.productName })}
             </div>
           ) : (
             <div className="d-flex align-items-center invoice-value justify-content-between mt-1 mb-3">
-              {formValues?.productName} is the fastest facility, It is a quick
-              fix for your business problems. This facility can be availed
-              within 24 hours and can be utilised for 1 year. Below are the
-              salient features for {formValues?.productName} product
+              {t("calc.desc.oneYear", { name: formValues?.productName })}
             </div>
           )}
 
@@ -324,7 +327,7 @@ const Calculator = () => {
                             className="mt-2"
                             style={{ fontSize: "13px", fontWeight: "600" }}
                           >
-                            {field.label}
+                            {t("calc.field." + field.name)}
                             <span className="required-indicator ps-1">*</span>
                           </Form.Label>
                           <Select
@@ -337,11 +340,11 @@ const Calculator = () => {
                             }}
                             defaultValue={1}
                             style={{ width: "100%" }}
-                            placeholder="Select Product"
+                            placeholder={t("calc.selectProductPlaceholder")}
                           >
                             {ProductList?.map((option,index) => (
                               <Select.Option  key={index} value={option.value}>
-                                <div>{option?.label}</div>
+                                <div>{option.value === 2 ? t("calc.tenure.monthly") : t("calc.tenure.yearly")}</div>
                               </Select.Option>
                             ))}
                           </Select>
@@ -355,14 +358,14 @@ const Calculator = () => {
                               className="mt-2"
                               style={{ fontSize: "13px", fontWeight: "600" }}
                             >
-                              {field.label}
+                              {t("calc.field." + field.name)}
                               <span className="required-indicator ps-1">*</span>
                             </Form.Label>
                             <Form.Control
                               name={field.name}
                               type={field.type}
                               value={formValues[field.name]}
-                              placeholder={field.placeholder}
+                              placeholder={t("calc.placeholder." + field.name)}
                               onChange={handleInputChange}
                             />
                             {errors[field.name] && (
@@ -394,7 +397,7 @@ const Calculator = () => {
                 width: "fit-content",
               }}
             >
-              Calculate
+              {t("calc.calculateBtn")}
             </button>
           </div>
         </div>
@@ -403,7 +406,7 @@ const Calculator = () => {
             className="d-flex align-items-center justify-content-center mt-5"
             style={{ fontSize: "14px", fontWeight: "Bold" }}
           >
-            Breakup of Payment
+            {t("calc.breakup")}
           </div>
           <div
             className="col-12 d-flex"
@@ -431,7 +434,9 @@ const Calculator = () => {
                               className="col-12 d-flex align-items-center invoice-value"
                               style={{ fontSize: "12px", color: "#000000" }}
                             >
-                              {item?.name}
+                              {item?.name && chainNameKey[item.name.trim()]
+                                ? t(chainNameKey[item.name.trim()])
+                                : item?.name}
                             </div>
                             <div
                               className="col-12 d-flex align-items-center mt-2 invoice-label"
@@ -467,7 +472,7 @@ const Calculator = () => {
                 <div className="principle-amount"></div>
               </div>
               <div className="col-10 d-flex align-items-center invoice-value">
-                Principle Amount
+                {t("calc.principleAmount")}
               </div>
             </div>
             <div className="d-flex col-6">
@@ -475,7 +480,7 @@ const Calculator = () => {
                 <div className="total-amount"></div>
               </div>
               <div className="col-10 d-flex align-items-center invoice-value">
-                Total Fees
+                {t("calc.totalFees")}
               </div>
             </div>
           </div>

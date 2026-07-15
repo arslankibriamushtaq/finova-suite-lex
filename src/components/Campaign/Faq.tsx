@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import ReactECharts from "echarts-for-react";
 import calandrImg from "../../assets/images/calandar-img.png";
 import { Form,Modal, Row, Col, FormLabel } from "react-bootstrap";
@@ -16,6 +17,7 @@ import arrowDown from "../../assets/images/arrow-down.png";
 import SkeletonLabel from "../SkeletonLabel";
 
 const Faq = () => {
+  const { t } = useTranslation("adminMisc");
 
   const [dashboardData, setDashboardData] = useState<any>();
   const [showModal, setShowModal] = useState(false);
@@ -42,23 +44,23 @@ const Faq = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("ui.sr"),
       selector: (row: { user_id: any }) => row.user_id,
       sortable: true,
       width : "100px"
     },
     {
-      name: "Questions",
+      name: t("faq.col.questions"),
       selector: (row: {  answer: any }) => row.answer,
       sortable: true,
     },
     {
-      name: "Answers",
+      name: t("faq.col.answers"),
       selector: (row: { question: any }) => row.question,
       sortable: true,
     },
     {
-        name: "Type",
+        name: t("common:type"),
         cell: (row: any) => (
             <div
              
@@ -68,13 +70,13 @@ const Faq = () => {
                 cursor: row.type === "spin" ? "spin" : "reward",
               }}
             >
-              {row.type=="spin"?"spin":"reward"}
+              {row.type=="spin"?t("faq.type.spin"):t("faq.type.reward")}
             </div>
           ),
-        
+
       },
       {
-        name: "Status",
+        name: t("common:status"),
         cell: (row: any) => (
             <div
              
@@ -93,12 +95,12 @@ const Faq = () => {
                 cursor: row.status === "active" ? "pointer" : "default",
               }}
             >
-              {row.status=="active"?"Active":"Inactive"}
+              {row.status=="active"?t("common:active"):t("common:inactive")}
             </div>
           ),
       },
     {
-        name: "Actions",
+        name: t("common:actions"),
   
         cell: (row: any) => (
           <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -113,12 +115,12 @@ const Faq = () => {
                 padding: "10px 20px",
               }}
             >
-              Select <img src={arrowDown} alt="" />
+              {t("common:select")} <img src={arrowDown} alt="" />
             </Button>
           </Dropdown>
         ),
     },
-   
+
 
   ];
 
@@ -144,14 +146,14 @@ const Faq = () => {
     }}
         
       >
-            Edit
+            {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -232,9 +234,9 @@ dashboardData?.map((item: any) => {
           });
           getList();
 
-          return "Faq updated successfully!";
+          return t("faq.toast.updateSuccess");
         } else {
-          throw new Error(response?.data?.errors || "Failed to update");
+          throw new Error(response?.data?.errors || t("faq.toast.updateFailed"));
         }
       } else {
         const response = await getAllFaqCreate(body);
@@ -249,19 +251,19 @@ dashboardData?.map((item: any) => {
           });
           getList();
 
-          return "Faq added successfully!";
+          return t("faq.toast.addSuccess");
         } else {
-          throw new Error(response?.data?.errors || "Failed to add");
+          throw new Error(response?.data?.errors || t("faq.toast.addFailed"));
         }
       }
     };
-  
+
     toast.promise(
       savePromise(),
       {
-        loading: isEditing ? "Updating Faq..." : "Adding Faq...",
+        loading: isEditing ? t("faq.toast.updating") : t("faq.toast.adding"),
         success: (msg) => msg,
-        error: (err) => err.message || "Something went wrong",
+        error: (err) => err.message || t("faq.toast.somethingWentWrong"),
       }
     );
   };
@@ -275,18 +277,18 @@ dashboardData?.map((item: any) => {
                 setIsDeleteModalVisible(false);
                 getList();
                 setEditRowId(null)
-                return "Faq delete successfully!";
+                return t("faq.toast.deleteSuccess");
               } else {
-                throw new Error(response?.data?.errors || "Failed to delete");
+                throw new Error(response?.data?.errors || t("faq.toast.deleteFailed"));
               }
           };
-        
+
           toast.promise(
             savePromise(),
             {
-              loading:  "Deleting Faq...",
+              loading:  t("faq.toast.deleting"),
               success: (msg) => msg,
-              error: (err) => err.message || "Something went wrong",
+              error: (err) => err.message || t("faq.toast.somethingWentWrong"),
             }
           );
     } catch (error: any) {
@@ -302,7 +304,7 @@ dashboardData?.map((item: any) => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -320,17 +322,17 @@ dashboardData?.map((item: any) => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("ui.searchPlaceholder")}
             />
           </div>
 
-          <button className="invoice-btn">Excel</button>
-          <button className="invoice-btn">PDF</button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("ui.excel")}</button>
+          <button className="invoice-btn">{t("ui.pdf")}</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button
             className="theme-btn"
             onClick={() => setShowModal(true)}>
-            Add New Faq
+            {t("faq.addBtn")}
           </button>
         </div>
       </div>
@@ -350,18 +352,18 @@ dashboardData?.map((item: any) => {
          />
        <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered>
               <Modal.Header closeButton>
-                <Modal.Title>{editRowId?"Edit Faq":"Add New Faq"}</Modal.Title>
+                <Modal.Title>{editRowId?t("faq.modal.editTitle"):t("faq.modal.addTitle")}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Form>
                   <Row>
                     <Col md={12}>
                       <Form.Group className="mb-2 custom-input-box">
-                        <Form.Label className="px-2 mt-2">Question</Form.Label>
+                        <Form.Label className="px-2 mt-2">{t("faq.form.question")}</Form.Label>
                         <Form.Control
                           type="text"
                           className="custom-input"
-                          placeholder="Placeholder"
+                          placeholder={t("faq.form.placeholder")}
                           name="answer"
                           value={formData.answer}
                           onChange={handleInputChange}
@@ -370,11 +372,11 @@ dashboardData?.map((item: any) => {
                     </Col>
                     <Col md={12}>
                       <Form.Group className="mb-2 custom-input-box">
-                        <Form.Label className="px-2 mt-2">Answer</Form.Label>
+                        <Form.Label className="px-2 mt-2">{t("faq.form.answer")}</Form.Label>
                         <Form.Control
                           type="text"
                           className="custom-input"
-                          placeholder="Placeholder"
+                          placeholder={t("faq.form.placeholder")}
                           name="question"
                           value={formData.question}
                           onChange={handleInputChange}
@@ -385,7 +387,7 @@ dashboardData?.map((item: any) => {
                     <Row>
                     <Col md={6}>
                       <Form.Group className="mb-2 custom-input-box">
-                        <Form.Label className="px-2 mt-2">Type</Form.Label>
+                        <Form.Label className="px-2 mt-2">{t("common:type")}</Form.Label>
                         <div className="custom-input-cont">
                             <Form.Select
                             value={formData.type}
@@ -393,8 +395,8 @@ dashboardData?.map((item: any) => {
                             onChange={handleInputChange}  // Now properly typed
                             style={{ width: "100%", marginTop: "0" }}
                             >
-                            <option value="spin">spin</option>
-                            <option value="reward">reward</option>
+                            <option value="spin">{t("faq.type.spin")}</option>
+                            <option value="reward">{t("faq.type.reward")}</option>
                             </Form.Select>
                         </div>
                       </Form.Group>
@@ -402,8 +404,8 @@ dashboardData?.map((item: any) => {
                       </Col>
                       <Col md={6}>
                       <Form.Group className="mb-2 custom-input-box">
-                        <Form.Label className="px-2 mt-2">Status</Form.Label>
-                        
+                        <Form.Label className="px-2 mt-2">{t("common:status")}</Form.Label>
+
                         <Form.Group className="w-100">
                         <div className="custom-input-cont">
                             <Form.Select
@@ -412,8 +414,8 @@ dashboardData?.map((item: any) => {
                             onChange={handleInputChange}  // Now properly typed
                             style={{ width: "100%", marginTop: "0" }}
                             >
-                            <option value="active">active</option>
-                            <option value="inactive">inactive</option>
+                            <option value="active">{t("common:active")}</option>
+                            <option value="inactive">{t("common:inactive")}</option>
                             </Form.Select>
                         </div>
                         </Form.Group>
@@ -433,10 +435,10 @@ dashboardData?.map((item: any) => {
                   type: '',
                   status:  ''
                 });}}>
-                  Close
+                  {t("common:close")}
                 </Button>
                 <Button className="theme-btn" onClick={handleSave}>
-                {editRowId?"Edit Faq":"Add New Faq"}
+                {editRowId?t("faq.modal.editTitle"):t("faq.modal.addTitle")}
                 </Button>
               </Modal.Footer>
             </Modal>
@@ -451,7 +453,7 @@ dashboardData?.map((item: any) => {
               marginBottom: "0",
             }}
           >
-            Are you sure want to delete this spin?
+            {t("faq.confirm.delete")}
           </p>
         </div>
               </Modal.Body>
@@ -461,7 +463,7 @@ dashboardData?.map((item: any) => {
                 onClick={() => setIsDeleteModalVisible(false)}
                 className="invoice-btn"
                 >
-                No
+                {t("common:no")}
                 </Button>
                 <Button
                 key="yes"
@@ -469,7 +471,7 @@ dashboardData?.map((item: any) => {
                 disabled={loading}
                 className="theme-btn"
                 >
-                Yes
+                {t("common:yes")}
                 </Button>
               </Modal.Footer>
             </Modal>

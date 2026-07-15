@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Button, Dropdown, Menu, Select, Modal, Input, Form } from "antd";
+import { useTranslation } from "react-i18next";
 import { FaFilter } from "react-icons/fa";
 import arrowDown from "../../../assets/images/arrow-down.png";
 import toast from "react-hot-toast";
@@ -12,6 +13,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 
 const Vendor = () => {
+  const { t } = useTranslation("system");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -37,24 +39,24 @@ const Vendor = () => {
           await toast.promise(
             deleteVendor(rowData?.id), // API call
             {
-              loading: "Deleting Vendor...",
+              loading: t("vendor.deleting"),
               success: (response) => {
                 if (response?.data?.success) {
                     getList()
                   setIsDeleteModalVisible(false)
-                  return "Vendor deleted successfully";
-                  
+                  return t("vendor.deleteSuccess");
+
                 } else {
                   throw new Error(
                     response?.data?.errors?.[0] ||
                       response?.data?.message ||
-                      "Failed to deleting Vendor."
+                      t("vendor.deleteFailed")
                   );
                 }
               },
               error: (err) =>
                 err?.message ||
-                "Something went wrong while deleting the Vendor.",
+                t("vendor.deleteError"),
             }
           );
         
@@ -93,19 +95,19 @@ const Vendor = () => {
   }, [page, pageSize]);
   const Activity_Loans_Header = [
     {
-      name: "Sr:",
+      name: t("shared.sr"),
       selector: (row: { Sr: any }) => row.Sr,
       sortable: true,
       width:"15%",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       selector: (row: { name: any }) => row.name,
       sortable: true,
       width:"75%",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
 
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
@@ -120,7 +122,7 @@ const Vendor = () => {
               padding: "10px 20px",
             }}
           >
-            Select <img src={arrowDown} alt="" />
+            {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -134,14 +136,14 @@ const Vendor = () => {
         icon={<EditOutlined />}
         onClick={() => handleMenuClick("edit", row)}
       >
-        Edit
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
         onClick={() => handleMenuClick("delete", row)}
       >
-        Delete
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -206,29 +208,29 @@ const Vendor = () => {
         await toast.promise(
             editVendor(updateBody), // Pass the body with ID included
           {
-            loading: "Updating Vendor...",
+            loading: t("vendor.updating"),
             success: (response:any) => {
                 if (response?.data?.success) {
                   getList()
                   setIsModalVisible(false)
-                return "Vendor updated successfully";
+                return t("vendor.updateSuccess");
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
-                    "Failed to update vendor."
+                    t("vendor.updateFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while updating the vendor.",
+              t("vendor.updateError"),
           }
         );
       } else {
         await toast.promise(
             createVendor(formValues), // API call
           {
-            loading: "Adding Vendor...",
+            loading: t("vendor.adding"),
             success: (response) => {
                 if (response?.data?.success) {
                 setFormValues({
@@ -237,18 +239,18 @@ const Vendor = () => {
                   });
                   getList()
                   setIsModalVisible(false)
-                return "New Vendor added successfully"
+                return t("vendor.addSuccess")
               } else {
                 throw new Error(
                   response?.data?.errors?.[0] ||
                     response?.data?.message ||
-                    "Failed to Vendor."
+                    t("vendor.addFailed")
                 );
               }
             },
             error: (err) =>
               err?.message ||
-              "Something went wrong while adding the Vendor.",
+              t("vendor.addError"),
           }
         );
       }
@@ -303,7 +305,7 @@ const Vendor = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("common:filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -321,11 +323,11 @@ const Vendor = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("shared.searchPlaceholder")}
             />
           </div>
           <button className="invoice-btn" onClick={exportToExcel}>
-            Excel
+            {t("shared.excel")}
           </button>
           <button
             className="invoice-btn"
@@ -333,11 +335,11 @@ const Vendor = () => {
               exportToPDF();
             }}
           >
-            PDF
+            {t("shared.pdf")}
           </button>
-          <button className="invoice-btn">Print</button>
+          <button className="invoice-btn">{t("common:print")}</button>
           <button onClick={showModal} className="theme-btn">
-            Add New Vendor
+            {t("vendor.addNew")}
           </button>
         </div>
       </div>
@@ -360,18 +362,18 @@ const Vendor = () => {
         style={{ maxWidth: "732px" }}
         title={
           selectedItem === "edit"
-            ? "Edit Vendor"
-            : "Add New Vendor"
+            ? t("vendor.editTitle")
+            : t("vendor.addNew")
         }
         visible={isModalVisible}
         onCancel={handleCancel}
         footer={[
-            <div className="w-100"> 
+            <div className="w-100">
     <Button key="close" onClick={handleCancel}>
-            Close
+            {t("common:close")}
           </Button>
           <button key="save" className="theme-btn ms-2" disabled={isLoading} onClick={handleOk}>
-            {selectedItem === "edit" ? "Edit" : "Add"}
+            {selectedItem === "edit" ? t("common:edit") : t("common:add")}
           </button>
             </div>
             
@@ -384,9 +386,9 @@ const Vendor = () => {
               {/* Name Field */}
               <Form.Item className="w-100">
                 <div className="custom-input-container">
-                  <label className="input-label">Name</label>
+                  <label className="input-label">{t("common:name")}</label>
                   <Input
-                    placeholder="Enter complaint type"
+                    placeholder={t("vendor.namePlaceholder")}
                     className="fs-6"
                     value={formValues?.name}
                     onChange={(e) => handleChange("name", e.target.value)}
@@ -415,7 +417,7 @@ const Vendor = () => {
               fontWeight: "500",
             }}
           >
-            No
+            {t("common:no")}
           </Button>,
           <Button
             key="yes"
@@ -430,7 +432,7 @@ const Vendor = () => {
               fontWeight: "500",
             }}
           >
-            Yes
+            {t("common:yes")}
           </Button>,
         ]}
         centered
@@ -444,7 +446,7 @@ const Vendor = () => {
               marginBottom: "0",
             }}
           >
-            Are you sure you want to delete this Vendor?
+            {t("vendor.deleteConfirm")}
           </p>
         </div>
       </Modal>

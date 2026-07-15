@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import enTranslations from "../../locales/en.json";
 import arTranslations from "../../locales/ar.json";
 import Loader from "../Loader/Loader";
+import { useTranslation } from "react-i18next";
 
 function FactoringApproval({ packageDetails }: any) {
+  const { t } = useTranslation("dashboard");
   const [factoringData, setFactoringData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
   const [factoringHistory, setFactoringHistory] = useState<any>(null);
@@ -48,7 +50,7 @@ function FactoringApproval({ packageDetails }: any) {
       toast.success(response.data.message);
     } catch (error) {
       console.error("Error fetching factoring data:", error);
-      toast.error("Failed to fetch factoring information");
+      toast.error(t("factoringInfo.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -97,7 +99,7 @@ function FactoringApproval({ packageDetails }: any) {
 
   const handleApproveFactoring = async () => {
     if (!id) {
-      toast.error("Application ID not found");
+      toast.error(t("factoringApproval.toast.appIdNotFound"));
       return;
     }
 
@@ -114,16 +116,16 @@ function FactoringApproval({ packageDetails }: any) {
       const response = await applicationApprovalChecks(body);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "Factoring amount approved successfully");
+        toast.success(response?.data?.message || t("factoringApproval.toast.approved"));
         //await fetchFactoringHistory(); // Refresh data to show updated status
       } else {
-        toast.error(response?.data?.message || "Failed to approve factoring amount");
+        toast.error(response?.data?.message || t("factoringApproval.toast.approveFailed"));
       }
     } catch (error: any) {
       console.error("Error approving factoring:", error);
       toast.error(
-        error?.response?.data?.message || 
-        "Failed to approve factoring amount"
+        error?.response?.data?.message ||
+        t("factoringApproval.toast.approveFailed")
       );
     } finally {
       setSubmitting(false);
@@ -132,7 +134,7 @@ function FactoringApproval({ packageDetails }: any) {
 
   const handleRejectFactoring = async () => {
     if (!id) {
-      toast.error("Application ID not found");
+      toast.error(t("factoringApproval.toast.appIdNotFound"));
       return;
     }
 
@@ -149,16 +151,16 @@ function FactoringApproval({ packageDetails }: any) {
       const response = await applicationApprovalChecks(body);
 
       if (response?.data?.success) {
-        toast.success(response?.data?.message || "Factoring amount rejected");
+        toast.success(response?.data?.message || t("factoringApproval.toast.rejected"));
         //await fetchFactoringHistory(); // Refresh data to show updated status
       } else {
-        toast.error(response?.data?.message || "Failed to reject factoring amount");
+        toast.error(response?.data?.message || t("factoringApproval.toast.rejectFailed"));
       }
     } catch (error: any) {
       console.error("Error rejecting factoring:", error);
       toast.error(
-        error?.response?.data?.message || 
-        "Failed to reject factoring amount"
+        error?.response?.data?.message ||
+        t("factoringApproval.toast.rejectFailed")
       );
     } finally {
       setSubmitting(false);
@@ -264,10 +266,10 @@ function FactoringApproval({ packageDetails }: any) {
                             <div style={{ display: "inline-block", transform: "scale(0.3)", transformOrigin: "center", marginRight: "8px" }}>
                               <Loader />
                             </div>
-                            Processing...
+                            {t("approval.processing")}
                           </>
                         ) : (
-                          "Approve Factoring Amount"
+                          t("factoringApproval.approveBtn")
                         )}
                       </button>
                       <button
@@ -288,10 +290,10 @@ function FactoringApproval({ packageDetails }: any) {
                             <div style={{ display: "inline-block", transform: "scale(0.3)", transformOrigin: "center", marginRight: "8px" }}>
                               <Loader />
                             </div>
-                            Processing...
+                            {t("approval.processing")}
                           </>
                         ) : (
-                          "Reject Factoring Amount"
+                          t("factoringApproval.rejectBtn")
                         )}
                       </button>
                       
@@ -312,7 +314,7 @@ function FactoringApproval({ packageDetails }: any) {
                       <div className="row mb-3" style={{ borderBottom: "1px solid #f0f0f0", paddingBottom: "15px" }}>
                         <div className="col-md-6 d-flex">
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                            Processor
+                            {t("approval.processor")}
                           </div>
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "600", flex: 1, textAlign: "right" }}>
                             {factoringHistory?.processor || 'N/A'}
@@ -321,7 +323,7 @@ function FactoringApproval({ packageDetails }: any) {
 
                         <div className="col-md-6 d-flex">
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                            Processed Date
+                            {t("approval.processedDate")}
                           </div>
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", flex: 1, textAlign: "right" }}>
                             {formatDate(factoringHistory?.processed_date)}
@@ -333,7 +335,7 @@ function FactoringApproval({ packageDetails }: any) {
                       <div className="row">
                         <div className="col-md-6 d-flex align-items-center">
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                            Application Status
+                            {t("approval.applicationStatus")}
                           </div>
                           <div style={{ flex: 1, textAlign: "right" }}>
                             <span 
@@ -352,10 +354,10 @@ function FactoringApproval({ packageDetails }: any) {
 
                         <div className="col-md-6 d-flex">
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", minWidth: "150px" }}>
-                            Comment
+                            {t("approval.comment")}
                           </div>
                           <div style={{ fontSize: "14px", color: "#000", fontWeight: "400", flex: 1, textAlign: "right" }}>
-                            {factoringHistory?.app_comment || 'No comment provided'}
+                            {factoringHistory?.app_comment || t("approval.noComment")}
                           </div>
                         </div>
                       </div>

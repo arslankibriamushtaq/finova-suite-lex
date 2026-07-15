@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { useTranslation } from "react-i18next"
 import { useRouter, useSearchParams } from "../../lib/router"
 import {
   ArrowLeft,
@@ -33,6 +34,7 @@ import toast from "react-hot-toast"
 
 export default function CreateRequiredDocuments() {
   const { isRTL } = useLanguage()
+  const { t } = useTranslation("productManagement2")
   const router = useRouter()
   const [searchParams] = useSearchParams()
   const productIdFromUrl = searchParams.get("id")
@@ -70,7 +72,7 @@ export default function CreateRequiredDocuments() {
       sessionStorage.setItem("productId", effectiveProductId)
       getDocumentsData(effectiveProductId)
     } else {
-      toast.error("Product ID not found. Please start from Basic Information.")
+      toast.error(t("createDocs.startFromBasicInfo"))
       router.push("/Los/ProductManagement/Create/BasicInfo")
     }
   }, [productIdFromUrl])
@@ -95,11 +97,11 @@ export default function CreateRequiredDocuments() {
         setPage(1)
         setTotalPage(Math.ceil(list.length / pageSize) || 1)
       } else {
-        toast.error(response?.data?.message || "Failed to fetch documents")
+        toast.error(response?.data?.message || t("createDocs.fetchFailed"))
       }
     } catch (error: any) {
       console.error("Error fetching documents:", error)
-      toast.error(error?.response?.data?.message || "Failed to fetch documents")
+      toast.error(error?.response?.data?.message || t("createDocs.fetchFailed"))
     } finally {
       setSkelitonLoading(false)
     }
@@ -121,11 +123,11 @@ export default function CreateRequiredDocuments() {
 
   const handleAddDocument = async () => {
     if (!productId) {
-      toast.error("Product ID not found")
+      toast.error(t("requiredDoc.productIdNotFound"))
       return
     }
     if (!documentForm.nameEn?.trim() || !documentForm.nameAr?.trim()) {
-      toast.error("Please fill Name (En) and Name (Ar)")
+      toast.error(t("requiredDoc.fillNames"))
       return
     }
     try {
@@ -146,13 +148,13 @@ export default function CreateRequiredDocuments() {
         : await addProductDocument(productId, body)
 
       if (response?.data?.message === "success") {
-        toast.success(editingDocument ? "Document updated successfully" : "Document added successfully")
+        toast.success(editingDocument ? t("createDocs.updated") : t("createDocs.added"))
         setIsDocumentDialogOpen(false)
         setEditingDocument(null)
         setDocumentForm(initialDocumentForm)
         getDocumentsData(productId)
       } else {
-        toast.error(response?.data?.message || (editingDocument ? "Failed to update document" : "Failed to add document"))
+        toast.error(response?.data?.message || (editingDocument ? t("createDocs.updateFailed") : t("createDocs.addFailed")))
       }
     } catch (error: any) {
       const errors = error?.response?.data?.errors || {}
@@ -164,7 +166,7 @@ export default function CreateRequiredDocuments() {
         setDocumentErrors(errMap)
         toast.error(Object.values(errMap)[0])
       } else {
-        toast.error(error?.response?.data?.message || (editingDocument ? "Failed to update document" : "Failed to add document"))
+        toast.error(error?.response?.data?.message || (editingDocument ? t("createDocs.updateFailed") : t("createDocs.addFailed")))
       }
     } finally {
       setIsLoading(false)
@@ -205,46 +207,46 @@ export default function CreateRequiredDocuments() {
 
   const Documents_Header = [
     {
-      name: "Name (En)",
+      name: t("requiredDoc.nameEn"),
       selector: (row: any) => row.nameEn || "-",
       sortable: true,
       // width: "200px",
     },
     {
-      name: "Name (Ar)",
+      name: t("requiredDoc.nameAr"),
       selector: (row: any) => row.nameAr || "-",
       sortable: true,
       // width: "200px",
     },
     {
-      name: "Document Type",
+      name: t("requiredDoc.documentType"),
       selector: (row: any) => row.documentType || "-",
       sortable: true,
       // width: "130px",
     },
     {
-      name: "Version",
+      name: t("requiredDoc.version"),
       selector: (row: any) => row.fileVersion || "-",
       sortable: true,
       // width: "90px",
     },
     {
-      name: "Created By",
+      name: t("requiredDoc.createdBy"),
       selector: (row: any) => row.createdByName || "-",
       sortable: true,
       // width: "130px",
     },
     {
-      name: "Required",
+      name: t("requiredDoc.required"),
       cell: (row: any) => (
         <span className={row.required ? "text-green-600 font-medium" : "text-muted-foreground"}>
-          {row.required ? "Yes" : "No"}
+          {row.required ? t("common:yes") : t("common:no")}
         </span>
       ),
       // width: "100px",
     },
     {
-      name: "Action",
+      name: t("createDocs.actionHeader"),
       cell: (row: any) => (
         <div
           className="relative inline-block"
@@ -257,7 +259,7 @@ export default function CreateRequiredDocuments() {
                 type="button"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
-                Select
+                {t("list.select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -269,7 +271,7 @@ export default function CreateRequiredDocuments() {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Update
+                {t("common:update")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -303,7 +305,7 @@ export default function CreateRequiredDocuments() {
               <div className={`flex items-center gap-4 ${isRTL ? "rtl:flex-row-reverse" : ""}`}>
                 <Button variant="ghost" size="sm" onClick={() => router.push("/Los/ProductManagement")} className="gap-2">
                   <ArrowLeft className="h-4 w-4" />
-                  Back to Products
+                  {t("createCategories.backToProducts")}
                 </Button>
               </div>
             </div>
@@ -311,7 +313,7 @@ export default function CreateRequiredDocuments() {
               <span className="inline-flex size-9 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                 <Package className="h-4 w-4" />
               </span>
-              Edit Product
+              {t("createDocs.editProduct")}
             </h1>
             <ProductCreateEditTabs
               activeTab="required-documents"
@@ -330,15 +332,15 @@ export default function CreateRequiredDocuments() {
                 <div>
                   <CardTitle className="text-xl flex items-center gap-2">
                     <FileText className="h-5 w-5" />
-                    Document Management
+                    {t("createDocs.documentManagement")}
                   </CardTitle>
                   <p className="text-muted-foreground mt-1">
-                    Configure required documents and templates for this product.
+                    {t("createDocs.documentManagementDesc")}
                   </p>
                 </div>
                 <Button className="gap-2" onClick={openAddDialog}>
                   <Plus className="h-4 w-4" />
-                  Add Document
+                  {t("requiredDoc.addDocument")}
                 </Button>
                 <Dialog open={isDocumentDialogOpen} onOpenChange={(open) => {
                   if (!open) {
@@ -352,16 +354,16 @@ export default function CreateRequiredDocuments() {
                   <DialogContent className="max-w-md rounded-xl border border-border/50 shadow-lg p-0 gap-0 overflow-hidden">
                     <DialogHeader className="px-6 pt-6 pb-4 border-b bg-muted/30">
                       <DialogTitle className="text-lg font-semibold">
-                        {editingDocument ? "Edit Document" : "Add Document"}
+                        {editingDocument ? t("requiredDoc.editDocument") : t("requiredDoc.addDocument")}
                       </DialogTitle>
                     </DialogHeader>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 px-6 py-5">
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Name (En)</Label>
+                        <Label className="text-sm font-medium text-foreground">{t("requiredDoc.nameEn")}</Label>
                         <Input
                           value={documentForm.nameEn}
                           onChange={(e) => setDocumentFormField("nameEn", e.target.value)}
-                          placeholder="Document name in English"
+                          placeholder={t("requiredDoc.nameEnPlaceholder")}
                           className={`h-10 ${documentErrors.nameEn ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                         />
                         {documentErrors.nameEn && (
@@ -369,11 +371,11 @@ export default function CreateRequiredDocuments() {
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground" style={{ textAlign: "right", display: "block" }}>الاسم (عربي)</Label>
+                        <Label className="text-sm font-medium text-foreground" style={{ textAlign: "right", display: "block" }}>{t("requiredDoc.nameAr")}</Label>
                         <Input
                           value={documentForm.nameAr}
                           onChange={(e) => setDocumentFormField("nameAr", e.target.value)}
-                          placeholder="اسم المستند بالعربي"
+                          placeholder={t("requiredDoc.nameArPlaceholder")}
                           dir="rtl"
                           className={`h-10 ${documentErrors.nameAr ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                         />
@@ -382,48 +384,48 @@ export default function CreateRequiredDocuments() {
                         )}
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Document Type</Label>
+                        <Label className="text-sm font-medium text-foreground">{t("requiredDoc.documentType")}</Label>
                         <Select
                           value={documentForm.documentType}
                           onValueChange={(value: string) => setDocumentFormField("documentType", value)}
                         >
                           <SelectTrigger className="h-10">
-                            <SelectValue placeholder="Select type" />
+                            <SelectValue placeholder={t("requiredDoc.selectType")} />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="TEMPLATE">Template</SelectItem>
-                            <SelectItem value="UPLOAD">Upload</SelectItem>
-                            <SelectItem value="GENERATED">Generated</SelectItem>
+                            <SelectItem value="TEMPLATE">{t("requiredDoc.typeTemplate")}</SelectItem>
+                            <SelectItem value="UPLOAD">{t("requiredDoc.typeUpload")}</SelectItem>
+                            <SelectItem value="GENERATED">{t("requiredDoc.typeGenerated")}</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">File Version</Label>
+                        <Label className="text-sm font-medium text-foreground">{t("requiredDoc.fileVersion")}</Label>
                         <Input
                           value={documentForm.fileVersion}
                           onChange={(e) => setDocumentFormField("fileVersion", e.target.value)}
-                          placeholder="e.g. v1"
+                          placeholder={t("requiredDoc.fileVersionPlaceholder")}
                           className="h-10"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Created By</Label>
+                        <Label className="text-sm font-medium text-foreground">{t("requiredDoc.createdBy")}</Label>
                         <Input
                           value={documentForm.createdByName}
                           onChange={(e) => setDocumentFormField("createdByName", e.target.value)}
-                          placeholder="Creator name"
+                          placeholder={t("requiredDoc.createdByPlaceholder")}
                           className="h-10"
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label className="text-sm font-medium text-foreground">Required</Label>
+                        <Label className="text-sm font-medium text-foreground">{t("requiredDoc.required")}</Label>
                         <div className="flex items-center h-10 gap-2">
                           <Switch
                             checked={documentForm.required}
                             onCheckedChange={(checked) => setDocumentFormField("required", checked)}
                           />
                           <span className="text-sm text-muted-foreground">
-                            {documentForm.required ? "Yes" : "No"}
+                            {documentForm.required ? t("common:yes") : t("common:no")}
                           </span>
                         </div>
                       </div>
@@ -434,10 +436,10 @@ export default function CreateRequiredDocuments() {
                         onClick={() => { setIsDocumentDialogOpen(false); setEditingDocument(null); setDocumentErrors({}); setDocumentForm(initialDocumentForm) }}
                         className="min-w-[80px]"
                       >
-                        Cancel
+                        {t("common:cancel")}
                       </Button>
                       <Button onClick={handleSaveDocument} disabled={isLoading} className="min-w-[80px]">
-                        {isLoading ? "Saving..." : "Save"}
+                        {isLoading ? t("creditScoring.saving") : t("common:save")}
                       </Button>
                     </div>
                   </DialogContent>
@@ -461,10 +463,10 @@ export default function CreateRequiredDocuments() {
 
               <div className="mt-4 p-4 bg-muted rounded-lg">
                 <p className="text-sm text-muted-foreground mb-2">
-                  {data.filter((doc: any) => doc.required === true || doc.required === 1).length} required document(s) configured for this product
+                  {t("createDocs.requiredCount", { count: data.filter((doc: any) => doc.required === true || doc.required === 1).length })}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Required documents will be automatically requested from customers during the application process.
+                  {t("createDocs.requiredNote")}
                 </p>
               </div>
             </CardContent>
@@ -489,17 +491,17 @@ export default function CreateRequiredDocuments() {
                 </Button> */}
                 <Button variant="outline" onClick={() => router.push("/products/create")} className="gap-2">
                   <X className="h-4 w-4" />
-                  Cancel
+                  {t("common:cancel")}
                 </Button>
               </div>
 
               <div className="flex items-center gap-3">
                 <Button variant="outline" onClick={handlePrevious} className="gap-2 bg-transparent">
                   <ArrowLeft className="h-4 w-4" />
-                  Previous
+                  {t("common:previous")}
                 </Button>
                 <Button onClick={handleFinish} disabled={isLoading} className="gap-2">
-                  {isLoading ? "Creating Product..." : "Create Product"}
+                  {isLoading ? t("createDocs.creatingProduct") : t("createDocs.createProduct")}
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </div>

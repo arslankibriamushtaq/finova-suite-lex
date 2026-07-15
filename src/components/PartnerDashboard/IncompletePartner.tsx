@@ -6,6 +6,7 @@ import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { getIncompletePartnerApplications } from "../../redux/apis/apisCrud";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
@@ -14,6 +15,7 @@ import { useNavigate } from "react-router-dom";
 import arrowDown from "../../assets/images/arrow-down.png";
 
 const IncompletePartner = () => {
+  const { t } = useTranslation("partner");
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
@@ -29,50 +31,50 @@ const IncompletePartner = () => {
 
   const Activity_Loans_Header = [
     {
-      name: "Application No.",
+      name: t("col.applicationNo"),
       selector: (row: any) => row.applicationNumber,
       sortable: true,
       width: "220px",
     },
     {
-      name: "Customer Name",
+      name: t("col.customerName"),
       selector: (row: any) => row.customerName,
       sortable: true,
       width: "220px",
     },
     {
-      name: "Product",
+      name: t("col.product"),
       selector: (row: any) => row.product,
       sortable: true,
       width: "180px",
     },
     {
-      name: "Phone No.",
+      name: t("col.phoneNo"),
       selector: (row: any) => row.phoneNo ?? "--",
       sortable: true,
       width: "120px",
     },
     {
-      name: "Email",
+      name: t("common:email"),
       selector: (row: any) => row.email,
       sortable: true,
       width: "260px",
     },
     {
-      name: "Application Date",
+      name: t("col.applicationDate"),
       selector: (row: any) => row.applicationDate,
       sortable: true,
       width: "220px",
     },
     {
-      name: "Financing Amount",
+      name: t("col.financingAmount"),
       selector: (row: any) => row.financingAmount,
       sortable: true,
       width: "180px",
     },
 
     {
-      name: "Parent Status",
+      name: t("col.parentStatus"),
       cell: (row: any) => (
         <span
           style={{
@@ -93,7 +95,7 @@ const IncompletePartner = () => {
     },
 
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => (
         <span
           style={{
@@ -113,19 +115,19 @@ const IncompletePartner = () => {
     },
 
     {
-      name: "Reason",
+      name: t("col.reason"),
       selector: (row: any) => row.reason ?? "--",
       sortable: true,
       width: "200px",
     },
     {
-      name: "Reason from Partner",
+      name: t("col.reasonFromPartner"),
       selector: (row: any) => row.reasonFromPartner ?? "--",
       sortable: true,
       width: "220px",
     },
     {
-      name: "Action",
+      name: t("col.action"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -139,7 +141,7 @@ const IncompletePartner = () => {
               fontSize: "12px",
             }}
           >
-            Action <img src={arrowDown} alt="" />
+            {t("col.action")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
       ),
@@ -169,7 +171,7 @@ const IncompletePartner = () => {
         icon={<EyeOutlined/>}
         onClick={() => handleMenuClick("view", row)}
       >
-        View Details
+        {t("menu.viewDetails")}
       </Menu.Item>
     </Menu>
   );
@@ -233,7 +235,7 @@ const IncompletePartner = () => {
           mode="tags"
           style={{ width: "15%", borderTopRightRadius: "0px" }}
           // onChange={handleChange}
-          placeholder="Filter"
+          placeholder={t("filter.filter")}
           tokenSeparators={[","]}
           suffixIcon={<FaFilter />}
 
@@ -251,7 +253,7 @@ const IncompletePartner = () => {
                 background: "transparent",
               }}
               className="p-2"
-              placeholder="Search..."
+              placeholder={t("filter.search")}
             />
           </div>
           <div className="d-flex align-items-center">
@@ -262,7 +264,7 @@ const IncompletePartner = () => {
               <Select>search</Select>
               <DatePicker
                 className="date-picker"
-                placeholder="From"
+                placeholder={t("filter.from")}
                 value={fromDate}
                 onChange={(date) => {
                   setFromDate(date);
@@ -276,7 +278,7 @@ const IncompletePartner = () => {
               />
               <DatePicker
                 className="date-picker"
-                placeholder="To"
+                placeholder={t("filter.to")}
                 value={toDate}
                 onChange={(date) => {
                   setToDate(date);
@@ -291,7 +293,7 @@ const IncompletePartner = () => {
               />
             </div>
           </div>
-          <button className="theme-btn-next">Export CSV</button>
+          <button className="theme-btn-next">{t("filter.exportCsv")}</button>
         </div>
       </div>
       <div className="p-2">

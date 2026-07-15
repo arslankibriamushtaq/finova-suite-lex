@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Row, Col, Form } from "react-bootstrap";
 import Loader from "../../../components/Loader/Loader";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +29,7 @@ import {
   CloseCircleOutlined,
 } from "@ant-design/icons";
 const Application = () => {
+  const { t } = useTranslation("loanManagement");
   const navigate = useNavigate();
   const [loader, setLoader] = useState(false);
   const [errors, setErrors] = useState<any>({});
@@ -47,9 +49,9 @@ const Application = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [stepStatus, setStepStatus] = useState<StepProps[]>([
-    { title: "Loan Creation", status: "wait" },
-  { title: "Application Creation", status: "wait" },
-  { title: "Schedule Generation", status: "wait" },
+    { title: t("application.stepLoanCreation"), status: "wait" },
+  { title: t("application.stepApplicationCreation"), status: "wait" },
+  { title: t("application.stepScheduleGeneration"), status: "wait" },
   ]);
 const getStepIcon = (step: any, status: any) => {
   const iconsMap = {
@@ -92,7 +94,7 @@ const getStepIcon = (step: any, status: any) => {
         value === null ||
         (typeof value === "string" && value.trim() === "")
       ) {
-        newErrors[key] = "This field is required";
+        newErrors[key] = t("fieldRequired");
       }
     });
 
@@ -168,16 +170,16 @@ const getStepIcon = (step: any, status: any) => {
   const handleInputChange = (event: any) => {
     const { name, value } = event.target;
     if (name === "loanAmount" && value < 0) {
-      setErrors({ ...errors, loanAmount: "Loan amount cannot be negative." });
+      setErrors({ ...errors, loanAmount: t("application.errLoanNegative") });
     } else if (name === "interestRate" && value < 0) {
       setErrors({
         ...errors,
-        interestRate: "interestRate  cannot be negative.",
+        interestRate: t("application.errInterestNegative"),
       });
     } else if (name === "tenureDuration" && value < 0) {
       setErrors({
         ...errors,
-        tenureDuration: "Duration  cannot be negative.",
+        tenureDuration: t("application.errDurationNegative"),
       });
     } else {
       setFormValues((prevValues: any) => ({
@@ -218,7 +220,7 @@ const getStepIcon = (step: any, status: any) => {
         setCustomerId("");
       }
     } catch (error) {
-      toast.error("Failed to fetch customer information.");
+      toast.error(t("application.toastCustomerFetchFailed"));
     } finally {
       //setLoader(false);
     }
@@ -266,9 +268,9 @@ const handleSave = async () => {
 
   setIsModalVisible(true);
   setStepStatus([
-    { title: "Loan Creation", status: "wait" },
-    { title: "Application Creation", status: "wait" },
-    { title: "Schedule Generation", status: "wait" },
+    { title: t("application.stepLoanCreation"), status: "wait" },
+    { title: t("application.stepApplicationCreation"), status: "wait" },
+    { title: t("application.stepScheduleGeneration"), status: "wait" },
   ]);
 
   setLoader(true);
@@ -395,7 +397,7 @@ const handleSave = async () => {
       });
     }
 
-    toast.success("Loan Application Processed Successfully");
+    toast.success(t("application.toastProcessed"));
     navigate("/lms/LoanManagement/ApplicationManagement");
   } catch (error) {
     console.error("Error saving data", error);
@@ -407,17 +409,17 @@ const handleSave = async () => {
 
 
   const isVariableRateLoanOptions = [
-    { label: "True", value: true },
-    { label: "False", value: false },
+    { label: t("option.true"), value: true },
+    { label: t("option.false"), value: false },
   ];
 
   const tenureTypeOptions = [
-    { label: "Monthly", value: 2 },
-    { label: "Yearly", value: 1 },
+    { label: t("option.monthly"), value: 2 },
+    { label: t("option.yearly"), value: 1 },
   ];
   const businessOption = [
-    { label: "Business", value: "business" },
-    { label: "Individual", value: "individual" },
+    { label: t("option.business"), value: "business" },
+    { label: t("option.individual"), value: "individual" },
   ];
   const payableStatusOptions = [
     { label: "EARLY SETTLEMENT", value: 0 },
@@ -447,7 +449,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Customers Type
+                  {t("field.customersType")}
                 </Form.Label>
                 <Select
                   value={customer}
@@ -455,7 +457,7 @@ const handleSave = async () => {
                     setCustomer(e);
                   }}
                   style={{ width: "100%" }}
-                  placeholder="Select Customer"
+                  placeholder={t("placeholder.selectCustomer")}
                 >
                   {businessOption?.map((option) => (
                     <Select.Option value={option.value}>
@@ -509,13 +511,13 @@ const handleSave = async () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      UNN
+                      {t("field.unn")}
                     </Form.Label>
                     <Form.Control
                       name="cr"
                       type="text"
                       value={formValues.cr}
-                      placeholder="Enter UNN"
+                      placeholder={t("placeholder.enterUnn")}
                       onChange={handleInputChange}
                       isInvalid={!!errors.cr}
                     />
@@ -527,7 +529,7 @@ const handleSave = async () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Customer Name
+                      {t("field.customerName")}
                     </Form.Label>
                     <Form.Control
                       name="customerName"
@@ -574,13 +576,13 @@ const handleSave = async () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      NID
+                      {t("field.nid")}
                     </Form.Label>
                     <Form.Control
                       name="nid"
                       type="text"
                       value={formValues.nid}
-                      placeholder="Enter NID"
+                      placeholder={t("placeholder.enterNid")}
                       onChange={handleInputChange}
                       isInvalid={!!errors.nid}
                     />
@@ -592,7 +594,7 @@ const handleSave = async () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Customer Name
+                      {t("field.customerName")}
                     </Form.Label>
                     <Form.Control
                       name="customerName"
@@ -611,7 +613,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Product Name
+                  {t("field.productName")}
                 </Form.Label>
                 <Select
                   value={formValues.productName}
@@ -622,7 +624,7 @@ const handleSave = async () => {
                     }));
                   }}
                   style={{ width: "100%" }}
-                  placeholder="Select Product Name"
+                  placeholder={t("placeholder.selectProductName")}
                 >
                   {prodId?.map((option:any) => (
                     <Select.Option value={option?.id}>
@@ -649,7 +651,7 @@ const handleSave = async () => {
                 <Col md={4} className="mb-3">
                   <Form.Group>
                     <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                      Company
+                      {t("field.company")}
                     </Form.Label>
                     <Form.Control
                       name="company"
@@ -669,7 +671,7 @@ const handleSave = async () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Branch
+                    {t("field.branch")}
                   </Form.Label>
                   <Form.Control
                     name="branch"
@@ -688,7 +690,7 @@ const handleSave = async () => {
               <Col md={4} className="mb-3">
                 <Form.Group>
                   <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                    Sub Unit
+                    {t("field.subUnit")}
                   </Form.Label>
                   <Form.Control
                     name="subUnit"
@@ -706,7 +708,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Is Variable Rate Loan
+                  {t("field.isVariableRateLoan")}
                 </Form.Label>
                 <Select
                   value={formValues.isVariableRateLoan}
@@ -717,7 +719,7 @@ const handleSave = async () => {
                     }))
                   }
                   style={{ width: "100%" }}
-                  placeholder="Select Variable Rate Loan"
+                  placeholder={t("placeholder.selectVariableRateLoan")}
                 >
                   {isVariableRateLoanOptions?.map((option) => (
                     <Select.Option value={option.value}>
@@ -734,7 +736,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Loan Amount
+                  {t("field.loanAmount")}
                 </Form.Label>
                 <Form.Control
                   name="loanAmount"
@@ -779,7 +781,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Tenure Type
+                  {t("field.tenureType")}
                 </Form.Label>
                 <Select
                   value={formValues.tenureType}
@@ -790,7 +792,7 @@ const handleSave = async () => {
                     }))
                   }
                   style={{ width: "100%" }}
-                  placeholder="Select Tenure Type"
+                  placeholder={t("placeholder.selectTenureType")}
                 >
                   {tenureTypeOptions.map((option) => (
                     <Select.Option key={option.value} value={option.value}>
@@ -807,7 +809,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Interest Rate
+                  {t("field.interestRate")}
                 </Form.Label>
                 <Form.Control
                   name="interestRate"
@@ -826,7 +828,7 @@ const handleSave = async () => {
             <Col md={4} className="mb-3">
               <Form.Group>
                 <Form.Label style={{ fontSize: "13px", fontWeight: "600" }}>
-                  Tenure Duration
+                  {t("field.tenureDuration")}
                 </Form.Label>
                 <Form.Control
                   name="tenureDuration"
@@ -854,7 +856,7 @@ const handleSave = async () => {
                 padding: "8px 16px",
               }}
             >
-              Cancel
+              {t("common:cancel")}
             </button>
             <button
               onClick={() => {
@@ -869,13 +871,13 @@ const handleSave = async () => {
                 padding: "12px",
               }}
             >
-              Save & Next
+              {t("application.saveAndNext")}
             </button>
           </div>
         </div>
       </div>
       <Modal
-        title="Processing Loan Application"
+        title={t("application.processingTitle")}
         open={isModalVisible}
         footer={null}
         centered

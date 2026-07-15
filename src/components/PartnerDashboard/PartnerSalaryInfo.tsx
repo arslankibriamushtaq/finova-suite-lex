@@ -1,8 +1,13 @@
 import React, { useState } from "react";
 import { Button, Col, Input, Row } from "antd";
 import { Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 const PartnerSalaryInfo = ({ setSelectedTab }: any) => {
+  const { t } = useTranslation("partner");
+  // Translate the field label for display while keeping the English key as the form-state identity.
+  const fieldLabel = (label: string) =>
+    label === "Month" ? t("salaryInfo.month") : t("salaryInfo.amount");
   // Define the business information fields
   const businessInformationFields = [
     { label: "Month", type: "input" },
@@ -37,7 +42,7 @@ const PartnerSalaryInfo = ({ setSelectedTab }: any) => {
 
   return (
     <div className="p-3" style={{ background: "white" }}>
-      <h3>Add Last 6 Month Salary Information</h3>
+      <h3>{t("salaryInfo.title")}</h3>
       <Row className="mb-3">
         {businessInformationFields.map((field, index) => (
           <Col md={12} key={index} className="pt-3">
@@ -46,12 +51,12 @@ const PartnerSalaryInfo = ({ setSelectedTab }: any) => {
                 className="mt-2"
                 style={{ fontSize: "12px", fontWeight: "700" }}
               >
-                {field.label}
+                {fieldLabel(field.label)}
               </Form.Label>
               <Input
                 type="text"
                 onChange={(e) => handleInputChange(e, field.label)}
-                placeholder={`Enter ${field.label}`}
+                placeholder={t("salaryInfo.enterField", { label: fieldLabel(field.label) })}
               />
             </Form.Group>
           </Col>
@@ -65,13 +70,13 @@ const PartnerSalaryInfo = ({ setSelectedTab }: any) => {
           style={{ background: "#000000" }}
           type="primary"
         >
-          Reject
+          {t("common:reject")}
         </Button>
         <Button
           style={{ background: "#198754" }}
           type="primary"
         >
-          Approve
+          {t("common:approve")}
         </Button>
       </div>
     </div>

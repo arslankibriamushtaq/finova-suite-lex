@@ -8,7 +8,9 @@ import {
   DownOutlined,
 } from "@ant-design/icons";
 import toast from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 const Escalation = () => {
+  const { t } = useTranslation("cms");
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
   const [totalRows, setTotalRows] = useState(0);
@@ -72,31 +74,31 @@ const Escalation = () => {
 
   const Table_Headers = [
     {
-      name: "Sr No.",
+      name: t("fields.srNo"),
       width: "30%",
 
       selector: (row: { srNo: string }) => row.srNo || "-",
     },
     {
-      name: "Sub Category",
+      name: t("fields.subCategory"),
       width: "30%",
 
       selector: (row: { subCategory: any }) => row.subCategory?.title || "-",
     },
     {
-      name: "Department",
+      name: t("fields.department"),
       width: "30%",
       selector: (row: { department: any }) => row.department?.name || "-",
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown menu={{ items: menu(row) }} trigger={["click"]}>
           <Button
             className="gradient-btn"
             type="primary"
           >
-            Select <DownOutlined />
+            {t("fields.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -106,7 +108,7 @@ const Escalation = () => {
   const menu = (row: any) => [{
     key: "edit",
     icon: <EditOutlined />,
-    label: "Edit",
+    label: t("common:edit"),
     onClick: () => handleMenuClick("edit", row),
   },
  ];
@@ -140,7 +142,7 @@ const Escalation = () => {
     try {
       if (isEditMode) {
         await toast.promise(updateEscalation(selectedRow?.id, body), {
-          loading: "Updating...",
+          loading: t("toast.updating"),
           success: (response: any) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -148,11 +150,11 @@ const Escalation = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to update",
+          error: (err) => (err?.response?.data?.message) || t("toast.failedUpdate"),
         });
       } else {
         await toast.promise(createEscalation(body), {
-          loading: "Adding escalation...",
+          loading: t("escalation.toast.adding"),
           success: (response) => {
             if (response?.data?.success) {
               handleCloseModal();
@@ -160,7 +162,7 @@ const Escalation = () => {
             }
             return response?.data?.message;
           },
-          error: (err) => (err?.response?.data?.message) || "Failed to add new escalation",
+          error: (err) => (err?.response?.data?.message) || t("escalation.toast.failedAdd"),
         });
       }
     } catch (error) {
@@ -203,11 +205,11 @@ const Escalation = () => {
     <>
       <div className="d-flex justify-content-between align-items-center mb-3">
         <div>
-          <h5 className="mb-0">Escalations</h5>
+          <h5 className="mb-0">{t("escalation.title")}</h5>
         </div>
         <div className="text-end">
           <Input
-            placeholder="Search by category or department"
+            placeholder={t("escalation.searchPlaceholder")}
             value={searchValue}
             prefix={<SearchOutlined />} style={{ width: "300px", height: "33px", marginRight: "10px" }}
             onChange={(e: any) => {
@@ -220,7 +222,7 @@ const Escalation = () => {
               setAddPriorityModal(true);
             }}
           >
-            Add New Escalation
+            {t("escalation.addNew")}
           </button>
 
         </div>
@@ -249,7 +251,7 @@ const Escalation = () => {
         maskClosable={false}
         title={
           <span style={{ fontSize: "16px", fontWeight: 600 }}>
-            {isEditMode ? "Edit Escalation" : "Add Escalation"}
+            {isEditMode ? t("escalation.editModalTitle") : t("escalation.addModalTitle")}
           </span>
         }
         footer={null}
@@ -265,10 +267,10 @@ const Escalation = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Select Sub Category
+              {t("fields.selectSubCategory")}
             </label>
             <Select
-              placeholder="Select Sub Category"
+              placeholder={t("fields.selectSubCategory")}
               value={subCategory || undefined}
               onChange={(value) => setSubCategory(value)}
               style={{ width: "100%", height: "40px" }}
@@ -288,10 +290,10 @@ const Escalation = () => {
                 color: "var(--color-text-dark)",
               }}
             >
-              Select Department
+              {t("fields.selectDepartment")}
             </label>
             <Select
-              placeholder="Select Department"
+              placeholder={t("fields.selectDepartment")}
               value={department || undefined}
               onChange={(value) => setDepartment(value)}
               style={{ width: "100%", height: "40px" }}
@@ -323,7 +325,7 @@ const Escalation = () => {
                 fontWeight: 500,
               }}
             >
-              Close
+              {t("common:close")}
             </button>
             <button
               onClick={handleSave}
@@ -338,7 +340,7 @@ const Escalation = () => {
                 fontWeight: 500,
               }}
             >
-              Save
+              {t("common:save")}
             </button>
           </div>
         </div>

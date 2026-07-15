@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -74,6 +75,7 @@ const recentActivity = [
 ];
 
 export default function DashboardOverview() {
+  const { t } = useTranslation('investor');
   const [dashboardData, setDashboardData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -92,7 +94,7 @@ export default function DashboardOverview() {
       }
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      setError('Failed to load dashboard data. Please try again.');
+      setError(t('dashboard.loadError'));
     } finally {
       setLoading(false);
     }
@@ -118,7 +120,7 @@ export default function DashboardOverview() {
             onClick={fetchDashboardData}
             className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
           >
-            Try Again
+            {t('dashboard.tryAgain')}
           </button>
         </div>
       </div>
@@ -130,7 +132,7 @@ export default function DashboardOverview() {
       <div className="p-8 flex items-center justify-center min-h-[400px]">
         <div className="text-center">
           <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-gray-400" />
-          <p className="text-gray-600">No data available</p>
+          <p className="text-gray-600">{t('common:noData')}</p>
         </div>
       </div>
     );
@@ -139,40 +141,40 @@ export default function DashboardOverview() {
   // Create dynamic portfolio stats from API data
   const portfolioStats = [
     {
-      name: 'Total Investment',
+      name: t('dashboard.stat.totalInvestment'),
       value: formatCurrency(dashboardData.totalInvestment),
       change: formatPercentage(dashboardData.quarterlyChangeInInvestment),
       changeType: dashboardData.quarterlyChangeInInvestment >= 0 ? 'increase' : 'decrease',
       icon: "SAR",
-      period: 'vs last quarter',
-      subtext: `Across ${dashboardData.totalProducts} products`
+      period: t('dashboard.period.vsLastQuarter'),
+      subtext: t('dashboard.subtext.acrossProducts', { count: dashboardData.totalProducts })
     },
     {
-      name: 'Total Investors',
+      name: t('dashboard.stat.totalInvestors'),
       value: dashboardData.totalInvestors.toString(),
       change: formatPercentage(dashboardData.monthlyChangeInInvestor),
       changeType: dashboardData.monthlyChangeInInvestor >= 0 ? 'increase' : 'decrease',
       icon: Users,
-      period: 'vs last month',
-      subtext: `${dashboardData.pendingInvestors} pending verification`
+      period: t('dashboard.period.vsLastMonth'),
+      subtext: t('dashboard.subtext.pendingVerification', { count: dashboardData.pendingInvestors })
     },
     {
-      name: 'Investment Products',
+      name: t('dashboard.stat.investmentProducts'),
       value: dashboardData.totalProducts.toString(),
       change: formatPercentage(dashboardData.quarterlyChangeInProduct),
       changeType: dashboardData.quarterlyChangeInProduct >= 0 ? 'increase' : 'decrease',
       icon: Activity,
-      period: 'new this quarter',
-      subtext: `${dashboardData.activeProducts} active, ${dashboardData.launchingProducts} launching`
+      period: t('dashboard.period.newThisQuarter'),
+      subtext: t('dashboard.subtext.activeLaunching', { active: dashboardData.activeProducts, launching: dashboardData.launchingProducts })
     },
     {
-      name: 'YTD Performance',
+      name: t('dashboard.stat.ytdPerformance'),
       value: `${(dashboardData.ytdPerformance * 100).toFixed(2)}%`,
       change: dashboardData.ytdPerformance >= 0 ? `+${(dashboardData.ytdPerformance * 100).toFixed(2)}%` : `${(dashboardData.ytdPerformance * 100).toFixed(2)}%`,
       changeType: dashboardData.ytdPerformance >= 0 ? 'increase' : 'decrease',
       icon: TrendingUp,
-      period: 'Year to date',
-      subtext: 'Portfolio performance'
+      period: t('dashboard.period.yearToDate'),
+      subtext: t('dashboard.subtext.portfolioPerformance')
     },
   ];
 
@@ -181,8 +183,8 @@ export default function DashboardOverview() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
-          <p className="text-gray-600">Super Admin Portal for Investor Portfolio Management</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('dashboard.title')}</h1>
+          <p className="text-gray-600">{t('dashboard.subtitle')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button 
@@ -190,14 +192,14 @@ export default function DashboardOverview() {
             disabled={loading}
             className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
           >
-            <RefreshCw className={`w-4 h-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-            Refresh Data
+            <RefreshCw className={`w-4 h-4 me-2 ${loading ? 'animate-spin' : ''}`} />
+            {t('dashboard.refreshData')}
           </button>
           {/* <Link 
             to="/admin/reports"
             className="flex items-center px-4 py-2 text-sm font-medium text-white bg-black rounded-lg hover:bg-gray-800"
           >
-            <Eye className="w-4 h-4 mr-2" />
+            <Eye className="w-4 h-4 me-2" />
             View Reports
           </Link> */}
         </div>
@@ -215,9 +217,9 @@ export default function DashboardOverview() {
                 stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'
               }`}>
                 {stat.changeType === 'increase' ? (
-                  <TrendingUp className="w-4 h-4 mr-1" />
+                  <TrendingUp className="w-4 h-4 me-1" />
                 ) : (
-                  <TrendingDown className="w-4 h-4 mr-1" />
+                  <TrendingDown className="w-4 h-4 me-1" />
                 )}
                 {stat.change}
               </div>
@@ -240,15 +242,15 @@ export default function DashboardOverview() {
                 <AlertTriangle className="w-6 h-6 text-yellow-600" />
               </div>
               <span className="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">
-                Pending
+                {t('dashboard.pending')}
               </span>
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 mb-1">
                 {dashboardData.pendingActions.kycVerificationsPending}
               </p>
-              <p className="text-sm text-gray-600 font-medium">KYC Verifications</p>
-              <p className="text-xs text-gray-400 mt-1">Require immediate attention</p>
+              <p className="text-sm text-gray-600 font-medium">{t('dashboard.kycVerifications')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('dashboard.kycVerificationsHint')}</p>
             </div>
           </div>
 
@@ -258,15 +260,15 @@ export default function DashboardOverview() {
                 <CheckCircle className="w-6 h-6 text-blue-600" />
               </div>
               <span className="px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">
-                Pending
+                {t('dashboard.pending')}
               </span>
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 mb-1">
                 {dashboardData.pendingActions.kybVerificationsPending}
               </p>
-              <p className="text-sm text-gray-600 font-medium">KYB Verifications</p>
-              <p className="text-xs text-gray-400 mt-1">Business verifications needed</p>
+              <p className="text-sm text-gray-600 font-medium">{t('dashboard.kybVerifications')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('dashboard.kybVerificationsHint')}</p>
             </div>
           </div>
 
@@ -276,15 +278,15 @@ export default function DashboardOverview() {
                 <Clock className="w-6 h-6 text-purple-600" />
               </div>
               <span className="px-3 py-1 bg-purple-100 text-purple-800 text-xs font-medium rounded-full">
-                Pending
+                {t('dashboard.pending')}
               </span>
             </div>
             <div>
               <p className="text-2xl font-bold text-gray-900 mb-1">
                 {dashboardData.pendingActions.pendingProducts}
               </p>
-              <p className="text-sm text-gray-600 font-medium">Product Approvals</p>
-              <p className="text-xs text-gray-400 mt-1">Awaiting review</p>
+              <p className="text-sm text-gray-600 font-medium">{t('dashboard.productApprovals')}</p>
+              <p className="text-xs text-gray-400 mt-1">{t('dashboard.productApprovalsHint')}</p>
             </div>
           </div>
         </div>
@@ -294,24 +296,24 @@ export default function DashboardOverview() {
       {dashboardData.performingProducts && dashboardData.performingProducts.length > 0 && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 shadow-sm">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-900">Top Performing Products</h2>
-            <Link 
+            <h2 className="text-lg font-semibold text-gray-900">{t('dashboard.topPerformingProducts')}</h2>
+            <Link
               to="/admin/products"
               className="text-sm text-black hover:text-gray-800 font-medium"
             >
-              View All Products
+              {t('dashboard.viewAllProducts')}
             </Link>
           </div>
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Product Name</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Total Investment</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Launch Year</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Investors</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-                  <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.col.productName')}</th>
+                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.stat.totalInvestment')}</th>
+                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.col.launchYear')}</th>
+                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('dashboard.col.investors')}</th>
+                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('common:status')}</th>
+                  <th className="text-start py-3 px-4 text-sm font-semibold text-gray-700">{t('common:actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -350,7 +352,7 @@ export default function DashboardOverview() {
                         product.status === 1 ? 'bg-yellow-100 text-yellow-800' : 
                         'bg-gray-100 text-gray-800'
                       }`}>
-                        {product.status === 0 ? 'Active' : product.status === 1 ? 'Launching' : 'Inactive'}
+                        {product.status === 0 ? t('dashboard.status.active') : product.status === 1 ? t('dashboard.status.launching') : t('dashboard.status.inactive')}
                       </span>
                     </td>
                     <td className="py-4 px-4">

@@ -11,8 +11,10 @@ import {
 } from "../../redux/apis/apisCrudLms";
 import { EditOutlined, PoweroffOutlined, CheckCircleOutlined, DownOutlined, SearchOutlined } from "@ant-design/icons";
 import { ListChecks } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const ChartOfAccountFields = () => {
+  const { t } = useTranslation("accountingLoans");
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -66,7 +68,7 @@ const ChartOfAccountFields = () => {
       }
     } catch (error: any) {
       console.error("Error fetching COA fields:", error);
-      toast.error(error?.response?.data?.message || "Failed to fetch COA fields");
+      toast.error(error?.response?.data?.message || t("coaFields.toast.fetchFailed"));
     } finally {
       setLoading(false);
     }
@@ -82,16 +84,16 @@ const ChartOfAccountFields = () => {
       setLoading(true);
       if (editingField) {
         await updateCoaField(editingField.id, values);
-        toast.success("Field updated successfully");
+        toast.success(t("coaFields.toast.updated"));
       } else {
         await createCoaField(values);
-        toast.success("Field created successfully");
+        toast.success(t("coaFields.toast.created"));
       }
       setModalVisible(false);
       fetchData();
     } catch (error: any) {
       console.error("Error saving COA field:", error);
-      toast.error(error?.response?.data?.message || "Failed to save COA field");
+      toast.error(error?.response?.data?.message || t("coaFields.toast.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -104,10 +106,10 @@ const ChartOfAccountFields = () => {
       
       if (isActive) {
         await deactivateCoaField(field.id);
-        toast.success("Field deactivated");
+        toast.success(t("coaFields.toast.deactivated"));
       } else {
         await activateCoaField(field.id);
-        toast.success("Field activated");
+        toast.success(t("coaFields.toast.activated"));
       }
       
       // Optimistic update to reflect change immediately in UI
@@ -121,7 +123,7 @@ const ChartOfAccountFields = () => {
       }, 800);
     } catch (error: any) {
       console.error("Error toggling status:", error);
-      toast.error(error?.response?.data?.message || "Operation failed");
+      toast.error(error?.response?.data?.message || t("coaFields.toast.operationFailed"));
     } finally {
       setLoading(false);
     }
@@ -147,20 +149,24 @@ const ChartOfAccountFields = () => {
           icon={<EditOutlined />}
           onClick={() => openModal(row)}
         >
-          Edit
+          {t("common:edit")}
         </Menu.Item>
         <Menu.Item
           key="toggle"
           icon={isActive ? <PoweroffOutlined /> : <CheckCircleOutlined />}
           onClick={() => {
             Modal.confirm({
-              title: `Are you sure you want to ${isActive ? "deactivate" : "activate"} this field?`,
+              title: t("coaFields.confirmToggle", {
+                action: isActive
+                  ? t("coaFields.actionDeactivate")
+                  : t("coaFields.actionActivate"),
+              }),
               onOk: () => toggleStatus({ ...row, active: isActive }),
             });
           }}
           danger={isActive}
         >
-          {isActive ? "Deactivate" : "Activate"}
+          {isActive ? t("common:deactivate") : t("common:activate")}
         </Menu.Item>
       </Menu>
     );
@@ -168,37 +174,37 @@ const ChartOfAccountFields = () => {
 
   const columns = [
     {
-      name: "Field Key",
+      name: t("coaFields.col.fieldKey"),
       selector: (row: any) => row.fieldKey,
       sortable: true,
     },
     {
-      name: "Label (EN)",
+      name: t("coaFields.col.labelEn"),
       selector: (row: any) => row.fieldLabelEn,
       sortable: true,
     },
     {
-      name: "Label (AR)",
+      name: t("coaFields.col.labelAr"),
       selector: (row: any) => row.fieldLabelAr,
       sortable: true,
     },
     {
-      name: "Category",
+      name: t("coaFields.col.category"),
       selector: (row: any) => row.category,
       sortable: true,
     },
     {
-      name: "Mandatory",
-      selector: (row: any) => (row.mandatoryDefault ? "Yes" : "No"),
+      name: t("coaFields.col.mandatory"),
+      selector: (row: any) => (row.mandatoryDefault ? t("common:yes") : t("common:no")),
       sortable: true,
     },
     {
-      name: "Order",
+      name: t("coaFields.col.order"),
       selector: (row: any) => row.displayOrder,
       sortable: true,
     },
     {
-      name: "Status",
+      name: t("common:status"),
       cell: (row: any) => {
         const isActive = getIsActive(row);
         return (
@@ -214,13 +220,13 @@ const ChartOfAccountFields = () => {
               width: "80px",
             }}
           >
-            {isActive ? "Active" : "Inactive"}
+            {isActive ? t("common:active") : t("common:inactive")}
           </div>
         );
       },
     },
     {
-      name: "Actions",
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={actionMenu(row)} trigger={["click"]}>
           <Button
@@ -234,7 +240,7 @@ const ChartOfAccountFields = () => {
               fontSize: "12px"
             }}
           >
-            Select <DownOutlined />
+            {t("account.select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -248,7 +254,7 @@ return (
         <span className="pro-head-badge">
           <ListChecks className="h-4 w-4" />
         </span>
-        Chart of Accounts Fields
+        {t("coaFields.title")}
       </h3>
     </div>
 
@@ -257,7 +263,7 @@ return (
       <div className="d-flex flex-wrap align-items-center gap-2 w-100">
         <Input
           allowClear
-          placeholder="Search by key, label, category, status"
+          placeholder={t("coaFields.searchPlaceholder")}
           prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -269,7 +275,7 @@ return (
           onClick={() => openModal()}
           style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
         >
-          Add New Field
+          {t("coaFields.addNew")}
         </button>
       </div>
     </div>
@@ -293,7 +299,7 @@ return (
     </div>
 
     <Modal
-      title={editingField ? "Edit Field" : "Add New Field"}
+      title={editingField ? t("coaFields.editTitle") : t("coaFields.addTitle")}
       open={modalVisible}
       onCancel={() => setModalVisible(false)}
       onOk={() => form.submit()}
@@ -313,19 +319,19 @@ return (
           <div className="col-md-6">
             <Form.Item
               name="fieldKey"
-              label="Field Key"
-              rules={[{ required: true, message: "Please input field key!" }]}
+              label={t("coaFields.fieldKey")}
+              rules={[{ required: true, message: t("coaFields.val.fieldKeyRequired") }]}
             >
-              <Input placeholder="e.g. COLLECTION_ACCOUNT" disabled={!!editingField} />
+              <Input placeholder={t("coaFields.fieldKeyPlaceholder")} disabled={!!editingField} />
             </Form.Item>
           </div>
           <div className="col-md-6">
             <Form.Item
               name="category"
-              label="Category"
-              rules={[{ required: true, message: "Please select category!" }]}
+              label={t("coaFields.category")}
+              rules={[{ required: true, message: t("coaFields.val.categoryRequired") }]}
             >
-              <Select placeholder="Select category">
+              <Select placeholder={t("coaFields.selectCategory")}>
                 <Select.Option value="COLLECTIONS">COLLECTIONS</Select.Option>
                 <Select.Option value="LENDING">LENDING</Select.Option>
                 <Select.Option value="FEES">FEES</Select.Option>
@@ -340,17 +346,17 @@ return (
           <div className="col-md-6">
             <Form.Item
               name="fieldLabelEn"
-              label="Label (English)"
-              rules={[{ required: true, message: "Please input English label!" }]}
+              label={t("coaFields.labelEnglish")}
+              rules={[{ required: true, message: t("coaFields.val.labelEnRequired") }]}
             >
-              <Input placeholder="Collection Account" />
+              <Input placeholder={t("coaFields.labelEnPlaceholder")} />
             </Form.Item>
           </div>
           <div className="col-md-6">
             <Form.Item
               name="fieldLabelAr"
-              label="Label (Arabic)"
-              rules={[{ required: true, message: "Please input Arabic label!" }]}
+              label={t("coaFields.labelArabic")}
+              rules={[{ required: true, message: t("coaFields.val.labelArRequired") }]}
             >
               <Input placeholder="حساب التحصيل" style={{ direction: "rtl" }} />
             </Form.Item>
@@ -361,8 +367,8 @@ return (
           <div className="col-md-6">
             <Form.Item
               name="displayOrder"
-              label="Display Order"
-              rules={[{ required: true, message: "Please input display order!" }]}
+              label={t("coaFields.displayOrder")}
+              rules={[{ required: true, message: t("coaFields.val.displayOrderRequired") }]}
             >
               <InputNumber min={1} style={{ width: "100%" }} />
             </Form.Item>
@@ -370,7 +376,7 @@ return (
           <div className="col-md-6">
             <Form.Item
               name="mandatoryDefault"
-              label="Is Mandatory?"
+              label={t("coaFields.isMandatory")}
               valuePropName="checked"
             >
               <Switch />

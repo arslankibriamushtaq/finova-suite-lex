@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import { Card, Steps, Button, Row, Col } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
+import { useTranslation } from "react-i18next";
 
 const { Step } = Steps;
 
@@ -19,6 +20,7 @@ interface StepFormsProps {
 }
 
 const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
+  const { t } = useTranslation("customerManagement");
   const [current, setCurrent] = useState(0);
 
   // Parse KYC steps if available
@@ -36,51 +38,51 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
   const stepsData = useMemo<StepContent[]>(() => {
     const steps: (StepContent | false)[] = [
     {
-      title: "Mobile Verification",
+      title: t("leadTabs.stepForms.mobileVerification"),
       tasks: [
-        { label: "Mobile Verification", checked: kycSteps.mobile_verification === true },
+        { label: t("leadTabs.stepForms.mobileVerification"), checked: kycSteps.mobile_verification === true },
       ],
     },
     {
-      title: "Verify OTP",
+      title: t("leadTabs.stepForms.verifyOtp"),
       tasks: [
-        { label: "OTP Verified", checked: kycSteps.otp === true },
+        { label: t("leadTabs.stepForms.task.otpVerified"), checked: kycSteps.otp === true },
       ],
     },
     {
-      title: "Set PIN",
-      tasks: [{ label: "PIN is set", checked: kycSteps.set_pin === true }],
+      title: t("leadTabs.stepForms.setPin"),
+      tasks: [{ label: t("leadTabs.stepForms.task.pinIsSet"), checked: kycSteps.set_pin === true }],
     },
     {
-      title: "Nafath Verification",
+      title: t("leadTabs.stepForms.nafathVerification"),
       tasks: [
-        { label: "Nafath initialized", checked: kycSteps.nafath === true },
+        { label: t("leadTabs.stepForms.task.nafathInitialized"), checked: kycSteps.nafath === true },
       ],
     },
     {
-      title: "Scan Session",
+      title: t("leadTabs.stepForms.scanSession"),
       tasks: [
-        { label: "Scan", checked:kycSteps.scan === true},
+        { label: t("leadTabs.stepForms.task.scan"), checked:kycSteps.scan === true},
       ],
     },
     {
-      title: "Onboarding",
+      title: t("leadTabs.stepForms.onboarding"),
       tasks: [
-        { label: "Success", checked: true },
+        { label: t("leadTabs.stepForms.task.success"), checked: true },
         //{ label: "OTP Verified", checked: kycSteps.otp === true },
       ],
     },
     {
-      title: "KYC",
-      tasks: [ 
+      title: t("leadTabs.stepForms.kyc"),
+      tasks: [
         //{ label: "KYC Question", checked: kycSteps.kyc_question === true },
-        { label: "KYC Answers", checked: kycSteps.kyc_answers === true },
+        { label: t("leadTabs.stepForms.task.kycAnswers"), checked: kycSteps.kyc_answers === true },
       ],
     },
     kycSteps.edd_answers && {
-      title: "EDD",
+      title: t("leadTabs.stepForms.edd"),
       tasks: [
-        { label: "EDD Answers", checked: kycSteps.edd_answers === true },
+        { label: t("leadTabs.stepForms.task.eddAnswers"), checked: kycSteps.edd_answers === true },
       ],
     },
     /* {
@@ -219,7 +221,7 @@ const StepForms: React.FC<StepFormsProps> = ({ userDetails }) => {
         <div style={styles.footer}>
           {current < stepsData.length - 1 && (
             <Button type="primary" onClick={next} style={styles.nextButton}>
-              Next Step
+              {t("leadTabs.stepForms.nextStep")}
             </Button>
           )}
           {/* {current === stepsData.length - 1 && (
