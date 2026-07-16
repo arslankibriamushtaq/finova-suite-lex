@@ -110,6 +110,16 @@ const common: ModuleLocale = {
     logout: "Log out",
     loggedOutSuccess: "Logged out successfully",
     loggedOutWithErrors: "Logged out (with errors)",
+    // Login / connectivity
+    loginWelcome: "Welcome!",
+    loginSubtitle: "To keep connected with us please login with your personal info.",
+    signIn: "Sign In",
+    tryAgain: "Try Again",
+    networkErrorTitle: "Connection Problem",
+    networkError:
+      "We can't reach the server right now. Please check your internet connection and try again.",
+    signInFailed:
+      "We couldn't start the sign-in process. Please try again in a moment.",
   },
   fr: {
     save: "Enregistrer",
@@ -209,6 +219,16 @@ const common: ModuleLocale = {
     logout: "Se déconnecter",
     loggedOutSuccess: "Déconnexion réussie",
     loggedOutWithErrors: "Déconnexion effectuée (avec des erreurs)",
+    loginWelcome: "Bienvenue !",
+    loginSubtitle:
+      "Pour rester connecté, veuillez vous identifier avec vos informations personnelles.",
+    signIn: "Connexion",
+    tryAgain: "Réessayer",
+    networkErrorTitle: "Problème de connexion",
+    networkError:
+      "Impossible de joindre le serveur pour le moment. Veuillez vérifier votre connexion internet et réessayer.",
+    signInFailed:
+      "Nous n'avons pas pu démarrer la connexion. Veuillez réessayer dans un instant.",
   },
   ar: {
     save: "حفظ",
@@ -307,6 +327,14 @@ const common: ModuleLocale = {
     logout: "تسجيل الخروج",
     loggedOutSuccess: "تم تسجيل الخروج بنجاح",
     loggedOutWithErrors: "تم تسجيل الخروج (مع أخطاء)",
+    loginWelcome: "مرحباً!",
+    loginSubtitle: "لتبقى على تواصل معنا، يرجى تسجيل الدخول باستخدام معلوماتك الشخصية.",
+    signIn: "تسجيل الدخول",
+    tryAgain: "حاول مرة أخرى",
+    networkErrorTitle: "مشكلة في الاتصال",
+    networkError:
+      "تعذّر الوصول إلى الخادم حالياً. يرجى التحقق من اتصالك بالإنترنت والمحاولة مرة أخرى.",
+    signInFailed: "تعذّر بدء عملية تسجيل الدخول. يرجى المحاولة مرة أخرى بعد قليل.",
   },
 };
 

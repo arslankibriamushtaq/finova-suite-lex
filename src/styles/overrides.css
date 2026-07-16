@@ -51,3 +51,78 @@ button,
 .ant-btn {
   white-space: nowrap;
 }
+
+/* --- Keep custom absolutely-positioned dropdowns inside the viewport ---------
+   The header profile menu (`.profile-dropdown`) is `position:absolute; right:0`
+   but had no positioned ancestor, so it anchored to the page's (overflowing)
+   right edge and ran off-screen — worse with longer translated labels
+   (e.g. FR "Se déconnecter"). Make its immediate container the positioning
+   context so it anchors to the header cluster, and clamp its width to the
+   viewport so it can never exceed the screen. Works in LTR and RTL (rtl.css
+   flips it to left:0). --- */
+div:has(> .profile-dropdown),
+li:has(> .profile-dropdown) {
+  position: relative !important;
+}
+.profile-dropdown {
+  width: 340px !important;
+  max-width: min(340px, calc(100vw - 24px)) !important;
+  padding: 16px !important;
+  overflow-x: hidden;
+}
+
+/* Profile-menu actions — original one-line split-button look (green pill,
+   Settings | Log out side by side), just sized so longer translated labels
+   (FR "Se déconnecter") and their icons fit on the single row without clipping.
+   Full-width pill + tighter padding buys the extra room; icons never shrink. */
+.profile-dropdown .profile-actions {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: stretch !important;
+  justify-content: center !important;
+  width: 100% !important;
+  margin: 16px 0 0 !important;
+  padding: 4px !important;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  background-image: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+  border-radius: 8px !important;
+}
+.profile-dropdown .profile-actions .divider {
+  display: block !important;
+  flex: 0 0 auto !important;
+  align-self: stretch !important;
+  width: 1px !important;
+  margin: 6px 2px !important;
+  background: rgba(255, 255, 255, 0.4) !important;
+}
+.profile-dropdown .profile-btn,
+.profile-dropdown .profile-btn.left,
+.profile-dropdown .profile-btn.right {
+  flex: 1 1 0 !important;
+  min-width: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 9px 6px !important;
+  border: 0 !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+  box-shadow: none !important;
+  white-space: nowrap !important;
+  overflow: visible !important;
+  cursor: pointer;
+  transition: background 0.15s ease !important;
+}
+.profile-dropdown .profile-btn .icon {
+  flex-shrink: 0 !important;
+  margin: 0 !important;
+  font-size: 15px !important;
+}
+.profile-dropdown .profile-btn:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}
