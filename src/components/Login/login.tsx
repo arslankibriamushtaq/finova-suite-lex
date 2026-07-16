@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useTranslation } from "react-i18next";
 import { WifiOff } from "lucide-react";
-import FactoringLogo from "../../assets/images/factoring-png.png";
 import Loader from "../Loader/Loader";
 
 const Login: React.FC = () => {
@@ -45,72 +44,82 @@ const Login: React.FC = () => {
 
   if (errorInfo) {
     return (
-      <div className="login-container">
-        <div className="login-form-wrapper">
-          <div className="login-left-panel">
-            <div className="login-left-content">
-              <img
-                src={FactoringLogo}
-                alt="Factoring Valley Logo"
-                className="login-logo"
-              />
-              <h1 className="login-welcome-text">{t("loginWelcome")}</h1>
-              <p className="login-instruction-text">{t("loginSubtitle")}</p>
-            </div>
-          </div>
-          <div className="login-right-panel">
-            <div className="login-form" style={{ textAlign: "center" }}>
-              {errorInfo.isNetwork ? (
-                <>
-                  <div
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      marginBottom: "16px",
-                    }}
-                  >
-                    <span
-                      style={{
-                        display: "inline-flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        width: "64px",
-                        height: "64px",
-                        borderRadius: "50%",
-                        background: "#fef2f2",
-                        color: "#ef4444",
-                      }}
-                    >
-                      <WifiOff size={30} />
-                    </span>
-                  </div>
-                  <h2 className="login-signin-title">{t("networkErrorTitle")}</h2>
-                </>
-              ) : (
-                <h2 className="login-signin-title">{t("signIn")}</h2>
-              )}
-              <p
+      <div
+        className="login-container"
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "24px",
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            maxWidth: "440px",
+            background: "#ffffff",
+            borderRadius: "14px",
+            boxShadow: "0 12px 40px rgba(15, 23, 42, 0.12)",
+            padding: "48px 40px",
+            textAlign: "center",
+          }}
+        >
+          {errorInfo.isNetwork && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                marginBottom: "20px",
+              }}
+            >
+              <span
                 style={{
-                  color: errorInfo.isNetwork ? "#64748b" : "#ff4d4f",
-                  margin: "20px auto 28px",
-                  maxWidth: "340px",
-                  lineHeight: 1.6,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  width: "72px",
+                  height: "72px",
+                  borderRadius: "50%",
+                  background:
+                    "color-mix(in srgb, var(--color-action, #10b981) 12%, transparent)",
+                  color: "var(--color-action, #10b981)",
                 }}
               >
-                {errorInfo.message}
-              </p>
-              <button
-                type="button"
-                onClick={() => {
-                  setErrorInfo(null);
-                  window.location.reload();
-                }}
-                className="login-submit-button"
-              >
-                {t("tryAgain")}
-              </button>
+                <WifiOff size={34} />
+              </span>
             </div>
-          </div>
+          )}
+          <h2 className="login-signin-title" style={{ marginBottom: "12px" }}>
+            {errorInfo.isNetwork ? t("networkErrorTitle") : t("signIn")}
+          </h2>
+          <p
+            style={{
+              color: "#64748b",
+              margin: "0 auto 28px",
+              maxWidth: "340px",
+              lineHeight: 1.6,
+            }}
+          >
+            {errorInfo.message}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              setErrorInfo(null);
+              window.location.reload();
+            }}
+            className="login-submit-button"
+            style={{
+              width: "100%",
+              background:
+                "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+              borderColor: "transparent",
+              color: "#ffffff",
+            }}
+          >
+            {t("tryAgain")}
+          </button>
         </div>
       </div>
     );
