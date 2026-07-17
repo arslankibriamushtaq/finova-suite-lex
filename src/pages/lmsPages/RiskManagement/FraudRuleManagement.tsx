@@ -31,6 +31,7 @@ import {
 import { ChevronDown, Pencil, Plus, Trash2, Link2, ShieldAlert } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { usePermissions, RISK_FRAUD_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 interface ParamEntry {
   key: string;
@@ -41,6 +42,8 @@ interface ParamEntry {
 
 const FraudRuleManagement = () => {
   const { t } = useTranslation("riskManagement");
+  const { hasPermission } = usePermissions();
+  const canEditFraud = hasPermission(RISK_FRAUD_PERMISSIONS.EDIT);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -304,6 +307,7 @@ const FraudRuleManagement = () => {
         <div className="flex items-center gap-2">
           <Switch
             checked={row.status === "ACTIVE"}
+            disabled={!canEditFraud}
             onCheckedChange={() => handleToggleStatus(row)}
           />
           <span className={row.status === "ACTIVE" ? "text-green-600 text-sm font-medium" : "text-red-600 text-sm font-medium"}>
@@ -315,7 +319,10 @@ const FraudRuleManagement = () => {
     },
     {
       name: t("fraudRule.col.action"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canEditFraud ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <div
           className="relative inline-block"
           onClick={(e) => e.stopPropagation()}
@@ -353,7 +360,7 @@ const FraudRuleManagement = () => {
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      ),
+        ),
       width: "120px",
     },
   ];

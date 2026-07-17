@@ -34,9 +34,15 @@ import {
 } from "../../../components/ui/dropdown-menu";
 import { Textarea } from "../../../components/ui/textarea";
 import { Input } from "../../../components/ui/input";
+import { usePermissions, RISK_DEVICES_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 const DeviceManagement = () => {
   const { t } = useTranslation("riskManagement");
+  const { hasPermission } = usePermissions();
+  const canCreateDevice = hasPermission(RISK_DEVICES_PERMISSIONS.CREATE);
+  const canEditDevice = hasPermission(RISK_DEVICES_PERMISSIONS.EDIT);
+  const canDeleteDevice = hasPermission(RISK_DEVICES_PERMISSIONS.DELETE);
+  const canDeviceActions = canCreateDevice || canEditDevice || canDeleteDevice;
   const [activeTab, setActiveTab] = useState<"all" | "blocked">("all");
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
@@ -421,6 +427,7 @@ const DeviceManagement = () => {
                   <span>{t("device.action.viewAssociations", { count: row.nidAssociations.length })}</span>
                 </DropdownMenuItem>
               )}
+              {canCreateDevice && (
               <DropdownMenuItem
                 onClick={() => openBlockModal(row)}
                 disabled={row.blocked}
@@ -429,6 +436,8 @@ const DeviceManagement = () => {
                 <Lock className="h-4 w-4" />
                 <span>{t("device.action.blockDevice")}</span>
               </DropdownMenuItem>
+              )}
+              {canDeleteDevice && (
               <DropdownMenuItem
                 onClick={() => openDeleteModal(row)}
                 className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
@@ -436,6 +445,7 @@ const DeviceManagement = () => {
                 <Trash2 className="h-4 w-4" />
                 <span>{t("device.action.deleteDevice")}</span>
               </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -551,6 +561,7 @@ const DeviceManagement = () => {
                   <span>{t("device.action.viewAssociations", { count: row.nidAssociations.length })}</span>
                 </DropdownMenuItem>
               )}
+              {canEditDevice && (
               <DropdownMenuItem
                 onClick={() => openUnblockModal(row)}
                 className="cursor-pointer gap-2 text-green-600 dark:text-green-400 focus:bg-green-50 dark:focus:bg-green-950"
@@ -558,6 +569,8 @@ const DeviceManagement = () => {
                 <Unlock className="h-4 w-4" />
                 <span>{t("device.action.unblockDevice")}</span>
               </DropdownMenuItem>
+              )}
+              {canDeleteDevice && (
               <DropdownMenuItem
                 onClick={() => openDeleteModal(row)}
                 className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
@@ -565,6 +578,7 @@ const DeviceManagement = () => {
                 <Trash2 className="h-4 w-4" />
                 <span>{t("device.action.deleteDevice")}</span>
               </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -687,14 +701,16 @@ const DeviceManagement = () => {
                 {t("device.tab.blocked")}
               </TabsTrigger>
             </TabsList>
-            <Button
-              className="gap-2"
-              onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
-              style={{ flexShrink: 0, height: 40, alignSelf: "center", marginBottom: 8 }}
-            >
-              <Plus className="w-4 h-4" />
-              {t("device.addButton")}
-            </Button>
+            {canCreateDevice && (
+              <Button
+                className="gap-2"
+                onClick={() => { setAddDeviceId(""); setAddDeviceReason(""); setAddDeviceErrors({}); setIsAddDeviceModalOpen(true); }}
+                style={{ flexShrink: 0, height: 40, alignSelf: "center", marginBottom: 8 }}
+              >
+                <Plus className="w-4 h-4" />
+                {t("device.addButton")}
+              </Button>
+            )}
           </div>
 
           {/* All Devices Tab */}

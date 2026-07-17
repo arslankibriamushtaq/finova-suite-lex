@@ -16,6 +16,7 @@ import {
   updateInternalCheckConfig,
   getRiskBlockCodes,
 } from "../../../redux/apis/apisRiskManagement";
+import { usePermissions, RISK_CONFIG_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 // The generic table rules clip cell content (`.rdt_TableCell, .rdt_TableCell > div
 // { overflow: hidden !important }`), which cuts off the "Enabled/Disabled" label next
@@ -40,6 +41,8 @@ if (typeof document !== "undefined" && !document.getElementById("toggle-cell-ove
 
 const InternalChecksConfig = () => {
   const { t } = useTranslation("riskManagement");
+  const { hasPermission } = usePermissions();
+  const canEditConfig = hasPermission(RISK_CONFIG_PERMISSIONS.EDIT);
   const [isLoading, setIsLoading] = useState(false);
   const [configs, setConfigs] = useState<any[]>([]);
   const [blockCodes, setBlockCodes] = useState<any[]>([]);
@@ -137,7 +140,7 @@ const InternalChecksConfig = () => {
             <Switch
               checked={row.active}
               onCheckedChange={() => handleToggle(row)}
-              disabled={isBusy}
+              disabled={isBusy || !canEditConfig}
             />
             <span
               className={`status-pill ${row.active ? "active" : "inactive"}`}
@@ -158,7 +161,7 @@ const InternalChecksConfig = () => {
           <Select
             value={currentVal}
             onValueChange={(val) => handleBlockCodeChange(row, val)}
-            disabled={isBusy}
+            disabled={isBusy || !canEditConfig}
           >
             <SelectTrigger className="h-8 text-xs w-[180px]">
               <SelectValue placeholder={t("common:none")} />

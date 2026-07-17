@@ -24,6 +24,7 @@ import {
 import { ChevronDown, Plus, ShieldOff, ShieldCheck, Smartphone } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { usePermissions, RISK_BLACKLIST_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 const PHONE_CODES = ["+966","+971","+965","+973","+968","+974","+962","+961","+20","+92","+91","+1","+44"];
 
@@ -37,6 +38,11 @@ const splitPhoneCode = (full: string): { phoneCode: string; local: string } => {
 
 const BlacklistMobile = () => {
   const { t } = useTranslation("riskManagement");
+  const { hasPermission } = usePermissions();
+  const canCreateBlacklist = hasPermission(RISK_BLACKLIST_PERMISSIONS.CREATE);
+  const canDeleteBlacklist = hasPermission(RISK_BLACKLIST_PERMISSIONS.DELETE);
+  const canAssignBlockCode = hasPermission(RISK_BLACKLIST_PERMISSIONS.CHECK);
+  const canRowActions = canCreateBlacklist || canDeleteBlacklist || canAssignBlockCode;
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -200,6 +206,7 @@ const BlacklistMobile = () => {
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
         if (status !== "BLACKLISTED" && status !== "REMOVED") return null;
+        if (!canRowActions) return <span className="text-muted-foreground">-</span>;
         return (
           <div
             className="relative inline-block"
@@ -219,6 +226,7 @@ const BlacklistMobile = () => {
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
                 {status === "REMOVED" ? (
                   <>
+                    {canCreateBlacklist && (
                     <DropdownMenuItem
                       onSelect={(e) => {
                         e.preventDefault();
@@ -230,6 +238,8 @@ const BlacklistMobile = () => {
                       <ShieldCheck className="h-4 w-4" />
                       {t("blacklistMobile.action.reBlacklist")}
                     </DropdownMenuItem>
+                    )}
+                    {canAssignBlockCode && (
                     <DropdownMenuItem
                       onSelect={(e) => {
                         e.preventDefault();
@@ -240,9 +250,11 @@ const BlacklistMobile = () => {
                       <Link2 className="h-4 w-4" />
                       {t("blacklistMobile.action.assignBlockCode")}
                     </DropdownMenuItem>
+                    )}
                   </>
                 ) : (
                   <>
+                    {canDeleteBlacklist && (
                     <DropdownMenuItem
                       variant="destructive"
                       onSelect={(e) => {
@@ -253,6 +265,8 @@ const BlacklistMobile = () => {
                       <ShieldOff className="h-4 w-4" />
                       {t("blacklistMobile.action.remove")}
                     </DropdownMenuItem>
+                    )}
+                    {canAssignBlockCode && (
                     <DropdownMenuItem
                       onSelect={(e) => {
                         e.preventDefault();
@@ -263,6 +277,7 @@ const BlacklistMobile = () => {
                       <Link2 className="h-4 w-4" />
                       {t("blacklistMobile.action.assignBlockCode")}
                     </DropdownMenuItem>
+                    )}
                   </>
                 )}
               </DropdownMenuContent>
@@ -295,10 +310,12 @@ const BlacklistMobile = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
-        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
-          <Plus className="h-4 w-4" />
-          {t("blacklistMobile.addButton")}
-        </Button>
+        {canCreateBlacklist && (
+          <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
+            <Plus className="h-4 w-4" />
+            {t("blacklistMobile.addButton")}
+          </Button>
+        )}
         </div>
       </div>
 
