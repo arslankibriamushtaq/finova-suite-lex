@@ -7,6 +7,7 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
+import { usePermissions, WALLET_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 import {
   getWalletLimitBounds,
@@ -54,6 +55,8 @@ const emptyForm = (): FormState =>
   }, {} as FormState);
 
 const AccountsLimitSetting = () => {
+  const { hasPermission } = usePermissions();
+  const canEditWallet = hasPermission(WALLET_PERMISSIONS.EDIT);
   const [form, setForm] = useState<FormState>(emptyForm());
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -194,12 +197,14 @@ const AccountsLimitSetting = () => {
             </Card>
           ))}
 
+          {canEditWallet && (
           <div className="flex justify-end gap-2 pt-2">
             <Button onClick={handleSave} disabled={isSaving} className="gap-2">
               <Save className="h-4 w-4" />
               {isSaving ? "Saving..." : "Save"}
             </Button>
           </div>
+          )}
         </div>
       )}
     </div>

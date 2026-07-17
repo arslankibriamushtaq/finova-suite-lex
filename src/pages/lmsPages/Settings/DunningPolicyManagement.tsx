@@ -9,6 +9,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Button } from "../../../components/ui/button";
+import { usePermissions, POLICY_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { Input } from "../../../components/ui/input";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
@@ -51,6 +52,11 @@ const emptyForm: DunningPolicyForm = {
 
 const DunningPolicyManagement = () => {
   const { t } = useTranslation("settings");
+  const { hasPermission } = usePermissions();
+  const canCreatePolicy = hasPermission(POLICY_PERMISSIONS.CREATE);
+  const canEditPolicy = hasPermission(POLICY_PERMISSIONS.EDIT);
+  const canDeletePolicy = hasPermission(POLICY_PERMISSIONS.DELETE);
+  const canPolicyRowActions = canEditPolicy || canDeletePolicy;
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
@@ -282,7 +288,10 @@ const DunningPolicyManagement = () => {
     },
     {
       name: t("dunning.col.action"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canPolicyRowActions ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="outline" size="sm" className="gap-1">
@@ -290,10 +299,13 @@ const DunningPolicyManagement = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {canEditPolicy && (
             <DropdownMenuItem onSelect={() => openEdit(row)}>
               <Pencil className="h-4 w-4 me-2" />
               {t("common:edit")}
             </DropdownMenuItem>
+            )}
+            {canDeletePolicy && (
             <DropdownMenuItem
               variant="destructive"
               onSelect={() => setDeleteTarget(row)}
@@ -301,9 +313,10 @@ const DunningPolicyManagement = () => {
               <Trash2 className="h-4 w-4 me-2" />
               {t("common:delete")}
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
-      ),
+        ),
       width: "120px",
     },
   ];
@@ -333,6 +346,7 @@ const DunningPolicyManagement = () => {
             }}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
+          {canCreatePolicy && (
           <Button
             className="gap-1"
             onClick={openAdd}
@@ -341,6 +355,7 @@ const DunningPolicyManagement = () => {
             <Plus className="h-4 w-4" />
             {t("dunning.addPolicy")}
           </Button>
+          )}
         </div>
       </div>
 

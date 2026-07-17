@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Dropdown, Input, Menu } from "antd";
+import { usePermissions, POLICY_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { SearchOutlined } from "@ant-design/icons";
 import { CalendarClock } from "lucide-react";
 import { Col, Form, Modal, Row } from "react-bootstrap";
@@ -104,6 +105,8 @@ const emptyField: FieldConfig = {
 
 const RescheduleConfigManagement = () => {
   const { t } = useTranslation("settings");
+  const { hasPermission } = usePermissions();
+  const canEditPolicy = hasPermission(POLICY_PERMISSIONS.EDIT);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -344,7 +347,10 @@ const RescheduleConfigManagement = () => {
     },
     {
       name: t("reschedule.col.action"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canEditPolicy ? (
+          <span className="text-muted">-</span>
+        ) : (
         <Dropdown
           overlay={
             <Menu>
@@ -371,7 +377,7 @@ const RescheduleConfigManagement = () => {
             {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
-      ),
+        ),
       width: "140px",
     },
   ];
@@ -441,7 +447,7 @@ const RescheduleConfigManagement = () => {
         />
       </div>
 
-      <Modal show={showEdit} onHide={closeEdit} centered size="lg" scrollable>
+      <Modal backdrop="static" keyboard={false} show={showEdit} onHide={closeEdit} centered size="lg" scrollable>
         <Modal.Header closeButton>
           <Modal.Title>{t("reschedule.modal.editTitle")}</Modal.Title>
         </Modal.Header>

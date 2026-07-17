@@ -8,6 +8,7 @@ import {
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
 import { Button } from "../../../components/ui/button";
+import { usePermissions, POLICY_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Label } from "../../../components/ui/label";
@@ -59,6 +60,9 @@ const formatCurrency = (amount?: number | null) =>
     : "-";
 
 const WaiverRequestsManagement = () => {
+  const { hasPermission } = usePermissions();
+  // Approving/rejecting waiver requests is an authorize action.
+  const canAuthorizeWaiver = hasPermission(POLICY_PERMISSIONS.AUTHORIZE) || hasPermission(POLICY_PERMISSIONS.MANAGE);
   const [data, setData] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
@@ -228,7 +232,7 @@ const WaiverRequestsManagement = () => {
     {
       name: "Actions",
       cell: (row: any) => {
-        if (row.status !== "PENDING") return <span className="text-xs text-muted-foreground">—</span>;
+        if (row.status !== "PENDING" || !canAuthorizeWaiver) return <span className="text-xs text-muted-foreground">—</span>;
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

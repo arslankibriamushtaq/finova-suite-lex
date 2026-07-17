@@ -3,6 +3,7 @@ import { Save, Coins, Calculator } from "lucide-react";
 import toast from "react-hot-toast";
 
 import { Button } from "../../../components/ui/button";
+import { usePermissions, WALLET_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import {
@@ -62,6 +63,8 @@ const toForm = (c: ChargeConfig): RailForm => ({
 const isBlank = (v: string) => v === "" || v === null || v === undefined;
 
 const TransferChargeConfig = () => {
+  const { hasPermission } = usePermissions();
+  const canEditWallet = hasPermission(WALLET_PERMISSIONS.EDIT);
   const [rails, setRails] = useState<RailForm[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [savingRail, setSavingRail] = useState<string | null>(null);
@@ -399,6 +402,7 @@ const TransferChargeConfig = () => {
                         ? `Last updated ${new Date(form.updatedAt).toLocaleString()}`
                         : "Not updated yet"}
                     </p>
+                    {canEditWallet && (
                     <Button
                       onClick={() => handleSave(form)}
                       disabled={savingRail === form.rail}
@@ -407,6 +411,7 @@ const TransferChargeConfig = () => {
                       <Save className="h-4 w-4" />
                       {savingRail === form.rail ? "Saving..." : "Save"}
                     </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
