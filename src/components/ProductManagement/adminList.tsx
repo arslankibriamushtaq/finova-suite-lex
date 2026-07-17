@@ -17,9 +17,16 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Button as UIButton } from "../ui/button";
+import { usePermissions, PRODUCT_PERMISSIONS_LOS } from "../../hooks/useProductPermissions";
 
 const AdminList = () => {
   const { t } = useTranslation("productManagement2");
+  const { hasPermission } = usePermissions();
+  const canViewAdmin = hasPermission(PRODUCT_PERMISSIONS_LOS.SHOW);
+  const canCreateAdmin = hasPermission(PRODUCT_PERMISSIONS_LOS.CREATE_ADMIN);
+  const canEditAdmin = hasPermission(PRODUCT_PERMISSIONS_LOS.EDIT_ADMIN);
+  const canDeleteAdmin = hasPermission(PRODUCT_PERMISSIONS_LOS.DELETE_ADMIN);
+  const canAdminRowActions = canViewAdmin || canEditAdmin || canDeleteAdmin;
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -118,7 +125,10 @@ const AdminList = () => {
     },
     {
       name: t("common:actions"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canAdminRowActions ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <UIButton className="gradient-btn bg-teal-600 text-foreground border border-primary-foreground rounded-lg py-2.5 px-5">
@@ -126,21 +136,27 @@ const AdminList = () => {
             </UIButton>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {canViewAdmin && (
             <DropdownMenuItem onSelect={() => handleMenuClick("view", row)}>
               <Eye className="h-4 w-4" />
               {t("common:viewDetails")}
             </DropdownMenuItem>
+            )}
+            {canEditAdmin && (
             <DropdownMenuItem onSelect={() => handleMenuClick("edit", row)}>
               <Pencil className="h-4 w-4" />
               {t("common:edit")}
             </DropdownMenuItem>
+            )}
+            {canDeleteAdmin && (
             <DropdownMenuItem onSelect={() => handleMenuClick("delete", row)}>
               <Trash2 className="h-4 w-4" />
               {t("common:delete")}
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
-      ),
+        ),
       width: "150px",
     },
   ];
@@ -365,6 +381,7 @@ const AdminList = () => {
     <div className="service">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <h4>{t("adminList.title")}</h4>
+        {canCreateAdmin && (
         <UIButton
           className="theme-btn-next"
           onClick={() => {
@@ -377,6 +394,7 @@ const AdminList = () => {
         >
           {t("admin.addAdmin")}
         </UIButton>
+        )}
       </div>
       <TableView
         header={AdminList_Header}

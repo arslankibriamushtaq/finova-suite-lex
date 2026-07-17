@@ -5,6 +5,7 @@ import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { getHighRiskUsers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, exportHighRiskUsers } from "../../redux/apis/apisCrud";
+import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
@@ -46,6 +47,10 @@ const blockCodesData = [
 ];
 const HighRiskUsers = () => {
   const { t } = useTranslation("customerManagement");
+  const { hasPermission } = usePermissions();
+  const canViewCustomer = hasPermission(CUSTOMER_PERMISSIONS.LIST);
+  const canWriteCustomer = hasPermission("CUSTOMER_WRITE");
+  const canCustomerRowActions = canViewCustomer || canWriteCustomer;
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -313,6 +318,7 @@ const HighRiskUsers = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -320,6 +326,8 @@ const HighRiskUsers = () => {
       >
         {t('common:viewDetails')}
       </Menu.Item>
+      )}
+      {canWriteCustomer && (
       <Menu.Item
         key="change"
         icon={<SyncOutlined />}
@@ -327,6 +335,8 @@ const HighRiskUsers = () => {
       >
         {t('highRiskUsers.changeStatus')}
       </Menu.Item>
+      )}
+      {canWriteCustomer && (
       <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
@@ -334,6 +344,7 @@ const HighRiskUsers = () => {
       >
         {t('highRiskUsers.changeRisk')}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -822,9 +833,11 @@ const HighRiskUsers = () => {
               />
             </div>
           </div>
+          {canViewCustomer && (
           <button className="theme-btn-next" onClick={exportCSV}>
               {t('highRiskUsers.exportCsv')}
           </button>
+          )}
         </div>
       </div>
 
@@ -843,7 +856,7 @@ const HighRiskUsers = () => {
       />
 
       {/* Block Codes Management Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('highRiskUsers.blockModal.title')}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
@@ -1072,7 +1085,7 @@ const HighRiskUsers = () => {
       </Modal>
 
       {/* Change Status Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('highRiskUsers.statusModal.title')}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
@@ -1161,7 +1174,7 @@ const HighRiskUsers = () => {
       </Modal>
 
       {/* Change Risk Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('highRiskUsers.riskModal.title')}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}

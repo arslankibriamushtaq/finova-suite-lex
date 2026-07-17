@@ -2,6 +2,20 @@ import { useSelector } from "react-redux"
 import { RootState } from "../redux/rootReducer"
 import { implementWorkFlowAction } from "../redux/apis/apisCrudWebPageManagement"
 import toast from "react-hot-toast"
+import { isSuperAdminFromToken } from "../utils/getLandingRoute"
+
+/** Decode a JWT and return true if it carries the `super_admin` Keycloak realm role. */
+function tokenIsSuperAdmin(token?: string): boolean {
+  if (!token || typeof token !== "string") return false
+  try {
+    const payload = token.split(".")[1]
+    if (!payload) return false
+    const claims = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")))
+    return isSuperAdminFromToken(claims)
+  } catch {
+    return false
+  }
+}
 
 interface Permission {
   id: number
@@ -343,9 +357,12 @@ export const TYPES_REASONS_PERMISSIONS = {
 }
 
 export const PRODUCT_CATEGORIES_PERMISSIONS = {
-  LIST: "list_product_category",
-  UPDATE_STATUS: "update_product_category_status",
-  SET_DEFAULT: "set_default_product_category",
+  LIST: "PRODUCT_CATEGORY_READ",
+  CREATE: "PRODUCT_CATEGORY_CREATE",
+  EDIT: "PRODUCT_CATEGORY_UPDATE",
+  DELETE: "PRODUCT_CATEGORY_DELETE",
+  UPDATE_STATUS: "PRODUCT_CATEGORY_UPDATE",
+  SET_DEFAULT: "PRODUCT_CATEGORY_UPDATE",
 }
 
 export const PRODUCT_TYPES_PERMISSIONS = {
@@ -627,7 +644,11 @@ function getAllModulesFromPermissionData(permissionData: any): any[] {
 
 export const useProductPermissions = () => {
   const permissionData = useSelector((state: RootState) => state.block.permissions)
+  const token = useSelector((state: RootState) => state.block.token)
   const allModules = getAllModulesFromPermissionData(permissionData)
+  // Super admin has no role/permissions assigned but carries the `super_admin`
+  // Keycloak realm role — grant them every permission so gated actions stay visible.
+  const isSuperAdmin = tokenIsSuperAdmin(token)
 
   /**
    * Check if user has a specific permission
@@ -635,6 +656,7 @@ export const useProductPermissions = () => {
    * @returns boolean indicating if user has the permission
    */
   const hasPermission = (permissionName: string): boolean => {
+    if (isSuperAdmin) return true
     if (!permissionName || allModules.length === 0) return false
 
     const target = permissionName.trim().toLowerCase()

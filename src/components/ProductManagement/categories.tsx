@@ -5,9 +5,12 @@ import TableView from "../TableView/TableView";
 import toast from "react-hot-toast";
 import { Checkbox } from "antd";
 import { getProductCategorie, getProductCategories, updateProductCategory } from "../../redux/apis/apisCrud";
+import { usePermissions, PRODUCT_CATEGORIES_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const Categories = () => {
   const { t } = useTranslation("productManagement2");
+  const { hasPermission } = usePermissions();
+  const canEditCategory = hasPermission(PRODUCT_CATEGORIES_PERMISSIONS.EDIT);
   const [categoriesData, setCategoriesData] = useState<any>([]);
   const [categoriesLoading, setCategoriesLoading] = useState(false);
   
@@ -34,6 +37,7 @@ const Categories = () => {
       cell: (row: any) => (
         <Checkbox
           checked={row.affiliation}
+          disabled={!canEditCategory}
           onChange={(e) => handleAffiliationChange(row.id, e.target.checked)}
         />
       ),
@@ -132,12 +136,14 @@ const Categories = () => {
         paginationShow={false}
       />
       <div className="d-flex justify-content-end mt-3">
-        <button 
+        {canEditCategory && (
+        <button
           className="btn btn-danger"
           onClick={handleUpdateCategories}
         >
           {t("common:update")}
         </button>
+        )}
       </div>
     </div>
   );
