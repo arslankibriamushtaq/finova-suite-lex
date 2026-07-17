@@ -322,11 +322,6 @@ const NotificationOrchestrator: React.FC = () => {
       ),
     },
     {
-      name: t("common:active"),
-      center: true,
-      cell: (row: any) => <Switch checked={!!row.active} size="small" />,
-    },
-    {
       name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={ruleActionMenu(row)} trigger={["click"]}>
