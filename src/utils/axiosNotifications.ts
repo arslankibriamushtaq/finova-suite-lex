@@ -4,6 +4,7 @@ import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
 import Axios from "axios";
 
+import { attachAcceptLanguage } from "./acceptLanguage";
 const axios = Axios.create({
   baseURL: import.meta.env.VITE_REACT_APP_API_NOTIFICATION_URL || import.meta.env.VITE_API_BASE_URL,
 });
@@ -49,5 +50,7 @@ axios.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+attachAcceptLanguage(axios);
 
 export default axios;

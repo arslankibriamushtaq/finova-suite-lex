@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
 
@@ -28,5 +29,7 @@ axiosCollectionsService.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
+attachAcceptLanguage(axiosCollectionsService);
 
 export default axiosCollectionsService;

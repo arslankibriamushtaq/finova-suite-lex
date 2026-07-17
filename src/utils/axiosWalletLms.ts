@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
@@ -77,4 +78,6 @@ axiosWalletLms.interceptors.response.use(
 //   return Promise.resolve(tokens);
 // };
  
+attachAcceptLanguage(axiosWalletLms);
+
 export default axiosWalletLms;

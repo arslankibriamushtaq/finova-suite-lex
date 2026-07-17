@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
  
@@ -63,4 +64,6 @@ axiosCms.interceptors.response.use(
 //   return Promise.resolve(tokens);
 // };
  
+attachAcceptLanguage(axiosCms);
+
 export default axiosCms;

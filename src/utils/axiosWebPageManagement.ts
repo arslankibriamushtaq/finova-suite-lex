@@ -1,5 +1,6 @@
 // src/utils/axios.js
 import Axios from "axios";
+import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
 import toast from "react-hot-toast";
@@ -78,5 +79,7 @@ axios.interceptors.response.use(
     return Promise.reject(error); // make sure errors still propagate
   }
 );
+
+attachAcceptLanguage(axios);
 
 export default axios;

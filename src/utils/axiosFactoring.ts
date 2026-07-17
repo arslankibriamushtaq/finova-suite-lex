@@ -1,4 +1,5 @@
 import Axios from "axios";
+import { attachAcceptLanguage } from "./acceptLanguage";
 import { store } from "../redux/store";
 import { setToken } from "../redux/apis/apisSlice";
 import { v4 as uuidv4 } from 'uuid'
@@ -104,4 +105,6 @@ axiosFactoring.interceptors.response.use(
 //   return Promise.resolve(tokens);
 // };
  
+attachAcceptLanguage(axiosFactoring);
+
 export default axiosFactoring;

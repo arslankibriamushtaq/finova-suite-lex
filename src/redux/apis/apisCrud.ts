@@ -2,6 +2,7 @@
 import axios from "../../utils/axios";
 import Axios from "axios";
 import { store } from "../store";
+import { attachAcceptLanguage } from "../../utils/acceptLanguage";
 
 export function getApplicationData() {
   return axios.get(`/v1/dashboard/applicationData`);
@@ -1315,6 +1316,7 @@ export function importProfessions(body: FormData) {
   const customAxios = Axios.create({
     baseURL: import.meta.env.VITE_REACT_APP_API_BASE_URL,
   });
+  attachAcceptLanguage(customAxios);
   customAxios.interceptors.request.use((reqConfig) => {
     const config = { ...reqConfig };
     const token = (store.getState() as any).block.token;
