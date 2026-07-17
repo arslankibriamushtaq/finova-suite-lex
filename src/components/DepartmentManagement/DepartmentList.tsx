@@ -229,7 +229,7 @@ const DepartmentList = () => {
         to={to}
       />
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "500px" }}
         title={t("dept.modalTitle")}

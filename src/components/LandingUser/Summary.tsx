@@ -295,7 +295,7 @@ return (
         </Col>
       </Row>
       
-      {unifonic && <Modal
+      {unifonic && <Modal backdrop="static" keyboard={false}
         show={modal}
         centered
         onHide={() => {

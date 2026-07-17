@@ -359,7 +359,7 @@ const ReasonsTypes = () => {
           to={to}
         />
 
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
@@ -419,7 +419,7 @@ const ReasonsTypes = () => {
             </Form>
           </div>
         </Modal>
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           visible={showConfirmModal}
           onCancel={() => setShowConfirmModal(false)}
           className="custom-mod"

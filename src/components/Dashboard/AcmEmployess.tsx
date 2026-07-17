@@ -395,7 +395,7 @@ const AcmEmployess = () => {
         </div>
         <TableView header={Departments_Header} data={mappedData} />
       </div>
-      <Modal show={addDialog} onHide={() => setAddDialog(false)} size="lg">
+      <Modal backdrop="static" keyboard={false} show={addDialog} onHide={() => setAddDialog(false)} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>{t("acmEmp.addNewEmployee")}</Modal.Title>
         </Modal.Header>
@@ -654,7 +654,7 @@ const AcmEmployess = () => {
           }}
         </Formik>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={updateDialog}
         onHide={() => {
           setUpdateDialog(false);
@@ -917,7 +917,7 @@ const AcmEmployess = () => {
           }}
         </Formik>
       </Modal>
-      <Modal show={deleteDialog} onHide={() => setDeleteDialog(false)}>
+      <Modal backdrop="static" keyboard={false} show={deleteDialog} onHide={() => setDeleteDialog(false)}>
         <Modal.Header>
           <Modal.Title className="modal-title"></Modal.Title>
           <div

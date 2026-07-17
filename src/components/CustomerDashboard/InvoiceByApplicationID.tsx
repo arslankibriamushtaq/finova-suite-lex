@@ -271,7 +271,7 @@ const InvoiceByApplicationID = () => {
                     to={to}
                 />
             </div>
-            <Modal
+            <Modal maskClosable={false} keyboard={false}
                 className="custom-mod"
                 style={{ maxWidth: "640px" }}
                 title={selectedInvoice?.id ? t("customersB:invoice.editInvoice") : t("customersB:invoice.addInvoice")}

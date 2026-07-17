@@ -298,7 +298,7 @@ return (
       />
     </div>
 
-    <Modal
+    <Modal maskClosable={false} keyboard={false}
       title={editingField ? t("coaFields.editTitle") : t("coaFields.addTitle")}
       open={modalVisible}
       onCancel={() => setModalVisible(false)}

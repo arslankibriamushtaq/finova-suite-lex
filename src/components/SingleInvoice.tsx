@@ -268,7 +268,7 @@ const SingleInvoice = (props: any) => {
         ))}
       </Row>
 
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal backdrop="static" keyboard={false} show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Invoice</Modal.Title>
         </Modal.Header>

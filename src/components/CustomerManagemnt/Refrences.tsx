@@ -337,7 +337,7 @@ const References = () => {
         />{" "}
       </div>
       <div className="col-12 p-4" />
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         centered
         show={show}
         onHide={handleModal}

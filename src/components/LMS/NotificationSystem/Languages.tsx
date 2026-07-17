@@ -309,7 +309,7 @@ const Languages = () => {
                 pageSize={pageSize}
                 setPageSize={setPageSize}
             />
-            <Modal
+            <Modal maskClosable={false} keyboard={false}
                 style={{ maxWidth: "732px" }}
                 className="custom-mod"
                 visible={showModal}
@@ -386,7 +386,7 @@ const Languages = () => {
                 </Form>
             </Modal>
 
-             <Modal
+             <Modal maskClosable={false} keyboard={false}
                 visible={isDeleteModalVisible}
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"

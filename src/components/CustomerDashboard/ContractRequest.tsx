@@ -232,7 +232,7 @@ const ContractRequest = () => {
       </div>
 
       {/* Confirmation Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         visible={showConfirmModal}
         onCancel={() => {
           setShowConfirmModal(false);

@@ -361,7 +361,7 @@ const AwnInfo = () => {
         to={to}
       />
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={editMode ? t("awnInfo.modal.editTitle") : t("awnInfo.modal.addTitle")}
         open={isModalVisible}
         onCancel={() => {

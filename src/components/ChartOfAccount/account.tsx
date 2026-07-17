@@ -310,7 +310,7 @@ const Account = ({
         />
       </div>
 
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={showPopup}
         onHide={() => {
           setShowPopup(false);
@@ -356,7 +356,7 @@ const Account = ({
           </div>
         </Modal.Body>
       </Modal>
-      <Modal show={updateModel} onHide={()=>{setUpdateModel(false)}}  centered size="lg">
+      <Modal backdrop="static" keyboard={false} show={updateModel} onHide={()=>{setUpdateModel(false)}}  centered size="lg">
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">{t("account.updateTitle")}</Modal.Title>
           <div className="cursor-pointer" onClick={() => setUpdateModel(false)}>
@@ -442,7 +442,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
   };
 
   return (
-    <Modal show={modal} centered onHide={()=>{setModal(false)}} size="lg">
+    <Modal backdrop="static" keyboard={false} show={modal} centered onHide={()=>{setModal(false)}} size="lg">
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">{t("account.addTitle")}</Modal.Title>
         <div className="cursor-pointer" onClick={() => setModal(false)}>

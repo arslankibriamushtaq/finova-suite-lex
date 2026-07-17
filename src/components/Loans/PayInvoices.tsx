@@ -555,7 +555,7 @@ const PayInvoice = () => {
           {t("payInvoice.payInvoice")}
         </Button>
       </div>
-      <Modal show={showModal} size="lg" centered>
+      <Modal backdrop="static" keyboard={false} show={showModal} size="lg" centered>
         <Modal.Header
           closeButton
           onClick={() => {

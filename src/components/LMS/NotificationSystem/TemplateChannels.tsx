@@ -418,7 +418,7 @@ const formatDate = (dateString: any) => {
                 pageSize={pageSize}
                 setPageSize={setPageSize}
             />
-            <Modal
+            <Modal maskClosable={false} keyboard={false}
                 style={{ maxWidth: "900px" }}
                 className="custom-mod"
                 visible={showModal}
@@ -553,7 +553,7 @@ const formatDate = (dateString: any) => {
                 </Form>
             </Modal>
 
-             <Modal
+             <Modal maskClosable={false} keyboard={false}
                 visible={isDeleteModalVisible}
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"

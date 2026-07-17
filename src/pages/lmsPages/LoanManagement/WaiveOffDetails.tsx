@@ -426,7 +426,7 @@ const WaiveOffDetails = () => {
       </div>
 
       {/* Approve / Reject Modal */}
-      <Modal show={!!modalType} onHide={closeModal} centered>
+      <Modal backdrop="static" keyboard={false} show={!!modalType} onHide={closeModal} centered>
         <Modal.Header closeButton>
           <Modal.Title style={{ fontSize: 16 }}>
             {modalType === "approve" ? t("waiveOff.approveTitle") : t("waiveOff.rejectTitle")}

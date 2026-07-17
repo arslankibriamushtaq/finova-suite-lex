@@ -420,7 +420,7 @@ const InvoiceRange = (props: any) => {
           Save & Next
         </Button>
       </div> */}
-      <Modal show={showModal} onHide={handleClose}>
+      <Modal backdrop="static" keyboard={false} show={showModal} onHide={handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Edit Invoice Range</Modal.Title>
         </Modal.Header>

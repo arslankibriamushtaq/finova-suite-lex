@@ -292,7 +292,7 @@ const BusinessPreferences = () => {
 
   return (
     <>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={modal}
         onHide={() => {

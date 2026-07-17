@@ -135,7 +135,7 @@ const ThirdPartyExpense = () => {
           ))}
         </Tabs>
       </div>
-     <Modal size="lg" show={show} onHide={handleClose}>
+     <Modal backdrop="static" keyboard={false} size="lg" show={show} onHide={handleClose}>
         <ModalHeader closeButton>
           <h3>{editData ? "Edit Expense" : "Create Expense"}</h3>
         </ModalHeader>

@@ -18,7 +18,7 @@ const NoLedgerAccountModal: React.FC<NoLedgerAccountModalProps> = ({ isVisible, 
         onClose(); // Call parent's close function
     };
     return (
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
             title={t("noLedger.title")}
             open={modalVisible}
             onCancel={() => setModalVisible(true)}

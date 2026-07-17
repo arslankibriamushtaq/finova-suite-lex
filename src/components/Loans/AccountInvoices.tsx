@@ -533,7 +533,7 @@ const AccountInvoices = () => {
           )}
         </div>
       </div>
-      <Modal show={showModal} size="lg" centered>
+      <Modal backdrop="static" keyboard={false} show={showModal} size="lg" centered>
         <Modal.Header
           closeButton
           onClick={() => {
@@ -903,7 +903,7 @@ const AccountInvoices = () => {
           </Formik>
         </Modal.Body>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         centered
         show={dueDateModal}
         onHide={() => {
@@ -955,7 +955,7 @@ const AccountInvoices = () => {
           </div>
         </ModalBody>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={waveLateDialog}
         size="lg"
         centered

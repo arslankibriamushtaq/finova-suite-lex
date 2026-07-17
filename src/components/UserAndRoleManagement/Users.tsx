@@ -447,7 +447,7 @@ const Users = () => {
           to={to}
         />
       </div>
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={selectedItem === "edit" ? t("users.modal.editTitle") : t("users.modal.addTitle")}

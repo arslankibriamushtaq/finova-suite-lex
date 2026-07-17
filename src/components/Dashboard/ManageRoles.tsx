@@ -250,7 +250,7 @@ const ManageRoles = () => {
         </div>
         <TableView header={Departments_Header} data={mappedData} />
       </div>
-      <Modal show={addDialog} size="lg">
+      <Modal backdrop="static" keyboard={false} show={addDialog} size="lg">
         <Modal.Header closeButton onClick={() => setAddDialog(!addDialog)}>
           <Modal.Title>{t("manageRoles.addNewRole")}</Modal.Title>
         </Modal.Header>
@@ -295,7 +295,7 @@ const ManageRoles = () => {
           </div>
         </ModalBody>
       </Modal>
-      {/* <Modal show={updateDialog} size="lg">
+      {/* <Modal backdrop="static" keyboard={false} show={updateDialog} size="lg">
         <Modal.Header
           closeButton
           onClick={() => setUpdateDialog(!updateDialog)}

@@ -1094,7 +1094,7 @@ const ApplicationManagement = () => {
         </Modal.Body>
       </Modal>
 
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={manualModal}
         onHide={() => setManualModal(false)}
         centered
@@ -1275,7 +1275,7 @@ const ApplicationManagement = () => {
         buisnessForm={buisnessForm}
         setCustomerValue={setCustomerValue}
       />
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={disberseDialog}
         centered
         size="lg"
@@ -1583,7 +1583,7 @@ const ApplicationManagement = () => {
           </div>
         </Modal.Body>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={updateDialog}
         centered
         size="lg"

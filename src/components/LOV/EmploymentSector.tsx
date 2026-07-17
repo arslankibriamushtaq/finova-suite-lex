@@ -366,7 +366,7 @@ const EmploymentSector = () => {
       />
 
       {/* ✅ Add/Edit Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={
           <span className="font-semibold text-lg">
             {isEdit ? t("employmentSector.modal.editTitle") : t("employmentSector.modal.addTitle")}
@@ -418,7 +418,7 @@ const EmploymentSector = () => {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("employmentSector.confirmDeleteTitle")}
         open={showConfirmModal}
         onCancel={() => setShowConfirmModal(false)}

@@ -350,7 +350,7 @@ const VendorCommission = () => {
         setPageSize={setPageSize}
         to={to}
       />
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={

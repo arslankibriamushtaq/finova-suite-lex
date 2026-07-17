@@ -318,7 +318,7 @@ const BarqFlex = () => {
         </div>
       </div>
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         title={selectedItem === "edit" ? t("accountTypes.modal.changeStatus") : t("accountTypes.modal.enterDetails")}
         visible={isModalVisible}

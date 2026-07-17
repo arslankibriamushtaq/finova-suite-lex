@@ -406,7 +406,7 @@ const VendorComissionSlab = () => {
         pageSize={pageSize}
         to={to}
       />
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={
@@ -498,7 +498,7 @@ const VendorComissionSlab = () => {
           </Form>
         </div>
       </Modal>
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod center-footer"
         style={{ maxWidth: "378px" }}
         visible={isDeleteModalVisible}

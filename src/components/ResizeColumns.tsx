@@ -26,7 +26,7 @@ const ResizeColumn = () => {
       <Button onClick={showModal}>
         Resize Columns... <DownOutlined />
       </Button>
-      <Modal title="Resize Column" visible={visible} >
+      <Modal maskClosable={false} keyboard={false} title="Resize Column" visible={visible} >
         <Row gutter={4}>
           <Col span={4}>Column:</Col>
           <Col span={6}>

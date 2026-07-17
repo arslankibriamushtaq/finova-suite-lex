@@ -443,8 +443,8 @@ const AllDocuments = () => {
 
   return (
     <div>
-      {/* <Modal title="Basic Modal" open={showModal} onOk={submitDocumentsData} onCancel={()=>setShowModal(false)}> */}
-      <Modal
+      {/* <Modal backdrop="static" keyboard={false} title="Basic Modal" open={showModal} onOk={submitDocumentsData} onCancel={()=>setShowModal(false)}> */}
+      <Modal backdrop="static" keyboard={false}
         show={showModal}
         onHide={() => setShowModal(false)}
         centered

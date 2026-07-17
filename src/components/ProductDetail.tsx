@@ -314,7 +314,7 @@ const ProductDetail = () => {
           </div>
         </div>
       </div>
-      <Modal show={show} centered size="lg">
+      <Modal backdrop="static" keyboard={false} show={show} centered size="lg">
         <Modal.Header closeButton onClick={() => setShow(false)}>
           <Modal.Title className="modal-title">Add more products</Modal.Title>
         </Modal.Header>

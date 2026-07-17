@@ -1136,7 +1136,7 @@ const CollateralManagementView = () => {
           </div>
         </Row>
 
-        <Modal show={false} centered size="lg">
+        <Modal backdrop="static" keyboard={false} show={false} centered size="lg">
           <Modal.Header closeButton>
             <div
               className="cursor-pointer text-end w-100"

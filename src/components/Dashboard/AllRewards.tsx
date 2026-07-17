@@ -503,7 +503,7 @@ dashboardData?.map((item: any) => {
             pageSize={pageSize}
             setPageSize={setPageSize}
             />
-      <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal backdrop="static" keyboard={false} size="lg" show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>{t("rewards.modal.title")}</Modal.Title>
         </Modal.Header>

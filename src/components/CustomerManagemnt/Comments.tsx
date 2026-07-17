@@ -288,7 +288,7 @@ const Comments = () => {
   });
   return (
     <>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={modal}
         onHide={() => {
@@ -470,7 +470,7 @@ const Comments = () => {
         </Formik>
       </Modal>
 
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={formModal}
         onHide={() => {

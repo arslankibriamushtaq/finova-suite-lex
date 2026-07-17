@@ -374,7 +374,7 @@ const RescheduleHistory = () => {
       />
 
       {/* Approve / Reject Modal */}
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+      <Modal backdrop="static" keyboard={false} show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
           <Modal.Title>
             {modalAction === "approve" ? t("reschedule.approveTitle") : t("reschedule.rejectTitle")}
@@ -426,7 +426,7 @@ const RescheduleHistory = () => {
       </Modal>
 
       {/* Details Modal */}
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={!!detailsRow}
         onHide={() => setDetailsRow(null)}
         centered

@@ -301,7 +301,7 @@ const BlockedDevices = () => {
       </div>
 
       {/* Add/Edit Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={selectedItem === "edit" ? t("blockedDevices.editTitle") : t("blockedDevices.addButton")}
         visible={showModal}
         onCancel={() => {
@@ -365,7 +365,7 @@ const BlockedDevices = () => {
       </Modal>
 
       {/* View Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("blockedDevices.viewTitle")}
         visible={showViewModal}
         onCancel={() => {
@@ -408,7 +408,7 @@ const BlockedDevices = () => {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("common:confirmDelete")}
         visible={showConfirmModal}
         onOk={handleDeleteConfirmed}

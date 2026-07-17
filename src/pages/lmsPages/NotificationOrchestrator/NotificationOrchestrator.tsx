@@ -510,7 +510,7 @@ const NotificationOrchestrator: React.FC = () => {
       </Tabs>
 
       {/* Rule Modal */}
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={isRuleModalOpen}
         onHide={() => setIsRuleModalOpen(false)}
         centered
@@ -649,7 +649,7 @@ const NotificationOrchestrator: React.FC = () => {
       </Modal>
 
       {/* Delete confirmation */}
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={!!deleteTarget}
         onHide={() => setDeleteTarget(null)}
         centered

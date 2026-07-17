@@ -679,7 +679,7 @@ const Vouchers = () => {
           />
         </div>
       </div>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={modal}
         onHide={() => {
@@ -948,7 +948,7 @@ const Vouchers = () => {
           }}
         </Formik>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={modalUpdate}
         onHide={() => {

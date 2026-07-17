@@ -521,7 +521,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
       </div>
 
       {/* Edit Modal */}
-      <Modal show={showEditModal} onHide={() => {
+      <Modal backdrop="static" keyboard={false} show={showEditModal} onHide={() => {
         setShowEditModal(false);
         setEditingIndex(null);
         setEditingSection(null);
@@ -697,7 +697,7 @@ const Default = ({ productId, setSelectedTab }: any) => {
       </Modal>
 
       {/* Delete Confirmation Modal */}
-      <Modal show={showDeleteModal} onHide={() => {
+      <Modal backdrop="static" keyboard={false} show={showDeleteModal} onHide={() => {
         setShowDeleteModal(false);
         setDeletingIndex(null);
       }}>

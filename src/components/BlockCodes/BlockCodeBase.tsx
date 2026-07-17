@@ -354,7 +354,7 @@ const BlockCodeBase = ({ type: defaultType = "", title, icon: Icon }: BlockCodeB
         />
       </div>
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={editMode ? t("blockCodes.modal.editTitle") : t("blockCodes.modal.addTitle")}
         open={isModalVisible}
         onCancel={() => {

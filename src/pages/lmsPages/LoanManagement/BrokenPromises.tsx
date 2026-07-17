@@ -308,7 +308,7 @@ form.setFieldsValue({
         />
       </div>
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={editPromise ? t("brokenPromises.editTitle") : t("brokenPromises.create")}
         open={isCreateOpen}
         width={800}

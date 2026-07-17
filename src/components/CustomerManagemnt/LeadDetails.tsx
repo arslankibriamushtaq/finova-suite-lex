@@ -1940,7 +1940,7 @@ const LeadDetail = () => {
       </Card>
 
       {/* Edit Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("leadDetails.modal.title")}
         open={isEditModalVisible}
         onCancel={handleEditModalClose}

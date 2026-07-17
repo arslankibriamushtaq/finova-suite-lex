@@ -259,7 +259,7 @@ const Departments = () => {
         <TableView header={Departments_Header} data={departmentData} />
       </div>
 
-      <Modal show={departmentModal} size="lg">
+      <Modal backdrop="static" keyboard={false} show={departmentModal} size="lg">
         <Modal.Header
           closeButton
           onClick={() => {

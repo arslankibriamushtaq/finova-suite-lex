@@ -350,7 +350,7 @@ dashboardData?.map((item: any) => {
             pageSize={pageSize}
             setPageSize={setPageSize}
          />
-       <Modal size="lg" show={showModal} onHide={() => setShowModal(false)} centered>
+       <Modal backdrop="static" keyboard={false} size="lg" show={showModal} onHide={() => setShowModal(false)} centered>
               <Modal.Header closeButton>
                 <Modal.Title>{editRowId?t("faq.modal.editTitle"):t("faq.modal.addTitle")}</Modal.Title>
               </Modal.Header>
@@ -442,7 +442,7 @@ dashboardData?.map((item: any) => {
                 </Button>
               </Modal.Footer>
             </Modal>
-            <Modal size="lg" show={isDeleteModalVisible} onHide={() => setIsDeleteModalVisible(false)} centered className="mini-mod" >
+            <Modal backdrop="static" keyboard={false} size="lg" show={isDeleteModalVisible} onHide={() => setIsDeleteModalVisible(false)} centered className="mini-mod" >
             
               <Modal.Body>
               <div style={{ textAlign: "center" }}>

@@ -275,7 +275,7 @@ const OnboardCustomers = () => {
     <div className="service">
     
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         title={selectedItem === "edit" ? t("onboardCustomers.changeStatus") : t("onboardCustomers.modal.detailsTitle")}
         visible={isModalVisible}

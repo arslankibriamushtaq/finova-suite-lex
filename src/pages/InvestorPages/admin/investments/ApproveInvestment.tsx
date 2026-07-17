@@ -240,7 +240,7 @@ const ApproveInvestment = () => {
         to={to}
       />
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("appinv.title")}
         open={approveModalVisible}
         onOk={handleApprove}

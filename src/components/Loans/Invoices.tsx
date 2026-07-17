@@ -1096,7 +1096,7 @@ profit:item?.profitComponent ?? 0,
         </Tabs>
         </div>
       </div>
-      <Modal show={showModal} size="lg" centered>
+      <Modal backdrop="static" keyboard={false} show={showModal} size="lg" centered>
         <Modal.Header
           closeButton
           onClick={() => {
@@ -1550,7 +1550,7 @@ profit:item?.profitComponent ?? 0,
           </Formik>
         </Modal.Body>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         centered
         show={dueDateModal}
         onHide={() => {
@@ -1602,7 +1602,7 @@ profit:item?.profitComponent ?? 0,
           </div>
         </ModalBody>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         show={waveLateDialog}
         size="lg"
         centered
@@ -1686,7 +1686,7 @@ profit:item?.profitComponent ?? 0,
       </Modal>
 
       {/* Waive Off Approve / Reject Modal */}
-      <Modal show={!!waiverModalType} onHide={closeWaiverModal} centered>
+      <Modal backdrop="static" keyboard={false} show={!!waiverModalType} onHide={closeWaiverModal} centered>
         <Modal.Header closeButton>
           <Modal.Title style={{ fontSize: 16 }}>
             {waiverModalType === "approve" ? t("invoices.waiver.approveTitle") : t("invoices.waiver.rejectTitle")}

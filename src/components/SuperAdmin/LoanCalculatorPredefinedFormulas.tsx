@@ -85,7 +85,7 @@ function LoanCalculatorPredefinedFormulas() {
       <div className="d-flex justify-content-end mt-4">
         <button className="next-button">Next</button>
       </div>
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered size="xl">
+      <Modal backdrop="static" keyboard={false} show={showModal} onHide={() => setShowModal(false)} centered size="xl">
         <Modal.Header closeButton>
           <Modal.Title style={{ fontSize: 18 }}>Make Custom Formula</Modal.Title>
         </Modal.Header>

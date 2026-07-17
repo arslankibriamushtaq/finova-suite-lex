@@ -374,7 +374,7 @@ const FactoringInfo = () => {
       </div>
 
       {/* Modal for Add/Edit Invoice */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("factoring.modal.title")}
         open={isModalVisible}
         onOk={handleModalOk}

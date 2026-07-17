@@ -349,7 +349,7 @@ const Promises = () => {
           data={mappedData}
         />
       </div>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={modal}
         onHide={() => {

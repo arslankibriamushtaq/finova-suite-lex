@@ -441,7 +441,7 @@ const CallActivity = () => {
           data={mappedData}
         />
       </div>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={modal}
         onHide={() => {
@@ -788,7 +788,7 @@ const CallActivity = () => {
           }}
         </Formik>
       </Modal>
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         size="lg"
         show={formModal}
         onHide={() => {

@@ -927,7 +927,7 @@ const OnboardingDashboard: React.FC = () => {
           </Row>
 
        {/* Step Edit/Add Modal */}
-       <Modal show={showStepModal} onHide={() => setShowStepModal(false)} centered className="uo-modal">
+       <Modal backdrop="static" keyboard={false} show={showStepModal} onHide={() => setShowStepModal(false)} centered className="uo-modal">
           <Modal.Header closeButton>
              <Modal.Title>{editingStep ? 'Edit Step Configuration' : 'Add New Step'}</Modal.Title>
           </Modal.Header>
@@ -1021,7 +1021,7 @@ const OnboardingDashboard: React.FC = () => {
        </Modal>
 
        {/* Field Edit/Add Modal */}
-       <Modal show={showFieldModal} onHide={() => setShowFieldModal(false)} centered className="uo-modal">
+       <Modal backdrop="static" keyboard={false} show={showFieldModal} onHide={() => setShowFieldModal(false)} centered className="uo-modal">
           <Modal.Header closeButton>
              <Modal.Title>Add Field to Step</Modal.Title>
           </Modal.Header>
@@ -1102,7 +1102,7 @@ const OnboardingDashboard: React.FC = () => {
        </Modal>
 
        {/* Submission Modal */}
-       <Modal show={showSubmissionModal} onHide={() => setShowSubmissionModal(false)} size="lg" centered className="uo-modal">
+       <Modal backdrop="static" keyboard={false} show={showSubmissionModal} onHide={() => setShowSubmissionModal(false)} size="lg" centered className="uo-modal">
           <Modal.Header closeButton>
              <Modal.Title>Submission Inspection</Modal.Title>
           </Modal.Header>

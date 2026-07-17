@@ -394,7 +394,7 @@ const VendorServices = () => {
         setPageSize={setPageSize}
         to={to}
       />
-         <Modal
+         <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={
@@ -454,7 +454,7 @@ const VendorServices = () => {
           </Form>
         </div>
       </Modal>
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod center-footer"
         style={{ maxWidth: "378px" }}
         visible={isDeleteModalVisible}

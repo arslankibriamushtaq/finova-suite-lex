@@ -485,7 +485,7 @@ const InsuranceVendor = () => {
         setPageSize={setPageSize}
         to={to}
       />
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={selectedItem === "edit" ? t("iv.editVendor") : t("iv.addVendor")}

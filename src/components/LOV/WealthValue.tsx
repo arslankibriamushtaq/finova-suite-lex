@@ -345,7 +345,7 @@ const WealthValue = () => {
           to={to}
         />
 
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           className="custom-mod"
           style={{ maxWidth: "640px" }}
           title={
@@ -416,7 +416,7 @@ const WealthValue = () => {
             </Form>
           </div>
         </Modal>
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           visible={showConfirmModal}
           onCancel={() => setShowConfirmModal(false)}
           className="custom-mod"

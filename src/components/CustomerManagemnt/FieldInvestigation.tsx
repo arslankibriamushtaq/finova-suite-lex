@@ -370,7 +370,7 @@ const FieldInvestigation = () => {
           header={Field_List_Header}
           data={mappedData}
         />
-        <Modal
+        <Modal backdrop="static" keyboard={false}
           centered
           show={show}
           size="lg"

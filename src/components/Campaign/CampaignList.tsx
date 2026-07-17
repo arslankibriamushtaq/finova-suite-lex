@@ -556,7 +556,7 @@ const CampaignList = () => {
         pageSize={pageSize}
         to={to}
       />
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod"
         style={{ maxWidth: "732px" }}
         title={selectedItem === "edit" ? t("campaign.modal.editTitle") : t("campaign.modal.addTitle")}
@@ -725,7 +725,7 @@ const CampaignList = () => {
         </div>
       </Modal>
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         className="custom-mod center-footer"
         style={{ maxWidth: "378px" }}
         visible={isDeleteModalVisible}

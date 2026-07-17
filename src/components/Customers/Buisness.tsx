@@ -464,7 +464,7 @@ const Buisness = () => {
         </div>
       </div>
 
-      <Modal
+      <Modal backdrop="static" keyboard={false}
         centered
         show={customerNameModal}
         onHide={() => {

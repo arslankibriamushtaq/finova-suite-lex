@@ -468,7 +468,7 @@ const ComplianceRequirement = () => {
         to={to}
       />
 
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={editMode ? t("compliance.modal.editTitle") : t("compliance.modal.addTitle")}
         open={isModalVisible}
         onCancel={() => {

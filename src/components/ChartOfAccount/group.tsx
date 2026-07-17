@@ -171,7 +171,7 @@ function AddGroupModal({ modal, setModal, mappedData }) {
 
 
   return (
-    <Modal show={modal} centered size="lg">
+    <Modal backdrop="static" keyboard={false} show={modal} centered size="lg">
       <Modal.Header>
         <Modal.Title className="modal-title">{t("group.addTitle")}</Modal.Title>
         <div className="cursor-pointer" onClick={() => setModal(false)}>

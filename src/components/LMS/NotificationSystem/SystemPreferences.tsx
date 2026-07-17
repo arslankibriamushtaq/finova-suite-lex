@@ -362,7 +362,7 @@ const SystemPreferences = () => {
                 pageSize={pageSize}
                 setPageSize={setPageSize}
             />
-            <Modal
+            <Modal maskClosable={false} keyboard={false}
                 style={{ maxWidth: "900px" }}
                 className="custom-mod"
                 visible={showModal}
@@ -428,7 +428,7 @@ const SystemPreferences = () => {
                 </Form>
             </Modal>
 
-            <Modal
+            <Modal maskClosable={false} keyboard={false}
                 visible={isDeleteModalVisible}
                 onCancel={() => setIsDeleteModalVisible(false)}
                 className="custom-mod"

@@ -386,7 +386,7 @@ const ApplicationApproval = ({ fullDetail }: any) => {
         )} */}
 
         {/* Reject Modal */}
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           title={t('appApproval.rejectModalTitle')}
           open={showRejectModal}
           onCancel={handleCancelReject}

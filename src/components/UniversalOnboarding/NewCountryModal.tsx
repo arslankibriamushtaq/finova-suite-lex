@@ -40,7 +40,7 @@ const NewCountryModal: React.FC<NewCountryModalProps> = ({ isOpen, onClose, onSu
   };
 
   return (
-    <Modal show={isOpen} onHide={onClose} centered className="new-country-modal">
+    <Modal backdrop="static" keyboard={false} show={isOpen} onHide={onClose} centered className="new-country-modal">
       <Modal.Header closeButton>
         <Modal.Title className="d-flex align-items-center gap-3">
           <span className="ncm-title-icon">

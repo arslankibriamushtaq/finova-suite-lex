@@ -876,7 +876,7 @@ const handleSave = async () => {
           </div>
         </div>
       </div>
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={t("application.processingTitle")}
         open={isModalVisible}
         footer={null}

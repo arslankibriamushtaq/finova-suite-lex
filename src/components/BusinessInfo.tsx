@@ -475,7 +475,7 @@ const BusinessInfo = () => {
           </Form>
         </Formik>
       </div>
-      <Modal show={termDialogBox} centered size="lg">
+      <Modal backdrop="static" keyboard={false} show={termDialogBox} centered size="lg">
         <Modal.Header closeButton onClick={() => setTermDialogBox(false)}>
           <Modal.Title className="modal-title">Terms & Conditions</Modal.Title>
           <div className="cursor-pointer">
