@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePermissions, EMPLOYEE_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { Button, Dropdown, Menu, Select, Tabs, Modal, Input, Form } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
@@ -19,6 +20,11 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 const Users = () => {
   const { t } = useTranslation("adminMisc");
+  const { hasPermission } = usePermissions();
+  const canViewEmp = hasPermission(EMPLOYEE_PERMISSIONS.SHOW);
+  const canCreateEmp = hasPermission(EMPLOYEE_PERMISSIONS.CREATE);
+  const canEditEmp = hasPermission(EMPLOYEE_PERMISSIONS.EDIT);
+  const canDeleteEmp = hasPermission(EMPLOYEE_PERMISSIONS.DELETE);
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [from, setFrom] = useState(0);
@@ -135,9 +141,12 @@ const Users = () => {
 
   const menu = (row: any) => (
     <Menu>
+      {canEditEmp && (
       <Menu.Item key="edit" icon={<EditOutlined />}>
         {t("common:edit")}
       </Menu.Item>
+      )}
+      {canDeleteEmp && (
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
@@ -145,6 +154,7 @@ const Users = () => {
       >
         {t("common:delete")}
       </Menu.Item>
+      )}
     </Menu>
   );
   // Close popup when clicking outside
@@ -410,6 +420,8 @@ const Users = () => {
                 placeholder={t("ui.searchPlaceholder")}
               />
             </div>
+            {canViewEmp && (
+            <>
             <button className="invoice-btn" onClick={exportToExcel}>
             {t("ui.excel")}
           </button>
@@ -422,6 +434,9 @@ const Users = () => {
             {t("ui.pdf")}
           </button>
             <button className="invoice-btn">{t("common:print")}</button>
+            </>
+            )}
+            {canCreateEmp && (
             <button
               className="theme-btn"
               onClick={() => {
@@ -430,6 +445,7 @@ const Users = () => {
             >
               {t("users.addBtn")}
             </button>
+            )}
           </div>
         </div>
 

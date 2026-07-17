@@ -22,9 +22,15 @@ import { ChevronDown, Pencil, Trash2, Plus, ListChecks } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { useTranslation } from "react-i18next";
+import { usePermissions, LOV_PURPOSE_OF_FINANCE_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const PurposeOfFinancing = () => {
   const { t } = useTranslation("lov");
+  const { hasPermission } = usePermissions();
+  const canCreate = hasPermission(LOV_PURPOSE_OF_FINANCE_PERMISSIONS.CREATE);
+  const canEdit = hasPermission(LOV_PURPOSE_OF_FINANCE_PERMISSIONS.EDIT);
+  const canDelete = hasPermission(LOV_PURPOSE_OF_FINANCE_PERMISSIONS.DELETE);
+  const canRowActions = canEdit || canDelete;
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -209,7 +215,10 @@ const PurposeOfFinancing = () => {
     },
     {
       name: t("common:actions"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canRowActions ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <div
           className="relative inline-block"
           onClick={(e) => e.stopPropagation()}
@@ -226,6 +235,7 @@ const PurposeOfFinancing = () => {
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              {canEdit && (
               <DropdownMenuItem
                 onSelect={(e) => {
                   e.preventDefault();
@@ -235,6 +245,8 @@ const PurposeOfFinancing = () => {
                 <Pencil className="h-4 w-4" />
                 {t("common:edit")}
               </DropdownMenuItem>
+              )}
+              {canDelete && (
               <DropdownMenuItem
                 variant="destructive"
                 onSelect={(e) => {
@@ -245,10 +257,11 @@ const PurposeOfFinancing = () => {
                 <Trash2 className="h-4 w-4" />
                 {t("common:delete")}
               </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
-      ),
+        ),
       width: "100px",
     },
   ];
@@ -277,10 +290,12 @@ const PurposeOfFinancing = () => {
           }}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
+        {canCreate && (
         <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
           <Plus className="h-4 w-4" />
           {t("shared.addNewRecord")}
         </Button>
+        )}
         </div>
       </div>
 
