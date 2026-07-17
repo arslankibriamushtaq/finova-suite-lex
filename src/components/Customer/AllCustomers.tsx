@@ -41,6 +41,7 @@ const AllCustomers = () => {
   // Permissions
   const { hasPermission } = usePermissions();
   const canExportCustomers = hasPermission(CUSTOMER_PERMISSIONS.EXPORT);
+  const canViewCustomer = hasPermission(CUSTOMER_PERMISSIONS.LIST);
 
   // Block codes modal state
   const [isBlockModalVisible, setIsBlockModalVisible] = useState(false);
@@ -260,6 +261,7 @@ const AllCustomers = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -267,6 +269,7 @@ const AllCustomers = () => {
       >
         {t("common:viewDetails")}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
@@ -288,6 +291,7 @@ const AllCustomers = () => {
       >
         Onboarding Cost By Customer
       </Menu.Item> */}
+      {canViewCustomer && (
       <Menu.Item
         key="checkBeneficiaries"
         icon={<Users size={14} />}
@@ -295,6 +299,7 @@ const AllCustomers = () => {
       >
         {t("allCustomers.menu.checkBeneficiaries")}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="manageBlockCodes"
         icon={<ShieldOff size={14} />}
@@ -811,7 +816,7 @@ const AllCustomers = () => {
       `}</style>
 
       {/* Block Codes Management Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.blockModal.title")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
@@ -879,7 +884,7 @@ const AllCustomers = () => {
       </Modal>
 
       {/* Change Status Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.statusModal.title")}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
@@ -963,7 +968,7 @@ const AllCustomers = () => {
       </Modal>
 
       {/* Change Risk Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.riskModal.title")}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}

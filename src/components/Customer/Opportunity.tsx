@@ -37,6 +37,7 @@ const Opportunity = () => {
   // Permissions
   const { hasPermission } = usePermissions();
   const canExportOpportunities = hasPermission(OPPORTUNITY_PERMISSIONS.EXPORT);
+  const canViewCustomer = hasPermission("CUSTOMER_READ");
 
   const getRiskColor = (risk: string) => {
     const riskLower = risk.toLowerCase();
@@ -277,6 +278,7 @@ const Opportunity = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -284,6 +286,7 @@ const Opportunity = () => {
       >
         {t("common:viewDetails")}
       </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -651,7 +654,7 @@ const Opportunity = () => {
       </div>
 
       {/* Block Codes Management Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("opportunity.blockModal.title")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}

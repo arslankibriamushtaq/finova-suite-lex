@@ -43,6 +43,8 @@ const Leads = () => {
   // Permissions
   const { hasPermission } = usePermissions();
   const canExportLeads = hasPermission(LEAD_PERMISSIONS.EXPORT);
+  const canViewCustomer = hasPermission("CUSTOMER_READ");
+  const canWriteCustomer = hasPermission("CUSTOMER_WRITE");
 
   // Block codes modal state
   const [isBlockModalVisible, setIsBlockModalVisible] = useState(false);
@@ -272,6 +274,7 @@ const Leads = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -279,6 +282,8 @@ const Leads = () => {
       >
         {t("common:viewDetails")}
       </Menu.Item>
+      )}
+      {canWriteCustomer && (
       <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
@@ -286,6 +291,7 @@ const Leads = () => {
       >
         {t("leads.menu.changeRisk")}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="logout"
         icon={<LogoutOutlined />}
@@ -834,7 +840,7 @@ const Leads = () => {
       `}</style>
 
       {/* Block Codes Management Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("leads.blockModal.title")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
@@ -1063,7 +1069,7 @@ const Leads = () => {
       </Modal>
 
       {/* Change Status Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("leads.statusModal.title")}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
@@ -1147,7 +1153,7 @@ const Leads = () => {
       </Modal>
 
       {/* Change Risk Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("leads.riskModal.title")}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}
