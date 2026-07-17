@@ -5,6 +5,7 @@ import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, changeUserStatus, updateKycRisk, getAllCustomersWithStatuses } from "../../redux/apis/apisCrud";
+import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
@@ -31,6 +32,9 @@ const blockCodesData = [
 ];
 
 const AllCustomerStatus = () => {
+  const { hasPermission } = usePermissions();
+  const canViewCustomer = hasPermission(CUSTOMER_PERMISSIONS.LIST);
+  const canWriteCustomer = hasPermission("CUSTOMER_WRITE");
   const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
@@ -240,6 +244,7 @@ const AllCustomerStatus = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -247,6 +252,8 @@ const AllCustomerStatus = () => {
       >
         {t('common:viewDetails')}
       </Menu.Item>
+      )}
+      {canWriteCustomer && (
       <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
@@ -254,6 +261,7 @@ const AllCustomerStatus = () => {
       >
         {t('allCustomerStatus.changeRisk')}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="logout"
         icon={<LogoutOutlined />}
@@ -893,7 +901,7 @@ const AllCustomerStatus = () => {
       />
 
       {/* Block Codes Management Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('allCustomerStatus.blockModal.title')}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
@@ -1122,7 +1130,7 @@ const AllCustomerStatus = () => {
       </Modal>
 
       {/* Change Status Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('allCustomerStatus.statusModal.title')}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
@@ -1206,7 +1214,7 @@ const AllCustomerStatus = () => {
       </Modal>
 
       {/* Change Risk Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('allCustomerStatus.riskModal.title')}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}

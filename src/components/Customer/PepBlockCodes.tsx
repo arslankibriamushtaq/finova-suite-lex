@@ -5,6 +5,7 @@ import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { getLeadCustomers, blockUserWithBlockCode, unblockUserWithBlockCode, getBlockCodes, getUserBlocksByUserId, getPepCustomers, changeUserStatus, updateKycRisk, exportPepCustomers } from "../../redux/apis/apisCrud";
+import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
@@ -31,6 +32,9 @@ const blockCodesData = [
 ];
 
 const PepBlockCodes = () => {
+  const { hasPermission } = usePermissions();
+  const canViewCustomer = hasPermission(CUSTOMER_PERMISSIONS.LIST);
+  const canWriteCustomer = hasPermission("CUSTOMER_WRITE");
   const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
@@ -270,6 +274,7 @@ const PepBlockCodes = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -277,6 +282,8 @@ const PepBlockCodes = () => {
       >
         {t("common:viewDetails")}
       </Menu.Item>
+      )}
+      {canWriteCustomer && (
       <Menu.Item
         key="change"
         icon={<SyncOutlined />}
@@ -284,6 +291,8 @@ const PepBlockCodes = () => {
       >
         {t("pepBlockCodes.changeStatus")}
       </Menu.Item>
+      )}
+      {canWriteCustomer && (
       <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
@@ -291,6 +300,7 @@ const PepBlockCodes = () => {
       >
         {t("pepBlockCodes.changeRisk")}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="logout"
         icon={<LogoutOutlined />}
@@ -769,9 +779,11 @@ const PepBlockCodes = () => {
               />
             </div>
           </div>
+            {canViewCustomer && (
             <button className="theme-btn-next" onClick={exportCSV}>
               {t("pepBlockCodes.exportCsv")}
           </button>
+            )}
         </div>
       </div>
 
@@ -790,7 +802,7 @@ const PepBlockCodes = () => {
       />
 
       {/* Block Codes Management Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("pepBlockCodes.manageBlockCodesTitle")}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
@@ -1019,7 +1031,7 @@ const PepBlockCodes = () => {
       </Modal>
 
       {/* Change Status Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("pepBlockCodes.changeStatusTitle")}</div>}
         open={isChangeStatusModalVisible}
         onCancel={handleChangeStatusModalClose}
@@ -1108,7 +1120,7 @@ const PepBlockCodes = () => {
       </Modal>
 
       {/* Change Risk Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("pepBlockCodes.changeRiskTitle")}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}

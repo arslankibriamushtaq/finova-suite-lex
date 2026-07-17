@@ -5,6 +5,7 @@ import TableView from "../TableView/TableView";
 import { FaFilter } from "react-icons/fa";
 import { Images } from "../Config/Images";
 import { blockUserWithBlockCode, getBlockCodes, getRejectedLeadCustomers, getUserBlocksByUserId, unblockUserWithBlockCode, changeUserStatus, updateKycRisk, exportRejectedUsers } from "../../redux/apis/apisCrud";
+import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SyncOutlined } from "@ant-design/icons";
@@ -32,6 +33,8 @@ const blockCodesData = [
 ];
 const RejectedCustomers = () => {
   const { t } = useTranslation("customerManagement");
+  const { hasPermission } = usePermissions();
+  const canViewCustomer = hasPermission(CUSTOMER_PERMISSIONS.LIST);
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -175,6 +178,7 @@ const RejectedCustomers = () => {
   ];
   const menu = (row: any) => (
     <Menu>
+      {canViewCustomer && (
       <Menu.Item
         key="view"
         icon={<EyeOutlined />}
@@ -182,6 +186,7 @@ const RejectedCustomers = () => {
       >
         {t('common:viewDetails')}
       </Menu.Item>
+      )}
       {/* <Menu.Item
         key="changeRisk"
         icon={<SyncOutlined />}
@@ -642,8 +647,10 @@ const handleRiskChange = async () => {
               />
             </div>
           </div>
+           {canViewCustomer && (
            <button className="theme-btn-next" onClick={exportCSV}>
               {t('sanctionedCustomers.exportCsv')}</button>
+           )}
         </div>
       </div>
 
@@ -661,7 +668,7 @@ const handleRiskChange = async () => {
         to={to}
       />
          {/* Block Codes Management Modal */}
-         <Modal
+         <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('sanctionedCustomers.blockModal.title')}</div>}
         open={isBlockModalVisible}
         onCancel={handleModalClose}
@@ -890,7 +897,7 @@ const handleRiskChange = async () => {
       </Modal>
 
       {/* Change Risk Modal */}
-      <Modal
+      <Modal maskClosable={false} keyboard={false}
         title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t('sanctionedCustomers.riskModal.title')}</div>}
         open={isChangeRiskModalVisible}
         onCancel={handleChangeRiskModalClose}
