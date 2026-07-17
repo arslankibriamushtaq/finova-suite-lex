@@ -24,6 +24,7 @@ import {
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { usePermissions, EMPLOYEE_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const EMPLOYEE_STATUS = ["ACTIVE", "INACTIVE", "SUSPENDED", "TERMINATED"];
 
@@ -83,6 +84,13 @@ const Employees = () => {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string>>({});
 
+  // Gate action buttons by the user's EMPLOYEE_* permissions.
+  const { hasPermission } = usePermissions();
+  const canCreateEmp = hasPermission(EMPLOYEE_PERMISSIONS.CREATE);
+  const canEditEmp = hasPermission(EMPLOYEE_PERMISSIONS.EDIT);
+  const canDeleteEmp = hasPermission(EMPLOYEE_PERMISSIONS.DELETE);
+  const canRowActions = canEditEmp || canDeleteEmp;
+
   const handleMenuClick = (key: string, row: any) => {
     if (key === "edit") {
       const original = data.find((item: any) => item.id === row.id);
@@ -108,12 +116,16 @@ const Employees = () => {
 
   const menu = (row: any) => (
     <Menu>
-      <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => handleMenuClick("edit", row)}>
-        {t("common:edit")}
-      </Menu.Item>
-      <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleMenuClick("delete", row)}>
-        {t("common:delete")}
-      </Menu.Item>
+      {canEditEmp && (
+        <Menu.Item key="edit" icon={<EditOutlined />} onClick={() => handleMenuClick("edit", row)}>
+          {t("common:edit")}
+        </Menu.Item>
+      )}
+      {canDeleteEmp && (
+        <Menu.Item key="delete" icon={<DeleteOutlined />} onClick={() => handleMenuClick("delete", row)}>
+          {t("common:delete")}
+        </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -150,14 +162,17 @@ const Employees = () => {
     {
       name: t("employees.col.action"),
       width: "10%",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "2px", padding: "8px" }}>
-            {t("common:select")}
-            <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
-          </Button>
-        </Dropdown>
-      ),
+      cell: (row: any) =>
+        canRowActions ? (
+          <Dropdown overlay={menu(row)} trigger={["click"]}>
+            <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "2px", padding: "8px" }}>
+              {t("common:select")}
+              <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
+            </Button>
+          </Dropdown>
+        ) : (
+          <span className="text-muted">-</span>
+        ),
     },
   ];
 
@@ -385,18 +400,20 @@ const Employees = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setShowModal(true);
-                setSelectedItem("add");
-                setFormData({ ...emptyForm, password: generatePassword() });
-                setErrors({});
-              }}
-              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-            >
-              {t("employees.addNew")}
-            </button>
+            {canCreateEmp && (
+              <button
+                className="theme-btn-next"
+                onClick={() => {
+                  setShowModal(true);
+                  setSelectedItem("add");
+                  setFormData({ ...emptyForm, password: generatePassword() });
+                  setErrors({});
+                }}
+                style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+              >
+                {t("employees.addNew")}
+              </button>
+            )}
           </div>
         </div>
 
@@ -425,7 +442,7 @@ const Employees = () => {
           />
         </div>
 
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           className="custom-mod"
           style={{ maxWidth: "764px" }}
           title={selectedItem === "edit" ? t("employees.modal.updateTitle") : t("employees.addNew")}
@@ -521,7 +538,7 @@ const Employees = () => {
           </div>
         </Modal>
 
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           open={showConfirmModal}
           onCancel={() => setShowConfirmModal(false)}
           className="custom-mod"

@@ -10,6 +10,7 @@ import {
 } from "../../redux/apis/apisSlice";
 import Loader from "../Loader/Loader";
 import { getPermissionByRole } from "../../redux/apis/apisCrudFactoring";
+import { getLandingRoute, isSuperAdminFromToken } from "../../utils/getLandingRoute";
 
 const decodeJWT = (token: string) => {
   try {
@@ -83,12 +84,15 @@ const SSOCallback: React.FC = () => {
         localStorage.setItem("userData", JSON.stringify(userData));
 
         // Fetch permissions by roleId
+        const superAdmin = isSuperAdminFromToken(decodedToken);
+        let loadedPermissions: any[] = [];
         try {
           const roleId = userData?.roleId || decodedToken?.role || decodedToken?.roleId;
           if (roleId) {
             const permissionRes = await getPermissionByRole(roleId);
             const permissions = permissionRes?.data?.data;
             if (Array.isArray(permissions)) {
+              loadedPermissions = permissions;
               dispatch(setPermissions(permissions));
               localStorage.setItem("permissions", JSON.stringify(permissions));
             }
@@ -105,7 +109,9 @@ const SSOCallback: React.FC = () => {
         sessionStorage.removeItem("sso_state");
 
         toast.success("Login Successful");
-        navigate("/LOS/Wallet/Home", { replace: true });
+        // Land on the wallet dashboard only if permitted; otherwise the first
+        // sidebar page the user has permission for.
+        navigate(getLandingRoute(loadedPermissions, superAdmin), { replace: true });
       } catch (err: any) {
         const message =
           err?.response?.data?.message || "SSO authentication failed.";

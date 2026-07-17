@@ -23,9 +23,16 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { ChevronDown, Plus, ShieldOff, ShieldCheck, Link2 } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
+import { usePermissions, RISK_BLACKLIST_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 const BlacklistNid = () => {
   const { t } = useTranslation("riskManagement");
+  // Gate actions by RISK_BLACKLIST_* permissions.
+  const { hasPermission } = usePermissions();
+  const canCreateBlacklist = hasPermission(RISK_BLACKLIST_PERMISSIONS.CREATE);
+  const canDeleteBlacklist = hasPermission(RISK_BLACKLIST_PERMISSIONS.DELETE);
+  const canAssignBlockCode = hasPermission(RISK_BLACKLIST_PERMISSIONS.CHECK);
+  const canRowActions = canCreateBlacklist || canDeleteBlacklist || canAssignBlockCode;
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -242,6 +249,7 @@ const BlacklistNid = () => {
       cell: (row: any) => {
         const status = row.status || "BLACKLISTED";
         if (status !== "BLACKLISTED" && status !== "REMOVED") return null;
+        if (!canRowActions) return <span className="text-muted-foreground">-</span>;
         return (
           <div
             className="relative inline-block"
@@ -260,40 +268,46 @@ const BlacklistNid = () => {
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
                 {status === "REMOVED" ? (
-                  <DropdownMenuItem
-                    onSelect={(e) => {
-                      e.preventDefault();
-                      setFormData({ nationalId: getNidValue(row), reason: row.reason || "", blockCodeId: row.blockCodeId || "" });
-                      setNidError("");
-                      setShowAddModal(true);
-                    }}
-                  >
-                    <ShieldCheck className="h-4 w-4" />
-                    {t("blacklistNid.action.reBlacklist")}
-                  </DropdownMenuItem>
+                  canCreateBlacklist && (
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setFormData({ nationalId: getNidValue(row), reason: row.reason || "", blockCodeId: row.blockCodeId || "" });
+                        setNidError("");
+                        setShowAddModal(true);
+                      }}
+                    >
+                      <ShieldCheck className="h-4 w-4" />
+                      {t("blacklistNid.action.reBlacklist")}
+                    </DropdownMenuItem>
+                  )
                 ) : (
+                  canDeleteBlacklist && (
+                    <DropdownMenuItem
+                      variant="destructive"
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        setRemoveTarget(row);
+                      }}
+                    >
+                      <ShieldOff className="h-4 w-4" />
+                      {t("blacklistNid.action.remove")}
+                    </DropdownMenuItem>
+                  )
+                )}
+                {canAssignBlockCode && (
                   <DropdownMenuItem
-                    variant="destructive"
                     onSelect={(e) => {
                       e.preventDefault();
-                      setRemoveTarget(row);
+                      setAssignNidTarget(row);
+                      setSelectedNidBlockCodeId(row.blockCodeId || "");
+                      setShowAddModal(false);
                     }}
                   >
-                    <ShieldOff className="h-4 w-4" />
-                    {t("blacklistNid.action.remove")}
+                    <Link2 className="h-4 w-4" />
+                    {t("blacklistNid.action.assignBlockCode")}
                   </DropdownMenuItem>
                 )}
-                <DropdownMenuItem
-                  onSelect={(e) => {
-                    e.preventDefault();
-                    setAssignNidTarget(row);
-                    setSelectedNidBlockCodeId(row.blockCodeId || "");
-                    setShowAddModal(false);
-                  }}
-                >
-                  <Link2 className="h-4 w-4" />
-                  {t("blacklistNid.action.assignBlockCode")}
-                </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -324,10 +338,12 @@ const BlacklistNid = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
         />
-        <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
-          <Plus className="h-4 w-4" />
-          {t("blacklistNid.addButton")}
-        </Button>
+        {canCreateBlacklist && (
+          <Button className="gap-2" onClick={handleAdd} style={{ flexShrink: 0 }}>
+            <Plus className="h-4 w-4" />
+            {t("blacklistNid.addButton")}
+          </Button>
+        )}
         </div>
       </div>
 

@@ -16,11 +16,18 @@ import { getRoles, saveRole, updateRole, deleteRole } from "../../redux/apis/api
 import { DeleteOutlined, EditOutlined, SearchOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
+import { usePermissions, ROLE_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const emptyForm = { roleCode: "", roleName: "", roleNameAr: "", description: "", status: false };
 
 const RoleList = () => {
   const { t } = useTranslation("settings");
+  // Gate action buttons by the user's ROLE_* permissions.
+  const { hasPermission } = usePermissions();
+  const canCreateRole = hasPermission(ROLE_PERMISSIONS.CREATE);
+  const canEditRole = hasPermission(ROLE_PERMISSIONS.EDIT);
+  const canDeleteRole = hasPermission(ROLE_PERMISSIONS.DELETE);
+  const canRowActions = canEditRole || canDeleteRole;
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [from, setFrom] = useState(0);
   const [to, setTo] = useState(0);
@@ -59,22 +66,26 @@ const RoleList = () => {
 
   const menu = (row: any) => (
     <Menu>
-      <Menu.Item
-        key="edit"
-        icon={<EditOutlined />}
-        disabled={row.IsSystem}
-        onClick={() => !row.IsSystem && handleMenuClick("edit", row)}
-      >
-        {t("common:edit")}
-      </Menu.Item>
-      <Menu.Item
-        key="delete"
-        icon={<DeleteOutlined />}
-        disabled={row.IsSystem}
-        onClick={() => !row.IsSystem && handleMenuClick("delete", row)}
-      >
-        {t("common:delete")}
-      </Menu.Item>
+      {canEditRole && (
+        <Menu.Item
+          key="edit"
+          icon={<EditOutlined />}
+          disabled={row.IsSystem}
+          onClick={() => !row.IsSystem && handleMenuClick("edit", row)}
+        >
+          {t("common:edit")}
+        </Menu.Item>
+      )}
+      {canDeleteRole && (
+        <Menu.Item
+          key="delete"
+          icon={<DeleteOutlined />}
+          disabled={row.IsSystem}
+          onClick={() => !row.IsSystem && handleMenuClick("delete", row)}
+        >
+          {t("common:delete")}
+        </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -138,14 +149,17 @@ const RoleList = () => {
     {
       name: t("roles.col.action"),
       width: "10%",
-      cell: (row: any) => (
-        <Dropdown overlay={menu(row)} trigger={["click"]}>
-          <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "2px", padding: "8px" }}>
-            {t("common:select")}
-            <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
-          </Button>
-        </Dropdown>
-      ),
+      cell: (row: any) =>
+        canRowActions ? (
+          <Dropdown overlay={menu(row)} trigger={["click"]}>
+            <Button className="gradient-btn" type="primary" style={{ fontSize: "12px", borderRadius: "2px", padding: "8px" }}>
+              {t("common:select")}
+              <img src={arrowDown} alt="" style={{ marginLeft: "5px" }} />
+            </Button>
+          </Dropdown>
+        ) : (
+          <span className="text-muted">-</span>
+        ),
     },
   ];
 
@@ -322,17 +336,19 @@ const RoleList = () => {
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
               style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
-            <button
-              className="theme-btn-next"
-              onClick={() => {
-                setShowModal(true);
-                setSelectedItem("add");
-                setFormData(emptyForm);
-              }}
-              style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
-            >
-              {t("roles.addNew")}
-            </button>
+            {canCreateRole && (
+              <button
+                className="theme-btn-next"
+                onClick={() => {
+                  setShowModal(true);
+                  setSelectedItem("add");
+                  setFormData(emptyForm);
+                }}
+                style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
+              >
+                {t("roles.addNew")}
+              </button>
+            )}
           </div>
         </div>
 
@@ -361,7 +377,7 @@ const RoleList = () => {
           />
         </div>
 
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           className="custom-mod"
           style={{ maxWidth: "632px" }}
           title={selectedItem === "edit" ? t("roles.modal.editTitle") : t("roles.addNew")}
@@ -440,7 +456,7 @@ const RoleList = () => {
           </div>
         </Modal>
 
-        <Modal
+        <Modal maskClosable={false} keyboard={false}
           visible={showConfirmModal}
           onCancel={() => setShowConfirmModal(false)}
           className="custom-mod"

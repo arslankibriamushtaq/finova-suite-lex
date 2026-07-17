@@ -5,6 +5,7 @@ import { ShieldCheck, Layers } from "lucide-react";
 import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions } from "../../redux/apis/apisCrudFactoring";
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
+import { usePermissions, PERMISSION_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 
 const { Option } = Select;
@@ -21,6 +22,11 @@ const AssignPermissions: React.FC = () => {
   const [hasExistingPermissions, setHasExistingPermissions] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const { hasPermission } = usePermissions();
+  // Assigning permissions to a role is a write action — only show the Assign/Update
+  // button to users who have PERMISSION_WRITE. View-only users (PERMISSION_READ) see
+  // the page read-only.
+  const canManagePermissions = hasPermission(PERMISSION_PERMISSIONS.EDIT);
   useEffect(() => {
     getRoleData();
     getModulesAndPermissions();
@@ -186,6 +192,7 @@ const AssignPermissions: React.FC = () => {
             <Switch
               className="red-switch"
               checked={isFullySelected}
+              disabled={!canManagePermissions}
               onChange={(checked: boolean) => toggleModulePermissions(module, checked)}
               style={{ backgroundColor: isFullySelected ? "var(--foreground)" : undefined }}
             />
@@ -208,6 +215,7 @@ const AssignPermissions: React.FC = () => {
                   <Switch
                     className="red-switch"
                     checked={isChecked}
+                    disabled={!canManagePermissions}
                     onChange={() => togglePermission(permission.id)}
                     size="small"
                   />
@@ -279,17 +287,19 @@ const AssignPermissions: React.FC = () => {
             ? t("assignPermissions.permissionSelected")
             : t("assignPermissions.permissionsSelected")}
         </span>
-        <Button
-          type="primary"
-          className="theme-btn-next"
-          loading={submitting}
-          disabled={submitting}
-          onClick={() => {
-            handleDepartmentPermissions();
-          }}
-        >
-          {hasExistingPermissions ? t("common:update") : t("assignPermissions.assign")}
-        </Button>
+        {canManagePermissions && (
+          <Button
+            type="primary"
+            className="theme-btn-next"
+            loading={submitting}
+            disabled={submitting}
+            onClick={() => {
+              handleDepartmentPermissions();
+            }}
+          >
+            {hasExistingPermissions ? t("common:update") : t("assignPermissions.assign")}
+          </Button>
+        )}
       </div>
     </div>
     )}

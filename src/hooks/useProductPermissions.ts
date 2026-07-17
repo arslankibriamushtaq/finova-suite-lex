@@ -537,6 +537,86 @@ export const API_PERMISSIONS = {
   APPROVER_REJECT: "api.approver.reject",
 }
 
+// ============================================
+// RISK Management — identity-service RISK_* codes
+// ============================================
+export const RISK_BLACKLIST_PERMISSIONS = {
+  LIST: "RISK_BLACKLIST_READ",
+  CREATE: "RISK_BLACKLIST_CREATE",
+  DELETE: "RISK_BLACKLIST_DELETE",
+  CHECK: "RISK_BLACKLIST_CHECK",
+}
+
+export const RISK_DEVICES_PERMISSIONS = {
+  LIST: "RISK_DEVICES_READ",
+  CREATE: "RISK_DEVICES_CREATE",
+  EDIT: "RISK_DEVICES_UPDATE",
+  DELETE: "RISK_DEVICES_DELETE",
+}
+
+export const RISK_FRAUD_PERMISSIONS = {
+  LIST: "RISK_FRAUD_RULES_READ",
+  CREATE: "RISK_FRAUD_RULES_CREATE",
+  EDIT: "RISK_FRAUD_RULES_UPDATE",
+  DELETE: "RISK_FRAUD_RULES_DELETE",
+}
+
+// Internal checks / risk parameters / thresholds config
+export const RISK_CONFIG_PERMISSIONS = {
+  LIST: "RISK_PARAMETERS_READ",
+  EDIT: "RISK_PARAMETERS_UPDATE",
+  MANAGE: "RISK_PARAMETERS_MANAGE",
+}
+
+// ============================================
+// POLICY (lending policies: dunning, reschedule, waivers) — identity-service POLICY_*
+// ============================================
+export const POLICY_PERMISSIONS = {
+  LIST: "POLICY_READ",
+  CREATE: "POLICY_CREATE",
+  EDIT: "POLICY_WRITE", // backend Policy has CREATE/READ/DELETE/WRITE/MANAGE/AUTHORIZE (no UPDATE)
+  DELETE: "POLICY_DELETE",
+  MANAGE: "POLICY_MANAGE",
+  AUTHORIZE: "POLICY_AUTHORIZE",
+}
+
+// ============================================
+// WALLET admin (transfer charges, account limits) — identity-service WALLET_*
+// ============================================
+export const WALLET_PERMISSIONS = {
+  LIST: "WALLET_READ",
+  CREATE: "WALLET_CREATE",
+  EDIT: "WALLET_WRITE", // backend Wallet has CREATE/READ/WRITE/MANAGE (no UPDATE/DELETE)
+  MANAGE: "WALLET_MANAGE",
+}
+
+// ============================================
+// KYC — identity-service KYC_*
+// ============================================
+export const KYC_PERMISSIONS = {
+  LIST: "KYC_READ",
+  EDIT: "KYC_WRITE",
+}
+
+// ============================================
+// LOV entities (EDD reference data) — identity-service LOV_* codes
+// ============================================
+export const LOV_SOURCE_OF_FUNDS_PERMISSIONS = {
+  LIST: "LOV_SOF_READ", CREATE: "LOV_SOF_CREATE", EDIT: "LOV_SOF_UPDATE", DELETE: "LOV_SOF_DELETE",
+}
+export const LOV_SOURCE_OF_INCOME_PERMISSIONS = {
+  LIST: "LOV_SOI_READ", CREATE: "LOV_SOI_CREATE", EDIT: "LOV_SOI_UPDATE", DELETE: "LOV_SOI_DELETE",
+}
+export const LOV_SOURCE_OF_WEALTH_PERMISSIONS = {
+  LIST: "LOV_SOW_READ", CREATE: "LOV_SOW_CREATE", EDIT: "LOV_SOW_UPDATE", DELETE: "LOV_SOW_DELETE",
+}
+export const LOV_PURPOSE_OF_FINANCE_PERMISSIONS = {
+  LIST: "LOV_POF_READ", CREATE: "LOV_POF_CREATE", EDIT: "LOV_POF_UPDATE", DELETE: "LOV_POF_DELETE",
+}
+export const LOV_NET_WORTH_RANGE_PERMISSIONS = {
+  LIST: "LOV_NWR_READ", CREATE: "LOV_NWR_CREATE", EDIT: "LOV_NWR_UPDATE", DELETE: "LOV_NWR_DELETE",
+}
+
 /** Get all modules array from Redux permission data (los or direct array) */
 function getAllModulesFromPermissionData(permissionData: any): any[] {
   if (!permissionData) return []
