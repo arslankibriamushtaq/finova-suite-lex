@@ -17,6 +17,27 @@ import {
   getRiskBlockCodes,
 } from "../../../redux/apis/apisRiskManagement";
 
+// The generic table rules clip cell content (`.rdt_TableCell, .rdt_TableCell > div
+// { overflow: hidden !important }`), which cuts off the "Enabled/Disabled" label next
+// to the switch. Override it just for the Status (toggle) cell so the label shows in
+// full and the cell sizes to its content. Injected via JS so it isn't lost to a stale
+// stylesheet bundle.
+if (typeof document !== "undefined" && !document.getElementById("toggle-cell-overflow-fix")) {
+  const style = document.createElement("style");
+  style.id = "toggle-cell-overflow-fix";
+  style.textContent = `
+    .rdt_TableCell:has(.toggle-cell),
+    .rdt_TableCell:has(.toggle-cell) > div {
+      overflow: visible !important;
+      text-overflow: clip !important;
+      min-width: max-content !important;
+    }
+    .toggle-cell { overflow: visible !important; }
+    .toggle-cell .status-pill { flex-shrink: 0 !important; overflow: visible !important; }
+  `;
+  document.head.appendChild(style);
+}
+
 const InternalChecksConfig = () => {
   const { t } = useTranslation("riskManagement");
   const [isLoading, setIsLoading] = useState(false);
@@ -112,19 +133,21 @@ const InternalChecksConfig = () => {
       cell: (row: any) => {
         const isBusy = updatingId === row.id;
         return (
-          <div className="status-cell">
+          <div className="toggle-cell" style={{ display: "flex", alignItems: "center", gap: 8, padding: 0, whiteSpace: "nowrap" }}>
             <Switch
               checked={row.active}
               onCheckedChange={() => handleToggle(row)}
               disabled={isBusy}
             />
-            <span className={`status-pill ${row.active ? "active" : "inactive"}`}>
+            <span
+              className={`status-pill ${row.active ? "active" : "inactive"}`}
+              style={{ flexShrink: 0 }}
+            >
               {row.active ? t("common:enabled") : t("common:disabled")}
             </span>
           </div>
         );
       },
-      width: "180px",
     },
     {
       name: t("internalChecks.col.blockCodeOnFail"),

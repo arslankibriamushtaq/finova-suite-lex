@@ -20,6 +20,7 @@ const AssignPermissions: React.FC = () => {
   const [selectedPermissions, setSelectedPermissions] = useState<any>([]);
   const [hasExistingPermissions, setHasExistingPermissions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   useEffect(() => {
     getRoleData();
     getModulesAndPermissions();
@@ -96,16 +97,19 @@ const AssignPermissions: React.FC = () => {
   };
 
   const handleDepartmentPermissions = async () => {
+    if (!selectedRole) {
+      return toast.error(t("assignPermissions.toast.selectRole"));
+    }
     try {
-      if (!selectedRole) {
-        return toast.error(t("assignPermissions.toast.selectRole"));
-      }
+      setSubmitting(true);
       const response = await syncRolePermissions(selectedRole, selectedPermissions || []);
       if (response) {
         toast.success(response?.data?.message || t("assignPermissions.toast.updated"));
       }
     } catch (e: any) {
       toast.error(e?.response?.data?.message || t("assignPermissions.toast.updateFailed"));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -278,6 +282,8 @@ const AssignPermissions: React.FC = () => {
         <Button
           type="primary"
           className="theme-btn-next"
+          loading={submitting}
+          disabled={submitting}
           onClick={() => {
             handleDepartmentPermissions();
           }}

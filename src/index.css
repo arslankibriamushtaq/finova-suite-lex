@@ -112,6 +112,40 @@
   pointer-events: auto !important;
 }
 
+/* The dashboard sidebar column is positioned with z-index:1005 (Layout.tsx), which
+   is above antd's default modal z-index (1000) — so a modal's overlay/mask fails to
+   cover the sidebar. Lift the modal mask + wrapper above the sidebar, but keep them
+   below the antd dropdown z-index (1300) so selects opened inside a modal stay on top. */
+.ant-modal-mask,
+.ant-modal-wrap {
+  z-index: 1100 !important;
+}
+
+/* The modal border comes from antd's generated styles on the wrapper
+   (.ant-modal.css-dev-only-do-not-override-*) and its content card, not from
+   source CSS — so it can only be overridden. Remove the border/outline (and the
+   elevation shadow that reads as a bottom line) from both. */
+.ant-modal,
+.ant-modal-content {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Input.Password renders an inner <input class="ant-input"> inside the affix wrapper.
+   That inner input keeps a transparent border which the global
+   `.ant-input:hover/:focus { border-color: var(--foreground) !important }` rule
+   (below in custom.scss) paints dark on focus — showing as a second, inner border.
+   The wrapper alone should carry the border, so force the inner input borderless in
+   every state. Needs !important + high specificity to beat that global rule. */
+.ant-input-affix-wrapper > input.ant-input,
+.ant-input-affix-wrapper > input.ant-input:hover,
+.ant-input-affix-wrapper > input.ant-input:focus,
+.ant-input-affix-wrapper:focus-within > input.ant-input {
+  border: none !important;
+  box-shadow: none !important;
+}
+
 [data-slot="select-content"] {
   background-color: var(--popover) !important;
   border: 1px solid var(--border) !important;

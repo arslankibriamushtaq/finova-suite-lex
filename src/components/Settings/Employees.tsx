@@ -81,6 +81,7 @@ const Employees = () => {
   const [formData, setFormData] = useState(emptyForm);
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleMenuClick = (key: string, row: any) => {
     if (key === "edit") {
@@ -96,6 +97,7 @@ const Employees = () => {
         roleId: original?.roleId || "",
         status: original?.status || "ACTIVE",
       });
+      setErrors({});
       setShowModal(true);
     } else if (key === "delete") {
       setDeleteTargetId(row.id);
@@ -193,6 +195,34 @@ const Employees = () => {
     } catch (error) {
       setShowConfirmModal(false);
       setDeleteTargetId(null);
+    }
+  };
+
+  // Validate the add/edit form; returns a map of field -> error message (empty = valid)
+  const validateForm = (): Record<string, string> => {
+    const errs: Record<string, string> = {};
+    if (!formData.name.trim()) errs.name = t("employees.error.name", "Please enter the name");
+    if (selectedItem === "add") {
+      if (!formData.email.trim()) {
+        errs.email = t("employees.error.email", "Please enter the email");
+      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email.trim())) {
+        errs.email = t("employees.error.emailInvalid", "Please enter a valid email");
+      }
+      if (!formData.password || formData.password.length < MIN_PASSWORD_LENGTH) {
+        errs.password = t("employees.error.password", `Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
+      }
+    }
+    if (!formData.roleId) errs.roleId = t("employees.error.role", "Please select a role");
+    return errs;
+  };
+
+  // Save button on the first modal: validate inline, then submit directly (no
+  // separate "are you sure?" confirmation step).
+  const handleSaveClick = () => {
+    const errs = validateForm();
+    setErrors(errs);
+    if (Object.keys(errs).length === 0) {
+      handleSave();
     }
   };
 
@@ -361,6 +391,7 @@ const Employees = () => {
                 setShowModal(true);
                 setSelectedItem("add");
                 setFormData({ ...emptyForm, password: generatePassword() });
+                setErrors({});
               }}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
@@ -399,10 +430,10 @@ const Employees = () => {
           style={{ maxWidth: "764px" }}
           title={selectedItem === "edit" ? t("employees.modal.updateTitle") : t("employees.addNew")}
           open={showModal}
-          onCancel={() => setShowModal(false)}
+          onCancel={() => { setShowModal(false); setErrors({}); }}
           footer={[
-            <Button key="close" onClick={() => setShowModal(false)}>{t("common:cancel")}</Button>,
-            <Button key="save" type="primary" onClick={() => { setShowConfirmModal(true); setShowModal(false); }}>
+            <Button key="close" onClick={() => { setShowModal(false); setErrors({}); }}>{t("common:cancel")}</Button>,
+            <Button key="save" type="primary" onClick={handleSaveClick}>
               {t("common:save")}
             </Button>,
           ]}
@@ -411,21 +442,21 @@ const Employees = () => {
             <Form layout="vertical">
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label={t("common:name")}>
+                  <Form.Item label={t("common:name")} validateStatus={errors.name ? "error" : undefined} help={errors.name}>
                     <Input
                       placeholder={t("employees.ph.fullName")}
                       value={formData.name}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, name: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setFormData({ ...formData, name: e.target.value }); setErrors((p) => ({ ...p, name: "" })); }}
                     />
                   </Form.Item>
                 </Col>
                 <Col span={12}>
-                  <Form.Item label={t("common:email")}>
+                  <Form.Item label={t("common:email")} validateStatus={errors.email ? "error" : undefined} help={errors.email}>
                     <Input
                       placeholder={t("employees.ph.email")}
                       value={formData.email}
                       disabled={selectedItem === "edit"}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setFormData({ ...formData, email: e.target.value }); setErrors((p) => ({ ...p, email: "" })); }}
                     />
                   </Form.Item>
                 </Col>
@@ -452,12 +483,12 @@ const Employees = () => {
               </Row>
               {selectedItem === "add" && (
                 <Row gutter={16}>
-                  <Col span={12}>
-                    <Form.Item label={t("employees.field.password")}>
+                  <Col span={24}>
+                    <Form.Item label={t("employees.field.password")} validateStatus={errors.password ? "error" : undefined} help={errors.password}>
                       <Input.Password
                         placeholder={t("employees.ph.password")}
                         value={formData.password}
-                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormData({ ...formData, password: e.target.value })}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) => { setFormData({ ...formData, password: e.target.value }); setErrors((p) => ({ ...p, password: "" })); }}
                       />
                     </Form.Item>
                   </Col>
@@ -465,12 +496,12 @@ const Employees = () => {
               )}
               <Row gutter={16}>
                 <Col span={12}>
-                  <Form.Item label={t("employees.field.assignRole")}>
+                  <Form.Item label={t("employees.field.assignRole")} validateStatus={errors.roleId ? "error" : undefined} help={errors.roleId}>
                     <Select
                       className="w-100"
                       placeholder={t("employees.ph.selectRole")}
                       value={formData.roleId || undefined}
-                      onChange={(value: string) => setFormData({ ...formData, roleId: value })}
+                      onChange={(value: string) => { setFormData({ ...formData, roleId: value }); setErrors((p) => ({ ...p, roleId: "" })); }}
                       options={roleData.map((item: any) => ({ label: item.roleName, value: item.id }))}
                     />
                   </Form.Item>
