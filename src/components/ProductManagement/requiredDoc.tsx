@@ -46,23 +46,17 @@ const RequiredDoc = ({setSelectedTab}:any) => {
   const productId = searchParams.get("id") || product?.id;
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   
-  // TODO: Re-enable when permission API is implemented
-  // const {
-  //   canCreate,
-  //   canUpdate,
-  //   canRemove,
-  //   canVerifyModule,
-  //   canRejectAsChecker,
-  //   canApproveModule,
-  //   canRejectAsApprover
-  // } = usePermissions();
-  const canCreate = () => true;
-  const canUpdate = () => true;
-  const canRemove = () => true;
-  const canVerifyModule = () => true;
-  const canRejectAsChecker = () => true;
-  const canApproveModule = () => true;
-  const canRejectAsApprover = () => true;
+  // Permission gating — reads the logged-in user's permissions from Redux, so it
+  // enforces per-role (mapped to the backend PRODUCT_DOCUMENT_* codes below).
+  const {
+    canCreate,
+    canUpdate,
+    canRemove,
+    canVerifyModule,
+    canRejectAsChecker,
+    canApproveModule,
+    canRejectAsApprover
+  } = usePermissions();
   const headers = [
     { name: t("requiredDoc.nameEn"), selector: (row: any) => row.nameEn, },
     { name: t("requiredDoc.nameAr"), selector: (row: any) => row.nameAr, },

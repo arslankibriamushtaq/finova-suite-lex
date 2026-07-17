@@ -123,11 +123,13 @@ export const PRODUCT_PERMISSIONS_LOS = {
 } as const
 
 // Document Module permission names (moduleId: 14)
+// Required documents live under the backend PRODUCT module as PRODUCT_DOCUMENT_*.
 export const DOCUMENT_PERMISSIONS = {
-  LIST: "list_document",
-  CREATE: "create_document",
-  EDIT: "edit_document",
-  DELETE: "delete_document",
+  LIST: "PRODUCT_DOCUMENT_READ",
+  CREATE: "PRODUCT_DOCUMENT_CREATE",
+  EDIT: "PRODUCT_DOCUMENT_UPDATE",
+  DELETE: "PRODUCT_DOCUMENT_DELETE",
+  // Workflow keys below have no backend permission — gates stay hidden as before
   MAKER_SUBMIT: "document.maker.submit",
   MAKER_RESUBMIT: "document.maker.resubmit",
   CHECKER_VERIFY: "document.checker.verify",

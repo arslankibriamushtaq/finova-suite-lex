@@ -26,23 +26,21 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog"
-import useProductPermissions, { useWorkflowActions, WORKFLOW_MODULE_NAMES } from "../../hooks/useProductPermissions"
+import useProductPermissions, { useWorkflowActions, WORKFLOW_MODULE_NAMES, PRODUCT_PERMISSIONS_LOS } from "../../hooks/useProductPermissions"
 
 export default function ProductManagement() {
   const { t, isRTL } = useLanguage()
   const { t: tp } = useTranslation("productManagement2")
   const router = useRouter()
   
-  // TODO: Re-enable when permission API is implemented
-  // const { canAdd, canEdit, canVerify, canCheckerReject, canApprove, canApproverReject } = useProductPermissions()
-  // const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
-  const canAdd = () => true;
-  const canEdit = () => true;
-  const canVerify = () => false;
-  const canCheckerReject = () => false;
-  const canApprove = () => false;
-  const canApproverReject = () => false;
+  // Permission gating via identity-service PRODUCT_* codes. hasPermission reads the
+  // logged-in user's permissions from Redux, so this enforces per-role automatically
+  // (a role with the permission unassigned won't see the corresponding action).
+  const { hasPermission, canVerify, canCheckerReject, canApprove, canApproverReject } = useProductPermissions()
   const { verifyItem, rejectAsChecker, approveItem, rejectAsApprover } = useWorkflowActions()
+  const canAdd = () => hasPermission(PRODUCT_PERMISSIONS_LOS.CREATE)
+  const canEdit = () => hasPermission(PRODUCT_PERMISSIONS_LOS.EDIT)
+  const canDelete = () => hasPermission(PRODUCT_PERMISSIONS_LOS.DELETE)
 
   const [searchTerm, setSearchTerm] = useState("")
   // Filters kept at default ("all") since the filter UI was removed; the API
@@ -279,13 +277,15 @@ export default function ProductManagement() {
       })
     }
 
-    // Delete
-    menuItems.push({
-      key: "delete",
-      icon: <Trash2 className="h-4 w-4 text-destructive" />,
-      label: tp("common:delete"),
-      onClick: () => openDeleteDialog(row.id),
-    })
+    // Delete - requires PRODUCT_DELETE
+    if (canDelete()) {
+      menuItems.push({
+        key: "delete",
+        icon: <Trash2 className="h-4 w-4 text-destructive" />,
+        label: tp("common:delete"),
+        onClick: () => openDeleteDialog(row.id),
+      })
+    }
 
     // Verify - requires checker.verify permission
     if (canVerify()) {

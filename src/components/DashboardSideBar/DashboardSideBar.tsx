@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import "./DashboardSideBar.css";
 import { Images } from "../Config/Images";
@@ -335,11 +335,31 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const permissionData = useSelector(
     (state: RootState) => state.block.permissions
   );
+  const token = useSelector((state: RootState) => state.block.token);
+
+  // Super admin has no role/permissions assigned (SSOCallback stores empty
+  // permissions for them) but carries the `super_admin` Keycloak realm role in the
+  // JWT. Detect that so we can still show them everything, while a NORMAL role with
+  // zero assigned permissions is hidden (fail-closed) rather than shown.
+  const isSuperAdmin = useMemo(() => {
+    if (!token || typeof token !== "string") return false;
+    try {
+      const payload = token.split(".")[1];
+      if (!payload) return false;
+      const claims = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+      const roles = claims?.realm_access?.roles;
+      return Array.isArray(roles) && roles.includes("super_admin");
+    } catch {
+      return false;
+    }
+  }, [token]);
 
   // Helper to check if user has access based on moduleCode, moduleName, subModule names, or permission names
   const hasAccess = (keys: string | string[]): boolean => {
+    if (isSuperAdmin) return true; // super admin sees every module/page
     if (!permissionData || !Array.isArray(permissionData) || permissionData.length === 0) {
-      return true; // No permissions loaded yet — show all
+      // A real user with no assigned permissions: hide gated modules/pages.
+      return false;
     }
     const keysToCheck = (Array.isArray(keys) ? keys : [keys]).map((k) => k.toLowerCase());
     const matchModule = (mod: any): boolean => {
@@ -2126,7 +2146,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   );
 
   const walletItems: any[] = [
-    {
+    hasAccess("DASHBOARD") && {
       label: "Dashboard",
       Link: "/LOS/Wallet/Home",
       active: pathname.includes("/LOS/Wallet/Home"),
@@ -2139,7 +2159,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       active: pathname.includes("/LOS/NotificationOrchestrator"),
     },
     
-    {
+    hasAccess("CUSTOMER") && {
       label: "Customer Management",
       Link: "/CustomerManagement/CustomerList",
       img: Images.CustomerManagementIcon,
@@ -2663,7 +2683,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             <div className="wallet-menu-scope">
               {walletItems.map((item, index) => (
                 <React.Fragment key={index}>
-                  {item.menu ? (
+                  {!item ? null : item.menu ? (
                     renderSubmenu(item, index)
                   ) : (
                     <div
