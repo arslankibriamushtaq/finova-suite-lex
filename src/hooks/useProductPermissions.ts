@@ -5,9 +5,24 @@ import toast from "react-hot-toast"
 
 interface Permission {
   id: number
-  name: string
-  moduleId: number
+  name?: string
+  permissionName?: string
+  permissionCode?: string
+  code?: string
+  moduleId?: number
 }
+
+/**
+ * All identifier strings a permission object exposes, regardless of backend shape.
+ * The identity-service `/permissions/role/{id}` payload (SSO login path) exposes
+ * `permissionCode` (e.g. "PRODUCT_CREATE") and `permissionName` (e.g. "Create
+ * Product"); the OTP v2 payload uses `name`. A caller's key may match ANY of these,
+ * so `hasPermission` must test all of them — not just the first present one.
+ */
+const getPermissionKeys = (p: Permission): string[] =>
+  [p?.permissionCode, p?.code, p?.name, p?.permissionName]
+    .filter((v): v is string => typeof v === "string" && v.trim() !== "")
+    .map((v) => v.trim().toLowerCase())
 
 // ============================================
 // WORKFLOW ACTION TYPES
@@ -93,18 +108,18 @@ export const PRODUCT_PERMISSIONS = {
 // Use these with hasPermission() when your API returns this structure
 export const PRODUCT_PERMISSIONS_LOS = {
   MODULE: "product_management",
-  LIST: "list_product",
-  CREATE: "create_product",
-  EDIT: "edit_product",
-  DELETE: "delete_product",
-  SHOW: "show_product",
-  PRODUCT_FEE_SETTING: "product_fee_setting",
-  UPDATE_STATUS: "update_product_status",
-  // Product Admin (sub-module)
-  LIST_ADMIN: "list_product_admin",
-  CREATE_ADMIN: "create_product_admin",
-  EDIT_ADMIN: "edit_product_admin",
-  DELETE_ADMIN: "delete_product_admin",
+  LIST: "PRODUCT_READ",
+  CREATE: "PRODUCT_CREATE",
+  EDIT: "PRODUCT_UPDATE",
+  DELETE: "PRODUCT_DELETE",
+  SHOW: "PRODUCT_READ",
+  PRODUCT_FEE_SETTING: "PRODUCT_SETTINGS_UPDATE",
+  UPDATE_STATUS: "PRODUCT_UPDATE",
+  // Product Admin (sub-module) — backend has no separate product-admin module
+  LIST_ADMIN: "PRODUCT_READ",
+  CREATE_ADMIN: "PRODUCT_CREATE",
+  EDIT_ADMIN: "PRODUCT_UPDATE",
+  DELETE_ADMIN: "PRODUCT_DELETE",
 } as const
 
 // Document Module permission names (moduleId: 14)
@@ -133,24 +148,26 @@ export const BOARD_ACTIONS_PERMISSIONS = {
 // ============================================
 // MODULE 5-9: Customer Management Module
 // ============================================
+// Leads/Opportunities have no dedicated backend module — they are customer-domain
+// read views, so gate them behind the Customer module's READ permission.
 export const LEAD_PERMISSIONS = {
-  LIST: "leads_list",
-  EXPORT: "export_leads",
+  LIST: "CUSTOMER_READ",
+  EXPORT: "CUSTOMER_READ",
 }
 
 export const CUSTOMER_PERMISSIONS = {
-  LIST: "customer_list",
-  EXPORT: "export_customers",
+  LIST: "CUSTOMER_READ",
+  EXPORT: "CUSTOMER_READ",
 }
 
 export const OPPORTUNITY_PERMISSIONS = {
-  LIST: "opportunity_list",
-  EXPORT: "export_opportunities",
+  LIST: "CUSTOMER_READ",
+  EXPORT: "CUSTOMER_READ",
 }
 
 export const ONBOARD_CUSTOMERS_PERMISSIONS = {
-  LIST: "onboard_customers_list",
-  RESEND_EMAIL: "resend_onboard_customer_login_email",
+  LIST: "ONBOARDING_READ",
+  RESEND_EMAIL: "ONBOARDING_WRITE",
 }
 
 // ============================================
@@ -218,6 +235,11 @@ export const DEPARTMENT_PERMISSION_MODULE_PERMISSIONS = {
 // ============================================
 // MODULE 23: Insurance Vendors Management
 // ============================================
+// NOTE(permissions): Insurance vendors are served by the LEGACY backend
+// (VITE_REACT_APP_API_BASE_URL, endpoints under insurance-vendor), which is NOT
+// covered by the identity-service permission catalog. No real code exists to gate
+// these, so the keys below never match and the gates stay hidden. Either add a
+// backend permission, or ungate these actions (they predate the identity ACL).
 export const VENDOR_PERMISSIONS = {
   LIST: "list_vendor",
   CREATE: "create_vendor",
@@ -274,6 +296,11 @@ export const PURPOSE_OF_FINANCE_PERMISSIONS = {
   APPROVER_REJECT: "purpose_of_finance.approver.reject",
 }
 
+// NOTE(permissions): "Source of Revenue" is served by the LEGACY backend
+// (VITE_REACT_APP_API_BASE_URL, /source-of-revenue) and is distinct from the new
+// identity-service LOV entities Source of Funds/Income/Wealth (LOV_SOF/SOI/SOW).
+// No real code exists for it, so keys below never match and gates stay hidden.
+// Add a backend permission or ungate; do NOT map to LOV_SOF/SOI/SOW.
 export const SOURCE_OF_REVENUE_PERMISSIONS = {
   CREATE: "create_source_of_revenue",
   DELETE: "delete_source_of_revenue",
@@ -289,6 +316,11 @@ export const SOURCE_OF_REVENUE_PERMISSIONS = {
   APPROVER_REJECT: "source_of_revenue.approver.reject",
 }
 
+// NOTE(permissions): Check-Types are served by the LEGACY backend
+// (VITE_REACT_APP_API_BASE_URL, /check-type), not the identity-service. The new LOV
+// module only covers POF / Source-of-Funds / Income / Wealth / NWR — there is no
+// "check type" code. Keys below never match, so gates stay hidden. Add a backend
+// permission or ungate; do NOT map to an unrelated LOV entity.
 export const CHECKS_TYPES_PERMISSIONS = {
   LIST: "list_checks_type",
   CREATE: "create_checks_type",
@@ -386,28 +418,31 @@ export const ACTIVITY_LOGS_PERMISSIONS = {
 // ============================================
 export const PARTNER_PERMISSIONS = {
   MANAGEMENT: "partner_management",
-  LIST: "list_partner",
-  CREATE: "create_partner",
-  EDIT: "edit_partner",
-  UPDATE: "update_partner",
-  DELETE: "delete_partner",
-  UPDATE_STATUS: "update_partner_status",
+  LIST: "PARTNER_READ",
+  CREATE: "PARTNER_CREATE",
+  EDIT: "PARTNER_UPDATE",
+  UPDATE: "PARTNER_UPDATE",
+  DELETE: "PARTNER_MANAGE", // backend has no PARTNER_DELETE; MANAGE is the closest
+  UPDATE_STATUS: "PARTNER_UPDATE",
+  // Workflow keys below have no backend permission — gates stay hidden as before
   MAKER_SUBMIT: "partner.maker.submit",
   MAKER_RESUBMIT: "partner.maker.resubmit",
   CHECKER_VERIFY: "partner.checker.verify",
   CHECKER_REJECT: "partner.checker.reject",
   APPROVER_APPROVE: "partner.approver.approve",
   APPROVER_REJECT: "partner.approver.reject",
-  LIST_COMMISSION: "list_partner_commission",
+  LIST_COMMISSION: "PARTNER_READ",
 }
 
+// Backend has no separate partner-admin module — gate under the Partner module.
 export const PARTNER_ADMIN_PERMISSIONS = {
-  LIST: "list_partner_admin",
-  CREATE: "create_partner_admin",
-  EDIT: "edit_partner_admin",
-  DELETE: "delete_partner_admin",
-  UPDATE_STATUS: "update_partner_admin_status",
-  RESEND_EMAIL: "resend_partner_admin_login_email",
+  LIST: "PARTNER_READ",
+  CREATE: "PARTNER_CREATE",
+  EDIT: "PARTNER_UPDATE",
+  DELETE: "PARTNER_MANAGE",
+  UPDATE_STATUS: "PARTNER_UPDATE",
+  RESEND_EMAIL: "PARTNER_WRITE",
+  // Workflow keys below have no backend permission — gates stay hidden as before
   MAKER_SUBMIT: "partner_admin.maker.submit",
   MAKER_RESUBMIT: "partner_admin.maker.resubmit",
   CHECKER_VERIFY: "partner_admin.checker.verify",
@@ -424,15 +459,16 @@ export const SETTING_PERMISSIONS = {
 }
 
 export const EMPLOYEE_PERMISSIONS = {
-  CREATE: "create_employee",
-  EDIT: "edit_employee",
-  DELETE: "delete_employee",
-  SHOW: "show_employee",
-  LIST: "list_employee",
-  ASSIGN_PERMISSION: "assign_employee_permission",
-  REVOKE_PERMISSION: "revoke_employee_permission",
-  RESEND_EMAIL: "resend_employee_login_email",
-  UPDATE_STATUS: "update_employee_status",
+  CREATE: "EMPLOYEE_CREATE",
+  EDIT: "EMPLOYEE_UPDATE",
+  DELETE: "EMPLOYEE_DELETE",
+  SHOW: "EMPLOYEE_READ",
+  LIST: "EMPLOYEE_READ",
+  ASSIGN_PERMISSION: "EMPLOYEE_UPDATE",
+  REVOKE_PERMISSION: "EMPLOYEE_UPDATE",
+  RESEND_EMAIL: "EMPLOYEE_UPDATE",
+  UPDATE_STATUS: "EMPLOYEE_UPDATE",
+  // Workflow keys below have no backend permission — gates stay hidden as before
   MAKER_SUBMIT: "employee.maker.submit",
   MAKER_RESUBMIT: "employee.maker.resubmit",
   CHECKER_VERIFY: "employee.checker.verify",
@@ -442,14 +478,15 @@ export const EMPLOYEE_PERMISSIONS = {
 }
 
 export const ROLE_PERMISSIONS = {
-  LIST: "list_role",
-  CREATE: "create_role",
-  DELETE: "delete_role",
-  EDIT: "edit_role",
-  SHOW: "show_role",
-  ASSIGN_PERMISSION: "assign_role_permission",
-  REVOKE_PERMISSION: "revoke_role_permission",
-  UPDATE_STATUS: "update_role_status",
+  LIST: "ROLE_READ",
+  CREATE: "ROLE_WRITE", // backend Role module exposes READ / WRITE / DELETE only
+  DELETE: "ROLE_DELETE",
+  EDIT: "ROLE_WRITE",
+  SHOW: "ROLE_READ",
+  ASSIGN_PERMISSION: "ROLE_WRITE",
+  REVOKE_PERMISSION: "ROLE_WRITE",
+  UPDATE_STATUS: "ROLE_WRITE",
+  // Workflow keys below have no backend permission — gates stay hidden as before
   MAKER_SUBMIT: "role.maker.submit",
   MAKER_RESUBMIT: "role.maker.resubmit",
   CHECKER_VERIFY: "role.checker.verify",
@@ -459,11 +496,12 @@ export const ROLE_PERMISSIONS = {
 }
 
 export const PERMISSION_PERMISSIONS = {
-  LIST: "list_permission",
-  CREATE: "create_permission",
-  DELETE: "delete_permission",
-  EDIT: "edit_permission",
-  SHOW: "show_permission",
+  LIST: "PERMISSION_READ",
+  CREATE: "PERMISSION_WRITE", // backend Permission module exposes READ / WRITE / DELETE only
+  DELETE: "PERMISSION_DELETE",
+  EDIT: "PERMISSION_WRITE",
+  SHOW: "PERMISSION_READ",
+  // Workflow keys below have no backend permission — gates stay hidden as before
   MAKER_SUBMIT: "permission.maker.submit",
   MAKER_RESUBMIT: "permission.maker.resubmit",
   CHECKER_VERIFY: "permission.checker.verify",
@@ -475,6 +513,11 @@ export const PERMISSION_PERMISSIONS = {
 // ============================================
 // MODULE 50: API Management
 // ============================================
+// NOTE(permissions): Partner-API management is served by the LEGACY backend
+// (VITE_REACT_APP_API_BASE_URL, /apis-management/partner-apis), not the
+// identity-service. The new MIDDLEWARE module's Provider-APIs are a different
+// concept. No real code exists here, so keys below never match and the enable/status
+// button stays disabled. Add a backend permission or ungate.
 export const API_PERMISSIONS = {
   MANAGEMENT: "api_management",
   LIST_PARTNER_API: "list_partner_api",
@@ -512,12 +555,15 @@ export const useProductPermissions = () => {
   const hasPermission = (permissionName: string): boolean => {
     if (!permissionName || allModules.length === 0) return false
 
+    const target = permissionName.trim().toLowerCase()
+    const matches = (p: Permission) => getPermissionKeys(p).includes(target)
+
     const findPermissionInModule = (module: any): boolean => {
       if (module.permissionsList && Array.isArray(module.permissionsList)) {
-        if (module.permissionsList.some((p: Permission) => p.name === permissionName)) return true
+        if (module.permissionsList.some(matches)) return true
       }
       if (module.permissions && Array.isArray(module.permissions)) {
-        if (module.permissions.some((p: Permission) => p.name === permissionName)) return true
+        if (module.permissions.some(matches)) return true
       }
       if (module.sub_modules && Array.isArray(module.sub_modules)) {
         for (const subModule of module.sub_modules) {
@@ -543,10 +589,10 @@ export const useProductPermissions = () => {
     const names: string[] = []
     const collect = (module: any) => {
       if (module.permissionsList && Array.isArray(module.permissionsList)) {
-        module.permissionsList.forEach((p: Permission) => names.push(p.name))
+        module.permissionsList.forEach((p: Permission) => names.push(...getPermissionKeys(p)))
       }
       if (module.permissions && Array.isArray(module.permissions)) {
-        module.permissions.forEach((p: Permission) => names.push(p.name))
+        module.permissions.forEach((p: Permission) => names.push(...getPermissionKeys(p)))
       }
       if (module.subModulesList && Array.isArray(module.subModulesList)) {
         module.subModulesList.forEach((sub: any) => collect(sub))

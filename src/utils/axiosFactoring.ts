@@ -6,6 +6,26 @@ import toast from "react-hot-toast";
 const axiosFactoring = Axios.create({
   baseURL: `${import.meta.env.VITE_API_BASE_URL}`,
 });
+
+// Fallback tenant used before login / if the JWT carries no tenant claim.
+const DEFAULT_TENANT_ID = "550e8400-e29b-41d4-a716-446655440000";
+
+// Derive the tenant from the access token's `tenant_id` claim rather than
+// hardcoding it, so the header is correct per-tenant if the backend ever starts
+// enforcing X-Tenant-Id (it is currently ignored). Falls back to the default on
+// any decode failure, preserving today's behavior.
+const getTenantId = (token?: string): string => {
+  if (!token) return DEFAULT_TENANT_ID;
+  try {
+    const payload = token.split(".")[1];
+    if (!payload) return DEFAULT_TENANT_ID;
+    const json = atob(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    const claims = JSON.parse(json);
+    return claims?.tenant_id || claims?.tenantId || DEFAULT_TENANT_ID;
+  } catch {
+    return DEFAULT_TENANT_ID;
+  }
+};
 // let tokenValue = localStorage.getItem("awn-token");
 axiosFactoring.interceptors.request.use((reqConfig) => {
   const config = { ...reqConfig };
@@ -18,7 +38,7 @@ axiosFactoring.interceptors.request.use((reqConfig) => {
     // if (accessToken && accessToken !== "undefined") {
      config.headers["Authorization"] = `Bearer ${token}`;
      config.headers["Content-Type"] = "application/json";
-     config.headers["X-Tenant-Id"] = "550e8400-e29b-41d4-a716-446655440000";
+     config.headers["X-Tenant-Id"] = getTenantId(token);
       // Let axios set Content-Type for FormData (multipart/form-data with boundary)
       if (!(config.data instanceof FormData)) {
         config.headers["Content-Type"] = "application/json";

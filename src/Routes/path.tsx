@@ -36,7 +36,9 @@ import CostByCustomer from "../components/Customer/CostByCustomer";
 import OnboardingCostByCustomer from "../components/Customer/OnboardingCostByCustomer";
 import LmsAllCustomers from "../pages/lmsPages/Customers/AllCustomers";
 import Login from "../components/Login/login";
-import VerifyOtp from "../components/Login/VerifyOtp";
+// OTP/password login is not in use — SSO (Keycloak) is the only active login path.
+// Commented out until/unless the OTP flow is wired (needs VITE_REACT_APP_API_IDS_URL).
+// import VerifyOtp from "../components/Login/VerifyOtp";
 import ResetPassword from "../components/Login/ResetPassword";
 import SSOCallback from "../components/Login/SSOCallback";
 import LayoutLogin from "../Layout/LayoutLogin";
@@ -458,11 +460,12 @@ export const router = createBrowserRouter([
         element: <LayoutLogin />,
         children: [{ path: "", element: <Login /> }],
       },
-      {
-        path: "verify-otp",
-        element: <LayoutLogin />,
-        children: [{ path: "", element: <VerifyOtp /> }],
-      },
+      // OTP/password login not in use — SSO is the only active login path.
+      // {
+      //   path: "verify-otp",
+      //   element: <LayoutLogin />,
+      //   children: [{ path: "", element: <VerifyOtp /> }],
+      // },
       {
         path: "reset-password",
         element: <LayoutLogin />,
