@@ -406,7 +406,7 @@ const Stepper = ({ onboarding, isAr }: any) => {
                 {!isFirst && (
                   <div
                     className={cn(
-                      "onb-connector absolute top-5 right-1/2 left-[-50%] z-0 h-0.5 rounded-full transition-colors duration-500",
+                      "onb-connector absolute top-5 z-0 h-0.5 rounded-full transition-colors duration-500",
                       prevDone ? "bg-emerald-500" : "bg-border"
                     )}
                     style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
@@ -728,6 +728,10 @@ const Onboarding360 = () => {
           z-index: 1;
           }
         .onb360-page .onb-connector {
+          /* Logical insets so the line connects to the previous step and mirrors
+             automatically in RTL (end=right in LTR / left in RTL). */
+          inset-inline-end: 50%;
+          inset-inline-start: -50%;
           transform-origin: left center;
           animation: onbConnGrow 0.45s ease-out both;
         }
