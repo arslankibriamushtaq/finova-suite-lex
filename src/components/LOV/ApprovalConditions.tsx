@@ -35,6 +35,7 @@ import {
 } from "../ui/select";
 import { Badge } from "../ui/badge";
 import { useTranslation } from "react-i18next";
+import { usePermissions, LOV_APPROVAL_CONDITION_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 interface ApprovalFieldDefinition {
   id?: string;
@@ -48,6 +49,11 @@ interface ApprovalFieldDefinition {
 
 const ApprovalConditions = () => {
   const { t } = useTranslation("lov");
+  const { hasPermission } = usePermissions();
+  const canCreate = hasPermission(LOV_APPROVAL_CONDITION_PERMISSIONS.CREATE);
+  const canEdit = hasPermission(LOV_APPROVAL_CONDITION_PERMISSIONS.EDIT);
+  const canDelete = hasPermission(LOV_APPROVAL_CONDITION_PERMISSIONS.DELETE);
+  const canRowActions = canEdit || canDelete;
   const [conditions, setConditions] = useState<ApprovalFieldDefinition[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -289,7 +295,10 @@ const ApprovalConditions = () => {
     },
     {
       name: t("common:actions"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canRowActions ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="outline" className="gap-1">
@@ -297,17 +306,21 @@ const ApprovalConditions = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {canEdit && (
             <DropdownMenuItem onClick={() => openEditModal(row)} className="cursor-pointer gap-2">
               <Edit2 className="h-4 w-4" />
               <span>{t("common:edit")}</span>
             </DropdownMenuItem>
+            )}
+            {canDelete && (
             <DropdownMenuItem onClick={() => openDeleteModal(row)} className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950">
               <Trash2 className="h-4 w-4" />
               <span>{t("common:delete")}</span>
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
-      ),
+        ),
       ignoreRowClick: true,
       allowOverflow: true,
     },
@@ -338,6 +351,7 @@ const ApprovalConditions = () => {
             }}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
+          {canCreate && (
           <Button
             onClick={openCreateModal}
             className="gap-2"
@@ -346,6 +360,7 @@ const ApprovalConditions = () => {
             <Plus className="w-4 h-4" />
             {t("common:create")}
           </Button>
+          )}
         </div>
       </div>
 

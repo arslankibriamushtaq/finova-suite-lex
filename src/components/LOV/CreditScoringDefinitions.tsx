@@ -34,9 +34,15 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useTranslation } from "react-i18next";
+import { usePermissions, RISK_CREDIT_SCORING_FIELDS_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const CreditScoringDefinitions = () => {
   const { t } = useTranslation("lov");
+  const { hasPermission } = usePermissions();
+  const canCreate = hasPermission(RISK_CREDIT_SCORING_FIELDS_PERMISSIONS.CREATE);
+  const canEdit = hasPermission(RISK_CREDIT_SCORING_FIELDS_PERMISSIONS.EDIT);
+  const canDelete = hasPermission(RISK_CREDIT_SCORING_FIELDS_PERMISSIONS.DELETE);
+  const canRowActions = canEdit || canDelete;
   const [isLoading, setIsLoading] = useState(false);
   const [definitions, setDefinitions] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -350,7 +356,10 @@ const CreditScoringDefinitions = () => {
     },
     {
       name: t("common:actions"),
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canRowActions ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button size="sm" variant="outline" className="gap-1">
@@ -358,6 +367,7 @@ const CreditScoringDefinitions = () => {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            {canEdit && (
             <DropdownMenuItem
               onClick={() => openEditModal(row)}
               className="cursor-pointer gap-2"
@@ -365,6 +375,8 @@ const CreditScoringDefinitions = () => {
               <Edit2 className="h-4 w-4" />
               <span>{t("common:edit")}</span>
             </DropdownMenuItem>
+            )}
+            {canDelete && (
             <DropdownMenuItem
               onClick={() => openDeleteModal(row)}
               className="cursor-pointer gap-2 text-red-600 dark:text-red-400 focus:bg-red-50 dark:focus:bg-red-950"
@@ -372,9 +384,10 @@ const CreditScoringDefinitions = () => {
               <Trash2 className="h-4 w-4" />
               <span>{t("common:delete")}</span>
             </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
-      ),
+        ),
       ignoreRowClick: true,
       allowOverflow: true,
     },
@@ -407,6 +420,7 @@ const CreditScoringDefinitions = () => {
             }}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
+          {canCreate && (
           <Button
             onClick={openCreateModal}
             className="gap-2"
@@ -415,6 +429,7 @@ const CreditScoringDefinitions = () => {
             <Plus className="w-4 h-4" />
             {t("common:create")}
           </Button>
+          )}
         </div>
       </div>
 

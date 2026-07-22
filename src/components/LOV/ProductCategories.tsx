@@ -34,8 +34,13 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { useTranslation } from "react-i18next";
+import { usePermissions, PRODUCT_CATEGORIES_PERMISSIONS } from "../../hooks/useProductPermissions";
 const ProductCategories = () => {
   const { t } = useTranslation("lov");
+  const { hasPermission } = usePermissions();
+  const canCreate = hasPermission(PRODUCT_CATEGORIES_PERMISSIONS.CREATE);
+  const canEdit = hasPermission(PRODUCT_CATEGORIES_PERMISSIONS.EDIT);
+  const canDelete = hasPermission(PRODUCT_CATEGORIES_PERMISSIONS.DELETE);
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [prodData, setProdData] = useState<any>([]);
@@ -73,6 +78,7 @@ const ProductCategories = () => {
 
   const menu = (row: any) => (
     <Menu>
+      {canEdit && (
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
@@ -80,6 +86,8 @@ const ProductCategories = () => {
       >
         {t("common:edit")}
       </Menu.Item>
+      )}
+      {canDelete && (
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
@@ -87,6 +95,7 @@ const ProductCategories = () => {
       >
         {t("common:delete")}
       </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -143,6 +152,7 @@ const ProductCategories = () => {
         <Switch
           className="red-switch"
           checked={row.is_default}
+          disabled={!canEdit}
           onChange={async (checked) => {
             const newStatus = checked;
             const body = {
@@ -198,6 +208,7 @@ const ProductCategories = () => {
         <Switch
           className="red-switch"
           checked={row.status}
+          disabled={!canEdit}
           onChange={async (checked) => {
             const newStatus = checked;
             const body = {
@@ -390,20 +401,22 @@ const ProductCategories = () => {
               />
             </div>
 
+            {canCreate && (
             <button
               className="theme-btn-next"
               onClick={() => {
                 setShowModal(true);
                 setSelectedItem("add");
-                setFormData({ 
+                setFormData({
                   type_id: "",
                   reason: "",
-                  status: 0 
+                  status: 0
                 });
               }}
             >
               {t("shared.addNewRecord")}
             </button>
+            )}
           </div>
         </div>
         <TableView

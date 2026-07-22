@@ -16,9 +16,16 @@ import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 import * as XLSX from "xlsx";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+import { usePermissions, LOV_RELATIONSHIP_PERMISSIONS } from "../../hooks/useProductPermissions";
 
 const RelationLov = () => {
   const { t } = useTranslation("system");
+  const { hasPermission } = usePermissions();
+  const canView = hasPermission(LOV_RELATIONSHIP_PERMISSIONS.LIST);
+  const canCreate = hasPermission(LOV_RELATIONSHIP_PERMISSIONS.CREATE);
+  const canEdit = hasPermission(LOV_RELATIONSHIP_PERMISSIONS.EDIT);
+  const canDelete = hasPermission(LOV_RELATIONSHIP_PERMISSIONS.DELETE);
+  const canRowActions = canEdit || canDelete;
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>();
   const [page, setPage] = useState(1);
@@ -110,7 +117,10 @@ const RelationLov = () => {
     {
       name: t("common:actions"),
 
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canRowActions ? (
+          <span className="text-muted">-</span>
+        ) : (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
             className="gradient-btn"
@@ -126,12 +136,13 @@ const RelationLov = () => {
             {t("shared.selectAction")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
-      ),
+        ),
       width: "10%",
     },
   ];
   const menu = (row: any) => (
     <Menu>
+      {canEdit && (
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
@@ -139,6 +150,8 @@ const RelationLov = () => {
       >
         {t("common:edit")}
       </Menu.Item>
+      )}
+      {canDelete && (
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
@@ -146,6 +159,7 @@ const RelationLov = () => {
       >
         {t("common:delete")}
       </Menu.Item>
+      )}
     </Menu>
   );
   const handleMenuClick = (action: string, data) => {
@@ -325,6 +339,8 @@ const RelationLov = () => {
               placeholder={t("shared.searchPlaceholder")}
             />
           </div>
+          {canView && (
+          <>
           <button className="invoice-btn" onClick={exportToExcel}>
             {t("shared.excel")}
           </button>
@@ -337,9 +353,13 @@ const RelationLov = () => {
             {t("shared.pdf")}
           </button>
           <button className="invoice-btn">{t("common:print")}</button>
+          </>
+          )}
+          {canCreate && (
           <button onClick={showModal} className="theme-btn">
             {t("relationLov.addNew")}
           </button>
+          )}
         </div>
       </div>
 
