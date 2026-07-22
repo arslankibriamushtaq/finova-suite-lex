@@ -2151,7 +2151,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       Link: "/LOS/Wallet/Home",
       active: pathname.includes("/LOS/Wallet/Home"),
     },
-    {
+    hasAccess("NOTIFICATION") && {
       label: "Notification Orchestrator",
       Link: "/LOS/NotificationOrchestrator",
       img: Images.ApiManagementIcon,
@@ -2223,7 +2223,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
-     {
+     hasAccess("CARD") && {
       label: "Card Management",
       Link: "CardManagement/Dashboard",
       LinkLable: "",
@@ -2347,35 +2347,35 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       ].filter(Boolean),
     },
     */
-    {
+    hasAccess("WALLET") && {
       label: "Send Money",
       Link: "/LOS/Wallet/SendMoney",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/Wallet/SendMoney"),
     },
-    {
+    hasAccess("WALLET") && {
       label: "Internal Transfer",
       Link: "/LOS/Wallet/InternalTransfer",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/Wallet/InternalTransfer"),
     },
-    {
+    hasAccess("WALLET") && {
       label: "Wallet Transactions Limits",
       Link: "/LOS/CustomerManagement/WalletTransactionLimits",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
     },
-    {
+    hasAccess("LEDGER") && {
       label: "Ledger",
       Link: "/LOS/Ledger",
       img: Images.reportsIconDark,
       imgActive: Images.reportsIconDark,
       active: pathname === "/LOS/Ledger",
     },
-    {
+    hasAccess("RISK") && {
       label: "General Credit Scoring",
       Link: "/Lms/Setting/GeneralCreditScoring?tab=general-credit-scoring",
       img: Images.SettingsIcon,
@@ -2384,7 +2384,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         pathname.includes("/Lms/Setting/GeneralCreditScoring") &&
         !location.search.includes("accounts-limit-setting"),
     },
-    {
+    hasAccess("WALLET") && {
       label: "Accounts Limit Setting",
       Link: "/Lms/Setting/GeneralCreditScoring?tab=accounts-limit-setting",
       img: Images.SettingsIcon,
@@ -2393,7 +2393,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         pathname.includes("/Lms/Setting/GeneralCreditScoring") &&
         location.search.includes("accounts-limit-setting"),
     },
-    {
+    hasAccess(["DASHBOARD", "PRODUCT", "LOV", "LENDING", "COLLECTIONS", "LEDGER", "RISK"]) && {
       label: "Financing",
       Link: "/LOS/Dashboard",
       img: Images.ApiManagementIcon,
@@ -2517,10 +2517,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             },
           ].filter(Boolean),
         },
-        lmsModule,
+        hasAccess(["LENDING", "COLLECTIONS", "LEDGER", "RISK", "PRODUCT", "POLICY"]) && lmsModule,
       ].filter(Boolean),
     },
-    connectorModule,
+    hasAccess("MIDDLEWARE") && connectorModule,
   ].filter(Boolean);
 
   // Recursively render menu items at any depth: an item with its own

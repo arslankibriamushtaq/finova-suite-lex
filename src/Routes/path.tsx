@@ -36,6 +36,7 @@ import CostByCustomer from "../components/Customer/CostByCustomer";
 import OnboardingCostByCustomer from "../components/Customer/OnboardingCostByCustomer";
 import LmsAllCustomers from "../pages/lmsPages/Customers/AllCustomers";
 import Login from "../components/Login/login";
+import NoAccess from "../pages/NoAccess";
 // OTP/password login is not in use — SSO (Keycloak) is the only active login path.
 // Commented out until/unless the OTP flow is wired (needs VITE_REACT_APP_API_IDS_URL).
 // import VerifyOtp from "../components/Login/VerifyOtp";
@@ -824,6 +825,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/Wallet/Home",
             element: <WalletHome />,
+          },
+          {
+            path: "/LOS/NoAccess",
+            element: <NoAccess />,
           },
           {
             path: "/LOS/Wallet/SendMoney",

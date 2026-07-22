@@ -4,6 +4,7 @@
 // landing page is the topmost accessible module.
 
 const DEFAULT_ROUTE = "/LOS/Wallet/Home";
+const NO_ACCESS_ROUTE = "/LOS/NoAccess";
 
 interface PermissionModule {
   moduleCode?: string;
@@ -34,14 +35,15 @@ export function getLandingRoute(
   // Super admin can see everything — keep the default landing page.
   if (isSuperAdmin) return DEFAULT_ROUTE;
 
+  const modules = Array.isArray(permissions) ? permissions : [];
+  // No module assigned at all → nothing is visible in the sidebar; send them to the
+  // No-Access screen instead of the wallet dashboard (which 403s).
+  if (modules.length === 0) return NO_ACCESS_ROUTE;
+
   const codes = new Set(
-    (Array.isArray(permissions) ? permissions : [])
-      .map((m) => String(m?.moduleCode || "").toUpperCase())
-      .filter(Boolean)
+    modules.map((m) => String(m?.moduleCode || "").toUpperCase()).filter(Boolean)
   );
 
-  // If nothing is assigned at all, there is no accessible module — keep the default
-  // (the individual page still guards itself); otherwise pick the first the user has.
   const match = LANDING_CANDIDATES.find((c) => codes.has(c.code));
   return match ? match.route : DEFAULT_ROUTE;
 }
