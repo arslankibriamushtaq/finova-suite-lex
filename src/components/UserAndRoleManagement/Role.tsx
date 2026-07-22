@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePermissions, ROLE_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { Button, Dropdown, Menu, Select } from "antd";
 import TableView from "../TableView/TableView";
 import { FaFilter, FaSearch } from "react-icons/fa";
@@ -11,6 +12,11 @@ import { useNavigate } from "react-router-dom";
 
 const Role = () => {
   const { t } = useTranslation("adminMisc");
+  const { hasPermission } = usePermissions();
+  const canCreate = hasPermission(ROLE_PERMISSIONS.CREATE);
+  const canEdit = hasPermission(ROLE_PERMISSIONS.EDIT);
+  const canDelete = hasPermission(ROLE_PERMISSIONS.DELETE);
+  const canRowActions = canEdit || canDelete;
   const [skelitonLoading, setSkelitonLoading] = useState(false);
   const [data, setData] = useState<any>([]);
   const [from, setFrom] = useState(0);
@@ -32,6 +38,7 @@ const Role = () => {
 
   const menu = (row: any) => (
     <Menu>
+      {canEdit && (
       <Menu.Item
         key="edit"
         icon={<EditOutlined />}
@@ -39,6 +46,8 @@ const Role = () => {
       >
         {t("common:edit")}
       </Menu.Item>
+      )}
+      {canDelete && (
       <Menu.Item
         key="delete"
         icon={<DeleteOutlined />}
@@ -46,6 +55,7 @@ const Role = () => {
       >
         {t("common:delete")}
       </Menu.Item>
+      )}
     </Menu>
   );
   // Close popup when clicking outside
@@ -75,7 +85,10 @@ const Role = () => {
     {
       name: t("common:actions"),
       width: "10%",
-      cell: (row: any) => (
+      cell: (row: any) =>
+        !canRowActions ? (
+          <span className="text-muted">-</span>
+        ) : (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
             className="gradient-btn"
@@ -91,7 +104,7 @@ const Role = () => {
             {t("common:select")} <img src={arrowDown} alt="" />
           </Button>
         </Dropdown>
-      ),
+        ),
     },
   ];
   useEffect(() => {
@@ -158,6 +171,7 @@ const Role = () => {
             />
           </div>
 
+          {canCreate && (
           <button
             className="theme-btn"
             onClick={() => {
@@ -166,6 +180,7 @@ const Role = () => {
           >
             {t("role.addBtn")}
           </button>
+          )}
         </div>
       </div>
       <TableView

@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { usePermissions, ROLE_PERMISSIONS } from "../../hooks/useProductPermissions";
 import ReactECharts from "echarts-for-react";
 import icon from "../../assets/images/Vector-11.png";
 import circle from "../../assets/images/circle-icon.png";
@@ -51,6 +52,8 @@ const data1 = [
 ];
 const AddRole = () => {
   const { t } = useTranslation("adminMisc");
+  const { hasPermission } = usePermissions();
+  const canCreate = hasPermission(ROLE_PERMISSIONS.CREATE);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
   const [status, setStatus] = useState("Manager");
@@ -308,7 +311,7 @@ const AddRole = () => {
       </div>
       <div className="d-flex gap-2 justify-content-end pt-2 pb-4">
         <button className="invoice-btn">{t("common:close")}</button>
-        <button className="theme-btn">{t("addRole.createRole")}</button>
+        {canCreate && <button className="theme-btn">{t("addRole.createRole")}</button>}
       </div>
     </div>
   );
