@@ -36,6 +36,7 @@ import {
   CreateExchangeProviderRequest,
   UpdateExchangeProviderRequest,
 } from "../../../redux/apis/apisWalletAdmin";
+import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 const StatusBadge = ({ status }: { status?: string }) => {
   const map: Record<string, string> = {
@@ -92,6 +93,9 @@ const emptyForm: FormState = {
 };
 
 const ExchangeProviders = () => {
+  const { hasPermission } = usePermissions();
+  const canCreateProvider = hasPermission(EXCHANGE_PERMISSIONS.PROVIDER_CREATE);
+  const canEditProvider = hasPermission(EXCHANGE_PERMISSIONS.PROVIDER_EDIT);
   const [providers, setProviders] = useState<ExchangeProvider[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -249,7 +253,10 @@ const ExchangeProviders = () => {
     },
     {
       name: "Action",
-      cell: (row: ExchangeProvider) => (
+      cell: (row: ExchangeProvider) =>
+        !canEditProvider ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
         <Button
           variant="outline"
           size="sm"
@@ -259,7 +266,7 @@ const ExchangeProviders = () => {
           <Pencil className="h-3.5 w-3.5" />
           Edit
         </Button>
-      ),
+        ),
       width: "120px",
     },
   ];
@@ -279,10 +286,12 @@ const ExchangeProviders = () => {
             dropdown.
           </p>
         </div>
+        {canCreateProvider && (
         <Button className="gap-2 wallet-brand-btn" onClick={openCreate}>
           <Plus className="h-4 w-4" />
           New Provider
         </Button>
+        )}
       </div>
 
       <Card className="pro-card-glow">

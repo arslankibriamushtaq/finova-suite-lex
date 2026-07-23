@@ -12933,6 +12933,8 @@
     "sendMoney": "إرسال الأموال",
     "internalTransfer": "تحويل داخلي",
     "walletTransactionsLimits": "حدود معاملات المحفظة",
+    "exchangeTopup": "شحن الصرافة",
+    "payments": "المدفوعات",
     "ledger": "دفتر الأستاذ",
     "generalCreditScoring": "التقييم الائتماني العام",
     "accountsLimitSetting": "إعداد حدود الحسابات",

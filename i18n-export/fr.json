@@ -12929,6 +12929,8 @@
     "sendMoney": "Envoyer de l’argent",
     "internalTransfer": "Virement interne",
     "walletTransactionsLimits": "Limites de transactions du portefeuille",
+    "exchangeTopup": "Recharge Exchange",
+    "payments": "Paiements",
     "ledger": "Grand livre",
     "generalCreditScoring": "Score de crédit général",
     "accountsLimitSetting": "Paramétrage des limites de comptes",

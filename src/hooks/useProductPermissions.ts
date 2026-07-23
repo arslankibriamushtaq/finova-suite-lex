@@ -608,6 +608,19 @@ export const WALLET_PERMISSIONS = {
 }
 
 // ============================================
+// EXCHANGE — Exchange Top-up (providers + payments). Module code: EXCHANGE.
+// Adjust these codes if the backend's identity-service catalog uses different ones.
+// ============================================
+export const EXCHANGE_PERMISSIONS = {
+  MODULE: "EXCHANGE",
+  PROVIDER_LIST: "EXCHANGE_PROVIDER_READ",
+  PROVIDER_CREATE: "EXCHANGE_PROVIDER_CREATE",
+  PROVIDER_EDIT: "EXCHANGE_PROVIDER_UPDATE",
+  PROVIDER_DELETE: "EXCHANGE_PROVIDER_DELETE",
+  PAYMENT_LIST: "EXCHANGE_PAYMENT_READ",
+}
+
+// ============================================
 // KYC — identity-service KYC_*
 // ============================================
 export const KYC_PERMISSIONS = {

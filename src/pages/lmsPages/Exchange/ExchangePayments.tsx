@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Receipt, Eye, CheckCircle2, Search } from "lucide-react";
+import { Receipt, Eye, CheckCircle2, RefreshCw } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import {
   Card,
   CardContent,
@@ -219,32 +220,33 @@ const ExchangePayments = () => {
 
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <div>
-          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-            <span className="pro-head-badge">
-              <Receipt className="h-4 w-4" />
-            </span>
-            Exchange Payments
-          </h3>
-          <p className="mb-0 mt-1 text-sm text-muted-foreground">
-            Oversee the exchange top-up payments customers make (1 Bill / card).
-          </p>
-        </div>
-        <div className="d-flex align-items-center gap-2">
-          <div className="relative w-[260px]">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="pl-8"
-              placeholder="Search customer, ID, bill, ref…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="w-[180px]">
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+          <span className="pro-head-badge">
+            <Receipt className="h-4 w-4" />
+          </span>
+          Exchange Payments
+        </h3>
+        <p className="mb-0 mt-1 text-sm text-muted-foreground">
+          Oversee the exchange top-up payments customers make (1 Bill / card).
+        </p>
+      </div>
+
+      {/* Filters card */}
+      <div className="pro-card p-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search customer, ID, bill, ref…"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
+          />
+          <div style={{ width: 170 }}>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue />
+              <SelectTrigger style={{ height: 40 }}>
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_FILTERS.map((s) => (
@@ -255,6 +257,16 @@ const ExchangePayments = () => {
               </SelectContent>
             </Select>
           </div>
+          <Button
+            variant="outline"
+            className="gap-2"
+            style={{ height: 40 }}
+            onClick={() => loadPayments()}
+            disabled={isLoading}
+          >
+            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+            Refresh
+          </Button>
         </div>
       </div>
 

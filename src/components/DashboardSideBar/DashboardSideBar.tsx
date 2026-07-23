@@ -159,6 +159,8 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Client Request Prod": "clientRequestProd",
   "Client Request Dev": "clientRequestDev",
   "Client Request Test": "clientRequestTest",
+  "Exchange Top-up": "exchangeTopup",
+  Payments: "payments",
 };
 
 /* Renders a colored lucide icon when the label is a known module; otherwise
@@ -2369,7 +2371,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
     },
-    hasAccess("WALLET") && {
+    hasAccess("EXCHANGE") && {
       label: "Exchange Top-up",
       Link: "/LOS/Exchange/Providers",
       img: Images.CustomerManagementIcon,

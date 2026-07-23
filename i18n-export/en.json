@@ -12929,6 +12929,8 @@
     "sendMoney": "Send Money",
     "internalTransfer": "Internal Transfer",
     "walletTransactionsLimits": "Wallet Transactions Limits",
+    "exchangeTopup": "Exchange Top-up",
+    "payments": "Payments",
     "ledger": "Ledger",
     "generalCreditScoring": "General Credit Scoring",
     "accountsLimitSetting": "Accounts Limit Setting",
