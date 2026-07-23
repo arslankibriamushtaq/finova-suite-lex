@@ -72,6 +72,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
+  "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
 };
 
 const DEFAULT_MI_COLOR = "#10b981";
@@ -2367,6 +2368,27 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
+    },
+    hasAccess("WALLET") && {
+      label: "Exchange Top-up",
+      Link: "/LOS/Exchange/Providers",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/LOS/Exchange"),
+      menu: [
+        {
+          label: "Providers",
+          Link: "Providers",
+          LinkLable: "/LOS/Exchange",
+          active: pathname === "/LOS/Exchange/Providers",
+        },
+        {
+          label: "Payments",
+          Link: "Payments",
+          LinkLable: "/LOS/Exchange",
+          active: pathname.startsWith("/LOS/Exchange/Payments"),
+        },
+      ].filter(Boolean),
     },
     hasAccess("LEDGER") && {
       label: "Ledger",

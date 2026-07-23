@@ -418,3 +418,162 @@ export function adminListInternalByMobile(mobile: string, page = 0, size = 20) {
     params: { mobile, page, size },
   });
 }
+
+// ============================================================
+// Admin · Exchange Top-Up
+//   Providers shown in the customer "Choose exchange option" dropdown +
+//   oversight of the exchange payments customers make (1 Bill / card).
+//   Base path: /api/v1/admin/exchange  (casbin object: admin.exchange)
+// ============================================================
+
+export type ExchangeProviderStatus = "ACTIVE" | "INACTIVE";
+
+export interface ExchangeProvider {
+  providerId: string;
+  code: string;
+  name: string;
+  logoUrl: string | null;
+  fxMarginPercent: number;
+  feePercent: number;
+  minAmount: number | null;
+  maxAmount: number | null;
+  status: ExchangeProviderStatus;
+  sortOrder: number;
+}
+
+export interface CreateExchangeProviderRequest {
+  code: string;
+  name: string;
+  logoUrl?: string | null;
+  fxMarginPercent: number;
+  feePercent?: number;
+  minAmount?: number | null;
+  maxAmount?: number | null;
+  sortOrder?: number;
+}
+
+/** Partial update — any omitted / null field keeps its current value. */
+export interface UpdateExchangeProviderRequest {
+  name?: string;
+  logoUrl?: string | null;
+  fxMarginPercent?: number;
+  feePercent?: number;
+  minAmount?: number | null;
+  maxAmount?: number | null;
+  status?: ExchangeProviderStatus;
+  sortOrder?: number;
+}
+
+export function listExchangeProviders() {
+  return axiosWalletService.get(`/api/v1/admin/exchange/providers`);
+}
+
+export function createExchangeProvider(body: CreateExchangeProviderRequest) {
+  return axiosWalletService.post(`/api/v1/admin/exchange/providers`, body);
+}
+
+export function updateExchangeProvider(
+  providerId: string,
+  body: UpdateExchangeProviderRequest
+) {
+  return axiosWalletService.put(
+    `/api/v1/admin/exchange/providers/${providerId}`,
+    body
+  );
+}
+
+export type ExchangePaymentStatus = "PENDING" | "COMPLETED" | "FAILED";
+export type ExchangePaymentMethod = "ONE_BILL" | "CARD";
+
+export interface ExchangePayment {
+  paymentId: string;
+  quoteId: string;
+  walletId?: string | null;
+  customerId?: string | null;
+  customerName?: string | null;
+  method: ExchangePaymentMethod | string;
+  status: ExchangePaymentStatus | string;
+  receivingCurrency: string;
+  receivingAmount: number;
+  payingCurrency: string;
+  payingAmount: number;
+  feeAmount: number;
+  totalPaying: number;
+  billId: string | null;
+  cardBrand: string | null;
+  cardLastFour: string | null;
+  providerReference: string | null;
+  movementId?: string | null;
+  errorMessage?: string | null;
+  completedAt: string | null;
+  createdAt?: string | null;
+}
+
+export interface ExchangeQuote {
+  quoteId: string;
+  providerCode: string;
+  receivingCurrency: string;
+  receivingAmount: number;
+  payingCurrency: string;
+  payingAmount: number;
+  totalPaying: number;
+  baseRate: number;
+  effectiveRate: number;
+  fxMarginPercent: number;
+  feePercent: number;
+  status: string;
+  expiresAt: string | null;
+  createdAt: string | null;
+}
+
+export interface ExchangeVerification {
+  documentType: string | null;
+  documentNumber: string | null;
+  documentStatus: string | null;
+  selfieStatus: string | null;
+  faceMatchScore: number | null;
+  fingerprintStatus: string | null;
+  overallStatus: string | null;
+  declineReason: string | null;
+  sullisSessionId: string | null;
+}
+
+export interface ExchangeUploadedFiles {
+  documentUrl: string | null;
+  selfieUrl: string | null;
+  fingerprintUrl: string | null;
+  documentObjectKey: string | null;
+  selfieObjectKey: string | null;
+  fingerprintObjectKey: string | null;
+}
+
+/** Shape returned by GET /admin/exchange/payments/{id} — payment + related data. */
+export interface ExchangePaymentDetail {
+  payment: ExchangePayment;
+  quote: ExchangeQuote | null;
+  verification: ExchangeVerification | null;
+  uploadedFiles: ExchangeUploadedFiles | null;
+}
+
+export function listExchangePayments(params: {
+  status?: string;
+  limit?: number;
+}) {
+  return axiosWalletService.get(`/api/v1/admin/exchange/payments`, {
+    params: {
+      status: params.status || undefined,
+      limit: params.limit ?? 50,
+    },
+  });
+}
+
+export function getExchangePayment(paymentId: string) {
+  return axiosWalletService.get(`/api/v1/admin/exchange/payments/${paymentId}`);
+}
+
+/** Ops confirmation that a 1 Bill payment was received. Idempotent. */
+export function confirmExchangePayment(paymentId: string) {
+  return axiosWalletService.post(
+    `/api/v1/admin/exchange/payments/${paymentId}/confirm`
+  );
+}

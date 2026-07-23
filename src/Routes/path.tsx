@@ -235,6 +235,9 @@ import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
 import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
+import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
+import ExchangePayments from "../pages/lmsPages/Exchange/ExchangePayments";
+import ExchangePaymentDetail from "../pages/lmsPages/Exchange/ExchangePaymentDetail";
 import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
@@ -837,6 +840,18 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/Wallet/InternalTransfer",
             element: <InternalTransfer />,
+          },
+          {
+            path: "/LOS/Exchange/Providers",
+            element: <ExchangeProviders />,
+          },
+          {
+            path: "/LOS/Exchange/Payments",
+            element: <ExchangePayments />,
+          },
+          {
+            path: "/LOS/Exchange/Payments/:paymentId",
+            element: <ExchangePaymentDetail />,
           },
           { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
           { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },
