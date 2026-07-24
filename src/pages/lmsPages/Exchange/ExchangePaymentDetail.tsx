@@ -13,6 +13,7 @@ import {
   TrendingUp,
   ArrowDownToLine,
   ArrowUpFromLine,
+  RotateCw,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -510,25 +511,7 @@ const ExchangePaymentDetail = () => {
                         </p>
                       )}
                       {doc.url ? (
-                        <a
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group block overflow-hidden rounded-lg border border-border"
-                        >
-                          <div className="flex items-center justify-center bg-muted p-2">
-                            <img
-                              src={doc.url}
-                              alt={doc.documentName}
-                              className="max-h-64 w-auto max-w-full object-contain transition group-hover:opacity-90"
-                              loading="lazy"
-                            />
-                          </div>
-                          <span className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary">
-                            <ExternalLink className="h-3 w-3" />
-                            Open full size
-                          </span>
-                        </a>
+                        <ImagePreview src={doc.url} alt={doc.documentName} />
                       ) : (
                         <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground">
                           {doc.source === "REUSED_PII"
@@ -565,6 +548,55 @@ const ExchangePaymentDetail = () => {
         </div>
         </>
       ) : null}
+    </div>
+  );
+};
+
+const ImagePreview = ({
+  src,
+  alt,
+  openLabel = "Open full size",
+  maxH = "h-64",
+}: {
+  src: string;
+  alt: string;
+  openLabel?: string;
+  maxH?: string;
+}) => {
+  const [rotation, setRotation] = useState(0);
+  const sideways = rotation % 180 !== 0;
+  return (
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div
+        className={`relative flex ${maxH} items-center justify-center overflow-hidden bg-muted p-2`}
+      >
+        <img
+          src={src}
+          alt={alt}
+          className={`w-auto object-contain transition-transform duration-200 ${
+            sideways ? "max-h-full max-w-[16rem]" : "max-h-full max-w-full"
+          }`}
+          style={{ transform: `rotate(${rotation}deg)` }}
+          loading="lazy"
+        />
+        <button
+          type="button"
+          onClick={() => setRotation((r) => (r + 90) % 360)}
+          className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
+          title="Rotate 90°"
+        >
+          <RotateCw className="h-4 w-4" />
+        </button>
+      </div>
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary hover:underline"
+      >
+        <ExternalLink className="h-3 w-3" />
+        {openLabel}
+      </a>
     </div>
   );
 };
@@ -619,25 +651,7 @@ const DocThumb = ({
   <div className="space-y-2">
     <p className="text-sm font-medium">{label}</p>
     {url ? (
-      <a
-        href={url}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group block overflow-hidden rounded-lg border border-border"
-      >
-        <div className="flex items-center justify-center bg-muted p-2">
-          <img
-            src={url}
-            alt={label}
-            className="max-h-80 w-auto max-w-full object-contain transition group-hover:opacity-90"
-            loading="lazy"
-          />
-        </div>
-        <span className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary">
-          <ExternalLink className="h-3 w-3" />
-          Open full size
-        </span>
-      </a>
+      <ImagePreview src={url} alt={label} maxH="h-80" />
     ) : (
       <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
         Not uploaded

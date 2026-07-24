@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { Receipt, Eye, CheckCircle2, RefreshCw } from "lucide-react";
+import { Receipt, Eye, CheckCircle2, RefreshCw, ChevronDown } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
 import {
   Select,
   SelectContent,
@@ -20,6 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 import {
   listExchangePayments,
@@ -67,6 +70,8 @@ const ExchangePayments = () => {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [search, setSearch] = useState("");
   const [confirmingId, setConfirmingId] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   const loadPayments = async (status = statusFilter) => {
     setIsLoading(true);
@@ -137,6 +142,10 @@ const ExchangePayments = () => {
     );
   }, [payments, search]);
 
+  const from = (page - 1) * pageSize;
+  const paged = filteredPayments.slice(from, from + pageSize);
+  const totalPage = Math.ceil(filteredPayments.length / pageSize) || 1;
+
   const headers = [
     {
       name: "Payment ID",
@@ -191,30 +200,48 @@ const ExchangePayments = () => {
     {
       name: "Action",
       cell: (row: ExchangePayment) => (
-        <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => openDetail(row)}
-          >
-            <Eye className="h-3.5 w-3.5" />
-            View
-          </Button>
-          {canConfirm(row) && (
-            <Button
-              size="sm"
-              className="gap-1 wallet-brand-btn"
-              onClick={() => confirmPayment(row)}
-              disabled={confirmingId === row.paymentId}
-            >
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              {confirmingId === row.paymentId ? "Confirming…" : "Confirm"}
-            </Button>
-          )}
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button
+                type="button"
+                disabled={confirmingId === row.paymentId}
+                className={SELECT_TRIGGER_CLS}
+              >
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openDetail(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                View
+              </DropdownMenuItem>
+              {canConfirm(row) && (
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    confirmPayment(row);
+                  }}
+                >
+                  <CheckCircle2 className="h-4 w-4" />
+                  {confirmingId === row.paymentId ? "Confirming…" : "Confirm"}
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       ),
-      width: "220px",
+      width: "120px",
     },
   ];
 
@@ -240,11 +267,20 @@ const ExchangePayments = () => {
             placeholder="Search customer, ID, bill, ref…"
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
           />
           <div style={{ width: 170 }}>
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => {
+                setStatusFilter(v);
+                setPage(1);
+              }}
+            >
               <SelectTrigger style={{ height: 40 }}>
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
@@ -270,19 +306,21 @@ const ExchangePayments = () => {
         </div>
       </div>
 
-      <Card className="pro-card-glow">
-        <CardHeader>
-          <CardTitle className="text-base">Recent Payments</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TableView
-            header={headers}
-            data={filteredPayments}
-            isLoading={isLoading}
-            paginationShow={false}
-          />
-        </CardContent>
-      </Card>
+      <div className="pro-card">
+        <TableView
+          header={headers}
+          data={paged}
+          totalRows={filteredPayments.length}
+          isLoading={isLoading}
+          from={filteredPayments.length === 0 ? 0 : from + 1}
+          to={Math.min(page * pageSize, filteredPayments.length)}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+        />
+      </div>
     </div>
   );
 };

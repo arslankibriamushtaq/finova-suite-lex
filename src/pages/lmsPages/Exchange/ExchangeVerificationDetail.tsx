@@ -12,6 +12,7 @@ import {
   ArrowUpFromLine,
   ScanFace,
   TrendingUp,
+  RotateCw,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -338,14 +339,14 @@ const ExchangeVerificationDetail = () => {
             </CardContent>
           </Card>
 
-          {/* Quote + selfie */}
+          {/* Quote */}
           <Card className="pro-card-glow">
             <CardHeader>
               <CardTitle className="text-base flex items-center gap-2">
                 <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/15">
                   <TrendingUp className="h-4 w-4" />
                 </span>
-                Quote &amp; Selfie
+                Quote
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -373,44 +374,23 @@ const ExchangeVerificationDetail = () => {
                   />
                 </div>
               )}
-              {data.selfieUrl && (
-                <a
-                  href={data.selfieUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group mt-3 block overflow-hidden rounded-lg border border-border"
-                >
-                  <div className="flex items-center justify-center bg-muted p-2">
-                    <img
-                      src={data.selfieUrl}
-                      alt="Selfie"
-                      className="max-h-64 w-auto max-w-full object-contain transition group-hover:opacity-90"
-                      loading="lazy"
-                    />
-                  </div>
-                  <span className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary">
-                    <ExternalLink className="h-3 w-3" />
-                    Open selfie
-                  </span>
-                </a>
-              )}
             </CardContent>
           </Card>
 
-          {/* Documents */}
-          {documents && documents.length > 0 && (
+          {/* Documents & selfie */}
+          {((documents && documents.length > 0) || data.selfieUrl) && (
             <Card className="pro-card-glow lg:col-span-2">
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
                     <FileText className="h-4 w-4" />
                   </span>
-                  Documents
+                  Documents &amp; Selfie
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  {documents.map((doc, i) => (
+                  {(documents || []).map((doc, i) => (
                     <div
                       key={`${doc.documentType}-${i}`}
                       className="space-y-2 rounded-lg border border-border p-3"
@@ -439,25 +419,7 @@ const ExchangeVerificationDetail = () => {
                         </p>
                       )}
                       {doc.url ? (
-                        <a
-                          href={doc.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="group block overflow-hidden rounded-lg border border-border"
-                        >
-                          <div className="flex items-center justify-center bg-muted p-2">
-                            <img
-                              src={doc.url}
-                              alt={doc.documentName}
-                              className="max-h-64 w-auto max-w-full object-contain transition group-hover:opacity-90"
-                              loading="lazy"
-                            />
-                          </div>
-                          <span className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary">
-                            <ExternalLink className="h-3 w-3" />
-                            Open full size
-                          </span>
-                        </a>
+                        <ImagePreview src={doc.url} alt={doc.documentName} />
                       ) : (
                         <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground">
                           {doc.source === "REUSED_PII"
@@ -467,6 +429,22 @@ const ExchangeVerificationDetail = () => {
                       )}
                     </div>
                   ))}
+
+                  {data.selfieUrl && (
+                    <div className="space-y-2 rounded-lg border border-border p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium">Selfie</span>
+                        {data.selfieStatus && (
+                          <StatusBadge status={data.selfieStatus} />
+                        )}
+                      </div>
+                      <ImagePreview
+                        src={data.selfieUrl}
+                        alt="Selfie"
+                        openLabel="Open selfie"
+                      />
+                    </div>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -539,6 +517,51 @@ const ExchangeVerificationDetail = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+  );
+};
+
+const ImagePreview = ({
+  src,
+  alt,
+  openLabel = "Open full size",
+}: {
+  src: string;
+  alt: string;
+  openLabel?: string;
+}) => {
+  const [rotation, setRotation] = useState(0);
+  const sideways = rotation % 180 !== 0;
+  return (
+    <div className="overflow-hidden rounded-lg border border-border">
+      <div className="relative flex h-64 items-center justify-center overflow-hidden bg-muted p-2">
+        <img
+          src={src}
+          alt={alt}
+          className={`w-auto object-contain transition-transform duration-200 ${
+            sideways ? "max-h-full max-w-[16rem]" : "max-h-full max-w-full"
+          }`}
+          style={{ transform: `rotate(${rotation}deg)` }}
+          loading="lazy"
+        />
+        <button
+          type="button"
+          onClick={() => setRotation((r) => (r + 90) % 360)}
+          className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
+          title="Rotate 90°"
+        >
+          <RotateCw className="h-4 w-4" />
+        </button>
+      </div>
+      <a
+        href={src}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary hover:underline"
+      >
+        <ExternalLink className="h-3 w-3" />
+        {openLabel}
+      </a>
     </div>
   );
 };
