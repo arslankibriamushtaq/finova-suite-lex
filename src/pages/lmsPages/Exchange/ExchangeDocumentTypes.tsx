@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { FileText, Plus, Pencil } from "lucide-react";
+import { FileText, Plus, Pencil, ChevronDown } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -8,12 +10,6 @@ import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Switch } from "../../../components/ui/switch";
 import { Badge } from "../../../components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -28,6 +24,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 import {
   listExchangeDocumentTypes,
@@ -38,6 +43,7 @@ import {
   CreateExchangeDocumentTypeRequest,
   UpdateExchangeDocumentTypeRequest,
 } from "../../../redux/apis/apisWalletAdmin";
+import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 const StatusBadge = ({ status }: { status?: string }) => (
   <span
@@ -72,8 +78,14 @@ const emptyForm: FormState = {
 };
 
 const ExchangeDocumentTypes = () => {
+  const { hasPermission } = usePermissions();
+  const canCreateDocType = hasPermission(EXCHANGE_PERMISSIONS.DOCUMENT_TYPE_CREATE);
+  const canEditDocType = hasPermission(EXCHANGE_PERMISSIONS.DOCUMENT_TYPE_EDIT);
   const [docTypes, setDocTypes] = useState<ExchangeDocumentType[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<ExchangeDocumentType | null>(null);
@@ -217,55 +229,110 @@ const ExchangeDocumentTypes = () => {
     },
     {
       name: "Action",
-      cell: (row: ExchangeDocumentType) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1"
-          onClick={() => openEdit(row)}
+      cell: (row: ExchangeDocumentType) =>
+        !canEditDocType ? (
+          <span className="text-muted-foreground">-</span>
+        ) : (
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
-          <Pencil className="h-3.5 w-3.5" />
-          Edit
-        </Button>
-      ),
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openEdit(row);
+                }}
+              >
+                <Pencil className="h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        ),
       width: "120px",
     },
   ];
 
+  const filtered = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return docTypes;
+    return docTypes.filter((dt) =>
+      [dt.code, dt.name, dt.sullisDocType, dt.piiDocumentType, dt.status]
+        .filter(Boolean)
+        .some((f) => String(f).toLowerCase().includes(q))
+    );
+  }, [docTypes, search]);
+
+  const from = (page - 1) * pageSize;
+  const paged = filtered.slice(from, from + pageSize);
+  const totalPage = Math.ceil(filtered.length / pageSize) || 1;
+
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <div>
-          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-            <span className="pro-head-badge">
-              <FileText className="h-4 w-4" />
-            </span>
-            Document Types
-          </h3>
-          <p className="mb-0 mt-1 text-sm text-muted-foreground">
-            The KYC document catalog referenced by each country's required-document
-            set.
-          </p>
-        </div>
-        <Button className="gap-2 wallet-brand-btn" onClick={openCreate}>
-          <Plus className="h-4 w-4" />
-          New Document Type
-        </Button>
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+          <span className="pro-head-badge">
+            <FileText className="h-4 w-4" />
+          </span>
+          Document Types
+        </h3>
+        <p className="mb-0 mt-1 text-sm text-muted-foreground">
+          The KYC document catalog referenced by each country's required-document
+          set.
+        </p>
       </div>
 
-      <Card className="pro-card-glow">
-        <CardHeader>
-          <CardTitle className="text-base">Catalog</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TableView
-            header={headers}
-            data={docTypes}
-            isLoading={isLoading}
-            paginationShow={false}
+      <div className="pro-card p-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search code, name…"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 220, borderRadius: 2, height: 40 }}
           />
-        </CardContent>
-      </Card>
+          {canCreateDocType && (
+          <Button
+            className="gap-2 wallet-brand-btn"
+            onClick={openCreate}
+            style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0, marginLeft: "auto" }}
+          >
+            <Plus className="h-4 w-4" />
+            New Document Type
+          </Button>
+          )}
+        </div>
+      </div>
+
+      <div className="pro-card">
+        <TableView
+          header={headers}
+          data={paged}
+          totalRows={filtered.length}
+          isLoading={isLoading}
+          from={filtered.length === 0 ? 0 : from + 1}
+          to={Math.min(page * pageSize, filtered.length)}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+        />
+      </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="sm:max-w-[520px]">

@@ -37,6 +37,7 @@ import {
   rejectExchangeVerification,
   ExchangeVerificationDetail as VerificationDetailType,
 } from "../../../redux/apis/apisWalletAdmin";
+import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
 const STATUS_BADGE: Record<string, string> = {
   APPROVED:
@@ -88,6 +89,8 @@ const formatDate = (dateString?: string | null) => {
 type DecisionMode = "approve" | "reject" | null;
 
 const ExchangeVerificationDetail = () => {
+  const { hasPermission } = usePermissions();
+  const canReview = hasPermission(EXCHANGE_PERMISSIONS.VERIFICATION_REVIEW);
   const { quoteId } = useParams<{ quoteId: string }>();
   const navigate = useNavigate();
 
@@ -196,7 +199,7 @@ const ExchangeVerificationDetail = () => {
         {data && !isLoading && (
           <div className="d-flex align-items-center gap-3">
             <StatusBadge status={data.approvalStatus} />
-            {isPending && (
+            {isPending && canReview && (
               <>
                 <Button
                   variant="outline"
