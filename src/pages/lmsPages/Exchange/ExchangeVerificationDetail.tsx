@@ -18,7 +18,6 @@ import {
 import { Button } from "../../../components/ui/button";
 import { Label } from "../../../components/ui/label";
 import { Textarea } from "../../../components/ui/textarea";
-import { Badge } from "../../../components/ui/badge";
 import {
   Card,
   CardContent,
@@ -400,18 +399,6 @@ const ExchangeVerificationDetail = () => {
                           {doc.documentName}
                         </span>
                         <StatusBadge status={doc.status} />
-                      </div>
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <Badge
-                          variant={doc.mandatory ? "default" : "secondary"}
-                        >
-                          {doc.mandatory ? "Mandatory" : "Optional"}
-                        </Badge>
-                        <Badge variant="outline">
-                          {doc.source === "REUSED_PII"
-                            ? "Reused (PII)"
-                            : "Uploaded"}
-                        </Badge>
                       </div>
                       {doc.documentNumber && (
                         <p className="font-mono text-xs text-muted-foreground">
