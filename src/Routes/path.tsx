@@ -238,6 +238,10 @@ import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
 import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
 import ExchangePayments from "../pages/lmsPages/Exchange/ExchangePayments";
 import ExchangePaymentDetail from "../pages/lmsPages/Exchange/ExchangePaymentDetail";
+import ExchangeCountries from "../pages/lmsPages/Exchange/ExchangeCountries";
+import ExchangeDocumentTypes from "../pages/lmsPages/Exchange/ExchangeDocumentTypes";
+import ExchangeVerifications from "../pages/lmsPages/Exchange/ExchangeVerifications";
+import ExchangeVerificationDetail from "../pages/lmsPages/Exchange/ExchangeVerificationDetail";
 import WaiverRequestsManagement from "../pages/lmsPages/Collections/WaiverRequestsManagement";
 import DayBook from "../components/Reports/DayBook";
 import TransactionTabs from "../components/Transaction History/TransactionTabs";
@@ -852,6 +856,22 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/Exchange/Payments/:paymentId",
             element: <ExchangePaymentDetail />,
+          },
+          {
+            path: "/LOS/Exchange/Countries",
+            element: <ExchangeCountries />,
+          },
+          {
+            path: "/LOS/Exchange/DocumentTypes",
+            element: <ExchangeDocumentTypes />,
+          },
+          {
+            path: "/LOS/Exchange/Verifications",
+            element: <ExchangeVerifications />,
+          },
+          {
+            path: "/LOS/Exchange/Verifications/:quoteId",
+            element: <ExchangeVerificationDetail />,
           },
           { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
           { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },

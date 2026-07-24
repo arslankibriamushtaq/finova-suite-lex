@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
+import { Badge } from "../../../components/ui/badge";
 
 import {
   getExchangePayment,
@@ -134,6 +135,7 @@ const ExchangePaymentDetail = () => {
   const payment = data?.payment;
   const quote = data?.quote;
   const verification = data?.verification;
+  const documents = data?.documents;
   const files = data?.uploadedFiles;
 
   const canConfirm =
@@ -466,27 +468,100 @@ const ExchangePaymentDetail = () => {
             </Card>
           )}
 
-          {/* Uploaded documents */}
-          {files &&
-            (files.documentUrl || files.selfieUrl || files.fingerprintUrl) && (
-              <Card className="pro-card-glow lg:col-span-2">
-                <CardHeader>
-                  <CardTitle className="text-base flex items-center gap-2">
-                    <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
-                      <FileText className="h-4 w-4" />
-                    </span>
-                    Uploaded Documents
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    <DocThumb label="ID Document" url={files.documentUrl} />
-                    <DocThumb label="Selfie" url={files.selfieUrl} />
-                    <DocThumb label="Fingerprint" url={files.fingerprintUrl} />
-                  </div>
-                </CardContent>
-              </Card>
-            )}
+          {/* Required documents (country-driven) */}
+          {documents && documents.length > 0 && (
+            <Card className="pro-card-glow lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
+                    <FileText className="h-4 w-4" />
+                  </span>
+                  Required Documents
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  {documents.map((doc, i) => (
+                    <div
+                      key={`${doc.documentType}-${i}`}
+                      className="space-y-2 rounded-lg border border-border p-3"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium">
+                          {doc.documentName}
+                        </span>
+                        <StatusBadge status={doc.status} />
+                      </div>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge
+                          variant={doc.mandatory ? "default" : "secondary"}
+                        >
+                          {doc.mandatory ? "Mandatory" : "Optional"}
+                        </Badge>
+                        <Badge variant="outline">
+                          {doc.source === "REUSED_PII"
+                            ? "Reused (PII)"
+                            : "Uploaded"}
+                        </Badge>
+                      </div>
+                      {doc.documentNumber && (
+                        <p className="font-mono text-xs text-muted-foreground">
+                          #{doc.documentNumber}
+                        </p>
+                      )}
+                      {doc.url ? (
+                        <a
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="group block overflow-hidden rounded-lg border border-border"
+                        >
+                          <div className="flex items-center justify-center bg-muted p-2">
+                            <img
+                              src={doc.url}
+                              alt={doc.documentName}
+                              className="max-h-64 w-auto max-w-full object-contain transition group-hover:opacity-90"
+                              loading="lazy"
+                            />
+                          </div>
+                          <span className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary">
+                            <ExternalLink className="h-3 w-3" />
+                            Open full size
+                          </span>
+                        </a>
+                      ) : (
+                        <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground">
+                          {doc.source === "REUSED_PII"
+                            ? "Reused from profile — no file"
+                            : "Not uploaded"}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Biometrics + legacy uploads */}
+          {files && (files.selfieUrl || files.fingerprintUrl) && (
+            <Card className="pro-card-glow lg:col-span-2">
+              <CardHeader>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
+                    <FileText className="h-4 w-4" />
+                  </span>
+                  Biometrics
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                  <DocThumb label="Selfie" url={files.selfieUrl} />
+                  <DocThumb label="Fingerprint" url={files.fingerprintUrl} />
+                </div>
+              </CardContent>
+            </Card>
+          )}
         </div>
         </>
       ) : null}

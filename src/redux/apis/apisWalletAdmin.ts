@@ -439,6 +439,8 @@ export interface ExchangeProvider {
   maxAmount: number | null;
   status: ExchangeProviderStatus;
   sortOrder: number;
+  /** Countries this provider serves. Empty = available in every country. */
+  countryCodes: string[];
 }
 
 export interface CreateExchangeProviderRequest {
@@ -450,6 +452,7 @@ export interface CreateExchangeProviderRequest {
   minAmount?: number | null;
   maxAmount?: number | null;
   sortOrder?: number;
+  countryCodes?: string[];
 }
 
 /** Partial update — any omitted / null field keeps its current value. */
@@ -462,6 +465,8 @@ export interface UpdateExchangeProviderRequest {
   maxAmount?: number | null;
   status?: ExchangeProviderStatus;
   sortOrder?: number;
+  /** Passing it replaces the whole set; omit/null keeps the current mapping. */
+  countryCodes?: string[];
 }
 
 export function listExchangeProviders() {
@@ -547,12 +552,261 @@ export interface ExchangeUploadedFiles {
   fingerprintObjectKey: string | null;
 }
 
+/** One entry in the country-driven required-document set for a payment. */
+export interface ExchangePaymentDocument {
+  documentType: string;
+  documentName: string;
+  mandatory: boolean;
+  status: string;
+  /** UPLOADED = customer uploaded here; REUSED_PII = reused from onboarding. */
+  source: string;
+  documentNumber: string | null;
+  url: string | null;
+}
+
 /** Shape returned by GET /admin/exchange/payments/{id} — payment + related data. */
 export interface ExchangePaymentDetail {
   payment: ExchangePayment;
   quote: ExchangeQuote | null;
   verification: ExchangeVerification | null;
+  documents: ExchangePaymentDocument[] | null;
   uploadedFiles: ExchangeUploadedFiles | null;
+}
+
+// ============================================================
+// Admin · Exchange Countries
+// ============================================================
+
+export type ExchangeCountryStatus = "ACTIVE" | "INACTIVE";
+
+export interface ExchangeCountry {
+  id: string;
+  countryCode: string;
+  countryName: string;
+  currencyCode: string | null;
+  flagUrl: string | null;
+  status: ExchangeCountryStatus;
+  sortOrder: number;
+}
+
+export interface CreateExchangeCountryRequest {
+  countryCode: string;
+  countryName: string;
+  currencyCode?: string | null;
+  flagUrl?: string | null;
+  sortOrder?: number;
+}
+
+export interface UpdateExchangeCountryRequest {
+  countryName?: string;
+  currencyCode?: string | null;
+  flagUrl?: string | null;
+  status?: ExchangeCountryStatus;
+  sortOrder?: number;
+}
+
+export function listExchangeCountries() {
+  return axiosWalletService.get(`/api/v1/admin/exchange/countries`);
+}
+
+export function createExchangeCountry(body: CreateExchangeCountryRequest) {
+  return axiosWalletService.post(`/api/v1/admin/exchange/countries`, body);
+}
+
+export function updateExchangeCountry(
+  id: string,
+  body: UpdateExchangeCountryRequest
+) {
+  return axiosWalletService.put(`/api/v1/admin/exchange/countries/${id}`, body);
+}
+
+// ============================================================
+// Admin · Exchange Document Types (KYC catalog)
+// ============================================================
+
+export type ExchangeDocumentTypeStatus = "ACTIVE" | "INACTIVE";
+
+export interface ExchangeDocumentType {
+  id: string;
+  code: string;
+  name: string;
+  sullisVerify: boolean;
+  sullisDocType: string | null;
+  piiDocumentType: string | null;
+  status: ExchangeDocumentTypeStatus;
+  sortOrder: number;
+}
+
+export interface CreateExchangeDocumentTypeRequest {
+  code: string;
+  name: string;
+  sullisVerify?: boolean;
+  sullisDocType?: string | null;
+  piiDocumentType?: string | null;
+  sortOrder?: number;
+}
+
+export interface UpdateExchangeDocumentTypeRequest {
+  name?: string;
+  sullisVerify?: boolean;
+  sullisDocType?: string | null;
+  piiDocumentType?: string | null;
+  status?: ExchangeDocumentTypeStatus;
+  sortOrder?: number;
+}
+
+export function listExchangeDocumentTypes() {
+  return axiosWalletService.get(`/api/v1/admin/exchange/document-types`);
+}
+
+export function createExchangeDocumentType(
+  body: CreateExchangeDocumentTypeRequest
+) {
+  return axiosWalletService.post(`/api/v1/admin/exchange/document-types`, body);
+}
+
+export function updateExchangeDocumentType(
+  id: string,
+  body: UpdateExchangeDocumentTypeRequest
+) {
+  return axiosWalletService.put(
+    `/api/v1/admin/exchange/document-types/${id}`,
+    body
+  );
+}
+
+// ============================================================
+// Admin · Exchange Country Documents (per-country required set)
+// ============================================================
+
+export interface CountryDocument {
+  id: string;
+  countryCode: string;
+  documentTypeId: string;
+  documentTypeCode: string;
+  documentTypeName: string;
+  mandatory: boolean;
+  sullisVerify: boolean;
+  sortOrder: number;
+}
+
+export interface AddCountryDocumentRequest {
+  documentTypeId: string;
+  mandatory?: boolean;
+  sortOrder?: number;
+}
+
+export function listCountryDocuments(countryCode: string) {
+  return axiosWalletService.get(
+    `/api/v1/admin/exchange/countries/${countryCode}/documents`
+  );
+}
+
+export function addCountryDocument(
+  countryCode: string,
+  body: AddCountryDocumentRequest
+) {
+  return axiosWalletService.post(
+    `/api/v1/admin/exchange/countries/${countryCode}/documents`,
+    body
+  );
+}
+
+export function removeCountryDocument(rowId: string) {
+  return axiosWalletService.delete(
+    `/api/v1/admin/exchange/countries/documents/${rowId}`
+  );
+}
+
+// ============================================================
+// Admin · Exchange Verification Approval (payment gate)
+//   After KYC is VERIFIED the top-up is blocked until an admin approves.
+// ============================================================
+
+export type ExchangeApprovalStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface ExchangeVerificationQueueItem {
+  quoteId: string;
+  customerId: string;
+  customerName: string | null;
+  countryCode: string;
+  overallStatus: string;
+  approvalStatus: ExchangeApprovalStatus;
+  selfieStatus: string | null;
+  faceMatchScore: number | null;
+  receivingCurrency: string;
+  receivingAmount: number;
+  payingCurrency: string;
+  totalPaying: number;
+  approvedAt: string | null;
+  createdAt: string | null;
+}
+
+export interface ExchangeVerificationQuote {
+  providerCode: string;
+  countryCode: string;
+  receivingCurrency: string;
+  receivingAmount: number;
+  payingCurrency: string;
+  totalPaying: number;
+  effectiveRate: number;
+  status: string;
+}
+
+export interface ExchangeVerificationDetail {
+  quoteId: string;
+  customerId: string;
+  customerName: string | null;
+  countryCode: string;
+  overallStatus: string;
+  approvalStatus: ExchangeApprovalStatus;
+  approvedBy: string | null;
+  approvedAt: string | null;
+  approvalNote: string | null;
+  declineReason: string | null;
+  selfieStatus: string | null;
+  faceMatchScore: number | null;
+  selfieUrl: string | null;
+  documents: ExchangePaymentDocument[] | null;
+  quote: ExchangeVerificationQuote | null;
+}
+
+export function listExchangeVerifications(params: {
+  status?: string;
+  limit?: number;
+}) {
+  return axiosWalletService.get(`/api/v1/admin/exchange/verifications`, {
+    params: {
+      status: params.status || undefined,
+      limit: params.limit ?? 50,
+    },
+  });
+}
+
+export function getExchangeVerification(quoteId: string) {
+  return axiosWalletService.get(
+    `/api/v1/admin/exchange/verifications/${quoteId}`
+  );
+}
+
+export function approveExchangeVerification(
+  quoteId: string,
+  body: { note?: string }
+) {
+  return axiosWalletService.post(
+    `/api/v1/admin/exchange/verifications/${quoteId}/approve`,
+    body
+  );
+}
+
+export function rejectExchangeVerification(
+  quoteId: string,
+  body: { note: string }
+) {
+  return axiosWalletService.post(
+    `/api/v1/admin/exchange/verifications/${quoteId}/reject`,
+    body
+  );
 }
 
 export function listExchangePayments(params: {

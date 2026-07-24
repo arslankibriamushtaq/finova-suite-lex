@@ -6,6 +6,7 @@ import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
+import { Badge } from "../../../components/ui/badge";
 import {
   Card,
   CardContent,
@@ -31,8 +32,10 @@ import {
   listExchangeProviders,
   createExchangeProvider,
   updateExchangeProvider,
+  listExchangeCountries,
   ExchangeProvider,
   ExchangeProviderStatus,
+  ExchangeCountry,
   CreateExchangeProviderRequest,
   UpdateExchangeProviderRequest,
 } from "../../../redux/apis/apisWalletAdmin";
@@ -78,6 +81,7 @@ type FormState = {
   maxAmount: string;
   sortOrder: string;
   status: ExchangeProviderStatus;
+  countryCodes: string[];
 };
 
 const emptyForm: FormState = {
@@ -90,6 +94,7 @@ const emptyForm: FormState = {
   maxAmount: "",
   sortOrder: "0",
   status: "ACTIVE",
+  countryCodes: [],
 };
 
 const ExchangeProviders = () => {
@@ -97,6 +102,7 @@ const ExchangeProviders = () => {
   const canCreateProvider = hasPermission(EXCHANGE_PERMISSIONS.PROVIDER_CREATE);
   const canEditProvider = hasPermission(EXCHANGE_PERMISSIONS.PROVIDER_EDIT);
   const [providers, setProviders] = useState<ExchangeProvider[]>([]);
+  const [countries, setCountries] = useState<ExchangeCountry[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -123,8 +129,21 @@ const ExchangeProviders = () => {
     }
   };
 
+  const loadCountries = async () => {
+    try {
+      const res = await listExchangeCountries();
+      const body = res?.data ?? {};
+      const inner = body?.data ?? body;
+      const rows = Array.isArray(inner) ? inner : inner?.content ?? [];
+      setCountries(Array.isArray(rows) ? rows : []);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   useEffect(() => {
     loadProviders();
+    loadCountries();
   }, []);
 
   const openCreate = () => {
@@ -145,9 +164,18 @@ const ExchangeProviders = () => {
       maxAmount: provider.maxAmount == null ? "" : String(provider.maxAmount),
       sortOrder: String(provider.sortOrder ?? 0),
       status: provider.status,
+      countryCodes: provider.countryCodes ?? [],
     });
     setDialogOpen(true);
   };
+
+  const toggleCountry = (code: string) =>
+    setForm((s) => ({
+      ...s,
+      countryCodes: s.countryCodes.includes(code)
+        ? s.countryCodes.filter((c) => c !== code)
+        : [...s.countryCodes, code],
+    }));
 
   const optionalNumber = (value: string) =>
     value.trim() === "" ? null : Number(value);
@@ -174,6 +202,7 @@ const ExchangeProviders = () => {
           maxAmount: optionalNumber(form.maxAmount),
           sortOrder: Number(form.sortOrder) || 0,
           status: form.status,
+          countryCodes: form.countryCodes,
         };
         await updateExchangeProvider(editing.providerId, body);
         toast.success("Provider updated");
@@ -187,6 +216,7 @@ const ExchangeProviders = () => {
           minAmount: optionalNumber(form.minAmount),
           maxAmount: optionalNumber(form.maxAmount),
           sortOrder: Number(form.sortOrder) || 0,
+          countryCodes: form.countryCodes,
         };
         await createExchangeProvider(body);
         toast.success("Provider created");
@@ -244,6 +274,22 @@ const ExchangeProviders = () => {
           {formatAmount(row.minAmount)} / {formatAmount(row.maxAmount)}
         </span>
       ),
+      width: "160px",
+    },
+    {
+      name: "Countries",
+      cell: (row: ExchangeProvider) =>
+        !row.countryCodes || row.countryCodes.length === 0 ? (
+          <Badge variant="secondary">All</Badge>
+        ) : (
+          <span className="flex flex-wrap gap-1">
+            {row.countryCodes.map((c) => (
+              <Badge key={c} variant="outline">
+                {c}
+              </Badge>
+            ))}
+          </span>
+        ),
       width: "160px",
     },
     {
@@ -416,6 +462,40 @@ const ExchangeProviders = () => {
                 }
               />
             </FormField>
+
+            <div className="md:col-span-2 space-y-2">
+              <Label>
+                Countries Served
+                <span className="ml-1 text-xs font-normal text-muted-foreground">
+                  (none selected = all countries)
+                </span>
+              </Label>
+              {countries.length === 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  No countries configured yet.
+                </p>
+              ) : (
+                <div className="flex flex-wrap gap-2">
+                  {countries.map((c) => {
+                    const selected = form.countryCodes.includes(c.countryCode);
+                    return (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => toggleCountry(c.countryCode)}
+                        className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                          selected
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border bg-transparent text-foreground hover:bg-muted"
+                        }`}
+                      >
+                        {c.countryCode} · {c.countryName}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </div>
 
           <DialogFooter>

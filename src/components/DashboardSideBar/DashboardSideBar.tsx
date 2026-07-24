@@ -2379,10 +2379,28 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       active: pathname.includes("/LOS/Exchange"),
       menu: [
         {
+          label: "Countries",
+          Link: "Countries",
+          LinkLable: "/LOS/Exchange",
+          active: pathname === "/LOS/Exchange/Countries",
+        },
+        {
+          label: "Document Types",
+          Link: "DocumentTypes",
+          LinkLable: "/LOS/Exchange",
+          active: pathname === "/LOS/Exchange/DocumentTypes",
+        },
+        {
           label: "Providers",
           Link: "Providers",
           LinkLable: "/LOS/Exchange",
           active: pathname === "/LOS/Exchange/Providers",
+        },
+        {
+          label: "Verifications",
+          Link: "Verifications",
+          LinkLable: "/LOS/Exchange",
+          active: pathname.startsWith("/LOS/Exchange/Verifications"),
         },
         {
           label: "Payments",
