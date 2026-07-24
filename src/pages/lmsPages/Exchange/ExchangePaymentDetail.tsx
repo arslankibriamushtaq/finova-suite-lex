@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   Receipt,
@@ -47,15 +48,21 @@ const STATUS_BADGE: Record<string, string> = {
   DECLINED: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
 };
 
-const StatusBadge = ({ status }: { status?: string | null }) => (
-  <span
-    className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ${
-      STATUS_BADGE[status || ""] || "bg-muted text-foreground"
-    }`}
-  >
-    {status || "-"}
-  </span>
-);
+const StatusBadge = ({ status }: { status?: string | null }) => {
+  const { t } = useTranslation("exchange");
+  const label = status
+    ? t(`status.${status.toLowerCase()}`, { defaultValue: status })
+    : "-";
+  return (
+    <span
+      className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ${
+        STATUS_BADGE[status || ""] || "bg-muted text-foreground"
+      }`}
+    >
+      {label}
+    </span>
+  );
+};
 
 const formatMoney = (value: number | null | undefined, currency?: string) => {
   if (value === null || value === undefined || Number.isNaN(Number(value)))
@@ -90,11 +97,15 @@ const formatDate = (dateString?: string | null) => {
   }
 };
 
-const methodLabel = (method?: string) =>
-  method === "ONE_BILL" ? "1 Bill" : method === "CARD" ? "Card" : method || "-";
-
 const ExchangePaymentDetail = () => {
+  const { t } = useTranslation("exchange");
   const { paymentId } = useParams<{ paymentId: string }>();
+  const methodText = (method?: string) =>
+    method === "ONE_BILL"
+      ? t("pd.method.oneBill")
+      : method === "CARD"
+        ? t("pd.method.card")
+        : method || "-";
 
   const [data, setData] = useState<ExchangePaymentDetailType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -120,7 +131,7 @@ const ExchangePaymentDetail = () => {
         setNotFound(true);
       } else {
         toast.error(
-          error?.response?.data?.message || "Failed to load payment"
+          error?.response?.data?.message || t("pd.toast.loadFailed")
         );
       }
     } finally {
@@ -149,12 +160,12 @@ const ExchangePaymentDetail = () => {
     setIsConfirming(true);
     try {
       await confirmExchangePayment(payment.paymentId);
-      toast.success("Payment confirmed — customer wallet credited");
+      toast.success(t("pd.toast.confirmed"));
       loadPayment();
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to confirm payment"
+        error?.response?.data?.message || t("pd.toast.confirmFailed")
       );
     } finally {
       setIsConfirming(false);
@@ -170,7 +181,7 @@ const ExchangePaymentDetail = () => {
             <span className="pro-head-badge">
               <Receipt className="h-4 w-4" />
             </span>
-            Payment Details
+            {t("pd.title")}
           </h3>
           <p className="mb-0 mt-1 text-sm text-muted-foreground font-mono">
             {paymentId}
@@ -186,7 +197,7 @@ const ExchangePaymentDetail = () => {
                 disabled={isConfirming}
               >
                 <CheckCircle2 className="h-4 w-4" />
-                {isConfirming ? "Confirming…" : "Confirm 1 Bill Payment"}
+                {isConfirming ? t("pd.confirming") : t("pd.confirm1Bill")}
               </Button>
             )}
           </div>
@@ -201,7 +212,7 @@ const ExchangePaymentDetail = () => {
       ) : notFound ? (
         <Card className="pro-card-glow">
           <CardContent className="py-12 text-center text-muted-foreground">
-            Payment not found for this tenant.
+            {t("pd.notFound")}
           </CardContent>
         </Card>
       ) : payment ? (
@@ -209,28 +220,31 @@ const ExchangePaymentDetail = () => {
         {/* KPI hero strip */}
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile
-            label="Receiving (credited)"
+            label={t("pd.tile.receiving")}
             value={formatMoney(
               payment.receivingAmount,
               payment.receivingCurrency
             )}
-            hint={payment.customerName ? `to ${payment.customerName}` : undefined}
+            hint={
+              payment.customerName
+                ? t("pd.tile.toCustomer", { name: payment.customerName })
+                : undefined
+            }
             icon={<ArrowDownToLine className="h-4 w-4" />}
             accent="emerald"
           />
           <StatTile
-            label="Total Paying"
+            label={t("pd.tile.totalPaying")}
             value={formatMoney(payment.totalPaying, payment.payingCurrency)}
-            hint={`incl. fee ${formatMoney(
-              payment.feeAmount,
-              payment.payingCurrency
-            )}`}
+            hint={t("pd.tile.inclFee", {
+              amount: formatMoney(payment.feeAmount, payment.payingCurrency),
+            })}
             icon={<ArrowUpFromLine className="h-4 w-4" />}
             accent="orange"
           />
           <StatTile
-            label="Method"
-            value={methodLabel(payment.method)}
+            label={t("pd.tile.method")}
+            value={methodText(payment.method)}
             icon={
               payment.method === "CARD" ? (
                 <CreditCard className="h-4 w-4" />
@@ -241,7 +255,7 @@ const ExchangePaymentDetail = () => {
             accent="violet"
           />
           <StatTile
-            label="Status"
+            label={t("common:status")}
             value={<StatusBadge status={payment.status} />}
             icon={<BadgeCheck className="h-4 w-4" />}
             accent="sky"
@@ -260,41 +274,55 @@ const ExchangePaymentDetail = () => {
                     <Landmark className="h-4 w-4" />
                   )}
                 </span>
-                Summary
+                {t("pd.card.summary")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
-              <DetailRow label="Customer" value={payment.customerName || "-"} />
               <DetailRow
-                label="Customer ID"
+                label={t("pd.row.customer")}
+                value={payment.customerName || "-"}
+              />
+              <DetailRow
+                label={t("pd.row.customerId")}
                 value={payment.customerId || "-"}
                 mono
               />
-              <DetailRow label="Wallet ID" value={payment.walletId || "-"} mono />
-              <DetailRow label="Payment ID" value={payment.paymentId} mono />
-              <DetailRow label="Method" value={methodLabel(payment.method)} />
               <DetailRow
-                label="Status"
+                label={t("pd.row.walletId")}
+                value={payment.walletId || "-"}
+                mono
+              />
+              <DetailRow
+                label={t("pd.row.paymentId")}
+                value={payment.paymentId}
+                mono
+              />
+              <DetailRow
+                label={t("pd.row.method")}
+                value={methodText(payment.method)}
+              />
+              <DetailRow
+                label={t("pd.row.status")}
                 value={<StatusBadge status={payment.status} />}
               />
               <DetailRow
-                label="Created At"
+                label={t("pd.row.createdAt")}
                 value={formatDate(payment.createdAt)}
               />
               <DetailRow
-                label="Completed At"
+                label={t("pd.row.completedAt")}
                 value={formatDate(payment.completedAt)}
               />
               {payment.movementId && (
                 <DetailRow
-                  label="Movement ID"
+                  label={t("pd.row.movementId")}
                   value={payment.movementId}
                   mono
                 />
               )}
               {payment.errorMessage && (
                 <DetailRow
-                  label="Error"
+                  label={t("pd.row.error")}
                   value={
                     <span className="text-destructive">
                       {payment.errorMessage}
@@ -312,48 +340,52 @@ const ExchangePaymentDetail = () => {
                 <span className="inline-flex size-8 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/15">
                   <Wallet className="h-4 w-4" />
                 </span>
-                Amounts
+                {t("pd.card.amounts")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
               <DetailRow
-                label="Receiving (credited)"
+                label={t("pd.row.receiving")}
                 value={formatMoney(
                   payment.receivingAmount,
                   payment.receivingCurrency
                 )}
               />
               <DetailRow
-                label="Paying"
+                label={t("pd.row.paying")}
                 value={formatMoney(
                   payment.payingAmount,
                   payment.payingCurrency
                 )}
               />
               <DetailRow
-                label="Fee"
+                label={t("pd.row.fee")}
                 value={formatMoney(payment.feeAmount, payment.payingCurrency)}
               />
               <div className="flex items-center justify-between gap-4 pt-2 mt-1 border-t border-border">
-                <span className="text-sm font-semibold">Total Paying</span>
+                <span className="text-sm font-semibold">
+                  {t("pd.row.totalPaying")}
+                </span>
                 <span className="text-base font-bold">
                   {formatMoney(payment.totalPaying, payment.payingCurrency)}
                 </span>
               </div>
               <div className="pt-2">
-                <p className="text-xs text-muted-foreground">Card / Bill</p>
+                <p className="text-xs text-muted-foreground">
+                  {t("pd.row.cardBill")}
+                </p>
                 <div className="mt-1 text-sm">
                   {payment.cardBrand || payment.cardLastFour
                     ? `${payment.cardBrand || ""} •••• ${
                         payment.cardLastFour || ""
                       }`.trim()
                     : payment.billId
-                    ? `Bill ${payment.billId}`
+                    ? t("pd.bill", { id: payment.billId })
                     : "-"}
                 </div>
                 {payment.providerReference && (
                   <p className="mt-1 font-mono text-xs text-muted-foreground">
-                    Ref: {payment.providerReference}
+                    {t("pd.ref", { ref: payment.providerReference })}
                   </p>
                 )}
               </div>
@@ -368,35 +400,45 @@ const ExchangePaymentDetail = () => {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/15">
                     <TrendingUp className="h-4 w-4" />
                   </span>
-                  Quote
+                  {t("pd.card.quote")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-1">
-                <DetailRow label="Quote ID" value={quote.quoteId} mono />
-                <DetailRow label="Provider" value={quote.providerCode} />
                 <DetailRow
-                  label="Status"
+                  label={t("pd.row.quoteId")}
+                  value={quote.quoteId}
+                  mono
+                />
+                <DetailRow
+                  label={t("pd.row.provider")}
+                  value={quote.providerCode}
+                />
+                <DetailRow
+                  label={t("pd.row.status")}
                   value={<StatusBadge status={quote.status} />}
                 />
-                <DetailRow label="Base Rate" value={formatRate(quote.baseRate)} />
                 <DetailRow
-                  label="Effective Rate"
+                  label={t("pd.row.baseRate")}
+                  value={formatRate(quote.baseRate)}
+                />
+                <DetailRow
+                  label={t("pd.row.effectiveRate")}
                   value={formatRate(quote.effectiveRate)}
                 />
                 <DetailRow
-                  label="FX Margin"
+                  label={t("pd.row.fxMargin")}
                   value={`${Number(quote.fxMarginPercent ?? 0)}%`}
                 />
                 <DetailRow
-                  label="Fee"
+                  label={t("pd.row.fee")}
                   value={`${Number(quote.feePercent ?? 0)}%`}
                 />
                 <DetailRow
-                  label="Created At"
+                  label={t("pd.row.createdAt")}
                   value={formatDate(quote.createdAt)}
                 />
                 <DetailRow
-                  label="Expires At"
+                  label={t("pd.row.expiresAt")}
                   value={formatDate(quote.expiresAt)}
                 />
               </CardContent>
@@ -411,39 +453,39 @@ const ExchangePaymentDetail = () => {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                     <BadgeCheck className="h-4 w-4" />
                   </span>
-                  KYC Verification
+                  {t("pd.card.kyc")}
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-1">
                 <DetailRow
-                  label="Overall"
+                  label={t("pd.row.overall")}
                   value={<StatusBadge status={verification.overallStatus} />}
                 />
                 <DetailRow
-                  label="Document Type"
+                  label={t("pd.row.documentType")}
                   value={verification.documentType || "-"}
                 />
                 <DetailRow
-                  label="Document Number"
+                  label={t("pd.row.documentNumber")}
                   value={verification.documentNumber || "-"}
                   mono
                 />
                 <DetailRow
-                  label="Document"
+                  label={t("pd.row.document")}
                   value={<StatusBadge status={verification.documentStatus} />}
                 />
                 <DetailRow
-                  label="Selfie"
+                  label={t("pd.row.selfie")}
                   value={<StatusBadge status={verification.selfieStatus} />}
                 />
                 <DetailRow
-                  label="Fingerprint"
+                  label={t("pd.row.fingerprint")}
                   value={
                     <StatusBadge status={verification.fingerprintStatus} />
                   }
                 />
                 <DetailRow
-                  label="Face Match"
+                  label={t("pd.row.faceMatch")}
                   value={
                     verification.faceMatchScore == null
                       ? "-"
@@ -452,7 +494,7 @@ const ExchangePaymentDetail = () => {
                 />
                 {verification.declineReason && (
                   <DetailRow
-                    label="Decline Reason"
+                    label={t("pd.row.declineReason")}
                     value={
                       <span className="text-destructive">
                         {verification.declineReason}
@@ -461,7 +503,7 @@ const ExchangePaymentDetail = () => {
                   />
                 )}
                 <DetailRow
-                  label="Sullis Session"
+                  label={t("pd.row.sullisSession")}
                   value={verification.sullisSessionId || "-"}
                   mono
                 />
@@ -477,7 +519,7 @@ const ExchangePaymentDetail = () => {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
                     <FileText className="h-4 w-4" />
                   </span>
-                  Required Documents
+                  {t("pd.card.requiredDocs")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -497,12 +539,14 @@ const ExchangePaymentDetail = () => {
                         <Badge
                           variant={doc.mandatory ? "default" : "secondary"}
                         >
-                          {doc.mandatory ? "Mandatory" : "Optional"}
+                          {doc.mandatory
+                            ? t("pd.doc.mandatory")
+                            : t("pd.doc.optional")}
                         </Badge>
                         <Badge variant="outline">
                           {doc.source === "REUSED_PII"
-                            ? "Reused (PII)"
-                            : "Uploaded"}
+                            ? t("pd.doc.reusedPii")
+                            : t("pd.doc.uploaded")}
                         </Badge>
                       </div>
                       {doc.documentNumber && (
@@ -515,8 +559,8 @@ const ExchangePaymentDetail = () => {
                       ) : (
                         <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground">
                           {doc.source === "REUSED_PII"
-                            ? "Reused from profile — no file"
-                            : "Not uploaded"}
+                            ? t("pd.doc.reusedNoFile")
+                            : t("pd.doc.notUploaded")}
                         </div>
                       )}
                     </div>
@@ -534,13 +578,16 @@ const ExchangePaymentDetail = () => {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
                     <FileText className="h-4 w-4" />
                   </span>
-                  Biometrics
+                  {t("pd.card.biometrics")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                  <DocThumb label="Selfie" url={files.selfieUrl} />
-                  <DocThumb label="Fingerprint" url={files.fingerprintUrl} />
+                  <DocThumb label={t("pd.row.selfie")} url={files.selfieUrl} />
+                  <DocThumb
+                    label={t("pd.row.fingerprint")}
+                    url={files.fingerprintUrl}
+                  />
                 </div>
               </CardContent>
             </Card>
@@ -555,7 +602,7 @@ const ExchangePaymentDetail = () => {
 const ImagePreview = ({
   src,
   alt,
-  openLabel = "Open full size",
+  openLabel,
   maxH = "h-64",
 }: {
   src: string;
@@ -563,6 +610,7 @@ const ImagePreview = ({
   openLabel?: string;
   maxH?: string;
 }) => {
+  const { t } = useTranslation("exchange");
   const [rotation, setRotation] = useState(0);
   const sideways = rotation % 180 !== 0;
   return (
@@ -583,7 +631,7 @@ const ImagePreview = ({
           type="button"
           onClick={() => setRotation((r) => (r + 90) % 360)}
           className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
-          title="Rotate 90°"
+          title={t("img.rotate")}
         >
           <RotateCw className="h-4 w-4" />
         </button>
@@ -595,7 +643,7 @@ const ImagePreview = ({
         className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary hover:underline"
       >
         <ExternalLink className="h-3 w-3" />
-        {openLabel}
+        {openLabel || t("img.openFull")}
       </a>
     </div>
   );
@@ -647,18 +695,21 @@ const DocThumb = ({
 }: {
   label: string;
   url: string | null;
-}) => (
-  <div className="space-y-2">
-    <p className="text-sm font-medium">{label}</p>
-    {url ? (
-      <ImagePreview src={url} alt={label} maxH="h-80" />
-    ) : (
-      <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
-        Not uploaded
-      </div>
-    )}
-  </div>
-);
+}) => {
+  const { t } = useTranslation("exchange");
+  return (
+    <div className="space-y-2">
+      <p className="text-sm font-medium">{label}</p>
+      {url ? (
+        <ImagePreview src={url} alt={label} maxH="h-80" />
+      ) : (
+        <div className="flex h-40 items-center justify-center rounded-lg border border-dashed border-border text-sm text-muted-foreground">
+          {t("pd.doc.notUploaded")}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const DetailRow = ({
   label,

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Globe, Plus, Pencil, FileText, Trash2, ChevronDown } from "lucide-react";
 import { Input as AntInput } from "antd";
@@ -51,7 +52,7 @@ import {
 } from "../../../redux/apis/apisWalletAdmin";
 import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
-const StatusBadge = ({ status }: { status?: string }) => (
+const StatusBadge = ({ status, label }: { status?: string; label?: string }) => (
   <span
     className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
       status === "ACTIVE"
@@ -59,7 +60,7 @@ const StatusBadge = ({ status }: { status?: string }) => (
         : "bg-muted text-muted-foreground"
     }`}
   >
-    {status || "-"}
+    {label || status || "-"}
   </span>
 );
 
@@ -82,6 +83,13 @@ const emptyForm: FormState = {
 };
 
 const ExchangeCountries = () => {
+  const { t } = useTranslation("exchange");
+  const statusLabel = (s?: string) =>
+    s === "ACTIVE"
+      ? t("common:active")
+      : s === "INACTIVE"
+        ? t("common:inactive")
+        : s || "-";
   const { hasPermission } = usePermissions();
   const canCreateCountry = hasPermission(EXCHANGE_PERMISSIONS.COUNTRY_CREATE);
   const canEditCountry = hasPermission(EXCHANGE_PERMISSIONS.COUNTRY_EDIT);
@@ -118,7 +126,7 @@ const ExchangeCountries = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load countries"
+        error?.response?.data?.message || t("countries.toast.loadFailed")
       );
       setCountries([]);
     } finally {
@@ -151,9 +159,9 @@ const ExchangeCountries = () => {
 
   const save = async () => {
     if (!editing && !form.countryCode.trim())
-      return toast.error("Country code is required");
+      return toast.error(t("countries.toast.codeRequired"));
     if (!form.countryName.trim())
-      return toast.error("Country name is required");
+      return toast.error(t("countries.toast.nameRequired"));
 
     setIsSaving(true);
     try {
@@ -166,7 +174,7 @@ const ExchangeCountries = () => {
           status: form.status,
         };
         await updateExchangeCountry(editing.id, body);
-        toast.success("Country updated");
+        toast.success(t("countries.toast.updated"));
       } else {
         const body: CreateExchangeCountryRequest = {
           countryCode: form.countryCode.trim().toUpperCase(),
@@ -176,13 +184,15 @@ const ExchangeCountries = () => {
           sortOrder: Number(form.sortOrder) || 0,
         };
         await createExchangeCountry(body);
-        toast.success("Country created");
+        toast.success(t("countries.toast.created"));
       }
       setDialogOpen(false);
       load();
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to save country");
+      toast.error(
+        error?.response?.data?.message || t("countries.toast.saveFailed")
+      );
     } finally {
       setIsSaving(false);
     }
@@ -199,7 +209,7 @@ const ExchangeCountries = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load required documents"
+        error?.response?.data?.message || t("countries.docs.loadFailed")
       );
       setCountryDocs([]);
     } finally {
@@ -229,7 +239,7 @@ const ExchangeCountries = () => {
 
   const addDoc = async () => {
     if (!docsCountry) return;
-    if (!addDocTypeId) return toast.error("Select a document type");
+    if (!addDocTypeId) return toast.error(t("countries.docs.selectTypeError"));
     setIsAddingDoc(true);
     try {
       await addCountryDocument(docsCountry.countryCode, {
@@ -237,12 +247,14 @@ const ExchangeCountries = () => {
         mandatory: addMandatory === "true",
         sortOrder: countryDocs.length + 1,
       });
-      toast.success("Document added");
+      toast.success(t("countries.docs.added"));
       setAddDocTypeId("");
       loadCountryDocs(docsCountry.countryCode);
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to add document");
+      toast.error(
+        error?.response?.data?.message || t("countries.docs.addFailed")
+      );
     } finally {
       setIsAddingDoc(false);
     }
@@ -253,12 +265,12 @@ const ExchangeCountries = () => {
     setRemovingId(row.id);
     try {
       await removeCountryDocument(row.id);
-      toast.success("Document removed");
+      toast.success(t("countries.docs.removed"));
       loadCountryDocs(docsCountry.countryCode);
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to remove document"
+        error?.response?.data?.message || t("countries.docs.removeFailed")
       );
     } finally {
       setRemovingId(null);
@@ -274,28 +286,28 @@ const ExchangeCountries = () => {
 
   const headers = [
     {
-      name: "Order",
+      name: t("countries.col.order"),
       cell: (row: ExchangeCountry) => (
         <span className="text-sm text-muted-foreground">{row.sortOrder}</span>
       ),
       width: "80px",
     },
     {
-      name: "Code",
+      name: t("countries.col.code"),
       cell: (row: ExchangeCountry) => (
         <span className="font-mono text-xs font-medium">{row.countryCode}</span>
       ),
       width: "100px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       cell: (row: ExchangeCountry) => (
         <span className="text-sm">{row.countryName}</span>
       ),
       width: "200px",
     },
     {
-      name: "Currency",
+      name: t("countries.col.currency"),
       cell: (row: ExchangeCountry) => (
         <span className="text-sm text-muted-foreground">
           {row.currencyCode || "-"}
@@ -304,12 +316,14 @@ const ExchangeCountries = () => {
       width: "110px",
     },
     {
-      name: "Status",
-      cell: (row: ExchangeCountry) => <StatusBadge status={row.status} />,
+      name: t("common:status"),
+      cell: (row: ExchangeCountry) => (
+        <StatusBadge status={row.status} label={statusLabel(row.status)} />
+      ),
       width: "110px",
     },
     {
-      name: "Action",
+      name: t("countries.col.action"),
       cell: (row: ExchangeCountry) => (
         <div
           className="relative inline-block"
@@ -319,7 +333,7 @@ const ExchangeCountries = () => {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <button type="button" className={SELECT_TRIGGER_CLS}>
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -331,7 +345,7 @@ const ExchangeCountries = () => {
                 }}
               >
                 <FileText className="h-4 w-4" />
-                Documents
+                {t("countries.action.documents")}
               </DropdownMenuItem>
               {canEditCountry && (
                 <DropdownMenuItem
@@ -341,7 +355,7 @@ const ExchangeCountries = () => {
                   }}
                 >
                   <Pencil className="h-4 w-4" />
-                  Edit
+                  {t("common:edit")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -395,11 +409,10 @@ const ExchangeCountries = () => {
           <span className="pro-head-badge">
             <Globe className="h-4 w-4" />
           </span>
-          Exchange Countries
+          {t("countries.title")}
         </h3>
         <p className="mb-0 mt-1 text-sm text-muted-foreground">
-          Countries offered in the "select country" step — each drives its own
-          providers and required documents.
+          {t("countries.subtitle")}
         </p>
       </div>
 
@@ -407,7 +420,7 @@ const ExchangeCountries = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search code, name, currency…"
+            placeholder={t("countries.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e) => {
@@ -423,7 +436,7 @@ const ExchangeCountries = () => {
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0, marginLeft: "auto" }}
             >
               <Plus className="h-4 w-4" />
-              New Country
+              {t("countries.new")}
             </Button>
           )}
         </div>
@@ -450,12 +463,14 @@ const ExchangeCountries = () => {
         <DialogContent className="exch-dialog sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Edit Country" : "New Country"}
+              {editing
+                ? t("countries.dialog.editTitle")
+                : t("countries.dialog.newTitle")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
-            <FormField label="Country Code (ISO-2)" required>
+            <FormField label={t("countries.field.code")} required>
               <Input
                 placeholder="AE"
                 maxLength={2}
@@ -466,7 +481,7 @@ const ExchangeCountries = () => {
                 }
               />
             </FormField>
-            <FormField label="Country Name" required>
+            <FormField label={t("countries.field.name")} required>
               <Input
                 placeholder="United Arab Emirates"
                 value={form.countryName}
@@ -475,7 +490,7 @@ const ExchangeCountries = () => {
                 }
               />
             </FormField>
-            <FormField label="Currency (ISO-3)">
+            <FormField label={t("countries.field.currency")}>
               <Input
                 placeholder="AED"
                 maxLength={3}
@@ -485,7 +500,7 @@ const ExchangeCountries = () => {
                 }
               />
             </FormField>
-            <FormField label="Sort Order">
+            <FormField label={t("countries.field.sortOrder")}>
               <Input
                 type="number"
                 placeholder="0"
@@ -496,7 +511,7 @@ const ExchangeCountries = () => {
               />
             </FormField>
             {editing && (
-              <FormField label="Status">
+              <FormField label={t("common:status")}>
                 <Select
                   value={form.status}
                   onValueChange={(v) =>
@@ -510,13 +525,15 @@ const ExchangeCountries = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ACTIVE">Active</SelectItem>
-                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    <SelectItem value="ACTIVE">{t("common:active")}</SelectItem>
+                    <SelectItem value="INACTIVE">
+                      {t("common:inactive")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>
             )}
-            <FormField label="Flag URL" className="md:col-span-2">
+            <FormField label={t("countries.field.flagUrl")} className="md:col-span-2">
               <Input
                 placeholder="https://…"
                 value={form.flagUrl}
@@ -533,14 +550,18 @@ const ExchangeCountries = () => {
               onClick={() => setDialogOpen(false)}
               disabled={isSaving}
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               className="wallet-brand-btn"
               onClick={save}
               disabled={isSaving}
             >
-              {isSaving ? "Saving…" : editing ? "Save Changes" : "Create"}
+              {isSaving
+                ? t("countries.form.saving")
+                : editing
+                  ? t("common:saveChanges")
+                  : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -551,29 +572,31 @@ const ExchangeCountries = () => {
         <DialogContent className="exch-dialog sm:max-w-[620px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              Required Documents · {docsCountry?.countryName}
+              {t("countries.docs.titleFor", {
+                name: docsCountry?.countryName || "",
+              })}
             </DialogTitle>
             <DialogDescription>
-              The identity documents customers must provide for this country.
+              {t("countries.docs.description")}
             </DialogDescription>
           </DialogHeader>
 
           {/* Add row */}
           <div className="rounded-xl border border-border bg-muted/40 p-4">
             <p className="mb-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-              Add a document
+              {t("countries.docs.addTitle")}
             </p>
             <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
               <div className="flex-1 space-y-1.5">
-                <Label className="text-xs">Document Type</Label>
+                <Label className="text-xs">{t("countries.docs.docType")}</Label>
                 <Select value={addDocTypeId} onValueChange={setAddDocTypeId}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select from catalog" />
+                    <SelectValue placeholder={t("countries.docs.selectCatalog")} />
                   </SelectTrigger>
                   <SelectContent>
                     {availableDocTypes.length === 0 ? (
                       <div className="px-2 py-1.5 text-sm text-muted-foreground">
-                        No more document types
+                        {t("countries.docs.noMoreTypes")}
                       </div>
                     ) : (
                       availableDocTypes.map((dt) => (
@@ -586,14 +609,20 @@ const ExchangeCountries = () => {
                 </Select>
               </div>
               <div className="w-full space-y-1.5 sm:w-[150px]">
-                <Label className="text-xs">Requirement</Label>
+                <Label className="text-xs">
+                  {t("countries.docs.requirement")}
+                </Label>
                 <Select value={addMandatory} onValueChange={setAddMandatory}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="true">Mandatory</SelectItem>
-                    <SelectItem value="false">Optional</SelectItem>
+                    <SelectItem value="true">
+                      {t("countries.docs.mandatory")}
+                    </SelectItem>
+                    <SelectItem value="false">
+                      {t("countries.docs.optional")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -603,7 +632,9 @@ const ExchangeCountries = () => {
                 disabled={isAddingDoc || !addDocTypeId}
               >
                 <Plus className="h-4 w-4" />
-                {isAddingDoc ? "Adding…" : "Add"}
+                {isAddingDoc
+                  ? t("countries.docs.adding")
+                  : t("countries.docs.add")}
               </Button>
             </div>
           </div>
@@ -612,7 +643,7 @@ const ExchangeCountries = () => {
           <div className="mt-1">
             <div className="mb-2 flex items-center justify-between">
               <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                Required documents
+                {t("countries.docs.listTitle")}
               </p>
               {countryDocs.length > 0 && (
                 <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
@@ -623,14 +654,16 @@ const ExchangeCountries = () => {
 
             {docsLoading ? (
               <div className="flex items-center justify-center rounded-xl border border-dashed border-border py-10 text-sm text-muted-foreground">
-                Loading…
+                {t("countries.docs.loading")}
               </div>
             ) : countryDocs.length === 0 ? (
               <div className="flex flex-col items-center justify-center gap-1 rounded-xl border border-dashed border-border py-10 text-center">
                 <FileText className="h-6 w-6 text-muted-foreground/60" />
-                <p className="text-sm font-medium">No required documents yet</p>
+                <p className="text-sm font-medium">
+                  {t("countries.docs.emptyTitle")}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Add one from the catalog above to get started.
+                  {t("countries.docs.emptyHint")}
                 </p>
               </div>
             ) : (
@@ -658,11 +691,13 @@ const ExchangeCountries = () => {
                             variant={cd.mandatory ? "default" : "secondary"}
                             className="text-[10px]"
                           >
-                            {cd.mandatory ? "Mandatory" : "Optional"}
+                            {cd.mandatory
+                              ? t("countries.docs.mandatory")
+                              : t("countries.docs.optional")}
                           </Badge>
                           {cd.sullisVerify && (
                             <Badge variant="outline" className="text-[10px]">
-                              Sullis Verify
+                              {t("countries.docs.sullisVerify")}
                             </Badge>
                           )}
                         </div>
@@ -674,7 +709,7 @@ const ExchangeCountries = () => {
                       className="h-8 w-8 shrink-0 text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
                       onClick={() => removeDoc(cd)}
                       disabled={removingId === cd.id}
-                      title="Remove document"
+                      title={t("countries.docs.removeTitle")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -689,7 +724,7 @@ const ExchangeCountries = () => {
               variant="outline"
               onClick={() => setDocsDialogOpen(false)}
             >
-              Done
+              {t("common:done")}
             </Button>
           </DialogFooter>
         </DialogContent>

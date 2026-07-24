@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   ShieldCheck,
@@ -54,15 +55,21 @@ const STATUS_BADGE: Record<string, string> = {
   DECLINED: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
 };
 
-const StatusBadge = ({ status }: { status?: string | null }) => (
-  <span
-    className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ${
-      STATUS_BADGE[status || ""] || "bg-muted text-foreground"
-    }`}
-  >
-    {status || "-"}
-  </span>
-);
+const StatusBadge = ({ status }: { status?: string | null }) => {
+  const { t } = useTranslation("exchange");
+  const label = status
+    ? t(`status.${status.toLowerCase()}`, { defaultValue: status })
+    : "-";
+  return (
+    <span
+      className={`inline-flex items-center rounded-md px-2.5 py-1 text-xs font-semibold ${
+        STATUS_BADGE[status || ""] || "bg-muted text-foreground"
+      }`}
+    >
+      {label}
+    </span>
+  );
+};
 
 const formatMoney = (value: number | null | undefined, currency?: string) => {
   if (value === null || value === undefined || Number.isNaN(Number(value)))
@@ -92,6 +99,7 @@ const formatDate = (dateString?: string | null) => {
 type DecisionMode = "approve" | "reject" | null;
 
 const ExchangeVerificationDetail = () => {
+  const { t } = useTranslation("exchange");
   const { hasPermission } = usePermissions();
   const canReview = hasPermission(EXCHANGE_PERMISSIONS.VERIFICATION_REVIEW);
   const { quoteId } = useParams<{ quoteId: string }>();
@@ -123,7 +131,7 @@ const ExchangeVerificationDetail = () => {
         setNotFound(true);
       } else {
         toast.error(
-          error?.response?.data?.message || "Failed to load verification"
+          error?.response?.data?.message || t("vd.toast.loadFailed")
         );
       }
     } finally {
@@ -144,24 +152,24 @@ const ExchangeVerificationDetail = () => {
   const submitDecision = async () => {
     if (!quoteId || !decision) return;
     if (decision === "reject" && !note.trim())
-      return toast.error("A rejection reason is required");
+      return toast.error(t("vd.toast.rejectReasonRequired"));
     setIsSubmitting(true);
     try {
       if (decision === "approve") {
         await approveExchangeVerification(quoteId, {
           note: note.trim() || undefined,
         });
-        toast.success("Verification approved — payment unlocked");
+        toast.success(t("vd.toast.approved"));
       } else {
         await rejectExchangeVerification(quoteId, { note: note.trim() });
-        toast.success("Verification rejected");
+        toast.success(t("vd.toast.rejected"));
       }
       setDecision(null);
       load();
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to submit decision"
+        error?.response?.data?.message || t("vd.toast.submitFailed")
       );
     } finally {
       setIsSubmitting(false);
@@ -195,7 +203,7 @@ const ExchangeVerificationDetail = () => {
             <span className="pro-head-badge">
               <ShieldCheck className="h-4 w-4" />
             </span>
-            Verification Review
+            {t("vd.title")}
           </h3>
           <p className="mb-0 mt-1 text-sm text-muted-foreground font-mono">
             {quoteId}
@@ -212,7 +220,7 @@ const ExchangeVerificationDetail = () => {
                   onClick={() => openDecision("reject")}
                 >
                   <X className="h-4 w-4" />
-                  Reject
+                  {t("vd.reject")}
                 </Button>
                 <Button
                   className="gap-2 wallet-brand-btn"
@@ -220,7 +228,7 @@ const ExchangeVerificationDetail = () => {
                   disabled={!kycVerified}
                 >
                   <Check className="h-4 w-4" />
-                  Approve
+                  {t("vd.approve")}
                 </Button>
               </>
             )}
@@ -236,7 +244,7 @@ const ExchangeVerificationDetail = () => {
       ) : notFound ? (
         <Card className="pro-card-glow">
           <CardContent className="py-12 text-center text-muted-foreground">
-            Verification not found for this tenant.
+            {t("vd.notFound")}
           </CardContent>
         </Card>
       ) : data ? (
@@ -244,34 +252,42 @@ const ExchangeVerificationDetail = () => {
         {/* KPI hero strip */}
         <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           <StatTile
-            label="Receiving"
+            label={t("vd.tile.receiving")}
             value={formatMoney(
               quote?.receivingAmount,
               quote?.receivingCurrency
             )}
-            hint={data.customerName ? `to ${data.customerName}` : undefined}
+            hint={
+              data.customerName
+                ? t("vd.tile.toCustomer", { name: data.customerName })
+                : undefined
+            }
             icon={<ArrowDownToLine className="h-4 w-4" />}
             accent="emerald"
           />
           <StatTile
-            label="Total Paying"
+            label={t("vd.tile.totalPaying")}
             value={formatMoney(quote?.totalPaying, quote?.payingCurrency)}
             icon={<ArrowUpFromLine className="h-4 w-4" />}
             accent="orange"
           />
           <StatTile
-            label="Face Match"
+            label={t("vd.tile.faceMatch")}
             value={
               data.faceMatchScore == null
                 ? "-"
                 : `${(data.faceMatchScore * 100).toFixed(1)}%`
             }
-            hint={kycVerified ? "KYC verified" : "KYC not verified"}
+            hint={
+              kycVerified
+                ? t("vd.tile.kycVerified")
+                : t("vd.tile.kycNotVerified")
+            }
             icon={<ScanFace className="h-4 w-4" />}
             accent="violet"
           />
           <StatTile
-            label="Approval"
+            label={t("vd.tile.approval")}
             value={<StatusBadge status={data.approvalStatus} />}
             icon={<BadgeCheck className="h-4 w-4" />}
             accent="sky"
@@ -286,27 +302,34 @@ const ExchangeVerificationDetail = () => {
                 <span className="inline-flex size-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
                   <BadgeCheck className="h-4 w-4" />
                 </span>
-                Identity Check
+                {t("vd.card.identity")}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
-              <DetailRow label="Customer" value={data.customerName || "-"} />
-              <DetailRow label="Customer ID" value={data.customerId} mono />
-              <DetailRow label="Country" value={data.countryCode} />
               <DetailRow
-                label="KYC Overall"
+                label={t("vd.row.customer")}
+                value={data.customerName || "-"}
+              />
+              <DetailRow
+                label={t("vd.row.customerId")}
+                value={data.customerId}
+                mono
+              />
+              <DetailRow label={t("vd.row.country")} value={data.countryCode} />
+              <DetailRow
+                label={t("vd.row.kycOverall")}
                 value={<StatusBadge status={data.overallStatus} />}
               />
               <DetailRow
-                label="Approval"
+                label={t("vd.row.approval")}
                 value={<StatusBadge status={data.approvalStatus} />}
               />
               <DetailRow
-                label="Selfie"
+                label={t("vd.row.selfie")}
                 value={<StatusBadge status={data.selfieStatus} />}
               />
               <DetailRow
-                label="Face Match"
+                label={t("vd.row.faceMatch")}
                 value={
                   data.faceMatchScore == null
                     ? "-"
@@ -314,20 +337,24 @@ const ExchangeVerificationDetail = () => {
                 }
               />
               {data.approvedBy && (
-                <DetailRow label="Decided By" value={data.approvedBy} mono />
+                <DetailRow
+                  label={t("vd.row.decidedBy")}
+                  value={data.approvedBy}
+                  mono
+                />
               )}
               {data.approvedAt && (
                 <DetailRow
-                  label="Decided At"
+                  label={t("vd.row.decidedAt")}
                   value={formatDate(data.approvedAt)}
                 />
               )}
               {data.approvalNote && (
-                <DetailRow label="Note" value={data.approvalNote} />
+                <DetailRow label={t("vd.row.note")} value={data.approvalNote} />
               )}
               {data.declineReason && (
                 <DetailRow
-                  label="Decline Reason"
+                  label={t("vd.row.declineReason")}
                   value={
                     <span className="text-destructive">
                       {data.declineReason}
@@ -345,30 +372,33 @@ const ExchangeVerificationDetail = () => {
                 <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/15">
                   <TrendingUp className="h-4 w-4" />
                 </span>
-                Quote
+                {t("vd.card.quote")}
               </CardTitle>
             </CardHeader>
             <CardContent>
               {quote && (
                 <div className="space-y-1">
-                  <DetailRow label="Provider" value={quote.providerCode} />
                   <DetailRow
-                    label="Status"
+                    label={t("vd.row.provider")}
+                    value={quote.providerCode}
+                  />
+                  <DetailRow
+                    label={t("vd.row.status")}
                     value={<StatusBadge status={quote.status} />}
                   />
                   <DetailRow
-                    label="Receiving"
+                    label={t("vd.row.receiving")}
                     value={formatMoney(
                       quote.receivingAmount,
                       quote.receivingCurrency
                     )}
                   />
                   <DetailRow
-                    label="Total Paying"
+                    label={t("vd.row.totalPaying")}
                     value={formatMoney(quote.totalPaying, quote.payingCurrency)}
                   />
                   <DetailRow
-                    label="Effective Rate"
+                    label={t("vd.row.effectiveRate")}
                     value={Number(quote.effectiveRate ?? 0)}
                   />
                 </div>
@@ -384,7 +414,7 @@ const ExchangeVerificationDetail = () => {
                   <span className="inline-flex size-8 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 ring-1 ring-blue-500/15">
                     <FileText className="h-4 w-4" />
                   </span>
-                  Documents &amp; Selfie
+                  {t("vd.card.docsSelfie")}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -410,8 +440,8 @@ const ExchangeVerificationDetail = () => {
                       ) : (
                         <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-border text-xs text-muted-foreground">
                           {doc.source === "REUSED_PII"
-                            ? "Reused from profile — no file"
-                            : "Not uploaded"}
+                            ? t("vd.doc.reusedNoFile")
+                            : t("vd.doc.notUploaded")}
                         </div>
                       )}
                     </div>
@@ -420,15 +450,17 @@ const ExchangeVerificationDetail = () => {
                   {data.selfieUrl && (
                     <div className="space-y-2 rounded-lg border border-border p-3">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="text-sm font-medium">Selfie</span>
+                        <span className="text-sm font-medium">
+                          {t("vd.selfie")}
+                        </span>
                         {data.selfieStatus && (
                           <StatusBadge status={data.selfieStatus} />
                         )}
                       </div>
                       <ImagePreview
                         src={data.selfieUrl}
-                        alt="Selfie"
-                        openLabel="Open selfie"
+                        alt={t("vd.selfie")}
+                        openLabel={t("vd.openSelfie")}
                       />
                     </div>
                   )}
@@ -449,19 +481,21 @@ const ExchangeVerificationDetail = () => {
           <DialogHeader>
             <DialogTitle>
               {decision === "approve"
-                ? "Approve Verification"
-                : "Reject Verification"}
+                ? t("vd.dialog.approveTitle")
+                : t("vd.dialog.rejectTitle")}
             </DialogTitle>
             <DialogDescription>
               {decision === "approve"
-                ? "This unlocks the top-up so the customer can pay."
-                : "The note is shown to the customer as the rejection reason."}
+                ? t("vd.dialog.approveDesc")
+                : t("vd.dialog.rejectDesc")}
             </DialogDescription>
           </DialogHeader>
 
           <div className="space-y-2">
             <Label>
-              {decision === "approve" ? "Note (optional)" : "Rejection reason"}
+              {decision === "approve"
+                ? t("vd.dialog.noteOptional")
+                : t("vd.dialog.rejectionReason")}
               {decision === "reject" && (
                 <span className="text-destructive"> *</span>
               )}
@@ -470,8 +504,8 @@ const ExchangeVerificationDetail = () => {
               rows={3}
               placeholder={
                 decision === "approve"
-                  ? "Documents verified"
-                  : "Document image unclear — please re-submit"
+                  ? t("vd.dialog.approvePlaceholder")
+                  : t("vd.dialog.rejectPlaceholder")
               }
               value={note}
               onChange={(e) => setNote(e.target.value)}
@@ -484,7 +518,7 @@ const ExchangeVerificationDetail = () => {
               onClick={() => setDecision(null)}
               disabled={isSubmitting}
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               className={
@@ -496,10 +530,10 @@ const ExchangeVerificationDetail = () => {
               disabled={isSubmitting}
             >
               {isSubmitting
-                ? "Submitting…"
+                ? t("vd.form.submitting")
                 : decision === "approve"
-                ? "Approve"
-                : "Reject"}
+                ? t("vd.approve")
+                : t("vd.reject")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -511,12 +545,13 @@ const ExchangeVerificationDetail = () => {
 const ImagePreview = ({
   src,
   alt,
-  openLabel = "Open full size",
+  openLabel,
 }: {
   src: string;
   alt: string;
   openLabel?: string;
 }) => {
+  const { t } = useTranslation("exchange");
   const [rotation, setRotation] = useState(0);
   const sideways = rotation % 180 !== 0;
   return (
@@ -535,7 +570,7 @@ const ImagePreview = ({
           type="button"
           onClick={() => setRotation((r) => (r + 90) % 360)}
           className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
-          title="Rotate 90°"
+          title={t("img.rotate")}
         >
           <RotateCw className="h-4 w-4" />
         </button>
@@ -547,7 +582,7 @@ const ImagePreview = ({
         className="flex items-center justify-center gap-1 py-1.5 text-xs text-primary hover:underline"
       >
         <ExternalLink className="h-3 w-3" />
-        {openLabel}
+        {openLabel || t("img.openFull")}
       </a>
     </div>
   );

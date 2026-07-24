@@ -161,6 +161,9 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Client Request Test": "clientRequestTest",
   "Exchange Top-up": "exchangeTopup",
   Payments: "payments",
+  Countries: "countries",
+  "Document Types": "documentTypes",
+  Verifications: "verifications",
 };
 
 /* Renders a colored lucide icon when the label is a known module; otherwise

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { FileText, Plus, Pencil, ChevronDown, ShieldCheck } from "lucide-react";
 import { Input as AntInput } from "antd";
@@ -49,8 +50,8 @@ const SULLIS_DOC_LABELS: Record<string, string> = {
   PASSPORT: "Passport",
 };
 
-const prettySullisDocType = (value?: string | null) => {
-  if (!value) return "Enabled";
+const prettySullisDocType = (value?: string | null, enabledLabel = "Enabled") => {
+  if (!value) return enabledLabel;
   return (
     SULLIS_DOC_LABELS[value] ||
     value
@@ -61,7 +62,7 @@ const prettySullisDocType = (value?: string | null) => {
   );
 };
 
-const StatusBadge = ({ status }: { status?: string }) => (
+const StatusBadge = ({ status, label }: { status?: string; label?: string }) => (
   <span
     className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
       status === "ACTIVE"
@@ -69,7 +70,7 @@ const StatusBadge = ({ status }: { status?: string }) => (
         : "bg-muted text-muted-foreground"
     }`}
   >
-    {status || "-"}
+    {label || status || "-"}
   </span>
 );
 
@@ -94,6 +95,13 @@ const emptyForm: FormState = {
 };
 
 const ExchangeDocumentTypes = () => {
+  const { t } = useTranslation("exchange");
+  const statusLabel = (s?: string) =>
+    s === "ACTIVE"
+      ? t("common:active")
+      : s === "INACTIVE"
+        ? t("common:inactive")
+        : s || "-";
   const { hasPermission } = usePermissions();
   const canCreateDocType = hasPermission(EXCHANGE_PERMISSIONS.DOCUMENT_TYPE_CREATE);
   const canEditDocType = hasPermission(EXCHANGE_PERMISSIONS.DOCUMENT_TYPE_EDIT);
@@ -119,7 +127,7 @@ const ExchangeDocumentTypes = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load document types"
+        error?.response?.data?.message || t("docTypes.toast.loadFailed")
       );
       setDocTypes([]);
     } finally {
@@ -152,8 +160,9 @@ const ExchangeDocumentTypes = () => {
   };
 
   const save = async () => {
-    if (!editing && !form.code.trim()) return toast.error("Code is required");
-    if (!form.name.trim()) return toast.error("Name is required");
+    if (!editing && !form.code.trim())
+      return toast.error(t("docTypes.toast.codeRequired"));
+    if (!form.name.trim()) return toast.error(t("docTypes.toast.nameRequired"));
 
     const sullisDocType =
       form.sullisVerify && form.sullisDocType !== "NONE"
@@ -172,7 +181,7 @@ const ExchangeDocumentTypes = () => {
           status: form.status,
         };
         await updateExchangeDocumentType(editing.id, body);
-        toast.success("Document type updated");
+        toast.success(t("docTypes.toast.updated"));
       } else {
         const body: CreateExchangeDocumentTypeRequest = {
           code: form.code.trim().toUpperCase(),
@@ -183,14 +192,14 @@ const ExchangeDocumentTypes = () => {
           sortOrder: Number(form.sortOrder) || 0,
         };
         await createExchangeDocumentType(body);
-        toast.success("Document type created");
+        toast.success(t("docTypes.toast.created"));
       }
       setDialogOpen(false);
       load();
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to save document type"
+        error?.response?.data?.message || t("docTypes.toast.saveFailed")
       );
     } finally {
       setIsSaving(false);
@@ -199,33 +208,33 @@ const ExchangeDocumentTypes = () => {
 
   const headers = [
     {
-      name: "Order",
+      name: t("docTypes.col.order"),
       cell: (row: ExchangeDocumentType) => (
         <span className="text-sm text-muted-foreground">{row.sortOrder}</span>
       ),
       width: "80px",
     },
     {
-      name: "Code",
+      name: t("docTypes.col.code"),
       cell: (row: ExchangeDocumentType) => (
         <span className="font-mono text-xs font-medium">{row.code}</span>
       ),
       width: "140px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       cell: (row: ExchangeDocumentType) => (
         <span className="text-sm">{row.name}</span>
       ),
       width: "180px",
     },
     {
-      name: "Sullis Verify",
+      name: t("docTypes.col.sullisVerify"),
       cell: (row: ExchangeDocumentType) =>
         row.sullisVerify ? (
           <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
             <ShieldCheck className="h-3.5 w-3.5" />
-            {prettySullisDocType(row.sullisDocType)}
+            {prettySullisDocType(row.sullisDocType, t("docTypes.badge.enabled"))}
           </span>
         ) : (
           <span className="text-sm text-muted-foreground">—</span>
@@ -233,7 +242,7 @@ const ExchangeDocumentTypes = () => {
       width: "150px",
     },
     {
-      name: "PII Reuse",
+      name: t("docTypes.col.piiReuse"),
       cell: (row: ExchangeDocumentType) => (
         <span className="text-sm text-muted-foreground">
           {row.piiDocumentType || "-"}
@@ -242,12 +251,14 @@ const ExchangeDocumentTypes = () => {
       width: "150px",
     },
     {
-      name: "Status",
-      cell: (row: ExchangeDocumentType) => <StatusBadge status={row.status} />,
+      name: t("common:status"),
+      cell: (row: ExchangeDocumentType) => (
+        <StatusBadge status={row.status} label={statusLabel(row.status)} />
+      ),
       width: "110px",
     },
     {
-      name: "Action",
+      name: t("docTypes.col.action"),
       cell: (row: ExchangeDocumentType) =>
         !canEditDocType ? (
           <span className="text-muted-foreground">-</span>
@@ -260,7 +271,7 @@ const ExchangeDocumentTypes = () => {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <button type="button" className={SELECT_TRIGGER_CLS}>
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -272,7 +283,7 @@ const ExchangeDocumentTypes = () => {
                 }}
               >
                 <Pencil className="h-4 w-4" />
-                Edit
+                {t("common:edit")}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -325,11 +336,10 @@ const ExchangeDocumentTypes = () => {
           <span className="pro-head-badge">
             <FileText className="h-4 w-4" />
           </span>
-          Document Types
+          {t("docTypes.title")}
         </h3>
         <p className="mb-0 mt-1 text-sm text-muted-foreground">
-          The KYC document catalog referenced by each country's required-document
-          set.
+          {t("docTypes.subtitle")}
         </p>
       </div>
 
@@ -337,7 +347,7 @@ const ExchangeDocumentTypes = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search code, name…"
+            placeholder={t("docTypes.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e) => {
@@ -353,7 +363,7 @@ const ExchangeDocumentTypes = () => {
             style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0, marginLeft: "auto" }}
           >
             <Plus className="h-4 w-4" />
-            New Document Type
+            {t("docTypes.new")}
           </Button>
           )}
         </div>
@@ -379,12 +389,14 @@ const ExchangeDocumentTypes = () => {
         <DialogContent className="exch-dialog sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Edit Document Type" : "New Document Type"}
+              {editing
+                ? t("docTypes.dialog.editTitle")
+                : t("docTypes.dialog.newTitle")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
-            <FormField label="Code" required>
+            <FormField label={t("docTypes.field.code")} required>
               <Input
                 placeholder="VISA"
                 value={form.code}
@@ -394,7 +406,7 @@ const ExchangeDocumentTypes = () => {
                 }
               />
             </FormField>
-            <FormField label="Name" required>
+            <FormField label={t("docTypes.field.name")} required>
               <Input
                 placeholder="Travel Visa"
                 value={form.name}
@@ -406,9 +418,11 @@ const ExchangeDocumentTypes = () => {
 
             <div className="md:col-span-2 flex items-center justify-between rounded-lg border border-border px-3 py-2">
               <div>
-                <p className="text-sm font-medium">Sullis Verify</p>
+                <p className="text-sm font-medium">
+                  {t("docTypes.sullis.title")}
+                </p>
                 <p className="text-xs text-muted-foreground">
-                  Run through Sullis OCR + selfie face-match (identity document).
+                  {t("docTypes.sullis.hint")}
                 </p>
               </div>
               <Switch
@@ -420,7 +434,7 @@ const ExchangeDocumentTypes = () => {
             </div>
 
             {form.sullisVerify && (
-              <FormField label="Sullis Doc Type">
+              <FormField label={t("docTypes.field.sullisDocType")}>
                 <Select
                   value={form.sullisDocType}
                   onValueChange={(v) =>
@@ -440,11 +454,11 @@ const ExchangeDocumentTypes = () => {
             )}
 
             <FormField
-              label="PII Reuse Kind"
+              label={t("docTypes.field.piiReuseKind")}
               className={form.sullisVerify ? "" : "md:col-span-2"}
             >
               <Input
-                placeholder="e.g. NATIONAL_ID (blank = never reuse)"
+                placeholder={t("docTypes.field.piiPlaceholder")}
                 value={form.piiDocumentType}
                 onChange={(e) =>
                   setForm((s) => ({ ...s, piiDocumentType: e.target.value }))
@@ -452,7 +466,7 @@ const ExchangeDocumentTypes = () => {
               />
             </FormField>
 
-            <FormField label="Sort Order">
+            <FormField label={t("docTypes.field.sortOrder")}>
               <Input
                 type="number"
                 placeholder="0"
@@ -463,7 +477,7 @@ const ExchangeDocumentTypes = () => {
               />
             </FormField>
             {editing && (
-              <FormField label="Status">
+              <FormField label={t("common:status")}>
                 <Select
                   value={form.status}
                   onValueChange={(v) =>
@@ -477,8 +491,10 @@ const ExchangeDocumentTypes = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ACTIVE">Active</SelectItem>
-                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    <SelectItem value="ACTIVE">{t("common:active")}</SelectItem>
+                    <SelectItem value="INACTIVE">
+                      {t("common:inactive")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>
@@ -491,14 +507,18 @@ const ExchangeDocumentTypes = () => {
               onClick={() => setDialogOpen(false)}
               disabled={isSaving}
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               className="wallet-brand-btn"
               onClick={save}
               disabled={isSaving}
             >
-              {isSaving ? "Saving…" : editing ? "Save Changes" : "Create"}
+              {isSaving
+                ? t("docTypes.form.saving")
+                : editing
+                  ? t("common:saveChanges")
+                  : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import DataTable from "react-data-table-component";
 import { Dropdown } from "react-bootstrap";
 import Skeleton from "react-loading-skeleton";
@@ -35,6 +36,7 @@ const TableView = ({
   to,
   endpoint,
 }: any) => {
+  const { t } = useTranslation("common");
   const [table, setTable] = useState<any>();
   const location = useLocation();
   const isViewPage = location.pathname.includes(
@@ -264,7 +266,7 @@ const TableView = ({
               <div>
                 <Dropdown>
                   <Dropdown.Toggle variant="success" id="dropdown-basic">
-                    Select
+                    {t("select")}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     {row.actionList &&
@@ -459,7 +461,7 @@ const TableView = ({
               type="text"
               style={{ width: "300px", border: "none", outline: "none" }}
               className="p-2"
-              placeholder="Search"
+              placeholder={t("search")}
             />
           </div>
         </div>
@@ -489,17 +491,22 @@ const TableView = ({
             // sortIcon={<CustomSortIcon />}
             />
             {data?.length === 0 && (
-              <div className="no-data-message">No data available</div>
+              <div className="no-data-message">{t("noData")}</div>
             )}
-            {endpoint && <div className="no-data-message">No APIs Enabled</div>}
+            {endpoint && (
+              <div className="no-data-message">{t("noApisEnabled")}</div>
+            )}
 
             {paginationShow && (
               <div className="pagination-div" style={conditionalStyles}>
                 <div className="d-flex col-12  align-items-center">
                   <div className="col-6">
                     <span>
-                      Showing {`${from}`} to {`${to}`} of {`${totalRows}`}{" "}
-                      entries
+                      {t("showingEntries", {
+                        from: from ?? 0,
+                        to: to ?? 0,
+                        total: totalRows ?? 0,
+                      })}{" "}
                     </span>
                     <Select
                       defaultValue={pageSize}

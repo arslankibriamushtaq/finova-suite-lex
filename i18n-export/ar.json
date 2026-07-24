@@ -1553,6 +1553,7 @@
     "save": "حفظ",
     "saveChanges": "حفظ التغييرات",
     "cancel": "إلغاء",
+    "done": "تم",
     "confirm": "تأكيد",
     "submit": "إرسال",
     "close": "إغلاق",
@@ -1610,6 +1611,8 @@
     "none": "لا شيء",
     "noData": "لا توجد بيانات متاحة",
     "noResults": "لا توجد نتائج",
+    "noApisEnabled": "لا توجد واجهات برمجة مُفعّلة",
+    "showingEntries": "عرض {{from}} إلى {{to}} من {{total}} مُدخلاً",
     "loading": "جاري التحميل...",
     "rowsPerPage": "صفوف لكل صفحة",
     "showingResults": "عرض {{from}}–{{to}} من {{total}}",
@@ -4906,6 +4909,360 @@
       "personalNarratives": "الملاحظات الشخصية",
       "creditInstrumentDetails": "تفاصيل أدوات الائتمان",
       "providedDemographicsInfo": "المعلومات الديموغرافية المقدمة"
+    }
+  },
+  "exchange": {
+    "verifications": {
+      "title": "موافقات التحقق",
+      "subtitle": "راجع عملية \"اعرف عميلك\" المكتملة ووافق أو ارفض قبل إمكانية دفع الشحن.",
+      "search": "ابحث عن عميل أو دولة…",
+      "col": {
+        "customer": "العميل",
+        "country": "الدولة",
+        "receiving": "المبلغ المستلم",
+        "paying": "المبلغ المدفوع",
+        "faceMatch": "مطابقة الوجه",
+        "approval": "الموافقة",
+        "action": "إجراء"
+      },
+      "action": {
+        "review": "مراجعة"
+      },
+      "toast": {
+        "loadFailed": "فشل تحميل عمليات التحقق"
+      }
+    },
+    "payments": {
+      "title": "مدفوعات الصرافة",
+      "subtitle": "تابع مدفوعات شحن الصرافة التي يقوم بها العملاء (1 Bill / بطاقة).",
+      "search": "ابحث عن عميل أو معرّف أو فاتورة أو مرجع…",
+      "col": {
+        "paymentId": "معرّف الدفعة",
+        "customer": "العميل",
+        "method": "الطريقة",
+        "receiving": "المبلغ المستلم",
+        "paying": "المبلغ المدفوع",
+        "action": "إجراء"
+      },
+      "action": {
+        "confirm": "تأكيد",
+        "confirming": "جارٍ التأكيد…"
+      },
+      "method": {
+        "oneBill": "1 Bill",
+        "card": "بطاقة"
+      },
+      "status": {
+        "all": "جميع الحالات",
+        "pending": "قيد الانتظار",
+        "completed": "مكتمل",
+        "failed": "فشل"
+      },
+      "toast": {
+        "loadFailed": "فشل تحميل مدفوعات الصرافة",
+        "confirmed": "تم تأكيد الدفعة — تم إيداع محفظة العميل",
+        "confirmFailed": "فشل تأكيد الدفعة"
+      }
+    },
+    "providers": {
+      "title": "مزودو الصرافة",
+      "subtitle": "قم بإعداد الشركاء الظاهرين في قائمة \"اختيار خيار الصرافة\" لدى العميل.",
+      "new": "مزود جديد",
+      "cardTitle": "المزودون",
+      "col": {
+        "order": "الترتيب",
+        "code": "الرمز",
+        "fxMargin": "هامش الصرف",
+        "fee": "الرسوم",
+        "minMax": "الحد الأدنى / الأقصى",
+        "countries": "الدول",
+        "action": "إجراء"
+      },
+      "allCountries": "جميع الدول",
+      "dialog": {
+        "editTitle": "تعديل المزود",
+        "newTitle": "مزود جديد"
+      },
+      "field": {
+        "code": "الرمز",
+        "name": "الاسم",
+        "fxMargin": "هامش الصرف (%)",
+        "fee": "الرسوم (%)",
+        "minAmount": "الحد الأدنى للمبلغ",
+        "maxAmount": "الحد الأقصى للمبلغ",
+        "sortOrder": "ترتيب الفرز",
+        "logoUrl": "رابط الشعار",
+        "countriesServed": "الدول المخدومة",
+        "countriesHint": "(لا شيء محدد = جميع الدول)"
+      },
+      "noCountries": "لا توجد دول مُعدّة بعد.",
+      "form": {
+        "saving": "جارٍ الحفظ…"
+      },
+      "toast": {
+        "loadFailed": "فشل تحميل مزودي الصرافة",
+        "codeRequired": "الرمز مطلوب",
+        "nameRequired": "الاسم مطلوب",
+        "fxMarginMin": "يجب أن يكون هامش الصرف ≥ 0",
+        "feeMin": "يجب أن تكون الرسوم ≥ 0",
+        "updated": "تم تحديث المزود",
+        "created": "تم إنشاء المزود",
+        "saveFailed": "فشل حفظ المزود"
+      }
+    },
+    "countries": {
+      "title": "دول الصرافة",
+      "subtitle": "الدول المتاحة في خطوة \"اختيار الدولة\" — كل دولة لها مزودوها ومستنداتها المطلوبة.",
+      "search": "ابحث عن رمز أو اسم أو عملة…",
+      "new": "دولة جديدة",
+      "col": {
+        "order": "الترتيب",
+        "code": "الرمز",
+        "currency": "العملة",
+        "action": "إجراء"
+      },
+      "action": {
+        "documents": "المستندات"
+      },
+      "dialog": {
+        "editTitle": "تعديل الدولة",
+        "newTitle": "دولة جديدة"
+      },
+      "field": {
+        "code": "رمز الدولة (ISO-2)",
+        "name": "اسم الدولة",
+        "currency": "العملة (ISO-3)",
+        "sortOrder": "ترتيب الفرز",
+        "flagUrl": "رابط العلم"
+      },
+      "form": {
+        "saving": "جارٍ الحفظ…"
+      },
+      "toast": {
+        "loadFailed": "فشل تحميل الدول",
+        "codeRequired": "رمز الدولة مطلوب",
+        "nameRequired": "اسم الدولة مطلوب",
+        "updated": "تم تحديث الدولة",
+        "created": "تم إنشاء الدولة",
+        "saveFailed": "فشل حفظ الدولة"
+      },
+      "docs": {
+        "titleFor": "المستندات المطلوبة · {{name}}",
+        "description": "مستندات الهوية التي يجب على العملاء تقديمها لهذه الدولة.",
+        "addTitle": "إضافة مستند",
+        "docType": "نوع المستند",
+        "selectCatalog": "اختر من الكتالوج",
+        "noMoreTypes": "لا مزيد من أنواع المستندات",
+        "requirement": "الإلزامية",
+        "mandatory": "إلزامي",
+        "optional": "اختياري",
+        "adding": "جارٍ الإضافة…",
+        "add": "إضافة",
+        "listTitle": "المستندات المطلوبة",
+        "loading": "جارٍ التحميل…",
+        "emptyTitle": "لا توجد مستندات مطلوبة بعد",
+        "emptyHint": "أضف واحداً من الكتالوج أعلاه للبدء.",
+        "sullisVerify": "Sullis Verify",
+        "removeTitle": "إزالة المستند",
+        "selectTypeError": "اختر نوع المستند",
+        "added": "تمت إضافة المستند",
+        "addFailed": "فشل إضافة المستند",
+        "removed": "تمت إزالة المستند",
+        "removeFailed": "فشل إزالة المستند",
+        "loadFailed": "فشل تحميل المستندات المطلوبة"
+      }
+    },
+    "docTypes": {
+      "title": "أنواع المستندات",
+      "subtitle": "كتالوج مستندات اعرف عميلك (KYC) الذي تشير إليه مجموعة المستندات المطلوبة لكل دولة.",
+      "search": "ابحث عن رمز أو اسم…",
+      "new": "نوع مستند جديد",
+      "col": {
+        "order": "الترتيب",
+        "code": "الرمز",
+        "sullisVerify": "Sullis Verify",
+        "piiReuse": "إعادة استخدام PII",
+        "action": "إجراء"
+      },
+      "badge": {
+        "enabled": "مُفعّل"
+      },
+      "dialog": {
+        "editTitle": "تعديل نوع المستند",
+        "newTitle": "نوع مستند جديد"
+      },
+      "field": {
+        "code": "الرمز",
+        "name": "الاسم",
+        "sullisDocType": "نوع مستند Sullis",
+        "piiReuseKind": "نوع إعادة استخدام PII",
+        "piiPlaceholder": "مثال NATIONAL_ID (فارغ = عدم إعادة الاستخدام أبداً)",
+        "sortOrder": "ترتيب الفرز"
+      },
+      "sullis": {
+        "title": "Sullis Verify",
+        "hint": "التحقق عبر Sullis OCR + مطابقة الوجه بالصورة الذاتية (مستند هوية)."
+      },
+      "form": {
+        "saving": "جارٍ الحفظ…"
+      },
+      "toast": {
+        "loadFailed": "فشل تحميل أنواع المستندات",
+        "codeRequired": "الرمز مطلوب",
+        "nameRequired": "الاسم مطلوب",
+        "updated": "تم تحديث نوع المستند",
+        "created": "تم إنشاء نوع المستند",
+        "saveFailed": "فشل حفظ نوع المستند"
+      }
+    },
+    "status": {
+      "approved": "معتمد",
+      "verified": "مُتحقّق",
+      "captured": "مُلتقط",
+      "consumed": "مُستهلك",
+      "completed": "مكتمل",
+      "quoted": "مُسعّر",
+      "pending": "قيد الانتظار",
+      "expired": "منتهي الصلاحية",
+      "failed": "فشل",
+      "declined": "مرفوض",
+      "rejected": "مرفوض",
+      "uploaded": "تم الرفع"
+    },
+    "img": {
+      "openFull": "فتح بالحجم الكامل",
+      "rotate": "تدوير 90°"
+    },
+    "pd": {
+      "title": "تفاصيل الدفعة",
+      "confirming": "جارٍ التأكيد…",
+      "confirm1Bill": "تأكيد دفعة 1 Bill",
+      "notFound": "لم يتم العثور على الدفعة لهذا المستأجر.",
+      "method": {
+        "oneBill": "1 Bill",
+        "card": "بطاقة"
+      },
+      "tile": {
+        "receiving": "المستلَم (مُضاف)",
+        "toCustomer": "إلى {{name}}",
+        "totalPaying": "إجمالي المدفوع",
+        "inclFee": "شامل الرسوم {{amount}}",
+        "method": "الطريقة"
+      },
+      "card": {
+        "summary": "الملخّص",
+        "amounts": "المبالغ",
+        "quote": "التسعير",
+        "kyc": "التحقق (KYC)",
+        "requiredDocs": "المستندات المطلوبة",
+        "biometrics": "القياسات الحيوية"
+      },
+      "row": {
+        "customer": "العميل",
+        "customerId": "معرّف العميل",
+        "walletId": "معرّف المحفظة",
+        "paymentId": "معرّف الدفعة",
+        "method": "الطريقة",
+        "status": "الحالة",
+        "createdAt": "أُنشئ في",
+        "completedAt": "اكتمل في",
+        "movementId": "معرّف الحركة",
+        "error": "خطأ",
+        "receiving": "المستلَم (مُضاف)",
+        "paying": "المدفوع",
+        "fee": "الرسوم",
+        "totalPaying": "إجمالي المدفوع",
+        "cardBill": "بطاقة / فاتورة",
+        "quoteId": "معرّف التسعير",
+        "provider": "المزوّد",
+        "baseRate": "السعر الأساسي",
+        "effectiveRate": "السعر الفعلي",
+        "fxMargin": "هامش الصرف",
+        "expiresAt": "ينتهي في",
+        "overall": "الإجمالي",
+        "documentType": "نوع المستند",
+        "documentNumber": "رقم المستند",
+        "document": "المستند",
+        "selfie": "صورة ذاتية",
+        "fingerprint": "البصمة",
+        "faceMatch": "مطابقة الوجه",
+        "declineReason": "سبب الرفض",
+        "sullisSession": "جلسة Sullis"
+      },
+      "bill": "فاتورة {{id}}",
+      "ref": "مرجع: {{ref}}",
+      "doc": {
+        "mandatory": "إلزامي",
+        "optional": "اختياري",
+        "reusedPii": "مُعاد استخدامه (PII)",
+        "uploaded": "تم الرفع",
+        "reusedNoFile": "مُعاد استخدامه من الملف الشخصي — لا يوجد ملف",
+        "notUploaded": "لم يتم الرفع"
+      }
+    },
+    "vd": {
+      "title": "مراجعة التحقق",
+      "notFound": "لم يتم العثور على التحقق لهذا المستأجر.",
+      "reject": "رفض",
+      "approve": "اعتماد",
+      "tile": {
+        "receiving": "المستلَم",
+        "toCustomer": "إلى {{name}}",
+        "totalPaying": "إجمالي المدفوع",
+        "faceMatch": "مطابقة الوجه",
+        "kycVerified": "تم التحقق (KYC)",
+        "kycNotVerified": "لم يتم التحقق (KYC)",
+        "approval": "الاعتماد"
+      },
+      "card": {
+        "identity": "فحص الهوية",
+        "quote": "التسعير",
+        "docsSelfie": "المستندات والصورة الذاتية"
+      },
+      "row": {
+        "customer": "العميل",
+        "customerId": "معرّف العميل",
+        "country": "الدولة",
+        "kycOverall": "إجمالي KYC",
+        "approval": "الاعتماد",
+        "selfie": "صورة ذاتية",
+        "faceMatch": "مطابقة الوجه",
+        "decidedBy": "تم القرار بواسطة",
+        "decidedAt": "تاريخ القرار",
+        "note": "ملاحظة",
+        "declineReason": "سبب الرفض",
+        "provider": "المزوّد",
+        "status": "الحالة",
+        "receiving": "المستلَم",
+        "totalPaying": "إجمالي المدفوع",
+        "effectiveRate": "السعر الفعلي"
+      },
+      "doc": {
+        "reusedNoFile": "مُعاد استخدامه من الملف الشخصي — لا يوجد ملف",
+        "notUploaded": "لم يتم الرفع"
+      },
+      "selfie": "صورة ذاتية",
+      "openSelfie": "فتح الصورة الذاتية",
+      "dialog": {
+        "approveTitle": "اعتماد التحقق",
+        "rejectTitle": "رفض التحقق",
+        "approveDesc": "هذا يفتح الشحن حتى يتمكن العميل من الدفع.",
+        "rejectDesc": "تُعرض الملاحظة للعميل كسبب للرفض.",
+        "noteOptional": "ملاحظة (اختياري)",
+        "rejectionReason": "سبب الرفض",
+        "approvePlaceholder": "تم التحقق من المستندات",
+        "rejectPlaceholder": "صورة المستند غير واضحة — يُرجى إعادة الإرسال"
+      },
+      "form": {
+        "submitting": "جارٍ الإرسال…"
+      },
+      "toast": {
+        "loadFailed": "فشل تحميل التحقق",
+        "rejectReasonRequired": "سبب الرفض مطلوب",
+        "approved": "تم اعتماد التحقق — تم فتح الدفع",
+        "rejected": "تم رفض التحقق",
+        "submitFailed": "فشل إرسال القرار"
+      }
     }
   },
   "financing": {
@@ -12935,6 +13292,9 @@
     "walletTransactionsLimits": "حدود معاملات المحفظة",
     "exchangeTopup": "شحن الصرافة",
     "payments": "المدفوعات",
+    "countries": "الدول",
+    "documentTypes": "أنواع المستندات",
+    "verifications": "عمليات التحقق",
     "ledger": "دفتر الأستاذ",
     "generalCreditScoring": "التقييم الائتماني العام",
     "accountsLimitSetting": "إعداد حدود الحسابات",

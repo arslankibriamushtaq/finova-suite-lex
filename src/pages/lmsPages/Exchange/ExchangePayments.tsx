@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { Receipt, Eye, CheckCircle2, RefreshCw, ChevronDown } from "lucide-react";
 import { Input as AntInput } from "antd";
@@ -38,13 +39,13 @@ const STATUS_BADGE: Record<string, string> = {
   FAILED: "bg-red-100 text-red-700 dark:bg-red-500/15 dark:text-red-300",
 };
 
-const StatusBadge = ({ status }: { status?: string }) => (
+const StatusBadge = ({ status, label }: { status?: string; label?: string }) => (
   <span
     className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium ${
       STATUS_BADGE[status || ""] || "bg-muted text-foreground"
     }`}
   >
-    {status || "-"}
+    {label || status || "-"}
   </span>
 );
 
@@ -58,13 +59,19 @@ const formatMoney = (value: number | null | undefined, currency?: string) => {
   return currency ? `${amount} ${currency}` : amount;
 };
 
-const methodLabel = (method?: string) =>
-  method === "ONE_BILL" ? "1 Bill" : method === "CARD" ? "Card" : method || "-";
-
 const STATUS_FILTERS = ["ALL", "PENDING", "COMPLETED", "FAILED"];
 
 const ExchangePayments = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation("exchange");
+  const methodText = (m?: string) =>
+    m === "ONE_BILL"
+      ? t("payments.method.oneBill")
+      : m === "CARD"
+        ? t("payments.method.card")
+        : m || "-";
+  const statusLabel = (s?: string) =>
+    s ? (t(`payments.status.${s.toLowerCase()}`) as string) : "-";
   const [payments, setPayments] = useState<ExchangePayment[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -87,7 +94,7 @@ const ExchangePayments = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load exchange payments"
+        error?.response?.data?.message || t("payments.toast.loadFailed")
       );
       setPayments([]);
     } finally {
@@ -107,12 +114,12 @@ const ExchangePayments = () => {
     setConfirmingId(payment.paymentId);
     try {
       await confirmExchangePayment(payment.paymentId);
-      toast.success("Payment confirmed — customer wallet credited");
+      toast.success(t("payments.toast.confirmed"));
       loadPayments();
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to confirm payment"
+        error?.response?.data?.message || t("payments.toast.confirmFailed")
       );
     } finally {
       setConfirmingId(null);
@@ -148,7 +155,7 @@ const ExchangePayments = () => {
 
   const headers = [
     {
-      name: "Payment ID",
+      name: t("payments.col.paymentId"),
       cell: (row: ExchangePayment) => (
         <button
           type="button"
@@ -161,21 +168,21 @@ const ExchangePayments = () => {
       width: "180px",
     },
     {
-      name: "Customer",
+      name: t("payments.col.customer"),
       cell: (row: ExchangePayment) => (
         <span className="text-sm">{row.customerName || "-"}</span>
       ),
       width: "180px",
     },
     {
-      name: "Method",
+      name: t("payments.col.method"),
       cell: (row: ExchangePayment) => (
-        <span className="text-sm">{methodLabel(row.method)}</span>
+        <span className="text-sm">{methodText(row.method)}</span>
       ),
       width: "100px",
     },
     {
-      name: "Receiving",
+      name: t("payments.col.receiving"),
       cell: (row: ExchangePayment) => (
         <span className="font-medium">
           {formatMoney(row.receivingAmount, row.receivingCurrency)}
@@ -184,7 +191,7 @@ const ExchangePayments = () => {
       width: "150px",
     },
     {
-      name: "Paying",
+      name: t("payments.col.paying"),
       cell: (row: ExchangePayment) => (
         <span className="text-sm">
           {formatMoney(row.totalPaying, row.payingCurrency)}
@@ -193,12 +200,14 @@ const ExchangePayments = () => {
       width: "160px",
     },
     {
-      name: "Status",
-      cell: (row: ExchangePayment) => <StatusBadge status={row.status} />,
+      name: t("common:status"),
+      cell: (row: ExchangePayment) => (
+        <StatusBadge status={row.status} label={statusLabel(row.status)} />
+      ),
       width: "120px",
     },
     {
-      name: "Action",
+      name: t("payments.col.action"),
       cell: (row: ExchangePayment) => (
         <div
           className="relative inline-block"
@@ -212,7 +221,7 @@ const ExchangePayments = () => {
                 disabled={confirmingId === row.paymentId}
                 className={SELECT_TRIGGER_CLS}
               >
-                Select
+                {t("common:select")}
                 <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
               </button>
             </DropdownMenuTrigger>
@@ -224,7 +233,7 @@ const ExchangePayments = () => {
                 }}
               >
                 <Eye className="h-4 w-4" />
-                View
+                {t("common:view")}
               </DropdownMenuItem>
               {canConfirm(row) && (
                 <DropdownMenuItem
@@ -234,7 +243,9 @@ const ExchangePayments = () => {
                   }}
                 >
                   <CheckCircle2 className="h-4 w-4" />
-                  {confirmingId === row.paymentId ? "Confirming…" : "Confirm"}
+                  {confirmingId === row.paymentId
+                    ? t("payments.action.confirming")
+                    : t("payments.action.confirm")}
                 </DropdownMenuItem>
               )}
             </DropdownMenuContent>
@@ -252,10 +263,10 @@ const ExchangePayments = () => {
           <span className="pro-head-badge">
             <Receipt className="h-4 w-4" />
           </span>
-          Exchange Payments
+          {t("payments.title")}
         </h3>
         <p className="mb-0 mt-1 text-sm text-muted-foreground">
-          Oversee the exchange top-up payments customers make (1 Bill / card).
+          {t("payments.subtitle")}
         </p>
       </div>
 
@@ -264,7 +275,7 @@ const ExchangePayments = () => {
         <div className="d-flex flex-wrap align-items-center gap-2 w-100">
           <AntInput
             allowClear
-            placeholder="Search customer, ID, bill, ref…"
+            placeholder={t("payments.search")}
             prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
             value={search}
             onChange={(e) => {
@@ -282,12 +293,12 @@ const ExchangePayments = () => {
               }}
             >
               <SelectTrigger style={{ height: 40 }}>
-                <SelectValue placeholder="Status" />
+                <SelectValue placeholder={t("common:status")} />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_FILTERS.map((s) => (
                   <SelectItem key={s} value={s}>
-                    {s === "ALL" ? "All statuses" : s}
+                    {statusLabel(s)}
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -301,7 +312,7 @@ const ExchangePayments = () => {
             disabled={isLoading}
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            Refresh
+            {t("common:refresh")}
           </Button>
         </div>
       </div>

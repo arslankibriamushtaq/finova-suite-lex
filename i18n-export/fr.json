@@ -1553,6 +1553,7 @@
     "save": "Enregistrer",
     "saveChanges": "Enregistrer les modifications",
     "cancel": "Annuler",
+    "done": "Terminé",
     "confirm": "Confirmer",
     "submit": "Soumettre",
     "close": "Fermer",
@@ -1610,6 +1611,8 @@
     "none": "Aucun",
     "noData": "Aucune donnée disponible",
     "noResults": "Aucun résultat trouvé",
+    "noApisEnabled": "Aucune API activée",
+    "showingEntries": "Affichage de {{from}} à {{to}} sur {{total}} entrées",
     "loading": "Chargement...",
     "rowsPerPage": "Lignes par page",
     "showingResults": "Affichage de {{from}} à {{to}} sur {{total}}",
@@ -4906,6 +4909,360 @@
       "personalNarratives": "Commentaires personnels",
       "creditInstrumentDetails": "Détails des instruments de crédit",
       "providedDemographicsInfo": "Informations démographiques fournies"
+    }
+  },
+  "exchange": {
+    "verifications": {
+      "title": "Approbations de vérification",
+      "subtitle": "Examinez le KYC terminé et approuvez ou rejetez avant que la recharge puisse être payée.",
+      "search": "Rechercher un client, un pays…",
+      "col": {
+        "customer": "Client",
+        "country": "Pays",
+        "receiving": "Réception",
+        "paying": "Paiement",
+        "faceMatch": "Correspondance faciale",
+        "approval": "Approbation",
+        "action": "Action"
+      },
+      "action": {
+        "review": "Examiner"
+      },
+      "toast": {
+        "loadFailed": "Échec du chargement des vérifications"
+      }
+    },
+    "payments": {
+      "title": "Paiements Exchange",
+      "subtitle": "Supervisez les paiements de recharge Exchange effectués par les clients (1 Bill / carte).",
+      "search": "Rechercher un client, un ID, une facture, une réf…",
+      "col": {
+        "paymentId": "ID de paiement",
+        "customer": "Client",
+        "method": "Méthode",
+        "receiving": "Réception",
+        "paying": "Paiement",
+        "action": "Action"
+      },
+      "action": {
+        "confirm": "Confirmer",
+        "confirming": "Confirmation…"
+      },
+      "method": {
+        "oneBill": "1 Bill",
+        "card": "Carte"
+      },
+      "status": {
+        "all": "Tous les statuts",
+        "pending": "En attente",
+        "completed": "Terminé",
+        "failed": "Échoué"
+      },
+      "toast": {
+        "loadFailed": "Échec du chargement des paiements Exchange",
+        "confirmed": "Paiement confirmé — portefeuille du client crédité",
+        "confirmFailed": "Échec de la confirmation du paiement"
+      }
+    },
+    "providers": {
+      "title": "Fournisseurs Exchange",
+      "subtitle": "Configurez les partenaires affichés dans le menu « Choisir une option de change » du client.",
+      "new": "Nouveau fournisseur",
+      "cardTitle": "Fournisseurs",
+      "col": {
+        "order": "Ordre",
+        "code": "Code",
+        "fxMargin": "Marge de change",
+        "fee": "Frais",
+        "minMax": "Min / Max",
+        "countries": "Pays",
+        "action": "Action"
+      },
+      "allCountries": "Tous les pays",
+      "dialog": {
+        "editTitle": "Modifier le fournisseur",
+        "newTitle": "Nouveau fournisseur"
+      },
+      "field": {
+        "code": "Code",
+        "name": "Nom",
+        "fxMargin": "Marge de change (%)",
+        "fee": "Frais (%)",
+        "minAmount": "Montant min",
+        "maxAmount": "Montant max",
+        "sortOrder": "Ordre de tri",
+        "logoUrl": "URL du logo",
+        "countriesServed": "Pays desservis",
+        "countriesHint": "(aucun sélectionné = tous les pays)"
+      },
+      "noCountries": "Aucun pays configuré pour le moment.",
+      "form": {
+        "saving": "Enregistrement…"
+      },
+      "toast": {
+        "loadFailed": "Échec du chargement des fournisseurs Exchange",
+        "codeRequired": "Le code est obligatoire",
+        "nameRequired": "Le nom est obligatoire",
+        "fxMarginMin": "La marge de change doit être ≥ 0",
+        "feeMin": "Les frais doivent être ≥ 0",
+        "updated": "Fournisseur mis à jour",
+        "created": "Fournisseur créé",
+        "saveFailed": "Échec de l'enregistrement du fournisseur"
+      }
+    },
+    "countries": {
+      "title": "Pays Exchange",
+      "subtitle": "Pays proposés à l'étape « sélectionner le pays » — chacun définit ses propres fournisseurs et documents requis.",
+      "search": "Rechercher un code, un nom, une devise…",
+      "new": "Nouveau pays",
+      "col": {
+        "order": "Ordre",
+        "code": "Code",
+        "currency": "Devise",
+        "action": "Action"
+      },
+      "action": {
+        "documents": "Documents"
+      },
+      "dialog": {
+        "editTitle": "Modifier le pays",
+        "newTitle": "Nouveau pays"
+      },
+      "field": {
+        "code": "Code pays (ISO-2)",
+        "name": "Nom du pays",
+        "currency": "Devise (ISO-3)",
+        "sortOrder": "Ordre de tri",
+        "flagUrl": "URL du drapeau"
+      },
+      "form": {
+        "saving": "Enregistrement…"
+      },
+      "toast": {
+        "loadFailed": "Échec du chargement des pays",
+        "codeRequired": "Le code pays est obligatoire",
+        "nameRequired": "Le nom du pays est obligatoire",
+        "updated": "Pays mis à jour",
+        "created": "Pays créé",
+        "saveFailed": "Échec de l'enregistrement du pays"
+      },
+      "docs": {
+        "titleFor": "Documents requis · {{name}}",
+        "description": "Les documents d'identité que les clients doivent fournir pour ce pays.",
+        "addTitle": "Ajouter un document",
+        "docType": "Type de document",
+        "selectCatalog": "Sélectionner dans le catalogue",
+        "noMoreTypes": "Plus aucun type de document",
+        "requirement": "Exigence",
+        "mandatory": "Obligatoire",
+        "optional": "Facultatif",
+        "adding": "Ajout…",
+        "add": "Ajouter",
+        "listTitle": "Documents requis",
+        "loading": "Chargement…",
+        "emptyTitle": "Aucun document requis pour le moment",
+        "emptyHint": "Ajoutez-en un depuis le catalogue ci-dessus pour commencer.",
+        "sullisVerify": "Sullis Verify",
+        "removeTitle": "Retirer le document",
+        "selectTypeError": "Sélectionnez un type de document",
+        "added": "Document ajouté",
+        "addFailed": "Échec de l'ajout du document",
+        "removed": "Document retiré",
+        "removeFailed": "Échec du retrait du document",
+        "loadFailed": "Échec du chargement des documents requis"
+      }
+    },
+    "docTypes": {
+      "title": "Types de documents",
+      "subtitle": "Le catalogue de documents KYC référencé par l'ensemble des documents requis de chaque pays.",
+      "search": "Rechercher un code, un nom…",
+      "new": "Nouveau type de document",
+      "col": {
+        "order": "Ordre",
+        "code": "Code",
+        "sullisVerify": "Sullis Verify",
+        "piiReuse": "Réutilisation PII",
+        "action": "Action"
+      },
+      "badge": {
+        "enabled": "Activé"
+      },
+      "dialog": {
+        "editTitle": "Modifier le type de document",
+        "newTitle": "Nouveau type de document"
+      },
+      "field": {
+        "code": "Code",
+        "name": "Nom",
+        "sullisDocType": "Type de document Sullis",
+        "piiReuseKind": "Type de réutilisation PII",
+        "piiPlaceholder": "ex. NATIONAL_ID (vide = jamais réutilisé)",
+        "sortOrder": "Ordre de tri"
+      },
+      "sullis": {
+        "title": "Sullis Verify",
+        "hint": "Passage par l'OCR Sullis + correspondance faciale du selfie (document d'identité)."
+      },
+      "form": {
+        "saving": "Enregistrement…"
+      },
+      "toast": {
+        "loadFailed": "Échec du chargement des types de documents",
+        "codeRequired": "Le code est requis",
+        "nameRequired": "Le nom est requis",
+        "updated": "Type de document mis à jour",
+        "created": "Type de document créé",
+        "saveFailed": "Échec de l'enregistrement du type de document"
+      }
+    },
+    "status": {
+      "approved": "Approuvé",
+      "verified": "Vérifié",
+      "captured": "Capturé",
+      "consumed": "Consommé",
+      "completed": "Terminé",
+      "quoted": "Coté",
+      "pending": "En attente",
+      "expired": "Expiré",
+      "failed": "Échoué",
+      "declined": "Refusé",
+      "rejected": "Rejeté",
+      "uploaded": "Téléversé"
+    },
+    "img": {
+      "openFull": "Ouvrir en taille réelle",
+      "rotate": "Pivoter de 90°"
+    },
+    "pd": {
+      "title": "Détails du paiement",
+      "confirming": "Confirmation…",
+      "confirm1Bill": "Confirmer le paiement 1 Bill",
+      "notFound": "Paiement introuvable pour ce locataire.",
+      "method": {
+        "oneBill": "1 Bill",
+        "card": "Carte"
+      },
+      "tile": {
+        "receiving": "Réception (crédité)",
+        "toCustomer": "à {{name}}",
+        "totalPaying": "Total à payer",
+        "inclFee": "frais inclus {{amount}}",
+        "method": "Méthode"
+      },
+      "card": {
+        "summary": "Résumé",
+        "amounts": "Montants",
+        "quote": "Cotation",
+        "kyc": "Vérification KYC",
+        "requiredDocs": "Documents requis",
+        "biometrics": "Biométrie"
+      },
+      "row": {
+        "customer": "Client",
+        "customerId": "ID client",
+        "walletId": "ID du portefeuille",
+        "paymentId": "ID du paiement",
+        "method": "Méthode",
+        "status": "Statut",
+        "createdAt": "Créé le",
+        "completedAt": "Terminé le",
+        "movementId": "ID du mouvement",
+        "error": "Erreur",
+        "receiving": "Réception (crédité)",
+        "paying": "À payer",
+        "fee": "Frais",
+        "totalPaying": "Total à payer",
+        "cardBill": "Carte / Facture",
+        "quoteId": "ID de cotation",
+        "provider": "Fournisseur",
+        "baseRate": "Taux de base",
+        "effectiveRate": "Taux effectif",
+        "fxMargin": "Marge de change",
+        "expiresAt": "Expire le",
+        "overall": "Global",
+        "documentType": "Type de document",
+        "documentNumber": "Numéro du document",
+        "document": "Document",
+        "selfie": "Selfie",
+        "fingerprint": "Empreinte digitale",
+        "faceMatch": "Correspondance faciale",
+        "declineReason": "Motif du refus",
+        "sullisSession": "Session Sullis"
+      },
+      "bill": "Facture {{id}}",
+      "ref": "Réf. : {{ref}}",
+      "doc": {
+        "mandatory": "Obligatoire",
+        "optional": "Facultatif",
+        "reusedPii": "Réutilisé (PII)",
+        "uploaded": "Téléversé",
+        "reusedNoFile": "Réutilisé depuis le profil — aucun fichier",
+        "notUploaded": "Non téléversé"
+      }
+    },
+    "vd": {
+      "title": "Examen de la vérification",
+      "notFound": "Vérification introuvable pour ce locataire.",
+      "reject": "Rejeter",
+      "approve": "Approuver",
+      "tile": {
+        "receiving": "Réception",
+        "toCustomer": "à {{name}}",
+        "totalPaying": "Total à payer",
+        "faceMatch": "Correspondance faciale",
+        "kycVerified": "KYC vérifié",
+        "kycNotVerified": "KYC non vérifié",
+        "approval": "Approbation"
+      },
+      "card": {
+        "identity": "Contrôle d'identité",
+        "quote": "Cotation",
+        "docsSelfie": "Documents et selfie"
+      },
+      "row": {
+        "customer": "Client",
+        "customerId": "ID client",
+        "country": "Pays",
+        "kycOverall": "KYC global",
+        "approval": "Approbation",
+        "selfie": "Selfie",
+        "faceMatch": "Correspondance faciale",
+        "decidedBy": "Décidé par",
+        "decidedAt": "Décidé le",
+        "note": "Note",
+        "declineReason": "Motif du refus",
+        "provider": "Fournisseur",
+        "status": "Statut",
+        "receiving": "Réception",
+        "totalPaying": "Total à payer",
+        "effectiveRate": "Taux effectif"
+      },
+      "doc": {
+        "reusedNoFile": "Réutilisé depuis le profil — aucun fichier",
+        "notUploaded": "Non téléversé"
+      },
+      "selfie": "Selfie",
+      "openSelfie": "Ouvrir le selfie",
+      "dialog": {
+        "approveTitle": "Approuver la vérification",
+        "rejectTitle": "Rejeter la vérification",
+        "approveDesc": "Cela débloque la recharge afin que le client puisse payer.",
+        "rejectDesc": "La note est affichée au client comme motif du rejet.",
+        "noteOptional": "Note (facultatif)",
+        "rejectionReason": "Motif du rejet",
+        "approvePlaceholder": "Documents vérifiés",
+        "rejectPlaceholder": "Image du document floue — veuillez la soumettre à nouveau"
+      },
+      "form": {
+        "submitting": "Envoi…"
+      },
+      "toast": {
+        "loadFailed": "Échec du chargement de la vérification",
+        "rejectReasonRequired": "Un motif de rejet est requis",
+        "approved": "Vérification approuvée — paiement débloqué",
+        "rejected": "Vérification rejetée",
+        "submitFailed": "Échec de la soumission de la décision"
+      }
     }
   },
   "financing": {
@@ -12931,6 +13288,9 @@
     "walletTransactionsLimits": "Limites de transactions du portefeuille",
     "exchangeTopup": "Recharge Exchange",
     "payments": "Paiements",
+    "countries": "Pays",
+    "documentTypes": "Types de documents",
+    "verifications": "Vérifications",
     "ledger": "Grand livre",
     "generalCreditScoring": "Score de crédit général",
     "accountsLimitSetting": "Paramétrage des limites de comptes",

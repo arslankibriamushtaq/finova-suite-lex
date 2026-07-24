@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import { ArrowLeftRight, Plus, Pencil, Globe, Check, ChevronDown } from "lucide-react";
 
@@ -49,7 +50,7 @@ import {
 } from "../../../redux/apis/apisWalletAdmin";
 import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductPermissions";
 
-const StatusBadge = ({ status }: { status?: string }) => {
+const StatusBadge = ({ status, label }: { status?: string; label?: string }) => {
   const map: Record<string, string> = {
     ACTIVE:
       "bg-green-100 text-green-700 dark:bg-green-500/15 dark:text-green-300",
@@ -61,7 +62,7 @@ const StatusBadge = ({ status }: { status?: string }) => {
         map[status || ""] || "bg-muted text-foreground"
       }`}
     >
-      {status || "-"}
+      {label || status || "-"}
     </span>
   );
 };
@@ -106,6 +107,13 @@ const emptyForm: FormState = {
 };
 
 const ExchangeProviders = () => {
+  const { t } = useTranslation("exchange");
+  const statusLabel = (s?: string) =>
+    s === "ACTIVE"
+      ? t("common:active")
+      : s === "INACTIVE"
+        ? t("common:inactive")
+        : s || "-";
   const { hasPermission } = usePermissions();
   const canCreateProvider = hasPermission(EXCHANGE_PERMISSIONS.PROVIDER_CREATE);
   const canEditProvider = hasPermission(EXCHANGE_PERMISSIONS.PROVIDER_EDIT);
@@ -129,7 +137,7 @@ const ExchangeProviders = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(
-        error?.response?.data?.message || "Failed to load exchange providers"
+        error?.response?.data?.message || t("providers.toast.loadFailed")
       );
       setProviders([]);
     } finally {
@@ -190,13 +198,13 @@ const ExchangeProviders = () => {
 
   const save = async () => {
     if (!editing) {
-      if (!form.code.trim()) return toast.error("Code is required");
-      if (!form.name.trim()) return toast.error("Name is required");
+      if (!form.code.trim()) return toast.error(t("providers.toast.codeRequired"));
+      if (!form.name.trim()) return toast.error(t("providers.toast.nameRequired"));
     }
-    if (!form.name.trim()) return toast.error("Name is required");
+    if (!form.name.trim()) return toast.error(t("providers.toast.nameRequired"));
     if (Number(form.fxMarginPercent) < 0)
-      return toast.error("FX margin must be ≥ 0");
-    if (Number(form.feePercent) < 0) return toast.error("Fee must be ≥ 0");
+      return toast.error(t("providers.toast.fxMarginMin"));
+    if (Number(form.feePercent) < 0) return toast.error(t("providers.toast.feeMin"));
 
     setIsSaving(true);
     try {
@@ -213,7 +221,7 @@ const ExchangeProviders = () => {
           countryCodes: form.countryCodes,
         };
         await updateExchangeProvider(editing.providerId, body);
-        toast.success("Provider updated");
+        toast.success(t("providers.toast.updated"));
       } else {
         const body: CreateExchangeProviderRequest = {
           code: form.code.trim().toUpperCase(),
@@ -227,13 +235,13 @@ const ExchangeProviders = () => {
           countryCodes: form.countryCodes,
         };
         await createExchangeProvider(body);
-        toast.success("Provider created");
+        toast.success(t("providers.toast.created"));
       }
       setDialogOpen(false);
       loadProviders();
     } catch (error: any) {
       console.error(error);
-      toast.error(error?.response?.data?.message || "Failed to save provider");
+      toast.error(error?.response?.data?.message || t("providers.toast.saveFailed"));
     } finally {
       setIsSaving(false);
     }
@@ -241,42 +249,42 @@ const ExchangeProviders = () => {
 
   const headers = [
     {
-      name: "Order",
+      name: t("providers.col.order"),
       cell: (row: ExchangeProvider) => (
         <span className="text-sm text-muted-foreground">{row.sortOrder}</span>
       ),
       width: "80px",
     },
     {
-      name: "Code",
+      name: t("providers.col.code"),
       cell: (row: ExchangeProvider) => (
         <span className="font-mono text-xs font-medium">{row.code}</span>
       ),
       width: "120px",
     },
     {
-      name: "Name",
+      name: t("common:name"),
       cell: (row: ExchangeProvider) => (
         <span className="text-sm">{row.name}</span>
       ),
       width: "200px",
     },
     {
-      name: "FX Margin",
+      name: t("providers.col.fxMargin"),
       cell: (row: ExchangeProvider) => (
         <span className="text-sm">{formatPercent(row.fxMarginPercent)}</span>
       ),
       width: "110px",
     },
     {
-      name: "Fee",
+      name: t("providers.col.fee"),
       cell: (row: ExchangeProvider) => (
         <span className="text-sm">{formatPercent(row.feePercent)}</span>
       ),
       width: "90px",
     },
     {
-      name: "Min / Max",
+      name: t("providers.col.minMax"),
       cell: (row: ExchangeProvider) => (
         <span className="text-sm text-muted-foreground">
           {formatAmount(row.minAmount)} / {formatAmount(row.maxAmount)}
@@ -285,12 +293,12 @@ const ExchangeProviders = () => {
       width: "160px",
     },
     {
-      name: "Countries",
+      name: t("providers.col.countries"),
       cell: (row: ExchangeProvider) =>
         !row.countryCodes || row.countryCodes.length === 0 ? (
           <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
             <Globe className="h-3.5 w-3.5" />
-            All countries
+            {t("providers.allCountries")}
           </span>
         ) : (
           <span className="flex flex-wrap gap-1">
@@ -307,12 +315,14 @@ const ExchangeProviders = () => {
       width: "180px",
     },
     {
-      name: "Status",
-      cell: (row: ExchangeProvider) => <StatusBadge status={row.status} />,
+      name: t("common:status"),
+      cell: (row: ExchangeProvider) => (
+        <StatusBadge status={row.status} label={statusLabel(row.status)} />
+      ),
       width: "120px",
     },
     {
-      name: "Action",
+      name: t("providers.col.action"),
       cell: (row: ExchangeProvider) =>
         !canEditProvider ? (
           <span className="text-muted-foreground">-</span>
@@ -325,7 +335,7 @@ const ExchangeProviders = () => {
             <DropdownMenu modal={false}>
               <DropdownMenuTrigger asChild>
                 <button type="button" className={SELECT_TRIGGER_CLS}>
-                  Select
+                  {t("common:select")}
                   <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
                 </button>
               </DropdownMenuTrigger>
@@ -337,7 +347,7 @@ const ExchangeProviders = () => {
                   }}
                 >
                   <Pencil className="h-4 w-4" />
-                  Edit
+                  {t("common:edit")}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -382,24 +392,23 @@ const ExchangeProviders = () => {
             <span className="pro-head-badge">
               <ArrowLeftRight className="h-4 w-4" />
             </span>
-            Exchange Providers
+            {t("providers.title")}
           </h3>
           <p className="mb-0 mt-1 text-sm text-muted-foreground">
-            Configure the partners shown in the customer "Choose exchange option"
-            dropdown.
+            {t("providers.subtitle")}
           </p>
         </div>
         {canCreateProvider && (
         <Button className="gap-2 wallet-brand-btn" onClick={openCreate}>
           <Plus className="h-4 w-4" />
-          New Provider
+          {t("providers.new")}
         </Button>
         )}
       </div>
 
       <Card className="pro-card-glow">
         <CardHeader>
-          <CardTitle className="text-base">Providers</CardTitle>
+          <CardTitle className="text-base">{t("providers.cardTitle")}</CardTitle>
         </CardHeader>
         <CardContent>
           <TableView
@@ -415,12 +424,12 @@ const ExchangeProviders = () => {
         <DialogContent className="exch-dialog sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
-              {editing ? "Edit Provider" : "New Provider"}
+              {editing ? t("providers.dialog.editTitle") : t("providers.dialog.newTitle")}
             </DialogTitle>
           </DialogHeader>
 
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 coa-form">
-            <FormField label="Code" required>
+            <FormField label={t("providers.field.code")} required>
               <Input
                 placeholder="WISE"
                 value={form.code}
@@ -430,7 +439,7 @@ const ExchangeProviders = () => {
                 }
               />
             </FormField>
-            <FormField label="Name" required>
+            <FormField label={t("common:name")} required>
               <Input
                 placeholder="Wise"
                 value={form.name}
@@ -439,7 +448,7 @@ const ExchangeProviders = () => {
                 }
               />
             </FormField>
-            <FormField label="FX Margin (%)" required>
+            <FormField label={t("providers.field.fxMargin")} required>
               <Input
                 type="number"
                 placeholder="0.5"
@@ -449,7 +458,7 @@ const ExchangeProviders = () => {
                 }
               />
             </FormField>
-            <FormField label="Fee (%)">
+            <FormField label={t("providers.field.fee")}>
               <Input
                 type="number"
                 placeholder="0.25"
@@ -459,27 +468,27 @@ const ExchangeProviders = () => {
                 }
               />
             </FormField>
-            <FormField label="Min Amount">
+            <FormField label={t("providers.field.minAmount")}>
               <Input
                 type="number"
-                placeholder="Optional"
+                placeholder={t("common:optional")}
                 value={form.minAmount}
                 onChange={(e) =>
                   setForm((s) => ({ ...s, minAmount: e.target.value }))
                 }
               />
             </FormField>
-            <FormField label="Max Amount">
+            <FormField label={t("providers.field.maxAmount")}>
               <Input
                 type="number"
-                placeholder="Optional"
+                placeholder={t("common:optional")}
                 value={form.maxAmount}
                 onChange={(e) =>
                   setForm((s) => ({ ...s, maxAmount: e.target.value }))
                 }
               />
             </FormField>
-            <FormField label="Sort Order">
+            <FormField label={t("providers.field.sortOrder")}>
               <Input
                 type="number"
                 placeholder="0"
@@ -490,7 +499,7 @@ const ExchangeProviders = () => {
               />
             </FormField>
             {editing && (
-              <FormField label="Status">
+              <FormField label={t("common:status")}>
                 <Select
                   value={form.status}
                   onValueChange={(v) =>
@@ -504,13 +513,13 @@ const ExchangeProviders = () => {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="ACTIVE">Active</SelectItem>
-                    <SelectItem value="INACTIVE">Inactive</SelectItem>
+                    <SelectItem value="ACTIVE">{t("common:active")}</SelectItem>
+                    <SelectItem value="INACTIVE">{t("common:inactive")}</SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>
             )}
-            <FormField label="Logo URL" className="md:col-span-2">
+            <FormField label={t("providers.field.logoUrl")} className="md:col-span-2">
               <Input
                 placeholder="https://…"
                 value={form.logoUrl}
@@ -522,14 +531,14 @@ const ExchangeProviders = () => {
 
             <div className="md:col-span-2 space-y-2">
               <Label>
-                Countries Served
+                {t("providers.field.countriesServed")}
                 <span className="ml-1 text-xs font-normal text-muted-foreground">
-                  (none selected = all countries)
+                  {t("providers.field.countriesHint")}
                 </span>
               </Label>
               {countries.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  No countries configured yet.
+                  {t("providers.noCountries")}
                 </p>
               ) : (
                 <div className="country-picker flex flex-wrap gap-2 rounded-lg border border-border bg-muted/30 p-3">
@@ -566,14 +575,18 @@ const ExchangeProviders = () => {
               onClick={() => setDialogOpen(false)}
               disabled={isSaving}
             >
-              Cancel
+              {t("common:cancel")}
             </Button>
             <Button
               className="wallet-brand-btn"
               onClick={save}
               disabled={isSaving}
             >
-              {isSaving ? "Saving…" : editing ? "Save Changes" : "Create"}
+              {isSaving
+                ? t("providers.form.saving")
+                : editing
+                  ? t("common:saveChanges")
+                  : t("common:create")}
             </Button>
           </DialogFooter>
         </DialogContent>

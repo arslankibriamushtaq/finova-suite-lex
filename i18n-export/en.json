@@ -1553,6 +1553,7 @@
     "save": "Save",
     "saveChanges": "Save Changes",
     "cancel": "Cancel",
+    "done": "Done",
     "confirm": "Confirm",
     "submit": "Submit",
     "close": "Close",
@@ -1610,6 +1611,8 @@
     "none": "None",
     "noData": "No data available",
     "noResults": "No results found",
+    "noApisEnabled": "No APIs Enabled",
+    "showingEntries": "Showing {{from}} to {{to}} of {{total}} entries",
     "loading": "Loading...",
     "rowsPerPage": "Rows per page",
     "showingResults": "Showing {{from}}–{{to}} of {{total}}",
@@ -4906,6 +4909,360 @@
       "personalNarratives": "Personal Narratives",
       "creditInstrumentDetails": "Credit Instrument Details",
       "providedDemographicsInfo": "Provided Demographics Info"
+    }
+  },
+  "exchange": {
+    "verifications": {
+      "title": "Verification Approvals",
+      "subtitle": "Review completed KYC and approve or reject before the top-up can be paid.",
+      "search": "Search customer, country…",
+      "col": {
+        "customer": "Customer",
+        "country": "Country",
+        "receiving": "Receiving",
+        "paying": "Paying",
+        "faceMatch": "Face Match",
+        "approval": "Approval",
+        "action": "Action"
+      },
+      "action": {
+        "review": "Review"
+      },
+      "toast": {
+        "loadFailed": "Failed to load verifications"
+      }
+    },
+    "payments": {
+      "title": "Exchange Payments",
+      "subtitle": "Oversee the exchange top-up payments customers make (1 Bill / card).",
+      "search": "Search customer, ID, bill, ref…",
+      "col": {
+        "paymentId": "Payment ID",
+        "customer": "Customer",
+        "method": "Method",
+        "receiving": "Receiving",
+        "paying": "Paying",
+        "action": "Action"
+      },
+      "action": {
+        "confirm": "Confirm",
+        "confirming": "Confirming…"
+      },
+      "method": {
+        "oneBill": "1 Bill",
+        "card": "Card"
+      },
+      "status": {
+        "all": "All statuses",
+        "pending": "Pending",
+        "completed": "Completed",
+        "failed": "Failed"
+      },
+      "toast": {
+        "loadFailed": "Failed to load exchange payments",
+        "confirmed": "Payment confirmed — customer wallet credited",
+        "confirmFailed": "Failed to confirm payment"
+      }
+    },
+    "providers": {
+      "title": "Exchange Providers",
+      "subtitle": "Configure the partners shown in the customer \"Choose exchange option\" dropdown.",
+      "new": "New Provider",
+      "cardTitle": "Providers",
+      "col": {
+        "order": "Order",
+        "code": "Code",
+        "fxMargin": "FX Margin",
+        "fee": "Fee",
+        "minMax": "Min / Max",
+        "countries": "Countries",
+        "action": "Action"
+      },
+      "allCountries": "All countries",
+      "dialog": {
+        "editTitle": "Edit Provider",
+        "newTitle": "New Provider"
+      },
+      "field": {
+        "code": "Code",
+        "name": "Name",
+        "fxMargin": "FX Margin (%)",
+        "fee": "Fee (%)",
+        "minAmount": "Min Amount",
+        "maxAmount": "Max Amount",
+        "sortOrder": "Sort Order",
+        "logoUrl": "Logo URL",
+        "countriesServed": "Countries Served",
+        "countriesHint": "(none selected = all countries)"
+      },
+      "noCountries": "No countries configured yet.",
+      "form": {
+        "saving": "Saving…"
+      },
+      "toast": {
+        "loadFailed": "Failed to load exchange providers",
+        "codeRequired": "Code is required",
+        "nameRequired": "Name is required",
+        "fxMarginMin": "FX margin must be ≥ 0",
+        "feeMin": "Fee must be ≥ 0",
+        "updated": "Provider updated",
+        "created": "Provider created",
+        "saveFailed": "Failed to save provider"
+      }
+    },
+    "countries": {
+      "title": "Exchange Countries",
+      "subtitle": "Countries offered in the \"select country\" step — each drives its own providers and required documents.",
+      "search": "Search code, name, currency…",
+      "new": "New Country",
+      "col": {
+        "order": "Order",
+        "code": "Code",
+        "currency": "Currency",
+        "action": "Action"
+      },
+      "action": {
+        "documents": "Documents"
+      },
+      "dialog": {
+        "editTitle": "Edit Country",
+        "newTitle": "New Country"
+      },
+      "field": {
+        "code": "Country Code (ISO-2)",
+        "name": "Country Name",
+        "currency": "Currency (ISO-3)",
+        "sortOrder": "Sort Order",
+        "flagUrl": "Flag URL"
+      },
+      "form": {
+        "saving": "Saving…"
+      },
+      "toast": {
+        "loadFailed": "Failed to load countries",
+        "codeRequired": "Country code is required",
+        "nameRequired": "Country name is required",
+        "updated": "Country updated",
+        "created": "Country created",
+        "saveFailed": "Failed to save country"
+      },
+      "docs": {
+        "titleFor": "Required Documents · {{name}}",
+        "description": "The identity documents customers must provide for this country.",
+        "addTitle": "Add a document",
+        "docType": "Document Type",
+        "selectCatalog": "Select from catalog",
+        "noMoreTypes": "No more document types",
+        "requirement": "Requirement",
+        "mandatory": "Mandatory",
+        "optional": "Optional",
+        "adding": "Adding…",
+        "add": "Add",
+        "listTitle": "Required documents",
+        "loading": "Loading…",
+        "emptyTitle": "No required documents yet",
+        "emptyHint": "Add one from the catalog above to get started.",
+        "sullisVerify": "Sullis Verify",
+        "removeTitle": "Remove document",
+        "selectTypeError": "Select a document type",
+        "added": "Document added",
+        "addFailed": "Failed to add document",
+        "removed": "Document removed",
+        "removeFailed": "Failed to remove document",
+        "loadFailed": "Failed to load required documents"
+      }
+    },
+    "docTypes": {
+      "title": "Document Types",
+      "subtitle": "The KYC document catalog referenced by each country's required-document set.",
+      "search": "Search code, name…",
+      "new": "New Document Type",
+      "col": {
+        "order": "Order",
+        "code": "Code",
+        "sullisVerify": "Sullis Verify",
+        "piiReuse": "PII Reuse",
+        "action": "Action"
+      },
+      "badge": {
+        "enabled": "Enabled"
+      },
+      "dialog": {
+        "editTitle": "Edit Document Type",
+        "newTitle": "New Document Type"
+      },
+      "field": {
+        "code": "Code",
+        "name": "Name",
+        "sullisDocType": "Sullis Doc Type",
+        "piiReuseKind": "PII Reuse Kind",
+        "piiPlaceholder": "e.g. NATIONAL_ID (blank = never reuse)",
+        "sortOrder": "Sort Order"
+      },
+      "sullis": {
+        "title": "Sullis Verify",
+        "hint": "Run through Sullis OCR + selfie face-match (identity document)."
+      },
+      "form": {
+        "saving": "Saving…"
+      },
+      "toast": {
+        "loadFailed": "Failed to load document types",
+        "codeRequired": "Code is required",
+        "nameRequired": "Name is required",
+        "updated": "Document type updated",
+        "created": "Document type created",
+        "saveFailed": "Failed to save document type"
+      }
+    },
+    "status": {
+      "approved": "Approved",
+      "verified": "Verified",
+      "captured": "Captured",
+      "consumed": "Consumed",
+      "completed": "Completed",
+      "quoted": "Quoted",
+      "pending": "Pending",
+      "expired": "Expired",
+      "failed": "Failed",
+      "declined": "Declined",
+      "rejected": "Rejected",
+      "uploaded": "Uploaded"
+    },
+    "img": {
+      "openFull": "Open full size",
+      "rotate": "Rotate 90°"
+    },
+    "pd": {
+      "title": "Payment Details",
+      "confirming": "Confirming…",
+      "confirm1Bill": "Confirm 1 Bill Payment",
+      "notFound": "Payment not found for this tenant.",
+      "method": {
+        "oneBill": "1 Bill",
+        "card": "Card"
+      },
+      "tile": {
+        "receiving": "Receiving (credited)",
+        "toCustomer": "to {{name}}",
+        "totalPaying": "Total Paying",
+        "inclFee": "incl. fee {{amount}}",
+        "method": "Method"
+      },
+      "card": {
+        "summary": "Summary",
+        "amounts": "Amounts",
+        "quote": "Quote",
+        "kyc": "KYC Verification",
+        "requiredDocs": "Required Documents",
+        "biometrics": "Biometrics"
+      },
+      "row": {
+        "customer": "Customer",
+        "customerId": "Customer ID",
+        "walletId": "Wallet ID",
+        "paymentId": "Payment ID",
+        "method": "Method",
+        "status": "Status",
+        "createdAt": "Created At",
+        "completedAt": "Completed At",
+        "movementId": "Movement ID",
+        "error": "Error",
+        "receiving": "Receiving (credited)",
+        "paying": "Paying",
+        "fee": "Fee",
+        "totalPaying": "Total Paying",
+        "cardBill": "Card / Bill",
+        "quoteId": "Quote ID",
+        "provider": "Provider",
+        "baseRate": "Base Rate",
+        "effectiveRate": "Effective Rate",
+        "fxMargin": "FX Margin",
+        "expiresAt": "Expires At",
+        "overall": "Overall",
+        "documentType": "Document Type",
+        "documentNumber": "Document Number",
+        "document": "Document",
+        "selfie": "Selfie",
+        "fingerprint": "Fingerprint",
+        "faceMatch": "Face Match",
+        "declineReason": "Decline Reason",
+        "sullisSession": "Sullis Session"
+      },
+      "bill": "Bill {{id}}",
+      "ref": "Ref: {{ref}}",
+      "doc": {
+        "mandatory": "Mandatory",
+        "optional": "Optional",
+        "reusedPii": "Reused (PII)",
+        "uploaded": "Uploaded",
+        "reusedNoFile": "Reused from profile — no file",
+        "notUploaded": "Not uploaded"
+      }
+    },
+    "vd": {
+      "title": "Verification Review",
+      "notFound": "Verification not found for this tenant.",
+      "reject": "Reject",
+      "approve": "Approve",
+      "tile": {
+        "receiving": "Receiving",
+        "toCustomer": "to {{name}}",
+        "totalPaying": "Total Paying",
+        "faceMatch": "Face Match",
+        "kycVerified": "KYC verified",
+        "kycNotVerified": "KYC not verified",
+        "approval": "Approval"
+      },
+      "card": {
+        "identity": "Identity Check",
+        "quote": "Quote",
+        "docsSelfie": "Documents & Selfie"
+      },
+      "row": {
+        "customer": "Customer",
+        "customerId": "Customer ID",
+        "country": "Country",
+        "kycOverall": "KYC Overall",
+        "approval": "Approval",
+        "selfie": "Selfie",
+        "faceMatch": "Face Match",
+        "decidedBy": "Decided By",
+        "decidedAt": "Decided At",
+        "note": "Note",
+        "declineReason": "Decline Reason",
+        "provider": "Provider",
+        "status": "Status",
+        "receiving": "Receiving",
+        "totalPaying": "Total Paying",
+        "effectiveRate": "Effective Rate"
+      },
+      "doc": {
+        "reusedNoFile": "Reused from profile — no file",
+        "notUploaded": "Not uploaded"
+      },
+      "selfie": "Selfie",
+      "openSelfie": "Open selfie",
+      "dialog": {
+        "approveTitle": "Approve Verification",
+        "rejectTitle": "Reject Verification",
+        "approveDesc": "This unlocks the top-up so the customer can pay.",
+        "rejectDesc": "The note is shown to the customer as the rejection reason.",
+        "noteOptional": "Note (optional)",
+        "rejectionReason": "Rejection reason",
+        "approvePlaceholder": "Documents verified",
+        "rejectPlaceholder": "Document image unclear — please re-submit"
+      },
+      "form": {
+        "submitting": "Submitting…"
+      },
+      "toast": {
+        "loadFailed": "Failed to load verification",
+        "rejectReasonRequired": "A rejection reason is required",
+        "approved": "Verification approved — payment unlocked",
+        "rejected": "Verification rejected",
+        "submitFailed": "Failed to submit decision"
+      }
     }
   },
   "financing": {
@@ -12931,6 +13288,9 @@
     "walletTransactionsLimits": "Wallet Transactions Limits",
     "exchangeTopup": "Exchange Top-up",
     "payments": "Payments",
+    "countries": "Countries",
+    "documentTypes": "Document Types",
+    "verifications": "Verifications",
     "ledger": "Ledger",
     "generalCreditScoring": "General Credit Scoring",
     "accountsLimitSetting": "Accounts Limit Setting",
