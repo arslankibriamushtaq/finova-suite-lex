@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import toast from "react-hot-toast";
-import { FileText, Plus, Pencil, ChevronDown } from "lucide-react";
+import { FileText, Plus, Pencil, ChevronDown, ShieldCheck } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 
@@ -9,7 +9,6 @@ import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
 import { Switch } from "../../../components/ui/switch";
-import { Badge } from "../../../components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -44,6 +43,23 @@ import {
   UpdateExchangeDocumentTypeRequest,
 } from "../../../redux/apis/apisWalletAdmin";
 import { usePermissions, EXCHANGE_PERMISSIONS } from "../../../hooks/useProductPermissions";
+
+const SULLIS_DOC_LABELS: Record<string, string> = {
+  ID_CARD: "ID Card",
+  PASSPORT: "Passport",
+};
+
+const prettySullisDocType = (value?: string | null) => {
+  if (!value) return "Enabled";
+  return (
+    SULLIS_DOC_LABELS[value] ||
+    value
+      .toLowerCase()
+      .split("_")
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+      .join(" ")
+  );
+};
 
 const StatusBadge = ({ status }: { status?: string }) => (
   <span
@@ -207,11 +223,14 @@ const ExchangeDocumentTypes = () => {
       name: "Sullis Verify",
       cell: (row: ExchangeDocumentType) =>
         row.sullisVerify ? (
-          <Badge variant="secondary">{row.sullisDocType || "YES"}</Badge>
+          <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+            <ShieldCheck className="h-3.5 w-3.5" />
+            {prettySullisDocType(row.sullisDocType)}
+          </span>
         ) : (
-          <span className="text-sm text-muted-foreground">No</span>
+          <span className="text-sm text-muted-foreground">—</span>
         ),
-      width: "140px",
+      width: "150px",
     },
     {
       name: "PII Reuse",
@@ -279,6 +298,28 @@ const ExchangeDocumentTypes = () => {
 
   return (
     <div className="service">
+      <style>{`
+        .exch-dialog [data-slot="dialog-title"] { font-size: 15px; }
+        .exch-dialog [data-slot="dialog-description"] { font-size: 12px; }
+        .exch-dialog [data-slot="label"],
+        .exch-dialog label,
+        .exch-dialog label span,
+        .exch-dialog .text-sm,
+        .exch-dialog input,
+        .exch-dialog textarea,
+        .exch-dialog [data-slot="select-trigger"],
+        .exch-dialog [data-slot="select-trigger"] span,
+        .exch-dialog [data-slot="select-item"],
+        .exch-dialog [data-slot="button"] {
+          font-size: 12px !important;
+        }
+        .exch-dialog [data-slot="label"] { font-weight: 600; }
+        .exch-dialog input:not([type="checkbox"]),
+        .exch-dialog [data-slot="select-trigger"] {
+          height: 36px !important;
+          min-height: 36px !important;
+        }
+      `}</style>
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
           <span className="pro-head-badge">
@@ -335,7 +376,7 @@ const ExchangeDocumentTypes = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[520px]">
+        <DialogContent className="exch-dialog sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>
               {editing ? "Edit Document Type" : "New Document Type"}

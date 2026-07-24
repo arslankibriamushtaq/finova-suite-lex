@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  ArrowLeft,
   ShieldCheck,
   Check,
   X,
   BadgeCheck,
   FileText,
   ExternalLink,
+  ArrowDownToLine,
+  ArrowUpFromLine,
+  ScanFace,
+  TrendingUp,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -92,7 +95,6 @@ const ExchangeVerificationDetail = () => {
   const { hasPermission } = usePermissions();
   const canReview = hasPermission(EXCHANGE_PERMISSIONS.VERIFICATION_REVIEW);
   const { quoteId } = useParams<{ quoteId: string }>();
-  const navigate = useNavigate();
 
   const [data, setData] = useState<VerificationDetailType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -173,28 +175,31 @@ const ExchangeVerificationDetail = () => {
 
   return (
     <div className="service">
+      <style>{`
+        .exch-dialog [data-slot="dialog-title"] { font-size: 15px; }
+        .exch-dialog [data-slot="dialog-description"] { font-size: 12px; }
+        .exch-dialog [data-slot="label"],
+        .exch-dialog label,
+        .exch-dialog label span,
+        .exch-dialog .text-sm,
+        .exch-dialog input,
+        .exch-dialog textarea,
+        .exch-dialog [data-slot="button"] {
+          font-size: 12px !important;
+        }
+        .exch-dialog [data-slot="label"] { font-weight: 600; }
+      `}</style>
       <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <div className="d-flex align-items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate("/LOS/Exchange/Verifications")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <div>
-            <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-              <span className="pro-head-badge">
-                <ShieldCheck className="h-4 w-4" />
-              </span>
-              Verification Review
-            </h3>
-            <p className="mb-0 mt-1 text-sm text-muted-foreground font-mono">
-              {quoteId}
-            </p>
-          </div>
+        <div>
+          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+            <span className="pro-head-badge">
+              <ShieldCheck className="h-4 w-4" />
+            </span>
+            Verification Review
+          </h3>
+          <p className="mb-0 mt-1 text-sm text-muted-foreground font-mono">
+            {quoteId}
+          </p>
         </div>
         {data && !isLoading && (
           <div className="d-flex align-items-center gap-3">
@@ -235,6 +240,44 @@ const ExchangeVerificationDetail = () => {
           </CardContent>
         </Card>
       ) : data ? (
+        <>
+        {/* KPI hero strip */}
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile
+            label="Receiving"
+            value={formatMoney(
+              quote?.receivingAmount,
+              quote?.receivingCurrency
+            )}
+            hint={data.customerName ? `to ${data.customerName}` : undefined}
+            icon={<ArrowDownToLine className="h-4 w-4" />}
+            accent="emerald"
+          />
+          <StatTile
+            label="Total Paying"
+            value={formatMoney(quote?.totalPaying, quote?.payingCurrency)}
+            icon={<ArrowUpFromLine className="h-4 w-4" />}
+            accent="orange"
+          />
+          <StatTile
+            label="Face Match"
+            value={
+              data.faceMatchScore == null
+                ? "-"
+                : `${(data.faceMatchScore * 100).toFixed(1)}%`
+            }
+            hint={kycVerified ? "KYC verified" : "KYC not verified"}
+            icon={<ScanFace className="h-4 w-4" />}
+            accent="violet"
+          />
+          <StatTile
+            label="Approval"
+            value={<StatusBadge status={data.approvalStatus} />}
+            icon={<BadgeCheck className="h-4 w-4" />}
+            accent="sky"
+          />
+        </div>
+
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* Customer & identity */}
           <Card className="pro-card-glow">
@@ -298,7 +341,12 @@ const ExchangeVerificationDetail = () => {
           {/* Quote + selfie */}
           <Card className="pro-card-glow">
             <CardHeader>
-              <CardTitle className="text-base">Quote &amp; Selfie</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2">
+                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/15">
+                  <TrendingUp className="h-4 w-4" />
+                </span>
+                Quote &amp; Selfie
+              </CardTitle>
             </CardHeader>
             <CardContent>
               {quote && (
@@ -424,6 +472,7 @@ const ExchangeVerificationDetail = () => {
             </Card>
           )}
         </div>
+        </>
       ) : null}
 
       {/* Approve / reject note dialog */}
@@ -431,7 +480,7 @@ const ExchangeVerificationDetail = () => {
         open={decision !== null}
         onOpenChange={(o) => !o && setDecision(null)}
       >
-        <DialogContent className="sm:max-w-[480px]">
+        <DialogContent className="exch-dialog sm:max-w-[480px]">
           <DialogHeader>
             <DialogTitle>
               {decision === "approve"
@@ -493,6 +542,46 @@ const ExchangeVerificationDetail = () => {
     </div>
   );
 };
+
+const ACCENT: Record<string, string> = {
+  emerald: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/15",
+  orange: "bg-orange-500/10 text-orange-600 ring-orange-500/15",
+  violet: "bg-violet-500/10 text-violet-600 ring-violet-500/15",
+  sky: "bg-sky-500/10 text-sky-600 ring-sky-500/15",
+};
+
+const StatTile = ({
+  label,
+  value,
+  hint,
+  icon,
+  accent = "sky",
+}: {
+  label: string;
+  value: React.ReactNode;
+  hint?: string;
+  icon: React.ReactNode;
+  accent?: keyof typeof ACCENT | string;
+}) => (
+  <div className="pro-card-glow flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-4">
+    <div className="min-w-0">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 truncate text-xl font-bold leading-tight">{value}</p>
+      {hint && (
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">{hint}</p>
+      )}
+    </div>
+    <span
+      className={`inline-flex size-9 shrink-0 items-center justify-center rounded-lg ring-1 ${
+        ACCENT[accent] || ACCENT.sky
+      }`}
+    >
+      {icon}
+    </span>
+  </div>
+);
 
 const DetailRow = ({
   label,

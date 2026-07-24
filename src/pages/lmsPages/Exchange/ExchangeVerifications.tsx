@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { ShieldCheck, Eye, Search } from "lucide-react";
+import { ShieldCheck, Eye, ChevronDown } from "lucide-react";
+import { Input as AntInput } from "antd";
+import { SearchOutlined } from "@ant-design/icons";
 
 import TableView from "../../../components/TableView/TableView";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
 import { Badge } from "../../../components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../../../components/ui/card";
 import {
   Select,
   SelectContent,
@@ -20,6 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 import {
   listExchangeVerifications,
@@ -62,6 +65,8 @@ const ExchangeVerifications = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [statusFilter, setStatusFilter] = useState("PENDING");
   const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(15);
 
   const load = async (status = statusFilter) => {
     setIsLoading(true);
@@ -99,6 +104,10 @@ const ExchangeVerifications = () => {
         .some((f) => String(f).toLowerCase().includes(q))
     );
   }, [items, search]);
+
+  const from = (page - 1) * pageSize;
+  const paged = filtered.slice(from, from + pageSize);
+  const totalPage = Math.ceil(filtered.length / pageSize) || 1;
 
   const headers = [
     {
@@ -160,15 +169,31 @@ const ExchangeVerifications = () => {
     {
       name: "Action",
       cell: (row: ExchangeVerificationQueueItem) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1"
-          onClick={() => openDetail(row)}
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
-          <Eye className="h-3.5 w-3.5" />
-          Review
-        </Button>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                Select
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openDetail(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                Review
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
       width: "120px",
     },
@@ -176,33 +201,42 @@ const ExchangeVerifications = () => {
 
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <div>
-          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-            <span className="pro-head-badge">
-              <ShieldCheck className="h-4 w-4" />
-            </span>
-            Verification Approvals
-          </h3>
-          <p className="mb-0 mt-1 text-sm text-muted-foreground">
-            Review completed KYC and approve or reject before the top-up can be
-            paid.
-          </p>
-        </div>
-        <div className="d-flex align-items-center gap-2">
-          <div className="relative w-[240px]">
-            <Search className="pointer-events-none absolute left-2.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              className="pl-8"
-              placeholder="Search customer, country…"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
-          </div>
-          <div className="w-[160px]">
-            <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger>
-                <SelectValue />
+      <div className="mb-3 pb-2 border-bottom">
+        <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+          <span className="pro-head-badge">
+            <ShieldCheck className="h-4 w-4" />
+          </span>
+          Verification Approvals
+        </h3>
+        <p className="mb-0 mt-1 text-sm text-muted-foreground">
+          Review completed KYC and approve or reject before the top-up can be
+          paid.
+        </p>
+      </div>
+
+      <div className="pro-card p-3 mb-3">
+        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
+          <AntInput
+            allowClear
+            placeholder="Search customer, country…"
+            prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
+            value={search}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
+            style={{ flex: "1 1 240px", minWidth: 220, borderRadius: 2, height: 40 }}
+          />
+          <div style={{ width: 170 }}>
+            <Select
+              value={statusFilter}
+              onValueChange={(v) => {
+                setStatusFilter(v);
+                setPage(1);
+              }}
+            >
+              <SelectTrigger style={{ height: 40 }}>
+                <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
                 {STATUS_FILTERS.map((s) => (
@@ -216,19 +250,21 @@ const ExchangeVerifications = () => {
         </div>
       </div>
 
-      <Card className="pro-card-glow">
-        <CardHeader>
-          <CardTitle className="text-base">Review Queue</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <TableView
-            header={headers}
-            data={filtered}
-            isLoading={isLoading}
-            paginationShow={false}
-          />
-        </CardContent>
-      </Card>
+      <div className="pro-card">
+        <TableView
+          header={headers}
+          data={paged}
+          totalRows={filtered.length}
+          isLoading={isLoading}
+          from={filtered.length === 0 ? 0 : from + 1}
+          to={Math.min(page * pageSize, filtered.length)}
+          page={page}
+          totalPage={totalPage}
+          setPage={setPage}
+          pageSize={pageSize}
+          setPageSize={setPageSize}
+        />
+      </div>
     </div>
   );
 };

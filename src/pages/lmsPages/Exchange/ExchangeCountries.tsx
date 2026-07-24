@@ -368,6 +368,28 @@ const ExchangeCountries = () => {
 
   return (
     <div className="service">
+      <style>{`
+        .exch-dialog [data-slot="dialog-title"] { font-size: 15px; }
+        .exch-dialog [data-slot="dialog-description"] { font-size: 12px; }
+        .exch-dialog [data-slot="label"],
+        .exch-dialog label,
+        .exch-dialog label span,
+        .exch-dialog .text-sm,
+        .exch-dialog input,
+        .exch-dialog textarea,
+        .exch-dialog [data-slot="select-trigger"],
+        .exch-dialog [data-slot="select-trigger"] span,
+        .exch-dialog [data-slot="select-item"],
+        .exch-dialog [data-slot="button"] {
+          font-size: 12px !important;
+        }
+        .exch-dialog [data-slot="label"] { font-weight: 600; }
+        .exch-dialog input:not([type="checkbox"]),
+        .exch-dialog [data-slot="select-trigger"] {
+          height: 36px !important;
+          min-height: 36px !important;
+        }
+      `}</style>
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
           <span className="pro-head-badge">
@@ -425,7 +447,7 @@ const ExchangeCountries = () => {
 
       {/* Create / edit country */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[520px]">
+        <DialogContent className="exch-dialog sm:max-w-[520px]">
           <DialogHeader>
             <DialogTitle>
               {editing ? "Edit Country" : "New Country"}
@@ -526,15 +548,7 @@ const ExchangeCountries = () => {
 
       {/* Required documents manager */}
       <Dialog open={docsDialogOpen} onOpenChange={setDocsDialogOpen}>
-        <DialogContent className="exch-docs-dialog sm:max-w-[620px]">
-          <style>{`
-            .exch-docs-dialog [data-slot="label"],
-            .exch-docs-dialog [data-slot="select-trigger"],
-            .exch-docs-dialog [data-slot="select-trigger"] span,
-            .exch-docs-dialog [data-slot="select-item"] {
-              font-size: 12px !important;
-            }
-          `}</style>
+        <DialogContent className="exch-dialog sm:max-w-[620px]">
           <DialogHeader>
             <DialogTitle>
               Required Documents · {docsCountry?.countryName}
