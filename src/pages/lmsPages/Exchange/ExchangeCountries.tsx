@@ -447,7 +447,7 @@ const ExchangeCountries = () => {
 
       {/* Create / edit country */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="exch-dialog sm:max-w-[520px]">
+        <DialogContent className="exch-dialog sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editing ? "Edit Country" : "New Country"}
@@ -548,7 +548,7 @@ const ExchangeCountries = () => {
 
       {/* Required documents manager */}
       <Dialog open={docsDialogOpen} onOpenChange={setDocsDialogOpen}>
-        <DialogContent className="exch-dialog sm:max-w-[620px]">
+        <DialogContent className="exch-dialog sm:max-w-[620px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               Required Documents · {docsCountry?.countryName}

@@ -376,7 +376,7 @@ const ExchangeDocumentTypes = () => {
       </div>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="exch-dialog sm:max-w-[520px]">
+        <DialogContent className="exch-dialog sm:max-w-[520px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editing ? "Edit Document Type" : "New Document Type"}

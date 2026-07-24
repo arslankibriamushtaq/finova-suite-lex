@@ -458,7 +458,7 @@ const ExchangeVerificationDetail = () => {
         open={decision !== null}
         onOpenChange={(o) => !o && setDecision(null)}
       >
-        <DialogContent className="exch-dialog sm:max-w-[480px]">
+        <DialogContent className="exch-dialog sm:max-w-[480px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {decision === "approve"

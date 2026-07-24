@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import { ArrowLeftRight, Plus, Pencil } from "lucide-react";
+import { ArrowLeftRight, Plus, Pencil, Globe, Check, ChevronDown } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-import { Badge } from "../../../components/ui/badge";
 import {
   Card,
   CardContent,
@@ -27,6 +26,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
+
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 import {
   listExchangeProviders,
@@ -280,17 +288,23 @@ const ExchangeProviders = () => {
       name: "Countries",
       cell: (row: ExchangeProvider) =>
         !row.countryCodes || row.countryCodes.length === 0 ? (
-          <Badge variant="secondary">All</Badge>
+          <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
+            <Globe className="h-3.5 w-3.5" />
+            All countries
+          </span>
         ) : (
           <span className="flex flex-wrap gap-1">
             {row.countryCodes.map((c) => (
-              <Badge key={c} variant="outline">
+              <span
+                key={c}
+                className="inline-flex items-center rounded-md border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] font-medium text-foreground"
+              >
                 {c}
-              </Badge>
+              </span>
             ))}
           </span>
         ),
-      width: "160px",
+      width: "180px",
     },
     {
       name: "Status",
@@ -303,15 +317,31 @@ const ExchangeProviders = () => {
         !canEditProvider ? (
           <span className="text-muted-foreground">-</span>
         ) : (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1"
-          onClick={() => openEdit(row)}
-        >
-          <Pencil className="h-3.5 w-3.5" />
-          Edit
-        </Button>
+          <div
+            className="relative inline-block"
+            onClick={(e) => e.stopPropagation()}
+            onPointerDown={(e) => e.stopPropagation()}
+          >
+            <DropdownMenu modal={false}>
+              <DropdownMenuTrigger asChild>
+                <button type="button" className={SELECT_TRIGGER_CLS}>
+                  Select
+                  <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+                <DropdownMenuItem
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    openEdit(row);
+                  }}
+                >
+                  <Pencil className="h-4 w-4" />
+                  Edit
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         ),
       width: "120px",
     },
@@ -319,6 +349,33 @@ const ExchangeProviders = () => {
 
   return (
     <div className="service">
+      <style>{`
+        .exch-dialog [data-slot="dialog-title"] { font-size: 15px; }
+        .exch-dialog [data-slot="dialog-description"] { font-size: 12px; }
+        .exch-dialog [data-slot="label"],
+        .exch-dialog label,
+        .exch-dialog label span,
+        .exch-dialog .text-sm,
+        .exch-dialog input,
+        .exch-dialog textarea,
+        .exch-dialog [data-slot="select-trigger"],
+        .exch-dialog [data-slot="select-trigger"] span,
+        .exch-dialog [data-slot="select-item"],
+        .exch-dialog [data-slot="button"] {
+          font-size: 12px !important;
+        }
+        .exch-dialog [data-slot="label"] { font-weight: 600; }
+        .exch-dialog input:not([type="checkbox"]),
+        .exch-dialog [data-slot="select-trigger"] {
+          height: 36px !important;
+          min-height: 36px !important;
+        }
+        .exch-dialog .country-picker button {
+          font-size: 12px !important;
+          font-weight: 500 !important;
+          line-height: 1 !important;
+        }
+      `}</style>
       <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
         <div>
           <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
@@ -355,7 +412,7 @@ const ExchangeProviders = () => {
       </Card>
 
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="sm:max-w-[560px]">
+        <DialogContent className="exch-dialog sm:max-w-[560px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editing ? "Edit Provider" : "New Provider"}
@@ -475,7 +532,7 @@ const ExchangeProviders = () => {
                   No countries configured yet.
                 </p>
               ) : (
-                <div className="flex flex-wrap gap-2">
+                <div className="country-picker flex flex-wrap gap-2 rounded-lg border border-border bg-muted/30 p-3">
                   {countries.map((c) => {
                     const selected = form.countryCodes.includes(c.countryCode);
                     return (
@@ -483,12 +540,17 @@ const ExchangeProviders = () => {
                         key={c.id}
                         type="button"
                         onClick={() => toggleCountry(c.countryCode)}
-                        className={`rounded-full border px-3 py-1 text-xs font-medium transition ${
+                        className={`inline-flex h-7 items-center gap-1.5 rounded-full border px-3 transition ${
                           selected
-                            ? "border-primary bg-primary text-primary-foreground"
-                            : "border-border bg-transparent text-foreground hover:bg-muted"
+                            ? "border-emerald-500 bg-emerald-500 text-white shadow-sm"
+                            : "border-border bg-background text-foreground hover:border-emerald-400 hover:bg-muted"
                         }`}
                       >
+                        <Check
+                          className={`h-3 w-3 shrink-0 ${
+                            selected ? "opacity-100" : "opacity-0"
+                          }`}
+                        />
                         {c.countryCode} · {c.countryName}
                       </button>
                     );
