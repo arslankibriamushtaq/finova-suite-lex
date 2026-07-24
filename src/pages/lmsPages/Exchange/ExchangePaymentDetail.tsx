@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
-  ArrowLeft,
   Receipt,
   CheckCircle2,
   CreditCard,
@@ -10,6 +9,10 @@ import {
   BadgeCheck,
   FileText,
   ExternalLink,
+  Wallet,
+  TrendingUp,
+  ArrowDownToLine,
+  ArrowUpFromLine,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -90,7 +93,6 @@ const methodLabel = (method?: string) =>
 
 const ExchangePaymentDetail = () => {
   const { paymentId } = useParams<{ paymentId: string }>();
-  const navigate = useNavigate();
 
   const [data, setData] = useState<ExchangePaymentDetailType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -158,28 +160,18 @@ const ExchangePaymentDetail = () => {
 
   return (
     <div className="service">
+      {/* Title band */}
       <div className="mb-3 pb-2 border-bottom d-flex align-items-center justify-content-between">
-        <div className="d-flex align-items-center gap-3">
-          <Button
-            variant="outline"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate("/LOS/Exchange/Payments")}
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back
-          </Button>
-          <div>
-            <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-              <span className="pro-head-badge">
-                <Receipt className="h-4 w-4" />
-              </span>
-              Payment Details
-            </h3>
-            <p className="mb-0 mt-1 text-sm text-muted-foreground font-mono">
-              {paymentId}
-            </p>
-          </div>
+        <div>
+          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+            <span className="pro-head-badge">
+              <Receipt className="h-4 w-4" />
+            </span>
+            Payment Details
+          </h3>
+          <p className="mb-0 mt-1 text-sm text-muted-foreground font-mono">
+            {paymentId}
+          </p>
         </div>
         {payment && !isLoading && (
           <div className="d-flex align-items-center gap-3">
@@ -210,6 +202,49 @@ const ExchangePaymentDetail = () => {
           </CardContent>
         </Card>
       ) : payment ? (
+        <>
+        {/* KPI hero strip */}
+        <div className="mb-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <StatTile
+            label="Receiving (credited)"
+            value={formatMoney(
+              payment.receivingAmount,
+              payment.receivingCurrency
+            )}
+            hint={payment.customerName ? `to ${payment.customerName}` : undefined}
+            icon={<ArrowDownToLine className="h-4 w-4" />}
+            accent="emerald"
+          />
+          <StatTile
+            label="Total Paying"
+            value={formatMoney(payment.totalPaying, payment.payingCurrency)}
+            hint={`incl. fee ${formatMoney(
+              payment.feeAmount,
+              payment.payingCurrency
+            )}`}
+            icon={<ArrowUpFromLine className="h-4 w-4" />}
+            accent="orange"
+          />
+          <StatTile
+            label="Method"
+            value={methodLabel(payment.method)}
+            icon={
+              payment.method === "CARD" ? (
+                <CreditCard className="h-4 w-4" />
+              ) : (
+                <Landmark className="h-4 w-4" />
+              )
+            }
+            accent="violet"
+          />
+          <StatTile
+            label="Status"
+            value={<StatusBadge status={payment.status} />}
+            icon={<BadgeCheck className="h-4 w-4" />}
+            accent="sky"
+          />
+        </div>
+
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           {/* Customer & Summary */}
           <Card className="pro-card-glow">
@@ -270,7 +305,12 @@ const ExchangePaymentDetail = () => {
           {/* Amounts */}
           <Card className="pro-card-glow">
             <CardHeader>
-              <CardTitle className="text-base">Amounts</CardTitle>
+              <CardTitle className="text-base flex items-center gap-2">
+                <span className="inline-flex size-8 items-center justify-center rounded-lg bg-violet-500/10 text-violet-600 ring-1 ring-violet-500/15">
+                  <Wallet className="h-4 w-4" />
+                </span>
+                Amounts
+              </CardTitle>
             </CardHeader>
             <CardContent className="space-y-1">
               <DetailRow
@@ -321,7 +361,12 @@ const ExchangePaymentDetail = () => {
           {quote && (
             <Card className="pro-card-glow">
               <CardHeader>
-                <CardTitle className="text-base">Quote</CardTitle>
+                <CardTitle className="text-base flex items-center gap-2">
+                  <span className="inline-flex size-8 items-center justify-center rounded-lg bg-sky-500/10 text-sky-600 ring-1 ring-sky-500/15">
+                    <TrendingUp className="h-4 w-4" />
+                  </span>
+                  Quote
+                </CardTitle>
               </CardHeader>
               <CardContent className="space-y-1">
                 <DetailRow label="Quote ID" value={quote.quoteId} mono />
@@ -443,10 +488,51 @@ const ExchangePaymentDetail = () => {
               </Card>
             )}
         </div>
+        </>
       ) : null}
     </div>
   );
 };
+
+const ACCENT: Record<string, string> = {
+  emerald: "bg-emerald-500/10 text-emerald-600 ring-emerald-500/15",
+  orange: "bg-orange-500/10 text-orange-600 ring-orange-500/15",
+  violet: "bg-violet-500/10 text-violet-600 ring-violet-500/15",
+  sky: "bg-sky-500/10 text-sky-600 ring-sky-500/15",
+};
+
+const StatTile = ({
+  label,
+  value,
+  hint,
+  icon,
+  accent = "sky",
+}: {
+  label: string;
+  value: React.ReactNode;
+  hint?: string;
+  icon: React.ReactNode;
+  accent?: keyof typeof ACCENT | string;
+}) => (
+  <div className="pro-card-glow flex items-start justify-between gap-3 rounded-xl border border-border bg-card p-4">
+    <div className="min-w-0">
+      <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p className="mt-1 truncate text-xl font-bold leading-tight">{value}</p>
+      {hint && (
+        <p className="mt-0.5 truncate text-xs text-muted-foreground">{hint}</p>
+      )}
+    </div>
+    <span
+      className={`inline-flex size-9 shrink-0 items-center justify-center rounded-lg ring-1 ${
+        ACCENT[accent] || ACCENT.sky
+      }`}
+    >
+      {icon}
+    </span>
+  </div>
+);
 
 const DocThumb = ({
   label,
