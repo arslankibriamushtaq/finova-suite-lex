@@ -102,6 +102,12 @@ const ExchangeDocumentTypes = () => {
       : s === "INACTIVE"
         ? t("common:inactive")
         : s || "-";
+  const sullisDocLabel = (value?: string | null) => {
+    if (!value) return t("docTypes.badge.enabled");
+    if (value === "ID_CARD") return t("docTypes.sullisDoc.idCard");
+    if (value === "PASSPORT") return t("docTypes.sullisDoc.passport");
+    return prettySullisDocType(value);
+  };
   const { hasPermission } = usePermissions();
   const canCreateDocType = hasPermission(EXCHANGE_PERMISSIONS.DOCUMENT_TYPE_CREATE);
   const canEditDocType = hasPermission(EXCHANGE_PERMISSIONS.DOCUMENT_TYPE_EDIT);
@@ -234,7 +240,7 @@ const ExchangeDocumentTypes = () => {
         row.sullisVerify ? (
           <span className="inline-flex items-center gap-1 rounded-md bg-green-100 px-2 py-0.5 text-xs font-medium text-green-700 dark:bg-green-500/15 dark:text-green-300">
             <ShieldCheck className="h-3.5 w-3.5" />
-            {prettySullisDocType(row.sullisDocType, t("docTypes.badge.enabled"))}
+            {sullisDocLabel(row.sullisDocType)}
           </span>
         ) : (
           <span className="text-sm text-muted-foreground">—</span>
@@ -446,8 +452,12 @@ const ExchangeDocumentTypes = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="NONE">—</SelectItem>
-                    <SelectItem value="ID_CARD">ID_CARD</SelectItem>
-                    <SelectItem value="PASSPORT">PASSPORT</SelectItem>
+                    <SelectItem value="ID_CARD">
+                      {t("docTypes.sullisDoc.idCard")}
+                    </SelectItem>
+                    <SelectItem value="PASSPORT">
+                      {t("docTypes.sullisDoc.passport")}
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </FormField>

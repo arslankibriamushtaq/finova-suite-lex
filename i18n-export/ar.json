@@ -5087,6 +5087,10 @@
       "badge": {
         "enabled": "مُفعّل"
       },
+      "sullisDoc": {
+        "idCard": "بطاقة الهوية",
+        "passport": "جواز السفر"
+      },
       "dialog": {
         "editTitle": "تعديل نوع المستند",
         "newTitle": "نوع مستند جديد"

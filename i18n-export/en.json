@@ -5087,6 +5087,10 @@
       "badge": {
         "enabled": "Enabled"
       },
+      "sullisDoc": {
+        "idCard": "ID Card",
+        "passport": "Passport"
+      },
       "dialog": {
         "editTitle": "Edit Document Type",
         "newTitle": "New Document Type"
