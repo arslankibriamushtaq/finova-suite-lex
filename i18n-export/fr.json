@@ -5062,7 +5062,7 @@
         "loading": "Chargement…",
         "emptyTitle": "Aucun document requis pour le moment",
         "emptyHint": "Ajoutez-en un depuis le catalogue ci-dessus pour commencer.",
-        "sullisVerify": "Sullis Verify",
+        "sullisVerify": "Vérification Sullis",
         "removeTitle": "Retirer le document",
         "selectTypeError": "Sélectionnez un type de document",
         "added": "Document ajouté",
@@ -5080,7 +5080,7 @@
       "col": {
         "order": "Ordre",
         "code": "Code",
-        "sullisVerify": "Sullis Verify",
+        "sullisVerify": "Vérification Sullis",
         "piiReuse": "Réutilisation PII",
         "action": "Action"
       },
@@ -5104,7 +5104,7 @@
         "sortOrder": "Ordre de tri"
       },
       "sullis": {
-        "title": "Sullis Verify",
+        "title": "Vérification Sullis",
         "hint": "Passage par l'OCR Sullis + correspondance faciale du selfie (document d'identité)."
       },
       "form": {

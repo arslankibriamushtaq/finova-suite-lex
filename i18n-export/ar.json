@@ -5062,7 +5062,7 @@
         "loading": "جارٍ التحميل…",
         "emptyTitle": "لا توجد مستندات مطلوبة بعد",
         "emptyHint": "أضف واحداً من الكتالوج أعلاه للبدء.",
-        "sullisVerify": "Sullis Verify",
+        "sullisVerify": "تحقق من Sullis",
         "removeTitle": "إزالة المستند",
         "selectTypeError": "اختر نوع المستند",
         "added": "تمت إضافة المستند",
@@ -5080,7 +5080,7 @@
       "col": {
         "order": "الترتيب",
         "code": "الرمز",
-        "sullisVerify": "Sullis Verify",
+        "sullisVerify": "تحقق من Sullis",
         "piiReuse": "إعادة استخدام PII",
         "action": "إجراء"
       },
@@ -5104,7 +5104,7 @@
         "sortOrder": "ترتيب الفرز"
       },
       "sullis": {
-        "title": "Sullis Verify",
+        "title": "تحقق من Sullis",
         "hint": "التحقق عبر Sullis OCR + مطابقة الوجه بالصورة الذاتية (مستند هوية)."
       },
       "form": {
