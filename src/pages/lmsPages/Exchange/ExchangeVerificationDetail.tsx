@@ -13,7 +13,7 @@ import {
   ArrowUpFromLine,
   ScanFace,
   TrendingUp,
-  RotateCw,
+  RotateCwSquare,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -572,7 +572,7 @@ const ImagePreview = ({
           className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
           title={t("img.rotate")}
         >
-          <RotateCw className="h-4 w-4" />
+          <RotateCwSquare className="h-4 w-4" />
         </button>
       </div>
       <a

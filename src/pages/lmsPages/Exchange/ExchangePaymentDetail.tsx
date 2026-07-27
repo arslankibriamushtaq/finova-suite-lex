@@ -14,7 +14,7 @@ import {
   TrendingUp,
   ArrowDownToLine,
   ArrowUpFromLine,
-  RotateCw,
+  RotateCwSquare,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -25,7 +25,6 @@ import {
   CardTitle,
 } from "../../../components/ui/card";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { Badge } from "../../../components/ui/badge";
 
 import {
   getExchangePayment,
@@ -535,20 +534,6 @@ const ExchangePaymentDetail = () => {
                         </span>
                         <StatusBadge status={doc.status} />
                       </div>
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <Badge
-                          variant={doc.mandatory ? "default" : "secondary"}
-                        >
-                          {doc.mandatory
-                            ? t("pd.doc.mandatory")
-                            : t("pd.doc.optional")}
-                        </Badge>
-                        <Badge variant="outline">
-                          {doc.source === "REUSED_PII"
-                            ? t("pd.doc.reusedPii")
-                            : t("pd.doc.uploaded")}
-                        </Badge>
-                      </div>
                       {doc.documentNumber && (
                         <p className="font-mono text-xs text-muted-foreground">
                           #{doc.documentNumber}
@@ -633,7 +618,7 @@ const ImagePreview = ({
           className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
           title={t("img.rotate")}
         >
-          <RotateCw className="h-4 w-4" />
+          <RotateCwSquare className="h-4 w-4" />
         </button>
       </div>
       <a
