@@ -9,7 +9,6 @@ import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { Label } from "../../../components/ui/label";
-import { Badge } from "../../../components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -687,18 +686,21 @@ const ExchangeCountries = () => {
                           </span>
                         </div>
                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
-                          <Badge
-                            variant={cd.mandatory ? "default" : "secondary"}
-                            className="text-[10px]"
+                          <span
+                            className={`inline-flex items-center rounded-md px-2 py-0.5 text-[10px] font-medium ${
+                              cd.mandatory
+                                ? "bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300"
+                                : "bg-slate-100 text-slate-600 dark:bg-slate-500/15 dark:text-slate-300"
+                            }`}
                           >
                             {cd.mandatory
                               ? t("countries.docs.mandatory")
                               : t("countries.docs.optional")}
-                          </Badge>
+                          </span>
                           {cd.sullisVerify && (
-                            <Badge variant="outline" className="text-[10px]">
+                            <span className="inline-flex items-center rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-medium text-blue-700 dark:bg-blue-500/15 dark:text-blue-300">
                               {t("countries.docs.sullisVerify")}
-                            </Badge>
+                            </span>
                           )}
                         </div>
                       </div>
