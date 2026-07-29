@@ -767,6 +767,8 @@ export interface ExchangeVerificationDetail {
   selfieStatus: string | null;
   faceMatchScore: number | null;
   selfieUrl: string | null;
+  fingerprintUrl: string | null;
+  documentUrl: string | null;
   documents: ExchangePaymentDocument[] | null;
   quote: ExchangeVerificationQuote | null;
 }

@@ -15,6 +15,7 @@ import {
   ArrowDownToLine,
   ArrowUpFromLine,
   RotateCwSquare,
+  RotateCcwSquare,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -612,14 +613,26 @@ const ImagePreview = ({
           style={{ transform: `rotate(${rotation}deg)` }}
           loading="lazy"
         />
-        <button
-          type="button"
-          onClick={() => setRotation((r) => (r + 90) % 360)}
-          className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
-          title={t("img.rotate")}
-        >
-          <RotateCwSquare className="h-4 w-4" />
-        </button>
+        <div className="absolute right-2 top-2 flex items-center gap-1">
+          {rotation !== 0 && (
+            <button
+              type="button"
+              onClick={() => setRotation(0)}
+              className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
+              title={t("img.reset", { defaultValue: "Reset to original" })}
+            >
+              <RotateCcwSquare className="h-4 w-4" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setRotation((r) => (r + 90) % 360)}
+            className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
+            title={t("img.rotate")}
+          >
+            <RotateCwSquare className="h-4 w-4" />
+          </button>
+        </div>
       </div>
       <a
         href={src}

@@ -14,6 +14,7 @@ import {
   ScanFace,
   TrendingUp,
   RotateCwSquare,
+  RotateCcwSquare,
 } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
@@ -407,7 +408,10 @@ const ExchangeVerificationDetail = () => {
           </Card>
 
           {/* Documents & selfie */}
-          {((documents && documents.length > 0) || data.selfieUrl) && (
+          {((documents && documents.length > 0) ||
+            data.selfieUrl ||
+            data.fingerprintUrl ||
+            data.documentUrl) && (
             <Card className="pro-card-glow lg:col-span-2">
               <CardHeader>
                 <CardTitle className="text-base flex items-center gap-2">
@@ -461,6 +465,37 @@ const ExchangeVerificationDetail = () => {
                         src={data.selfieUrl}
                         alt={t("vd.selfie")}
                         openLabel={t("vd.openSelfie")}
+                      />
+                    </div>
+                  )}
+
+                  {data.fingerprintUrl && (
+                    <div className="space-y-2 rounded-lg border border-border p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium">
+                          {t("vd.fingerprint", { defaultValue: "Fingerprint" })}
+                        </span>
+                      </div>
+                      <ImagePreview
+                        src={data.fingerprintUrl}
+                        alt={t("vd.fingerprint", { defaultValue: "Fingerprint" })}
+                        openLabel={t("vd.openFingerprint", {
+                          defaultValue: "Open fingerprint",
+                        })}
+                      />
+                    </div>
+                  )}
+
+                  {data.documentUrl && (
+                    <div className="space-y-2 rounded-lg border border-border p-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-sm font-medium">
+                          {t("vd.document", { defaultValue: "Document" })}
+                        </span>
+                      </div>
+                      <ImagePreview
+                        src={data.documentUrl}
+                        alt={t("vd.document", { defaultValue: "Document" })}
                       />
                     </div>
                   )}
@@ -566,14 +601,26 @@ const ImagePreview = ({
           style={{ transform: `rotate(${rotation}deg)` }}
           loading="lazy"
         />
-        <button
-          type="button"
-          onClick={() => setRotation((r) => (r + 90) % 360)}
-          className="absolute right-2 top-2 inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
-          title={t("img.rotate")}
-        >
-          <RotateCwSquare className="h-4 w-4" />
-        </button>
+        <div className="absolute right-2 top-2 flex items-center gap-1">
+          {rotation !== 0 && (
+            <button
+              type="button"
+              onClick={() => setRotation(0)}
+              className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
+              title={t("img.reset", { defaultValue: "Reset to original" })}
+            >
+              <RotateCcwSquare className="h-4 w-4" />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setRotation((r) => (r + 90) % 360)}
+            className="inline-flex size-8 items-center justify-center rounded-md border border-border bg-background/80 text-muted-foreground shadow-sm backdrop-blur transition hover:text-foreground"
+            title={t("img.rotate")}
+          >
+            <RotateCwSquare className="h-4 w-4" />
+          </button>
+        </div>
       </div>
       <a
         href={src}
