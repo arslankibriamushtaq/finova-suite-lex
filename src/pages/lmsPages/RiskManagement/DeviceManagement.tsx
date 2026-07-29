@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Label } from "../../../components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../../components/ui/tabs";
 import { Badge } from "../../../components/ui/badge";
-import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus, Smartphone } from "lucide-react";
+import { RefreshCw, Lock, Unlock, Trash2, ChevronDown, Plus, Smartphone, AlertTriangle } from "lucide-react";
 import { Input as AntInput } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { Button } from "../../../components/ui/button";
@@ -50,8 +50,6 @@ const DeviceManagement = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(15);
-  const [totalRows, setTotalRows] = useState(0);
-  const [totalPage, setTotalPage] = useState(1);
 
   // Block Device Modal State
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false);
@@ -93,9 +91,11 @@ const DeviceManagement = () => {
     return () => clearTimeout(handle);
   }, [searchTerm]);
 
+  // Fetch the full set once per tab; search + pagination happen on the client.
   useEffect(() => {
     fetchDevicesData();
-  }, [activeTab, page, pageSize, debouncedSearch]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab]);
 
   useEffect(() => {
     getRiskBlockCodes()
@@ -110,10 +110,10 @@ const DeviceManagement = () => {
     try {
       setIsLoading(true);
       const apiCall = activeTab === "all" ? getAllDevices : getBlockedDevices;
-      const search = debouncedSearch || undefined;
 
-      // Backend uses 0-based indexing for page
-      const response = await apiCall(page - 1, pageSize, search);
+      // Fetch the full set in one request; the frontend handles search +
+      // pagination, so we ask for a large page and ignore server paging meta.
+      const response = await apiCall(0, 10000, undefined);
 
       // The devices endpoint may return the rows as response.data.data,
       // response.data.content (Spring Page), or response.data itself.
@@ -126,22 +126,7 @@ const DeviceManagement = () => {
             ? payload
             : [];
       setData(list);
-
-      // Pagination metadata can live under .pagination / .pageInfo, or at the
-      // top level (Spring Page). Read whichever is present so navigation works.
-      const meta = payload?.pagination ?? payload?.pageInfo ?? payload ?? {};
-      const totalElements =
-        meta?.totalElements ?? meta?.totalCount ?? meta?.total;
-      if (totalElements != null) {
-        setTotalRows(totalElements);
-        setTotalPage(
-          meta?.totalPages ?? Math.max(1, Math.ceil(totalElements / pageSize))
-        );
-      } else {
-        // No total available — fall back to the current page's length.
-        setTotalRows(list.length);
-        setTotalPage(Math.ceil(list.length / pageSize) || 1);
-      }
+      setPage(1);
     } catch (error: any) {
       toast.error(
         error?.response?.data?.message || t("device.toast.fetchFailed")
@@ -589,11 +574,49 @@ const DeviceManagement = () => {
     },
   ];
 
-  const fromValue = totalRows > 0 ? (page - 1) * pageSize + 1 : 0;
+  // Client-side search across all primitive fields of each device row.
+  const q = debouncedSearch.toLowerCase();
+  const filteredData = q
+    ? data.filter((d) =>
+        Object.values(d || {}).some(
+          (v) =>
+            v != null &&
+            typeof v !== "object" &&
+            String(v).toLowerCase().includes(q)
+        )
+      )
+    : data;
+
+  const totalRows = filteredData.length;
+  const totalPage = Math.ceil(totalRows / pageSize) || 1;
+  const fromIndex = (page - 1) * pageSize;
+  const pagedData = filteredData.slice(fromIndex, fromIndex + pageSize);
+  const fromValue = totalRows > 0 ? fromIndex + 1 : 0;
   const toValue = Math.min(page * pageSize, totalRows);
 
   return (
     <div className="service device-management-page">
+      <style>{`
+        .rm-dialog [data-slot="dialog-title"] { font-size: 15px !important; }
+        .rm-dialog [data-slot="dialog-description"] { font-size: 12px !important; }
+        .rm-dialog [data-slot="label"],
+        .rm-dialog label,
+        .rm-dialog .text-sm,
+        .rm-dialog input,
+        .rm-dialog textarea,
+        .rm-dialog [data-slot="select-trigger"],
+        .rm-dialog [data-slot="select-trigger"] span,
+        .rm-dialog [data-slot="select-item"],
+        .rm-dialog [data-slot="button"] {
+          font-size: 12px !important;
+        }
+        .rm-dialog [data-slot="label"] { font-weight: 600; }
+        .rm-dialog input:not([type="checkbox"]),
+        .rm-dialog [data-slot="select-trigger"] {
+          height: 36px !important;
+          min-height: 36px !important;
+        }
+      `}</style>
       <div className="mb-3 pb-2 border-bottom">
         <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
           <span className="pro-head-badge">
@@ -719,7 +742,7 @@ const DeviceManagement = () => {
 
               <TableView
                 header={allDevicesHeaders}
-                data={data}
+                data={pagedData}
                 totalRows={totalRows}
                 from={fromValue}
                 to={toValue}
@@ -740,7 +763,7 @@ const DeviceManagement = () => {
 
               <TableView
                 header={blockedDevicesHeaders}
-                data={data}
+                data={pagedData}
                 totalRows={totalRows}
                 from={fromValue}
                 to={toValue}
@@ -758,7 +781,7 @@ const DeviceManagement = () => {
 
       {/* Block Device Modal */}
       <Dialog open={isBlockModalOpen} onOpenChange={setIsBlockModalOpen}>
-        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+        <DialogContent className="rm-dialog sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
@@ -816,7 +839,7 @@ const DeviceManagement = () => {
 
       {/* Unblock Device Modal */}
       <Dialog open={isUnblockModalOpen} onOpenChange={setIsUnblockModalOpen}>
-        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+        <DialogContent className="rm-dialog sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Unlock className="w-5 h-5" style={{ color: "var(--color-status-green)" }} />
@@ -829,8 +852,9 @@ const DeviceManagement = () => {
             )}
           </DialogHeader>
           <div className="py-3">
-            <div className="p-3 rounded-lg" style={{ background: "var(--color-status-amber)", opacity: 0.9 }}>
-              <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
+            <div className="flex items-start gap-3 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-500/30 dark:bg-amber-500/10">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-amber-600 dark:text-amber-400" />
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-200">
                 {t("device.unblockModal.warning")}
               </p>
             </div>
@@ -849,7 +873,7 @@ const DeviceManagement = () => {
 
       {/* Add / Block Device Modal */}
       <Dialog open={isAddDeviceModalOpen} onOpenChange={setIsAddDeviceModalOpen}>
-        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+        <DialogContent className="rm-dialog sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Lock className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
@@ -1006,7 +1030,7 @@ const DeviceManagement = () => {
 
       {/* Delete Device Modal */}
       <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-        <DialogContent className="sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
+        <DialogContent className="rm-dialog sm:max-w-md" style={{ background: "var(--background)", color: "var(--foreground)", border: "1px solid var(--border)" }}>
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2" style={{ color: "var(--foreground)", fontSize: 16 }}>
               <Trash2 className="w-5 h-5" style={{ color: "var(--color-status-coral)" }} />
@@ -1019,8 +1043,9 @@ const DeviceManagement = () => {
             )}
           </DialogHeader>
           <div className="py-3">
-            <div className="p-3 rounded-lg" style={{ background: "var(--color-status-coral)", opacity: 0.9 }}>
-              <p className="text-sm font-medium" style={{ color: "var(--primary-foreground)" }}>
+            <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-3 dark:border-red-500/30 dark:bg-red-500/10">
+              <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-red-600 dark:text-red-400" />
+              <p className="text-sm font-medium text-red-800 dark:text-red-200">
                 {t("device.deleteModal.warning")}
               </p>
             </div>
