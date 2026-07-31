@@ -89,6 +89,7 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Customer Management": "customerManagement",
   Users: "users",
   Customers: "customers",
+  Business: "business",
   "Risk Management": "riskManagement",
   "Blacklist NID": "blacklistNid",
   "Blacklist Mobile": "blacklistMobile",
@@ -195,6 +196,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const isSharedPage = (p: string) =>
     p.includes("/CustomerList") ||
     p.includes("/CustomerDetails") ||
+    p.includes("/CustomerManagement/Business") ||
+    p.includes("/BusinessDetails") ||
     p.includes("/CostByCustomer") ||
     p.includes("/OnboardingCostByCustomer") ||
     p.includes("/Lms/Setting/GeneralCreditScoring");
@@ -499,6 +502,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           Link: "CustomerList",
               LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails") || pathname.includes("/CostByCustomer") || pathname.includes("/OnboardingCostByCustomer"),
+        },
+        {
+          label: "Business",
+          Link: "Business",
+          LinkLable: "/LOS/CustomerManagement",
+          active:
+            pathname.includes("/CustomerManagement/Business") ||
+            pathname.includes("/BusinessDetails"),
         },
 
       ].filter(Boolean),
@@ -2187,6 +2198,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             pathname.includes("/CustomerDetails") ||
             pathname.includes("/CostByCustomer") ||
             pathname.includes("/OnboardingCostByCustomer"),
+        },
+        {
+          label: "Business",
+          Link: "Business",
+          LinkLable: "/LOS/CustomerManagement",
+          active:
+            pathname.includes("/CustomerManagement/Business") ||
+            pathname.includes("/BusinessDetails"),
         },
       ].filter(Boolean),
     },

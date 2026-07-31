@@ -32,6 +32,7 @@ import AllProviderApis from "../pages/ThirdPartyDashboard/AllProviderApis";
 import ProviderApiEnvConfig from "../pages/ThirdPartyDashboard/ProviderApiEnvConfig";
 import DashboardOnboarding from "../components/DashboardHeader/DashboardOnboarding";
 import AllCustomers from "../components/Customer/AllCustomers";
+import AllBusiness from "../components/Customer/AllBusiness";
 import CostByCustomer from "../components/Customer/CostByCustomer";
 import OnboardingCostByCustomer from "../components/Customer/OnboardingCostByCustomer";
 import LmsAllCustomers from "../pages/lmsPages/Customers/AllCustomers";
@@ -220,6 +221,7 @@ import Invoices from "../components/Loans/Invoices";
 import RetryTransaction from "../pages/lmsPages/LoanManagement/RetryTransaction";
 import ApplicationManagement from "../pages/lmsPages/LoanManagement/ApplicationManagement";
 import Onboarding360 from "../pages/lmsPages/Customers/Onboarding360";
+import Business360 from "../pages/lmsPages/Customers/Business360";
 import BrokenPromises from "../pages/lmsPages/LoanManagement/BrokenPromises";
 import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistory";
 import WaiveOffDetails from "../pages/lmsPages/LoanManagement/WaiveOffDetails";
@@ -805,6 +807,10 @@ export const router = createBrowserRouter([
             element: <AllCustomers />,
           },
           {
+            path: "/LOS/CustomerManagement/Business",
+            element: <AllBusiness />,
+          },
+          {
             path: "/LOS/CustomerManagement/CostByCustomer/:id",
             element: <CostByCustomer />,
           },
@@ -1002,6 +1008,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/CustomerManagement/CustomerDetails/:id",
             element: <Onboarding360 />,
+          },
+          {
+            path: "/LOS/CustomerManagement/BusinessDetails/:id",
+            element: <Business360 />,
           },
           {
             path: "/LOS/CustomerManagement/HighRiskUsers/:id",

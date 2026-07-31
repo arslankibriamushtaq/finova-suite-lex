@@ -31,7 +31,10 @@ import {
   Gauge,
   ShieldCheck,
   BarChart3,
+  CheckCircle2,
+  XCircle,
 } from "lucide-react";
+import toast from "react-hot-toast";
 import {
   LineChart,
   Line,
@@ -62,9 +65,24 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "../../../components/ui/dialog";
+import { Textarea } from "../../../components/ui/textarea";
+import { Label } from "../../../components/ui/label";
 import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
 import { getOnboarding360, getOnboardingDocumentImage } from "../../../redux/apis/apisCrud";
+import {
+  getBusinessDetail,
+  approveBusinessDocument,
+  rejectBusinessDocument,
+} from "../../../redux/apis/apisEddReferenceData";
 
 /* ------------------------------------------------------------------ */
 /* Helpers                                                             */
@@ -568,7 +586,13 @@ const LoadingState = () => (
   </Card>
 );
 
-const Onboarding360 = () => {
+/**
+ * Customer 360 detail page.
+ *
+ * `businessMode` renders the same page for SME/business customers and enables
+ * the approve / reject review actions in the Documents section (Business page).
+ */
+const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => {
   const { t } = useTranslation("customerManagement");
   const params = useParams();
   const customerId = params.id || params.customerId;
@@ -582,6 +606,13 @@ const Onboarding360 = () => {
   const [reloadKey, setReloadKey] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
   const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
+
+  /* Business document review (businessMode only) — reviewStatus / rejectionReason
+     come from the admin businesses endpoint, keyed by documentId. */
+  const [docReview, setDocReview] = useState<Record<string, any>>({});
+  const [reviewTarget, setReviewTarget] = useState<{ doc: any; action: "approve" | "reject" } | null>(null);
+  const [reviewNote, setReviewNote] = useState("");
+  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -605,6 +636,74 @@ const Onboarding360 = () => {
       active = false;
     };
   }, [customerId, reloadKey]);
+
+  /* Review status per document — business page only. Failure here must not break
+     the page: the documents still render, just without review state. */
+  const loadDocReview = async () => {
+    if (!businessMode || !customerId) return;
+    try {
+      const res = await getBusinessDetail(String(customerId));
+      const docs: any[] = res?.data?.data?.documents ?? res?.data?.documents ?? [];
+      const map: Record<string, any> = {};
+      docs.forEach((d: any) => {
+        if (d?.documentId) map[d.documentId] = d;
+      });
+      setDocReview(map);
+    } catch {
+      setDocReview({});
+    }
+  };
+
+  useEffect(() => {
+    loadDocReview();
+  }, [businessMode, customerId, reloadKey]);
+
+  const openReview = (doc: any, action: "approve" | "reject") => {
+    setReviewNote("");
+    setReviewTarget({ doc, action });
+  };
+
+  const submitReview = async () => {
+    if (!reviewTarget || !customerId) return;
+    const { doc, action } = reviewTarget;
+    const note = reviewNote.trim();
+    if (action === "reject" && !note) {
+      toast.error(t("onboarding360.review.reasonRequired"));
+      return;
+    }
+    try {
+      setSubmittingReview(true);
+      const res =
+        action === "approve"
+          ? await approveBusinessDocument(String(customerId), doc.documentId, note)
+          : await rejectBusinessDocument(String(customerId), doc.documentId, note);
+      const result = res?.data?.data ?? res?.data ?? {};
+      // Reflect the new status immediately, then re-sync from the backend.
+      setDocReview((prev) => ({
+        ...prev,
+        [doc.documentId]: {
+          ...(prev[doc.documentId] || {}),
+          documentId: doc.documentId,
+          reviewStatus: result.reviewStatus || (action === "approve" ? "APPROVED" : "REJECTED"),
+          rejectionReason: action === "reject" ? note : result.rejectionReason || null,
+        },
+      }));
+      toast.success(
+        action === "approve"
+          ? t("onboarding360.review.approveSuccess")
+          : t("onboarding360.review.rejectSuccess")
+      );
+      setReviewTarget(null);
+      setReviewNote("");
+      loadDocReview();
+    } catch (err: any) {
+      toast.error(
+        err?.response?.data?.message || err?.message || t("onboarding360.review.failed")
+      );
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
 
   const customer = data?.customer;
   const wallet = data?.wallet;
@@ -1105,7 +1204,12 @@ const Onboarding360 = () => {
                         <EmptyState icon={FileText} text={t("onboarding360.empty.noDocuments")} />
                       ) : (
                         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          {documents.map((doc, idx) => (
+                          {documents.map((doc, idx) => {
+                            const review = docReview[doc.documentId] || {};
+                            const reviewStatus = (review.reviewStatus || "").toUpperCase();
+                            const isApproved = reviewStatus === "APPROVED";
+                            const isRejected = reviewStatus === "REJECTED";
+                            return (
                             <div
                               key={doc.documentId ?? idx}
                               className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
@@ -1124,8 +1228,55 @@ const Onboarding360 = () => {
                                 <span className="text-muted-foreground">{t("onboarding360.doc.documentNo")}</span>
                                 <span className="font-mono font-medium text-foreground">{doc.documentNumber || "—"}</span>
                               </div>
+
+                              {/* Business document review — approve / reject */}
+                              {businessMode && (
+                                <div className="flex flex-col gap-2 border-t border-border/60 pt-2">
+                                  <div className="flex items-center justify-between gap-2 text-xs">
+                                    <span className="text-muted-foreground">
+                                      {t("onboarding360.review.status")}
+                                    </span>
+                                    <Badge
+                                      variant="outline"
+                                      className={cn("border font-medium", TONES[statusTone(reviewStatus || "PENDING")])}
+                                    >
+                                      {reviewStatus || t("common:pending")}
+                                    </Badge>
+                                  </div>
+
+                                  {isRejected && review.rejectionReason && (
+                                    <div className={cn("rounded-md border px-2 py-1.5 text-xs", TONES.red)}>
+                                      {review.rejectionReason}
+                                    </div>
+                                  )}
+
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isApproved || !doc.documentId}
+                                      onClick={() => openReview(doc, "approve")}
+                                      className="flex-1 gap-1 border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
+                                    >
+                                      <CheckCircle2 className="size-3.5" />
+                                      {t("onboarding360.review.approve")}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isRejected || !doc.documentId}
+                                      onClick={() => openReview(doc, "reject")}
+                                      className="flex-1 gap-1 border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400"
+                                    >
+                                      <XCircle className="size-3.5" />
+                                      {t("onboarding360.review.reject")}
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
                             </div>
-                          ))}
+                            );
+                          })}
                         </div>
                       )}
                     </Block>
@@ -1160,6 +1311,89 @@ const Onboarding360 = () => {
           </Card>
         </>
       )}
+
+      {/* Business document review — approve (note optional) / reject (reason required) */}
+      <Dialog
+        open={!!reviewTarget}
+        onOpenChange={(open: boolean) => {
+          if (!open && !submittingReview) {
+            setReviewTarget(null);
+            setReviewNote("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {reviewTarget?.action === "approve"
+                ? t("onboarding360.review.approveTitle")
+                : t("onboarding360.review.rejectTitle")}
+            </DialogTitle>
+            <DialogDescription>
+              {reviewTarget?.action === "approve"
+                ? t("onboarding360.review.approveHint")
+                : t("onboarding360.review.rejectHint")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
+              <span className="text-muted-foreground">{t("onboarding360.doc.documentLabel")}</span>
+              <span className="font-medium text-foreground">
+                {reviewTarget?.doc?.kind || t("onboarding360.doc.documentFallback")}
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="doc-review-note">
+                {reviewTarget?.action === "approve"
+                  ? t("onboarding360.review.noteOptional")
+                  : t("onboarding360.review.reasonRequiredLabel")}
+              </Label>
+              <Textarea
+                id="doc-review-note"
+                rows={4}
+                value={reviewNote}
+                onChange={(e: any) => setReviewNote(e.target.value)}
+                placeholder={
+                  reviewTarget?.action === "approve"
+                    ? t("onboarding360.review.notePlaceholder")
+                    : t("onboarding360.review.reasonPlaceholder")
+                }
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              disabled={submittingReview}
+              onClick={() => {
+                setReviewTarget(null);
+                setReviewNote("");
+              }}
+            >
+              {t("common:cancel")}
+            </Button>
+            <Button
+              onClick={submitReview}
+              disabled={
+                submittingReview || (reviewTarget?.action === "reject" && !reviewNote.trim())
+              }
+              className={cn(
+                reviewTarget?.action === "reject" &&
+                  "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/40"
+              )}
+            >
+              {submittingReview
+                ? t("onboarding360.review.submitting")
+                : reviewTarget?.action === "approve"
+                ? t("onboarding360.review.approve")
+                : t("onboarding360.review.reject")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Lightbox — portaled to body so the overlay also covers the sidebar */}
       {lightbox &&

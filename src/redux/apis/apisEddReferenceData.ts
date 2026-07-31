@@ -180,13 +180,26 @@ export function deactivateOccupation(id: string) {
 // Customers
 // ============================================================
 
-export function getCustomers(page?: any, size?: any, search?: string, pep?: string, status?: string) {
+/**
+ * List customers.
+ * `filter` is the backend's generic criteria syntax, e.g. "customerType:eq:SME"
+ * (used by the Business list to show SME customers only).
+ */
+export function getCustomers(
+  page?: any,
+  size?: any,
+  search?: string,
+  pep?: string,
+  status?: string,
+  filter?: string
+) {
   const params: Record<string, any> = {};
   if (page !== undefined) params.page = page;
   if (size !== undefined) params.size = size;
   if (search) params.search = search;
   if (pep) params.pep = pep;
   if (status) params.status = status;
+  if (filter) params.filter = filter;
   return axiosCustomerService.get(`/api/v1/customers${buildQueryString(params)}`);
 }
 
@@ -194,6 +207,39 @@ export function updateKycRisk(customerId: string, riskGrade: string) {
   return axiosCustomerService.patch(`/api/v1/customers/${customerId}/risk-grade`, {
     riskGrade: riskGrade.toUpperCase()
   });
+}
+
+// ============================================================
+// Admin Businesses (SME) — document review
+// ============================================================
+
+/** Business detail + all uploaded onboarding documents (incl. reviewStatus). */
+export function getBusinessDetail(customerId: string) {
+  return axiosCustomerService.get(`/api/v1/admin/businesses/${customerId}`);
+}
+
+/** Approve a business document. Description is an optional note. */
+export function approveBusinessDocument(
+  customerId: string,
+  documentId: string,
+  description?: string
+) {
+  return axiosCustomerService.post(
+    `/api/v1/admin/businesses/${customerId}/documents/${documentId}/approve`,
+    description ? { description } : {}
+  );
+}
+
+/** Reject a business document. Description is required and is emailed to the applicant. */
+export function rejectBusinessDocument(
+  customerId: string,
+  documentId: string,
+  description: string
+) {
+  return axiosCustomerService.post(
+    `/api/v1/admin/businesses/${customerId}/documents/${documentId}/reject`,
+    { description }
+  );
 }
 
 export function getLeadCustomers(search: string = '', pep: string = '', status: string = '') {
