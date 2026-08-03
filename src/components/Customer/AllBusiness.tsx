@@ -4,11 +4,11 @@ import { Button, DatePicker, Dropdown, Input, Menu, Modal, Checkbox } from "antd
 import TableView from "../TableView/TableView";
 import { getRiskBlockCodes } from "../../redux/apis/apisRiskManagement";
 import { getCustomerBlocks, assignBlockToCustomer, removeBlockFromCustomer } from "../../redux/apis/apisCrudLms";
-import { getCustomers } from "../../redux/apis/apisEddReferenceData";
+import { getBusinessesList } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
-import { Users } from "lucide-react";
+import { Users, Lock, ShieldAlert, AlertTriangle } from "lucide-react";
 import BeneficiariesDialog from "../../pages/lmsPages/Wallet/BeneficiariesDialog";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
@@ -16,12 +16,11 @@ import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
 import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { useTranslation } from "react-i18next";
+import { cn } from "../../lib/utils";
+import { TONES, statusTone, riskTone } from "../../components/shared/detailKit";
 
-/**
- * Business list — same dataset/columns as the Customer list, restricted to SME
- * customers via the backend filter below.
- */
-const BUSINESS_FILTER = "customerType:eq:SME";
+/** Business (SME) list — dedicated admin businesses endpoint, filterable by KYC status. */
+const KYC_STATUS_CHIPS = ["PENDING", "ALL", "VERIFIED", "REJECTED"] as const;
 
 const AllBusiness = () => {
   const { t } = useTranslation("customerManagement");
@@ -36,6 +35,7 @@ const AllBusiness = () => {
   const [toDate, setToDate] = useState(null);
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
+  const [kycStatus, setKycStatus] = useState<(typeof KYC_STATUS_CHIPS)[number]>("PENDING");
 
   // Permissions
   const { hasPermission } = usePermissions();
@@ -54,65 +54,63 @@ const AllBusiness = () => {
 
   const Activity_Loans_Header = [
     {
-      name: t("common:name"),
-      cell: (row: any) => row.name,
+      name: t("business.col.businessName"),
+      cell: (row: any) => (
+        <div className="d-flex flex-column gap-1 py-1">
+          <span className="fw-semibold">{row.name}</span>
+          <div className="d-flex flex-wrap gap-1">
+            {row.isBlocked && (
+              <span className={cn("inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium", TONES.red)}>
+                <Lock className="size-2.5" /> {t("onboarding360.badge.blocked")}
+              </span>
+            )}
+            {row.sanctionsFlag && (
+              <span className={cn("inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium", TONES.red)}>
+                <ShieldAlert className="size-2.5" /> {t("onboarding360.badge.sanctioned")}
+              </span>
+            )}
+            {row.pepFlag && (
+              <span className={cn("inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-medium", TONES.amber)}>
+                <AlertTriangle className="size-2.5" /> {t("onboarding360.badge.pep")}
+              </span>
+            )}
+          </div>
+        </div>
+      ),
       sortable: true,
-      width: "200px",
+      width: "220px",
     },
     {
-      name: t("allCustomers.col.id"),
-      selector: (row: any) => row.nationalId || "-",
+      name: t("business.col.registrationNo"),
+      selector: (row: any) => row.businessRegistrationNumber || "-",
       sortable: true,
-      width: "150px",
+      width: "160px",
     },
     {
-      name: t("allCustomers.col.cif"),
-      selector: (row: any) => row.cif || "-",
-      sortable: true,
-      width: "180px",
-    },
-    {
-      name: t("common:email"),
-      selector: (row: any) => row.email,
-      sortable: true,
-    },
-    {
-      name: t("common:phone"),
-      selector: (row: any) => row.phone,
-      sortable: true,
-      width: "180px",
-    },
-    {
-      name: t("allCustomers.col.nationality"),
-      selector: (row: any) => row.nationality || "-",
+      name: t("business.col.type"),
+      selector: (row: any) => row.businessTypeCode || "-",
       sortable: true,
       width: "120px",
     },
     {
-      name: t("allCustomers.col.stage"),
-      cell: (row: any) => {
-        const stage = row.lifecycleStage || "-";
-        const color = stage === "QUALIFIED" ? "var(--color-success)" : stage === "LEAD" ? "var(--color-info)" : "var(--color-warning)";
-        return (
-          <span
-            style={{
-              padding: "6px 12px",
-              borderRadius: "32px",
-              fontSize: "12px",
-              backgroundColor: color,
-              color: "var(--primary-foreground)",
-              display: "inline-block",
-              textTransform: "capitalize",
-              fontWeight: "500",
-              whiteSpace: "nowrap"
-            }}
-          >
-            {stage.toLowerCase()}
-          </span>
-        );
-      },
+      name: t("business.col.kycStatus"),
+      cell: (row: any) => (
+        <span className={cn("inline-flex rounded-full border px-2.5 py-1 text-xs font-medium", TONES[statusTone(row.kycStatus)])}>
+          {row.kycStatus || "-"}
+        </span>
+      ),
       sortable: true,
-      width: "130px",
+      width: "140px",
+    },
+    {
+      name: t("business.col.riskGrade"),
+      cell: (row: any) => (
+        <span className={cn("inline-flex rounded-full border px-2.5 py-1 text-xs font-medium", TONES[riskTone(row.risk)])}>
+          {row.risk || "-"}
+        </span>
+      ),
+      sortable: true,
+      width: "120px",
     },
     {
       name: t("allCustomers.col.created"),
@@ -123,16 +121,6 @@ const AllBusiness = () => {
         </div>
       ),
       width: "120px",
-    },
-    {
-      name: t("allCustomers.col.isBlocked"),
-      cell: (row: any) => {
-        const blocked = row.isBlocked;
-        return blocked
-          ? <span onClick={() => handleBlockButtonClick(row)} style={{ padding: "4px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: "var(--color-error)", color: "var(--primary-foreground)", fontWeight: 600, whiteSpace: "nowrap", cursor: "pointer" }}>{t("allCustomers.status.blocked")}</span>
-          : <span onClick={() => handleBlockButtonClick(row)} style={{ padding: "4px 12px", borderRadius: "32px", fontSize: "12px", backgroundColor: "var(--color-success)", color: "var(--primary-foreground)", fontWeight: 500, whiteSpace: "nowrap", cursor: "pointer" }}>{t("allCustomers.status.unblocked")}</span>;
-      },
-      width: "130px",
     },
     {
       name: t("common:actions"),
@@ -176,6 +164,15 @@ const AllBusiness = () => {
           {t("allCustomers.menu.checkBeneficiaries")}
         </Menu.Item>
       )}
+      {canViewCustomer && (
+        <Menu.Item
+          key="manageBlocks"
+          icon={<Lock size={14} />}
+          onClick={() => handleMenuClick("manageBlocks", row)}
+        >
+          {t("business.menu.manageBlocks")}
+        </Menu.Item>
+      )}
     </Menu>
   );
 
@@ -186,6 +183,9 @@ const AllBusiness = () => {
         break;
       case "checkBeneficiaries":
         setBeneficiaryCustomerId(data.id);
+        break;
+      case "manageBlocks":
+        handleBlockButtonClick(data);
         break;
       default:
         break;
@@ -265,7 +265,12 @@ const AllBusiness = () => {
       setSkelitonLoading(true);
 
       // Backend uses 0-based indexing for page
-      const response = await getCustomers(page - 1, pageSize, search, '', '', BUSINESS_FILTER);
+      const response = await getBusinessesList({
+        kycStatus: kycStatus === "ALL" ? undefined : kycStatus,
+        page: page - 1,
+        size: pageSize,
+        search,
+      });
       if (response) {
         const list = response?.data?.data || [];
         const allData = Array.isArray(list) ? list : [];
@@ -289,36 +294,39 @@ const AllBusiness = () => {
 
   useEffect(() => {
     getBusinessList();
-  }, [page, pageSize, search]);
+  }, [page, pageSize, search, kycStatus]);
 
-  // Reset to page 1 when search / page size changes
+  // Reset to page 1 when search / page size / status chip changes
   useEffect(() => {
     setPage(1);
-  }, [search, pageSize]);
+  }, [search, pageSize, kycStatus]);
 
   const mappedData =
     (data || []).map((item: any, index: number) => {
+      const customer = item?.customer || {};
       return {
-        id: item.id,
+        id: item.customerId,
         Sr: (page - 1) * pageSize + index + 1,
-        name: item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
-        nationalId: item?.nationalId || "-",
-        cif: item?.cifNumber || "-",
-        email: item?.email || "-",
-        phone: item?.mobileNumber || "-",
-        nationality: item?.nationality || "-",
-        isBlocked: item?.isBlocked,
-        gender: item?.gender || "-",
-        pep: item?.pepFlag ? "Yes" : "No",
-        kycStatus: item?.kycStatus || "-",
-        lifecycleStage: item?.lifecycleStage || "-",
-        risk: item?.riskGrade || item?.riskLevel || item?.risk_grade || item?.risk || "N/A",
-        risk_status: item?.riskGrade || item?.riskLevel || item?.risk_grade || item?.risk || "-",
-        sanctionsFlag: item?.sanctionsFlag,
-        customerType: item?.customerType || "-",
-        residencyType: item?.residencyType || "-",
-        created_at: item?.createdAt || "-",
-        dateOfBirth: item?.dateOfBirth || "-",
+        name: item?.businessName || customer?.fullName || "-",
+        businessRegistrationNumber: item?.businessRegistrationNumber || "-",
+        businessTypeCode: item?.businessTypeCode || "-",
+        nationalId: customer?.nationalId || "-",
+        cif: customer?.cifNumber || "-",
+        email: customer?.email || "-",
+        phone: customer?.mobileNumber || "-",
+        nationality: customer?.nationality || "-",
+        isBlocked: customer?.isBlocked,
+        blockCodes: customer?.blockCodes,
+        gender: customer?.gender || "-",
+        pepFlag: customer?.pepFlag,
+        kycStatus: customer?.kycStatus || "-",
+        lifecycleStage: customer?.lifecycleStage || "-",
+        risk: customer?.riskGrade || "-",
+        sanctionsFlag: customer?.sanctionsFlag,
+        customerType: customer?.customerType || "-",
+        residencyType: customer?.residencyType || "-",
+        created_at: customer?.createdAt || "-",
+        dateOfBirth: customer?.dateOfBirth || "-",
       };
     });
 
@@ -332,7 +340,12 @@ const AllBusiness = () => {
       let allData: any[] = [];
 
       try {
-        const response = await getCustomers(0, 10000, search, '', '', BUSINESS_FILTER);
+        const response = await getBusinessesList({
+          kycStatus: kycStatus === "ALL" ? undefined : kycStatus,
+          page: 0,
+          size: 10000,
+          search,
+        });
         const list = response?.data?.data || [];
         allData = Array.isArray(list) ? list : [];
       } catch (pageError) {
@@ -345,20 +358,22 @@ const AllBusiness = () => {
       }
 
       // Map data according to table headers
-      const csvData = allData.map((item: any) => ({
-        "Name": item?.fullName || `${item?.firstName || ""} ${item?.lastName || ""}`.trim() || "-",
-        "CIF": item?.cifNumber || "-",
-        "Email": item?.email || "-",
-        "Phone": item?.mobileNumber || "-",
-        "Nationality": item?.nationality || "-",
-        "Gender": item?.gender || "-",
-        "KYC Status": item?.kycStatus || "-",
-        "Lifecycle Stage": item?.lifecycleStage || "-",
-        "PEP": item?.pepFlag ? "Yes" : "No",
-        "Risk Grade": item?.riskGrade || "-",
-        "Customer Type": item?.customerType || "-",
-        "Created": item?.createdAt ? new Date(item.createdAt).toLocaleDateString() : "-",
-      }));
+      const csvData = allData.map((item: any) => {
+        const customer = item?.customer || {};
+        return {
+          "Business Name": item?.businessName || customer?.fullName || "-",
+          "Registration No": item?.businessRegistrationNumber || "-",
+          "Type": item?.businessTypeCode || "-",
+          "CIF": customer?.cifNumber || "-",
+          "Email": customer?.email || "-",
+          "Phone": customer?.mobileNumber || "-",
+          "KYC Status": customer?.kycStatus || "-",
+          "Lifecycle Stage": customer?.lifecycleStage || "-",
+          "PEP": customer?.pepFlag ? "Yes" : "No",
+          "Risk Grade": customer?.riskGrade || "-",
+          "Created": customer?.createdAt ? new Date(customer.createdAt).toLocaleDateString() : "-",
+        };
+      });
 
       // Create CSV string
       const headers = Object.keys(csvData[0]);
@@ -405,6 +420,25 @@ const AllBusiness = () => {
           </span>
           {t("business.title")}
         </h3>
+      </div>
+
+      {/* KYC status chips */}
+      <div className="mb-3 flex flex-wrap gap-2">
+        {KYC_STATUS_CHIPS.map((chip) => (
+          <button
+            key={chip}
+            type="button"
+            onClick={() => setKycStatus(chip)}
+            className={cn(
+              "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
+              kycStatus === chip
+                ? TONES[chip === "ALL" ? "sky" : statusTone(chip)]
+                : "border-border bg-transparent text-muted-foreground hover:bg-muted/50"
+            )}
+          >
+            {t(`business.chip.${chip.toLowerCase()}`)}
+          </button>
+        ))}
       </div>
 
       {/* Filters card */}

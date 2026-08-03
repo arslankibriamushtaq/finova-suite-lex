@@ -221,7 +221,8 @@ import Invoices from "../components/Loans/Invoices";
 import RetryTransaction from "../pages/lmsPages/LoanManagement/RetryTransaction";
 import ApplicationManagement from "../pages/lmsPages/LoanManagement/ApplicationManagement";
 import Onboarding360 from "../pages/lmsPages/Customers/Onboarding360";
-import Business360 from "../pages/lmsPages/Customers/Business360";
+import BusinessDetail from "../pages/lmsPages/Customers/BusinessDetail";
+import PartnerDetail from "../pages/lmsPages/Customers/PartnerDetail";
 import BrokenPromises from "../pages/lmsPages/LoanManagement/BrokenPromises";
 import RescheduleHistory from "../pages/lmsPages/LoanManagement/RescheduleHistory";
 import WaiveOffDetails from "../pages/lmsPages/LoanManagement/WaiveOffDetails";
@@ -1011,7 +1012,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "/LOS/CustomerManagement/BusinessDetails/:id",
-            element: <Business360 />,
+            element: <BusinessDetail />,
+          },
+          {
+            path: "/LOS/CustomerManagement/BusinessDetails/:id/Partners/:membershipId",
+            element: <PartnerDetail />,
           },
           {
             path: "/LOS/CustomerManagement/HighRiskUsers/:id",

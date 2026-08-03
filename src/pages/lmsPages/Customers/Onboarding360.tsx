@@ -1,23 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
-import { createPortal } from "react-dom";
+import { useMemo, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import {
-  ArrowLeft,
-  Check,
-  Copy,
   AlertTriangle,
   ArrowDownLeft,
   ArrowUpRight,
   ShieldAlert,
   Wallet as WalletIcon,
   Lock,
-  RefreshCw,
+  Check,
   CircleDot,
   FileText,
   Camera,
-  ZoomIn,
-  X,
   Phone,
   Mail,
   Hash,
@@ -31,10 +26,7 @@ import {
   Gauge,
   ShieldCheck,
   BarChart3,
-  CheckCircle2,
-  XCircle,
 } from "lucide-react";
-import toast from "react-hot-toast";
 import {
   LineChart,
   Line,
@@ -65,202 +57,25 @@ import {
   TableHeader,
   TableRow,
 } from "../../../components/ui/table";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-  DialogFooter,
-} from "../../../components/ui/dialog";
-import { Textarea } from "../../../components/ui/textarea";
-import { Label } from "../../../components/ui/label";
 import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
 import { getOnboarding360, getOnboardingDocumentImage } from "../../../redux/apis/apisCrud";
 import {
-  getBusinessDetail,
-  approveBusinessDocument,
-  rejectBusinessDocument,
-} from "../../../redux/apis/apisEddReferenceData";
-
-/* ------------------------------------------------------------------ */
-/* Helpers                                                             */
-/* ------------------------------------------------------------------ */
-
-const formatMoney = (value: any, currency?: string) => {
-  const num = Number(value ?? 0);
-  if (Number.isNaN(num)) return `${currency ? currency + " " : ""}0.00`;
-  const formatted = num.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  return currency ? `${formatted} ${currency}` : formatted;
-};
-
-const formatDate = (value?: string) => {
-  if (!value) return "—";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-};
-
-const formatDateTime = (value?: string) => {
-  if (!value) return "—";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-const TONES: Record<string, string> = {
-  emerald:
-    "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30",
-  amber:
-    "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30",
-  sky: "bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/30",
-  orange:
-    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-500/30",
-  red: "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/30",
-  slate:
-    "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/15 dark:text-slate-300 dark:border-slate-500/30",
-};
-
-const statusTone = (status?: string): string => {
-  switch ((status || "").toUpperCase()) {
-    case "ACTIVE":
-    case "COMPLETED":
-    case "APPROVED":
-    case "VERIFIED":
-    case "SUCCESS":
-      return "emerald";
-    case "PENDING":
-    case "PENDING_ACTIVATION":
-    case "IN_PROGRESS":
-      return "amber";
-    case "FROZEN":
-      return "sky";
-    case "SUSPENDED":
-      return "orange";
-    case "FAILED":
-    case "REJECTED":
-    case "CLOSED":
-    case "BLOCKED":
-      return "red";
-    default:
-      return "slate";
-  }
-};
-
-const riskTone = (level?: string): string => {
-  switch ((level || "").toUpperCase()) {
-    case "LOW":
-      return "emerald";
-    case "MEDIUM":
-      return "amber";
-    case "HIGH":
-    case "CRITICAL":
-      return "red";
-    default:
-      return "slate";
-  }
-};
-
-const TONE_HEX: Record<string, string> = {
-  emerald: "#10b981",
-  amber: "#f59e0b",
-  red: "#ef4444",
-  sky: "#0ea5e9",
-  slate: "#94a3b8",
-};
-
-const StatusBadge = ({ status, className }: { status?: string; className?: string }) => (
-  <Badge variant="outline" className={cn("border font-medium", TONES[statusTone(status)], className)}>
-    {status || "—"}
-  </Badge>
-);
-
-const chartTooltipStyle = {
-  background: "var(--card)",
-  border: "1px solid var(--border)",
-  borderRadius: 8,
-  color: "var(--foreground)",
-  fontSize: 12,
-  boxShadow: "var(--surface-elevation-2, 0 4px 12px rgba(0,0,0,0.12))",
-};
-
-/* Label / value row */
-const Field = ({ label, value, mono }: { label: string; value: React.ReactNode; mono?: boolean }) => (
-  <div className="-mx-2 flex items-center justify-between gap-4 rounded-md border-b border-border/60 px-2 py-2.5 text-sm transition-colors last:border-b-0 hover:bg-muted/40">
-    <span className="shrink-0 text-muted-foreground">{label}</span>
-    <span
-      className={cn(
-        "min-w-0 break-words text-end font-medium text-foreground",
-        mono && "font-mono text-xs"
-      )}
-    >
-      {value ?? "—"}
-    </span>
-  </div>
-);
-
-/* Section title inside a tab */
-const Block = ({ title, right, children, className, icon: Icon }: any) => (
-  <div
-    className={cn(
-      "onb-card relative overflow-hidden rounded-xl border p-4 transition-shadow duration-200 hover:shadow-md md:p-5",
-      className
-    )}
-  >
-    {/* Soft emerald glow accent — consistent across all cards */}
-    <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
-    <div className="relative mb-4 flex items-center justify-between gap-2">
-      <div className="flex items-center gap-2.5">
-        {Icon && (
-          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
-            <Icon className="size-4" />
-          </span>
-        )}
-        <h3 className="m-0 text-sm font-semibold tracking-tight text-foreground">{title}</h3>
-      </div>
-      {right}
-    </div>
-    <div className="relative">{children}</div>
-  </div>
-);
-
-const CopyButton = ({ text }: { text?: string }) => {
-  const { t } = useTranslation("customerManagement");
-  const [copied, setCopied] = useState(false);
-  if (!text) return null;
-  return (
-    <button
-      type="button"
-      onClick={() =>
-        navigator.clipboard.writeText(text).then(() => {
-          setCopied(true);
-          setTimeout(() => setCopied(false), 1500);
-        })
-      }
-      className="inline-flex items-center justify-center rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-      aria-label={t("onboarding360.action.copy")}
-    >
-      {copied ? <Check className="size-3.5 text-emerald-500" /> : <Copy className="size-3.5" />}
-    </button>
-  );
-};
-
-const EmptyState = ({ icon: Icon, text }: any) => (
-  <div className="flex flex-col items-center justify-center gap-2 py-10 text-center">
-    <Icon className="size-8 text-muted-foreground/40" />
-    <p className="text-sm text-muted-foreground">{text}</p>
-  </div>
-);
+  formatMoney,
+  formatDate,
+  formatDateTime,
+  TONES,
+  TONE_HEX,
+  riskTone,
+  StatusBadge,
+  chartTooltipStyle,
+  Field,
+  Block,
+  CopyButton,
+  EmptyState,
+  DocImage,
+  Lightbox,
+} from "../../../components/shared/detailKit";
 
 /* ------------------------------------------------------------------ */
 /* Header band (single, not floating cards)                            */
@@ -512,67 +327,6 @@ const RiskGauge = ({ risk }: any) => {
 };
 
 /* ------------------------------------------------------------------ */
-/* Document / selfie image (lazy-loaded via auth'd API client)         */
-/* ------------------------------------------------------------------ */
-
-const DocImage = ({
-  imagePath,
-  label,
-  onEnlarge,
-}: {
-  imagePath?: string;
-  label: string;
-  onEnlarge?: (src: string, label: string) => void;
-}) => {
-  const { t } = useTranslation("customerManagement");
-  const [src, setSrc] = useState<string | null>(null);
-  const [err, setErr] = useState(false);
-
-  useEffect(() => {
-    if (!imagePath) {
-      setErr(true);
-      return;
-    }
-    let alive = true;
-    setErr(false);
-    setSrc(null);
-    getOnboardingDocumentImage(imagePath)
-      .then((res: any) => {
-        const d = res?.data?.data ?? res?.data;
-        if (alive && d?.base64Image) {
-          setSrc(`data:${d.contentType || "image/jpeg"};base64,${d.base64Image}`);
-        } else if (alive) {
-          setErr(true);
-        }
-      })
-      .catch(() => alive && setErr(true));
-    return () => {
-      alive = false;
-    };
-  }, [imagePath]);
-
-  if (err)
-    return (
-      <div className="flex h-48 items-center justify-center rounded-lg border border-dashed text-center text-sm text-muted-foreground">
-        {t("onboarding360.doc.failedToLoad", { label })}
-      </div>
-    );
-  if (!src) return <Skeleton className="h-48 w-full rounded-lg" />;
-  return (
-    <button
-      type="button"
-      onClick={() => onEnlarge?.(src, label)}
-      className="group relative block w-full overflow-hidden rounded-lg border"
-    >
-      <img src={src} alt={label} loading="lazy" className="h-48 w-full bg-muted object-cover transition-transform duration-200 group-hover:scale-105" />
-      <span className="absolute inset-0 flex items-center justify-center gap-1 bg-black/45 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-        <ZoomIn className="size-4" /> {t("onboarding360.doc.clickToEnlarge")}
-      </span>
-    </button>
-  );
-};
-
-/* ------------------------------------------------------------------ */
 /* Page                                                                */
 /* ------------------------------------------------------------------ */
 
@@ -586,17 +340,11 @@ const LoadingState = () => (
   </Card>
 );
 
-/**
- * Customer 360 detail page.
- *
- * `businessMode` renders the same page for SME/business customers and enables
- * the approve / reject review actions in the Documents section (Business page).
- */
-const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => {
+/** Customer 360 detail page. */
+const Onboarding360 = () => {
   const { t } = useTranslation("customerManagement");
   const params = useParams();
   const customerId = params.id || params.customerId;
-  const navigate = useNavigate();
   const { isRTL, currentLanguage } = useLanguage();
   const isAr = currentLanguage?.code === "ar";
 
@@ -606,13 +354,6 @@ const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => 
   const [reloadKey, setReloadKey] = useState(0);
   const [activeTab, setActiveTab] = useState("overview");
   const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
-
-  /* Business document review (businessMode only) — reviewStatus / rejectionReason
-     come from the admin businesses endpoint, keyed by documentId. */
-  const [docReview, setDocReview] = useState<Record<string, any>>({});
-  const [reviewTarget, setReviewTarget] = useState<{ doc: any; action: "approve" | "reject" } | null>(null);
-  const [reviewNote, setReviewNote] = useState("");
-  const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -636,74 +377,6 @@ const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => 
       active = false;
     };
   }, [customerId, reloadKey]);
-
-  /* Review status per document — business page only. Failure here must not break
-     the page: the documents still render, just without review state. */
-  const loadDocReview = async () => {
-    if (!businessMode || !customerId) return;
-    try {
-      const res = await getBusinessDetail(String(customerId));
-      const docs: any[] = res?.data?.data?.documents ?? res?.data?.documents ?? [];
-      const map: Record<string, any> = {};
-      docs.forEach((d: any) => {
-        if (d?.documentId) map[d.documentId] = d;
-      });
-      setDocReview(map);
-    } catch {
-      setDocReview({});
-    }
-  };
-
-  useEffect(() => {
-    loadDocReview();
-  }, [businessMode, customerId, reloadKey]);
-
-  const openReview = (doc: any, action: "approve" | "reject") => {
-    setReviewNote("");
-    setReviewTarget({ doc, action });
-  };
-
-  const submitReview = async () => {
-    if (!reviewTarget || !customerId) return;
-    const { doc, action } = reviewTarget;
-    const note = reviewNote.trim();
-    if (action === "reject" && !note) {
-      toast.error(t("onboarding360.review.reasonRequired"));
-      return;
-    }
-    try {
-      setSubmittingReview(true);
-      const res =
-        action === "approve"
-          ? await approveBusinessDocument(String(customerId), doc.documentId, note)
-          : await rejectBusinessDocument(String(customerId), doc.documentId, note);
-      const result = res?.data?.data ?? res?.data ?? {};
-      // Reflect the new status immediately, then re-sync from the backend.
-      setDocReview((prev) => ({
-        ...prev,
-        [doc.documentId]: {
-          ...(prev[doc.documentId] || {}),
-          documentId: doc.documentId,
-          reviewStatus: result.reviewStatus || (action === "approve" ? "APPROVED" : "REJECTED"),
-          rejectionReason: action === "reject" ? note : result.rejectionReason || null,
-        },
-      }));
-      toast.success(
-        action === "approve"
-          ? t("onboarding360.review.approveSuccess")
-          : t("onboarding360.review.rejectSuccess")
-      );
-      setReviewTarget(null);
-      setReviewNote("");
-      loadDocReview();
-    } catch (err: any) {
-      toast.error(
-        err?.response?.data?.message || err?.message || t("onboarding360.review.failed")
-      );
-    } finally {
-      setSubmittingReview(false);
-    }
-  };
 
   const customer = data?.customer;
   const wallet = data?.wallet;
@@ -1203,13 +876,8 @@ const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => 
                       {documents.length === 0 ? (
                         <EmptyState icon={FileText} text={t("onboarding360.empty.noDocuments")} />
                       ) : (
-                        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                          {documents.map((doc, idx) => {
-                            const review = docReview[doc.documentId] || {};
-                            const reviewStatus = (review.reviewStatus || "").toUpperCase();
-                            const isApproved = reviewStatus === "APPROVED";
-                            const isRejected = reviewStatus === "REJECTED";
-                            return (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                          {documents.map((doc, idx) => (
                             <div
                               key={doc.documentId ?? idx}
                               className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
@@ -1223,60 +891,22 @@ const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => 
                                   {formatDate(doc.createdAt)}
                                 </span>
                               </div>
-                              <DocImage imagePath={doc.imagePath} label={doc.kind || t("onboarding360.doc.documentLabel")} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                              <DocImage
+                                cacheKey={doc.imagePath}
+                                label={doc.kind || t("onboarding360.doc.documentLabel")}
+                                onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
+                                fetcher={() =>
+                                  getOnboardingDocumentImage(doc.imagePath).then(
+                                    (res: any) => res?.data?.data ?? res?.data ?? null
+                                  )
+                                }
+                              />
                               <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
                                 <span className="text-muted-foreground">{t("onboarding360.doc.documentNo")}</span>
                                 <span className="font-mono font-medium text-foreground">{doc.documentNumber || "—"}</span>
                               </div>
-
-                              {/* Business document review — approve / reject */}
-                              {businessMode && (
-                                <div className="flex flex-col gap-2 border-t border-border/60 pt-2">
-                                  <div className="flex items-center justify-between gap-2 text-xs">
-                                    <span className="text-muted-foreground">
-                                      {t("onboarding360.review.status")}
-                                    </span>
-                                    <Badge
-                                      variant="outline"
-                                      className={cn("border font-medium", TONES[statusTone(reviewStatus || "PENDING")])}
-                                    >
-                                      {reviewStatus || t("common:pending")}
-                                    </Badge>
-                                  </div>
-
-                                  {isRejected && review.rejectionReason && (
-                                    <div className={cn("rounded-md border px-2 py-1.5 text-xs", TONES.red)}>
-                                      {review.rejectionReason}
-                                    </div>
-                                  )}
-
-                                  <div className="flex items-center gap-2">
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      disabled={isApproved || !doc.documentId}
-                                      onClick={() => openReview(doc, "approve")}
-                                      className="flex-1 gap-1 border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
-                                    >
-                                      <CheckCircle2 className="size-3.5" />
-                                      {t("onboarding360.review.approve")}
-                                    </Button>
-                                    <Button
-                                      size="sm"
-                                      variant="outline"
-                                      disabled={isRejected || !doc.documentId}
-                                      onClick={() => openReview(doc, "reject")}
-                                      className="flex-1 gap-1 border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400"
-                                    >
-                                      <XCircle className="size-3.5" />
-                                      {t("onboarding360.review.reject")}
-                                    </Button>
-                                  </div>
-                                </div>
-                              )}
                             </div>
-                            );
-                          })}
+                          ))}
                         </div>
                       )}
                     </Block>
@@ -1285,7 +915,16 @@ const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => 
                       {selfie ? (
                         <div className="w-full">
                           <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
-                            <DocImage imagePath={selfie.imagePath} label={t("onboarding360.doc.selfieLabel")} onEnlarge={(s, l) => setLightbox({ src: s, label: l })} />
+                            <DocImage
+                              cacheKey={selfie.imagePath}
+                              label={t("onboarding360.doc.selfieLabel")}
+                              onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
+                              fetcher={() =>
+                                getOnboardingDocumentImage(selfie.imagePath).then(
+                                  (res: any) => res?.data?.data ?? res?.data ?? null
+                                )
+                              }
+                            />
                             {kyc?.selfieVerified != null && (
                               <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
                                 <span className="text-muted-foreground">{t("onboarding360.doc.verification")}</span>
@@ -1312,111 +951,7 @@ const Onboarding360 = ({ businessMode = false }: { businessMode?: boolean }) => 
         </>
       )}
 
-      {/* Business document review — approve (note optional) / reject (reason required) */}
-      <Dialog
-        open={!!reviewTarget}
-        onOpenChange={(open: boolean) => {
-          if (!open && !submittingReview) {
-            setReviewTarget(null);
-            setReviewNote("");
-          }
-        }}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              {reviewTarget?.action === "approve"
-                ? t("onboarding360.review.approveTitle")
-                : t("onboarding360.review.rejectTitle")}
-            </DialogTitle>
-            <DialogDescription>
-              {reviewTarget?.action === "approve"
-                ? t("onboarding360.review.approveHint")
-                : t("onboarding360.review.rejectHint")}
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
-              <span className="text-muted-foreground">{t("onboarding360.doc.documentLabel")}</span>
-              <span className="font-medium text-foreground">
-                {reviewTarget?.doc?.kind || t("onboarding360.doc.documentFallback")}
-              </span>
-            </div>
-
-            <div className="flex flex-col gap-1.5">
-              <Label htmlFor="doc-review-note">
-                {reviewTarget?.action === "approve"
-                  ? t("onboarding360.review.noteOptional")
-                  : t("onboarding360.review.reasonRequiredLabel")}
-              </Label>
-              <Textarea
-                id="doc-review-note"
-                rows={4}
-                value={reviewNote}
-                onChange={(e: any) => setReviewNote(e.target.value)}
-                placeholder={
-                  reviewTarget?.action === "approve"
-                    ? t("onboarding360.review.notePlaceholder")
-                    : t("onboarding360.review.reasonPlaceholder")
-                }
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
-            <Button
-              variant="outline"
-              disabled={submittingReview}
-              onClick={() => {
-                setReviewTarget(null);
-                setReviewNote("");
-              }}
-            >
-              {t("common:cancel")}
-            </Button>
-            <Button
-              onClick={submitReview}
-              disabled={
-                submittingReview || (reviewTarget?.action === "reject" && !reviewNote.trim())
-              }
-              className={cn(
-                reviewTarget?.action === "reject" &&
-                  "bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500/40"
-              )}
-            >
-              {submittingReview
-                ? t("onboarding360.review.submitting")
-                : reviewTarget?.action === "approve"
-                ? t("onboarding360.review.approve")
-                : t("onboarding360.review.reject")}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Lightbox — portaled to body so the overlay also covers the sidebar */}
-      {lightbox &&
-        createPortal(
-          <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4"
-            onClick={() => setLightbox(null)}
-          >
-            <div className="relative max-h-[90vh] max-w-3xl" onClick={(e) => e.stopPropagation()}>
-              <button
-                type="button"
-                onClick={() => setLightbox(null)}
-                className="absolute -right-3 -top-3 flex size-8 items-center justify-center rounded-full bg-background text-foreground shadow-md ring-1 ring-border"
-                aria-label={t("common:close")}
-              >
-                <X className="size-4" />
-              </button>
-              <img src={lightbox.src} alt={lightbox.label} className="max-h-[90vh] max-w-full rounded-lg object-contain" />
-              <div className="mt-2 text-center text-sm font-medium text-white">{lightbox.label}</div>
-            </div>
-          </div>,
-          document.body
-        )}
+      <Lightbox image={lightbox} onClose={() => setLightbox(null)} />
     </div>
   );
 };

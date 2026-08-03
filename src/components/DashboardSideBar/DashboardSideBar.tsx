@@ -498,7 +498,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // },
         // hasAccess("customer_module") &&
          {
-          label: "Customers",
+          label: "Individual",
           Link: "CustomerList",
               LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails") || pathname.includes("/CostByCustomer") || pathname.includes("/OnboardingCostByCustomer"),
@@ -2190,7 +2190,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname.includes("/OnboardingUsers"),
         },
         {
-          label: "Customers",
+          label: "Individuals",
           Link: "CustomerList",
           LinkLable: "/LOS/CustomerManagement",
           active:

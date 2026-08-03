@@ -242,6 +242,65 @@ export function rejectBusinessDocument(
   );
 }
 
+/** Businesses list — dedicated admin endpoint (richer than the generic customers list). */
+export function getBusinessesList({
+  kycStatus,
+  page,
+  size,
+  search,
+  sort,
+}: {
+  kycStatus?: string;
+  page?: any;
+  size?: any;
+  search?: string;
+  sort?: string;
+} = {}) {
+  const params: Record<string, any> = {};
+  if (kycStatus) params.kycStatus = kycStatus;
+  if (page !== undefined) params.page = page;
+  if (size !== undefined) params.size = size;
+  if (search) params.search = search;
+  if (sort) params.sort = sort;
+  return axiosCustomerService.get(`/api/v1/admin/businesses${buildQueryString(params)}`);
+}
+
+/** Owner identity + documents (images inlined) — one call for the Owner tab. */
+export function getCustomerDocumentsBundle(customerId: string) {
+  return axiosCustomerService.get(`/api/v1/customers/${customerId}/documents-bundle`);
+}
+
+/** Lazy single document image, keyed by documentId (not a returned imagePath). */
+export function getCustomerOnboardingDocumentImage(customerId: string, documentId: string) {
+  return axiosCustomerService.get(
+    `/api/v1/customers/${customerId}/onboarding-documents/${documentId}/image`
+  );
+}
+
+/** Permission catalogue for the Partners tab (code/category/labels). */
+export function getBusinessPermissionsCatalog() {
+  return axiosCustomerService.get(`/api/v1/business-permissions`);
+}
+
+/**
+ * Business partners (owner + members). Owner-scoped on the backend today — the
+ * admin variant used here (`admin.businesses:read`) 403s until it ships. Wired
+ * ahead of time so the Partners tab only needs a flag flip once it's live.
+ */
+export function getBusinessPartners(customerId: string, status?: string) {
+  const params: Record<string, any> = {};
+  if (status) params.status = status;
+  return axiosCustomerService.get(
+    `/api/v1/admin/businesses/${customerId}/partners${buildQueryString(params)}`
+  );
+}
+
+export function getBusinessPartnerDetail(customerId: string, membershipId: string) {
+  return axiosCustomerService.get(
+    `/api/v1/admin/businesses/${customerId}/partners/${membershipId}`
+  );
+}
+
 export function getLeadCustomers(search: string = '', pep: string = '', status: string = '') {
   const params: Record<string, any> = { search, pep, status, lifecycleStage: 'LEAD' };
   const queryString = Object.entries(params)
