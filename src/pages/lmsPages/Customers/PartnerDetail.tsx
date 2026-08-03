@@ -17,7 +17,21 @@ import {
   CalendarDays,
   CheckCircle2,
   XCircle,
+  TrendingUp,
+  BarChart3,
+  ShieldCheck,
 } from "lucide-react";
+import {
+  LineChart,
+  Line,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip as ReTooltip,
+  ResponsiveContainer,
+} from "recharts";
 
 import { Card } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
@@ -44,14 +58,17 @@ import {
   DetailTabsTrigger,
   TabSkeleton,
   PermissionDenied,
+  RiskGauge,
 } from "../../../components/shared/detailKit";
 import {
   formatDate,
   formatDateTime,
   TONES,
-  riskTone,
   useTabTransition,
   humanizeCode,
+  resolveRiskScore,
+  resolveRiskLevel,
+  chartTooltipStyle,
 } from "../../../components/shared/detailKitUtils";
 
 const PERMISSION_CATEGORY_ORDER = ["WALLET", "PAYMENTS", "CARDS", "DOCUMENTS", "PROFILE", "PARTNERS"];
@@ -280,6 +297,17 @@ const PartnerDetail = () => {
 
   const isOwner = membership?.role === "OWNER";
 
+  // Risk payload shape varies by backend version — read both nestings, same as
+  // the business detail page does.
+  const riskInfo = risk?.riskInfo || {};
+  const scoreComponents =
+    risk?.riskCalculation?.scoreComponents || risk?.riskCalculation?.breakdown || [];
+  const riskHistory = risk?.riskHistory || risk?.riskCalculation?.history || [];
+  const complianceAnswers =
+    risk?.complianceQuestionHistory?.slice(-1)?.[0]?.answers ||
+    risk?.riskCalculation?.complianceQuestionHistory?.slice(-1)?.[0]?.answers ||
+    [];
+
   return (
     <div dir={isRTL ? "rtl" : "ltr"} className="onb360-page flex flex-col gap-4 p-4 md:p-6">
       <style>{`
@@ -487,20 +515,146 @@ const PartnerDetail = () => {
               <TabsContent value="risk">
                 <div className="pt-4">
                   {switching || identityLoading ? (
-                    <TabSkeleton variant="fields" count={1} />
+                    <TabSkeleton variant="charts" />
                   ) : (
-                  <Block title={t("businessDetail.tab.riskCompliance")} icon={ShieldAlert}>
-                    {(
-                      <div className="flex flex-wrap items-center gap-3">
-                        <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(risk?.riskInfo?.riskLevel)])}>
-                          {risk?.riskInfo?.riskLevel || t("onboarding360.risk.notAssessed")}
-                        </Badge>
-                        {risk?.riskInfo?.riskScore != null && (
-                          <span className="text-sm font-semibold text-foreground">{risk.riskInfo.riskScore}</span>
-                        )}
+                    <div className="flex flex-col gap-4">
+                      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+                        <Block title={t("onboarding360.risk.score")} icon={ShieldAlert}>
+                          <RiskGauge
+                            level={resolveRiskLevel(risk) || riskInfo?.riskLevel}
+                            score={resolveRiskScore(risk)}
+                            flags={
+                              <>
+                                {riskInfo?.riskGrade && (
+                                  <span>{t("onboarding360.risk.grade", { grade: riskInfo.riskGrade })}</span>
+                                )}
+                                {riskInfo?.complianceStatus && <span>{humanizeCode(riskInfo.complianceStatus)}</span>}
+                                {(riskInfo?.isPep || risk?.customer?.pepFlag) && (
+                                  <span className="inline-flex items-center gap-1 font-medium text-amber-500">
+                                    <AlertTriangle className="size-3" />
+                                    {t("onboarding360.badge.pep")}
+                                  </span>
+                                )}
+                              </>
+                            }
+                          />
+                        </Block>
+
+                        <Block title={t("onboarding360.block.scoreTrend")} icon={TrendingUp} className="lg:col-span-2">
+                          {riskHistory.length === 0 ? (
+                            <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noRiskAssessment")} />
+                          ) : (
+                            // Single series: the block title names it, so no legend.
+                            <ResponsiveContainer width="100%" height={200}>
+                              <LineChart data={riskHistory} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
+                                <CartesianGrid stroke="var(--border)" vertical={false} />
+                                <XAxis
+                                  dataKey="date"
+                                  tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                  tickFormatter={(v) => formatDate(v)}
+                                  tickLine={false}
+                                  axisLine={{ stroke: "var(--border)" }}
+                                />
+                                <YAxis
+                                  domain={[0, 100]}
+                                  tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                  tickLine={false}
+                                  axisLine={false}
+                                  width={34}
+                                />
+                                <ReTooltip
+                                  contentStyle={chartTooltipStyle}
+                                  labelFormatter={(v) => formatDate(v as string)}
+                                  formatter={(v: any) => [v, t("onboarding360.risk.score")]}
+                                />
+                                {/* Neutral series colour, not the current risk status:
+                                    painting the whole history with today's level would
+                                    mis-state what the earlier points were. */}
+                                <Line
+                                  type="monotone"
+                                  dataKey="score"
+                                  stroke="var(--chart-series-1)"
+                                  strokeWidth={2}
+                                  dot={{ r: 3 }}
+                                  activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                                />
+                              </LineChart>
+                            </ResponsiveContainer>
+                          )}
+                        </Block>
                       </div>
-                    )}
-                  </Block>
+
+                      <Block title={t("onboarding360.block.scoreBreakdown")} icon={BarChart3}>
+                        {scoreComponents.length === 0 ? (
+                          <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noBreakdown")} />
+                        ) : (
+                          // Nominal categories -> one hue for every bar. A darker-where-
+                          // bigger ramp would double-encode the bar length as colour.
+                          <ResponsiveContainer width="100%" height={260}>
+                            <BarChart data={scoreComponents} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
+                              <CartesianGrid stroke="var(--border)" vertical={false} />
+                              <XAxis
+                                dataKey="category"
+                                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                interval={0}
+                                angle={-15}
+                                textAnchor="end"
+                                height={56}
+                                tickLine={false}
+                                axisLine={{ stroke: "var(--border)" }}
+                              />
+                              <YAxis
+                                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                tickLine={false}
+                                axisLine={false}
+                                width={34}
+                              />
+                              <ReTooltip contentStyle={chartTooltipStyle} cursor={{ fill: "var(--muted)" }} />
+                              <Bar
+                                dataKey="scoreContribution"
+                                fill="var(--chart-series-1)"
+                                radius={[4, 4, 0, 0]}
+                                maxBarSize={44}
+                              />
+                            </BarChart>
+                          </ResponsiveContainer>
+                        )}
+                      </Block>
+
+                      {/* Table view — every charted value is also readable as text. */}
+                      {complianceAnswers.length > 0 && (
+                        <Block title={t("onboarding360.block.complianceQuestionnaire")} icon={ShieldCheck}>
+                          <div className="overflow-x-auto">
+                            <table className="w-full min-w-[640px] border-collapse text-sm">
+                              <thead>
+                                <tr className="border-b border-border text-xs uppercase tracking-wide text-muted-foreground">
+                                  <th className="px-3 py-2 text-start font-medium">{t("onboarding360.compliance.question")}</th>
+                                  <th className="px-3 py-2 text-start font-medium">{t("onboarding360.compliance.answer")}</th>
+                                  <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.factorWeight")}</th>
+                                  <th className="px-3 py-2 text-end font-medium">{t("onboarding360.breakdown.score")}</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {complianceAnswers.map((a: any, i: number) => (
+                                  <tr key={i} className="border-b border-border/60 transition-colors hover:bg-muted/40">
+                                    <td className="px-3 py-2.5 font-medium text-foreground">
+                                      {isRTL ? a.questionAr || a.questionEn : a.questionEn}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-muted-foreground">{a.answer || "—"}</td>
+                                    <td className="px-3 py-2.5 text-end tabular-nums">
+                                      {a.factorWeightPct != null ? `${a.factorWeightPct}%` : "—"}
+                                    </td>
+                                    <td className="px-3 py-2.5 text-end font-semibold tabular-nums text-foreground">
+                                      {a.scoreContribution ?? "—"}
+                                    </td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        </Block>
+                      )}
+                    </div>
                   )}
                 </div>
               </TabsContent>

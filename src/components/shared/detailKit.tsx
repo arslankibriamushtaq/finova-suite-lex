@@ -10,13 +10,21 @@ import {
   Check,
   Copy,
   ShieldAlert,
+  AlertTriangle,
 } from "lucide-react";
+
+import {
+  ResponsiveContainer,
+  RadialBarChart,
+  RadialBar,
+  PolarAngleAxis,
+} from "recharts";
 
 import { Badge } from "../ui/badge";
 import { Skeleton } from "../ui/skeleton";
 import { TabsList, TabsTrigger } from "../ui/tabs";
 import { cn } from "../../lib/utils";
-import { TONES, statusTone } from "./detailKitUtils";
+import { TONES, TONE_HEX, statusTone, riskTone, formatDate } from "./detailKitUtils";
 
 /**
  * Component half of the detail kit. This module must export *only* components
@@ -113,6 +121,211 @@ export const PermissionDenied = ({ message }: { message?: string }) => {
       </span>
       <h3 className="m-0 text-sm font-semibold text-foreground">{t("permission.deniedTitle")}</h3>
       <p className="m-0 max-w-sm text-sm text-muted-foreground">{message || t("permission.deniedMessage")}</p>
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Onboarding stepper                                                  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Onboarding progress rail. Reads `onboarding.steps` — each step being
+ * `{ step, label, labelAr, status, occurredAt }` with status one of
+ * COMPLETED / CURRENT / FAILED / PENDING.
+ *
+ * Renders nothing when there are no steps, so a page can mount it
+ * unconditionally against a payload that may not carry them.
+ *
+ * Presentation lives in the `.onb360-page .onb-*` rules in `styles/tokens.css`,
+ * so every page using this gets the animation and RTL connector mirroring.
+ */
+export const OnboardingStepper = ({
+  onboarding,
+  isAr,
+  hideWhenEmpty = false,
+}: {
+  onboarding?: any;
+  isAr?: boolean;
+  hideWhenEmpty?: boolean;
+}) => {
+  const { t } = useTranslation("customerManagement");
+  const steps: any[] = onboarding?.steps || [];
+
+  if (hideWhenEmpty && steps.length === 0 && !onboarding?.failureReason) return null;
+
+  return (
+    <div className="px-4 py-3 md:px-5">
+      {onboarding?.failureReason && (
+        <div className={cn("mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm", TONES.red)}>
+          <AlertTriangle className="size-4 shrink-0" />
+          {onboarding.failureReason}
+        </div>
+      )}
+
+      {steps.length === 0 ? (
+        <p className="text-sm text-muted-foreground">{t("onboarding360.stepper.noSteps")}</p>
+      ) : (
+        /* Each step is an equal-width column so its label is bounded by the
+           column (wraps, never overlaps the neighbour) — no horizontal scroll.
+           Connectors are absolute lines drawn from each circle's centre to the
+           next, sitting behind the circles. */
+        <div className="relative flex items-start">
+          {steps.map((step: any, idx: number) => {
+            const status = (step.status || "PENDING").toUpperCase();
+            const isFirst = idx === 0;
+            const done = status === "COMPLETED";
+            const current = status === "CURRENT";
+            const failed = status === "FAILED";
+            const prevDone = idx > 0 && (steps[idx - 1]?.status || "PENDING").toUpperCase() === "COMPLETED";
+            const circle = done
+              ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
+              : failed
+              ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
+              : current
+              ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
+              : "border-border text-muted-foreground";
+            return (
+              <div key={step.step ?? idx} className="relative flex min-w-0 flex-1 flex-col items-center">
+                {/* Connector from the previous circle's centre to this one. */}
+                {!isFirst && (
+                  <div
+                    className={cn(
+                      "onb-connector absolute top-5 z-0 h-0.5 rounded-full transition-colors duration-500",
+                      prevDone ? "bg-emerald-500" : "bg-border"
+                    )}
+                    style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
+                  />
+                )}
+                <div
+                  className={cn(
+                    "onb-step-circle relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
+                    circle
+                  )}
+                  style={{ animationDelay: `${idx * 0.18}s` }}
+                >
+                  {done ? (
+                    <Check className="size-5" strokeWidth={3} />
+                  ) : failed ? (
+                    <AlertTriangle className="size-5" />
+                  ) : (
+                    <span className="text-sm font-semibold">{idx + 1}</span>
+                  )}
+                </div>
+                <div className="mt-2 w-full px-1 text-center leading-tight">
+                  <div className="onb-label" style={{ animationDelay: `${idx * 0.18 + 0.15}s` }}>
+                    <span
+                      className={cn(
+                        "block break-words text-xs",
+                        done || current ? "font-semibold text-foreground" : "font-medium text-muted-foreground"
+                      )}
+                    >
+                      {isAr ? step.labelAr || step.label : step.label}
+                    </span>
+                    {step.occurredAt && (
+                      <div className="text-[10px] text-muted-foreground">{formatDate(step.occurredAt)}</div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Risk gauge                                                          */
+/* ------------------------------------------------------------------ */
+
+/**
+ * How far to fill the arc when the backend gives a risk *level* but no numeric
+ * score. The band is the honest reading of "HIGH" — so the ring shows the band
+ * and the centre shows the level word. We never render a fabricated number.
+ */
+const LEVEL_FILL: Record<string, number> = {
+  LOW: 33,
+  MEDIUM: 66,
+  HIGH: 100,
+  CRITICAL: 100,
+};
+
+/**
+ * Risk as a meter, not a chart: a single value against a fixed limit (0–100),
+ * so a one-bar bar chart would be the wrong form. The track uses the same ramp
+ * as the fill.
+ *
+ * Degrades in two steps, because the payload often carries a level with no
+ * score: score → numeric arc + number; level only → band arc + level word;
+ * neither → empty track + "—".
+ *
+ * The arc colour is a *status* token (good / warning / critical), so it is
+ * always paired with the level text — status is never encoded by colour alone.
+ */
+export const RiskGauge = ({
+  level,
+  score,
+  flags,
+}: {
+  level?: string;
+  score?: number | null;
+  flags?: React.ReactNode;
+}) => {
+  const { t } = useTranslation("customerManagement");
+  const tone = riskTone(level);
+  const color = TONE_HEX[tone];
+
+  const numeric = score != null && score !== "" && !Number.isNaN(Number(score));
+  const levelKey = (level || "").toUpperCase();
+  const bandFill = LEVEL_FILL[levelKey];
+  const hasBand = !numeric && bandFill != null;
+
+  const value = numeric ? Math.max(0, Math.min(100, Number(score))) : hasBand ? bandFill : 0;
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-2">
+      <div className="relative size-40">
+        <ResponsiveContainer width="100%" height="100%">
+          <RadialBarChart
+            innerRadius="72%"
+            outerRadius="100%"
+            data={[{ name: "score", value, fill: color }]}
+            startAngle={90}
+            endAngle={-270}
+          >
+            <PolarAngleAxis type="number" domain={[0, 100]} tick={false} />
+            <RadialBar dataKey="value" cornerRadius={12} background={{ fill: "var(--muted)" }} />
+          </RadialBarChart>
+        </ResponsiveContainer>
+        {/* Proportional figures — tabular-nums makes a standalone number look loose. */}
+        <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
+          <span
+            className={cn("font-bold leading-none", hasBand ? "text-xl" : "text-3xl")}
+            style={{ color }}
+          >
+            {numeric ? value : hasBand ? levelKey : "—"}
+          </span>
+          <span className="mt-1 text-[11px] uppercase tracking-wide text-muted-foreground">
+            {numeric || !hasBand ? t("onboarding360.risk.score") : t("onboarding360.risk.level")}
+          </span>
+        </div>
+      </div>
+
+      {/* Suppressed when the level is already the centre figure — otherwise the
+          same word appears twice under one ring. */}
+      {!hasBand && (
+        <Badge variant="outline" className={cn("border text-[11px] font-semibold", TONES[tone])}>
+          {level || t("onboarding360.risk.notAssessed")}
+        </Badge>
+      )}
+
+      {flags && (
+        <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
+          {flags}
+        </div>
+      )}
     </div>
   );
 };

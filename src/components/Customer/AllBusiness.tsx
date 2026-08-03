@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import PulseLoading from "../Loader/PulseLoader";
-import { Button, DatePicker, Dropdown, Input, Menu, Modal, Checkbox } from "antd";
+import { Button, DatePicker, Dropdown, Input, Menu } from "antd";
 import TableView from "../TableView/TableView";
 import { getRiskBlockCodes } from "../../redux/apis/apisRiskManagement";
 import { getCustomerBlocks, assignBlockToCustomer, removeBlockFromCustomer } from "../../redux/apis/apisCrudLms";
@@ -8,8 +8,18 @@ import { getBusinessesList } from "../../redux/apis/apisEddReferenceData";
 import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
-import { Users, Lock, ShieldAlert, AlertTriangle } from "lucide-react";
+import { Users, Lock, ShieldAlert, AlertTriangle, ShieldCheck } from "lucide-react";
 import { Tabs } from "../ui/tabs";
+import { Badge } from "../ui/badge";
+import { Button as ShadButton } from "../ui/button";
+import { Checkbox as ShadCheckbox } from "../ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "../ui/dialog";
 import BeneficiariesDialog from "../../pages/lmsPages/Wallet/BeneficiariesDialog";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
@@ -23,7 +33,7 @@ import {
   DetailTabsList,
   DetailTabsTrigger,
 } from "../../components/shared/detailKit";
-import { TONES, statusTone, riskTone } from "../../components/shared/detailKitUtils";
+import { TONES, statusTone, riskTone, humanizeCode } from "../../components/shared/detailKitUtils";
 
 /** Business (SME) list — dedicated admin businesses endpoint, filterable by KYC status. */
 const KYC_STATUS_CHIPS = ["ALL", "PENDING", "VERIFIED", "REJECTED"] as const;
@@ -665,73 +675,166 @@ const AllBusiness = () => {
         }
       `}</style>
 
-      {/* Block Codes Management Modal */}
-      <Modal maskClosable={false} keyboard={false}
-        title={<div style={{ fontSize: "20px", fontWeight: "600" }}>{t("allCustomers.blockModal.title")}</div>}
+      {/* Block Codes Management — shadcn Dialog (migration target); soft tone
+          badges instead of saturated blocks, and the state column is a status
+          chip rather than a button that never did anything. */}
+      <Dialog
         open={isBlockModalVisible}
-        onCancel={handleModalClose}
-        footer={null}
-        width={800}
-        centered
+        onOpenChange={(open: boolean) => {
+          if (!open) handleModalClose();
+        }}
       >
-        <div style={{ marginTop: "20px" }}>
+        <DialogContent className="max-h-[90vh] gap-0 overflow-hidden p-0 sm:max-w-3xl">
+          <DialogHeader className="border-b px-5 py-4">
+            <DialogTitle className="flex items-center gap-2 text-base">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 ring-1 ring-emerald-500/15">
+                <Lock className="size-4" />
+              </span>
+              {t("allCustomers.blockModal.title")}
+            </DialogTitle>
+          </DialogHeader>
+
           {isLoadingBlockCodes ? (
-            <div style={{ display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", minHeight: "300px", gap: "20px" }}>
+            <div className="flex min-h-72 flex-col items-center justify-center gap-4 px-5 py-10">
               <PulseLoading size="lg" />
-              <p style={{ fontSize: "16px", color: "var(--muted-foreground)", margin: 0 }}>{t("allCustomers.blockModal.loading")}</p>
+              <p className="m-0 text-sm text-muted-foreground">{t("allCustomers.blockModal.loading")}</p>
             </div>
           ) : (
             <>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", padding: "10px 0" }}>
-                <h3 style={{ margin: 0, fontSize: "16px", fontWeight: "600" }}>{t("allCustomers.blockModal.selectionHeading")}</h3>
-                <div style={{ display: "flex", gap: "10px" }}>
-                  <Button type="primary" style={{ backgroundColor: "var(--color-success)", borderColor: "var(--color-success)" }} onClick={handleSelectAll}>{t("allCustomers.blockModal.selectAll")}</Button>
-                  <Button style={{ backgroundColor: "var(--color-warning)", borderColor: "var(--color-warning)", color: "var(--primary-foreground)" }} onClick={handleDeselectAll}>{t("allCustomers.blockModal.deselectAll")}</Button>
+              <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3">
+                <div className="flex min-w-0 items-center gap-2">
+                  <h3 className="m-0 text-sm font-semibold text-foreground">
+                    {t("allCustomers.blockModal.selectionHeading")}
+                  </h3>
+                  {selectedBlockCodes.length > 0 && (
+                    <Badge variant="outline" className={cn("border text-[11px] font-medium", TONES.sky)}>
+                      {t("allCustomers.blockModal.selectedCount", { count: selectedBlockCodes.length })}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShadButton variant="outline" size="sm" className="h-8 text-xs" onClick={handleSelectAll}>
+                    {t("allCustomers.blockModal.selectAll")}
+                  </ShadButton>
+                  <ShadButton
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 text-xs"
+                    disabled={selectedBlockCodes.length === 0}
+                    onClick={handleDeselectAll}
+                  >
+                    {t("allCustomers.blockModal.deselectAll")}
+                  </ShadButton>
                 </div>
               </div>
-              <div style={{ border: "1px solid var(--border)", borderRadius: "2px", overflow: "hidden", maxHeight: "400px", overflowY: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead style={{ backgroundColor: "var(--muted)", position: "sticky", top: 0, zIndex: 1 }}>
-                    <tr>
-                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", width: "50px" }}>
-                        <Checkbox checked={selectedBlockCodes.length === blockCodes.length && blockCodes.length > 0} indeterminate={selectedBlockCodes.length > 0 && selectedBlockCodes.length < blockCodes.length} onChange={(e: any) => e.target.checked ? handleSelectAll() : handleDeselectAll()} />
+
+              <div className="max-h-[45vh] overflow-y-auto border-y">
+                <table className="w-full border-collapse text-sm">
+                  <thead className="sticky top-0 z-10 bg-muted/70 backdrop-blur">
+                    <tr className="border-b text-[11px] uppercase tracking-wide text-muted-foreground">
+                      <th className="w-12 px-4 py-2.5 text-start font-medium">
+                        <ShadCheckbox
+                          checked={
+                            selectedBlockCodes.length > 0 && selectedBlockCodes.length === blockCodes.length
+                              ? true
+                              : selectedBlockCodes.length > 0
+                              ? "indeterminate"
+                              : false
+                          }
+                          onCheckedChange={(checked: boolean | "indeterminate") =>
+                            checked === true ? handleSelectAll() : handleDeselectAll()
+                          }
+                          aria-label={t("allCustomers.blockModal.selectAll")}
+                        />
                       </th>
-                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>{t("allCustomers.blockModal.colBlockCode")}</th>
-                      <th style={{ padding: "12px 16px", textAlign: "left", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>{t("common:type")}</th>
-                      <th style={{ padding: "12px 16px", textAlign: "center", borderBottom: "1px solid var(--border)", fontWeight: "600" }}>{t("allCustomers.blockModal.colAction")}</th>
+                      <th className="px-4 py-2.5 text-start font-medium">{t("allCustomers.blockModal.colBlockCode")}</th>
+                      <th className="px-4 py-2.5 text-start font-medium">{t("common:type")}</th>
+                      <th className="px-4 py-2.5 text-end font-medium">{t("common:status")}</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {blockCodes.map((code) => (
-                      <tr key={code.id} style={{ backgroundColor: selectedBlockCodes.includes(code.id) ? "var(--muted)" : "var(--background)" }}>
-                        <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
-                          <Checkbox checked={selectedBlockCodes.includes(code.id)} onChange={() => handleCheckboxChange(code.id)} />
-                        </td>
-                        <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", fontWeight: "500" }}>{code.code}</td>
-                        <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)" }}>
-                          <span style={{ backgroundColor: "var(--color-info)", color: "var(--primary-foreground)", padding: "4px 12px", borderRadius: "2px", fontSize: "12px", fontWeight: "500" }}>{code.type}</span>
-                        </td>
-                        <td style={{ padding: "12px 16px", borderBottom: "1px solid var(--border)", textAlign: "center" }}>
-                          <button style={{ backgroundColor: code.blocked ? "var(--color-error)" : "var(--color-success)", color: "var(--primary-foreground)", border: "none", padding: "6px 16px", borderRadius: "2px", fontSize: "12px", fontWeight: "500", cursor: "default", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                            {code.blocked ? t("allCustomers.blockModal.blocked") : t("allCustomers.blockModal.activeState")}
-                          </button>
+                    {blockCodes.length === 0 ? (
+                      <tr>
+                        <td colSpan={4} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                          {t("allCustomers.blockModal.noCodes")}
                         </td>
                       </tr>
-                    ))}
+                    ) : (
+                      blockCodes.map((code) => {
+                        const checked = selectedBlockCodes.includes(code.id);
+                        return (
+                          <tr
+                            key={code.id}
+                            onClick={() => handleCheckboxChange(code.id)}
+                            className={cn(
+                              "cursor-pointer border-b border-border/60 transition-colors last:border-b-0",
+                              checked ? "bg-emerald-500/[0.06]" : "hover:bg-muted/40"
+                            )}
+                          >
+                            <td className="px-4 py-2.5" onClick={(e) => e.stopPropagation()}>
+                              <ShadCheckbox
+                                checked={checked}
+                                onCheckedChange={() => handleCheckboxChange(code.id)}
+                                aria-label={code.code}
+                              />
+                            </td>
+                            <td className="px-4 py-2.5 font-medium text-foreground">{code.code}</td>
+                            <td className="px-4 py-2.5">
+                              <Badge variant="outline" className={cn("border text-[11px] font-medium", TONES.sky)}>
+                                {humanizeCode(code.type)}
+                              </Badge>
+                            </td>
+                            <td className="px-4 py-2.5 text-end">
+                              <Badge
+                                variant="outline"
+                                className={cn(
+                                  "border text-[11px] font-medium",
+                                  code.blocked ? TONES.red : TONES.emerald
+                                )}
+                              >
+                                {code.blocked
+                                  ? t("allCustomers.blockModal.blocked")
+                                  : t("allCustomers.blockModal.activeState")}
+                              </Badge>
+                            </td>
+                          </tr>
+                        );
+                      })
+                    )}
                   </tbody>
                 </table>
               </div>
-              <div style={{ display: "flex", gap: "10px", marginTop: "20px", paddingTop: "20px", borderTop: "1px solid var(--border)" }}>
-                <Button type="primary" danger disabled={selectedBlockCodes.length === 0} onClick={handleBlockSelected} style={{ backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)", borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-error)" }}>{t("allCustomers.blockModal.blockSelected")}</Button>
-                <Button type="primary" disabled={selectedBlockCodes.length === 0} onClick={handleUnblockSelected} style={{ backgroundColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning)", borderColor: selectedBlockCodes.length === 0 ? undefined : "var(--color-warning)" }}>{t("allCustomers.blockModal.unblockSelected")}</Button>
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px", paddingTop: "20px", borderTop: "1px solid var(--border)" }}>
-                <Button onClick={handleModalClose} style={{ backgroundColor: "var(--color-disabled)", borderColor: "var(--color-disabled)", color: "var(--primary-foreground)" }}>{t("common:close")}</Button>
-              </div>
+
+              <DialogFooter className="flex-row items-center justify-between gap-2 px-5 py-3 sm:justify-between">
+                <div className="flex items-center gap-2">
+                  <ShadButton
+                    size="sm"
+                    disabled={selectedBlockCodes.length === 0}
+                    onClick={handleBlockSelected}
+                    className="h-8 gap-1.5 bg-red-600 text-xs text-white hover:bg-red-700 focus-visible:ring-red-500/40"
+                  >
+                    <Lock className="size-3.5" />
+                    {t("allCustomers.blockModal.blockSelected")}
+                  </ShadButton>
+                  <ShadButton
+                    variant="outline"
+                    size="sm"
+                    disabled={selectedBlockCodes.length === 0}
+                    onClick={handleUnblockSelected}
+                    className="h-8 gap-1.5 border-emerald-500/40 text-xs text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
+                  >
+                    <ShieldCheck className="size-3.5" />
+                    {t("allCustomers.blockModal.unblockSelected")}
+                  </ShadButton>
+                </div>
+                <ShadButton variant="ghost" size="sm" className="h-8 text-xs" onClick={handleModalClose}>
+                  {t("common:close")}
+                </ShadButton>
+              </DialogFooter>
             </>
           )}
-        </div>
-      </Modal>
+        </DialogContent>
+      </Dialog>
 
       {/* Customer Beneficiaries (IBAN + IBFT) */}
       <BeneficiariesDialog

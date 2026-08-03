@@ -9,7 +9,6 @@ import {
   ShieldAlert,
   Wallet as WalletIcon,
   Lock,
-  Check,
   CircleDot,
   FileText,
   Camera,
@@ -68,6 +67,7 @@ import {
   EmptyState,
   DocImage,
   Lightbox,
+  OnboardingStepper,
 } from "../../../components/shared/detailKit";
 import {
   formatMoney,
@@ -195,101 +195,6 @@ const HeaderBand = ({ customer, countryConfig, isAr }: any) => {
 /* ------------------------------------------------------------------ */
 /* Onboarding stepper                                                  */
 /* ------------------------------------------------------------------ */
-
-const Stepper = ({ onboarding, isAr }: any) => {
-  const { t } = useTranslation("customerManagement");
-  const steps: any[] = onboarding?.steps || [];
-
-  return (
-    <div className="px-4 py-3 md:px-5">
-      {onboarding?.failureReason && (
-        <div className={cn("mb-4 flex items-center gap-2 rounded-lg border px-3 py-2 text-sm", TONES.red)}>
-          <AlertTriangle className="size-4 shrink-0" />
-          {onboarding.failureReason}
-        </div>
-      )}
-
-      {steps.length === 0 ? (
-        <p className="text-sm text-muted-foreground">{t("onboarding360.stepper.noSteps")}</p>
-      ) : (
-        /* Each step is an equal-width column so its label is bounded by the
-           column (wraps, never overlaps the neighbour) — no horizontal scroll.
-           Connectors are absolute lines drawn from each circle's centre to the
-           next, sitting behind the circles. */
-        <div className="relative flex items-start">
-          {steps.map((step: any, idx: number) => {
-            const status = (step.status || "PENDING").toUpperCase();
-            const isFirst = idx === 0;
-            const done = status === "COMPLETED";
-            const current = status === "CURRENT";
-            const failed = status === "FAILED";
-            const prevDone =
-              idx > 0 &&
-              (steps[idx - 1]?.status || "PENDING").toUpperCase() === "COMPLETED";
-            const circle = done
-              ? "border-emerald-500 bg-emerald-500 text-white shadow-sm shadow-emerald-500/30"
-              : failed
-              ? "border-red-500 bg-red-500 text-white shadow-sm shadow-red-500/30"
-              : current
-              ? "border-emerald-500 text-emerald-600 ring-4 ring-emerald-500/15"
-              : "border-border text-muted-foreground";
-            return (
-              <div
-                key={step.step ?? idx}
-                className="relative flex min-w-0 flex-1 flex-col items-center"
-              >
-                {/* Connector from the previous circle's centre to this one. */}
-                {!isFirst && (
-                  <div
-                    className={cn(
-                      "onb-connector absolute top-5 z-0 h-0.5 rounded-full transition-colors duration-500",
-                      prevDone ? "bg-emerald-500" : "bg-border"
-                    )}
-                    style={{ animationDelay: `${idx * 0.18 + 0.1}s` }}
-                  />
-                )}
-                <div
-                  className={cn(
-                    "onb-step-circle relative z-10 flex size-10 items-center justify-center rounded-full border-2 bg-background transition-all duration-300",
-                    circle
-                  )}
-                  style={{ animationDelay: `${idx * 0.18}s` }}
-                >
-                  {done ? (
-                    <Check className="size-5" strokeWidth={3} />
-                  ) : failed ? (
-                    <AlertTriangle className="size-5" />
-                  ) : (
-                    <span className="text-sm font-semibold">{idx + 1}</span>
-                  )}
-                </div>
-                <div className="mt-2 w-full px-1 text-center leading-tight">
-                  <div className="onb-label" style={{ animationDelay: `${idx * 0.18 + 0.15}s` }}>
-                    <span
-                      className={cn(
-                        "block break-words text-xs",
-                        done || current
-                          ? "font-semibold text-foreground"
-                          : "font-medium text-muted-foreground"
-                      )}
-                    >
-                      {isAr ? step.labelAr || step.label : step.label}
-                    </span>
-                    {step.occurredAt && (
-                      <div className="text-[10px] text-muted-foreground">
-                        {formatDate(step.occurredAt)}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-};
 
 /* ------------------------------------------------------------------ */
 /* Risk gauge (reused in overview + risk tab)                          */
@@ -481,44 +386,6 @@ const Onboarding360 = () => {
         .onb360-page h3 { font-size: 0.875rem !important; line-height: 1.3 !important; margin: 0 !important; }
         .onb360-page h4 { font-size: 0.8125rem !important; line-height: 1.3 !important; margin: 0 !important; }
 
-        /* Stepper entrance animation — staggered, professional reveal */
-        @keyframes onbStepPop {
-          0%   { opacity: 0; transform: scale(0.4); }
-          60%  { opacity: 1; transform: scale(1.12); }
-          100% { opacity: 1; transform: scale(1); }
-        }
-        @keyframes onbConnGrow {
-          from { transform: scaleX(0); }
-          to   { transform: scaleX(1); }
-        }
-        @keyframes onbLabelIn {
-          from { opacity: 0; transform: translateY(6px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .onb360-page .onb-step-circle {
-          animation: onbStepPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
-          /* Must sit above the connector lines (which also animate a transform,
-             creating their own stacking context) so the line never covers the
-             tick. Higher than the connector's z-0. */
-          z-index: 1;
-          }
-        .onb360-page .onb-connector {
-          /* Logical insets so the line connects to the previous step and mirrors
-             automatically in RTL (end=right in LTR / left in RTL). */
-          inset-inline-end: 50%;
-          inset-inline-start: -50%;
-          transform-origin: left center;
-          animation: onbConnGrow 0.45s ease-out both;
-        }
-        .onb360-page[dir="rtl"] .onb-connector { transform-origin: right center; }
-        .onb360-page .onb-label {
-          animation: onbLabelIn 0.4s ease-out both;
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .onb360-page .onb-step-circle,
-          .onb360-page .onb-connector,
-          .onb360-page .onb-label { animation: none !important; }
-        }
       `}</style>
       {loading ? (
         <LoadingState />
@@ -540,7 +407,7 @@ const Onboarding360 = () => {
         <>
           {/* Onboarding progress — its own (transparent) card */}
           <Card className="stepper-card overflow-hidden py-0">
-            <Stepper onboarding={onboarding} isAr={isAr} />
+            <OnboardingStepper onboarding={onboarding} isAr={isAr} />
           </Card>
 
           {/* Customer info + tabs — its own card */}

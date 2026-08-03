@@ -156,6 +156,35 @@ export const riskTone = (level?: string): string => {
   }
 };
 
+/**
+ * Numeric risk score, wherever this backend version put it. Several payload
+ * shapes are in play (`riskInfo.riskScore`, a bare `riskScore`, and
+ * `riskCalculation.totalScore`), and some records carry only a level with no
+ * score at all — hence `null` rather than a 0 default, so callers can tell
+ * "no score" apart from "scored zero".
+ */
+export const resolveRiskScore = (risk: any): number | null => {
+  const candidates = [
+    risk?.riskInfo?.riskScore,
+    risk?.riskScore,
+    risk?.riskCalculation?.totalScore,
+    risk?.riskCalculation?.score,
+    risk?.riskInfo?.score,
+  ];
+  for (const c of candidates) {
+    if (c != null && c !== "" && !Number.isNaN(Number(c))) return Number(c);
+  }
+  return null;
+};
+
+/** Risk level, tolerant of the same nesting variance as the score. */
+export const resolveRiskLevel = (risk: any): string | undefined =>
+  risk?.riskInfo?.riskLevel ||
+  risk?.riskLevel ||
+  risk?.riskCalculation?.riskLevel ||
+  risk?.riskInfo?.riskGrade ||
+  undefined;
+
 export const chartTooltipStyle = {
   background: "var(--card)",
   border: "1px solid var(--border)",

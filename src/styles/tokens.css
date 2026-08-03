@@ -32,6 +32,10 @@
   --chart-3: #06b6d4;
   --chart-4: #34d399;
   --chart-5: #0d9488;
+  /* Single-series chart mark. Validated against the dataviz six checks in
+     BOTH light and dark: lightness band, chroma floor, and >= 3:1 contrast vs
+     each surface. --chart-1 (#10b981) sits below 3:1 and is not safe here. */
+  --chart-series-1: #059669;
   --radius: 2px;
 
   /* Status colors */
@@ -237,6 +241,10 @@ html.dark,
   --chart-3: #06b6d4;
   --chart-4: #34d399;
   --chart-5: #0d9488;
+  /* Single-series chart mark. Validated against the dataviz six checks in
+     BOTH light and dark: lightness band, chroma floor, and >= 3:1 contrast vs
+     each surface. --chart-1 (#10b981) sits below 3:1 and is not safe here. */
+  --chart-series-1: #059669;
 
   /* App surface / status — dark variants */
   --color-success: #22c55e;
@@ -2462,6 +2470,108 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"],
 html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
 .dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after {
   background-color: #ffffff;
+}
+
+/* ------------------------------------------------------------------ *
+ * shadcn dialog typography reset
+ *
+ * Dialogs portal to <body>, outside every page scope — so Bootstrap's global
+ * element rules apply to their contents. Tailwind v4 emits utilities inside
+ * `@layer utilities`, and UNLAYERED css always beats LAYERED css regardless of
+ * specificity, so `h2{font-size:2rem}` from Bootstrap silently overrides a
+ * `text-base` class on a DialogTitle. That's why dialog headings rendered at
+ * ~32px. These rules are unlayered too, so they compete on equal footing.
+ * ------------------------------------------------------------------ */
+[data-slot="dialog-content"] h1,
+[data-slot="dialog-content"] h2,
+[data-slot="dialog-content"] h3,
+[data-slot="dialog-content"] h4,
+[data-slot="dialog-content"] h5,
+[data-slot="dialog-content"] h6 {
+  font-size: 0.9375rem !important;
+  line-height: 1.35 !important;
+  font-weight: 600 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  color: var(--foreground) !important;
+}
+/* The dialog's own title may sit one step up from body copy. */
+[data-slot="dialog-header"] h2 {
+  font-size: 1rem !important;
+}
+[data-slot="dialog-content"] p {
+  margin: 0;
+}
+/* Bootstrap's reboot restyles bare <button>; Radix renders its checkbox as a
+   button, which is what stretched them into ovals. */
+[data-slot="dialog-content"] button[role="checkbox"] {
+  width: 1rem !important;
+  height: 1rem !important;
+  min-width: 1rem !important;
+  flex: 0 0 auto !important;
+  padding: 0 !important;
+  border-radius: 0.25rem !important;
+}
+[data-slot="dialog-content"] table {
+  font-size: 0.8125rem;
+}
+/* Bootstrap sets `button{font-size:inherit}` unlayered, which also outranks a
+   `text-xs` utility — so buttons were inheriting the 16px body size. Set the
+   dialog's base size and let them inherit something sane. */
+[data-slot="dialog-content"] {
+  font-size: 0.875rem;
+}
+[data-slot="dialog-content"] button {
+  font-size: 0.8125rem;
+  line-height: 1.2;
+}
+/* The built-in close affordance shouldn't pick up Bootstrap's button chrome. */
+[data-slot="dialog-content"] > button[type="button"]:last-child,
+[data-slot="dialog-close"] {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0.25rem !important;
+}
+
+/* Onboarding stepper (shared by the 360 / Business detail screens).
+   Lives here rather than in a page's inline <style> so every page rendering
+   <OnboardingStepper> is styled — an inline block only applies while that one
+   page is mounted. */
+@keyframes onbStepPop {
+  0%   { opacity: 0; transform: scale(0.4); }
+  60%  { opacity: 1; transform: scale(1.12); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes onbConnGrow {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+@keyframes onbLabelIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.onb360-page .onb-step-circle {
+  animation: onbStepPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  /* Must sit above the connector lines (which also animate a transform,
+     creating their own stacking context) so the line never covers the tick. */
+  z-index: 1;
+}
+.onb360-page .onb-connector {
+  /* Logical insets so the line connects to the previous step and mirrors
+     automatically in RTL (end=right in LTR / left in RTL). */
+  inset-inline-end: 50%;
+  inset-inline-start: -50%;
+  transform-origin: left center;
+  animation: onbConnGrow 0.45s ease-out both;
+}
+.onb360-page[dir="rtl"] .onb-connector { transform-origin: right center; }
+.onb360-page .onb-label {
+  animation: onbLabelIn 0.4s ease-out both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .onb360-page .onb-step-circle,
+  .onb360-page .onb-connector,
+  .onb360-page .onb-label { animation: none !important; }
 }
 
 /* Detail-page tabs (Business / Partner / 360 screens) — emerald underline.

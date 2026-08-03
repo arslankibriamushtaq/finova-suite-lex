@@ -92,6 +92,8 @@ import {
   DetailTabsTrigger,
   TabSkeleton,
   PermissionDenied,
+  RiskGauge,
+  OnboardingStepper,
 } from "../../../components/shared/detailKit";
 import {
   formatDate,
@@ -102,6 +104,8 @@ import {
   chartTooltipStyle,
   useTabTransition,
   humanizeCode,
+  resolveRiskScore,
+  resolveRiskLevel,
 } from "../../../components/shared/detailKitUtils";
 
 /* The admin partners endpoints (`GET /admin/businesses/{id}/partners*`) 403 today —
@@ -437,6 +441,23 @@ const BusinessDetail = () => {
     }
   };
 
+  /**
+   * Onboarding steps, if the admin business payload carries them. The endpoint
+   * is auth-gated so the exact nesting couldn't be confirmed — accept the
+   * shapes the customer APIs already use (`onboarding.steps`, or a bare
+   * `steps`/`onboardingSteps` array) and render nothing when absent.
+   */
+  const onboardingSteps = useMemo(() => {
+    if (!business) return null;
+    if (Array.isArray(business.onboarding?.steps) && business.onboarding.steps.length) {
+      return business.onboarding;
+    }
+    const bare = [business.onboardingSteps, business.steps].find(
+      (v: any) => Array.isArray(v) && v.length
+    );
+    return bare ? { steps: bare } : null;
+  }, [business]);
+
   const addressLine = [business?.addressLine1, business?.city, business?.postalCode].filter(Boolean).join(", ");
 
   const businessRows = business
@@ -553,17 +574,28 @@ const BusinessDetail = () => {
                     <TabSkeleton variant="fields" count={2} />
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-2">
-                    <Block title={t("businessDetail.block.businessIdentity")} icon={Building2}>
-                      {businessRows.map((r) => (
-                        <Field key={r.label} label={r.label} value={r.value || "—"} />
-                      ))}
-                    </Block>
-                    <Block title={t("businessDetail.block.status")} icon={ShieldCheck}>
-                      {statusRows.map((r) => (
-                        <Field key={r.label} label={r.label} value={r.value || "—"} />
-                      ))}
-                    </Block>
+                  <div className="flex flex-col gap-4 pt-4">
+                    {/* Onboarding rail — only rendered when the business payload
+                        actually carries steps, so it costs nothing if the admin
+                        endpoint doesn't return them. */}
+                    {onboardingSteps && (
+                      <Block title={t("onboarding360.block.onboardingProgress")} icon={ShieldCheck}>
+                        <OnboardingStepper onboarding={onboardingSteps} isAr={isRTL} hideWhenEmpty />
+                      </Block>
+                    )}
+
+                    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <Block title={t("businessDetail.block.businessIdentity")} icon={Building2}>
+                        {businessRows.map((r) => (
+                          <Field key={r.label} label={r.label} value={r.value || "—"} />
+                        ))}
+                      </Block>
+                      <Block title={t("businessDetail.block.status")} icon={ShieldCheck}>
+                        {statusRows.map((r) => (
+                          <Field key={r.label} label={r.label} value={r.value || "—"} />
+                        ))}
+                      </Block>
+                    </div>
                   </div>
                 )}
               </TabsContent>
@@ -1047,31 +1079,76 @@ const BusinessDetail = () => {
                     </Block>
                   ) : (
                     <>
-                      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
                         <Block title={t("onboarding360.risk.score")} icon={ShieldAlert}>
-                          <div className="flex flex-wrap items-center gap-3">
-                            <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(riskInfo?.riskLevel)])}>
-                              {riskInfo?.riskLevel || t("onboarding360.risk.notAssessed")}
-                            </Badge>
-                            {riskInfo?.riskScore != null && (
-                              <span className="text-sm font-semibold text-foreground">{riskInfo.riskScore}</span>
-                            )}
-                            {customer?.pepFlag && (
-                              <span className="text-xs font-medium text-amber-500">{t("onboarding360.badge.pep")}</span>
-                            )}
-                          </div>
+                          <RiskGauge
+                            level={resolveRiskLevel(riskData) || riskInfo?.riskLevel}
+                            score={resolveRiskScore(riskData)}
+                            flags={
+                              <>
+                                {(riskInfo?.riskGrade || customer?.riskGrade) && (
+                                  <span>
+                                    {t("onboarding360.risk.grade", {
+                                      grade: riskInfo?.riskGrade || customer?.riskGrade,
+                                    })}
+                                  </span>
+                                )}
+                                {riskInfo?.complianceStatus && <span>{humanizeCode(riskInfo.complianceStatus)}</span>}
+                                {customer?.pepFlag && (
+                                  <span className="inline-flex items-center gap-1 font-medium text-amber-500">
+                                    <AlertTriangle className="size-3" />
+                                    {t("onboarding360.badge.pep")}
+                                  </span>
+                                )}
+                                {customer?.sanctionsFlag && (
+                                  <span className="inline-flex items-center gap-1 font-medium text-red-500">
+                                    <ShieldAlert className="size-3" />
+                                    {t("onboarding360.badge.sanctioned")}
+                                  </span>
+                                )}
+                              </>
+                            }
+                          />
                         </Block>
-                        <Block title={t("onboarding360.block.scoreTrend")} icon={TrendingUp}>
+
+                        <Block title={t("onboarding360.block.scoreTrend")} icon={TrendingUp} className="lg:col-span-2">
                           {riskHistory.length === 0 ? (
                             <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noRiskAssessment")} />
                           ) : (
-                            <ResponsiveContainer width="100%" height={180}>
-                              <LineChart data={riskHistory} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                                <XAxis dataKey="date" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} tickFormatter={(v) => formatDate(v)} />
-                                <YAxis tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
-                                <ReTooltip contentStyle={chartTooltipStyle} labelFormatter={(v) => formatDate(v as string)} />
-                                <Line type="monotone" dataKey="score" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 3 }} />
+                            // Single series: the block title names it, so no legend.
+                            <ResponsiveContainer width="100%" height={200}>
+                              <LineChart data={riskHistory} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
+                                <CartesianGrid stroke="var(--border)" vertical={false} />
+                                <XAxis
+                                  dataKey="date"
+                                  tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                  tickFormatter={(v) => formatDate(v)}
+                                  tickLine={false}
+                                  axisLine={{ stroke: "var(--border)" }}
+                                />
+                                <YAxis
+                                  domain={[0, 100]}
+                                  tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                  tickLine={false}
+                                  axisLine={false}
+                                  width={34}
+                                />
+                                <ReTooltip
+                                  contentStyle={chartTooltipStyle}
+                                  labelFormatter={(v) => formatDate(v as string)}
+                                  formatter={(v: any) => [v, t("onboarding360.risk.score")]}
+                                />
+                                {/* Neutral series colour, not the current risk status:
+                                    painting the whole history with today's level would
+                                    mis-state what the earlier points were. */}
+                                <Line
+                                  type="monotone"
+                                  dataKey="score"
+                                  stroke="var(--chart-series-1)"
+                                  strokeWidth={2}
+                                  dot={{ r: 3 }}
+                                  activeDot={{ r: 5, strokeWidth: 2, stroke: "var(--card)" }}
+                                />
                               </LineChart>
                             </ResponsiveContainer>
                           )}
@@ -1082,13 +1159,34 @@ const BusinessDetail = () => {
                         {scoreComponents.length === 0 ? (
                           <EmptyState icon={ShieldAlert} text={t("onboarding360.empty.noBreakdown")} />
                         ) : (
-                          <ResponsiveContainer width="100%" height={240}>
-                            <BarChart data={scoreComponents} margin={{ top: 5, right: 10, left: -10, bottom: 0 }}>
-                              <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
-                              <XAxis dataKey="category" tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} interval={0} angle={-15} textAnchor="end" height={50} />
-                              <YAxis tick={{ fontSize: 10, fill: "var(--muted-foreground)" }} />
+                          // Nominal categories -> one hue for every bar. A darker-where-
+                          // bigger ramp would double-encode the bar length as colour.
+                          <ResponsiveContainer width="100%" height={260}>
+                            <BarChart data={scoreComponents} margin={{ top: 8, right: 12, left: -12, bottom: 4 }}>
+                              <CartesianGrid stroke="var(--border)" vertical={false} />
+                              <XAxis
+                                dataKey="category"
+                                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                interval={0}
+                                angle={-15}
+                                textAnchor="end"
+                                height={56}
+                                tickLine={false}
+                                axisLine={{ stroke: "var(--border)" }}
+                              />
+                              <YAxis
+                                tick={{ fontSize: 10, fill: "var(--muted-foreground)" }}
+                                tickLine={false}
+                                axisLine={false}
+                                width={34}
+                              />
                               <ReTooltip contentStyle={chartTooltipStyle} cursor={{ fill: "var(--muted)" }} />
-                              <Bar dataKey="scoreContribution" fill="var(--chart-2, #14b8a6)" radius={[5, 5, 0, 0]} />
+                              <Bar
+                                dataKey="scoreContribution"
+                                fill="var(--chart-series-1)"
+                                radius={[4, 4, 0, 0]}
+                                maxBarSize={44}
+                              />
                             </BarChart>
                           </ResponsiveContainer>
                         )}
