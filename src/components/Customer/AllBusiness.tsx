@@ -9,38 +9,80 @@ import toast from "react-hot-toast";
 import arrowDown from "../../assets/images/arrow-down.png";
 import { EyeOutlined, SearchOutlined } from "@ant-design/icons";
 import { Users, Lock, ShieldAlert, AlertTriangle } from "lucide-react";
+import { Tabs } from "../ui/tabs";
 import BeneficiariesDialog from "../../pages/lmsPages/Wallet/BeneficiariesDialog";
 import { useDispatch } from "react-redux";
 import { authSlice } from "../../redux/apis/apisSlice";
 import { formatDate } from "../../App";
 import { useNavigate } from "react-router-dom";
-import { usePermissions, CUSTOMER_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { usePermissions, BUSINESS_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { useTranslation } from "react-i18next";
 import { cn } from "../../lib/utils";
-import { TONES, statusTone, riskTone } from "../../components/shared/detailKit";
+import {
+  PermissionDenied,
+  DetailTabsList,
+  DetailTabsTrigger,
+} from "../../components/shared/detailKit";
+import { TONES, statusTone, riskTone } from "../../components/shared/detailKitUtils";
 
 /** Business (SME) list — dedicated admin businesses endpoint, filterable by KYC status. */
-const KYC_STATUS_CHIPS = ["PENDING", "ALL", "VERIFIED", "REJECTED"] as const;
+const KYC_STATUS_CHIPS = ["ALL", "PENDING", "VERIFIED", "REJECTED"] as const;
+type KycStatus = (typeof KYC_STATUS_CHIPS)[number];
+
+/** Statuses the endpoint can filter on — "All" is their union, not a value. */
+const FILTERABLE_STATUSES = KYC_STATUS_CHIPS.filter((s) => s !== "ALL");
+
+/** Per-status page size used to build the "All" tab's merged set. */
+const ALL_TAB_FETCH_SIZE = 1000;
+
+/**
+ * Pull the row array out of the response regardless of envelope shape.
+ * The admin list endpoint has been seen returning both a bare array under
+ * `data.data` and a Spring `Page` (`{ content, totalElements, totalPages }`),
+ * and an unhandled Page object silently rendered as an empty table.
+ */
+const extractRows = (response: any): any[] => {
+  const d = response?.data;
+  const candidates = [d?.data, d?.data?.content, d?.content, d?.items, d?.results, d];
+  for (const c of candidates) if (Array.isArray(c)) return c;
+  return [];
+};
+
+const extractPagination = (response: any): { totalElements: number; totalPages: number } | null => {
+  const d = response?.data;
+  const src = d?.pagination || d?.data?.pagination || (Array.isArray(d?.data) ? null : d?.data) || d;
+  const totalElements = src?.totalElements ?? src?.total ?? src?.totalCount;
+  const totalPages = src?.totalPages ?? src?.pageCount;
+  if (totalElements == null && totalPages == null) return null;
+  return { totalElements: Number(totalElements ?? 0), totalPages: Number(totalPages ?? 1) };
+};
 
 const AllBusiness = () => {
   const { t } = useTranslation("customerManagement");
   const [skelitonLoading, setSkelitonLoading] = useState(false);
-  const [data, setData] = useState<any>();
+  /** Server-paginated rows for a single-status tab. */
+  const [rows, setRows] = useState<any[]>([]);
+  const [serverTotal, setServerTotal] = useState(0);
+  const [serverPages, setServerPages] = useState(1);
+  /** Full merged set backing the "All" tab (paginated client-side). */
+  const [allRows, setAllRows] = useState<any[]>([]);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [totalRows, setTotalRows] = useState(0);
-  const [totalPage, setTotalPage] = useState(1);
   const dispatch = useDispatch();
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [kycStatus, setKycStatus] = useState<(typeof KYC_STATUS_CHIPS)[number]>("PENDING");
+  const [kycStatus, setKycStatus] = useState<KycStatus>("ALL");
+  const [reloadKey, setReloadKey] = useState(0);
+  const isAll = kycStatus === "ALL";
 
   // Permissions
   const { hasPermission } = usePermissions();
-  const canExportCustomers = hasPermission(CUSTOMER_PERMISSIONS.EXPORT);
-  const canViewCustomer = hasPermission(CUSTOMER_PERMISSIONS.LIST);
+  const canListBusiness = hasPermission(BUSINESS_PERMISSIONS.LIST);
+  const canExportCustomers = hasPermission(BUSINESS_PERMISSIONS.EXPORT);
+  const canViewCustomer = hasPermission(BUSINESS_PERMISSIONS.VIEW);
+  const canManageBlocks = hasPermission(BUSINESS_PERMISSIONS.REVIEW);
 
   // Block codes modal state
   const [isBlockModalVisible, setIsBlockModalVisible] = useState(false);
@@ -164,7 +206,7 @@ const AllBusiness = () => {
           {t("allCustomers.menu.checkBeneficiaries")}
         </Menu.Item>
       )}
-      {canViewCustomer && (
+      {canManageBlocks && (
         <Menu.Item
           key="manageBlocks"
           icon={<Lock size={14} />}
@@ -260,49 +302,104 @@ const AllBusiness = () => {
     setIsLoadingBlockCodes(false);
   };
 
-  const getBusinessList = async () => {
-    try {
-      setSkelitonLoading(true);
+  /** Refetch whichever view is active — used after a block/unblock mutation. */
+  const getBusinessList = () => setReloadKey((k) => k + 1);
 
-      // Backend uses 0-based indexing for page
-      const response = await getBusinessesList({
-        kycStatus: kycStatus === "ALL" ? undefined : kycStatus,
-        page: page - 1,
-        size: pageSize,
-        search,
-      });
-      if (response) {
-        const list = response?.data?.data || [];
-        const allData = Array.isArray(list) ? list : [];
-        setData(allData);
-
-        const pagination = response?.data?.pagination;
-        if (pagination) {
-          setTotalRows(pagination.totalElements || 0);
-          setTotalPage(pagination.totalPages || 1);
-        } else {
-          setTotalRows(allData.length);
-          setTotalPage(Math.ceil(allData.length / pageSize) || 1);
-        }
-      }
-    } catch (error: any) {
-      toast.error(error?.message);
-    } finally {
-      setSkelitonLoading(false);
-    }
-  };
-
+  // "All" tab: the admin endpoint returns nothing unless `kycStatus` is given,
+  // so All is the union of every status fetched in parallel, deduped and
+  // paginated client-side. Re-runs on search only — paging slices the cache.
   useEffect(() => {
-    getBusinessList();
-  }, [page, pageSize, search, kycStatus]);
+    if (!canListBusiness || !isAll) return;
+    let active = true;
+    (async () => {
+      setSkelitonLoading(true);
+      try {
+        const settled = await Promise.allSettled(
+          FILTERABLE_STATUSES.map((s) =>
+            getBusinessesList({ kycStatus: s, page: 0, size: ALL_TAB_FETCH_SIZE, search })
+          )
+        );
+        if (!active) return;
+        const seen = new Set<string>();
+        const merged: any[] = [];
+        settled.forEach((r) => {
+          if (r.status !== "fulfilled") return;
+          extractRows(r.value).forEach((row: any) => {
+            const key = String(row?.customerId ?? row?.id ?? "");
+            if (key && seen.has(key)) return;
+            if (key) seen.add(key);
+            merged.push(row);
+          });
+        });
+        merged.sort(
+          (a, b) =>
+            new Date(b?.customer?.createdAt || 0).getTime() -
+            new Date(a?.customer?.createdAt || 0).getTime()
+        );
+        setAllRows(merged);
+        if (settled.every((r) => r.status === "rejected")) {
+          toast.error(t("business.toast.loadFailed"));
+        }
+      } finally {
+        if (active) setSkelitonLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAll, search, canListBusiness, reloadKey]);
 
-  // Reset to page 1 when search / page size / status chip changes
+  // Single-status tabs keep server-side pagination.
+  useEffect(() => {
+    if (!canListBusiness || isAll) return;
+    let active = true;
+    (async () => {
+      setSkelitonLoading(true);
+      try {
+        // Backend uses 0-based indexing for page
+        const response = await getBusinessesList({
+          kycStatus,
+          page: page - 1,
+          size: pageSize,
+          search,
+        });
+        if (!active) return;
+        const list = extractRows(response);
+        setRows(list);
+        const pagination = extractPagination(response);
+        setServerTotal(pagination ? pagination.totalElements : list.length);
+        setServerPages(pagination ? pagination.totalPages : Math.ceil(list.length / pageSize) || 1);
+      } catch (error: any) {
+        if (active) toast.error(error?.message || t("business.toast.loadFailed"));
+      } finally {
+        if (active) setSkelitonLoading(false);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAll, kycStatus, search, page, pageSize, canListBusiness, reloadKey]);
+
+  // Reset to page 1 when search / page size changes. The status tab resets
+  // `page` in its own handler so both land in one render — resetting it here
+  // too would fire a second fetch against the previous page.
   useEffect(() => {
     setPage(1);
-  }, [search, pageSize, kycStatus]);
+  }, [search, pageSize]);
+
+  const handleKycStatusChange = (next: string) => {
+    setKycStatus(next as KycStatus);
+    setPage(1);
+  };
+
+  const sourceRows = isAll ? allRows.slice((page - 1) * pageSize, page * pageSize) : rows;
+  const totalRows = isAll ? allRows.length : serverTotal;
+  const totalPage = isAll ? Math.ceil(allRows.length / pageSize) || 1 : serverPages;
 
   const mappedData =
-    (data || []).map((item: any, index: number) => {
+    (sourceRows || []).map((item: any, index: number) => {
       const customer = item?.customer || {};
       return {
         id: item.customerId,
@@ -340,14 +437,32 @@ const AllBusiness = () => {
       let allData: any[] = [];
 
       try {
-        const response = await getBusinessesList({
-          kycStatus: kycStatus === "ALL" ? undefined : kycStatus,
-          page: 0,
-          size: 10000,
-          search,
-        });
-        const list = response?.data?.data || [];
-        allData = Array.isArray(list) ? list : [];
+        if (isAll) {
+          // Mirror the All tab: union of every status, deduped.
+          const settled = await Promise.allSettled(
+            FILTERABLE_STATUSES.map((s) =>
+              getBusinessesList({ kycStatus: s, page: 0, size: 10000, search })
+            )
+          );
+          const seen = new Set<string>();
+          settled.forEach((r) => {
+            if (r.status !== "fulfilled") return;
+            extractRows(r.value).forEach((row: any) => {
+              const key = String(row?.customerId ?? row?.id ?? "");
+              if (key && seen.has(key)) return;
+              if (key) seen.add(key);
+              allData.push(row);
+            });
+          });
+        } else {
+          const response = await getBusinessesList({
+            kycStatus,
+            page: 0,
+            size: 10000,
+            search,
+          });
+          allData = extractRows(response);
+        }
       } catch (pageError) {
         console.error("Error fetching businesses for export:", pageError);
       }
@@ -361,17 +476,17 @@ const AllBusiness = () => {
       const csvData = allData.map((item: any) => {
         const customer = item?.customer || {};
         return {
-          "Business Name": item?.businessName || customer?.fullName || "-",
-          "Registration No": item?.businessRegistrationNumber || "-",
-          "Type": item?.businessTypeCode || "-",
-          "CIF": customer?.cifNumber || "-",
-          "Email": customer?.email || "-",
-          "Phone": customer?.mobileNumber || "-",
-          "KYC Status": customer?.kycStatus || "-",
-          "Lifecycle Stage": customer?.lifecycleStage || "-",
-          "PEP": customer?.pepFlag ? "Yes" : "No",
-          "Risk Grade": customer?.riskGrade || "-",
-          "Created": customer?.createdAt ? new Date(customer.createdAt).toLocaleDateString() : "-",
+          [t("business.col.businessName")]: item?.businessName || customer?.fullName || "-",
+          [t("business.col.registrationNo")]: item?.businessRegistrationNumber || "-",
+          [t("business.col.type")]: item?.businessTypeCode || "-",
+          [t("allCustomers.col.cif")]: customer?.cifNumber || "-",
+          [t("common:email")]: customer?.email || "-",
+          [t("common:phone")]: customer?.mobileNumber || "-",
+          [t("business.col.kycStatus")]: customer?.kycStatus || "-",
+          [t("businessDetail.field.lifecycleStage")]: customer?.lifecycleStage || "-",
+          [t("onboarding360.badge.pep")]: customer?.pepFlag ? t("common:yes") : t("common:no"),
+          [t("business.col.riskGrade")]: customer?.riskGrade || "-",
+          [t("allCustomers.col.created")]: customer?.createdAt ? new Date(customer.createdAt).toLocaleDateString() : "-",
         };
       });
 
@@ -422,24 +537,22 @@ const AllBusiness = () => {
         </h3>
       </div>
 
-      {/* KYC status chips */}
-      <div className="mb-3 flex flex-wrap gap-2">
-        {KYC_STATUS_CHIPS.map((chip) => (
-          <button
-            key={chip}
-            type="button"
-            onClick={() => setKycStatus(chip)}
-            className={cn(
-              "rounded-full border px-3.5 py-1.5 text-xs font-medium transition-colors",
-              kycStatus === chip
-                ? TONES[chip === "ALL" ? "sky" : statusTone(chip)]
-                : "border-border bg-transparent text-muted-foreground hover:bg-muted/50"
-            )}
-          >
-            {t(`business.chip.${chip.toLowerCase()}`)}
-          </button>
-        ))}
-      </div>
+      {!canListBusiness ? (
+        <div className="pro-card">
+          <PermissionDenied message={t("permission.businessDenied")} />
+        </div>
+      ) : (
+      <>
+      {/* KYC status tabs — same underline bar as the Business detail page. */}
+      <Tabs value={kycStatus} onValueChange={handleKycStatusChange} className="mb-3">
+        <DetailTabsList>
+          {KYC_STATUS_CHIPS.map((chip) => (
+            <DetailTabsTrigger key={chip} value={chip}>
+              {t(`business.chip.${chip.toLowerCase()}`)}
+            </DetailTabsTrigger>
+          ))}
+        </DetailTabsList>
+      </Tabs>
 
       {/* Filters card */}
       <div className="pro-card p-3 mb-3">
@@ -521,6 +634,8 @@ const AllBusiness = () => {
           to={toValue}
         />
       </div>
+      </>
+      )}
 
       <style>{`
         /* Table styling is centralized (shared across all pages) — no per-page

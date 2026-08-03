@@ -176,6 +176,17 @@ export const CUSTOMER_PERMISSIONS = {
   EXPORT: "CUSTOMER_READ",
 }
 
+// Business (SME) lives under Customer Management and has no dedicated backend
+// codes — it reuses CUSTOMER_READ/WRITE so the gates actually resolve. Named
+// separately so a future BUSINESS_* code only has to change here.
+export const BUSINESS_PERMISSIONS = {
+  LIST: "CUSTOMER_READ",
+  EXPORT: "CUSTOMER_READ",
+  VIEW: "CUSTOMER_READ",
+  /** Approve / reject business documents, manage block codes. */
+  REVIEW: "CUSTOMER_WRITE",
+}
+
 export const OPPORTUNITY_PERMISSIONS = {
   LIST: "CUSTOMER_READ",
   EXPORT: "CUSTOMER_READ",

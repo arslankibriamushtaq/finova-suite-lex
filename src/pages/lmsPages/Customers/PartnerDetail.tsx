@@ -23,9 +23,10 @@ import { Card } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../components/ui/tabs";
+import { Tabs, TabsContent } from "../../../components/ui/tabs";
 import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
+import { usePermissions, BUSINESS_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { getCustomer360 } from "../../../redux/apis/apisCrud";
 import {
   getBusinessPartnerDetail,
@@ -33,17 +34,25 @@ import {
   getBusinessPermissionsCatalog,
 } from "../../../redux/apis/apisEddReferenceData";
 import {
-  formatDate,
-  formatDateTime,
-  TONES,
-  riskTone,
   StatusBadge,
   Field,
   Block,
   EmptyState,
   DocImage,
   Lightbox,
+  DetailTabsList,
+  DetailTabsTrigger,
+  TabSkeleton,
+  PermissionDenied,
 } from "../../../components/shared/detailKit";
+import {
+  formatDate,
+  formatDateTime,
+  TONES,
+  riskTone,
+  useTabTransition,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
 
 const PERMISSION_CATEGORY_ORDER = ["WALLET", "PAYMENTS", "CARDS", "DOCUMENTS", "PROFILE", "PARTNERS"];
 const PERMISSION_CATALOG_FALLBACK: Record<string, string[]> = {
@@ -170,11 +179,14 @@ const PartnerDetail = () => {
   const membershipId = params.membershipId;
   const { isRTL } = useLanguage();
 
+  const { hasPermission } = usePermissions();
+  const canViewBusiness = hasPermission(BUSINESS_PERMISSIONS.VIEW);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [membership, setMembership] = useState<any>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [activeTab, setActiveTab] = useState("overview");
+  const { activeTab, setActiveTab, switching } = useTabTransition("overview");
   const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
 
   const [identity, setIdentity] = useState<any>(null);
@@ -189,6 +201,10 @@ const PartnerDetail = () => {
   useEffect(() => {
     let active = true;
     if (!businessId || !membershipId) return;
+    if (!canViewBusiness) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     getBusinessPartnerDetail(String(businessId), String(membershipId))
@@ -198,13 +214,14 @@ const PartnerDetail = () => {
       })
       .catch((err: any) => {
         if (!active) return;
-        setError(err?.response?.data?.message || err?.message || "Failed to load partner data");
+        setError(err?.response?.data?.message || err?.message || t("businessDetail.error.loadPartner"));
       })
       .finally(() => active && setLoading(false));
     return () => {
       active = false;
     };
-  }, [businessId, membershipId, reloadKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId, membershipId, reloadKey, canViewBusiness]);
 
   useEffect(() => {
     let active = true;
@@ -283,7 +300,11 @@ const PartnerDetail = () => {
         .onb360-page h4 { font-size: 0.8125rem !important; line-height: 1.3 !important; margin: 0 !important; }
       `}</style>
 
-      {loading ? (
+      {!canViewBusiness ? (
+        <Card>
+          <PermissionDenied message={t("permission.businessDenied")} />
+        </Card>
+      ) : loading ? (
         <LoadingState />
       ) : error ? (
         <Card>
@@ -317,20 +338,23 @@ const PartnerDetail = () => {
             )}
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="overview">{t("onboarding360.tab.overview")}</TabsTrigger>
-                <TabsTrigger value="permissions">{t("businessDetail.partner.permissions")}</TabsTrigger>
-                <TabsTrigger value="documents">{t("onboarding360.tab.documents")}</TabsTrigger>
-                <TabsTrigger value="risk">{t("businessDetail.tab.riskCompliance")}</TabsTrigger>
-              </TabsList>
+              <DetailTabsList>
+                <DetailTabsTrigger value="overview">{t("onboarding360.tab.overview")}</DetailTabsTrigger>
+                <DetailTabsTrigger value="permissions">{t("businessDetail.partner.permissions")}</DetailTabsTrigger>
+                <DetailTabsTrigger value="documents">{t("onboarding360.tab.documents")}</DetailTabsTrigger>
+                <DetailTabsTrigger value="risk">{t("businessDetail.tab.riskCompliance")}</DetailTabsTrigger>
+              </DetailTabsList>
 
               {/* ---------------- Overview: identity + membership ---------------- */}
               <TabsContent value="overview">
+                {switching || identityLoading ? (
+                  <div className="pt-4">
+                    <TabSkeleton variant="fields" count={2} />
+                  </div>
+                ) : (
                 <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-2">
                   <Block title={t("businessDetail.partner.identity")} icon={Fingerprint}>
-                    {identityLoading ? (
-                      <Skeleton className="h-40 w-full" />
-                    ) : (
+                    {(
                       [
                         {
                           label: t("onboarding360.personal.fullName"),
@@ -359,11 +383,15 @@ const PartnerDetail = () => {
                     )}
                   </Block>
                 </div>
+                )}
               </TabsContent>
 
               {/* ---------------- Permissions ---------------- */}
               <TabsContent value="permissions">
                 <div className="pt-4">
+                  {switching ? (
+                    <TabSkeleton variant="fields" count={1} />
+                  ) : (
                   <Block title={t("businessDetail.partner.permissions")} icon={KeyRound}>
                     {isOwner ? (
                       <EmptyState icon={Crown} text={t("businessDetail.partner.unrestricted")} />
@@ -397,16 +425,18 @@ const PartnerDetail = () => {
                       </div>
                     )}
                   </Block>
+                  )}
                 </div>
               </TabsContent>
 
               {/* ---------------- Documents ---------------- */}
               <TabsContent value="documents">
                 <div className="pt-4">
+                  {switching || identityLoading ? (
+                    <TabSkeleton variant="cards" count={1} />
+                  ) : (
                   <Block title={t("onboarding360.tab.documents")} icon={FileText}>
-                    {identityLoading ? (
-                      <Skeleton className="h-48 w-full" />
-                    ) : identityError ? (
+                    {identityError ? (
                       <div className="flex flex-col items-center gap-3 py-8 text-center">
                         <AlertTriangle className="size-6 text-red-500" />
                         <p className="text-sm text-muted-foreground">{identityError}</p>
@@ -421,11 +451,11 @@ const PartnerDetail = () => {
                             className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
                           >
                             <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
-                              {doc.kind || t("onboarding360.doc.documentFallback")}
+                              {humanizeCode(doc.kind) || t("onboarding360.doc.documentFallback")}
                             </Badge>
                             <DocImage
-                              cacheKey={doc.documentId || doc.kind}
-                              label={doc.kind || t("onboarding360.doc.documentLabel")}
+                              cacheKey={`${membership.memberCustomerId}:${doc.documentId || doc.kind}`}
+                              label={humanizeCode(doc.kind) || t("onboarding360.doc.documentLabel")}
                               onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                               fetcher={() => Promise.resolve({ base64Image: doc.base64Image, contentType: doc.contentType })}
                             />
@@ -437,7 +467,7 @@ const PartnerDetail = () => {
                               {t("onboarding360.doc.selfieLabel")}
                             </Badge>
                             <DocImage
-                              cacheKey="selfie"
+                              cacheKey={`${membership.memberCustomerId}:selfie`}
                               label={t("onboarding360.doc.selfieLabel")}
                               onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                               fetcher={() =>
@@ -449,16 +479,18 @@ const PartnerDetail = () => {
                       </div>
                     )}
                   </Block>
+                  )}
                 </div>
               </TabsContent>
 
               {/* ---------------- Risk & compliance ---------------- */}
               <TabsContent value="risk">
                 <div className="pt-4">
+                  {switching || identityLoading ? (
+                    <TabSkeleton variant="fields" count={1} />
+                  ) : (
                   <Block title={t("businessDetail.tab.riskCompliance")} icon={ShieldAlert}>
-                    {identityLoading ? (
-                      <Skeleton className="h-32 w-full" />
-                    ) : (
+                    {(
                       <div className="flex flex-wrap items-center gap-3">
                         <Badge variant="outline" className={cn("border font-medium", TONES[riskTone(risk?.riskInfo?.riskLevel)])}>
                           {risk?.riskInfo?.riskLevel || t("onboarding360.risk.notAssessed")}
@@ -469,6 +501,7 @@ const PartnerDetail = () => {
                       </div>
                     )}
                   </Block>
+                  )}
                 </div>
               </TabsContent>
             </Tabs>

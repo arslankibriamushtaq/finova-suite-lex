@@ -43,7 +43,7 @@ import { Card } from "../../../components/ui/card";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Skeleton } from "../../../components/ui/skeleton";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "../../../components/ui/tabs";
+import { Tabs, TabsContent } from "../../../components/ui/tabs";
 import {
   Dialog,
   DialogContent,
@@ -71,6 +71,7 @@ import {
 } from "../../../components/ui/dropdown-menu";
 import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
+import { usePermissions, BUSINESS_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { getCustomer360 } from "../../../redux/apis/apisCrud";
 import {
   getBusinessDetail,
@@ -81,19 +82,27 @@ import {
   getBusinessPartners,
 } from "../../../redux/apis/apisEddReferenceData";
 import {
-  formatDate,
-  formatDateTime,
-  TONES,
-  statusTone,
-  riskTone,
   StatusBadge,
-  chartTooltipStyle,
   Field,
   Block,
   EmptyState,
   DocImage,
   Lightbox,
+  DetailTabsList,
+  DetailTabsTrigger,
+  TabSkeleton,
+  PermissionDenied,
 } from "../../../components/shared/detailKit";
+import {
+  formatDate,
+  formatDateTime,
+  TONES,
+  statusTone,
+  riskTone,
+  chartTooltipStyle,
+  useTabTransition,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
 
 /* The admin partners endpoints (`GET /admin/businesses/{id}/partners*`) 403 today —
    they're owner-scoped on the backend. Enabled for UI review; the tab will show
@@ -221,11 +230,15 @@ const BusinessDetail = () => {
   const customerId = params.id || params.customerId;
   const { isRTL } = useLanguage();
 
+  const { hasPermission } = usePermissions();
+  const canViewBusiness = hasPermission(BUSINESS_PERMISSIONS.VIEW);
+  const canReviewDocuments = hasPermission(BUSINESS_PERMISSIONS.REVIEW);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [business, setBusiness] = useState<any>(null);
   const [reloadKey, setReloadKey] = useState(0);
-  const [activeTab, setActiveTab] = useState("overview");
+  const { activeTab, setActiveTab, switching } = useTabTransition("overview");
   const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
   const [verifiedBanner, setVerifiedBanner] = useState(false);
 
@@ -245,6 +258,10 @@ const BusinessDetail = () => {
 
   useEffect(() => {
     let active = true;
+    if (!canViewBusiness) {
+      setLoading(false);
+      return;
+    }
     const fetchData = async () => {
       if (!customerId) return;
       try {
@@ -255,7 +272,7 @@ const BusinessDetail = () => {
         setBusiness(response?.data?.data ?? null);
       } catch (err: any) {
         if (!active) return;
-        setError(err?.response?.data?.message || err?.message || "Failed to load business data");
+        setError(err?.response?.data?.message || err?.message || t("businessDetail.error.loadBusiness"));
       } finally {
         if (active) setLoading(false);
       }
@@ -264,7 +281,8 @@ const BusinessDetail = () => {
     return () => {
       active = false;
     };
-  }, [customerId, reloadKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customerId, reloadKey, canViewBusiness]);
 
   useEffect(() => {
     if (activeTab !== "owner" || ownerLoaded || !customerId) return;
@@ -279,12 +297,13 @@ const BusinessDetail = () => {
       })
       .catch((err: any) => {
         if (!active) return;
-        setOwnerError(err?.response?.data?.message || err?.message || "Failed to load owner data");
+        setOwnerError(err?.response?.data?.message || err?.message || t("businessDetail.error.loadOwner"));
       })
       .finally(() => active && setOwnerLoading(false));
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, ownerLoaded, customerId]);
 
   useEffect(() => {
@@ -300,12 +319,13 @@ const BusinessDetail = () => {
       })
       .catch((err: any) => {
         if (!active) return;
-        setRiskError(err?.response?.data?.message || err?.message || "Failed to load risk data");
+        setRiskError(err?.response?.data?.message || err?.message || t("businessDetail.error.loadRisk"));
       })
       .finally(() => active && setRiskLoading(false));
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, riskLoaded, customerId]);
 
   const [partnersData, setPartnersData] = useState<any[] | null>(null);
@@ -327,12 +347,13 @@ const BusinessDetail = () => {
       })
       .catch((err: any) => {
         if (!active) return;
-        setPartnersError(err?.response?.data?.message || err?.message || "Failed to load partners");
+        setPartnersError(err?.response?.data?.message || err?.message || t("businessDetail.error.loadPartners"));
       })
       .finally(() => active && setPartnersLoading(false));
     return () => {
       active = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, partnersLoaded, customerId]);
 
   const sortedPartners = useMemo(
@@ -352,13 +373,24 @@ const BusinessDetail = () => {
   );
   const approvedCount = businessDocs.filter((d) => (d.reviewStatus || "").toUpperCase() === "APPROVED").length;
 
+  /**
+   * Human label for a document kind. Prefers an explicit translation when one
+   * exists for the code, otherwise falls back to humanizing the enum so a new
+   * backend kind still reads properly instead of leaking SCREAMING_SNAKE.
+   */
+  const docKindLabel = (kind?: string) =>
+    kind
+      ? t(`onboarding360.docKind.${kind}`, { defaultValue: humanizeCode(kind) })
+      : t("onboarding360.doc.documentFallback");
+
   const openReview = (doc: any, action: "approve" | "reject") => {
+    if (!canReviewDocuments) return;
     setReviewNote("");
     setReviewTarget({ doc, action });
   };
 
   const submitReview = async () => {
-    if (!reviewTarget || !customerId) return;
+    if (!reviewTarget || !customerId || !canReviewDocuments) return;
     const { doc, action } = reviewTarget;
     const note = reviewNote.trim();
     if (action === "reject" && !note) {
@@ -471,7 +503,11 @@ const BusinessDetail = () => {
         .onb360-page h4 { font-size: 0.8125rem !important; line-height: 1.3 !important; margin: 0 !important; }
       `}</style>
 
-      {loading ? (
+      {!canViewBusiness ? (
+        <Card>
+          <PermissionDenied message={t("permission.businessDenied")} />
+        </Card>
+      ) : loading ? (
         <LoadingState />
       ) : error ? (
         <Card>
@@ -500,34 +536,45 @@ const BusinessDetail = () => {
             )}
 
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList>
-                <TabsTrigger value="overview">{t("onboarding360.tab.overview")}</TabsTrigger>
-                <TabsTrigger value="documents">{t("onboarding360.tab.documents")}</TabsTrigger>
-                <TabsTrigger value="owner">{t("businessDetail.tab.owner")}</TabsTrigger>
+              <DetailTabsList>
+                <DetailTabsTrigger value="overview">{t("onboarding360.tab.overview")}</DetailTabsTrigger>
+                <DetailTabsTrigger value="documents">{t("onboarding360.tab.documents")}</DetailTabsTrigger>
+                <DetailTabsTrigger value="owner">{t("businessDetail.tab.owner")}</DetailTabsTrigger>
                 {BUSINESS_PARTNERS_ENABLED && (
-                  <TabsTrigger value="partners">{t("businessDetail.tab.partners")}</TabsTrigger>
+                  <DetailTabsTrigger value="partners">{t("businessDetail.tab.partners")}</DetailTabsTrigger>
                 )}
-                <TabsTrigger value="risk">{t("businessDetail.tab.riskCompliance")}</TabsTrigger>
-              </TabsList>
+                <DetailTabsTrigger value="risk">{t("businessDetail.tab.riskCompliance")}</DetailTabsTrigger>
+              </DetailTabsList>
 
               {/* ---------------- Overview ---------------- */}
               <TabsContent value="overview">
-                <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-2">
-                  <Block title={t("businessDetail.block.businessIdentity")} icon={Building2}>
-                    {businessRows.map((r) => (
-                      <Field key={r.label} label={r.label} value={r.value || "—"} />
-                    ))}
-                  </Block>
-                  <Block title={t("businessDetail.block.status")} icon={ShieldCheck}>
-                    {statusRows.map((r) => (
-                      <Field key={r.label} label={r.label} value={r.value || "—"} />
-                    ))}
-                  </Block>
-                </div>
+                {switching ? (
+                  <div className="pt-4">
+                    <TabSkeleton variant="fields" count={2} />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-4 pt-4 lg:grid-cols-2">
+                    <Block title={t("businessDetail.block.businessIdentity")} icon={Building2}>
+                      {businessRows.map((r) => (
+                        <Field key={r.label} label={r.label} value={r.value || "—"} />
+                      ))}
+                    </Block>
+                    <Block title={t("businessDetail.block.status")} icon={ShieldCheck}>
+                      {statusRows.map((r) => (
+                        <Field key={r.label} label={r.label} value={r.value || "—"} />
+                      ))}
+                    </Block>
+                  </div>
+                )}
               </TabsContent>
 
               {/* ---------------- Documents ---------------- */}
               <TabsContent value="documents">
+                {switching ? (
+                  <div className="pt-4">
+                    <TabSkeleton variant="cards" count={1} />
+                  </div>
+                ) : (
                 <div className="flex flex-col gap-4 pt-4">
                   <Block
                     title={t("businessDetail.block.businessDocuments")}
@@ -551,20 +598,27 @@ const BusinessDetail = () => {
                           return (
                             <div
                               key={doc.documentId ?? idx}
-                              className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                              className="flex h-full flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
                             >
-                              <div className="flex items-center justify-between gap-2">
-                                <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
-                                  {doc.kind || t("onboarding360.doc.documentFallback")}
+                              {/* Fixed-height header keeps every tile's image, rows and
+                                  buttons on the same baseline even when a doc kind is
+                                  long enough to wrap. */}
+                              <div className="flex min-h-9 items-start justify-between gap-2">
+                                <Badge
+                                  variant="outline"
+                                  className={cn("min-w-0 shrink whitespace-normal border text-[11px] font-medium leading-tight", TONES.sky)}
+                                  title={docKindLabel(doc.kind)}
+                                >
+                                  <span className="line-clamp-2 break-words">{docKindLabel(doc.kind)}</span>
                                 </Badge>
-                                <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                  <CalendarDays className="size-3" />
+                                <span className="flex shrink-0 items-center gap-1 whitespace-nowrap pt-0.5 text-[11px] text-muted-foreground">
+                                  <CalendarDays className="size-3 shrink-0" />
                                   {formatDate(doc.createdAt)}
                                 </span>
                               </div>
                               <DocImage
-                                cacheKey={doc.documentId}
-                                label={doc.kind || t("onboarding360.doc.documentLabel")}
+                                cacheKey={`${customerId}:${doc.documentId}`}
+                                label={docKindLabel(doc.kind)}
                                 onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                                 fetcher={() =>
                                   getCustomerOnboardingDocumentImage(String(customerId), doc.documentId).then(
@@ -572,16 +626,16 @@ const BusinessDetail = () => {
                                   )
                                 }
                               />
-                              <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
-                                <span className="text-muted-foreground">{t("onboarding360.doc.documentNo")}</span>
-                                <span className="font-mono font-medium text-foreground">{doc.documentNumber || "—"}</span>
+                              <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
+                                <span className="shrink-0 text-muted-foreground">{t("onboarding360.doc.documentNo")}</span>
+                                <span className="truncate font-mono font-medium text-foreground">{doc.documentNumber || "—"}</span>
                               </div>
 
                               <div className="flex flex-col gap-2 border-t border-border/60 pt-2">
                                 <div className="flex items-center justify-between gap-2 text-xs">
-                                  <span className="text-muted-foreground">{t("onboarding360.review.status")}</span>
-                                  <Badge variant="outline" className={cn("border font-medium", TONES[statusTone(reviewStatus || "PENDING_REVIEW")])}>
-                                    {reviewStatus || t("common:pending")}
+                                  <span className="shrink-0 text-muted-foreground">{t("onboarding360.review.status")}</span>
+                                  <Badge variant="outline" className={cn("border text-[11px] font-medium", TONES[statusTone(reviewStatus || "PENDING_REVIEW")])}>
+                                    {humanizeCode(reviewStatus) || t("common:pending")}
                                   </Badge>
                                 </div>
 
@@ -589,28 +643,30 @@ const BusinessDetail = () => {
                                   <div className={cn("rounded-md border px-2 py-1.5 text-xs", TONES.red)}>{doc.rejectionReason}</div>
                                 )}
 
-                                <div className="flex items-center gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={isApproved || !doc.documentId}
-                                    onClick={() => openReview(doc, "approve")}
-                                    className="flex-1 gap-1 border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
-                                  >
-                                    <CheckCircle2 className="size-3.5" />
-                                    {t("onboarding360.review.approve")}
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
-                                    disabled={isRejected || !doc.documentId}
-                                    onClick={() => openReview(doc, "reject")}
-                                    className="flex-1 gap-1 border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400"
-                                  >
-                                    <XCircle className="size-3.5" />
-                                    {t("onboarding360.review.reject")}
-                                  </Button>
-                                </div>
+                                {canReviewDocuments && (
+                                  <div className="flex items-center gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isApproved || !doc.documentId}
+                                      onClick={() => openReview(doc, "approve")}
+                                      className="h-7 flex-1 gap-1 px-2 text-[11px] border-emerald-500/40 text-emerald-600 hover:bg-emerald-500/10 hover:text-emerald-700 dark:text-emerald-400"
+                                    >
+                                      <CheckCircle2 className="size-3" />
+                                      {t("onboarding360.review.approve")}
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      disabled={isRejected || !doc.documentId}
+                                      onClick={() => openReview(doc, "reject")}
+                                      className="h-7 flex-1 gap-1 px-2 text-[11px] border-red-500/40 text-red-600 hover:bg-red-500/10 hover:text-red-700 dark:text-red-400"
+                                    >
+                                      <XCircle className="size-3" />
+                                      {t("onboarding360.review.reject")}
+                                    </Button>
+                                  </div>
+                                )}
                               </div>
                             </div>
                           );
@@ -627,20 +683,24 @@ const BusinessDetail = () => {
                         {ownerIdentityDocs.map((doc, idx) => (
                           <div
                             key={doc.documentId ?? idx}
-                            className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                            className="flex h-full flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
                           >
-                            <div className="flex items-center justify-between gap-2">
-                              <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
-                                {doc.kind || t("onboarding360.doc.documentFallback")}
+                            <div className="flex min-h-9 items-start justify-between gap-2">
+                              <Badge
+                                variant="outline"
+                                className={cn("min-w-0 shrink whitespace-normal border text-[11px] font-medium leading-tight", TONES.sky)}
+                                title={docKindLabel(doc.kind)}
+                              >
+                                <span className="line-clamp-2 break-words">{docKindLabel(doc.kind)}</span>
                               </Badge>
-                              <span className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <CalendarDays className="size-3" />
+                              <span className="flex shrink-0 items-center gap-1 whitespace-nowrap pt-0.5 text-[11px] text-muted-foreground">
+                                <CalendarDays className="size-3 shrink-0" />
                                 {formatDate(doc.createdAt)}
                               </span>
                             </div>
                             <DocImage
-                              cacheKey={doc.documentId}
-                              label={doc.kind || t("onboarding360.doc.documentLabel")}
+                              cacheKey={`${customerId}:${doc.documentId}`}
+                              label={docKindLabel(doc.kind)}
                               onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                               fetcher={() =>
                                 getCustomerOnboardingDocumentImage(String(customerId), doc.documentId).then(
@@ -648,9 +708,9 @@ const BusinessDetail = () => {
                                 )
                               }
                             />
-                            <div className="flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
-                              <span className="text-muted-foreground">{t("onboarding360.doc.verification")}</span>
-                              <Badge variant="outline" className={cn("border font-medium", TONES.emerald)}>
+                            <div className="mt-auto flex items-center justify-between gap-2 border-t border-border/60 pt-2 text-xs">
+                              <span className="shrink-0 text-muted-foreground">{t("onboarding360.doc.verification")}</span>
+                              <Badge variant="outline" className={cn("border text-[11px] font-medium", TONES.emerald)}>
                                 {t("onboarding360.doc.verified")}
                               </Badge>
                             </div>
@@ -660,13 +720,14 @@ const BusinessDetail = () => {
                     )}
                   </Block>
                 </div>
+                )}
               </TabsContent>
 
               {/* ---------------- Owner ---------------- */}
               <TabsContent value="owner">
                 <div className="flex flex-col gap-4 pt-4">
-                  {ownerLoading ? (
-                    <Skeleton className="h-64 w-full" />
+                  {switching ? (
+                    <TabSkeleton variant="fields" count={2} />
                   ) : ownerError ? (
                     <Block title={t("businessDetail.tab.owner")} icon={UserCircle}>
                       <div className="flex flex-col items-center gap-3 py-8 text-center">
@@ -680,10 +741,17 @@ const BusinessDetail = () => {
                   ) : (
                     <>
                       {(() => {
+                        // Header renders from data already on the page, so the
+                        // owner's identity is readable immediately — only the
+                        // vaulted PII rows below wait on the documents bundle.
                         const pii = ownerData?.piiVault || {};
-                        const ownerName = `${pii.firstName || ""} ${pii.lastName || ""}`.trim() || customer?.fullName || "—";
-                        const initials = ((pii.firstName?.[0] || "") + (pii.lastName?.[0] || "")).toUpperCase();
-                        const mobile = pii.mobileNumber || pii.mobile;
+                        const ownerName =
+                          `${pii.firstName || ""} ${pii.lastName || ""}`.trim() || customer?.fullName || "—";
+                        const initials = (
+                          (pii.firstName?.[0] || customer?.fullName?.[0] || "") +
+                          (pii.lastName?.[0] || "")
+                        ).toUpperCase();
+                        const mobile = pii.mobileNumber || pii.mobile || customer?.mobileNumber;
                         return (
                           <div className="onb-card relative overflow-hidden rounded-xl border p-4 md:p-5">
                             <div className="pointer-events-none absolute -right-10 -top-10 size-32 rounded-full bg-emerald-500/[0.07] blur-2xl" />
@@ -707,9 +775,9 @@ const BusinessDetail = () => {
                                         <Phone className="size-3.5" /> {mobile}
                                       </span>
                                     )}
-                                    {pii.email && (
+                                    {(pii.email || customer?.email) && (
                                       <span className="inline-flex items-center gap-1.5">
-                                        <Mail className="size-3.5" /> {pii.email}
+                                        <Mail className="size-3.5" /> {pii.email || customer?.email}
                                       </span>
                                     )}
                                   </div>
@@ -722,23 +790,35 @@ const BusinessDetail = () => {
 
                       <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                         <Block title={t("businessDetail.owner.personalDetails")} icon={UserCircle}>
-                          {[
-                            { label: t("onboarding360.field.dateOfBirth"), value: formatDate(ownerData?.piiVault?.dateOfBirth) },
-                            { label: t("onboarding360.field.nationalId"), value: ownerData?.piiVault?.nationalId },
-                            { label: t("onboarding360.personal.nationality"), value: ownerData?.piiVault?.nationality },
-                          ].map((r) => (
-                            <Field key={r.label} label={r.label} value={r.value || "—"} />
-                          ))}
+                          {ownerLoading
+                            ? [0, 1, 2].map((i) => (
+                                <div key={i} className="flex items-center justify-between gap-4 py-2.5">
+                                  <Skeleton className="h-3.5 w-28" />
+                                  <Skeleton className="h-3.5 w-36" />
+                                </div>
+                              ))
+                            : [
+                                { label: t("onboarding360.field.dateOfBirth"), value: formatDate(ownerData?.piiVault?.dateOfBirth) },
+                                { label: t("onboarding360.field.nationalId"), value: ownerData?.piiVault?.nationalId || customer?.nationalId },
+                                { label: t("onboarding360.personal.nationality"), value: ownerData?.piiVault?.nationality || customer?.nationality },
+                              ].map((r) => <Field key={r.label} label={r.label} value={r.value || "—"} />)}
                         </Block>
                         <Block title={t("businessDetail.field.address")} icon={MapPin}>
-                          <Field
-                            label={t("businessDetail.field.address")}
-                            value={
-                              [ownerData?.piiVault?.addressLine1, ownerData?.piiVault?.city, ownerData?.piiVault?.country]
-                                .filter(Boolean)
-                                .join(", ") || "—"
-                            }
-                          />
+                          {ownerLoading ? (
+                            <div className="flex items-center justify-between gap-4 py-2.5">
+                              <Skeleton className="h-3.5 w-28" />
+                              <Skeleton className="h-3.5 w-44" />
+                            </div>
+                          ) : (
+                            <Field
+                              label={t("businessDetail.field.address")}
+                              value={
+                                [ownerData?.piiVault?.addressLine1, ownerData?.piiVault?.city, ownerData?.piiVault?.country]
+                                  .filter(Boolean)
+                                  .join(", ") || "—"
+                              }
+                            />
+                          )}
                         </Block>
                       </div>
 
@@ -752,7 +832,41 @@ const BusinessDetail = () => {
                           </Badge>
                         }
                       >
-                        {!ownerData?.documents?.length && !ownerData?.selfie ? (
+                        {/* Rendered from the document metadata already loaded with the
+                            business, fetching each image lazily — the same path the
+                            Documents tab uses. Waiting on `documents-bundle` here meant
+                            the whole tab sat behind one response that inlines every
+                            image as base64. The bundle is only a fallback now. */}
+                        {ownerIdentityDocs.length > 0 ? (
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {ownerIdentityDocs.map((doc: any, idx: number) => (
+                              <div
+                                key={doc.documentId ?? idx}
+                                className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
+                              >
+                                <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
+                                  {docKindLabel(doc.kind)}
+                                </Badge>
+                                <DocImage
+                                  cacheKey={`${customerId}:${doc.documentId}`}
+                                  label={docKindLabel(doc.kind)}
+                                  onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
+                                  fetcher={() =>
+                                    getCustomerOnboardingDocumentImage(String(customerId), doc.documentId).then(
+                                      (res: any) => res?.data?.data ?? res?.data ?? null
+                                    )
+                                  }
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        ) : ownerLoading ? (
+                          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                            {[0, 1].map((i) => (
+                              <Skeleton key={i} className="h-48 w-full rounded-lg" />
+                            ))}
+                          </div>
+                        ) : !ownerData?.documents?.length && !ownerData?.selfie ? (
                           <EmptyState icon={FileText} text={t("onboarding360.empty.noDocuments")} />
                         ) : (
                           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -762,11 +876,11 @@ const BusinessDetail = () => {
                                 className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md"
                               >
                                 <Badge variant="outline" className={cn("w-fit border font-medium", TONES.sky)}>
-                                  {doc.kind || t("onboarding360.doc.documentFallback")}
+                                  {docKindLabel(doc.kind)}
                                 </Badge>
                                 <DocImage
-                                  cacheKey={doc.documentId || doc.kind}
-                                  label={doc.kind || t("onboarding360.doc.documentLabel")}
+                                  cacheKey={`${customerId}:owner:${doc.documentId || doc.kind}`}
+                                  label={docKindLabel(doc.kind)}
                                   onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                                   fetcher={() => Promise.resolve({ base64Image: doc.base64Image, contentType: doc.contentType })}
                                 />
@@ -778,7 +892,7 @@ const BusinessDetail = () => {
                                   {t("onboarding360.doc.selfieLabel")}
                                 </Badge>
                                 <DocImage
-                                  cacheKey="selfie"
+                                  cacheKey={`${customerId}:owner:selfie`}
                                   label={t("onboarding360.doc.selfieLabel")}
                                   onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                                   fetcher={() =>
@@ -802,10 +916,11 @@ const BusinessDetail = () => {
               {BUSINESS_PARTNERS_ENABLED && (
                 <TabsContent value="partners">
                   <div className="pt-4">
+                    {switching || partnersLoading ? (
+                      <TabSkeleton variant="table" count={1} />
+                    ) : (
                     <Block title={t("businessDetail.tab.partners")} icon={Users}>
-                      {partnersLoading ? (
-                        <Skeleton className="h-48 w-full" />
-                      ) : partnersError ? (
+                      {partnersError ? (
                         <div className="flex flex-col items-center gap-3 py-8 text-center">
                           <AlertTriangle className="size-6 text-red-500" />
                           <p className="text-sm text-muted-foreground">{partnersError}</p>
@@ -910,6 +1025,7 @@ const BusinessDetail = () => {
                         </div>
                       )}
                     </Block>
+                    )}
                   </div>
                 </TabsContent>
               )}
@@ -917,8 +1033,8 @@ const BusinessDetail = () => {
               {/* ---------------- Risk & compliance ---------------- */}
               <TabsContent value="risk">
                 <div className="flex flex-col gap-4 pt-4">
-                  {riskLoading ? (
-                    <Skeleton className="h-64 w-full" />
+                  {switching || riskLoading ? (
+                    <TabSkeleton variant="charts" />
                   ) : riskError ? (
                     <Block title={t("businessDetail.tab.riskCompliance")} icon={ShieldAlert}>
                       <div className="flex flex-col items-center gap-3 py-8 text-center">
@@ -1037,7 +1153,7 @@ const BusinessDetail = () => {
             <div className="flex items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
               <span className="text-muted-foreground">{t("onboarding360.doc.documentLabel")}</span>
               <span className="font-medium text-foreground">
-                {reviewTarget?.doc?.kind || t("onboarding360.doc.documentFallback")}
+                {docKindLabel(reviewTarget?.doc?.kind)}
               </span>
             </div>
 

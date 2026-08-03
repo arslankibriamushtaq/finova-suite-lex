@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,126 +9,27 @@ import {
   RotateCcwSquare,
   Check,
   Copy,
+  ShieldAlert,
 } from "lucide-react";
 
 import { Badge } from "../ui/badge";
 import { Skeleton } from "../ui/skeleton";
+import { TabsList, TabsTrigger } from "../ui/tabs";
 import { cn } from "../../lib/utils";
+import { TONES, statusTone } from "./detailKitUtils";
 
-/* ------------------------------------------------------------------ */
-/* Formatting helpers                                                  */
-/* ------------------------------------------------------------------ */
-
-export const formatMoney = (value: any, currency?: string) => {
-  const num = Number(value ?? 0);
-  if (Number.isNaN(num)) return `${currency ? currency + " " : ""}0.00`;
-  const formatted = num.toLocaleString(undefined, {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-  return currency ? `${formatted} ${currency}` : formatted;
-};
-
-export const formatDate = (value?: string) => {
-  if (!value) return "—";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" });
-};
-
-export const formatDateTime = (value?: string) => {
-  if (!value) return "—";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "—";
-  return d.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-};
-
-/* ------------------------------------------------------------------ */
-/* Tone / status helpers                                               */
-/* ------------------------------------------------------------------ */
-
-export const TONES: Record<string, string> = {
-  emerald:
-    "bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-300 dark:border-emerald-500/30",
-  amber:
-    "bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-300 dark:border-amber-500/30",
-  sky: "bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-500/15 dark:text-sky-300 dark:border-sky-500/30",
-  orange:
-    "bg-orange-100 text-orange-700 border-orange-200 dark:bg-orange-500/15 dark:text-orange-300 dark:border-orange-500/30",
-  red: "bg-red-100 text-red-700 border-red-200 dark:bg-red-500/15 dark:text-red-300 dark:border-red-500/30",
-  slate:
-    "bg-slate-100 text-slate-600 border-slate-200 dark:bg-slate-500/15 dark:text-slate-300 dark:border-slate-500/30",
-};
-
-export const TONE_HEX: Record<string, string> = {
-  emerald: "#10b981",
-  amber: "#f59e0b",
-  red: "#ef4444",
-  sky: "#0ea5e9",
-  slate: "#94a3b8",
-};
-
-export const statusTone = (status?: string): string => {
-  switch ((status || "").toUpperCase()) {
-    case "ACTIVE":
-    case "COMPLETED":
-    case "APPROVED":
-    case "VERIFIED":
-    case "SUCCESS":
-      return "emerald";
-    case "PENDING":
-    case "PENDING_ACTIVATION":
-    case "PENDING_REVIEW":
-    case "IN_PROGRESS":
-      return "amber";
-    case "FROZEN":
-      return "sky";
-    case "SUSPENDED":
-      return "orange";
-    case "FAILED":
-    case "REJECTED":
-    case "CLOSED":
-    case "BLOCKED":
-      return "red";
-    default:
-      return "slate";
-  }
-};
-
-export const riskTone = (level?: string): string => {
-  switch ((level || "").toUpperCase()) {
-    case "LOW":
-      return "emerald";
-    case "MEDIUM":
-      return "amber";
-    case "HIGH":
-    case "CRITICAL":
-      return "red";
-    default:
-      return "slate";
-  }
-};
+/**
+ * Component half of the detail kit. This module must export *only* components
+ * so React Fast Refresh can treat it as a refresh boundary — formatters, tone
+ * maps and hooks live in `./detailKitUtils`. Import those from there directly;
+ * re-exporting them here would break the boundary again.
+ */
 
 export const StatusBadge = ({ status, className }: { status?: string; className?: string }) => (
   <Badge variant="outline" className={cn("border font-medium", TONES[statusTone(status)], className)}>
     {status || "—"}
   </Badge>
 );
-
-export const chartTooltipStyle = {
-  background: "var(--card)",
-  border: "1px solid var(--border)",
-  borderRadius: 8,
-  color: "var(--foreground)",
-  fontSize: 12,
-  boxShadow: "var(--surface-elevation-2, 0 4px 12px rgba(0,0,0,0.12))",
-};
 
 /* ------------------------------------------------------------------ */
 /* Layout primitives                                                   */
@@ -202,9 +103,259 @@ export const EmptyState = ({ icon: Icon, text }: any) => (
   </div>
 );
 
+/** Shown in place of a page (or a tab) the signed-in role may not read. */
+export const PermissionDenied = ({ message }: { message?: string }) => {
+  const { t } = useTranslation("customerManagement");
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 py-14 text-center">
+      <span className="flex size-14 items-center justify-center rounded-full bg-red-500/10 text-red-500 ring-1 ring-red-500/20">
+        <ShieldAlert className="size-7" />
+      </span>
+      <h3 className="m-0 text-sm font-semibold text-foreground">{t("permission.deniedTitle")}</h3>
+      <p className="m-0 max-w-sm text-sm text-muted-foreground">{message || t("permission.deniedMessage")}</p>
+    </div>
+  );
+};
+
+/* ------------------------------------------------------------------ */
+/* Tabs — underline style, matching the project-wide `.nav-tabs` look  */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Underline tab bar matching the rest of the app (the `.nav-tabs` look in
+ * `assets/scss/custom.scss`, and the `.wallet-tabs` / `.coa-tabs` shadcn tab
+ * bars in `styles/tokens.css`).
+ *
+ * The visual styling lives in `.detail-tabs` / `.detail-tab-trigger` in
+ * `styles/tokens.css` rather than in Tailwind utilities here. shadcn's Tabs
+ * carry their own `data-[state=active]:*` pill utilities, and tokens.css is
+ * imported before `@import 'tailwindcss'` — so plain utilities lose the
+ * cascade and the underline silently never paints. This is the same approach
+ * the wallet and COA tab bars already use.
+ *
+ * Overflow is handled by a wrapper so a scroll container can never clip the
+ * 2px ::after underline, which sits 1px below the trigger box.
+ */
+export const DetailTabsList = ({ className, ...props }: React.ComponentProps<typeof TabsList>) => (
+  <div className="w-full max-w-full overflow-x-auto pb-px">
+    <TabsList className={cn("detail-tabs", className)} {...props} />
+  </div>
+);
+
+export const DetailTabsTrigger = ({ className, ...props }: React.ComponentProps<typeof TabsTrigger>) => (
+  <TabsTrigger className={cn("detail-tab-trigger", className)} {...props} />
+);
+
+/* ------------------------------------------------------------------ */
+/* Tab-switch skeletons                                                */
+/* ------------------------------------------------------------------ */
+
+const SkeletonBlock = ({ children }: { children: React.ReactNode }) => (
+  <div className="onb-card rounded-xl border p-4 md:p-5">
+    <div className="mb-4 flex items-center gap-2.5">
+      <Skeleton className="size-8 rounded-lg" />
+      <Skeleton className="h-4 w-40" />
+    </div>
+    {children}
+  </div>
+);
+
+const FieldRows = ({ rows = 6 }: { rows?: number }) => (
+  <div className="flex flex-col gap-3">
+    {Array.from({ length: rows }).map((_, i) => (
+      <div key={i} className="flex items-center justify-between gap-4">
+        <Skeleton className="h-3.5 w-28" />
+        <Skeleton className="h-3.5 w-36" />
+      </div>
+    ))}
+  </div>
+);
+
+/**
+ * Placeholder for a tab body. `variant` only shapes the bars so the skeleton
+ * roughly matches the layout that replaces it — no data required.
+ */
+export const TabSkeleton = ({
+  variant = "fields",
+  count = 2,
+}: {
+  variant?: "fields" | "cards" | "table" | "charts";
+  count?: number;
+}) => {
+  if (variant === "cards") {
+    return (
+      <SkeletonBlock>
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: count * 3 }).map((_, i) => (
+            <div key={i} className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3">
+              <div className="flex items-center justify-between gap-2">
+                <Skeleton className="h-5 w-20 rounded-full" />
+                <Skeleton className="h-3 w-16" />
+              </div>
+              <Skeleton className="h-48 w-full rounded-lg" />
+              <Skeleton className="h-3 w-full" />
+              <div className="flex gap-2">
+                <Skeleton className="h-8 flex-1 rounded-md" />
+                <Skeleton className="h-8 flex-1 rounded-md" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </SkeletonBlock>
+    );
+  }
+
+  if (variant === "table") {
+    return (
+      <SkeletonBlock>
+        <div className="overflow-hidden rounded-lg border">
+          <Skeleton className="h-9 w-full rounded-none" />
+          {Array.from({ length: count * 3 }).map((_, i) => (
+            <div key={i} className="flex items-center gap-4 border-t px-4 py-3">
+              <Skeleton className="h-3.5 flex-1" />
+              <Skeleton className="h-3.5 w-32" />
+              <Skeleton className="h-3.5 w-20" />
+              <Skeleton className="h-5 w-16 rounded-full" />
+              <Skeleton className="size-7 rounded-md" />
+            </div>
+          ))}
+        </div>
+      </SkeletonBlock>
+    );
+  }
+
+  if (variant === "charts") {
+    return (
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+          <SkeletonBlock>
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-6 w-24 rounded-full" />
+              <Skeleton className="h-4 w-10" />
+            </div>
+          </SkeletonBlock>
+          <SkeletonBlock>
+            <Skeleton className="h-[180px] w-full rounded-lg" />
+          </SkeletonBlock>
+        </div>
+        <SkeletonBlock>
+          <Skeleton className="h-[240px] w-full rounded-lg" />
+        </SkeletonBlock>
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("grid grid-cols-1 gap-4", count > 1 && "lg:grid-cols-2")}>
+      {Array.from({ length: count }).map((_, i) => (
+        <SkeletonBlock key={i}>
+          <FieldRows />
+        </SkeletonBlock>
+      ))}
+    </div>
+  );
+};
+
 /* ------------------------------------------------------------------ */
 /* Document image (lazy-loaded via a caller-supplied fetcher)          */
 /* ------------------------------------------------------------------ */
+
+/**
+ * Process-wide cache of decoded document images, keyed by `cacheKey`.
+ *
+ * Radix unmounts inactive tab panels, so without this every tab switch refired
+ * a document-image request — and these payloads are base64, hundreds of KB, and
+ * slow. Entries are evicted least-recently-used so a long session can't grow
+ * without bound.
+ *
+ * `cacheKey` MUST be unique per document *and* per owning customer. Passing a
+ * bare `"selfie"` or a document `kind` would collide across customers and show
+ * one person's document under another's record — always namespace with the
+ * customer/membership id.
+ */
+const MAX_CACHED_IMAGES = 40;
+const imageCache = new Map<string, string>();
+const imageInFlight = new Map<string, Promise<string | null>>();
+
+const cacheImage = (key: string, url: string) => {
+  // Delete-then-set moves the entry to the tail, so `keys().next()` is always
+  // the least-recently-used one.
+  if (imageCache.has(key)) imageCache.delete(key);
+  imageCache.set(key, url);
+  while (imageCache.size > MAX_CACHED_IMAGES) {
+    const oldest = imageCache.keys().next().value;
+    if (oldest === undefined) break;
+    imageCache.delete(oldest);
+  }
+};
+
+/**
+ * Read through the cache, marking the entry as recently used. Reading with a
+ * bare `imageCache.get` would leave recency untouched and degrade the cache to
+ * FIFO — an image you keep coming back to could be evicted before one you
+ * loaded once and never looked at again.
+ */
+const getCachedImage = (key: string): string | undefined => {
+  const hit = imageCache.get(key);
+  if (hit !== undefined) cacheImage(key, hit);
+  return hit;
+};
+
+/**
+ * Document images are hundreds of KB each and can take tens of seconds. Left
+ * unbounded they fill the browser's ~6-connection-per-host budget and starve
+ * every other request on the page — that is what made the Owner tab's
+ * `documents-bundle` call sit queued behind a wall of in-flight images. Cap how
+ * many run at once so ordinary API calls always have a connection available.
+ */
+const MAX_CONCURRENT_IMAGE_LOADS = 3;
+let activeImageLoads = 0;
+const imageWaitQueue: Array<() => void> = [];
+
+const acquireImageSlot = (): Promise<void> =>
+  new Promise((resolve) => {
+    if (activeImageLoads < MAX_CONCURRENT_IMAGE_LOADS) {
+      activeImageLoads += 1;
+      resolve();
+      return;
+    }
+    imageWaitQueue.push(() => {
+      activeImageLoads += 1;
+      resolve();
+    });
+  });
+
+const releaseImageSlot = () => {
+  activeImageLoads = Math.max(0, activeImageLoads - 1);
+  imageWaitQueue.shift()?.();
+};
+
+/** Fetch-once per key: concurrent callers share one request. */
+const loadImage = (
+  key: string,
+  fetcher: () => Promise<{ base64Image?: string; contentType?: string } | null>
+): Promise<string | null> => {
+  const hit = getCachedImage(key);
+  if (hit) return Promise.resolve(hit);
+  const pending = imageInFlight.get(key);
+  if (pending) return pending;
+
+  const request = acquireImageSlot()
+    .then(() => fetcher())
+    .then((d) => {
+      if (!d?.base64Image) return null;
+      const url = `data:${d.contentType || "image/jpeg"};base64,${d.base64Image}`;
+      cacheImage(key, url);
+      return url;
+    })
+    .finally(() => {
+      releaseImageSlot();
+      imageInFlight.delete(key);
+    });
+
+  imageInFlight.set(key, request);
+  return request;
+};
 
 export const DocImage = ({
   cacheKey,
@@ -218,31 +369,67 @@ export const DocImage = ({
   fetcher: () => Promise<{ base64Image?: string; contentType?: string } | null>;
 }) => {
   const { t } = useTranslation("customerManagement");
-  const [src, setSrc] = useState<string | null>(null);
+  const key = cacheKey ? String(cacheKey) : "";
+  // Seed from cache so a cached image paints on the first frame — no skeleton
+  // flash when returning to a tab.
+  const [src, setSrc] = useState<string | null>(() => (key ? getCachedImage(key) ?? null : null));
   const [err, setErr] = useState(false);
+  const [inView, setInView] = useState(false);
+  const holderRef = useRef<HTMLDivElement>(null);
+
+  // `fetcher` is an inline arrow at every call site, so its identity changes
+  // each render. Hold the latest in a ref and keep it out of effect deps.
+  const fetcherRef = useRef(fetcher);
+  fetcherRef.current = fetcher;
+
+  // Only request what the user can actually see (plus a 300px lead-in), instead
+  // of firing every tile on the grid at once.
+  useEffect(() => {
+    if (!key || src || inView) return;
+    const el = holderRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setInView(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [key, src, inView]);
 
   useEffect(() => {
-    if (!cacheKey) {
+    if (!key) {
       setErr(true);
       return;
     }
+    const cached = getCachedImage(key);
+    if (cached) {
+      setSrc(cached);
+      setErr(false);
+      return;
+    }
+    if (!inView) return;
+
     let alive = true;
     setErr(false);
-    setSrc(null);
-    fetcher()
-      .then((d) => {
-        if (alive && d?.base64Image) {
-          setSrc(`data:${d.contentType || "image/jpeg"};base64,${d.base64Image}`);
-        } else if (alive) {
-          setErr(true);
-        }
+    loadImage(key, () => fetcherRef.current())
+      .then((url) => {
+        if (!alive) return;
+        if (url) setSrc(url);
+        else setErr(true);
       })
       .catch(() => alive && setErr(true));
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cacheKey]);
+  }, [key, inView]);
 
   if (err)
     return (
@@ -250,14 +437,25 @@ export const DocImage = ({
         {t("onboarding360.doc.failedToLoad", { label })}
       </div>
     );
-  if (!src) return <Skeleton className="h-48 w-full rounded-lg" />;
+  if (!src)
+    return (
+      <div ref={holderRef}>
+        <Skeleton className="h-48 w-full rounded-lg" />
+      </div>
+    );
   return (
     <button
       type="button"
       onClick={() => onEnlarge?.(src, label)}
       className="group relative block w-full overflow-hidden rounded-lg border"
     >
-      <img src={src} alt={label} loading="lazy" className="h-48 w-full bg-muted object-cover transition-transform duration-200 group-hover:scale-105" />
+      <img
+        src={src}
+        alt={label}
+        loading="lazy"
+        decoding="async"
+        className="h-48 w-full bg-muted object-cover transition-transform duration-200 group-hover:scale-105"
+      />
       <span className="absolute inset-0 flex items-center justify-center gap-1 bg-black/45 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
         <ZoomIn className="size-4" /> {t("onboarding360.doc.clickToEnlarge")}
       </span>

@@ -2464,6 +2464,77 @@ html.dark .wallet-tabs .wallet-tab-trigger[data-state="active"]::after,
   background-color: #ffffff;
 }
 
+/* Detail-page tabs (Business / Partner / 360 screens) — emerald underline.
+   Same shape as .wallet-tabs above: shadcn's Tabs ship a filled "pill" look via
+   data-[state=active] utilities, and since this file is imported BEFORE
+   `@import 'tailwindcss'`, only !important reliably wins over them. The bar is
+   an ::after element rather than a border so it can't be eaten by the
+   border-width/border-style utilities the trigger also carries. */
+.detail-tabs {
+  background: transparent !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  height: auto !important;
+  gap: 0 !important;
+  justify-content: flex-start;
+  width: 100%;
+  border-bottom: 1px solid var(--border) !important;
+}
+.detail-tabs .detail-tab-trigger {
+  flex: 0 0 auto !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  color: var(--muted-foreground) !important;
+  padding: 10px 16px !important;
+  font-weight: 500;
+  font-size: 14px;
+  box-shadow: none !important;
+  outline: none !important;
+  position: relative;
+  white-space: nowrap;
+  transition: color 0.15s ease;
+}
+.detail-tabs .detail-tab-trigger:hover {
+  color: #047857 !important;
+}
+.detail-tabs .detail-tab-trigger:hover::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background-color: color-mix(in srgb, #10b981 40%, transparent);
+}
+.detail-tabs .detail-tab-trigger[data-state="active"] {
+  background: transparent !important;
+  color: #059669 !important;
+  box-shadow: none !important;
+  font-weight: 700;
+}
+.detail-tabs .detail-tab-trigger[data-state="active"]::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background-color: #10b981;
+}
+html.dark .detail-tabs .detail-tab-trigger[data-state="active"],
+.dark .detail-tabs .detail-tab-trigger[data-state="active"] {
+  color: #34d399 !important;
+}
+html.dark .detail-tabs .detail-tab-trigger[data-state="active"]::after,
+.dark .detail-tabs .detail-tab-trigger[data-state="active"]::after {
+  background-color: #34d399;
+}
+html.dark .detail-tabs .detail-tab-trigger:hover,
+.dark .detail-tabs .detail-tab-trigger:hover {
+  color: #34d399 !important;
+}
+
 /* Underline nav tabs — matches the CoaConfiguration look: dark bold active label
    with an emerald underline, gray inactive labels, no boxes/backgrounds. */
 .coa-tabs {

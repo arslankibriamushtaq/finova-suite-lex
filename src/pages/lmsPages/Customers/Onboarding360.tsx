@@ -61,14 +61,7 @@ import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
 import { getOnboarding360, getOnboardingDocumentImage } from "../../../redux/apis/apisCrud";
 import {
-  formatMoney,
-  formatDate,
-  formatDateTime,
-  TONES,
-  TONE_HEX,
-  riskTone,
   StatusBadge,
-  chartTooltipStyle,
   Field,
   Block,
   CopyButton,
@@ -76,6 +69,16 @@ import {
   DocImage,
   Lightbox,
 } from "../../../components/shared/detailKit";
+import {
+  formatMoney,
+  formatDate,
+  formatDateTime,
+  TONES,
+  TONE_HEX,
+  riskTone,
+  chartTooltipStyle,
+  humanizeCode,
+} from "../../../components/shared/detailKitUtils";
 
 /* ------------------------------------------------------------------ */
 /* Header band (single, not floating cards)                            */
@@ -884,7 +887,7 @@ const Onboarding360 = () => {
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <Badge variant="outline" className={cn("border font-medium", TONES.sky)}>
-                                  {doc.kind || t("onboarding360.doc.documentFallback")}
+                                  {humanizeCode(doc.kind) || t("onboarding360.doc.documentFallback")}
                                 </Badge>
                                 <span className="flex items-center gap-1 text-xs text-muted-foreground">
                                   <CalendarDays className="size-3" />
@@ -892,8 +895,8 @@ const Onboarding360 = () => {
                                 </span>
                               </div>
                               <DocImage
-                                cacheKey={doc.imagePath}
-                                label={doc.kind || t("onboarding360.doc.documentLabel")}
+                                cacheKey={`${customerId}:${doc.imagePath}`}
+                                label={humanizeCode(doc.kind) || t("onboarding360.doc.documentLabel")}
                                 onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                                 fetcher={() =>
                                   getOnboardingDocumentImage(doc.imagePath).then(
@@ -916,7 +919,7 @@ const Onboarding360 = () => {
                         <div className="w-full">
                           <div className="flex flex-col gap-3 rounded-xl border bg-muted/20 p-3 transition-all duration-200 hover:border-emerald-500/40 hover:shadow-md">
                             <DocImage
-                              cacheKey={selfie.imagePath}
+                              cacheKey={`${customerId}:${selfie.imagePath}`}
                               label={t("onboarding360.doc.selfieLabel")}
                               onEnlarge={(s, l) => setLightbox({ src: s, label: l })}
                               fetcher={() =>
