@@ -32,6 +32,7 @@ import notifications from "./locales/notifications";
 import allApplication from "./locales/allApplication";
 import accountingLoans from "./locales/accountingLoans";
 import adminMisc from "./locales/adminMisc";
+import businessOnboarding from "./locales/businessOnboarding";
 import customersB from "./locales/customersB";
 import exchange from "./locales/exchange";
 // <-- register new module locale files here (keep alphabetical)
@@ -62,6 +63,7 @@ const modules: ModuleLocale[] = [
   allApplication,
   accountingLoans,
   adminMisc,
+  businessOnboarding,
   customersB,
   exchange,
 ];

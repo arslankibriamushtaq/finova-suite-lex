@@ -1,0 +1,291 @@
+/* ------------------------------------------------------------------ *
+ * Public business onboarding — scoped typography contract
+ *
+ * These screens render in the same document as Bootstrap 5, whose reboot
+ * styles bare elements globally and UNLAYERED. Tailwind v4 emits utilities
+ * inside `@layer utilities`, and unlayered css beats layered css regardless of
+ * specificity — so on a bare <h1>, <legend>, <button> or <input>, Bootstrap
+ * wins and the Tailwind text-* class silently does nothing.
+ *
+ * The rules below are unlayered too, so they compete on equal footing, and
+ * every one is scoped to `.biz-onboarding`. Two conventions follow from that:
+ *
+ *   1. Element rules (0,1,1) set the baseline Bootstrap would otherwise own.
+ *   2. Where a specific element needs a different size, it gets a `.biz-*`
+ *      class (0,2,0) — which outranks the element rule and is not a Tailwind
+ *      utility, so it survives.
+ *
+ * Everything else — colour, spacing, layout — is plain Tailwind: Bootstrap
+ * does not set those on bare elements, so the utilities apply normally.
+ *
+ * SEPARATE HAZARD, same root cause: Bootstrap also ships *utility classes*
+ * whose names collide with Tailwind's, declared `!important` and unlayered.
+ * Those always win, and several carry different values:
+ *
+ *   .text-primary / .bg-primary / .border-primary  → Bootstrap BLUE (#0d6efd)
+ *   .border                                        → shorthand, resets colour
+ *   .p-3 .p-4 .p-5 (and m/px/py/gap variants)      → 1rem / 1.5rem / 3rem
+ *                                                    vs Tailwind .75/1/1.25rem
+ *
+ * So inside this flow those are written as arbitrary values — `p-[1rem]`,
+ * `text-[var(--primary)]`, `border-[1px]` — which generate class names
+ * Bootstrap has no equivalent for. Responsive variants (`sm:p-4`) are safe:
+ * Bootstrap spells those `.p-sm-4`.
+ * ------------------------------------------------------------------ */
+
+.biz-onboarding {
+  /* Bootstrap makes controls inherit their font-size, so the container's own
+     size is what buttons and inputs end up with. 14px matches shadcn. */
+  font-size: 0.875rem;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* --- Headings -------------------------------------------------------- */
+
+.biz-onboarding h1,
+.biz-onboarding h2,
+.biz-onboarding h3,
+.biz-onboarding h4,
+.biz-onboarding h5,
+.biz-onboarding h6 {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--foreground);
+}
+
+/* Step title — the one large heading on each screen. */
+.biz-onboarding .biz-title {
+  font-size: 1.375rem;
+  font-weight: 650;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+/* --- Form primitives ------------------------------------------------- */
+
+.biz-onboarding fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+/* Bootstrap floats <legend> and blows it up to 1.5rem. */
+.biz-onboarding legend,
+.biz-onboarding .biz-legend {
+  float: none;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--foreground);
+}
+
+.biz-onboarding label {
+  display: block;
+  margin: 0;
+}
+
+/* 16px on phones keeps iOS from zooming the viewport on focus; 14px from the
+   tablet breakpoint up matches the rest of the app's controls. */
+.biz-onboarding input,
+.biz-onboarding textarea,
+.biz-onboarding select {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 768px) {
+  .biz-onboarding input,
+  .biz-onboarding textarea,
+  .biz-onboarding select {
+    font-size: 0.875rem;
+  }
+}
+
+/* Public-facing forms get a taller control than the dense admin tables do —
+   44px is the comfortable touch target, and it stops the card reading as a
+   wireframe. Applies to the shadcn Input/Textarea and the Select trigger. */
+.biz-onboarding input:not([type="file"]):not(.biz-code-box),
+.biz-onboarding [data-slot="select-trigger"] {
+  height: 2.75rem;
+}
+
+.biz-onboarding textarea {
+  min-height: 5rem;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+/* Chrome paints autofilled fields pale blue, which fights the emerald theme
+   and makes a finished form look broken. Repaint them as normal fields. */
+.biz-onboarding input:-webkit-autofill,
+.biz-onboarding input:-webkit-autofill:hover,
+.biz-onboarding input:-webkit-autofill:focus,
+.biz-onboarding textarea:-webkit-autofill,
+.biz-onboarding select:-webkit-autofill {
+  -webkit-text-fill-color: var(--foreground);
+  -webkit-box-shadow: 0 0 0 1000px var(--surface-card) inset;
+  box-shadow: 0 0 0 1000px var(--surface-card) inset;
+  caret-color: var(--foreground);
+  /* The only reliable way to stop the UA repainting on blur. */
+  transition: background-color 100000s ease-in-out 0s;
+}
+
+/* --- Size overrides where the inherited 14px is wrong ---------------- */
+
+.biz-onboarding .biz-xs {
+  font-size: 0.75rem;
+  line-height: 1.1rem;
+}
+
+.biz-onboarding .biz-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.3;
+}
+
+/* Primary step action — a public form's main button carries more weight than
+   a toolbar button, and Bootstrap's inherited size would leave it at 14px. */
+.biz-onboarding .biz-submit {
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+/* One digit box of the OTP / PIN input. */
+.biz-onboarding .biz-code-box {
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+/* --- Buttons --------------------------------------------------------- */
+
+/* Inline text actions ("Resend code", "Wrong number?"). Without Tailwind's
+   preflight — which this project disables — a bare <button> keeps the UA's
+   `color: buttontext`, so these rendered near-black instead of brand green.
+   Declared here rather than as utilities so the result is not at the mercy of
+   whichever unlayered rule loads last. */
+.biz-onboarding .biz-link {
+  color: var(--primary);
+  font-weight: 500;
+  background: none;
+  border: 0;
+  padding: 0;
+  text-underline-offset: 4px;
+}
+
+.biz-onboarding .biz-link:hover:not(:disabled) {
+  text-decoration: underline;
+}
+
+.biz-onboarding .biz-link:disabled {
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+  text-decoration: none;
+}
+
+/* The app's global primary-button rule paints a disabled button with a
+   surface colour that reads as a solid slab on a white card. Inside the flow a
+   disabled action should recede, not compete with the one that is available. */
+.biz-onboarding [data-slot="button"]:disabled,
+.biz-onboarding [data-slot="button"][class*="bg-primary"]:disabled {
+  background: color-mix(in srgb, var(--foreground) 7%, transparent) !important;
+  background-image: none !important;
+  color: color-mix(in srgb, var(--foreground) 42%, transparent) !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  opacity: 1 !important;
+  cursor: not-allowed;
+}
+
+/* --- Select triggers ------------------------------------------------- */
+
+/* `SelectTrigger` in `src/components/ui/select.tsx` carries `w-100`, which is
+   Bootstrap's `width: 100% !important` — so a Tailwind width class on the
+   trigger never applies. These give the two triggers that are not full-width a
+   value that outranks it (same origin, higher specificity). */
+/* Sizes to its content so a long dial code (+1268) is never clipped, with a
+   floor so short ones (+1) don't collapse the control. */
+.biz-onboarding .biz-dial-trigger {
+  width: auto !important;
+  min-width: 6.25rem;
+  flex: 0 0 auto;
+}
+
+/* SelectTrigger clamps its value to one line via `-webkit-box`, which truncates
+   the dial code rather than letting the auto width grow. */
+.biz-onboarding .biz-dial-trigger [data-slot="select-value"] {
+  display: flex !important;
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+/* flag-icons sizes itself in `em`; pin it so every row lines up. */
+.biz-onboarding .biz-flag {
+  width: 1.375rem;
+  height: 1rem;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--foreground) 12%, transparent);
+  background-size: cover;
+}
+
+.biz-onboarding .biz-kind-trigger {
+  width: 100% !important;
+}
+
+@media (min-width: 640px) {
+  .biz-onboarding .biz-kind-trigger {
+    width: 15rem !important;
+    flex: 0 0 auto;
+  }
+}
+
+/* --- Surfaces -------------------------------------------------------- */
+
+/* Same card language as the SME back-office screens — card surface, faintly
+   emerald border — but lifted with a real shadow, because this one floats on
+   an empty page rather than sitting in a dashboard grid. */
+.biz-onboarding .biz-card {
+  background-color: var(--surface-card);
+  border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--surface-border));
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--foreground) 5%, transparent),
+    0 12px 32px -18px color-mix(in srgb, var(--primary) 45%, transparent),
+    0 24px 60px -40px color-mix(in srgb, var(--foreground) 30%, transparent);
+}
+
+/* --- Lists ----------------------------------------------------------- */
+
+.biz-onboarding p {
+  margin-bottom: 0;
+}
+
+/* Bootstrap indents every list by a physical `padding-left: 2rem`, which
+   outranks Tailwind's logical `ps-*` and does not mirror in RTL. Most lists
+   here are layout, not prose — so they start flush, and the genuinely
+   bulleted ones opt back in with `.biz-list`. */
+.biz-onboarding ul,
+.biz-onboarding ol {
+  margin: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.biz-onboarding .biz-list {
+  padding-inline-start: 1.125rem;
+}
+
+/* Reboot also hangs a 1rem bottom margin off these. */
+.biz-onboarding figure,
+.biz-onboarding dl {
+  margin: 0;
+}
+
+.biz-onboarding dd {
+  margin: 0;
+}

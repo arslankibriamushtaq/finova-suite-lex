@@ -450,6 +450,22 @@ import DeviceManagement from "../pages/lmsPages/RiskManagement/DeviceManagement"
 import CreditScoringDefinitions from "../components/LOV/CreditScoringDefinitions";
 import ApprovalConditions from "../components/LOV/ApprovalConditions";
 
+// Public business (SME/KYB) onboarding — applicant-facing, no auth guard.
+import BusinessOnboardingLayout from "../pages/BusinessOnboarding/BusinessOnboardingLayout";
+import StartStep from "../pages/BusinessOnboarding/steps/StartStep";
+import OtpStep from "../pages/BusinessOnboarding/steps/OtpStep";
+import ResumePinStep from "../pages/BusinessOnboarding/steps/ResumePinStep";
+import EmailCodeStep from "../pages/BusinessOnboarding/steps/EmailCodeStep";
+import SetPinStep from "../pages/BusinessOnboarding/steps/SetPinStep";
+import BusinessDetailsStep from "../pages/BusinessOnboarding/steps/BusinessDetailsStep";
+import AddressStep from "../pages/BusinessOnboarding/steps/AddressStep";
+import DocumentsStep from "../pages/BusinessOnboarding/steps/DocumentsStep";
+import PassportStep from "../pages/BusinessOnboarding/steps/PassportStep";
+import PassportReviewStep from "../pages/BusinessOnboarding/steps/PassportReviewStep";
+import SelfieStep from "../pages/BusinessOnboarding/steps/SelfieStep";
+import UnderReviewStep from "../pages/BusinessOnboarding/steps/UnderReviewStep";
+import PepStep from "../pages/BusinessOnboarding/steps/PepStep";
+
 // import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
 // import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
 // import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
@@ -521,6 +537,33 @@ export const router = createBrowserRouter([
   {
     path: "/financial-statements",
     element: <FinancialStatements />,
+  },
+
+  // Business (SME/KYB) onboarding — public on purpose. Deliberately NOT wrapped
+  // in <PublicRoute>: that guard bounces anyone holding an admin token to the
+  // dashboard, which would lock a signed-in back-office user out of the
+  // applicant journey. Navigation inside the flow is driven by the server's
+  // `nextAction`, so these paths are entry points, not an enforced order.
+  {
+    path: "business",
+    element: <BusinessOnboardingLayout />,
+    children: [
+      { index: true, element: <StartStep /> },
+      { path: "start", element: <StartStep /> },
+      { path: "otp", element: <OtpStep /> },
+      { path: "resume-pin", element: <ResumePinStep /> },
+      { path: "email-code", element: <EmailCodeStep /> },
+      { path: "set-pin", element: <SetPinStep /> },
+      { path: "details", element: <BusinessDetailsStep /> },
+      { path: "address", element: <AddressStep /> },
+      { path: "documents", element: <DocumentsStep /> },
+      { path: "passport", element: <PassportStep /> },
+      { path: "passport-review", element: <PassportReviewStep /> },
+      { path: "selfie", element: <SelfieStep /> },
+      { path: "under-review", element: <UnderReviewStep /> },
+      { path: "pep", element: <PepStep /> },
+      { path: "*", element: <NotFound /> },
+    ],
   },
 
 

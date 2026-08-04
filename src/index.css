@@ -3,6 +3,7 @@
 @import 'tailwindcss';
 @import "./assets/scss/custom.scss";
 @import "./styles/rtl.css";
+@import "./styles/business-onboarding.css";
 
 /* Custom dark mode variant */
 @custom-variant dark (&:is(.dark *));
