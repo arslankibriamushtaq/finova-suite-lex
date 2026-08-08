@@ -70,6 +70,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "internal transfer": { Icon: ArrowLeftRight, color: "#6366f1" },
   "wallet transactions limits": { Icon: SlidersHorizontal, color: "#14b8a6" },
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
+  "wallet ledger": { Icon: BookOpen, color: "#10b981" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
@@ -114,6 +115,9 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Internal Transfer": "internalTransfer",
   "Wallet Transactions Limits": "walletTransactionsLimits",
   Ledger: "ledger",
+  "Wallet Ledger": "walletLedger",
+  Transactions: "transactions",
+  "Account Statements": "accountStatements",
   "General Credit Scoring": "generalCreditScoring",
   "Accounts Limit Setting": "accountsLimitSetting",
   Financing: "financing",
@@ -209,6 +213,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     if (
       p.includes("/WalletTransactionLimits") ||
       p.includes("/Wallet/") ||
+      p.includes("/WalletLedger") ||
       p.includes("/NotificationOrchestrator") ||
       p.includes("/RiskManagement") ||
       p.includes("/LOS/Setting") ||
@@ -2392,6 +2397,27 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
+    },
+    hasAccess(["LEDGER", "WALLET"]) && {
+      label: "Wallet Ledger",
+      Link: "/LOS/WalletLedger/Transactions",
+      img: Images.reportsIconDark,
+      imgActive: Images.reportsIconDark,
+      active: pathname.includes("/LOS/WalletLedger"),
+      menu: [
+        {
+          label: "Transactions",
+          Link: "Transactions",
+          LinkLable: "/LOS/WalletLedger",
+          active: pathname.includes("/LOS/WalletLedger/Transactions"),
+        },
+        {
+          label: "Account Statements",
+          Link: "Accounts",
+          LinkLable: "/LOS/WalletLedger",
+          active: pathname.includes("/LOS/WalletLedger/Accounts"),
+        },
+      ].filter(Boolean),
     },
     hasAccess("EXCHANGE") && {
       label: "Exchange Top-up",

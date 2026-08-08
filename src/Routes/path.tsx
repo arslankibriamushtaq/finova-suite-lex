@@ -238,6 +238,8 @@ import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
 import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
+import WalletLedgerTransactions from "../pages/lmsPages/WalletLedger/WalletLedgerTransactions";
+import WalletLedgerAccounts from "../pages/lmsPages/WalletLedger/WalletLedgerAccounts";
 import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
 import ExchangePayments from "../pages/lmsPages/Exchange/ExchangePayments";
 import ExchangePaymentDetail from "../pages/lmsPages/Exchange/ExchangePaymentDetail";
@@ -894,6 +896,14 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/Wallet/InternalTransfer",
             element: <InternalTransfer />,
+          },
+          {
+            path: "/LOS/WalletLedger/Transactions",
+            element: <WalletLedgerTransactions />,
+          },
+          {
+            path: "/LOS/WalletLedger/Accounts",
+            element: <WalletLedgerAccounts />,
           },
           {
             path: "/LOS/Exchange/Providers",

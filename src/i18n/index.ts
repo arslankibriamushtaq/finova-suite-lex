@@ -35,6 +35,7 @@ import adminMisc from "./locales/adminMisc";
 import businessOnboarding from "./locales/businessOnboarding";
 import customersB from "./locales/customersB";
 import exchange from "./locales/exchange";
+import walletLedger from "./locales/walletLedger";
 // <-- register new module locale files here (keep alphabetical)
 
 const modules: ModuleLocale[] = [
@@ -66,6 +67,7 @@ const modules: ModuleLocale[] = [
   businessOnboarding,
   customersB,
   exchange,
+  walletLedger,
 ];
 
 export const moduleNamespaces: string[] = modules.map((m) => m.namespace);

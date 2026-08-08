@@ -283,6 +283,15 @@ body,
   min-height: 34px !important;
   font-size: 12px !important;
 }
+/* shadcn Input in a filter row — same 34px/12px treatment as the antd fields
+   so pages built on the target stack still line up with the rest. Scoped to the
+   `.p-3` filter-card combo so form inputs inside content cards keep their size. */
+.pro-card.p-3 [data-slot="input"],
+.no-card.p-3 [data-slot="input"] {
+  height: 34px !important;
+  min-height: 34px !important;
+  font-size: 12px !important;
+}
 /* Action buttons in the filter row */
 .pro-card .theme-btn-next,
 .pro-card [data-slot="button"],
@@ -362,6 +371,49 @@ body,
   color: #10b981;
   box-shadow: inset 0 0 0 1px color-mix(in srgb, #10b981 15%, transparent);
   flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Compact data table for places where the full DataTable (TableView) is too
+   heavy — inside dialogs or nested in a card. Mirrors TableView's emerald head,
+   striped rows and hover so nested tables read as the same component.
+   Use `.mini-table` on the <table>, `.num` on numeric cells.
+--------------------------------------------------------------------------- */
+.mini-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  color: var(--foreground);
+  background: var(--surface-card);
+}
+.mini-table thead th {
+  background: var(--theme-table-background-color);
+  color: var(--theme-table-heading-color);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  padding: 8px 12px;
+  text-align: start;
+  white-space: nowrap;
+}
+.mini-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--surface-border);
+  vertical-align: middle;
+}
+.mini-table tbody tr:nth-child(even) {
+  background: var(--theme-table-row-alt);
+}
+.mini-table tbody tr:hover {
+  background: var(--theme-table-row-hover);
+}
+.mini-table tbody tr:last-child td {
+  border-bottom: none;
+}
+.mini-table .num {
+  text-align: end;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
 }
 
 /* Emerald glow + hover-lift accent for shadcn <Card> (and similar), to match
