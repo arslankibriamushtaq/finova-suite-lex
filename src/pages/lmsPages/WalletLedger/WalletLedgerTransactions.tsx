@@ -11,6 +11,8 @@ import {
   Undo2,
   Coins,
   ArrowLeftRight,
+  ArrowDownLeft,
+  ArrowUpRight,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,7 +48,6 @@ import {
   signedLedgerAmount,
   walletSide,
   type CurrencySummary,
-  type EntriesTotals,
   type PartyView,
   type WalletCounterparty,
   type WalletLedgerEntry,
@@ -74,6 +75,33 @@ const STATUS_TONE: Record<string, string> = {
 
 /** Brand color per currency card — same palette as the dashboard stat cards. */
 const CARD_THEMES = ["emerald", "teal", "indigo", "amber", "cyan", "violet", "green", "rose"];
+
+/**
+ * The row's direction as the statement shows it: DEBIT means money went INTO
+ * the perspective account, CREDIT means it left. INTERNAL is a customer-to-
+ * customer transfer, where that account's balance did not move at all.
+ */
+const DirectionBadge = ({ direction }: { direction?: string | null }) => {
+  const { t } = useTranslation("walletLedger");
+  if (!direction) return <span className="text-muted-foreground">-</span>;
+  if (direction === "INTERNAL") {
+    return (
+      <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
+        {t("tx.direction.internal")}
+      </Badge>
+    );
+  }
+  const isIn = direction === "DEBIT";
+  return (
+    <Badge
+      variant="outline"
+      className={`border gap-1 font-medium ${isIn ? TONES.emerald : TONES.red}`}
+    >
+      {isIn ? <ArrowDownLeft className="h-3 w-3" /> : <ArrowUpRight className="h-3 w-3" />}
+      {isIn ? t("acc.direction.in") : t("acc.direction.out")}
+    </Badge>
+  );
+};
 
 const StatusBadge = ({ status }: { status?: string }) => (
   <Badge
@@ -221,12 +249,11 @@ const WalletLedgerTransactions = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   const [entries, setEntries] = useState<WalletLedgerEntry[]>([]);
-  const [totals, setTotals] = useState<EntriesTotals[]>([]);
   const [summary, setSummary] = useState<CurrencySummary[]>([]);
   const [totalRows, setTotalRows] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1); // 1-based in the UI, 0-based on the API
-  const [pageSize, setPageSize] = useState(20);
+  const [pageSize, setPageSize] = useState(10);
   const [detail, setDetail] = useState<WalletLedgerEntry | null>(null);
 
   // Build the currency dropdown from the API — never hardcode the list.
@@ -280,13 +307,10 @@ const WalletLedgerTransactions = () => {
       });
       const body = res?.data;
       setEntries(body?.data?.entries ?? []);
-      // Server-side over the whole filtered set — never sum the page here.
-      setTotals(body?.data?.totals ?? []);
       setTotalRows(body?.pagination?.totalElements ?? body?.data?.totalEntries ?? 0);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || t("tx.toast.loadFailed"));
       setEntries([]);
-      setTotals([]);
       setTotalRows(0);
     } finally {
       setIsLoading(false);
@@ -511,6 +535,28 @@ const WalletLedgerTransactions = () => {
         );
       },
       width: "160px",
+    },
+    {
+      // The account's balance after this entry, exactly as the statement shows
+      // it. Server-accumulated across pages — never recomputed here.
+      name: t("tx.col.balance"),
+      cell: (row: WalletLedgerEntry) =>
+        row.runningBalance == null ? (
+          <span className="text-muted-foreground" title={t("tx.balanceNullHint")}>
+            -
+          </span>
+        ) : (
+          <span className="font-semibold" title={t("tx.balanceHint")}>
+            {formatLedgerAmount(row.runningBalance, row.currency)}
+          </span>
+        ),
+      width: "160px",
+    },
+    {
+      // Same In / Out reading as the statement, from the perspective account.
+      name: t("tx.col.direction"),
+      cell: (row: WalletLedgerEntry) => <DirectionBadge direction={row.direction} />,
+      width: "120px",
     },
     {
       name: t("common:status"),
@@ -775,10 +821,35 @@ const WalletLedgerTransactions = () => {
                         label={t("detail.transferStatus")}
                         value={humanizeCode(detail.wallet.status)}
                       />
+                      {/* The transaction's own figures, in the transaction's own
+                          currency — on a cross-currency transfer that is not the
+                          row's currency. The row's `amount` is only this one
+                          journal entry (principal and fee post separately). */}
+                      {detail.wallet.amount != null && (
+                        <Field
+                          label={t("detail.walletAmount")}
+                          value={formatLedgerAmount(
+                            detail.wallet.amount,
+                            detail.wallet.currency ?? undefined
+                          )}
+                        />
+                      )}
                       {detail.wallet.feeAmount != null && (
                         <Field
                           label={t("detail.fee")}
-                          value={formatLedgerAmount(detail.wallet.feeAmount, detail.currency)}
+                          value={formatLedgerAmount(
+                            detail.wallet.feeAmount,
+                            detail.wallet.currency ?? undefined
+                          )}
+                        />
+                      )}
+                      {detail.wallet.totalAmount != null && (
+                        <Field
+                          label={t("detail.totalAmount")}
+                          value={formatLedgerAmount(
+                            detail.wallet.totalAmount,
+                            detail.wallet.currency ?? undefined
+                          )}
                         />
                       )}
                     </div>

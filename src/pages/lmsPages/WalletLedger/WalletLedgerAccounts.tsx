@@ -26,6 +26,7 @@ import { Field } from "../../../components/shared/detailKit";
 import { TONES } from "../../../components/shared/detailKitUtils";
 import {
   getWalletLedgerAccounts,
+  getWalletLedgerAccountStatement,
   getWalletLedgerCurrencies,
   formatLedgerAmount,
   humanizeCode,
@@ -33,6 +34,8 @@ import {
   signedLedgerAmount,
   walletSide,
   type AccountLedger,
+  type AccountMovement,
+  type AccountStatementData,
 } from "../../../redux/apis/apisWalletLedger";
 
 const ALL = "ALL";
@@ -69,7 +72,15 @@ const WalletLedgerAccounts = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1); // 1-based in the UI, 0-based on the API
   const [pageSize, setPageSize] = useState(15);
-  const [statement, setStatement] = useState<AccountLedger | null>(null);
+
+  // The statement lives behind its own paginated endpoint, fetched when a row
+  // is opened — the listing carries balances only.
+  const [openRow, setOpenRow] = useState<AccountLedger | null>(null);
+  const [statement, setStatement] = useState<AccountStatementData | null>(null);
+  const [stmtLoading, setStmtLoading] = useState(false);
+  const [stmtPage, setStmtPage] = useState(1);
+  const [stmtPageSize, setStmtPageSize] = useState(10);
+  const [stmtTotalRows, setStmtTotalRows] = useState(0);
 
   useEffect(() => {
     getWalletLedgerCurrencies()
@@ -129,6 +140,154 @@ const WalletLedgerAccounts = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fromDate, toDate, currency, accountCode, debouncedSearch, page, pageSize]);
 
+  /** Open a row's statement — the currency is required by the endpoint. */
+  const openStatement = (row: AccountLedger) => {
+    setOpenRow(row);
+    setStatement(null);
+    setStmtPage(1);
+    setStmtTotalRows(row.movementCount ?? 0);
+  };
+
+  const closeStatement = () => {
+    setOpenRow(null);
+    setStatement(null);
+    setStmtTotalRows(0);
+  };
+
+  useEffect(() => {
+    if (!openRow) return;
+    let cancelled = false;
+    const loadStatement = async () => {
+      setStmtLoading(true);
+      try {
+        const res = await getWalletLedgerAccountStatement(openRow.accountCode, {
+          currency: openRow.currency,
+          fromDate: fromDate || undefined,
+          toDate: toDate || undefined,
+          page: stmtPage - 1,
+          size: stmtPageSize,
+        });
+        if (cancelled) return;
+        const body = res?.data;
+        setStatement(body?.data ?? null);
+        setStmtTotalRows(body?.pagination?.totalElements ?? 0);
+      } catch (error: any) {
+        if (cancelled) return;
+        toast.error(error?.response?.data?.message || t("acc.toast.statementFailed"));
+        setStatement(null);
+      } finally {
+        if (!cancelled) setStmtLoading(false);
+      }
+    };
+    loadStatement();
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [openRow, stmtPage, stmtPageSize, fromDate, toDate]);
+
+  // The movements table mirrors the entries table: no font-size overrides and
+  // stacked (not inline) lines, so TableView's width measurement matches.
+  const movementHeaders = [
+    {
+      name: t("acc.col.date"),
+      cell: (m: AccountMovement) => <span>{m.entryDate || "-"}</span>,
+      width: "110px",
+    },
+    {
+      name: t("acc.col.txnNo"),
+      cell: (m: AccountMovement) => (
+        <div className="flex flex-col">
+          <span className="font-mono">{m.wallet?.transactionNumber || m.entryNumber}</span>
+          <span className="text-muted-foreground">{humanizeCode(m.transactionType)}</span>
+        </div>
+      ),
+      width: "220px",
+    },
+    {
+      name: t("acc.col.description"),
+      cell: (m: AccountMovement) => <span>{m.description || "-"}</span>,
+      width: "260px",
+    },
+    {
+      // The other side, relative to this account: money that left it went to
+      // the credited party, and vice versa.
+      name: t("acc.col.contra"),
+      cell: (m: AccountMovement) => {
+        const other = walletSide(m.wallet, m.direction === "OUT" ? "to" : "from");
+        if (other) {
+          return (
+            <div className="flex flex-col">
+              <span>{other.name}</span>
+              {other.detail && <span className="text-muted-foreground">{other.detail}</span>}
+            </div>
+          );
+        }
+        return m.contraAccountCode ? (
+          <div className="flex flex-col">
+            <span className="font-mono">{m.contraAccountCode}</span>
+            <span>{m.contraAccountName}</span>
+          </div>
+        ) : (
+          <span className="text-muted-foreground">-</span>
+        );
+      },
+      width: "220px",
+    },
+    {
+      name: t("acc.col.debit"),
+      cell: (m: AccountMovement) => (
+        <span>{m.debitAmount ? formatLedgerAmount(m.debitAmount, m.currency) : ""}</span>
+      ),
+      width: "140px",
+    },
+    {
+      name: t("acc.col.credit"),
+      cell: (m: AccountMovement) => (
+        <span>{m.creditAmount ? formatLedgerAmount(m.creditAmount, m.currency) : ""}</span>
+      ),
+      width: "140px",
+    },
+    {
+      name: t("acc.col.amount"),
+      cell: (m: AccountMovement) => {
+        const signed = signedLedgerAmount({
+          amount: Math.abs(m.signedAmount ?? m.debitAmount ?? m.creditAmount ?? 0),
+          currency: m.currency,
+          signedAmount: m.signedAmount,
+        });
+        return (
+          <span
+            className={`font-medium ${
+              signed.tone === "up"
+                ? "text-emerald-600 dark:text-emerald-400"
+                : signed.tone === "down"
+                  ? "text-red-600 dark:text-red-400"
+                  : ""
+            }`}
+          >
+            {signed.text}
+          </span>
+        );
+      },
+      width: "150px",
+    },
+    {
+      // Accumulated server-side across the whole window, so it carries over
+      // between pages — never recomputed here from the rows on screen.
+      name: t("acc.col.balance"),
+      cell: (m: AccountMovement) => (
+        <span className="font-semibold">{formatLedgerAmount(m.runningBalance, m.currency)}</span>
+      ),
+      width: "160px",
+    },
+    {
+      name: t("acc.direction.in") + " / " + t("acc.direction.out"),
+      cell: (m: AccountMovement) => <DirectionBadge direction={m.direction} />,
+      width: "110px",
+    },
+  ];
+
   // One row per (account, currency) pair — an account holding two currencies
   // appears twice, and the two are never added together.
   const headers = [
@@ -140,7 +299,7 @@ const WalletLedgerAccounts = () => {
       cell: (row: AccountLedger) => (
         <button
           type="button"
-          onClick={() => setStatement(row)}
+          onClick={() => openStatement(row)}
           className="flex flex-col text-start text-primary hover:underline"
         >
           <span className="font-mono">{row.accountCode}</span>
@@ -204,7 +363,14 @@ const WalletLedgerAccounts = () => {
     {
       name: t("acc.col.action"),
       cell: (row: AccountLedger) => (
-        <Button variant="outline" size="sm" className="gap-1" onClick={() => setStatement(row)}>
+        <Button
+          variant="outline"
+          size="sm"
+          className="gap-1"
+          // Nothing to open when the window holds no movements.
+          disabled={!row.movementCount}
+          onClick={() => openStatement(row)}
+        >
           <FileText className="h-4 w-4" />
           {t("acc.action.statement")}
         </Button>
@@ -318,149 +484,81 @@ const WalletLedgerAccounts = () => {
         />
       </div>
 
-      {/* T-account statement — opening balance, movements, closing balance */}
-      <Dialog open={!!statement} onOpenChange={(open) => !open && setStatement(null)}>
+      {/* Statement detail — fetched per row from its own paginated endpoint */}
+      <Dialog open={!!openRow} onOpenChange={(open) => !open && closeStatement()}>
         {/* Scrolling lives on the body below: tokens.css sets `overflow: hidden`
             on [data-slot="dialog-content"] unlayered, which outranks utilities. */}
-        <DialogContent className="pro-dialog sm:max-w-4xl">
+        <DialogContent className="pro-dialog sm:max-w-5xl">
           <DialogHeader className="min-w-0 text-start">
             <DialogTitle className="truncate">
-              {statement
-                ? `${statement.accountCode} — ${statement.accountName} (${statement.currency})`
+              {openRow
+                ? `${openRow.accountCode} — ${openRow.accountName} (${openRow.currency})`
                 : ""}
             </DialogTitle>
             <DialogDescription className="truncate">
-              {statement
-                ? `${humanizeCode(statement.accountType)} · ${t("acc.movements", {
-                    count: statement.movementCount,
+              {openRow
+                ? `${humanizeCode(openRow.accountType)} · ${t("acc.movements", {
+                    count: openRow.movementCount,
                   })}`
                 : ""}
             </DialogDescription>
           </DialogHeader>
 
-          {statement && (
+          {openRow && (
             <div className="flex max-h-[70vh] min-w-0 flex-col gap-3 overflow-y-auto overflow-x-hidden">
+              {/* Window balances — the listing already carries the same numbers,
+                  so they show immediately and never flicker while paging. */}
               <div className="grid min-w-0 gap-x-6 md:grid-cols-2">
                 <div className="min-w-0">
                   <Field
                     label={t("acc.opening")}
-                    value={formatLedgerAmount(statement.openingBalance, statement.currency)}
+                    value={formatLedgerAmount(
+                      statement?.openingBalance ?? openRow.openingBalance,
+                      openRow.currency
+                    )}
                   />
                   <Field
                     label={t("acc.debits")}
-                    value={formatLedgerAmount(statement.totalDebits, statement.currency)}
+                    value={formatLedgerAmount(
+                      statement?.totalDebits ?? openRow.totalDebits,
+                      openRow.currency
+                    )}
                   />
                 </div>
                 <div className="min-w-0">
                   <Field
                     label={t("acc.credits")}
-                    value={formatLedgerAmount(statement.totalCredits, statement.currency)}
+                    value={formatLedgerAmount(
+                      statement?.totalCredits ?? openRow.totalCredits,
+                      openRow.currency
+                    )}
                   />
                   <Field
                     label={t("acc.closing")}
-                    value={formatLedgerAmount(statement.closingBalance, statement.currency)}
+                    value={formatLedgerAmount(
+                      statement?.closingBalance ?? openRow.closingBalance,
+                      openRow.currency
+                    )}
                   />
                 </div>
               </div>
 
-              <div className="w-full min-w-0 overflow-x-auto">
-                <table className="mini-table">
-                  <thead>
-                    <tr>
-                      <th>{t("acc.col.date")}</th>
-                      <th>{t("acc.col.txnNo")}</th>
-                      <th>{t("acc.col.description")}</th>
-                      <th>{t("acc.col.contra")}</th>
-                      <th className="num">{t("acc.col.debit")}</th>
-                      <th className="num">{t("acc.col.credit")}</th>
-                      <th className="num">{t("acc.col.amount")}</th>
-                      <th className="num">{t("acc.col.balance")}</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(statement.movements ?? []).length === 0 ? (
-                      <tr>
-                        <td colSpan={8} className="text-center text-muted-foreground">
-                          {t("acc.noMovements")}
-                        </td>
-                      </tr>
-                    ) : (
-                      statement.movements.map((m, i) => {
-                        // The other side, relative to this account: money that
-                        // left it went to the credited party, and vice versa.
-                        const other = walletSide(m.wallet, m.direction === "OUT" ? "to" : "from");
-                        // A movement has no unsigned `amount` of its own — the
-                        // posted leg is whichever of Dr / Cr is non-zero.
-                        const signed = signedLedgerAmount({
-                          amount: Math.abs(m.signedAmount ?? m.debitAmount ?? m.creditAmount ?? 0),
-                          currency: m.currency,
-                          signedAmount: m.signedAmount,
-                        });
-                        return (
-                          <tr key={`${m.entryNumber}-${i}`}>
-                            <td className="text-nowrap">{m.entryDate || "-"}</td>
-                            <td>
-                              <div className="d-flex align-items-center gap-2">
-                                <span className="font-mono text-xs">
-                                  {m.wallet?.transactionNumber || m.entryNumber}
-                                </span>
-                                <DirectionBadge direction={m.direction} />
-                              </div>
-                              <div className="text-xs text-muted-foreground">
-                                {humanizeCode(m.transactionType)}
-                              </div>
-                            </td>
-                            <td>{m.description || "-"}</td>
-                            <td>
-                              {other ? (
-                                <>
-                                  <div>{other.name}</div>
-                                  {other.detail && (
-                                    <div className="text-xs text-muted-foreground">
-                                      {other.detail}
-                                    </div>
-                                  )}
-                                </>
-                              ) : m.contraAccountCode ? (
-                                <>
-                                  <span className="font-mono text-xs">{m.contraAccountCode}</span>{" "}
-                                  {m.contraAccountName}
-                                </>
-                              ) : (
-                                <span className="text-muted-foreground">-</span>
-                              )}
-                            </td>
-                            <td className="num">
-                              {m.debitAmount ? formatLedgerAmount(m.debitAmount, m.currency) : "-"}
-                            </td>
-                            <td className="num">
-                              {m.creditAmount
-                                ? formatLedgerAmount(m.creditAmount, m.currency)
-                                : "-"}
-                            </td>
-                            {/* Signed the same way as runningBalance, so the
-                                Amount and Balance columns can never disagree. */}
-                            <td
-                              className={`num font-medium ${
-                                signed.tone === "up"
-                                  ? "text-emerald-600 dark:text-emerald-400"
-                                  : signed.tone === "down"
-                                    ? "text-red-600 dark:text-red-400"
-                                    : ""
-                              }`}
-                            >
-                              {signed.text}
-                            </td>
-                            <td className="num font-semibold">
-                              {formatLedgerAmount(m.runningBalance, m.currency)}
-                            </td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
+              <TableView
+                header={movementHeaders}
+                data={statement?.movements ?? []}
+                totalRows={stmtTotalRows}
+                isLoading={stmtLoading}
+                from={stmtTotalRows === 0 ? 0 : (stmtPage - 1) * stmtPageSize + 1}
+                to={Math.min(stmtPage * stmtPageSize, stmtTotalRows)}
+                page={stmtPage}
+                totalPage={Math.ceil(stmtTotalRows / stmtPageSize) || 1}
+                setPage={setStmtPage}
+                pageSize={stmtPageSize}
+                setPageSize={(size: number) => {
+                  setStmtPageSize(size);
+                  setStmtPage(1);
+                }}
+              />
             </div>
           )}
         </DialogContent>

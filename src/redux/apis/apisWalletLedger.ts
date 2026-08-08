@@ -99,7 +99,18 @@ export interface WalletContext {
   /** The wallet the money reached; null when it left the platform. */
   creditWallet?: WalletParty | null;
   counterparty?: WalletCounterparty | null;
+
+  /**
+   * The TRANSACTION's principal, excluding the fee — not the row's `amount`,
+   * which is only what that one journal entry moved. On a cross-currency
+   * transfer this is the leg the sender paid, so always format it with
+   * `wallet.currency`, never the row's.
+   */
+  amount?: number | null;
+  currency?: string | null;
   feeAmount?: number | null;
+  /** `amount + feeAmount` — what the wallet was actually debited. */
+  totalAmount?: number | null;
   /** Set only on a cross-currency transfer — a non-null rate means show the FX line. */
   creditAmount?: number | null;
   creditCurrency?: string | null;
@@ -137,6 +148,13 @@ export interface WalletLedgerEntry {
   creditAmount?: number | null;
   /** Positive when the perspective account's balance rose, negative when it fell. */
   signedAmount?: number | null;
+  /**
+   * The perspective account's balance after this entry, in `currency` —
+   * accumulated server-side over the whole set before paging, per (account,
+   * currency) pair, so it carries across pages. `null` when the entry never
+   * touches that account (`direction: null`); unchanged on an `INTERNAL` row.
+   */
+  runningBalance?: number | null;
 
   status?: string;
   reversal?: boolean;
@@ -185,6 +203,12 @@ export interface WalletLedgerEntriesData {
   currency?: string;
   totalEntries: number;
   totals?: EntriesTotals[];
+  /**
+   * `false` = each row's `runningBalance` is the account's true position,
+   * accumulated over every posting rather than only the filtered rows. Two
+   * adjacent visible rows can then differ by an amount that is not on screen.
+   */
+  balanceIsFiltered?: boolean;
   entries: WalletLedgerEntry[];
 }
 
@@ -238,7 +262,11 @@ export interface AccountMovement {
   status?: string;
 }
 
-/** One (account, currency) pair — an account holding two currencies = two rows. */
+/**
+ * One (account, currency) pair — an account holding two currencies = two rows.
+ * Balances only: the movements behind a row come from the statement endpoint,
+ * fetched when the user opens it (inline movements made the listing ~107 KB).
+ */
 export interface AccountLedger {
   accountId: string;
   accountCode: string;
@@ -249,7 +277,24 @@ export interface AccountLedger {
   totalDebits: number;
   totalCredits: number;
   closingBalance: number;
+  /** How many rows the statement will have — 0 means nothing to open. */
   movementCount: number;
+}
+
+/** One (account, currency) statement: window balances + a page of movements. */
+export interface AccountStatementData {
+  accountId: string;
+  accountCode: string;
+  accountName: string;
+  accountType: string;
+  currency: string;
+  fromDate: string;
+  toDate: string;
+  /** These describe the WHOLE window, not the current page — they don't change as you page. */
+  openingBalance: number;
+  totalDebits: number;
+  totalCredits: number;
+  closingBalance: number;
   movements: AccountMovement[];
 }
 
@@ -313,12 +358,40 @@ export interface WalletLedgerAccountsParams {
   size?: number;
 }
 
-/** T-account statements: opening balance, movements, closing balance. */
+/** Account listing — one row per (account, currency) pair, balances only. */
 export function getWalletLedgerAccounts(params: WalletLedgerAccountsParams = {}) {
   return axios.get<{
     data: WalletLedgerAccountsData;
     pagination: LedgerPagination;
   }>(`${BASE}/accounts${qs(params)}`);
+}
+
+export interface WalletLedgerStatementParams {
+  /** Required — a running balance mixing two currencies would be meaningless. */
+  currency: string;
+  fromDate?: string;
+  toDate?: string;
+  /** 0-based; counted in movements. */
+  page?: number;
+  size?: number;
+}
+
+/**
+ * Statement detail behind one listing row: opening balance, a page of movements
+ * with a running balance, closing balance.
+ *
+ * The running balance is accumulated server-side over the whole window before
+ * paging, so page 2 opens where page 1 closed — never recompute it in the
+ * browser from the page you happen to hold.
+ */
+export function getWalletLedgerAccountStatement(
+  accountCode: string,
+  params: WalletLedgerStatementParams
+) {
+  return axios.get<{
+    data: AccountStatementData;
+    pagination: LedgerPagination;
+  }>(`${BASE}/accounts/${encodeURIComponent(accountCode)}/statement${qs({ ...params })}`);
 }
 
 // ---------------------------------------------------------------------------
