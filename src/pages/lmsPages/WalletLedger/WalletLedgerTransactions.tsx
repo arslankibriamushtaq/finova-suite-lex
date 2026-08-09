@@ -4,8 +4,13 @@ import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
 import {
   BookOpen,
+  ChevronDown,
   Eye,
   RefreshCw,
+  SlidersHorizontal,
+  // Only used by the two notes that are commented out below — kept so those
+  // blocks can be restored as-is.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   Info,
   AlertTriangle,
   Undo2,
@@ -36,7 +41,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../../components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Field } from "../../../components/shared/detailKit";
+import { FilterField, SearchField } from "../../../components/shared/filterKit";
 import { TONES } from "../../../components/shared/detailKitUtils";
 import {
   getWalletLedgerCurrencies,
@@ -55,6 +67,15 @@ import {
 } from "../../../redux/apis/apisWalletLedger";
 
 const ALL = "ALL";
+
+/**
+ * Row-action dropdown trigger, identical to the Exchange tables. The emerald
+ * paint, padding and height come from the global table-action rules in
+ * tokens.css, which key off `bg-foreground` / `aria-haspopup` — so keep those
+ * classes for the button to look like every other Action column in the app.
+ */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 /** Documented reference types; the list grows as new wallet rails are added. */
 const REFERENCE_TYPES = [
@@ -247,6 +268,9 @@ const WalletLedgerTransactions = () => {
   const [accountCode, setAccountCode] = useState("");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  // The advanced filters stay collapsed until asked for — the page opens on
+  // just the search row, and the button carries a count of what is applied.
+  const [showFilters, setShowFilters] = useState(false);
 
   const [entries, setEntries] = useState<WalletLedgerEntry[]>([]);
   const [summary, setSummary] = useState<CurrencySummary[]>([]);
@@ -364,11 +388,25 @@ const WalletLedgerTransactions = () => {
    * The account the Dr / Cr / signed-amount columns are measured from. It comes
    * back on the rows (the accountCode filter when set, else Consumer Wallet).
    */
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const perspective = useMemo(() => {
     const row = entries.find((e) => e.perspectiveAccountCode);
     if (!row) return "";
     return [row.perspectiveAccountCode, row.perspectiveAccountName].filter(Boolean).join(" ");
   }, [entries]);
+
+  // How many of the collapsed filters are applied — search is excluded, it has
+  // its own visible field. Shown on the Filters button so a hidden filter is
+  // never a surprise, and it keeps Clear disabled while nothing is set.
+  const activeFilterCount = [
+    currency !== ALL,
+    referenceType !== ALL,
+    transactionType !== ALL,
+    status !== ALL,
+    !!accountCode.trim(),
+    !!fromDate,
+    !!toDate,
+  ].filter(Boolean).length;
 
   // SAR is the posting path's default, not a real currency — no tile for it.
   const visibleSummary = summary
@@ -578,12 +616,35 @@ const WalletLedgerTransactions = () => {
     {
       name: t("tx.col.action"),
       cell: (row: WalletLedgerEntry) => (
-        <Button variant="outline" size="sm" className="gap-1" onClick={() => setDetail(row)}>
-          <Eye className="h-4 w-4" />
-          {t("common:view")}
-        </Button>
+        // Row clicks are stopped here so opening the menu never triggers the
+        // row's own handlers, same as every other Action column in the app.
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+        >
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  setDetail(row);
+                }}
+              >
+                <Eye className="h-4 w-4" />
+                {t("common:view")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "110px",
+      width: "120px",
     },
   ];
 
@@ -607,151 +668,221 @@ const WalletLedgerTransactions = () => {
       {visibleSummary.length > 0 && (
         <div className="row gy-3 dashboard-stats mb-3">
           {visibleSummary.map((c, i) => (
-            <div key={c.currency} className="col-12 col-sm-6 col-lg-3 d-flex">
+            // 1 / 2 / 3 / 4 across: four tiles only get a column each once
+            // there is really room for them, so nothing is cramped at laptop
+            // widths or at 110% zoom.
+            <div key={c.currency} className="col-12 col-sm-6 col-lg-4 col-xxl-3 d-flex">
               <CurrencyCard summary={c} theme={CARD_THEMES[i % CARD_THEMES.length]} />
             </div>
           ))}
         </div>
       )}
 
-      {/* Filters */}
+      {/* Search stays out front; the rest of the filters live behind the
+          Filters button so the page opens on one clean row. The panel is a
+          labelled grid that collapses 4 → 3 → 2 → 1 from desktop to phone. */}
       <div className="pro-card p-3 mb-3">
-        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <Input
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <SearchField
+            id="ledger-search"
+            className="flex-1"
             placeholder={t("tx.search")}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ flex: "1 1 220px", minWidth: 190 }}
+            onChange={setSearch}
           />
-          <div style={{ width: 140 }}>
-            <Select value={currency} onValueChange={onFilter(setCurrency)}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("tx.filter.currency")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t("tx.filter.allCurrencies")}</SelectItem>
-                {currencies.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="h-10 flex-1 gap-2 sm:flex-none"
+              aria-expanded={showFilters}
+              aria-controls="ledger-filter-panel"
+              onClick={() => setShowFilters((open) => !open)}
+            >
+              <SlidersHorizontal className="h-4 w-4" />
+              {t("tx.filter.title")}
+              {activeFilterCount > 0 && (
+                <Badge
+                  variant="outline"
+                  title={t("tx.filter.active", { count: activeFilterCount })}
+                  className={`border font-medium ${TONES.emerald}`}
+                >
+                  {activeFilterCount}
+                </Badge>
+              )}
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
+              />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-10 flex-1 gap-2 sm:flex-none"
+              onClick={() => {
+                loadEntries();
+                loadSummary();
+              }}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
           </div>
-          <div style={{ width: 180 }}>
-            <Select value={referenceType} onValueChange={onFilter(setReferenceType)}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("tx.filter.referenceType")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t("tx.filter.allReferenceTypes")}</SelectItem>
-                {REFERENCE_TYPES.map((r) => (
-                  <SelectItem key={r} value={r}>
-                    {humanizeCode(r)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div style={{ width: 200 }}>
-            <Select value={transactionType} onValueChange={onFilter(setTransactionType)}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("tx.filter.transactionType")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t("tx.filter.allTransactionTypes")}</SelectItem>
-                {transactionTypes.map((tt) => (
-                  <SelectItem key={tt} value={tt}>
-                    {humanizeCode(tt)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div style={{ width: 140 }}>
-            <Select value={status} onValueChange={onFilter(setStatus)}>
-              <SelectTrigger>
-                <SelectValue placeholder={t("common:status")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t("tx.filter.allStatuses")}</SelectItem>
-                {statuses.map((s) => (
-                  <SelectItem key={s} value={s}>
-                    {humanizeCode(s)}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <Input
-            placeholder={t("tx.filter.accountCode")}
-            value={accountCode}
-            onChange={(e) => {
-              setAccountCode(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: 140 }}
-          />
-          <Input
-            type="date"
-            aria-label={t("common:from")}
-            value={fromDate}
-            onChange={(e) => {
-              setFromDate(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: 150 }}
-          />
-          <Input
-            type="date"
-            aria-label={t("common:to")}
-            value={toDate}
-            min={fromDate || undefined}
-            onChange={(e) => {
-              setToDate(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: 150 }}
-          />
-          <Button
-            variant="outline"
-            className="gap-2"
-            onClick={() => {
-              loadEntries();
-              loadSummary();
-            }}
-            disabled={isLoading}
-          >
-            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            {t("common:refresh")}
-          </Button>
-          <Button
-            variant="ghost"
-            onClick={() => {
-              setCurrency(ALL);
-              setReferenceType(ALL);
-              setTransactionType(ALL);
-              setStatus(ALL);
-              setAccountCode("");
-              setSearch("");
-              setFromDate("");
-              setToDate("");
-              setPage(1);
-            }}
-          >
-            {t("tx.filter.clear")}
-          </Button>
         </div>
 
-        {/* The wallet posting path does not send a currency yet — say so here. */}
-        <div className="d-flex align-items-start gap-2 mt-2 text-xs text-muted-foreground">
-          <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
+        {showFilters && (
+          <div id="ledger-filter-panel" className="mt-3 border-t pt-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <FilterField label={t("tx.filter.currency")}>
+                <Select value={currency} onValueChange={onFilter(setCurrency)}>
+                  {/* h-10 to match the search field; the data-size variant is
+                    what SelectTrigger sizes itself with, so plain h-10 loses. */}
+                <SelectTrigger className="w-full data-[size=default]:h-10">
+                    <SelectValue placeholder={t("tx.filter.currency")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>{t("tx.filter.allCurrencies")}</SelectItem>
+                    {currencies.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterField>
+
+              <FilterField label={t("tx.filter.referenceType")}>
+                <Select value={referenceType} onValueChange={onFilter(setReferenceType)}>
+                  {/* h-10 to match the search field; the data-size variant is
+                    what SelectTrigger sizes itself with, so plain h-10 loses. */}
+                <SelectTrigger className="w-full data-[size=default]:h-10">
+                    <SelectValue placeholder={t("tx.filter.referenceType")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>{t("tx.filter.allReferenceTypes")}</SelectItem>
+                    {REFERENCE_TYPES.map((r) => (
+                      <SelectItem key={r} value={r}>
+                        {humanizeCode(r)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterField>
+
+              <FilterField label={t("tx.filter.transactionType")}>
+                <Select value={transactionType} onValueChange={onFilter(setTransactionType)}>
+                  {/* h-10 to match the search field; the data-size variant is
+                    what SelectTrigger sizes itself with, so plain h-10 loses. */}
+                <SelectTrigger className="w-full data-[size=default]:h-10">
+                    <SelectValue placeholder={t("tx.filter.transactionType")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>{t("tx.filter.allTransactionTypes")}</SelectItem>
+                    {transactionTypes.map((tt) => (
+                      <SelectItem key={tt} value={tt}>
+                        {humanizeCode(tt)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterField>
+
+              <FilterField label={t("common:status")}>
+                <Select value={status} onValueChange={onFilter(setStatus)}>
+                  {/* h-10 to match the search field; the data-size variant is
+                    what SelectTrigger sizes itself with, so plain h-10 loses. */}
+                <SelectTrigger className="w-full data-[size=default]:h-10">
+                    <SelectValue placeholder={t("common:status")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>{t("tx.filter.allStatuses")}</SelectItem>
+                    {statuses.map((s) => (
+                      <SelectItem key={s} value={s}>
+                        {humanizeCode(s)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterField>
+
+              <FilterField label={t("tx.filter.accountCode")} htmlFor="ledger-account-code">
+                <Input
+                  id="ledger-account-code"
+                  className="h-10"
+                  placeholder={t("tx.filter.accountCode")}
+                  value={accountCode}
+                  onChange={(e) => {
+                    setAccountCode(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+
+              <FilterField label={t("common:from")} htmlFor="ledger-from-date">
+                <Input
+                  id="ledger-from-date"
+                  className="h-10"
+                  type="date"
+                  value={fromDate}
+                  max={toDate || undefined}
+                  onChange={(e) => {
+                    setFromDate(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+
+              <FilterField label={t("common:to")} htmlFor="ledger-to-date">
+                <Input
+                  id="ledger-to-date"
+                  className="h-10"
+                  type="date"
+                  value={toDate}
+                  min={fromDate || undefined}
+                  onChange={(e) => {
+                    setToDate(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+            </div>
+
+            <div className="mt-3 flex justify-end">
+              <Button
+                variant="ghost"
+                className="w-full sm:w-auto"
+                disabled={activeFilterCount === 0 && !search.trim()}
+                onClick={() => {
+                  setCurrency(ALL);
+                  setReferenceType(ALL);
+                  setTransactionType(ALL);
+                  setStatus(ALL);
+                  setAccountCode("");
+                  setSearch("");
+                  setFromDate("");
+                  setToDate("");
+                  setPage(1);
+                }}
+              >
+                {t("tx.filter.clear")}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Hidden on request. The wallet posting path does not send a currency
+            yet, so older rows landed on the SAR default — the note explained
+            that. Restore this block when the note is wanted back on screen.
+        <div className="mt-3 flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>{t("tx.currencyNote")}</span>
         </div>
+        */}
       </div>
 
       <div className="pro-card">
-        {/* Dr / Cr only mean something relative to one account — name it once. */}
+        {/* Hidden on request. Dr / Cr / Amount are measured from one account,
+            and this named it so the columns could not be misread. Restore this
+            block to put the perspective line back above the table.
         {perspective && (
           <div
             className="d-flex align-items-center gap-2 px-3 pt-2 text-xs text-muted-foreground"
@@ -761,6 +892,7 @@ const WalletLedgerTransactions = () => {
             <span>{t("tx.perspective", { account: perspective })}</span>
           </div>
         )}
+        */}
         <TableView
           header={headers}
           data={entries}

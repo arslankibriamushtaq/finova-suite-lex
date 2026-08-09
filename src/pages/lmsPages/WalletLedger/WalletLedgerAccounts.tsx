@@ -2,7 +2,19 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { Landmark, RefreshCw, Info, ArrowDownLeft, ArrowUpRight, FileText } from "lucide-react";
+import {
+  Landmark,
+  RefreshCw,
+  SlidersHorizontal,
+  ChevronDown,
+  // Only used by the currency note that is commented out below — kept so that
+  // block can be restored as-is.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  Info,
+  ArrowDownLeft,
+  ArrowUpRight,
+  FileText,
+} from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Button } from "../../../components/ui/button";
@@ -22,7 +34,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../../components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import { Field } from "../../../components/shared/detailKit";
+import { FilterField, SearchField } from "../../../components/shared/filterKit";
 import { TONES } from "../../../components/shared/detailKitUtils";
 import {
   getWalletLedgerAccounts,
@@ -39,6 +58,15 @@ import {
 } from "../../../redux/apis/apisWalletLedger";
 
 const ALL = "ALL";
+
+/**
+ * Row-action dropdown trigger, identical to the other tables. The emerald
+ * paint, padding and height come from the global table-action rules in
+ * tokens.css, which key off `bg-foreground` / `aria-haspopup` — so keep those
+ * classes for the button to look like every other Action column in the app.
+ */
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
 
 /** IN = this account was debited, OUT = credited. */
 const DirectionBadge = ({ direction }: { direction: string }) => {
@@ -66,6 +94,13 @@ const WalletLedgerAccounts = () => {
   const [toDate, setToDate] = useState("");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  // The advanced filters stay collapsed until asked for — the page opens on
+  // just the search row. It starts open when the URL arrives carrying a filter
+  // (the Transactions page links here with accountCode / currency set), so the
+  // narrowed result set is never unexplained.
+  const [showFilters, setShowFilters] = useState(
+    !!searchParams.get("accountCode") || !!searchParams.get("currency")
+  );
 
   const [ledgers, setLedgers] = useState<AccountLedger[]>([]);
   const [totalRows, setTotalRows] = useState(0);
@@ -363,21 +398,49 @@ const WalletLedgerAccounts = () => {
     {
       name: t("acc.col.action"),
       cell: (row: AccountLedger) => (
-        <Button
-          variant="outline"
-          size="sm"
-          className="gap-1"
-          // Nothing to open when the window holds no movements.
-          disabled={!row.movementCount}
-          onClick={() => openStatement(row)}
+        // Row clicks are stopped here so opening the menu never triggers the
+        // row's own handlers, same as every other Action column in the app.
+        <div
+          className="relative inline-block"
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
         >
-          <FileText className="h-4 w-4" />
-          {t("acc.action.statement")}
-        </Button>
+          <DropdownMenu modal={false}>
+            <DropdownMenuTrigger asChild>
+              <button type="button" className={SELECT_TRIGGER_CLS}>
+                {t("common:select")}
+                <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" side="bottom" className="z-[9999]" sideOffset={4}>
+              <DropdownMenuItem
+                // Nothing to open when the window holds no movements.
+                disabled={!row.movementCount}
+                onSelect={(e) => {
+                  e.preventDefault();
+                  openStatement(row);
+                }}
+              >
+                <FileText className="h-4 w-4" />
+                {t("acc.action.statement")}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       ),
-      width: "130px",
+      width: "120px",
     },
   ];
+
+  // How many of the collapsed filters are applied — search is excluded, it has
+  // its own visible field. Shown on the Filters button so a hidden filter is
+  // never a surprise, and it keeps Clear disabled while nothing is set.
+  const activeFilterCount = [
+    currency !== ALL,
+    !!accountCode.trim(),
+    !!fromDate,
+    !!toDate,
+  ].filter(Boolean).length;
 
   const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
   const to = Math.min(page * pageSize, totalRows);
@@ -395,74 +458,151 @@ const WalletLedgerAccounts = () => {
         <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("acc.subtitle")}</p>
       </div>
 
+      {/* Search stays out front; the rest of the filters live behind the
+          Filters button so the page opens on one clean row. The panel is a
+          labelled grid that collapses 4 → 3 → 2 → 1 from desktop to phone. */}
       <div className="pro-card p-3 mb-3">
-        <div className="d-flex flex-wrap align-items-center gap-2 w-100">
-          <Input
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+          <SearchField
+            id="accounts-search"
+            className="flex-1"
             placeholder={t("acc.search")}
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{ flex: "1 1 220px", minWidth: 190 }}
+            onChange={setSearch}
           />
-          <Input
-            placeholder={t("tx.filter.accountCode")}
-            value={accountCode}
-            onChange={(e) => {
-              setAccountCode(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: 150 }}
-          />
-          <div style={{ width: 140 }}>
-            <Select
-              value={currency}
-              onValueChange={(v) => {
-                setCurrency(v);
-                setPage(1);
-              }}
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              className="h-10 flex-1 gap-2 sm:flex-none"
+              aria-expanded={showFilters}
+              aria-controls="accounts-filter-panel"
+              onClick={() => setShowFilters((open) => !open)}
             >
-              <SelectTrigger>
-                <SelectValue placeholder={t("tx.filter.currency")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t("tx.filter.allCurrencies")}</SelectItem>
-                {currencies.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+              <SlidersHorizontal className="h-4 w-4" />
+              {t("tx.filter.title")}
+              {activeFilterCount > 0 && (
+                <Badge
+                  variant="outline"
+                  title={t("tx.filter.active", { count: activeFilterCount })}
+                  className={`border font-medium ${TONES.emerald}`}
+                >
+                  {activeFilterCount}
+                </Badge>
+              )}
+              <ChevronDown
+                className={`h-4 w-4 transition-transform ${showFilters ? "rotate-180" : ""}`}
+              />
+            </Button>
+            <Button
+              variant="outline"
+              className="h-10 flex-1 gap-2 sm:flex-none"
+              onClick={loadLedgers}
+              disabled={isLoading}
+            >
+              <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
+              {t("common:refresh")}
+            </Button>
           </div>
-          <Input
-            type="date"
-            aria-label={t("common:from")}
-            value={fromDate}
-            onChange={(e) => {
-              setFromDate(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: 150 }}
-          />
-          <Input
-            type="date"
-            aria-label={t("common:to")}
-            value={toDate}
-            min={fromDate || undefined}
-            onChange={(e) => {
-              setToDate(e.target.value);
-              setPage(1);
-            }}
-            style={{ width: 150 }}
-          />
-          <Button variant="outline" className="gap-2" onClick={loadLedgers} disabled={isLoading}>
-            <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
-            {t("common:refresh")}
-          </Button>
         </div>
+
+        {showFilters && (
+          <div id="accounts-filter-panel" className="mt-3 border-t pt-3">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <FilterField label={t("tx.filter.accountCode")} htmlFor="accounts-account-code">
+                <Input
+                  id="accounts-account-code"
+                  className="h-10"
+                  placeholder={t("tx.filter.accountCode")}
+                  value={accountCode}
+                  onChange={(e) => {
+                    setAccountCode(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+
+              <FilterField label={t("tx.filter.currency")}>
+                <Select
+                  value={currency}
+                  onValueChange={(v) => {
+                    setCurrency(v);
+                    setPage(1);
+                  }}
+                >
+                  {/* h-10 to match the search field; the data-size variant is
+                      what SelectTrigger sizes itself with, so plain h-10 loses. */}
+                  <SelectTrigger className="w-full data-[size=default]:h-10">
+                    <SelectValue placeholder={t("tx.filter.currency")} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={ALL}>{t("tx.filter.allCurrencies")}</SelectItem>
+                    {currencies.map((c) => (
+                      <SelectItem key={c} value={c}>
+                        {c}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </FilterField>
+
+              <FilterField label={t("common:from")} htmlFor="accounts-from-date">
+                <Input
+                  id="accounts-from-date"
+                  className="h-10"
+                  type="date"
+                  value={fromDate}
+                  max={toDate || undefined}
+                  onChange={(e) => {
+                    setFromDate(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+
+              <FilterField label={t("common:to")} htmlFor="accounts-to-date">
+                <Input
+                  id="accounts-to-date"
+                  className="h-10"
+                  type="date"
+                  value={toDate}
+                  min={fromDate || undefined}
+                  onChange={(e) => {
+                    setToDate(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+            </div>
+
+            <div className="mt-3 flex justify-end">
+              <Button
+                variant="ghost"
+                className="w-full sm:w-auto"
+                disabled={activeFilterCount === 0 && !search.trim()}
+                onClick={() => {
+                  setCurrency(ALL);
+                  setAccountCode("");
+                  setSearch("");
+                  setFromDate("");
+                  setToDate("");
+                  setPage(1);
+                }}
+              >
+                {t("tx.filter.clear")}
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Hidden on request. The wallet posting path does not send a currency
+            yet, so older rows landed on the SAR default — the note explained
+            that. Restore this block when the note is wanted back on screen.
         <div className="d-flex align-items-start gap-2 mt-2 text-xs text-muted-foreground">
           <Info className="h-3.5 w-3.5 shrink-0 mt-0.5" />
           <span>{t("tx.currencyNote")}</span>
         </div>
+        */}
       </div>
 
       <div className="pro-card">

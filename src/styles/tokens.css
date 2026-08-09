@@ -1503,6 +1503,33 @@ html.dark .rdt_TableCell .text-amber-600 {
   color: #ffffff !important;
 }
 
+/* ===== Anything clickable shows a pointer =====
+   Tailwind's preflight is off while Bootstrap coexists, so <button> keeps the
+   browser default `cursor: default` and the row-action "Select" trigger read as
+   inert. Cover buttons, the Radix menu / select slots and the Bootstrap and
+   Ant dropdown toggles in one place, app-wide. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+[data-slot="dropdown-menu-trigger"],
+[data-slot="dropdown-menu-item"],
+[data-slot="dropdown-menu-checkbox-item"],
+[data-slot="dropdown-menu-radio-item"],
+[data-slot="dropdown-menu-sub-trigger"],
+[data-slot="select-trigger"],
+[data-slot="select-item"],
+.dropdown-toggle,
+.ant-dropdown-trigger,
+.ant-select-selector {
+  cursor: pointer;
+}
+/* Disabled controls — including Radix's, which stay focusable rather than
+   carrying the :disabled pseudo-class — must not look clickable. */
+button:disabled,
+[aria-disabled="true"],
+[data-disabled] {
+  cursor: not-allowed;
+}
+
 /* ===== Row-action trigger stays whole at any window size / browser zoom =====
    Table cells clip their content (overflow:hidden, set globally in custom.css)
    and TableView sizes each column from the text it can measure. A dropdown
