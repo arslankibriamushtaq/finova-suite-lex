@@ -1503,6 +1503,40 @@ html.dark .rdt_TableCell .text-amber-600 {
   color: #ffffff !important;
 }
 
+/* ===== Native date/time pickers: icon at the end of the field =====
+   Chrome lays the picker indicator out immediately after the date text, so on
+   a full-width field it floats mid-input instead of sitting at the edge like
+   every other trailing affordance. Pin it to the inline end — `inset-inline-end`
+   so it lands on the left in Arabic — and leave room so a filled-in date never
+   runs under it. */
+input[type="date"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="time"],
+input[type="week"] {
+  position: relative;
+  padding-inline-end: 2.25rem;
+}
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+input[type="month"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator,
+input[type="week"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  inset-inline-end: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+/* The indicator is painted as a dark glyph — invert it in dark mode. */
+html.dark input[type="date"]::-webkit-calendar-picker-indicator,
+html.dark input[type="datetime-local"]::-webkit-calendar-picker-indicator,
+html.dark input[type="month"]::-webkit-calendar-picker-indicator,
+html.dark input[type="time"]::-webkit-calendar-picker-indicator,
+html.dark input[type="week"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
 /* ===== Anything clickable shows a pointer =====
    Tailwind's preflight is off while Bootstrap coexists, so <button> keeps the
    browser default `cursor: default` and the row-action "Select" trigger read as
