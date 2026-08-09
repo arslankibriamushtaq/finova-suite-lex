@@ -185,6 +185,29 @@ const TableView = ({
     return 0;
   };
 
+  // Controls (the "Select" dropdown trigger, edit/delete buttons, links styled as
+  // buttons) are far wider than the text inside them: padding, gap and a chevron
+  // add ~50px of chrome that measureNodeWidth cannot see. Counting them lets the
+  // column reserve that space — otherwise the cell (overflow:hidden globally)
+  // clips the button as soon as the viewport tightens, e.g. at 100–110% zoom.
+  const CONTROL_CHROME = 48; // padding + gap + chevron/icon + border, per control
+  const CONTROL_COL_MIN = 130; // never size an action column below one full button
+  const isControlNode = (type: any): boolean => {
+    if (typeof type === "string") {
+      return ["button", "a", "select", "input", "textarea"].includes(type);
+    }
+    const name = type?.displayName || type?.name || "";
+    return /button|dropdown|menu|toggle|switch|action/i.test(name);
+  };
+  const countControls = (node: any, depth = 0): number => {
+    if (!node || typeof node !== "object" || depth > 12) return 0;
+    if (Array.isArray(node)) {
+      return node.reduce((n, c) => n + countControls(c, depth + 1), 0);
+    }
+    if (isControlNode(node.type)) return 1; // don't descend — nested icons are chrome
+    return countControls(node.props?.children, depth + 1);
+  };
+
   // Make every table responsive: drop the fixed `width` (which, with nowrap
   // content, caused columns to overlap) and instead size each column to its
   // widest content so the full value shows on one line; the table grows and
@@ -196,6 +219,7 @@ const TableView = ({
     const headerText = typeof rest.name === "string" ? rest.name : "";
     let contentW = headerText ? measureText(headerText, 600) : 0;
     let measuredBody = false;
+    let hasControl = false;
     (data || []).forEach((row: any) => {
       let w = 0;
       try {
@@ -203,7 +227,10 @@ const TableView = ({
           const sv = rest.selector(row);
           if (sv !== null && sv !== undefined) w = measureText(String(sv), 500);
         } else if (typeof rest.cell === "function") {
-          w = measureNodeWidth(rest.cell(row), 500);
+          const node = rest.cell(row);
+          const controls = countControls(node);
+          if (controls > 0) hasControl = true;
+          w = measureNodeWidth(node, 500) + controls * CONTROL_CHROME;
         }
       } catch {
         /* unmeasurable cell — falls back to default width below */
@@ -213,6 +240,7 @@ const TableView = ({
         contentW = Math.max(contentW, w);
       }
     });
+    if (hasControl) contentW = Math.max(contentW, CONTROL_COL_MIN - 44);
     // Content-fit MINIMUM width (text + padding + buffer for monospace/icons).
     // Using minWidth (not a fixed width) + grow lets columns expand to fill the
     // container — so there's no empty space on the right — while never shrinking

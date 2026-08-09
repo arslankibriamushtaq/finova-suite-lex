@@ -1503,6 +1503,65 @@ html.dark .rdt_TableCell .text-amber-600 {
   color: #ffffff !important;
 }
 
+/* ===== Row-action trigger stays whole at any window size / browser zoom =====
+   Table cells clip their content (overflow:hidden, set globally in custom.css)
+   and TableView sizes each column from the text it can measure. A dropdown
+   trigger is ~50px wider than its label (padding + gap + chevron), so once the
+   layout tightened — browser zoom at 100–110%, narrow laptop, sidebar expanded —
+   the right edge of the button was cut off. TableView now reserves that chrome;
+   these rules are the safety net: the trigger never shrinks or wraps, and the
+   cell holding one is allowed to show it in full. Scoped to menu triggers so
+   ordinary text cells keep clipping as before. */
+.rdt_TableCell:has(button[aria-haspopup="menu"]),
+.rdt_TableCell:has(button[aria-haspopup="menu"]) > div,
+.rdt_TableCell:has(button[aria-haspopup="true"]),
+.rdt_TableCell:has(button[aria-haspopup="true"]) > div,
+.rdt_TableCell:has(.dropdown-toggle),
+.rdt_TableCell:has(.dropdown-toggle) > div,
+.no-table tbody td:has(button[aria-haspopup="menu"]),
+.no-table tbody td:has(.dropdown-toggle) {
+  overflow: visible !important;
+}
+.rdt_TableCell button[aria-haspopup="menu"],
+.rdt_TableCell button[aria-haspopup="true"],
+.rdt_TableCell button.dropdown-toggle,
+.rdt_TableCell .gradient-btn,
+.rdt_TableCell .theme-btn-next,
+.rdt_TableCell .ant-btn,
+.rdt_TableCell button[class*="bg-foreground"],
+.no-table tbody td button[aria-haspopup="menu"],
+.no-table tbody td button.dropdown-toggle,
+.no-table tbody td .gradient-btn,
+.no-table tbody td .theme-btn-next,
+.no-table tbody td .ant-btn {
+  flex: 0 0 auto !important;
+  white-space: nowrap !important;
+  max-width: none !important;
+}
+.rdt_TableCell button[aria-haspopup="menu"] svg,
+.rdt_TableCell button.dropdown-toggle svg,
+.no-table tbody td button[aria-haspopup="menu"] svg {
+  flex: 0 0 auto !important;
+}
+/* Tighter chrome once horizontal space is scarce (also what browser zoom
+   reports, since zooming shrinks the CSS viewport) — same button, less padding. */
+@media (max-width: 1400px) {
+  .rdt_TableCell .gradient-btn,
+  .rdt_TableCell .theme-btn-next,
+  .rdt_TableCell button.dropdown-toggle,
+  .rdt_TableCell .ant-btn,
+  .rdt_TableCell button[class*="bg-foreground"],
+  .rdt_TableCell button[aria-haspopup="menu"],
+  .no-table tbody td .gradient-btn,
+  .no-table tbody td .theme-btn-next,
+  .no-table tbody td button.dropdown-toggle,
+  .no-table tbody td .ant-btn,
+  .no-table tbody td button[class*="bg-foreground"] {
+    padding: 5px 10px !important;
+    gap: 4px !important;
+  }
+}
+
 /* Caret / chevron / arrow icon inside the trigger — always white */
 .rdt_TableCell .gradient-btn img,
 .rdt_TableCell .theme-btn-next img,
