@@ -35,6 +35,8 @@ import {
   Send,
   BookOpen,
   Gauge,
+  ShoppingBag,
+  Coins,
   type LucideIcon,
 } from "lucide-react";
 
@@ -71,6 +73,8 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "wallet transactions limits": { Icon: SlidersHorizontal, color: "#14b8a6" },
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
   "wallet ledger": { Icon: BookOpen, color: "#10b981" },
+  "bnpl categories": { Icon: ShoppingBag, color: "#a855f7" },
+  "sulliscash settings": { Icon: Coins, color: "#f59e0b" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
@@ -125,6 +129,8 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Product Management": "productManagement",
   Products: "products",
   "Contract Template": "contractTemplate",
+  "BNPL Categories": "bnplCategories",
+  "SullisCash Settings": "sullisCashSettings",
   "Product Category": "productCategory",
   "Product Sub Category": "productSubCategory",
   LOV: "lov",
@@ -214,6 +220,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       p.includes("/WalletTransactionLimits") ||
       p.includes("/Wallet/") ||
       p.includes("/WalletLedger") ||
+      p.includes("/LOS/Bnpl") ||
+      p.includes("/LOS/SullisCash") ||
       p.includes("/NotificationOrchestrator") ||
       p.includes("/RiskManagement") ||
       p.includes("/LOS/Setting") ||
@@ -2418,6 +2426,20 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname.includes("/LOS/WalletLedger/Accounts"),
         },
       ].filter(Boolean),
+    },
+    hasAccess(["BNPL", "WALLET"]) && {
+      label: "BNPL Categories",
+      Link: "/LOS/Bnpl/Categories",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/LOS/Bnpl"),
+    },
+    hasAccess(["SULLIS_CASH", "WALLET"]) && {
+      label: "SullisCash Settings",
+      Link: "/LOS/SullisCash/Settings",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/LOS/SullisCash"),
     },
     hasAccess("EXCHANGE") && {
       label: "Exchange Top-up",

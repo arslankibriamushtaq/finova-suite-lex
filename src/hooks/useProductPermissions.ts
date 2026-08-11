@@ -640,6 +640,31 @@ export const EXCHANGE_PERMISSIONS = {
 }
 
 // ============================================
+// BNPL — wallet-service, Casbin object `wallet.bnpl.admin-categories`
+// (acts: create / update / delete / read). Deliberately separate from the
+// customer-facing `wallet.bnpl.categories` object, so browse-only access can
+// never reach the admin catalog.
+// ============================================
+export const BNPL_PERMISSIONS = {
+  MODULE: "BNPL",
+  CATEGORY_LIST: "BNPL_CATEGORY_READ",
+  CATEGORY_CREATE: "BNPL_CATEGORY_CREATE",
+  CATEGORY_EDIT: "BNPL_CATEGORY_UPDATE",
+  CATEGORY_DELETE: "BNPL_CATEGORY_DELETE",
+}
+
+// ============================================
+// SullisCash — wallet-service, Casbin object `wallet.sullis-cash.admin-config`
+// (acts: read / update). Separate from the customer-facing
+// `wallet.sullis-cash.offer` / `.loans` objects.
+// ============================================
+export const SULLIS_CASH_PERMISSIONS = {
+  MODULE: "SULLIS_CASH",
+  CONFIG_READ: "SULLIS_CASH_CONFIG_READ",
+  CONFIG_UPDATE: "SULLIS_CASH_CONFIG_UPDATE",
+}
+
+// ============================================
 // KYC — identity-service KYC_*
 // ============================================
 export const KYC_PERMISSIONS = {

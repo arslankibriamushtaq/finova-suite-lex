@@ -238,6 +238,8 @@ import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
 import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
+import BnplCategories from "../pages/lmsPages/Bnpl/BnplCategories";
+import SullisCashConfig from "../pages/lmsPages/SullisCash/SullisCashConfig";
 import WalletLedgerTransactions from "../pages/lmsPages/WalletLedger/WalletLedgerTransactions";
 import WalletLedgerAccounts from "../pages/lmsPages/WalletLedger/WalletLedgerAccounts";
 import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
@@ -904,6 +906,14 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/WalletLedger/Accounts",
             element: <WalletLedgerAccounts />,
+          },
+          {
+            path: "/LOS/Bnpl/Categories",
+            element: <BnplCategories />,
+          },
+          {
+            path: "/LOS/SullisCash/Settings",
+            element: <SullisCashConfig />,
           },
           {
             path: "/LOS/Exchange/Providers",

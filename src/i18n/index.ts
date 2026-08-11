@@ -25,6 +25,7 @@ import financing from "./locales/financing";
 import dashboard from "./locales/dashboard";
 import reconciliation from "./locales/reconciliation";
 import walletBlocks from "./locales/walletBlocks";
+import sullisCash from "./locales/sullisCash";
 import system from "./locales/system";
 import landingUser from "./locales/landingUser";
 import webPages from "./locales/webPages";
@@ -32,6 +33,7 @@ import notifications from "./locales/notifications";
 import allApplication from "./locales/allApplication";
 import accountingLoans from "./locales/accountingLoans";
 import adminMisc from "./locales/adminMisc";
+import bnpl from "./locales/bnpl";
 import businessOnboarding from "./locales/businessOnboarding";
 import customersB from "./locales/customersB";
 import exchange from "./locales/exchange";
@@ -57,6 +59,7 @@ const modules: ModuleLocale[] = [
   dashboard,
   reconciliation,
   walletBlocks,
+  sullisCash,
   system,
   landingUser,
   webPages,
@@ -64,6 +67,7 @@ const modules: ModuleLocale[] = [
   allApplication,
   accountingLoans,
   adminMisc,
+  bnpl,
   businessOnboarding,
   customersB,
   exchange,
