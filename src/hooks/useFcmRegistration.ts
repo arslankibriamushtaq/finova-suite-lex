@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { getToken } from "firebase/messaging";
 import { messaging, VAPID_KEY } from "../firebase/config";
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://46.62.226.94:8000";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://148.251.185.111:8000";
 
 export const useFcmRegistration = (jwt: string | null) => {
   useEffect(() => {
