@@ -594,11 +594,16 @@ const SullisCashConfigPage = () => {
             title={t("cfg.preview.title")}
             description={t("cfg.preview.subtitle")}
           >
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {/* Laid out as the equation it is — principal + profit = total —
+                rather than four equal tiles that hide the arithmetic. The
+                operator cells sit between the tiles on desktop and stack
+                between them on phones, so the sum reads either way. */}
+            <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
               <PreviewStat
                 label={t("cfg.preview.principal")}
                 value={formatSullisAmount(preview.principal)}
               />
+              <Operator symbol="+" />
               <PreviewStat
                 label={t("cfg.preview.profit")}
                 value={formatSullisAmount(preview.profit)}
@@ -607,21 +612,33 @@ const SullisCashConfigPage = () => {
                   days: preview.days,
                 })}
               />
+              <Operator symbol="=" />
               <PreviewStat
                 label={t("cfg.preview.totalDue")}
                 value={formatSullisAmount(preview.totalDue)}
-                strong
-              />
-              <PreviewStat
-                label={t("cfg.preview.penaltyPerDay")}
-                value={formatSullisAmount(preview.penaltyPerDay)}
-                caption={
-                  graceDays > 0
-                    ? t("cfg.preview.penaltyAfterGrace", { days: graceDays })
-                    : t("cfg.preview.penaltyNoGrace")
-                }
+                tone="total"
               />
             </div>
+
+            {/* The penalty is conditional and not part of the sum above, so it
+                sits below the divider rather than pretending to be a fourth
+                term of the equation. */}
+            {preview.penaltyPerDay > 0 && (
+              <div
+                className={`mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border px-3 py-2 text-xs ${TONES.amber}`}
+              >
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                <span>{t("cfg.preview.penaltyPerDay")}</span>
+                <span className="font-bold tabular-nums">
+                  {formatSullisAmount(preview.penaltyPerDay)}
+                </span>
+                <span className="opacity-80">
+                  {graceDays > 0
+                    ? t("cfg.preview.penaltyAfterGrace", { days: graceDays })
+                    : t("cfg.preview.penaltyNoGrace")}
+                </span>
+              </div>
+            )}
           </Section>
         )}
 
@@ -741,21 +758,57 @@ const StatusPill = ({
   </div>
 );
 
+/**
+ * One figure in the worked example.
+ *
+ * `tabular-nums` matters here: without it the digits are proportional, so the
+ * amounts in adjacent tiles do not line up and the column reads as ragged.
+ * `tone="total"` tints the result so the eye lands on what is actually repaid
+ * rather than treating all three terms as equals.
+ */
 const PreviewStat = ({
   label,
   value,
   caption,
-  strong,
+  tone = "default",
 }: {
   label: string;
   value: string;
   caption?: string;
-  strong?: boolean;
-}) => (
-  <div className="rounded-lg border border-border bg-muted/40 px-3 py-2">
-    <p className="text-xs text-muted-foreground">{label}</p>
-    <p className={`mt-0.5 ${strong ? "text-base font-bold" : "text-sm font-semibold"}`}>{value}</p>
-    {caption && <p className="mt-0.5 text-xs text-muted-foreground">{caption}</p>}
+  tone?: "default" | "total";
+}) => {
+  const isTotal = tone === "total";
+  return (
+    <div
+      className={`flex flex-col rounded-lg border px-4 py-3 ${
+        isTotal ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-muted/40"
+      }`}
+    >
+      <p className="m-0 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+        {label}
+      </p>
+      <p
+        className={`m-0 mt-1 font-bold tabular-nums ${
+          isTotal ? "text-lg text-emerald-600 dark:text-emerald-400" : "text-base text-foreground"
+        }`}
+      >
+        {value}
+      </p>
+      {caption && <p className="m-0 mt-1 text-[11px] text-muted-foreground">{caption}</p>}
+    </div>
+  );
+};
+
+/**
+ * The `+` / `=` between the tiles. Muted and light so it guides the eye without
+ * competing with the figures it joins.
+ */
+const Operator = ({ symbol }: { symbol: string }) => (
+  <div
+    aria-hidden="true"
+    className="flex items-center justify-center text-lg font-light text-muted-foreground"
+  >
+    {symbol}
   </div>
 );
 
