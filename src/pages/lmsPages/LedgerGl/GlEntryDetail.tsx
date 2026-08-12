@@ -237,12 +237,21 @@ const GlEntryDetail = ({
                                 <span className="text-xs text-muted-foreground">
                                   {humanizeCode(line.subLedgerType) || t("gl.detail.party")}
                                 </span>
-                                <span
-                                  className="truncate font-mono text-xs"
-                                  title={line.subLedgerId}
-                                >
-                                  {line.subLedgerId}
-                                </span>
+                                {/* The name is a convenience the ledger resolves;
+                                    the id is the record, so it stays reachable on
+                                    hover and shows when no name came back. */}
+                                {line.subLedgerName ? (
+                                  <span className="truncate" title={line.subLedgerId}>
+                                    {line.subLedgerName}
+                                  </span>
+                                ) : (
+                                  <span
+                                    className="truncate font-mono text-xs"
+                                    title={line.subLedgerId}
+                                  >
+                                    {line.subLedgerId}
+                                  </span>
+                                )}
                               </div>
                             ) : (
                               <span className="text-muted-foreground">—</span>

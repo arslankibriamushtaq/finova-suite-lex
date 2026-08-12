@@ -180,8 +180,8 @@ const GlEntries = () => {
       // is the part that distinguishes one transfer type from another.
       name: t("gl.col.type"),
       cell: (row: GlEntry) => (
-        <span style={{ whiteSpace: "break-spaces" }} title={row.entryType || ""}>
-          {humanizeCode(row.entryType) || "-"}
+        <span style={{ whiteSpace: "break-spaces" }} title={row.referenceType || ""}>
+          {humanizeCode(row.referenceType) || "-"}
         </span>
       ),
       width: "220px",

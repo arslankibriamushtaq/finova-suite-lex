@@ -52,6 +52,11 @@ export interface GlEntryLine {
    */
   subLedgerType?: string | null;
   subLedgerId?: string | null;
+  /**
+   * The party's display name, resolved by the ledger. May be null even when
+   * `subLedgerId` is set — the id is the record, the name is a convenience.
+   */
+  subLedgerName?: string | null;
 }
 
 export interface GlEntry {
