@@ -41,6 +41,17 @@ export interface GlEntryLine {
   creditAmount: number;
   currency?: string;
   description?: string | null;
+  /**
+   * Whose money moved on this line. Only wallet legs carry it — clearing, bank,
+   * income and expense accounts are the platform's own position and belong to
+   * no customer, so tagging them would put the same person on both sides of
+   * their own transfer.
+   *
+   * Null on entries posted before the tag existed; it was never recorded at the
+   * time and is not reconstructed after the fact.
+   */
+  subLedgerType?: string | null;
+  subLedgerId?: string | null;
 }
 
 export interface GlEntry {
@@ -142,6 +153,13 @@ export interface GlEntryQuery {
   loanId?: string;
   /** Matches entries with a line on this account. */
   accountCode?: string;
+  /**
+   * Matches entries with a line tagged to this party. This is the only way to
+   * answer "what moved for this customer" from the GL alone: every customer
+   * sits on the same `110401` control account, so an account-code filter
+   * cannot separate them.
+   */
+  subLedgerId?: string;
   search?: string;
   page?: number;
   size?: number;

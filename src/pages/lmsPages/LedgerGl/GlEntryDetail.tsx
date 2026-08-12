@@ -172,7 +172,10 @@ const GlEntryDetail = ({
                 </div>
                 <div className="min-w-0">
                   <Field label={t("gl.detail.currency")} value={entry.currency} />
-                  <Field label={t("gl.detail.status")} value={<GlStatusBadge status={entry.status} />} />
+                  <Field
+                    label={t("gl.detail.status")}
+                    value={<GlStatusBadge status={entry.status} />}
+                  />
                   <Field
                     label={t("gl.col.sync")}
                     value={entry.fineractSynced ? t("gl.sync.synced") : t("gl.sync.pending")}
@@ -203,12 +206,16 @@ const GlEntryDetail = ({
               <SectionTitle icon={FileText} title={t("gl.detail.lines")} />
               {entry.lines?.length ? (
                 <div className="overflow-x-auto rounded-md border">
-                  <table className="w-full min-w-[560px] text-sm">
+                  <table className="w-full min-w-[680px] text-sm">
                     <thead className="bg-muted/50 text-muted-foreground">
                       <tr>
                         <th className="p-2 text-start font-medium">{t("gl.detail.line")}</th>
                         <th className="p-2 text-start font-medium">{t("gl.detail.account")}</th>
                         <th className="p-2 text-start font-medium">{t("gl.detail.accountType")}</th>
+                        {/* A wallet-to-wallet transfer is Dr 110401 / Cr 110401 —
+                            without this column the entry says money moved and
+                            not between whom. */}
+                        <th className="p-2 text-start font-medium">{t("gl.detail.party")}</th>
                         <th className="p-2 text-end font-medium">{t("gl.col.debit")}</th>
                         <th className="p-2 text-end font-medium">{t("gl.col.credit")}</th>
                       </tr>
@@ -224,6 +231,23 @@ const GlEntryDetail = ({
                             </div>
                           </td>
                           <td className="p-2">{line.accountType || "—"}</td>
+                          <td className="p-2">
+                            {line.subLedgerId ? (
+                              <div className="flex min-w-0 flex-col">
+                                <span className="text-xs text-muted-foreground">
+                                  {humanizeCode(line.subLedgerType) || t("gl.detail.party")}
+                                </span>
+                                <span
+                                  className="truncate font-mono text-xs"
+                                  title={line.subLedgerId}
+                                >
+                                  {line.subLedgerId}
+                                </span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground">—</span>
+                            )}
+                          </td>
                           {/* Raw columns — they carry no direction of their own. */}
                           <td className="p-2 text-end">
                             {line.debitAmount
@@ -240,7 +264,7 @@ const GlEntryDetail = ({
                     </tbody>
                     <tfoot className="border-t bg-muted/30 font-medium">
                       <tr>
-                        <td className="p-2" colSpan={3}>
+                        <td className="p-2" colSpan={4}>
                           {t("gl.detail.totals")}
                         </td>
                         <td className="p-2 text-end">
@@ -255,6 +279,12 @@ const GlEntryDetail = ({
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">{t("gl.detail.noLines")}</p>
+              )}
+
+              {/* An untagged entry is not an entry with no party — it is one
+                  posted before the party was recorded. Say which. */}
+              {!!entry.lines?.length && !entry.lines.some((line) => line.subLedgerId) && (
+                <p className="text-xs text-muted-foreground">{t("gl.detail.noParty")}</p>
               )}
 
               <div>

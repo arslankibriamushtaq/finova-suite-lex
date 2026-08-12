@@ -72,6 +72,7 @@ const GlEntries = () => {
   const [currency, setCurrency] = useState(ALL);
   const [loanId, setLoanId] = useState("");
   const [accountCode, setAccountCode] = useState("");
+  const [subLedgerId, setSubLedgerId] = useState("");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -103,6 +104,7 @@ const GlEntries = () => {
         currency: currency === ALL ? undefined : currency,
         loanId: loanId.trim() || undefined,
         accountCode: accountCode.trim() || undefined,
+        subLedgerId: subLedgerId.trim() || undefined,
         search: debouncedSearch || undefined,
         page: page - 1,
         size: pageSize,
@@ -132,6 +134,7 @@ const GlEntries = () => {
     currency,
     loanId,
     accountCode,
+    subLedgerId,
     debouncedSearch,
     page,
     pageSize,
@@ -155,6 +158,7 @@ const GlEntries = () => {
     currency !== ALL,
     !!loanId.trim(),
     !!accountCode.trim(),
+    !!subLedgerId.trim(),
     !!fromDate,
     !!toDate,
   ].filter(Boolean).length;
@@ -414,6 +418,21 @@ const GlEntries = () => {
                 />
               </FilterField>
 
+              {/* Every customer's wallet balance sits on one control account,
+                  so the account-code filter cannot separate them — this can. */}
+              <FilterField label={t("gl.filter.subLedgerId")} htmlFor="gl-sub-ledger-id">
+                <Input
+                  id="gl-sub-ledger-id"
+                  className="h-10"
+                  placeholder={t("gl.filter.subLedgerIdPlaceholder")}
+                  value={subLedgerId}
+                  onChange={(e) => {
+                    setSubLedgerId(e.target.value);
+                    setPage(1);
+                  }}
+                />
+              </FilterField>
+
               <FilterField label={t("common:from")} htmlFor="gl-from-date">
                 <Input
                   id="gl-from-date"
@@ -454,6 +473,7 @@ const GlEntries = () => {
                   setCurrency(ALL);
                   setLoanId("");
                   setAccountCode("");
+                  setSubLedgerId("");
                   setSearch("");
                   setFromDate("");
                   setToDate("");
