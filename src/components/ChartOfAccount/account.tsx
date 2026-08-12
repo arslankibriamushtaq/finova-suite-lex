@@ -1,13 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import {
-  Button,
-  Checkbox,
-  DatePicker,
-  Dropdown,
-  Input,
-  Menu,
-  Select,
-} from "antd";
+import { Button, Checkbox, DatePicker, Dropdown, Input, Menu, Select } from "antd";
 import { FaDumpster, FaPencilAlt, FaSearch } from "react-icons/fa";
 import TableView from "../TableView/TableView";
 import TableHeaderFilter from "../TableHeaderFilter";
@@ -88,7 +80,7 @@ const Account = ({
       placeholder="Search"
       value={searchValue}
       prefix={<FaSearch />}
-      onChange={(e:any) => setSearchValue(e.target.value)}
+      onChange={(e: any) => setSearchValue(e.target.value)}
     />
   );
 
@@ -126,7 +118,17 @@ const Account = ({
   const Account_Documents_List_Header = [
     {
       name: t("account.col.code"),
-      selector: (row: { accountCode: any }) => row.accountCode,
+      // Indented by depth so a row's place in the chart is visible. Not a
+      // collapsible tree: the list is paged server-side, so a row's parent may
+      // sit on another page and cannot be linked up from here.
+      cell: (row: any) => (
+        <span
+          className="font-monospace"
+          style={{ paddingInlineStart: `${Math.min(row.hierarchyLevel ?? 0, 4) * 12}px` }}
+        >
+          {row.accountCode}
+        </span>
+      ),
     },
     {
       name: t("account.col.name"),
@@ -158,7 +160,8 @@ const Account = ({
     {
       name: t("common:status"),
       cell: (row: any) => {
-        const isActive = row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
+        const isActive =
+          row.status === "ACTIVE" || row.status === "active" || row.status === "Active";
         return (
           <div
             style={{
@@ -209,7 +212,11 @@ const Account = ({
         ? t("account.toast.deactivatingAccount")
         : t("account.toast.activatingAccount"),
       success: (response) => {
-        if (response?.data?.message === "success" || response?.status === 200 || response?.status === 204) {
+        if (
+          response?.data?.message === "success" ||
+          response?.status === 200 ||
+          response?.status === 204
+        ) {
           ledgerAccount();
           setShowPopup(false);
           setEditRowId("");
@@ -231,12 +238,7 @@ const Account = ({
     };
     try {
       setLoading(true);
-      const response = await getLedgerAccount(
-        page,
-        pageSize,
-        searchValue,
-        dates
-      );
+      const response = await getLedgerAccount(page, pageSize, searchValue, dates);
       if (response) {
         const data = response.data.data || [];
         setLedgerData(data);
@@ -333,15 +335,15 @@ const Account = ({
         />
       </div>
 
-      <Modal backdrop="static" keyboard={false}
+      <Modal
+        backdrop="static"
+        keyboard={false}
         show={showPopup}
         onHide={() => {
           setShowPopup(false);
         }}
       >
-        <Modal.Header closeButton>
-          {/* <Modal.Title>Are you sure?</Modal.Title> */}
-        </Modal.Header>
+        <Modal.Header closeButton>{/* <Modal.Title>Are you sure?</Modal.Title> */}</Modal.Header>
         <Modal.Body>
           {/* Additional content goes here */}
           {showPopup && (
@@ -352,9 +354,7 @@ const Account = ({
               >
                 {t("common:areYouSure")}
               </div>
-              <p className="text-center pt-3">
-                {t("account.cannotUndo")}
-              </p>
+              <p className="text-center pt-3">{t("account.cannotUndo")}</p>
               {/* Add more details as needed */}
             </div>
           )}
@@ -379,7 +379,16 @@ const Account = ({
           </div>
         </Modal.Body>
       </Modal>
-      <Modal backdrop="static" keyboard={false} show={updateModel} onHide={()=>{setUpdateModel(false)}}  centered size="lg">
+      <Modal
+        backdrop="static"
+        keyboard={false}
+        show={updateModel}
+        onHide={() => {
+          setUpdateModel(false);
+        }}
+        centered
+        size="lg"
+      >
         <Modal.Header closeButton>
           <Modal.Title className="modal-title">{t("account.updateTitle")}</Modal.Title>
           <div className="cursor-pointer" onClick={() => setUpdateModel(false)}>
@@ -394,7 +403,7 @@ const Account = ({
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountTitle}
-                onChange={(e:any) => setaccountTitle(e.target.value)}
+                onChange={(e: any) => setaccountTitle(e.target.value)}
               />
             </div>
             <div className="col-6">
@@ -453,7 +462,11 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
     toast.promise(addAccountLedger(body), {
       loading: t("account.toast.processing"),
       success: (response) => {
-        if (response?.data?.message === "success" || response?.status === 201 || response?.status === 200) {
+        if (
+          response?.data?.message === "success" ||
+          response?.status === 201 ||
+          response?.status === 200
+        ) {
           setAddGroupMod(false);
           return t("account.toast.createSuccess");
         } else {
@@ -465,7 +478,16 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
   };
 
   return (
-    <Modal backdrop="static" keyboard={false} show={modal} centered onHide={()=>{setModal(false)}} size="lg">
+    <Modal
+      backdrop="static"
+      keyboard={false}
+      show={modal}
+      centered
+      onHide={() => {
+        setModal(false);
+      }}
+      size="lg"
+    >
       <Modal.Header closeButton>
         <Modal.Title className="modal-title">{t("account.addTitle")}</Modal.Title>
         <div className="cursor-pointer" onClick={() => setModal(false)}>
@@ -481,7 +503,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountCode}
-                onChange={(e:any) => setaccountCode(e.target.value)}
+                onChange={(e: any) => setaccountCode(e.target.value)}
               />
             </div>
             <div className="col">
@@ -490,7 +512,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountTitle}
-                onChange={(e:any) => setaccountTitle(e.target.value)}
+                onChange={(e: any) => setaccountTitle(e.target.value)}
               />
             </div>
           </div>
@@ -502,7 +524,7 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 type="text"
                 className="w-3/4 border p-2"
                 value={accountNameAr}
-                onChange={(e:any) => setAccountNameAr(e.target.value)}
+                onChange={(e: any) => setAccountNameAr(e.target.value)}
               />
             </div>
             <div className="col">
@@ -543,19 +565,12 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
               </Select>
             </div>
             <div className="col d-flex align-items-center gap-2 pt-4">
-              <Checkbox
-                checked={isHeader}
-                onChange={(e: any) => setIsHeader(e.target.checked)}
-              />
+              <Checkbox checked={isHeader} onChange={(e: any) => setIsHeader(e.target.checked)} />
               <h6 className="mb-0">{t("account.isHeader")}</h6>
             </div>
           </div>
 
-          <button
-            type="submit"
-            style={{ float: "right" }}
-            className="theme-btn-next"
-          >
+          <button type="submit" style={{ float: "right" }} className="theme-btn-next">
             {t("account.addBtn")}
           </button>
         </form>
