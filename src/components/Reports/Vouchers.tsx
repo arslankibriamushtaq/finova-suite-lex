@@ -4,7 +4,16 @@ import { ReceiptText } from "lucide-react";
 import { ErrorMessage, Field, Form, Formik } from "formik";
 import { Col, Modal, ModalHeader, Row } from "react-bootstrap";
 import * as Yup from "yup";
-import { Dropdown, Button, DatePicker, Menu, Select, Input, Row as AntRow, Col as AntCol } from "antd";
+import {
+  Dropdown,
+  Button,
+  DatePicker,
+  Menu,
+  Select,
+  Input,
+  Row as AntRow,
+  Col as AntCol,
+} from "antd";
 import {
   DeleteOutlined,
   DownOutlined,
@@ -24,7 +33,6 @@ import {
   getJournalVouchersReport,
 } from "../../redux/apis/apisCrudLms";
 import { saveAs } from "file-saver";
-import Loader from "../Loader/Loader";
 import dayjs from "dayjs";
 import { useTranslation } from "react-i18next";
 const Vouchers = () => {
@@ -34,8 +42,6 @@ const Vouchers = () => {
   const [editRowId, setEditRowId] = useState(null);
   const [callAction, setCallAction] = useState<any>();
   const [allCallActivity, setAllCallActivity] = useState<any>([]);
-  const [loading, setLoading] = useState<any>(false);
-  const [customerData, setCustomerData] = useState<any>([]);
   const [allAccounts, setAllAccounts] = useState<any>([]);
   const [editForm, setEditForm] = useState<any>([]);
   const [pageSize, setPageSize] = useState(10);
@@ -79,7 +85,14 @@ const Vouchers = () => {
     try {
       const res = await getLedgerAccount(1, 1000, "");
       if (res) {
-        setAllAccounts(res.data.data || []);
+        // Only postable accounts. The chart of accounts is a tree now: its 23
+        // header accounts exist to group, and the ledger rejects a line against
+        // one (422 LEDGER.ACCOUNT.IS_HEADER). Offering them means offering
+        // options that always fail.
+        const accounts: any[] = res.data.data || [];
+        setAllAccounts(
+          accounts.filter((a: any) => !a.isHeader && a.isManualEntriesAllowed !== false)
+        );
       }
     } catch (error: any) {
       toast.error(error.message);
@@ -144,7 +157,9 @@ const Vouchers = () => {
       );
     } catch (error: any) {
       console.error("Error fetching vouchers:", error);
-      toast.error(error?.response?.data?.message || error?.message || t('vouchers.toast.fetchError'));
+      toast.error(
+        error?.response?.data?.message || error?.message || t("vouchers.toast.fetchError")
+      );
       setAllCallActivity([]);
       setSummary(null);
     } finally {
@@ -152,17 +167,17 @@ const Vouchers = () => {
     }
   };
   const exportToCSV = (data: any[], fileName: string) => {
-      const updatedData = data?.map((item) => {
+    const updatedData = data?.map((item) => {
       return {
         "Voucher No": item?.voucherNumber || item?.voucherNo || "",
-        "Date": item?.entryDate || item?.date || "",
+        Date: item?.entryDate || item?.date || "",
         "Reference Type": item?.referenceType || "",
         "Transaction Type": item?.transactionType || item?.voucherType || "",
-        "Description": item?.description || "",
-        "Debit": item?.totalDebit ?? item?.debitAmount ?? item?.amount ?? 0,
-        "Credit": item?.totalCredit ?? item?.creditAmount ?? 0,
-        "Currency": item?.currency || "SAR",
-        "Status": item?.status || item?.approvalStatus || "",
+        Description: item?.description || "",
+        Debit: item?.totalDebit ?? item?.debitAmount ?? item?.amount ?? 0,
+        Credit: item?.totalCredit ?? item?.creditAmount ?? 0,
+        Currency: item?.currency || "SAR",
+        Status: item?.status || item?.approvalStatus || "",
       };
     });
     const csvRows = [];
@@ -170,7 +185,7 @@ const Vouchers = () => {
     csvRows.push(headers.join(",")); // Join header row with commas
 
     // Loop through the data and generate CSV rows
-  
+
     updatedData.forEach((row: any) => {
       const values = headers.map((header) => row[header]);
       csvRows.push(values.join(","));
@@ -187,8 +202,8 @@ const Vouchers = () => {
     try {
       // Validate Application No separately since it's in formValues
       if (!formValues.applicationID || formValues.applicationID.trim() === "") {
-        setApplicationNoError(t('vouchers.applicationNoRequired'));
-        toast.error(t('vouchers.fillRequiredFields'));
+        setApplicationNoError(t("vouchers.applicationNoRequired"));
+        toast.error(t("vouchers.fillRequiredFields"));
         return;
       }
 
@@ -235,7 +250,6 @@ const Vouchers = () => {
           toast.success(res.data.notificationMessage);
           handleSubmit();
           setModalUpdate(false);
-
         }
       });
     } catch (error: any) {
@@ -281,28 +295,15 @@ const Vouchers = () => {
     }
   };
 
-  const LedgerDetails = async () => {
-    try {
-      //setLoading(true);
-      const res = await getLedgerAccount(1, 1000, "");
-      if (res) {
-        const value = res.data.data || [];
-        setCustomerData(value);
-      }
-    } catch (error: any) {
-      toast.error(error.message);
-    }
-    setLoading(false);
-  };
   const enums = {
     ApprovalStatus: [
-      { value: 0, label: t('vouchers.status.draft') },
-      { value: 1, label: t('common:pending') },
-      { value: 2, label: t('common:approved') },
-      { value: 3, label: t('common:rejected') },
-      { value: 4, label: t('vouchers.status.underReview') },
-      { value: 5, label: t('vouchers.status.cancelled') },
-      { value: 6, label: t('common:completed') },
+      { value: 0, label: t("vouchers.status.draft") },
+      { value: 1, label: t("common:pending") },
+      { value: 2, label: t("common:approved") },
+      { value: 3, label: t("common:rejected") },
+      { value: 4, label: t("vouchers.status.underReview") },
+      { value: 5, label: t("vouchers.status.cancelled") },
+      { value: 6, label: t("common:completed") },
     ],
   };
   const getApprovalStatus = (value: any) => {
@@ -318,19 +319,19 @@ const Vouchers = () => {
     return `${year}-${month}-${day}`;
   };
   const validationSchema = Yup.object({
-    approvalStatus: Yup.string().required(t('vouchers.validation.approvalStatusRequired')),
+    approvalStatus: Yup.string().required(t("vouchers.validation.approvalStatusRequired")),
     voucherType: Yup.string()
-      .required(t('vouchers.validation.voucherTypeRequired'))
-      .test("not-zero", t('vouchers.validation.voucherTypeInvalid'), (value) => {
+      .required(t("vouchers.validation.voucherTypeRequired"))
+      .test("not-zero", t("vouchers.validation.voucherTypeInvalid"), (value) => {
         return value !== "0";
       }),
-    date: Yup.string().required(t('vouchers.validation.dateRequired')),
-    description: Yup.string().required(t('vouchers.validation.descriptionRequired')),
-    debitAccount: Yup.string().required(t('vouchers.validation.debitAccountRequired')),
-    creditAccount: Yup.string().required(t('vouchers.validation.creditAccountRequired')),
+    date: Yup.string().required(t("vouchers.validation.dateRequired")),
+    description: Yup.string().required(t("vouchers.validation.descriptionRequired")),
+    debitAccount: Yup.string().required(t("vouchers.validation.debitAccountRequired")),
+    creditAccount: Yup.string().required(t("vouchers.validation.creditAccountRequired")),
     amount: Yup.string()
-      .required(t('vouchers.validation.amountRequired'))
-      .test("not-zero", t('vouchers.validation.amountGreaterThanZero'), (value) => {
+      .required(t("vouchers.validation.amountRequired"))
+      .test("not-zero", t("vouchers.validation.amountGreaterThanZero"), (value) => {
         if (!value) return false;
         return Number(value) > 0;
       }),
@@ -361,13 +362,26 @@ const Vouchers = () => {
 
     if (!debouncedSearch) return all;
     const term = debouncedSearch.toLowerCase();
-    return all.filter((row: any) =>
-      String(row.VoucherNo || "").toLowerCase().includes(term) ||
-      String(row.ReferenceType || "").toLowerCase().includes(term) ||
-      String(row.TransactionType || "").toLowerCase().includes(term) ||
-      String(row.Status || "").toLowerCase().includes(term) ||
-      String(row.Description || "").toLowerCase().includes(term) ||
-      String(row.Date || "").toLowerCase().includes(term)
+    return all.filter(
+      (row: any) =>
+        String(row.VoucherNo || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.ReferenceType || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.TransactionType || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.Status || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.Description || "")
+          .toLowerCase()
+          .includes(term) ||
+        String(row.Date || "")
+          .toLowerCase()
+          .includes(term)
     );
   }, [allCallActivity, debouncedSearch]);
 
@@ -406,7 +420,6 @@ const Vouchers = () => {
   useEffect(() => {
     handleSubmit();
     handleAccounts();
-    LedgerDetails();
     return () => {};
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, fromDate, toDate]);
@@ -422,13 +435,13 @@ const Vouchers = () => {
   const menu = (row: any) => (
     <Menu onClick={({ key }: any) => handleChange(key, row)}>
       <Menu.Item key="Reversal" icon={<EyeOutlined />}>
-        {t('vouchers.reversePayment')}
+        {t("vouchers.reversePayment")}
       </Menu.Item>
       <Menu.Item key="Edit" icon={<EditOutlined />}>
-        {t('common:edit')}
+        {t("common:edit")}
       </Menu.Item>
       <Menu.Item key="Delete" icon={<DeleteOutlined />}>
-        {t('common:delete')}
+        {t("common:delete")}
       </Menu.Item>
     </Menu>
   );
@@ -441,57 +454,53 @@ const Vouchers = () => {
 
   const Call_Activity_Header = [
     {
-      name: t('vouchers.col.voucherNo'),
+      name: t("vouchers.col.voucherNo"),
       selector: (row: any) => row.VoucherNo,
       sortable: true,
       width: "180px",
     },
     {
-      name: t('common:date'),
+      name: t("common:date"),
       selector: (row: any) => row.Date,
       sortable: true,
       width: "120px",
     },
     {
-      name: t('vouchers.col.referenceType'),
+      name: t("vouchers.col.referenceType"),
       selector: (row: any) => row.ReferenceType,
       sortable: true,
       width: "140px",
     },
     {
-      name: t('vouchers.col.transactionType'),
+      name: t("vouchers.col.transactionType"),
       selector: (row: any) => row.TransactionType,
       sortable: true,
       width: "150px",
     },
     {
-      name: t('common:description'),
+      name: t("common:description"),
       selector: (row: any) => row.Description,
       grow: 2,
     },
     {
-      name: t('vouchers.col.debit'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.Debit)}</span>
-      ),
+      name: t("vouchers.col.debit"),
+      cell: (row: any) => <span>{formatNumber(row.Debit)}</span>,
       sortable: true,
       width: "130px",
     },
     {
-      name: t('vouchers.col.credit'),
-      cell: (row: any) => (
-        <span>{formatNumber(row.Credit)}</span>
-      ),
+      name: t("vouchers.col.credit"),
+      cell: (row: any) => <span>{formatNumber(row.Credit)}</span>,
       sortable: true,
       width: "130px",
     },
     {
-      name: t('vouchers.col.currency'),
+      name: t("vouchers.col.currency"),
       selector: (row: any) => row.Currency,
       width: "90px",
     },
     {
-      name: t('common:status'),
+      name: t("common:status"),
       width: "150px",
       cell: (row: any) => (
         <div
@@ -503,14 +512,14 @@ const Vouchers = () => {
               row.Status === "POSTED" || row.Status === "Approved"
                 ? "#92BC83"
                 : row.Status === "DRAFT" || row.Status === "Pending"
-                ? "#FAB65E"
-                : row.Status === "REJECTED" || row.Status === "Rejected"
-                ? "#F85F54"
-                : row.Status === "Under_Review"
-                ? "#959595"
-                : row.Status === "Cancelled"
-                ? "#629FFB"
-                : "rgba(55, 52, 53, 1)",
+                  ? "#FAB65E"
+                  : row.Status === "REJECTED" || row.Status === "Rejected"
+                    ? "#F85F54"
+                    : row.Status === "Under_Review"
+                      ? "#959595"
+                      : row.Status === "Cancelled"
+                        ? "#629FFB"
+                        : "rgba(55, 52, 53, 1)",
             color: "rgba(255, 255, 255, 1)",
             cursor: row.Status === "Active" ? "pointer" : "default",
           }}
@@ -520,7 +529,7 @@ const Vouchers = () => {
       ),
     },
     {
-      name: t('common:actions'),
+      name: t("common:actions"),
       cell: (row: any) => (
         <Dropdown overlay={menu(row)} trigger={["click"]}>
           <Button
@@ -530,7 +539,7 @@ const Vouchers = () => {
               border: "none",
             }}
           >
-            {t('common:select')} <DownOutlined />
+            {t("common:select")} <DownOutlined />
           </Button>
         </Dropdown>
       ),
@@ -543,7 +552,7 @@ const Vouchers = () => {
       ...prevValues,
       [name]: value,
     }));
-    
+
     // Clear application no error when user types
     if (name === "applicationID") {
       setApplicationNoError("");
@@ -558,14 +567,13 @@ const Vouchers = () => {
 
   return (
     <>
-      {loading && <Loader />}
       <div className="service vouchers-page">
         <div className="mb-3 pb-2 border-bottom">
           <h3 className="mb-0 fw-bold text-dark d-flex align-items-center gap-2 ps-0">
             <span className="pro-head-badge">
               <ReceiptText className="h-4 w-4" />
             </span>
-            {t('vouchers.title')}
+            {t("vouchers.title")}
           </h3>
         </div>
 
@@ -574,27 +582,45 @@ const Vouchers = () => {
           <div className="d-flex flex-wrap align-items-center gap-2 w-100">
             <Input
               allowClear
-              placeholder={t('vouchers.searchPlaceholder')}
+              placeholder={t("vouchers.searchPlaceholder")}
               prefix={<SearchOutlined style={{ color: "var(--muted-foreground)" }} />}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ flex: "1 1 240px", minWidth: 200, borderRadius: 2, height: 40 }}
             />
             <DatePicker
-              placeholder={t('common:from')}
+              placeholder={t("common:from")}
               value={fromDate}
-              onChange={(d) => { setFromDate(d); setPage(1); }}
+              onChange={(d) => {
+                setFromDate(d);
+                setPage(1);
+              }}
               format="YYYY-MM-DD"
               allowClear
-              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+              style={{
+                flex: "1 1 180px",
+                minWidth: 160,
+                height: 40,
+                borderRadius: 2,
+                background: "#fff",
+              }}
             />
             <DatePicker
-              placeholder={t('common:to')}
+              placeholder={t("common:to")}
               value={toDate}
-              onChange={(d) => { setToDate(d); setPage(1); }}
+              onChange={(d) => {
+                setToDate(d);
+                setPage(1);
+              }}
               format="YYYY-MM-DD"
               allowClear
-              style={{ flex: "1 1 180px", minWidth: 160, height: 40, borderRadius: 2, background: "#fff" }}
+              style={{
+                flex: "1 1 180px",
+                minWidth: 160,
+                height: 40,
+                borderRadius: 2,
+                background: "#fff",
+              }}
             />
             <button
               type="button"
@@ -602,7 +628,7 @@ const Vouchers = () => {
               onClick={() => setModal(true)}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              {t('vouchers.createVoucher')}
+              {t("vouchers.createVoucher")}
             </button>
             <button
               type="button"
@@ -610,7 +636,7 @@ const Vouchers = () => {
               onClick={() => exportToCSV(allCallActivity, "Voucher")}
               style={{ height: 40, whiteSpace: "nowrap", flexShrink: 0 }}
             >
-              {t('action.exportCsv')}
+              {t("action.exportCsv")}
             </button>
           </div>
         </div>
@@ -619,7 +645,9 @@ const Vouchers = () => {
           <AntRow gutter={[16, 16]} className="mb-3">
             <AntCol xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('vouchers.summary.totalVouchers')}</div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("vouchers.summary.totalVouchers")}
+                </div>
                 <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {visibleTotals.totalVouchers}
                 </div>
@@ -627,22 +655,20 @@ const Vouchers = () => {
             </AntCol>
             <AntCol xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('vouchers.summary.totalDebits')}</div>
-                <div
-                  className="mt-2"
-                  style={{ fontSize: 22, fontWeight: 700 }}
-                >
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("vouchers.summary.totalDebits")}
+                </div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {formatNumber(visibleTotals.totalDebits)}
                 </div>
               </div>
             </AntCol>
             <AntCol xs={24} sm={12} lg={6}>
               <div className="card-product p-4 text-dark h-100">
-                <div style={{ fontSize: 14, fontWeight: 600 }}>{t('vouchers.summary.totalCredits')}</div>
-                <div
-                  className="mt-2"
-                  style={{ fontSize: 22, fontWeight: 700 }}
-                >
+                <div style={{ fontSize: 14, fontWeight: 600 }}>
+                  {t("vouchers.summary.totalCredits")}
+                </div>
+                <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
                   {formatNumber(visibleTotals.totalCredits)}
                 </div>
               </div>
@@ -650,7 +676,9 @@ const Vouchers = () => {
             {(summary.fromDate || summary.toDate) && (
               <AntCol xs={24} sm={12} lg={6}>
                 <div className="card-product p-4 text-dark h-100">
-                  <div style={{ fontSize: 14, fontWeight: 600 }}>{t('vouchers.summary.dateRange')}</div>
+                  <div style={{ fontSize: 14, fontWeight: 600 }}>
+                    {t("vouchers.summary.dateRange")}
+                  </div>
                   <div className="mt-2" style={{ fontSize: 14, fontWeight: 600 }}>
                     {summary.fromDate} → {summary.toDate}
                   </div>
@@ -660,9 +688,7 @@ const Vouchers = () => {
           </AntRow>
         )}
 
-        <div
-          className="pro-card"
-        >
+        <div className="pro-card">
           <TableView
             setPage={setPage}
             setPageSize={setPageSize}
@@ -679,7 +705,9 @@ const Vouchers = () => {
           />
         </div>
       </div>
-      <Modal backdrop="static" keyboard={false}
+      <Modal
+        backdrop="static"
+        keyboard={false}
         size="lg"
         show={modal}
         onHide={() => {
@@ -689,7 +717,7 @@ const Vouchers = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>{t('vouchers.addVoucher')}</h3>
+          <h3>{t("vouchers.addVoucher")}</h3>
         </ModalHeader>
 
         <Formik
@@ -712,16 +740,13 @@ const Vouchers = () => {
                 <Modal.Body>
                   <Row className="mb-2">
                     <Col md={6}>
-                      <label
-                        htmlFor="approvalStatus"
-                        className="mb-1 form-label"
-                      >
-                        {t('vouchers.approvalStatus')}
+                      <label htmlFor="approvalStatus" className="mb-1 form-label">
+                        {t("vouchers.approvalStatus")}
                       </label>
 
                       <Field
                         as="select"
-                        placeholder={t('vouchers.approvalStatus')}
+                        placeholder={t("vouchers.approvalStatus")}
                         id="approvalStatus"
                         name="approvalStatus"
                         className="form-control"
@@ -734,7 +759,7 @@ const Vouchers = () => {
                           })
                         }
                       >
-                        <option value="" label={t('vouchers.selectApprovalStatus')} />
+                        <option value="" label={t("vouchers.selectApprovalStatus")} />
                         {enums.ApprovalStatus.map((option) => (
                           <option key={option.value} value={option.value}>
                             {option.label}
@@ -749,22 +774,22 @@ const Vouchers = () => {
                     </Col>
 
                     <Col md={6}>
-                      <label
-                        htmlFor="applicationNo"
-                        className="mb-1 form-label"
-                      >
-                        {t('vouchers.applicationNo')}
+                      <label htmlFor="applicationNo" className="mb-1 form-label">
+                        {t("vouchers.applicationNo")}
                       </label>
                       <Input
                         name="applicationID"
                         value={formValues.applicationID}
                         onChange={handleInputChange}
                         size="large"
-                        placeholder={t('vouchers.applicationNumberPlaceholder')}
+                        placeholder={t("vouchers.applicationNumberPlaceholder")}
                         status={applicationNoError ? "error" : ""}
                       />
                       {applicationNoError && (
-                        <div className="text-danger" style={{ fontSize: "0.875rem", marginTop: "0.25rem" }}>
+                        <div
+                          className="text-danger"
+                          style={{ fontSize: "0.875rem", marginTop: "0.25rem" }}
+                        >
                           {applicationNoError}
                         </div>
                       )}
@@ -773,7 +798,7 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="voucherType" className="mb-1 form-label">
-                        {t('vouchers.voucherType')}
+                        {t("vouchers.voucherType")}
                       </label>
                       <Field
                         as="select"
@@ -781,9 +806,9 @@ const Vouchers = () => {
                         name="voucherType"
                         className="form-control"
                       >
-                        <option value={0}>{t('vouchers.selectVoucherType')}</option>
-                        <option value={1}>{t('vouchers.receiptVoucher')}</option>
-                        <option value={2}>{t('vouchers.paymentVoucher')}</option>
+                        <option value={0}>{t("vouchers.selectVoucherType")}</option>
+                        <option value={1}>{t("vouchers.receiptVoucher")}</option>
+                        <option value={2}>{t("vouchers.paymentVoucher")}</option>
                       </Field>
                       <ErrorMessage
                         name="voucherType"
@@ -794,14 +819,9 @@ const Vouchers = () => {
 
                     <Col md={6}>
                       <label htmlFor="date" className="mb-1 form-label">
-                        {t('common:date')}
+                        {t("common:date")}
                       </label>
-                      <Field
-                        type="date"
-                        id="date"
-                        name="date"
-                        className="form-control"
-                      />
+                      <Field type="date" id="date" name="date" className="form-control" />
                       <ErrorMessage
                         name="date"
                         component="div"
@@ -813,11 +833,11 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="description" className="mb-1 form-label">
-                        {t('common:description')}
+                        {t("common:description")}
                       </label>
                       <Field
                         type="text"
-                        placeholder={t('vouchers.enterDescription')}
+                        placeholder={t("vouchers.enterDescription")}
                         id="description"
                         name="description"
                         className="form-control"
@@ -831,20 +851,20 @@ const Vouchers = () => {
 
                     <Col md={6}>
                       <label htmlFor="debitAccount" className="mb-1 form-label">
-                        {t('vouchers.debitAccount')}
+                        {t("vouchers.debitAccount")}
                       </label>
                       <Select
                         //name="debitAccount"
                         id="debitAccount"
                         //className="form-control"
-                        placeholder={t('vouchers.selectDebitAccount')}
+                        placeholder={t("vouchers.selectDebitAccount")}
                         onChange={(value) =>
                           handleChange({
                             target: { name: "debitAccount", value },
                           })
                         }
                       >
-                        {customerData.map((account: any) => (
+                        {allAccounts.map((account: any) => (
                           <Select.Option key={account.id} value={account.id}>
                             {account.accountCode} - {account.accountTitle}
                           </Select.Option>
@@ -860,17 +880,14 @@ const Vouchers = () => {
 
                   <Row className="mb-2">
                     <Col md={6}>
-                      <label
-                        htmlFor="creditAccount"
-                        className="mb-1 form-label"
-                      >
-                        {t('vouchers.creditAccount')}
+                      <label htmlFor="creditAccount" className="mb-1 form-label">
+                        {t("vouchers.creditAccount")}
                       </label>
                       <Select
                         //name="creditAccount"
                         id="creditAccount"
                         //className="form-control"
-                        placeholder={t('vouchers.selectCreditAccount')}
+                        placeholder={t("vouchers.selectCreditAccount")}
                         onChange={(value) =>
                           handleChange({
                             target: { name: "creditAccount", value },
@@ -892,19 +909,16 @@ const Vouchers = () => {
 
                     <Col md={6}>
                       <label htmlFor="amount" className="mb-1 form-label">
-                        {t('common:amount')}
+                        {t("common:amount")}
                       </label>
                       <Field
                         type="text"
                         id="amount"
                         name="amount"
                         className="form-control"
-                        placeholder={t('common:amount')}
+                        placeholder={t("common:amount")}
                         onInput={(e: any) => {
-                          e.target.value = e.target.value.replace(
-                            /[^0-9]/g,
-                            ""
-                          ); // Replaces any non-numeric characters with an empty string
+                          e.target.value = e.target.value.replace(/[^0-9]/g, ""); // Replaces any non-numeric characters with an empty string
                         }}
                       />
                       <ErrorMessage
@@ -918,7 +932,7 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="currency" className="mb-1 form-label">
-                        {t('vouchers.currency')}
+                        {t("vouchers.currency")}
                       </label>
                       <Field
                         type="text"
@@ -939,7 +953,7 @@ const Vouchers = () => {
 
                   <div className="d-flex mt-4 justify-content-end">
                     <button className="theme-btn-next" type="submit">
-                      {t('common:create')}
+                      {t("common:create")}
                     </button>
                   </div>
                 </Modal.Body>
@@ -948,7 +962,9 @@ const Vouchers = () => {
           }}
         </Formik>
       </Modal>
-      <Modal backdrop="static" keyboard={false}
+      <Modal
+        backdrop="static"
+        keyboard={false}
         size="lg"
         show={modalUpdate}
         onHide={() => {
@@ -956,7 +972,7 @@ const Vouchers = () => {
         }}
       >
         <ModalHeader closeButton>
-          <h3>{t('vouchers.editVoucher')}</h3>
+          <h3>{t("vouchers.editVoucher")}</h3>
         </ModalHeader>
 
         <Formik
@@ -983,7 +999,7 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="voucherNo" className="mb-1 form-label">
-                        {t('vouchers.voucherNoLabel')}
+                        {t("vouchers.voucherNoLabel")}
                       </label>
                       <Field
                         type="text"
@@ -1000,11 +1016,8 @@ const Vouchers = () => {
                     </Col>
 
                     <Col md={6}>
-                      <label
-                        htmlFor="applicationKey"
-                        className="mb-1 form-label"
-                      >
-                        {t('vouchers.applicationKey')}
+                      <label htmlFor="applicationKey" className="mb-1 form-label">
+                        {t("vouchers.applicationKey")}
                       </label>
                       <Select
                         size="large"
@@ -1013,10 +1026,7 @@ const Vouchers = () => {
                       >
                         {applications &&
                           applications.map((item: any) => (
-                            <Select.Option
-                              key={item.applicationId}
-                              value={item.applicationId}
-                            >
+                            <Select.Option key={item.applicationId} value={item.applicationId}>
                               <div>{item.applicationKey}</div>
                             </Select.Option>
                           ))}
@@ -1032,7 +1042,7 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="voucherType" className="mb-1 form-label">
-                        {t('vouchers.voucherType')}
+                        {t("vouchers.voucherType")}
                       </label>
                       <Field
                         as="select"
@@ -1040,9 +1050,9 @@ const Vouchers = () => {
                         name="voucherType"
                         className="form-control"
                       >
-                        <option value={""}>{t('common:select')}</option>
-                        <option value={"1"}>{t('vouchers.receiptVoucher')}</option>
-                        <option value={"2"}>{t('vouchers.paymentVoucher')}</option>
+                        <option value={""}>{t("common:select")}</option>
+                        <option value={"1"}>{t("vouchers.receiptVoucher")}</option>
+                        <option value={"2"}>{t("vouchers.paymentVoucher")}</option>
                       </Field>
                       <ErrorMessage
                         name="voucherType"
@@ -1053,14 +1063,9 @@ const Vouchers = () => {
 
                     <Col md={6}>
                       <label htmlFor="date" className="mb-1 form-label">
-                        {t('common:date')}
+                        {t("common:date")}
                       </label>
-                      <Field
-                        type="date"
-                        id="date"
-                        name="date"
-                        className="form-control"
-                      />
+                      <Field type="date" id="date" name="date" className="form-control" />
                       <ErrorMessage
                         name="date"
                         component="div"
@@ -1072,7 +1077,7 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="description" className="mb-1 form-label">
-                        {t('common:description')}
+                        {t("common:description")}
                       </label>
                       <Field
                         type="text"
@@ -1096,20 +1101,20 @@ const Vouchers = () => {
 
                     <Col md={6}>
                       <label htmlFor="debitAccount" className="mb-1 form-label">
-                        {t('vouchers.debitAccount')}
+                        {t("vouchers.debitAccount")}
                       </label>
                       <Select
                         //name="debitAccount"
                         id="debitAccount"
                         value={editForm.debitAccount}
-                        placeholder={t('vouchers.selectDebitAccount')}
+                        placeholder={t("vouchers.selectDebitAccount")}
                         onChange={(value) =>
                           setEditForm({
                             debitAccount: value,
                           })
                         }
                       >
-                        {customerData.map((account: any) => (
+                        {allAccounts.map((account: any) => (
                           <Select.Option key={account.id} value={account.id}>
                             {account.accountCode} - {account.accountTitle}
                           </Select.Option>
@@ -1125,17 +1130,14 @@ const Vouchers = () => {
 
                   <Row className="mb-2">
                     <Col md={6}>
-                      <label
-                        htmlFor="creditAccount"
-                        className="mb-1 form-label"
-                      >
-                        {t('vouchers.creditAccount')}
+                      <label htmlFor="creditAccount" className="mb-1 form-label">
+                        {t("vouchers.creditAccount")}
                       </label>
                       <Select
                         //name="creditAccount"
                         id="creditAccount"
                         value={editForm.creditAccount}
-                        placeholder={t('vouchers.selectCreditAccount')}
+                        placeholder={t("vouchers.selectCreditAccount")}
                         onChange={(value) =>
                           setEditForm({
                             creditAccount: value,
@@ -1156,7 +1158,7 @@ const Vouchers = () => {
                     </Col>
                     <Col md={6}>
                       <label htmlFor="amount" className="mb-1 form-label">
-                        {t('common:amount')}
+                        {t("common:amount")}
                       </label>
                       <Field
                         type="text"
@@ -1165,10 +1167,7 @@ const Vouchers = () => {
                         name="amount"
                         className="form-control"
                         onInput={(e: any) => {
-                          e.target.value = e.target.value.replace(
-                            /[^0-9]/g,
-                            ""
-                          );
+                          e.target.value = e.target.value.replace(/[^0-9]/g, "");
                         }}
                         // onChange={(value: any) => setFieldValue("amount", value)}
                       />
@@ -1183,7 +1182,7 @@ const Vouchers = () => {
                   <Row className="mb-2">
                     <Col md={6}>
                       <label htmlFor="currency" className="mb-1 form-label">
-                        {t('vouchers.currency')}
+                        {t("vouchers.currency")}
                       </label>
                       <Field
                         type="text"
@@ -1200,11 +1199,8 @@ const Vouchers = () => {
                     </Col>
 
                     <Col md={6}>
-                      <label
-                        htmlFor="approvalStatus"
-                        className="mb-1 form-label"
-                      >
-                        {t('vouchers.approvalStatus')}
+                      <label htmlFor="approvalStatus" className="mb-1 form-label">
+                        {t("vouchers.approvalStatus")}
                       </label>
                       <Field
                         as="select"
@@ -1213,9 +1209,9 @@ const Vouchers = () => {
                         className="form-control"
                         defaultValue="1"
                       >
-                        <option value="">{t('common:select')}</option>
-                        <option value="1">{t('common:approved')}</option>
-                        <option value="0">{t('common:pending')}</option>
+                        <option value="">{t("common:select")}</option>
+                        <option value="1">{t("common:approved")}</option>
+                        <option value="0">{t("common:pending")}</option>
                       </Field>
                       <ErrorMessage
                         name="approvalStatus"
@@ -1227,7 +1223,7 @@ const Vouchers = () => {
 
                   <div className="d-flex mt-4 justify-content-end">
                     <button className="theme-btn-next" type="submit">
-                      {t('common:update')}
+                      {t("common:update")}
                     </button>
                   </div>
                 </Modal.Body>
