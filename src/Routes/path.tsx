@@ -409,7 +409,6 @@ import CreateRequiredDocuments from "../components/ProductManagement/createRequi
 // import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
 // import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
 
-
 // Investor Dashboard Components
 // import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
 // import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
@@ -482,2153 +481,2233 @@ import PepStep from "../pages/BusinessOnboarding/steps/PepStep";
 // import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
 // import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
 
-
 // Investor Dashboard Components
 // import AuditLogs from "../pages/InvestorPages/admin/audit-logs/AuditLogs";
 // import Notifications from "../pages/InvestorPages/admin/notifications/Notifications";
 // import AdminUsers from "../pages/InvestorPages/admin/admin-users/AdminUsers";
 // import SystemSettings from "../pages/InvestorPages/admin/system-settings/SystemSettings";
 
-export const router = createBrowserRouter([
-  {
-    element: <PublicRoute />,
-    children: [
-      {
-        path: "login",
-        element: <LayoutLogin />,
-        children: [{ path: "", element: <Login /> }],
-      },
-      // OTP/password login not in use — SSO is the only active login path.
-      // {
-      //   path: "verify-otp",
-      //   element: <LayoutLogin />,
-      //   children: [{ path: "", element: <VerifyOtp /> }],
-      // },
-      {
-        path: "reset-password",
-        element: <LayoutLogin />,
-        children: [{ path: "", element: <ResetPassword /> }],
-      },
-      {
-        path: "callback",
-        element: <LayoutLogin />,
-        children: [{ path: "", element: <SSOCallback /> }],
-      },
-    ],
-  },
-  // {
-  //   path: "",
-  //   element: <LandingPage />,
-  // },
-  {
-    path: "",
-    element: <ManagementForm />,
-  },
+export const router = createBrowserRouter(
+  [
+    {
+      element: <PublicRoute />,
+      children: [
+        {
+          path: "login",
+          element: <LayoutLogin />,
+          children: [{ path: "", element: <Login /> }],
+        },
+        // OTP/password login not in use — SSO is the only active login path.
+        // {
+        //   path: "verify-otp",
+        //   element: <LayoutLogin />,
+        //   children: [{ path: "", element: <VerifyOtp /> }],
+        // },
+        {
+          path: "reset-password",
+          element: <LayoutLogin />,
+          children: [{ path: "", element: <ResetPassword /> }],
+        },
+        {
+          path: "callback",
+          element: <LayoutLogin />,
+          children: [{ path: "", element: <SSOCallback /> }],
+        },
+      ],
+    },
+    // {
+    //   path: "",
+    //   element: <LandingPage />,
+    // },
+    {
+      path: "",
+      element: <ManagementForm />,
+    },
 
-  {
-    path: "/About",
-    element: <AboutPage />,
-  },
-  {
-    path: "/Contact",
-    element: <ContactUs />,
-  },
-  {
-    path: "/privacy-policy",
-    element: <PrivacyPolicy />,
-  },
-  {
-    path: "/Terms",
-    element: <TermsConditions />,
-  },
-  {
-    path: "/Faq",
-    element: <Faqs />,
-  },
-  {
-    path: "/financial-statements",
-    element: <FinancialStatements />,
-  },
+    {
+      path: "/About",
+      element: <AboutPage />,
+    },
+    {
+      path: "/Contact",
+      element: <ContactUs />,
+    },
+    {
+      path: "/privacy-policy",
+      element: <PrivacyPolicy />,
+    },
+    {
+      path: "/Terms",
+      element: <TermsConditions />,
+    },
+    {
+      path: "/Faq",
+      element: <Faqs />,
+    },
+    {
+      path: "/financial-statements",
+      element: <FinancialStatements />,
+    },
 
-  // Business (SME/KYB) onboarding — public on purpose. Deliberately NOT wrapped
-  // in <PublicRoute>: that guard bounces anyone holding an admin token to the
-  // dashboard, which would lock a signed-in back-office user out of the
-  // applicant journey. Navigation inside the flow is driven by the server's
-  // `nextAction`, so these paths are entry points, not an enforced order.
-  {
-    path: "business",
-    element: <BusinessOnboardingLayout />,
-    children: [
-      { index: true, element: <StartStep /> },
-      { path: "start", element: <StartStep /> },
-      { path: "otp", element: <OtpStep /> },
-      { path: "resume-pin", element: <ResumePinStep /> },
-      { path: "email-code", element: <EmailCodeStep /> },
-      { path: "set-pin", element: <SetPinStep /> },
-      { path: "details", element: <BusinessDetailsStep /> },
-      { path: "address", element: <AddressStep /> },
-      { path: "documents", element: <DocumentsStep /> },
-      { path: "passport", element: <PassportStep /> },
-      { path: "passport-review", element: <PassportReviewStep /> },
-      { path: "selfie", element: <SelfieStep /> },
-      { path: "under-review", element: <UnderReviewStep /> },
-      { path: "pep", element: <PepStep /> },
-      { path: "*", element: <NotFound /> },
-    ],
-  },
+    // Business (SME/KYB) onboarding — public on purpose. Deliberately NOT wrapped
+    // in <PublicRoute>: that guard bounces anyone holding an admin token to the
+    // dashboard, which would lock a signed-in back-office user out of the
+    // applicant journey. Navigation inside the flow is driven by the server's
+    // `nextAction`, so these paths are entry points, not an enforced order.
+    {
+      path: "business",
+      element: <BusinessOnboardingLayout />,
+      children: [
+        { index: true, element: <StartStep /> },
+        { path: "start", element: <StartStep /> },
+        { path: "otp", element: <OtpStep /> },
+        { path: "resume-pin", element: <ResumePinStep /> },
+        { path: "email-code", element: <EmailCodeStep /> },
+        { path: "set-pin", element: <SetPinStep /> },
+        { path: "details", element: <BusinessDetailsStep /> },
+        { path: "address", element: <AddressStep /> },
+        { path: "documents", element: <DocumentsStep /> },
+        { path: "passport", element: <PassportStep /> },
+        { path: "passport-review", element: <PassportReviewStep /> },
+        { path: "selfie", element: <SelfieStep /> },
+        { path: "under-review", element: <UnderReviewStep /> },
+        { path: "pep", element: <PepStep /> },
+        { path: "*", element: <NotFound /> },
+      ],
+    },
 
+    {
+      element: <PrivateRoute />,
+      children: [
+        {
+          path: "",
+          element: <LayoutDashboard />,
+          children: [
+            { path: "", element: <RoutetoDash /> },
+            { path: "/LOS/Dashboard", element: <LandingDashboardPage /> },
+            { path: "/LOS/UniversalOnboarding", element: <OnboardingDashboard /> },
 
-  {
-    element: <PrivateRoute />,
-    children: [
-      {
-        path: "",
-        element: <LayoutDashboard />,
-        children: [
-          { path: "", element: <RoutetoDash /> },
-          { path: "/LOS/Dashboard", element: <LandingDashboardPage /> },
-          { path: "/LOS/UniversalOnboarding", element: <OnboardingDashboard /> },
-         
-          // { path: "/LOS/ApplicationBoard", element: <ApplicationBoard /> },
-          { path: "/LOS/ProductManagement", element: <ProductManagement /> },
-          { path: "/LOS/ProductManagement/Categories", element: <CreateCategories /> },
-          { path: "/LOS/ProductManagement/Wizerd", element: <CreateWizerd /> },
-          { path: "/LOS/ProductManagement/Create/BasicInfo", element: <CreateBasicInfo /> },
-          { path: "/LOS/ProductManagement/Create/CommodityInfo", element: <CreateComodityInfo /> },
-          { path: "/LOS/ProductManagement/Create/ProductSettings", element: <CraeteProductSettings /> },
-          { path: "/LOS/ProductManagement/Create/RequiredDocuments", element: <CreateRequiredDocuments /> },
-          { path: "/LOS/ProductManagement/Create/ProductAffiliation", element: <CreateProductAffiliation /> },
-          { path: "/LOS/ProductManagement/ProductCategory", element: <ProductCategory /> },
-          { path: "/LOS/ProductManagement/ProductSubCategory", element: <ProductSubCategory /> },
-          { path: "/CardManagement/Dashboard", element: <CardsDashboard /> },
-          { path: "/CardManagement/Cards", element: <CardsList /> },
-          { path: "/CardManagement/Cards/:id", element: <CardDetail /> },
-          { path: "/CardManagement/Products", element: <CardProducts /> },
-          { path: "/CardManagement/Settings", element: <CardSettings /> },
-          { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },
-          { path: "/LOS/Notification", element: <Notification /> },
-          { path: "/LOS/NotificationOrchestrator", element: <NotificationOrchestrator /> },
-{
-            path: "/LOS/UserBlock/Compliance",
-            element: <ComplianceBlock />,
-          },
-          {
-            path: "/LOS/UserBlock/AntiFraud",
-            element: <AntiFraud />,
-          },
-          {
-            path: "/LOS/UserBlock/AML",
-            element: <AML />,
-          },
-    
-          {
-            path: "/LOS/UserBlock/Sanction",
-            element: <Sanction     />,
-          },
-          {
-            path: "/LOS/ProductManagement/AddProduct",
-            element: <PartnerManagementTabs />,
-          },
-          {
-            path: "ProductManagement/Commodity",
-            element: <CommodityInfo />,
-          },
-          {
-            path: "/ProductManagement/termsandconditions",
-            element: <SettingsTermsConditions />,
-          },
-    
-          {
-            path: "ProductManagement/applicationSteps",
-            element: <Settings
-             />,
-          },
-          {
-            path: "ProductManagement/feeSettings",
-            element: <FeeSettings
-             />,
-          },
-          {
-            path: "ProductManagement/adminFeeSlabs",
-            element: <AdminFeeSlabs
-             />,
-          },
-          {
-            path: "ProductManagement/RequiredDoc",
-            element: <RequiredDoc />,
-          },
-          {
-            path: "ProductManagement/AdminList",
-            element: <AdminList />,
-          },
-          {
-            path: "ProductManagement/Categories",
-            element: <Categories />,
-          },
-          {
-            path: "ProductManagement/AddAdmin",
-            element: <AddAdmin />,
-          },
-          {
-            path: "ProductManagement/EditAdmin",
-            element: <AddAdmin />,
-          },
-        
-          { path: "Dashboard/Onboarding", element: <DashboardOnboarding /> },
-          { path: "Profile", element: <DashboardProfile /> },
-          { path: "*", element: <NotFound /> },
-        ],
-      },
-      {
-        path: "CustomerVerification",
-        element: <CustomerVerificationLayout />,
-        children: [
-          /* {
+            // { path: "/LOS/ApplicationBoard", element: <ApplicationBoard /> },
+            { path: "/LOS/ProductManagement", element: <ProductManagement /> },
+            { path: "/LOS/ProductManagement/Categories", element: <CreateCategories /> },
+            { path: "/LOS/ProductManagement/Wizerd", element: <CreateWizerd /> },
+            { path: "/LOS/ProductManagement/Create/BasicInfo", element: <CreateBasicInfo /> },
+            {
+              path: "/LOS/ProductManagement/Create/CommodityInfo",
+              element: <CreateComodityInfo />,
+            },
+            {
+              path: "/LOS/ProductManagement/Create/ProductSettings",
+              element: <CraeteProductSettings />,
+            },
+            {
+              path: "/LOS/ProductManagement/Create/RequiredDocuments",
+              element: <CreateRequiredDocuments />,
+            },
+            {
+              path: "/LOS/ProductManagement/Create/ProductAffiliation",
+              element: <CreateProductAffiliation />,
+            },
+            { path: "/LOS/ProductManagement/ProductCategory", element: <ProductCategory /> },
+            { path: "/LOS/ProductManagement/ProductSubCategory", element: <ProductSubCategory /> },
+            { path: "/CardManagement/Dashboard", element: <CardsDashboard /> },
+            { path: "/CardManagement/Cards", element: <CardsList /> },
+            { path: "/CardManagement/Cards/:id", element: <CardDetail /> },
+            { path: "/CardManagement/Products", element: <CardProducts /> },
+            { path: "/CardManagement/Settings", element: <CardSettings /> },
+            { path: "/LOS/InsuranceVendors", element: <InsuranceVendor /> },
+            { path: "/LOS/Notification", element: <Notification /> },
+            { path: "/LOS/NotificationOrchestrator", element: <NotificationOrchestrator /> },
+            {
+              path: "/LOS/UserBlock/Compliance",
+              element: <ComplianceBlock />,
+            },
+            {
+              path: "/LOS/UserBlock/AntiFraud",
+              element: <AntiFraud />,
+            },
+            {
+              path: "/LOS/UserBlock/AML",
+              element: <AML />,
+            },
+
+            {
+              path: "/LOS/UserBlock/Sanction",
+              element: <Sanction />,
+            },
+            {
+              path: "/LOS/ProductManagement/AddProduct",
+              element: <PartnerManagementTabs />,
+            },
+            {
+              path: "ProductManagement/Commodity",
+              element: <CommodityInfo />,
+            },
+            {
+              path: "/ProductManagement/termsandconditions",
+              element: <SettingsTermsConditions />,
+            },
+
+            {
+              path: "ProductManagement/applicationSteps",
+              element: <Settings />,
+            },
+            {
+              path: "ProductManagement/feeSettings",
+              element: <FeeSettings />,
+            },
+            {
+              path: "ProductManagement/adminFeeSlabs",
+              element: <AdminFeeSlabs />,
+            },
+            {
+              path: "ProductManagement/RequiredDoc",
+              element: <RequiredDoc />,
+            },
+            {
+              path: "ProductManagement/AdminList",
+              element: <AdminList />,
+            },
+            {
+              path: "ProductManagement/Categories",
+              element: <Categories />,
+            },
+            {
+              path: "ProductManagement/AddAdmin",
+              element: <AddAdmin />,
+            },
+            {
+              path: "ProductManagement/EditAdmin",
+              element: <AddAdmin />,
+            },
+
+            { path: "Dashboard/Onboarding", element: <DashboardOnboarding /> },
+            { path: "Profile", element: <DashboardProfile /> },
+            { path: "*", element: <NotFound /> },
+          ],
+        },
+        {
+          path: "CustomerVerification",
+          element: <CustomerVerificationLayout />,
+          children: [
+            /* {
             path: "nafath-verification",
             element: <NafathVerification />,
           }, */
-          {
-            path: "first-time-login",
-            element: <FirstTimeLogin />,
-          },
-          { path: "*", element: <NotFound /> },
-        ],
-      },
-      {
-        path: "partner",
-        element: <PartnerLayout />,
-        children: [
-          {
-            path: "",
-            element: <DashboardPartner />,
-          },
-          {
-            path: "View/:id",
-            element: <PartnerApplicationView />,
-          },
-          {
-            path: "PendingApplication/:id",
-            element: <PendingTabs />,
-          },
-          {
-            path: "AllApplications",
-            element: <PartnerAllApplication />,
-          },
-          {
-            path: "IncompletePartner",
-            element: <IncompletePartner />,
-          },
-          {
-            path: "InProgressApplications",
-            element: <InprogressApplication />,
-          },
-          {
-            path: "RejectedApplications",
-            element: <RejectedApplication />,
-          },
-          {
-            path: "ApprovedApplications",
-            element: <PartnerApprovedApplication />,
-          },
-          {
-            path: "comission",
-            element: <PartnerComission />,
-          },
-          {
-            path: "PendingApplications",
-            element: <PendingApplication />,
-          },
-          {
-            path: "invoice/:id",
-            element: <PartnerInvoice />,
-          },
-          {
-            path: "apimanagement",
-            element: <PartnerApiManagement />,
-          },
-          {
-            path: "onboarding",
-            element: <PartnerOnboarding />,
-          },
-          {
-            path: "landingpage",
-            element: <LandingPageManage />,
-          },
-          { path: "*", element: <NotFound /> },
-        ],
-      },
-      {
-        path: "customer",
-        element: <CustomerLayout />,
-        children: [
-          {
-            path: "",
-            element: <DashboardCustomer />,
-          },
-          {
-            path: "Applications",
-            element: <CustomerApplications />,
-          },
-          {
-            path: "CompleteApplication/:id",
-            element: <CompleteApplication />,
-          },
-          {
-            path: "ContractRequest/:id",
-            element: <ContractRequest />,
-          },
-          {
-            path: "InvoiceByApplicationID",
-            element: <InvoiceByApplicationID/>,
-          },
-          { path: "*", element: <NotFound /> },
-        ],
-      },
-      {
-        path: "",
-        element: <Layout />,
-        children: [
-          { path: "/LOS/sales/IBFT", element: <IBFT /> },
-          { path: "/LOS/sales/MobileTopup", element: <MobileTopup /> },
-          { path: "/LOS/sales/BusBooking", element: <BusBooking /> },
-          { path: "/LOS/sales/MobileBundle", element: <MobileBundle /> },
-          { path: "/LOS/System/Settings/AppVersion", element: <AppVersion /> },
-          {
-            path: "/LOS/System/CommissionSlabs/VendorCommissionType",
-            element: <VendorComissionSlab />,
-          },
-          {
-            path: "/LOS/FinancingApplications/AllApplications",
-            element: <AllApplication />,
-          },
-          {
-            path: "/LOS/FinancingApplications/AllApplications/ActivityLogs/:id",
-            element: <ApplicationActivityLogs />,
-          },
-          {
-            path: "/LOS/FinancingApplications/CostByApplication/:id",
-            element: <CostByApplication />,
-          },
-          {
-            path: "/LOS/FinancingApplications/PendingFinancing",
-            element: <PendingFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/InProgressFinancing",
-            element: <InProgressFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/ApprovedFinancing",
-            element: <ApprovedFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/RejectedFinancing",
-            element: <RejectedFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/CanceledFinancing",
-            element: <CanceledFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/ActivityLogsFinancing",
-            element: <ActivityLogFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/IncompleteFinancing",
-            element: <IncompleteFinancing />,
-          },
-          {
-            path: "/LOS/FinancingApplications/ReschedulingRequest",
-            element: <ReschedulingRequest />,
-          },
-          {
-            path: "/LOS/FinancingApplications/ApprovedRescheduledApplications",
-            element: <ApprovedRescheduledApplications />,
-          },
-          {
-            path: "/FinancingApplications/AllApplications/View/:id",
-            element: <AllApplicationView />,
-          },
-          {
-            path: "/FinancingApplications/AllApplications/Documents/:id",
-            element: <ApplicationDocuments />,
-          },
-          {
-            path: `/LOS/sales/airbooking`,
-            element: <AirBooking />,
-          },
-          {
-            path: "/LOS/CustomerManagement/CustomerList",
-            element: <AllCustomers />,
-          },
-          {
-            path: "/LOS/CustomerManagement/Business",
-            element: <AllBusiness />,
-          },
-          {
-            path: "/LOS/CustomerManagement/CostByCustomer/:id",
-            element: <CostByCustomer />,
-          },
-          {
-            path: "/LOS/CustomerManagement/OnboardingCostByCustomer/:id",
-            element: <OnboardingCostByCustomer />,
-          },
-          { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
-          {
-            path: "/LOS/CustomerManagement/OnboardingUsers",
-            element: <OnboardingUsers />,
-          },
-          {
-            path: "/LOS/CustomerManagement/OnboardingUsers/:workflowId",
-            element: <OnboardingUserDetail />,
-          },
-          {
-            path: "/LOS/CustomerManagement/WalletTransactionLimits",
-            element: <WalletTransactionLimits />,
-          },
-          {
-            path: "/LOS/Wallet/Dashboard",
-            element: <WalletDashboard />,
-          },
-          {
-            path: "/LOS/Wallet/Home",
-            element: <WalletHome />,
-          },
-          {
-            path: "/LOS/NoAccess",
-            element: <NoAccess />,
-          },
-          {
-            path: "/LOS/Wallet/SendMoney",
-            element: <SendMoney />,
-          },
-          {
-            path: "/LOS/Wallet/InternalTransfer",
-            element: <InternalTransfer />,
-          },
-          {
-            // One screen, two entry points: the sidebar's two children pick the
-            // opening tab, so a deep link lands where the label promised.
-            path: "/LOS/Wallet/Qr/Codes",
-            element: <WalletQrCodes />,
-          },
-          {
-            path: "/LOS/Wallet/Qr/ScanPay",
-            element: <WalletQrCodes />,
-          },
-          {
-            path: "/LOS/WalletLedger/Transactions",
-            element: <WalletLedgerTransactions />,
-          },
-          {
-            path: "/LOS/WalletLedger/Accounts",
-            element: <WalletLedgerAccounts />,
-          },
-          {
-            path: "/LOS/Bnpl/Categories",
-            element: <BnplCategories />,
-          },
-          {
-            path: "/LOS/Bnpl/CurrencyLimits",
-            element: <BnplCurrencyLimits />,
-          },
-          {
-            path: "/LOS/SullisCash/Settings",
-            element: <SullisCashConfig />,
-          },
-          {
-            path: "/LOS/Exchange/Providers",
-            element: <ExchangeProviders />,
-          },
-          {
-            path: "/LOS/Exchange/Payments",
-            element: <ExchangePayments />,
-          },
-          {
-            path: "/LOS/Exchange/Payments/:paymentId",
-            element: <ExchangePaymentDetail />,
-          },
-          {
-            path: "/LOS/Exchange/Countries",
-            element: <ExchangeCountries />,
-          },
-          {
-            path: "/LOS/Exchange/DocumentTypes",
-            element: <ExchangeDocumentTypes />,
-          },
-          {
-            path: "/LOS/Exchange/Verifications",
-            element: <ExchangeVerifications />,
-          },
-          {
-            path: "/LOS/Exchange/Verifications/:quoteId",
-            element: <ExchangeVerificationDetail />,
-          },
-          { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
-          { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },
-          { path: "/LOS/CustomerManagement/AllCustomerStatus", element: <AllCustomerStatus /> },
-          {
-            path: "/LOS/CustomerManagement/OnboardCustomers",
-            element: <OnboardCustomers />,
-          },
-          { path: "/LOS/UserAccountType/Guest", element: <Guests /> },
-          { path: "/LOS/UserAccountType/barqLite", element: <BarqLite /> },
-          { path: "/LOS/UserAccountType/barqFlex", element: <BarqFlex /> },
-          { path: "/LOS/UserAccountType/barqPrime", element: <BarqPrime /> },
-          { path: "/LOS/GameCenter/AllRewards", element: <AllRewards /> },
-          { path: "/LOS/GameCenter/Referral", element: <Referral /> },
-          { path: "/LOS/Campaign/Faqs", element: <Faq /> },
-          {
-            path: "/LOS/DepartmentManagement/Departments",
-            element: <DepartmentList />,
-          },
-          {
-          path: "/LOS/LOV/EmploymentSector",
-            element: <EmploymentSector />,
-          },
-          {
-            path: "/LOS/LOV/SourceOfIncome",
-            element: <SourceOfIncome />,
-          },
-          {
-            path: "/LOS/LOV/Occupation",
-            element: <Occupation />,
-          },
-          {
-            path: "/LOS/LOV/SourceOfWealth",
-            element: <SourceOfWealth />,
-          },
-          {
-            path: "/LOS/LOV/SourceOfFunds",
-            element: <SourceOfFunds />,
-          },
-          {
-            path: "/LOS/LOV/TemplateTypes",
-            element: <TemplateTypes />,
-          },
-          {
-            path: "/LOS/LOV/NetWorthRanges",
-            element: <NetWorthRanges />,
-          },
-          {
-            path: "/LOS/LOV/WealthValue",
-            element: <WealthValue />,
-          },
-          {
-            path: "/LOS/LOV/PurposeofFinancing",
-            element: <PurposeOfFinancing />,
-          },
-          {
-            path: "/LOS/LOV/CreditScoringDefinitions",
-            element: <CreditScoringDefinitions/>,
-          },
-          {
-            path: "/LOS/LOV/ApprovalConditions",
-            element: <ApprovalConditions/>,
-          },
-          {
-            path: "/LOS/LOV/ProfessionValue",
-            element: <ProfessionValue />,
-          },
-          {
-            path: "/LOS/LOV/CitiesList",
-            element: <CitiesList />,
-          },
-          {
-            path: "/Los/LOV/CountriesList",
-            element: <CountriesList />,
-          },
-          {
-            path: "/Los/LOV/MonthlyIncome",
-            element: <MonthlyIncome />,
-          },
-          {
-            path: "/Los/LOV/WealthRanges",
-            element: <WealthRanges />,
-          },
-          {
-            path: "/Los/LOV/ListOfValues",
-            element: <ListOfValues />,
-          },
-          {
-            path: "/Los/LOV/ListOfValues/:id",
-            element: <ViewListOfValues />,
-          },
-          {
-            path: "/Los/LOV/WealthRanges/:id",
-            element: <ViewWealthRanges />,
-          },
-          {
-            path: "/Los/LOV/FactorsList",
-            element: <FactorsList/>,
-          },
-          {
-            path: "/LOS/RiskManagement/BlacklistNid",
-            element: <BlacklistNid />,
-          },
-          {
-            path: "/LOS/RiskManagement/BlacklistMobile",
-            element: <BlacklistMobile />,
-          },
-          {
-            path: "/LOS/RiskManagement/FraudRuleManagement",
-            element: <FraudRuleManagement />,
-          },
-          {
-            path: "/LOS/RiskManagement/InternalChecksConfig",
-            element: <InternalChecksConfig />,
-          },
-          {
-            path: "/LOS/RiskManagement/DeviceManagement",
-            element: <DeviceManagement/>,
-          },
-          {
-            path: "/LOS/CustomerManagement/LeadDetails/:id",
-            element: <LeadDetails/>,
-          },
-          {
-            path: "/LOS/CustomerManagement/OpportunityDetails/:id",
-            element: <LeadDetails/>,
-          },
-          {
-            path: "/LOS/CustomerManagement/CustomerDetails/:id",
-            element: <Onboarding360 />,
-          },
-          {
-            path: "/LOS/CustomerManagement/BusinessDetails/:id",
-            element: <BusinessDetail />,
-          },
-          {
-            path: "/LOS/CustomerManagement/BusinessDetails/:id/Partners/:membershipId",
-            element: <PartnerDetail />,
-          },
-          {
-            path: "/LOS/CustomerManagement/HighRiskUsers/:id",
-            element: <LeadDetails/>,
-          },
-          {
-            path: "/LOS/CustomerManagement/RejectedCustomers/:id",
-            element: <LeadDetails/>,
-          },
-          {
-            path: "/LOS/CustomerManagement/PepCustomers/:id",
-            element: <LeadDetails/>,
-          },
-          // {
-          //   path: "/LOS/CustomerManagement/OpportunityDetails/:id",
-          //   element: <OpportunityDetails/>,
-          // },
-          {
-            path: "/Los/LOV/WealthRanges",
-            element: <WealthRanges />,
-          },
-          {
-            path: "/Los/LOV/ListOfValues",
-            element: <ListOfValues />,
-          },
-          {
-            path: "/Los/LOV/ListOfValues/:id",
-            element: <ViewListOfValues />,
-          },
-          {
-            path: "/Los/LOV/WealthRanges/:id",
-            element: <ViewWealthRanges />,
-          },
-          {
-            path: "/Los/LOV/MandatoryReasonRescheduling",
-            element: <MandatoryReasonRescheduling />,
-          },
-          {
-            path: "/Los/LOV/OptionalReasonRescheduling",
-            element: <OptionalReasonRescheduling />,
-          },
-        
-          { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
-          { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },
-           {
-            path: "/LOS/CustomerManagement/SanctionedCustomers",
-            element: <SanctionedCustomers />,
-          },
-          {
-            path: "/LOS/NotificationTemplate/SmsTemplate",
-            element: <SmsTemplate />,
-          },
-           {
-            path: "/LOS/NotificationTemplate/PushTemplate",
-            element: <PushTemplate />,
-          },
-           {
-            path: "/LOS/NotificationTemplate/EmailTemplate",
-            element: <EmailTemplate />,
-          },
-          {
-            path: "/LOS/MerchantManagement/MerchantList",
-            element: <MerchantList />,
-          },
-           {
-            path: "/LOS/NotificationTemplate/ContractTemplate",
-            element: <ContractTemplate />,
-          },
-          {
-            path: "/LOS/DepartmentManagement/DepartmentsPermissions",
-            element: <DepartmentsPermissions />,
-          },
-          {
-            path: "/LOS/LOV/ChecksTypes",
-            element: <ChecksTypes />,
-          },
-          {
-            path: "/LOS/LOV/ReasonsTypes",
-            element: <ReasonsTypes />,
-          },
-          {
-            path: "/LOS/LOV/ProductCategories",
-            element: <ProductCategories />,
-          },
-          {
-            path: "/LOS/LOV/ProductTypes",
-            element: <ProductTypes />,
-          },
-          {
-            path: "/LOS/LOV/CommodityTypes",
-            element: <CommodityTypes />,
-          },
-          {
-            path: "/LOS/PartnerManagement/PartnersList",
-            element: <PartnerList />,
-          },
-          {
-            path: "/LOS/PartnerManagement/AddPartner",
-            element: <AddPartner />,
-          },
-         
-          {
-            path: "/LOS/PartnerManagement/UpdatePartner",
-            element: <UpdatePartner />,
-          },
-          {
-            path: "/LOS/PartnerManagement/PartnerAdminList",
-            element: <PartnerAdminList />,
-          },
-          {
-            path: "/LOS/PartnerManagement/AddPartnerAdmin",
-            element: <AddPartnerAdmin />,
-          },
-          {
-            path: "/LOS/PartnerManagement/UpdatePartnerAdmin",
-            element: <UpdatePartnerAdmin />,
-          },
-          {
-            path: "/LOS/PartnerManagement/AllPartners",
-            element: <PartnersCommission />,
-          },
-          {
-            path: "/LOS/Setting/Employees",
-            element: <Employees />,
-          },
-          {
-            path: "/LOS/Setting/RoleList",
-            element: <RoleList />,
-          },
-          {
-            path: "/LOS/Setting/AssignPermissions",
-            element: <AssignPermissions />,
-          },
-          {
-            path: "/LOS/Settings/AwnInfo",
-            element: <AwnInfo />,
-          },
-          {
-            path: "/LOS/Settings/ComplianceRequirement",
-            element: <ComplianceRequirement />,
-          },
-          {
-            path: "/LOS/Settings/BlockHistory",
-            element: <BlockHistory />,
-          },
-          {
-            path: "/LOS/BlockCodes/AllBlockCodes",
-            element: <AllBlockCodes />,
-          },
-          {
-            path: "/LOS/BlockCodes/Compliance",
-            element: <ComplianceBlockCodes />,
-          },
-          {
-            path: "/LOS/BlockCodes/AML",
-            element: <AMLBlockCodes />,
-          },
-          {
-            path: "/LOS/BlockCodes/AntiFraud",
-            element: <AntiFraudBlockCodes />,
-          },
-          {
-            path: "/LOS/BlockCodes/Sanction",
-            element: <SanctionBlockCodes />,
-          },
-          {
-            path: "/LOS/CustomerManagement/PepCustomers",
-            element: <PepBlockCodes />,
-          },
-          {
-            path: "/LOS/CustomerManagement/BlockedDevices",
-            element: <BlockedDevices />,
-          },
-          {
-            path: "/LOS/CustomerManagement/Devices",
-            element: <Devices />,
-          },
-          {
-            path: "/LOS/APIManagement/AllAPIs",
-            element: <AllApis />,
-          },
-          /* {
+            {
+              path: "first-time-login",
+              element: <FirstTimeLogin />,
+            },
+            { path: "*", element: <NotFound /> },
+          ],
+        },
+        {
+          path: "partner",
+          element: <PartnerLayout />,
+          children: [
+            {
+              path: "",
+              element: <DashboardPartner />,
+            },
+            {
+              path: "View/:id",
+              element: <PartnerApplicationView />,
+            },
+            {
+              path: "PendingApplication/:id",
+              element: <PendingTabs />,
+            },
+            {
+              path: "AllApplications",
+              element: <PartnerAllApplication />,
+            },
+            {
+              path: "IncompletePartner",
+              element: <IncompletePartner />,
+            },
+            {
+              path: "InProgressApplications",
+              element: <InprogressApplication />,
+            },
+            {
+              path: "RejectedApplications",
+              element: <RejectedApplication />,
+            },
+            {
+              path: "ApprovedApplications",
+              element: <PartnerApprovedApplication />,
+            },
+            {
+              path: "comission",
+              element: <PartnerComission />,
+            },
+            {
+              path: "PendingApplications",
+              element: <PendingApplication />,
+            },
+            {
+              path: "invoice/:id",
+              element: <PartnerInvoice />,
+            },
+            {
+              path: "apimanagement",
+              element: <PartnerApiManagement />,
+            },
+            {
+              path: "onboarding",
+              element: <PartnerOnboarding />,
+            },
+            {
+              path: "landingpage",
+              element: <LandingPageManage />,
+            },
+            { path: "*", element: <NotFound /> },
+          ],
+        },
+        {
+          path: "customer",
+          element: <CustomerLayout />,
+          children: [
+            {
+              path: "",
+              element: <DashboardCustomer />,
+            },
+            {
+              path: "Applications",
+              element: <CustomerApplications />,
+            },
+            {
+              path: "CompleteApplication/:id",
+              element: <CompleteApplication />,
+            },
+            {
+              path: "ContractRequest/:id",
+              element: <ContractRequest />,
+            },
+            {
+              path: "InvoiceByApplicationID",
+              element: <InvoiceByApplicationID />,
+            },
+            { path: "*", element: <NotFound /> },
+          ],
+        },
+        {
+          path: "",
+          element: <Layout />,
+          children: [
+            { path: "/LOS/sales/IBFT", element: <IBFT /> },
+            { path: "/LOS/sales/MobileTopup", element: <MobileTopup /> },
+            { path: "/LOS/sales/BusBooking", element: <BusBooking /> },
+            { path: "/LOS/sales/MobileBundle", element: <MobileBundle /> },
+            { path: "/LOS/System/Settings/AppVersion", element: <AppVersion /> },
+            {
+              path: "/LOS/System/CommissionSlabs/VendorCommissionType",
+              element: <VendorComissionSlab />,
+            },
+            {
+              path: "/LOS/FinancingApplications/AllApplications",
+              element: <AllApplication />,
+            },
+            {
+              path: "/LOS/FinancingApplications/AllApplications/ActivityLogs/:id",
+              element: <ApplicationActivityLogs />,
+            },
+            {
+              path: "/LOS/FinancingApplications/CostByApplication/:id",
+              element: <CostByApplication />,
+            },
+            {
+              path: "/LOS/FinancingApplications/PendingFinancing",
+              element: <PendingFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/InProgressFinancing",
+              element: <InProgressFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/ApprovedFinancing",
+              element: <ApprovedFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/RejectedFinancing",
+              element: <RejectedFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/CanceledFinancing",
+              element: <CanceledFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/ActivityLogsFinancing",
+              element: <ActivityLogFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/IncompleteFinancing",
+              element: <IncompleteFinancing />,
+            },
+            {
+              path: "/LOS/FinancingApplications/ReschedulingRequest",
+              element: <ReschedulingRequest />,
+            },
+            {
+              path: "/LOS/FinancingApplications/ApprovedRescheduledApplications",
+              element: <ApprovedRescheduledApplications />,
+            },
+            {
+              path: "/FinancingApplications/AllApplications/View/:id",
+              element: <AllApplicationView />,
+            },
+            {
+              path: "/FinancingApplications/AllApplications/Documents/:id",
+              element: <ApplicationDocuments />,
+            },
+            {
+              path: `/LOS/sales/airbooking`,
+              element: <AirBooking />,
+            },
+            {
+              path: "/LOS/CustomerManagement/CustomerList",
+              element: <AllCustomers />,
+            },
+            {
+              path: "/LOS/CustomerManagement/Business",
+              element: <AllBusiness />,
+            },
+            {
+              path: "/LOS/CustomerManagement/CostByCustomer/:id",
+              element: <CostByCustomer />,
+            },
+            {
+              path: "/LOS/CustomerManagement/OnboardingCostByCustomer/:id",
+              element: <OnboardingCostByCustomer />,
+            },
+            { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
+            {
+              path: "/LOS/CustomerManagement/OnboardingUsers",
+              element: <OnboardingUsers />,
+            },
+            {
+              path: "/LOS/CustomerManagement/OnboardingUsers/:workflowId",
+              element: <OnboardingUserDetail />,
+            },
+            {
+              path: "/LOS/CustomerManagement/WalletTransactionLimits",
+              element: <WalletTransactionLimits />,
+            },
+            {
+              path: "/LOS/Wallet/Dashboard",
+              element: <WalletDashboard />,
+            },
+            {
+              path: "/LOS/Wallet/Home",
+              element: <WalletHome />,
+            },
+            {
+              path: "/LOS/NoAccess",
+              element: <NoAccess />,
+            },
+            {
+              path: "/LOS/Wallet/SendMoney",
+              element: <SendMoney />,
+            },
+            {
+              path: "/LOS/Wallet/InternalTransfer",
+              element: <InternalTransfer />,
+            },
+            {
+              // One screen, two entry points: the sidebar's two children pick the
+              // opening tab, so a deep link lands where the label promised.
+              path: "/LOS/Wallet/Qr/Codes",
+              element: <WalletQrCodes />,
+            },
+            {
+              path: "/LOS/Wallet/Qr/ScanPay",
+              element: <WalletQrCodes />,
+            },
+            {
+              path: "/LOS/WalletLedger/Transactions",
+              element: <WalletLedgerTransactions />,
+            },
+            {
+              path: "/LOS/WalletLedger/Accounts",
+              element: <WalletLedgerAccounts />,
+            },
+            {
+              path: "/LOS/Bnpl/Categories",
+              element: <BnplCategories />,
+            },
+            {
+              path: "/LOS/Bnpl/CurrencyLimits",
+              element: <BnplCurrencyLimits />,
+            },
+            {
+              path: "/LOS/SullisCash/Settings",
+              element: <SullisCashConfig />,
+            },
+            {
+              path: "/LOS/Exchange/Providers",
+              element: <ExchangeProviders />,
+            },
+            {
+              path: "/LOS/Exchange/Payments",
+              element: <ExchangePayments />,
+            },
+            {
+              path: "/LOS/Exchange/Payments/:paymentId",
+              element: <ExchangePaymentDetail />,
+            },
+            {
+              path: "/LOS/Exchange/Countries",
+              element: <ExchangeCountries />,
+            },
+            {
+              path: "/LOS/Exchange/DocumentTypes",
+              element: <ExchangeDocumentTypes />,
+            },
+            {
+              path: "/LOS/Exchange/Verifications",
+              element: <ExchangeVerifications />,
+            },
+            {
+              path: "/LOS/Exchange/Verifications/:quoteId",
+              element: <ExchangeVerificationDetail />,
+            },
+            { path: "/LOS/CustomerManagement/HighRiskUsers", element: <HighRiskUsers /> },
+            { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },
+            { path: "/LOS/CustomerManagement/AllCustomerStatus", element: <AllCustomerStatus /> },
+            {
+              path: "/LOS/CustomerManagement/OnboardCustomers",
+              element: <OnboardCustomers />,
+            },
+            { path: "/LOS/UserAccountType/Guest", element: <Guests /> },
+            { path: "/LOS/UserAccountType/barqLite", element: <BarqLite /> },
+            { path: "/LOS/UserAccountType/barqFlex", element: <BarqFlex /> },
+            { path: "/LOS/UserAccountType/barqPrime", element: <BarqPrime /> },
+            { path: "/LOS/GameCenter/AllRewards", element: <AllRewards /> },
+            { path: "/LOS/GameCenter/Referral", element: <Referral /> },
+            { path: "/LOS/Campaign/Faqs", element: <Faq /> },
+            {
+              path: "/LOS/DepartmentManagement/Departments",
+              element: <DepartmentList />,
+            },
+            {
+              path: "/LOS/LOV/EmploymentSector",
+              element: <EmploymentSector />,
+            },
+            {
+              path: "/LOS/LOV/SourceOfIncome",
+              element: <SourceOfIncome />,
+            },
+            {
+              path: "/LOS/LOV/Occupation",
+              element: <Occupation />,
+            },
+            {
+              path: "/LOS/LOV/SourceOfWealth",
+              element: <SourceOfWealth />,
+            },
+            {
+              path: "/LOS/LOV/SourceOfFunds",
+              element: <SourceOfFunds />,
+            },
+            {
+              path: "/LOS/LOV/TemplateTypes",
+              element: <TemplateTypes />,
+            },
+            {
+              path: "/LOS/LOV/NetWorthRanges",
+              element: <NetWorthRanges />,
+            },
+            {
+              path: "/LOS/LOV/WealthValue",
+              element: <WealthValue />,
+            },
+            {
+              path: "/LOS/LOV/PurposeofFinancing",
+              element: <PurposeOfFinancing />,
+            },
+            {
+              path: "/LOS/LOV/CreditScoringDefinitions",
+              element: <CreditScoringDefinitions />,
+            },
+            {
+              path: "/LOS/LOV/ApprovalConditions",
+              element: <ApprovalConditions />,
+            },
+            {
+              path: "/LOS/LOV/ProfessionValue",
+              element: <ProfessionValue />,
+            },
+            {
+              path: "/LOS/LOV/CitiesList",
+              element: <CitiesList />,
+            },
+            {
+              path: "/Los/LOV/CountriesList",
+              element: <CountriesList />,
+            },
+            {
+              path: "/Los/LOV/MonthlyIncome",
+              element: <MonthlyIncome />,
+            },
+            {
+              path: "/Los/LOV/WealthRanges",
+              element: <WealthRanges />,
+            },
+            {
+              path: "/Los/LOV/ListOfValues",
+              element: <ListOfValues />,
+            },
+            {
+              path: "/Los/LOV/ListOfValues/:id",
+              element: <ViewListOfValues />,
+            },
+            {
+              path: "/Los/LOV/WealthRanges/:id",
+              element: <ViewWealthRanges />,
+            },
+            {
+              path: "/Los/LOV/FactorsList",
+              element: <FactorsList />,
+            },
+            {
+              path: "/LOS/RiskManagement/BlacklistNid",
+              element: <BlacklistNid />,
+            },
+            {
+              path: "/LOS/RiskManagement/BlacklistMobile",
+              element: <BlacklistMobile />,
+            },
+            {
+              path: "/LOS/RiskManagement/FraudRuleManagement",
+              element: <FraudRuleManagement />,
+            },
+            {
+              path: "/LOS/RiskManagement/InternalChecksConfig",
+              element: <InternalChecksConfig />,
+            },
+            {
+              path: "/LOS/RiskManagement/DeviceManagement",
+              element: <DeviceManagement />,
+            },
+            {
+              path: "/LOS/CustomerManagement/LeadDetails/:id",
+              element: <LeadDetails />,
+            },
+            {
+              path: "/LOS/CustomerManagement/OpportunityDetails/:id",
+              element: <LeadDetails />,
+            },
+            {
+              path: "/LOS/CustomerManagement/CustomerDetails/:id",
+              element: <Onboarding360 />,
+            },
+            {
+              path: "/LOS/CustomerManagement/BusinessDetails/:id",
+              element: <BusinessDetail />,
+            },
+            {
+              path: "/LOS/CustomerManagement/BusinessDetails/:id/Partners/:membershipId",
+              element: <PartnerDetail />,
+            },
+            {
+              path: "/LOS/CustomerManagement/HighRiskUsers/:id",
+              element: <LeadDetails />,
+            },
+            {
+              path: "/LOS/CustomerManagement/RejectedCustomers/:id",
+              element: <LeadDetails />,
+            },
+            {
+              path: "/LOS/CustomerManagement/PepCustomers/:id",
+              element: <LeadDetails />,
+            },
+            // {
+            //   path: "/LOS/CustomerManagement/OpportunityDetails/:id",
+            //   element: <OpportunityDetails/>,
+            // },
+            {
+              path: "/Los/LOV/WealthRanges",
+              element: <WealthRanges />,
+            },
+            {
+              path: "/Los/LOV/ListOfValues",
+              element: <ListOfValues />,
+            },
+            {
+              path: "/Los/LOV/ListOfValues/:id",
+              element: <ViewListOfValues />,
+            },
+            {
+              path: "/Los/LOV/WealthRanges/:id",
+              element: <ViewWealthRanges />,
+            },
+            {
+              path: "/Los/LOV/MandatoryReasonRescheduling",
+              element: <MandatoryReasonRescheduling />,
+            },
+            {
+              path: "/Los/LOV/OptionalReasonRescheduling",
+              element: <OptionalReasonRescheduling />,
+            },
+
+            { path: "/LOS/CustomerManagement/Leads", element: <Leads /> },
+            { path: "/LOS/CustomerManagement/Opportunity", element: <Opportunity /> },
+            {
+              path: "/LOS/CustomerManagement/SanctionedCustomers",
+              element: <SanctionedCustomers />,
+            },
+            {
+              path: "/LOS/NotificationTemplate/SmsTemplate",
+              element: <SmsTemplate />,
+            },
+            {
+              path: "/LOS/NotificationTemplate/PushTemplate",
+              element: <PushTemplate />,
+            },
+            {
+              path: "/LOS/NotificationTemplate/EmailTemplate",
+              element: <EmailTemplate />,
+            },
+            {
+              path: "/LOS/MerchantManagement/MerchantList",
+              element: <MerchantList />,
+            },
+            {
+              path: "/LOS/NotificationTemplate/ContractTemplate",
+              element: <ContractTemplate />,
+            },
+            {
+              path: "/LOS/DepartmentManagement/DepartmentsPermissions",
+              element: <DepartmentsPermissions />,
+            },
+            {
+              path: "/LOS/LOV/ChecksTypes",
+              element: <ChecksTypes />,
+            },
+            {
+              path: "/LOS/LOV/ReasonsTypes",
+              element: <ReasonsTypes />,
+            },
+            {
+              path: "/LOS/LOV/ProductCategories",
+              element: <ProductCategories />,
+            },
+            {
+              path: "/LOS/LOV/ProductTypes",
+              element: <ProductTypes />,
+            },
+            {
+              path: "/LOS/LOV/CommodityTypes",
+              element: <CommodityTypes />,
+            },
+            {
+              path: "/LOS/PartnerManagement/PartnersList",
+              element: <PartnerList />,
+            },
+            {
+              path: "/LOS/PartnerManagement/AddPartner",
+              element: <AddPartner />,
+            },
+
+            {
+              path: "/LOS/PartnerManagement/UpdatePartner",
+              element: <UpdatePartner />,
+            },
+            {
+              path: "/LOS/PartnerManagement/PartnerAdminList",
+              element: <PartnerAdminList />,
+            },
+            {
+              path: "/LOS/PartnerManagement/AddPartnerAdmin",
+              element: <AddPartnerAdmin />,
+            },
+            {
+              path: "/LOS/PartnerManagement/UpdatePartnerAdmin",
+              element: <UpdatePartnerAdmin />,
+            },
+            {
+              path: "/LOS/PartnerManagement/AllPartners",
+              element: <PartnersCommission />,
+            },
+            {
+              path: "/LOS/Setting/Employees",
+              element: <Employees />,
+            },
+            {
+              path: "/LOS/Setting/RoleList",
+              element: <RoleList />,
+            },
+            {
+              path: "/LOS/Setting/AssignPermissions",
+              element: <AssignPermissions />,
+            },
+            {
+              path: "/LOS/Settings/AwnInfo",
+              element: <AwnInfo />,
+            },
+            {
+              path: "/LOS/Settings/ComplianceRequirement",
+              element: <ComplianceRequirement />,
+            },
+            {
+              path: "/LOS/Settings/BlockHistory",
+              element: <BlockHistory />,
+            },
+            {
+              path: "/LOS/BlockCodes/AllBlockCodes",
+              element: <AllBlockCodes />,
+            },
+            {
+              path: "/LOS/BlockCodes/Compliance",
+              element: <ComplianceBlockCodes />,
+            },
+            {
+              path: "/LOS/BlockCodes/AML",
+              element: <AMLBlockCodes />,
+            },
+            {
+              path: "/LOS/BlockCodes/AntiFraud",
+              element: <AntiFraudBlockCodes />,
+            },
+            {
+              path: "/LOS/BlockCodes/Sanction",
+              element: <SanctionBlockCodes />,
+            },
+            {
+              path: "/LOS/CustomerManagement/PepCustomers",
+              element: <PepBlockCodes />,
+            },
+            {
+              path: "/LOS/CustomerManagement/BlockedDevices",
+              element: <BlockedDevices />,
+            },
+            {
+              path: "/LOS/CustomerManagement/Devices",
+              element: <Devices />,
+            },
+            {
+              path: "/LOS/APIManagement/AllAPIs",
+              element: <AllApis />,
+            },
+            /* {
             path: "APIManagement/PartnerAPIs",
             element: <PartnerApis />,
           }, */
-          {
-            path: "/LOS/SystemLogs/Dashboard",
-            element: <Dashboard />,
-          },
-          {
-            path: "/LOS/SystemLogs/Logs",
-            element: <Logs />,
-          },
-          { path: "/LOS/UserRoleManagement/Users", element: <Users /> },
-          { path: "/LOS/UserRoleManagement/Role", element: <Role /> },
-          { path: "/LOS/UserRoleManagement/AddRole", element: <AddRole /> },
-          { path: "/LOS/System/Logs/ActivityLogs", element: <ActivityLogs /> },
-          { path: "/LOS/System/Logs/FinancialLogs", element: <FinancialLogs /> },
-          { path: "/LOS/System/Logs/DigittLogs", element: <DigittLogs /> },
-          { path: "/LOS/System/Logs/SystemAudit", element: <SystemAudit /> },
-          {
-            path: "System/CommissionSlabs/VendorServices",
-            element: <VendorServices />,
-          },
-          {
-            path: "/LOS/System/CommissionSlabs/VendorServices",
-            element: <VendorServices />,
-          },
-          {
-            path: "LOS/LOV/RevenueSource",
-            element: <RevenueSource />,
-          },
-          {
-            path: "LOS/LOV/FinancingPurpose",
-            element: <FinancingPurpose />,
-          },
-          {
-            path: "/LOS/System/CommissionSlabs/VendorCommission",
-            element: <VendorCommission />,
-          },
-          { path: "/LOS/System/IncomeType", element: <IncomeType /> },
-          { path: "/LOS/System/IncomeProof", element: <IncomeProof /> },
-          { path: "/LOS/System/CommissionSlabs/Vendor", element: <Vendor /> },
+            {
+              path: "/LOS/SystemLogs/Dashboard",
+              element: <Dashboard />,
+            },
+            {
+              path: "/LOS/SystemLogs/Logs",
+              element: <Logs />,
+            },
+            { path: "/LOS/UserRoleManagement/Users", element: <Users /> },
+            { path: "/LOS/UserRoleManagement/Role", element: <Role /> },
+            { path: "/LOS/UserRoleManagement/AddRole", element: <AddRole /> },
+            { path: "/LOS/System/Logs/ActivityLogs", element: <ActivityLogs /> },
+            { path: "/LOS/System/Logs/FinancialLogs", element: <FinancialLogs /> },
+            { path: "/LOS/System/Logs/DigittLogs", element: <DigittLogs /> },
+            { path: "/LOS/System/Logs/SystemAudit", element: <SystemAudit /> },
+            {
+              path: "System/CommissionSlabs/VendorServices",
+              element: <VendorServices />,
+            },
+            {
+              path: "/LOS/System/CommissionSlabs/VendorServices",
+              element: <VendorServices />,
+            },
+            {
+              path: "LOS/LOV/RevenueSource",
+              element: <RevenueSource />,
+            },
+            {
+              path: "LOS/LOV/FinancingPurpose",
+              element: <FinancingPurpose />,
+            },
+            {
+              path: "/LOS/System/CommissionSlabs/VendorCommission",
+              element: <VendorCommission />,
+            },
+            { path: "/LOS/System/IncomeType", element: <IncomeType /> },
+            { path: "/LOS/System/IncomeProof", element: <IncomeProof /> },
+            { path: "/LOS/System/CommissionSlabs/Vendor", element: <Vendor /> },
 
-          { path: "/LOS/System/RelationLov", element: <RelationLov /> },
-          { path: "/LOS/Campaign/CampaignList", element: <CampaignList /> },
-          { path: "/LOS/HomePageManagement", element: <HomePageManage /> },
-          { path: "/LOS/HomePageManagement/home-page/setting", element: <ManagementForm /> },
-                    { path: "/LOS/LandingPageManagement", element: <LandingPageManage /> },
-                    {
-                      path: "/LOS/WebPageManagement/GlobalSections",
-                      element: <GlobalSections />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/GlobalSections/Settings",
-                      element: <GlobalSectionsSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/CalculatorTemplatePage",
-                      element: <CalculatorTemplatePage />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/CalculatorTemplatePage/Settings",
-                      element: <CalculatorSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/CareerPage",
-                      element: <CareerPage />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/CareerPage/Settings",
-                      element: <CareerPageSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/HomePage",
-                      element: <HomePageTemplate />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/HomePage/Settings",
-                      element: <HomePageSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/AboutPage",
-                      element: <AboutPageTemplate />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/AboutPage/Settings",
-                      element: <AboutPageSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/PrivacyPolicyTemplatePage",
-                      element: <PrivacyPolicyManagement />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/PrivacyPolicyTemplatePage/Settings",
-                      element: <PrivacyPolicySettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/TermsConditionsTemplatePage",
-                      element: <TermsConditionsPage />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/TermsConditionsTemplatePage/Settings",
-                      element: <TermsConditionsSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/FaqsTemplatePage",
-                      element: <FaqPageManagement />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/FaqsTemplatePage/Settings",
-                      element: <FaqPageSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/FinancialStatementsTemplatePage",
-                      element: <FinancialStatementsPageManagement />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/FinancialStatementsTemplatePage/Settings",
-                      element: <FinancialStatementsSettings />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/ContactUsTemplatePage",
-                      element: <ContactUsPageManagement />,
-                    },
-                    {
-                      path: "/LOS/WebPageManagement/ContactUsTemplatePage/Settings",
-                      element: <ContactUsSettings />,
-                    },
+            { path: "/LOS/System/RelationLov", element: <RelationLov /> },
+            { path: "/LOS/Campaign/CampaignList", element: <CampaignList /> },
+            { path: "/LOS/HomePageManagement", element: <HomePageManage /> },
+            { path: "/LOS/HomePageManagement/home-page/setting", element: <ManagementForm /> },
+            { path: "/LOS/LandingPageManagement", element: <LandingPageManage /> },
+            {
+              path: "/LOS/WebPageManagement/GlobalSections",
+              element: <GlobalSections />,
+            },
+            {
+              path: "/LOS/WebPageManagement/GlobalSections/Settings",
+              element: <GlobalSectionsSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/CalculatorTemplatePage",
+              element: <CalculatorTemplatePage />,
+            },
+            {
+              path: "/LOS/WebPageManagement/CalculatorTemplatePage/Settings",
+              element: <CalculatorSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/CareerPage",
+              element: <CareerPage />,
+            },
+            {
+              path: "/LOS/WebPageManagement/CareerPage/Settings",
+              element: <CareerPageSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/HomePage",
+              element: <HomePageTemplate />,
+            },
+            {
+              path: "/LOS/WebPageManagement/HomePage/Settings",
+              element: <HomePageSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/AboutPage",
+              element: <AboutPageTemplate />,
+            },
+            {
+              path: "/LOS/WebPageManagement/AboutPage/Settings",
+              element: <AboutPageSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/PrivacyPolicyTemplatePage",
+              element: <PrivacyPolicyManagement />,
+            },
+            {
+              path: "/LOS/WebPageManagement/PrivacyPolicyTemplatePage/Settings",
+              element: <PrivacyPolicySettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/TermsConditionsTemplatePage",
+              element: <TermsConditionsPage />,
+            },
+            {
+              path: "/LOS/WebPageManagement/TermsConditionsTemplatePage/Settings",
+              element: <TermsConditionsSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/FaqsTemplatePage",
+              element: <FaqPageManagement />,
+            },
+            {
+              path: "/LOS/WebPageManagement/FaqsTemplatePage/Settings",
+              element: <FaqPageSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/FinancialStatementsTemplatePage",
+              element: <FinancialStatementsPageManagement />,
+            },
+            {
+              path: "/LOS/WebPageManagement/FinancialStatementsTemplatePage/Settings",
+              element: <FinancialStatementsSettings />,
+            },
+            {
+              path: "/LOS/WebPageManagement/ContactUsTemplatePage",
+              element: <ContactUsPageManagement />,
+            },
+            {
+              path: "/LOS/WebPageManagement/ContactUsTemplatePage/Settings",
+              element: <ContactUsSettings />,
+            },
 
+            //cms routesss list
+            {
+              path: `cms/dashboard`,
+              element: <DashboardInfoGraphicsCms />,
+            },
+            {
+              path: "cms/Tickets/AllTickets",
+              element: <AllTickets />,
+            },
+            {
+              path: "cms/Tickets/GetTickets",
+              element: <Tickets />,
+            },
+            {
+              path: "cms/Tickets/TicketDetails/:id",
+              element: <TicketDetails />,
+            },
+            {
+              path: "cms/Tickets/MyTickets",
+              element: <MyTickets />,
+            },
+            {
+              path: "cms/Tickets/Create",
+              element: <CreateTicket />,
+            },
+            {
+              path: "cms/Reports",
+              element: <Reports />,
+            },
+            {
+              path: "cms/Priorities",
+              element: <Priorities />,
+            },
+            {
+              path: "cms/Categories",
+              element: <Categories />,
+            },
+            {
+              path: "cms/SubCategories",
+              element: <SubCategories />,
+            },
+            {
+              path: "cms/Escalation",
+              element: <Escalation />,
+            },
+            {
+              path: "cms/Customers",
+              element: <Customers />,
+            },
+            {
+              path: "cms/Logs",
+              element: <LogsCms />,
+            },
+            ///// Lms routes
+            {
+              path: `Lms/dashboard`,
+              element: <DashboardInfoGraphics />,
+            },
+            {
+              path: "Lms/Setting/WorkFlowMapping",
+              element: <WorkFlowMapping />,
+            },
+            {
+              path: "Lms/Setting/InvoiceSetting",
+              element: <InvoiceSetting />,
+            },
+            {
+              path: "Lms/Setting/ProductFee",
+              element: <ProductFee />,
+            },
+            {
+              path: "Lms/Setting/Calculator",
+              element: <Calculator />,
+            },
+            {
+              path: "Lms/loanmanagement/lateInvoice/:id",
+              element: <LateInvoice />,
+            },
+            {
+              path: "Lms/allapplications/viewapplication",
+              element: <ViewApplication />,
+            },
+            {
+              path: "Lms/LoanManagement/OtherFee",
+              element: <OtherFee />,
+            },
+            {
+              path: "Lms/ProductManagement/AddProduct",
+              element: <AddProduct />,
+            },
+            {
+              path: "Lms/ProductManagement/EditProduct/:id",
+              element: <EditProduct />,
+            },
+            {
+              path: "Lms/LoanManagement/invoicemanagement",
+              element: <InvoiceManagement />,
+            },
+            {
+              path: "Lms/LoanManagement/payinvoice",
+              element: <PayInvoices />,
+            },
+            {
+              path: "Lms/LoanManagement/AccountInvoices/:id",
+              element: <AccountInvoices />,
+            },
+            {
+              path: "Lms/LoanManagement/OtherInvoices",
+              element: <OtherInvoices />,
+            },
+            {
+              path: "Lms/LoanManagement/invoicemanagement/:id/:type",
+              element: <Invoices />,
+            },
+            {
+              path: "Lms/LoanManagement/RetryTransaction/:id/:type",
+              element: <RetryTransaction />,
+            },
+            {
+              path: "Lms/Customers/InvoiceManagement/:accountNumber",
+              element: <ApplicationManagement />,
+            },
+            {
+              path: "Lms/LoanManagement/createInvoice",
+              element: <CreateInvoice />,
+            },
+            {
+              path: "Lms/Setting/ProductManagement",
+              element: <ProductManagement />,
+            },
+            {
+              path: "Lms/Setting/Deliquency",
+              element: <DeliquencyManagement />,
+            },
+            {
+              path: "Lms/Setting/Rescheduling",
+              element: <RescheduleConfigManagement />,
+            },
+            {
+              path: "Lms/Setting/DunningPolicy",
+              element: <DunningPolicyManagement />,
+            },
+            {
+              path: "Lms/Setting/GeneralCreditScoring",
+              element: <GeneralCreditScoring />,
+            },
+            {
+              path: "Lms/Collections/WaiverRequests",
+              element: <WaiverRequestsManagement />,
+            },
+            {
+              path: "Lms/accountingFinancing/daybook",
+              element: <DayBook />,
+            },
+            {
+              path: "Lms/transactionHistory",
+              element: <TransactionTabs />,
+            },
+            {
+              path: "Lms/excessPayment",
+              element: <ExcessPayment />,
+            },
+            {
+              path: "Lms/customerServices",
+              element: <CustomerServices />,
+            },
 
+            {
+              path: "Lms/CustomerManagement/AccountDocuments",
+              element: <AccountDocuments />,
+            },
+            {
+              path: "Lms/LoanManagement/CollateralManagement",
+              element: <CollateralManagement />,
+            },
+            {
+              path: "Lms/addcollateral/CollateralManagement",
+              element: <CollateralManagementView />,
+            },
+            {
+              path: "Lms/viewdetails/CollateralManagement/Edit/:id",
+              element: <CollateralManagementEdit />,
+            },
+            {
+              path: "Lms/viewdetails/collateralmanagement/allocation/:id",
+              element: <CollateralAllocation />,
+            },
+            {
+              path: "Lms/viewdetails/collateralmanagement/:customerId",
+              element: <CollateralManagementView />,
+            },
+            {
+              path: "Lms/ChartOfAccount/CoaConfiguration",
+              element: <AccountMapping />,
+            },
+            {
+              path: "Lms/ChartOfAccount/ChartOfAccount",
+              element: <Coa />,
+            },
+            {
+              // One page per category; the report itself is picked on the page.
+              // Twenty-seven entries in a flat sidebar list would be unusable.
+              path: "Lms/ReportsCenter/:category",
+              element: <ReportsCenter />,
+            },
+            {
+              // GL enquiry sits with the accounting screens: an accountant looking
+              // for an entry looks where the chart of accounts and reports are.
+              path: "Lms/LedgerGl/Entries",
+              element: <GlEntries />,
+            },
+            {
+              path: "Lms/LedgerGl/Failed",
+              element: <GlFailedEntries />,
+            },
+            {
+              path: "Lms/LedgerGl/Reconciliation",
+              element: <GlReconciliation />,
+            },
+            {
+              // Sits with the chart of accounts, not the GL enquiry screens: it
+              // chooses accounts rather than reading entries.
+              path: "Lms/ChartOfAccount/WalletAccounts",
+              element: <WalletGlAccounts />,
+            },
+            {
+              path: "Lms/ChartOfAccount/ChartOfAccountFields",
+              element: <ChartOfAccountFields />,
+            },
+            {
+              path: "Lms/Customers/AllCustomers",
+              element: <LmsAllCustomers />,
+            },
+            {
+              path: "Lms/loanmanagement/generateInvoice/:id",
+              element: <GenerateInvoice />,
+            },
+            {
+              path: "Lms/Customers/Business",
+              element: <Buisness />,
+            },
+            {
+              path: "Lms/customers/individuals",
+              element: <Individuals />,
+            },
+            {
+              path: "Lms/kyc-kyb",
+              element: <KycKyb />,
+            },
+            {
+              path: "Lms/accountLogs/:id",
+              element: <AccountLogs />,
+            },
+            {
+              path: "Lms/callActivity",
+              element: <CustomerServices />,
+            },
+            {
+              path: "Lms/LoanManagement/ApplicationManagement",
+              element: <ApplicationManagement />,
+            },
+            {
+              path: "Lms/LoanManagement/CostByApplication/:id",
+              element: <CostByApplication />,
+            },
+            {
+              path: "Lms/LoanManagement/BrokenPromises/:id",
+              element: <BrokenPromises />,
+            },
+            {
+              path: "Lms/LoanManagement/RescheduleHistory/:id",
+              element: <RescheduleHistory />,
+            },
+            {
+              path: "Lms/LoanManagement/WaiveOffDetails/:applicationId",
+              element: <WaiveOffDetails />,
+            },
+            {
+              path: "Lms/LoanManagement/ViewSchedule/:id",
+              element: <LoanPaymentSchedule />,
+            },
+            {
+              path: "Lms/loandetailview",
+              element: <LoanDetailView />,
+            },
+            {
+              path: "Lms/Customers/kyc-kyb",
+              element: <KycKyb />,
+            },
+            {
+              path: "Lms/LoanManagement/ApplicationManagement/loanInvoice",
+              element: <LoanInvoice />,
+            },
 
-                  //cms routesss list
-                    {
-                      path: `cms/dashboard`,
-                      element: <DashboardInfoGraphicsCms />,
-                    },
-                    {
-                      path: "cms/Tickets/AllTickets",
-                      element: <AllTickets />,
-                    },
-                    {
-                      path: "cms/Tickets/GetTickets",
-                      element: <Tickets />,
-                    },
-                    {
-                      path: "cms/Tickets/TicketDetails/:id",
-                      element: <TicketDetails/>,
-                    },
-                    {
-                      path: "cms/Tickets/MyTickets",
-                      element: <MyTickets />,
-                    },
-                    {
-                      path: "cms/Tickets/Create",
-                      element: <CreateTicket/>,
-                    },
-                    {
-                      path: "cms/Reports",
-                      element: <Reports />,
-                    },
-                    {
-                      path: "cms/Priorities",
-                      element: <Priorities/>,
-                    },
-                    {
-                      path: "cms/Categories",
-                      element: <Categories/>,
-                    },
-                    {
-                      path: "cms/SubCategories",
-                      element: <SubCategories/>,
-                    },
-                    {
-                      path: "cms/Escalation",
-                      element: <Escalation/>,
-                    },
-                    {
-                      path: "cms/Customers",
-                      element: <Customers/>,
-                    },
-                    {
-                      path: "cms/Logs",
-                      element: <LogsCms/>,
-                    },
-        ///// Lms routes
-        {
-          path: `Lms/dashboard`,
-          element: <DashboardInfoGraphics/>,
-        },
-        {
-          path: "Lms/Setting/WorkFlowMapping",
-          element: <WorkFlowMapping />,
-        },
-        {
-          path: "Lms/Setting/InvoiceSetting",
-          element: <InvoiceSetting/>,
-        },
-        {
-          path: "Lms/Setting/ProductFee",
-          element: <ProductFee/>,
-        },
-        {
-          path: "Lms/Setting/Calculator",
-          element: <Calculator />,
-        },
-        {
-          path: "Lms/loanmanagement/lateInvoice/:id",
-          element: <LateInvoice />,
-        },
-        {
-          path: "Lms/allapplications/viewapplication",
-          element: <ViewApplication />,
-        },
-        {
-          path: "Lms/LoanManagement/OtherFee",
-          element: <OtherFee />,
-        },
-        {
-          path: "Lms/ProductManagement/AddProduct",
-          element: <AddProduct />,
-        },
-        {
-          path: "Lms/ProductManagement/EditProduct/:id",
-          element: <EditProduct />,
-        },
-        {
-          path: "Lms/LoanManagement/invoicemanagement",
-          element: <InvoiceManagement />,
-        },
-        {
-          path: "Lms/LoanManagement/payinvoice",
-          element: <PayInvoices />,
-        },
-        {
-          path: "Lms/LoanManagement/AccountInvoices/:id",
-          element: <AccountInvoices />,
-        },
-        {
-          path: "Lms/LoanManagement/OtherInvoices",
-          element: <OtherInvoices />,
-        },
-        {
-          path: "Lms/LoanManagement/invoicemanagement/:id/:type",
-          element: <Invoices />,
-        },
-        {
-          path: "Lms/LoanManagement/RetryTransaction/:id/:type",
-          element: <RetryTransaction/>,
-        },
-        {
-          path: "Lms/Customers/InvoiceManagement/:accountNumber",
-          element: <ApplicationManagement />,
-        },
-        {
-          path: "Lms/LoanManagement/createInvoice",
-          element: <CreateInvoice />,
-        },
-        {
-          path: "Lms/Setting/ProductManagement",
-          element: <ProductManagement />,
-        },
-        {
-          path: "Lms/Setting/Deliquency",
-          element: <DeliquencyManagement />,
-        },
-        {
-          path: "Lms/Setting/Rescheduling",
-          element: <RescheduleConfigManagement />,
-        },
-        {
-          path: "Lms/Setting/DunningPolicy",
-          element: <DunningPolicyManagement />,
-        },
-        {
-          path: "Lms/Setting/GeneralCreditScoring",
-          element: <GeneralCreditScoring />,
-        },
-        {
-          path: "Lms/Collections/WaiverRequests",
-          element: <WaiverRequestsManagement />,
-        },
-        {
-          path: "Lms/accountingFinancing/daybook",
-          element: <DayBook />,
-        },
-        {
-          path: "Lms/transactionHistory",
-          element: <TransactionTabs />,
-        },
-        {
-          path: "Lms/excessPayment",
-          element: <ExcessPayment />,
-        },
-        {
-          path: "Lms/customerServices",
-          element: <CustomerServices />,
-        },
-   
-        {
-          path: "Lms/CustomerManagement/AccountDocuments",
-          element: <AccountDocuments />,
-        },
-        {
-          path: "Lms/LoanManagement/CollateralManagement",
-          element: <CollateralManagement />,
-        },
-        {
-          path: "Lms/addcollateral/CollateralManagement",
-          element: <CollateralManagementView />,
-        },
-        {
-          path: "Lms/viewdetails/CollateralManagement/Edit/:id",
-          element: <CollateralManagementEdit />,
-        },
-        {
-          path: "Lms/viewdetails/collateralmanagement/allocation/:id",
-          element: <CollateralAllocation />,
-        },
-        {
-          path: "Lms/viewdetails/collateralmanagement/:customerId",
-          element: <CollateralManagementView />,
-        },
-        {
-          path: "Lms/ChartOfAccount/CoaConfiguration",
-          element: <AccountMapping />,
-        },
-        {
-          path: "Lms/ChartOfAccount/ChartOfAccount",
-          element: <Coa />,
-        },
-        {
-          // One page per category; the report itself is picked on the page.
-          // Twenty-seven entries in a flat sidebar list would be unusable.
-          path: "Lms/ReportsCenter/:category",
-          element: <ReportsCenter />,
-        },
-        {
-          // GL enquiry sits with the accounting screens: an accountant looking
-          // for an entry looks where the chart of accounts and reports are.
-          path: "Lms/LedgerGl/Entries",
-          element: <GlEntries />,
-        },
-        {
-          path: "Lms/LedgerGl/Failed",
-          element: <GlFailedEntries />,
-        },
-        {
-          path: "Lms/LedgerGl/Reconciliation",
-          element: <GlReconciliation />,
-        },
-        {
-          path: "Lms/LedgerGl/WalletAccounts",
-          element: <WalletGlAccounts />,
-        },
-        {
-          path: "Lms/ChartOfAccount/ChartOfAccountFields",
-          element: <ChartOfAccountFields />,
-        },
-        {
-          path: "Lms/Customers/AllCustomers",
-          element: <LmsAllCustomers/>,
-        },
-        {
-          path: "Lms/loanmanagement/generateInvoice/:id",
-          element: <GenerateInvoice />,
-        },
-        {
-          path: "Lms/Customers/Business",
-          element: <Buisness />,
-        },
-        {
-          path: "Lms/customers/individuals",
-          element: <Individuals />,
-        },
-        {
-          path: "Lms/kyc-kyb",
-          element: <KycKyb />,
-        },
-        {
-          path: "Lms/accountLogs/:id",
-          element: <AccountLogs />,
-        },
-        {
-          path: "Lms/callActivity",
-          element: <CustomerServices />,
-        },
-        {
-          path: "Lms/LoanManagement/ApplicationManagement",
-          element: <ApplicationManagement />,
-        },
-        {
-          path: "Lms/LoanManagement/CostByApplication/:id",
-          element: <CostByApplication />,
-        },
-        {
-          path: "Lms/LoanManagement/BrokenPromises/:id",
-          element: <BrokenPromises />,
-        },
-        {
-          path: "Lms/LoanManagement/RescheduleHistory/:id",
-          element: <RescheduleHistory />,
-        },
-        {
-          path: "Lms/LoanManagement/WaiveOffDetails/:applicationId",
-          element: <WaiveOffDetails />,
-        },
-        {
-          path: "Lms/LoanManagement/ViewSchedule/:id",
-          element: <LoanPaymentSchedule />,
-        },
-        {
-          path: "Lms/loandetailview",
-          element: <LoanDetailView />,
-        },
-        {
-          path: "Lms/Customers/kyc-kyb",
-          element: <KycKyb />,
-        },
-        {
-          path: "Lms/LoanManagement/ApplicationManagement/loanInvoice",
-          element: <LoanInvoice />,
-        },
-   
-        {
-          path: "Lms/LoanManagement/createInvoice",
-          element: <CreateInvoice />,
-        },
-        {
-          path: "Lms/LoanManagement/LoanTimeline/:applicationNo/:id",
-          element: <LoanTimeline />,
-        },
-        // {
-        //   path: "accountingFinancing/vouchers",
-        //   element: <Vouchers />,
-        // },
-   
-        {
-          path: "Lms/accountingFinancing/trialbalance",
-          element: <TrialBalance />,
-        },
-   
-        {
-          path: "Lms/transactionHistory",
-          element: <TransactionTabs />,
-        },
-        {
-          path: "Lms/excessPayment",
-          element: <ExcessPayment />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing",
-          element: <AccountFinancing />,
-        },
-        {
-          path: "/LOS/Ledger",
-          element: <Ledger />,
-        },
-        {
-          path: "Lms/Reports/loans",
-          element: <Loans />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/vouchers",
-          element: <Vouchers />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/ledger",
-          element: <Ledger />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/trialbalance",
-          element: <TrialBalance />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/daybook",
-          element: <DayBook />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/collection",
-          element: <CollectionReport />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/profit-revenue",
-          element: <ProfitRevenueReport />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/cash-flow",
-          element: <CashFlowReport />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/customer-statement",
-          element: <CustomerStatementReport />,
-        },
-        {
-          path: "Lms/Reports/loans/overdue",
-          element: <OverDue />,
-        },
-        {
-          path: "Lms/Reports/loans/performingLoans",
-          element: <PerformingLoans />,
-        },
-        {
-          path: "Lms/Reports/loans/due",
-          element: <Due />,
-        },
-        {
-          path: "Lms/Reports/loans/earlySettlement",
-          element: <EarlySettlement />,
-        },
-        {
-          path: "Lms/Reports/loans/disbursement",
-          element: <LoanDisbursementReport />,
-        },
-        {
-          path: "Lms/Reports/loans/writeOff",
-          element: <WriteOff />,
-        },
-        {
-          path: "Lms/Reports/loans/loanDisbursementReport",
-          element: <LoanDisbursmentReport />,
-        },
-        {
-          path: "Lms/Reports/loans/repaymentScheduleReport",
-          element: <RepaymentScheduleReport />,
-        },
-        {
-          path: "Lms/Reports/loans/dailyTransactionSummary",
-          element: <DailyTransactionSummary />,
-        },
-        {
-          path: "Lms/Reports/loans/loanBalanceReport",
-          element: <LoanBalanceReport />,
-        },
-        {
-          path: "Lms/Reports/loans/loanHistoryReport",
-          element: <LoanHistoryReport />,
-        },
-        {
-          path: "Lms/Reports/loans/productWiseProfitLoss",
-          element: <ProductWiseProfitLoss />,
-        },
-        {
-          path: "Lms/Reports/loans/customerWiseProfitLoss",
-          element: <CustomerWiseProfitLoss />,
-        },
-        {
-          path: "Lms/Reports/loans/customerAccountStatement",
-          element: <CustomerAccountStatement />,
-        },
-        {
-          path: "Lms/Reports/loans/collectionsDueReport",
-          element: <CollectionsDueReport />,
-        },
-        {
-          path: "Lms/Reports/loans/skippedInstallmentsReport",
-          element: <SkippedInstallmentsReport />,
-        },
-        {
-          path: "Lms/Reports/loans/productPerformanceReport",
-          element: <ProductPerformanceReport />,
-        },
-        {
-          path: "Lms/Reports/loans/topBorrowersReport",
-          element: <TopBorrowersReport />,
-        },
-        {
-          path: "Lms/Reports/AccountReport",
-          element:<AccountReport/>,
-        },
-        {
-          path: "Lms/Reports/AccountReportsList",
-          element:<AccountReportsList/>,
-        },
-        {
-          path: "Lms/Logs/AllLogs",
-          element: <AllLogs/>,
-        },
-        {
-          path: "Lms/Logs/ApiLogs",
-          element: <ApiLogs/>,
-        },
-        {
-          path: "Lms/Logs/ApiLogsByDate/:customerId/:type",
-          element: <LogsByDate/>,
-        },
-        {
-          path: "Lms/Logs/DisburseApprovedAmountApiLogs",
-           element: <DisburseApprovedAmountApiLogs/>,
-        },
-        {
-          path: "Lms/Expenses/ThirdPartyExpense",
-          element: <ThirdPartyExpense/>,
-        },
-        {
-          path: "Lms/Expenses/LoanApplicationExpenses",
-          element: <LoanApplicationExpenses/>,
-        },
-        {
-          path: "Lms/Expenses/LoanApplicationExpenseDetail/:nationalId",
-          element: <LoanApplicationExpenseDetail/>,
-        },
-        {
-          path: "Lms/Expenses/OnboardingExpensesDetail/:nationalId",
-          element: <OnboardingExpensesDetail/>,
-        },
-        {
-          path: "Lms/Expenses/OnboardingExpenses",
-          element: <OnboardingExpenses/>,
-        },
-        {
-          path: "Lms/CommodityManagement/CommodityList",
-          element: <CommodityManagement />,
-        },
-        {
-          path: "Lms/CommodityManagement/CommoditySupplier",
-          element: <CommoditySupplier />,
-        },
-        {
-          path: "Lms/CommodityManagement/CommoditySupplier/View/:id",
-          element: <ViewCommoditySupplierData />,
-        },
-        { path: "Lms/Reconciliation/Dashboard", element: <ReconciliationDashboard /> },
-        { path: "Lms/Reconciliation/Transactions", element: <Transactions /> },
-        { path: "Lms/Reconciliation/OperationalExpenses", element: <OperationalExpenseTab/> },
-        { path: "Lms/Reconciliation/ReconciliationSummary", element: <ReconciliationSummary/> },
-        { path: "Lms/Reconciliation/TransactionAccounts", element: <TransactionAccounts/> },
-        { path: "Lms/Reconciliation/ErrorReport", element: <ErrorReport/> },
-           {
-          path: "Lms/Reports/SimahReportsList",
-          element:<SimahReport/>,
-        },
-        {
-          path: "Lms/LoanManagement/application",
-          element: <Application />,
-        },
-        {
-          path: "Lms/account/LoanManagement/Bureau",
-          element: <Bureau />,
-        },
-        { path: "LOS/Notification/Channels", element: <Channels/> },
-        { path: "LOS/Notification/Languages", element: <Languages/> },
-        { path: "LOS/Notification/Templates", element: <Templates/> },
-        { path: "LOS/Notification/TemplateChannels", element: <TemplateChannels/> },
-        { path: "LOS/Notification/Users", element: <UsersNotification/> },
-        { path: "LOS/Notification/UserPreferences", element: <UserPreferences/> },
-        { path: "LOS/Notification/SystemPreferences", element: <SystemPreferences/> },
-         { path: "ThirdPartyManagement/Dashboard", element: <ThirdPartyDashboard /> },
-         { path: "ThirdPartyManagement/Services", element: <ServicesList /> },
-         { path: "ThirdPartyManagement/Services/Apis", element: <ServicesApis /> },
-         { path: "ThirdPartyManagement/Services/Environment", element: <ServicesEnvironment /> },
-         { path: "ThirdPartyManagement/EnvironmentSettings/ServicesList", element: <ServicesList /> },
-         { path: "ThirdPartyManagement/Clients", element: <ClientsList /> },
-         { path: "ThirdPartyManagement/Clients/Add", element: <AddEditClient /> },
-         { path: "ThirdPartyManagement/Clients/Edit/:id", element: <AddEditClient /> },
-         { path: "ThirdPartyManagement/Clients/:id/Admins", element: <ClientAdminList /> },
-         { path: "ThirdPartyManagement/Clients/:clientId/Admins/Add", element: <AddEditClientAdmin /> },
-         { path: "ThirdPartyManagement/Clients/:clientId/Admins/Edit/:id", element: <AddEditClientAdmin /> },
-         { path: "ThirdPartyManagement/RequestHistory/ClientRequestProd", element: <ClientRequestProd /> },
-         { path: "ThirdPartyManagement/RequestHistory/ClientRequestDev", element: <ClientRequestDev /> },
-         { path: "ThirdPartyManagement/RequestHistory/ClientRequestDev/:id", element: <ClientRequestDevDetail /> },
-         { path: "ThirdPartyManagement/RequestHistory/ClientRequestTest", element: <ClientRequestTest /> },
-         { path: "ThirdPartyManagement/RequestHistory/ClientRequestTest/:id", element: <ClientRequestTestDetail /> },
-         { path: "ThirdPartyManagement/RequestHistory/RequestDetail/:id", element: <RequestDetail /> },
-         { path: "ThirdPartyManagement/RequestHistory/RequestService", element: <RequestService /> },
-         { path: "ThirdPartyManagement/DevClientRequests", element: <ClientRequestHistory environment="dev" /> },
-         { path: "ThirdPartyManagement/ProdClientRequests", element: <ClientRequestHistory environment="prod" /> },
-         { path: "ThirdPartyManagement/ClientServiceRequests", element: <ClientRequestHistory environment="service" /> },
-         { path: "ThirdPartyManagement/AllEnvironment", element: <AllEnvironment /> },
-         { path: "ThirdPartyManagement/EnvConfig", element: <EnvConfig /> },
-         { path: "ThirdPartyManagement/ExportCsv", element: <ExportCsv /> },
-         { path: "ThirdPartyManagement/Providers", element: <ProvidersList /> },
-         { path: "ThirdPartyManagement/AllProviderApis", element: <AllProviderApis /> },
-         { path: "ThirdPartyManagement/AllProviderApis/EnvConfig/:apiId", element: <ProviderApiEnvConfig /> },
-         { path: "ThirdPartyManagement/Setting/Employees", element: <Employees /> },
-         { path: "ThirdPartyManagement/Setting/RoleList", element: <RoleList /> },
-         { path: "ThirdPartyManagement/Setting/AssignPermissions", element: <AssignPermissions /> },
-        ],
-      },
-      {
-        path: "/",
-        element: <LayoutDashboard />,
-        children: [
-         /* Investor Dashboard Routes - Wrapped with LayoutInvestor for Tailwind CSS scoping */
-         { 
-           path: "InvestorDashboard",
-           element: <LayoutInvestor />,
-           children: [
-             { path: "Overview", element: <DashboardOverview /> },
-         
-         /* Investors Module */
-         { path: "Investors", element: <InvestorsList /> },
-         { path: "Investors/new", element: <AddInvestor /> },
-         { path: "Investors/:id", element: <InvestorDetail /> },
-         { path: "Investors/kyc-documents/:investorId", element: <KycDocuments /> },
-         { path: "Investors/documents/:investorId", element: <InvestorDocuments /> },
-         { path: "Investors/document-preview/:investorId", element: <DocumentPreview /> },
-         { path: "Investors/kyc-kyb-detail/:investorId", element: <KycKybDetail /> },
+            {
+              path: "Lms/LoanManagement/createInvoice",
+              element: <CreateInvoice />,
+            },
+            {
+              path: "Lms/LoanManagement/LoanTimeline/:applicationNo/:id",
+              element: <LoanTimeline />,
+            },
+            // {
+            //   path: "accountingFinancing/vouchers",
+            //   element: <Vouchers />,
+            // },
 
-         /* Products & Rates */
-         { path: "Products", element: <ProductsList /> },
-         { path: "Products/View/:productId", element: <ProductView /> },
-         { path: "Products/:productId/config", element: <ProductConfiguration /> },
-         { path: "SystemSettings/IncomeRanges", element: <IncomeRangeList /> },
-         { path: "SystemSettings/IncomeRanges/View/:incomeRangeId", element: <IncomeRangeView /> },
-         { path: "SystemSettings/InitialInvest", element: <InitialInvestList /> },
-         { path: "SystemSettings/InvestmentExperience", element: <InvestmentExperienceList /> },
-         { path: "SystemSettings/InvestmentTimeline", element: <InvestmentTimelineList /> },
+            {
+              path: "Lms/accountingFinancing/trialbalance",
+              element: <TrialBalance />,
+            },
 
-         /* Investments */
-         { path: "Investments", element: <InvestmentsList /> },
-         { path: "Investments/:id/adjust", element: <InvestmentAdjust /> },
-         { path: "ApproveInvestment", element: <ApproveInvestment /> },
-         { path: "Logs", element: <InvestorLogs /> },
-         { path: "Ledger", element: <InvestorLedger /> },
+            {
+              path: "Lms/transactionHistory",
+              element: <TransactionTabs />,
+            },
+            {
+              path: "Lms/excessPayment",
+              element: <ExcessPayment />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing",
+              element: <AccountFinancing />,
+            },
+            {
+              path: "/LOS/Ledger",
+              element: <Ledger />,
+            },
+            {
+              path: "Lms/Reports/loans",
+              element: <Loans />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/vouchers",
+              element: <Vouchers />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/ledger",
+              element: <Ledger />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/trialbalance",
+              element: <TrialBalance />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/daybook",
+              element: <DayBook />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/collection",
+              element: <CollectionReport />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/profit-revenue",
+              element: <ProfitRevenueReport />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/cash-flow",
+              element: <CashFlowReport />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/customer-statement",
+              element: <CustomerStatementReport />,
+            },
+            {
+              path: "Lms/Reports/loans/overdue",
+              element: <OverDue />,
+            },
+            {
+              path: "Lms/Reports/loans/performingLoans",
+              element: <PerformingLoans />,
+            },
+            {
+              path: "Lms/Reports/loans/due",
+              element: <Due />,
+            },
+            {
+              path: "Lms/Reports/loans/earlySettlement",
+              element: <EarlySettlement />,
+            },
+            {
+              path: "Lms/Reports/loans/disbursement",
+              element: <LoanDisbursementReport />,
+            },
+            {
+              path: "Lms/Reports/loans/writeOff",
+              element: <WriteOff />,
+            },
+            {
+              path: "Lms/Reports/loans/loanDisbursementReport",
+              element: <LoanDisbursmentReport />,
+            },
+            {
+              path: "Lms/Reports/loans/repaymentScheduleReport",
+              element: <RepaymentScheduleReport />,
+            },
+            {
+              path: "Lms/Reports/loans/dailyTransactionSummary",
+              element: <DailyTransactionSummary />,
+            },
+            {
+              path: "Lms/Reports/loans/loanBalanceReport",
+              element: <LoanBalanceReport />,
+            },
+            {
+              path: "Lms/Reports/loans/loanHistoryReport",
+              element: <LoanHistoryReport />,
+            },
+            {
+              path: "Lms/Reports/loans/productWiseProfitLoss",
+              element: <ProductWiseProfitLoss />,
+            },
+            {
+              path: "Lms/Reports/loans/customerWiseProfitLoss",
+              element: <CustomerWiseProfitLoss />,
+            },
+            {
+              path: "Lms/Reports/loans/customerAccountStatement",
+              element: <CustomerAccountStatement />,
+            },
+            {
+              path: "Lms/Reports/loans/collectionsDueReport",
+              element: <CollectionsDueReport />,
+            },
+            {
+              path: "Lms/Reports/loans/skippedInstallmentsReport",
+              element: <SkippedInstallmentsReport />,
+            },
+            {
+              path: "Lms/Reports/loans/productPerformanceReport",
+              element: <ProductPerformanceReport />,
+            },
+            {
+              path: "Lms/Reports/loans/topBorrowersReport",
+              element: <TopBorrowersReport />,
+            },
+            {
+              path: "Lms/Reports/AccountReport",
+              element: <AccountReport />,
+            },
+            {
+              path: "Lms/Reports/AccountReportsList",
+              element: <AccountReportsList />,
+            },
+            {
+              path: "Lms/Logs/AllLogs",
+              element: <AllLogs />,
+            },
+            {
+              path: "Lms/Logs/ApiLogs",
+              element: <ApiLogs />,
+            },
+            {
+              path: "Lms/Logs/ApiLogsByDate/:customerId/:type",
+              element: <LogsByDate />,
+            },
+            {
+              path: "Lms/Logs/DisburseApprovedAmountApiLogs",
+              element: <DisburseApprovedAmountApiLogs />,
+            },
+            {
+              path: "Lms/Expenses/ThirdPartyExpense",
+              element: <ThirdPartyExpense />,
+            },
+            {
+              path: "Lms/Expenses/LoanApplicationExpenses",
+              element: <LoanApplicationExpenses />,
+            },
+            {
+              path: "Lms/Expenses/LoanApplicationExpenseDetail/:nationalId",
+              element: <LoanApplicationExpenseDetail />,
+            },
+            {
+              path: "Lms/Expenses/OnboardingExpensesDetail/:nationalId",
+              element: <OnboardingExpensesDetail />,
+            },
+            {
+              path: "Lms/Expenses/OnboardingExpenses",
+              element: <OnboardingExpenses />,
+            },
+            {
+              path: "Lms/CommodityManagement/CommodityList",
+              element: <CommodityManagement />,
+            },
+            {
+              path: "Lms/CommodityManagement/CommoditySupplier",
+              element: <CommoditySupplier />,
+            },
+            {
+              path: "Lms/CommodityManagement/CommoditySupplier/View/:id",
+              element: <ViewCommoditySupplierData />,
+            },
+            { path: "Lms/Reconciliation/Dashboard", element: <ReconciliationDashboard /> },
+            { path: "Lms/Reconciliation/Transactions", element: <Transactions /> },
+            { path: "Lms/Reconciliation/OperationalExpenses", element: <OperationalExpenseTab /> },
+            {
+              path: "Lms/Reconciliation/ReconciliationSummary",
+              element: <ReconciliationSummary />,
+            },
+            { path: "Lms/Reconciliation/TransactionAccounts", element: <TransactionAccounts /> },
+            { path: "Lms/Reconciliation/ErrorReport", element: <ErrorReport /> },
+            {
+              path: "Lms/Reports/SimahReportsList",
+              element: <SimahReport />,
+            },
+            {
+              path: "Lms/LoanManagement/application",
+              element: <Application />,
+            },
+            {
+              path: "Lms/account/LoanManagement/Bureau",
+              element: <Bureau />,
+            },
+            { path: "LOS/Notification/Channels", element: <Channels /> },
+            { path: "LOS/Notification/Languages", element: <Languages /> },
+            { path: "LOS/Notification/Templates", element: <Templates /> },
+            { path: "LOS/Notification/TemplateChannels", element: <TemplateChannels /> },
+            { path: "LOS/Notification/Users", element: <UsersNotification /> },
+            { path: "LOS/Notification/UserPreferences", element: <UserPreferences /> },
+            { path: "LOS/Notification/SystemPreferences", element: <SystemPreferences /> },
+            { path: "ThirdPartyManagement/Dashboard", element: <ThirdPartyDashboard /> },
+            { path: "ThirdPartyManagement/Services", element: <ServicesList /> },
+            { path: "ThirdPartyManagement/Services/Apis", element: <ServicesApis /> },
+            { path: "ThirdPartyManagement/Services/Environment", element: <ServicesEnvironment /> },
+            {
+              path: "ThirdPartyManagement/EnvironmentSettings/ServicesList",
+              element: <ServicesList />,
+            },
+            { path: "ThirdPartyManagement/Clients", element: <ClientsList /> },
+            { path: "ThirdPartyManagement/Clients/Add", element: <AddEditClient /> },
+            { path: "ThirdPartyManagement/Clients/Edit/:id", element: <AddEditClient /> },
+            { path: "ThirdPartyManagement/Clients/:id/Admins", element: <ClientAdminList /> },
+            {
+              path: "ThirdPartyManagement/Clients/:clientId/Admins/Add",
+              element: <AddEditClientAdmin />,
+            },
+            {
+              path: "ThirdPartyManagement/Clients/:clientId/Admins/Edit/:id",
+              element: <AddEditClientAdmin />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/ClientRequestProd",
+              element: <ClientRequestProd />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/ClientRequestDev",
+              element: <ClientRequestDev />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/ClientRequestDev/:id",
+              element: <ClientRequestDevDetail />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/ClientRequestTest",
+              element: <ClientRequestTest />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/ClientRequestTest/:id",
+              element: <ClientRequestTestDetail />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/RequestDetail/:id",
+              element: <RequestDetail />,
+            },
+            {
+              path: "ThirdPartyManagement/RequestHistory/RequestService",
+              element: <RequestService />,
+            },
+            {
+              path: "ThirdPartyManagement/DevClientRequests",
+              element: <ClientRequestHistory environment="dev" />,
+            },
+            {
+              path: "ThirdPartyManagement/ProdClientRequests",
+              element: <ClientRequestHistory environment="prod" />,
+            },
+            {
+              path: "ThirdPartyManagement/ClientServiceRequests",
+              element: <ClientRequestHistory environment="service" />,
+            },
+            { path: "ThirdPartyManagement/AllEnvironment", element: <AllEnvironment /> },
+            { path: "ThirdPartyManagement/EnvConfig", element: <EnvConfig /> },
+            { path: "ThirdPartyManagement/ExportCsv", element: <ExportCsv /> },
+            { path: "ThirdPartyManagement/Providers", element: <ProvidersList /> },
+            { path: "ThirdPartyManagement/AllProviderApis", element: <AllProviderApis /> },
+            {
+              path: "ThirdPartyManagement/AllProviderApis/EnvConfig/:apiId",
+              element: <ProviderApiEnvConfig />,
+            },
+            { path: "ThirdPartyManagement/Setting/Employees", element: <Employees /> },
+            { path: "ThirdPartyManagement/Setting/RoleList", element: <RoleList /> },
+            {
+              path: "ThirdPartyManagement/Setting/AssignPermissions",
+              element: <AssignPermissions />,
+            },
+          ],
+        },
+        {
+          path: "/",
+          element: <LayoutDashboard />,
+          children: [
+            /* Investor Dashboard Routes - Wrapped with LayoutInvestor for Tailwind CSS scoping */
+            {
+              path: "InvestorDashboard",
+              element: <LayoutInvestor />,
+              children: [
+                { path: "Overview", element: <DashboardOverview /> },
 
-         /* Reports */
-         { path: "Reports", element: <ReportsMain /> },
-         
-         /* Performance Reports */
-         { path: "Reports/pl", element: <PLSummary /> },
-         { path: "Reports/pl-summary", element: <PLSummary /> },
-         { path: "Reports/analytics", element: <PortfolioAnalytics /> },
-         { path: "Reports/portfolio-analytics", element: <PortfolioAnalytics /> },
-         { path: "Reports/benchmark-comparison", element: <BenchmarkComparison /> },
-         { path: "Reports/risk-metrics", element: <RiskMetrics /> },
+                /* Investors Module */
+                { path: "Investors", element: <InvestorsList /> },
+                { path: "Investors/new", element: <AddInvestor /> },
+                { path: "Investors/:id", element: <InvestorDetail /> },
+                { path: "Investors/kyc-documents/:investorId", element: <KycDocuments /> },
+                { path: "Investors/documents/:investorId", element: <InvestorDocuments /> },
+                { path: "Investors/document-preview/:investorId", element: <DocumentPreview /> },
+                { path: "Investors/kyc-kyb-detail/:investorId", element: <KycKybDetail /> },
 
-         /* Financial Reports */
-         { path: "Reports/balance-sheet", element: <BalanceSheet /> },
-         { path: "Reports/income-statement", element: <IncomeStatement /> },
-         { path: "Reports/cash-flow", element: <CashFlowStatement /> },
-         { path: "Reports/fee-analysis", element: <FeeAnalysis /> },
+                /* Products & Rates */
+                { path: "Products", element: <ProductsList /> },
+                { path: "Products/View/:productId", element: <ProductView /> },
+                { path: "Products/:productId/config", element: <ProductConfiguration /> },
+                { path: "SystemSettings/IncomeRanges", element: <IncomeRangeList /> },
+                {
+                  path: "SystemSettings/IncomeRanges/View/:incomeRangeId",
+                  element: <IncomeRangeView />,
+                },
+                { path: "SystemSettings/InitialInvest", element: <InitialInvestList /> },
+                {
+                  path: "SystemSettings/InvestmentExperience",
+                  element: <InvestmentExperienceList />,
+                },
+                { path: "SystemSettings/InvestmentTimeline", element: <InvestmentTimelineList /> },
 
-         /* Investor Reports */
-         { path: "Reports/investor-statements", element: <InvestorStatements /> },
-         { path: "Reports/allocation-reports", element: <AllocationReports /> },
-         { path: "Reports/transaction-summary", element: <TransactionSummary /> },
-         { path: "Reports/tax-reports", element: <InvestorStatements /> },
+                /* Investments */
+                { path: "Investments", element: <InvestmentsList /> },
+                { path: "Investments/:id/adjust", element: <InvestmentAdjust /> },
+                { path: "ApproveInvestment", element: <ApproveInvestment /> },
+                { path: "Logs", element: <InvestorLogs /> },
+                { path: "Ledger", element: <InvestorLedger /> },
 
-         /* Compliance Reports */
-         { path: "Reports/regulatory-filing", element: <RegulatoryFilings /> },
-         { path: "Reports/audit-trail", element: <RegulatoryFilings /> },
-         { path: "Reports/compliance-monitoring", element: <RegulatoryFilings /> },
-         { path: "Reports/risk-compliance", element: <RegulatoryFilings /> },
+                /* Reports */
+                { path: "Reports", element: <ReportsMain /> },
 
-         /* Allocation Engine */
-         { path: "AllocationEngine", element: <AllocationDashboard /> },
-         { path: "AllocationEngine/strategies", element: <StrategiesList /> },
-         { path: "AllocationEngine/strategies/new", element: <CreateStrategy /> },
-         { path: "AllocationEngine/strategies/:id", element: <SimulationResults /> },
-         { path: "AllocationEngine/strategies/:id/simulate", element: <SimulationResults /> },
-         { path: "AllocationEngine/schedules", element: <AllocationDashboard /> },
-         { path: "AllocationEngine/audit", element: <AllocationAudit /> },
-         { path: "AllocationEngine/settings", element: <AllocationDashboard /> },
-         { path: "AllocationEngine/risk-profiles", element: <RiskProfiles /> },
+                /* Performance Reports */
+                { path: "Reports/pl", element: <PLSummary /> },
+                { path: "Reports/pl-summary", element: <PLSummary /> },
+                { path: "Reports/analytics", element: <PortfolioAnalytics /> },
+                { path: "Reports/portfolio-analytics", element: <PortfolioAnalytics /> },
+                { path: "Reports/benchmark-comparison", element: <BenchmarkComparison /> },
+                { path: "Reports/risk-metrics", element: <RiskMetrics /> },
 
-         /* Other Admin Pages */
-        //  { path: "AuditLogs", element: <AuditLogs /> },
-        //  { path: "Notifications", element: <Notifications /> },
-        //  { path: "AdminUsers", element: <AdminUsers /> },
-        //  { path: "SystemSettings", element: <SystemSettings /> },
-           ],
-         },
-        ],
-      },
-      {
-        path: "applyloan",
-        element: <LandingUserLayout />,
-        children: [
-          { path: "partner", element: <SelectProduct /> },
-          { path: "Terms", element: <UserTermsandCondition /> },
-          // { path: "Dashboard", element: <LandingDashboardPage /> },
-          { path: "businessdetails", element: <BusinessDetails /> },
-          { path: "otpVerification", element: <OtpVerification /> },
-          { path: "orbitSms", element: <OrbitSms /> },
-          { path: "factoringInfo", element: <FactoringInfo /> },
-          { path: "ComplianceInfo", element: <ComplianceInfo /> },
-          { path: "bankingInfo", element: <BankingInfo /> },
-          { path: "finish", element: <Finish /> },
-          { path: "*", element: <NotFound /> },
-        ],
-      },
-    ],
-  },
+                /* Financial Reports */
+                { path: "Reports/balance-sheet", element: <BalanceSheet /> },
+                { path: "Reports/income-statement", element: <IncomeStatement /> },
+                { path: "Reports/cash-flow", element: <CashFlowStatement /> },
+                { path: "Reports/fee-analysis", element: <FeeAnalysis /> },
+
+                /* Investor Reports */
+                { path: "Reports/investor-statements", element: <InvestorStatements /> },
+                { path: "Reports/allocation-reports", element: <AllocationReports /> },
+                { path: "Reports/transaction-summary", element: <TransactionSummary /> },
+                { path: "Reports/tax-reports", element: <InvestorStatements /> },
+
+                /* Compliance Reports */
+                { path: "Reports/regulatory-filing", element: <RegulatoryFilings /> },
+                { path: "Reports/audit-trail", element: <RegulatoryFilings /> },
+                { path: "Reports/compliance-monitoring", element: <RegulatoryFilings /> },
+                { path: "Reports/risk-compliance", element: <RegulatoryFilings /> },
+
+                /* Allocation Engine */
+                { path: "AllocationEngine", element: <AllocationDashboard /> },
+                { path: "AllocationEngine/strategies", element: <StrategiesList /> },
+                { path: "AllocationEngine/strategies/new", element: <CreateStrategy /> },
+                { path: "AllocationEngine/strategies/:id", element: <SimulationResults /> },
+                {
+                  path: "AllocationEngine/strategies/:id/simulate",
+                  element: <SimulationResults />,
+                },
+                { path: "AllocationEngine/schedules", element: <AllocationDashboard /> },
+                { path: "AllocationEngine/audit", element: <AllocationAudit /> },
+                { path: "AllocationEngine/settings", element: <AllocationDashboard /> },
+                { path: "AllocationEngine/risk-profiles", element: <RiskProfiles /> },
+
+                /* Other Admin Pages */
+                //  { path: "AuditLogs", element: <AuditLogs /> },
+                //  { path: "Notifications", element: <Notifications /> },
+                //  { path: "AdminUsers", element: <AdminUsers /> },
+                //  { path: "SystemSettings", element: <SystemSettings /> },
+              ],
+            },
+          ],
+        },
+        {
+          path: "applyloan",
+          element: <LandingUserLayout />,
+          children: [
+            { path: "partner", element: <SelectProduct /> },
+            { path: "Terms", element: <UserTermsandCondition /> },
+            // { path: "Dashboard", element: <LandingDashboardPage /> },
+            { path: "businessdetails", element: <BusinessDetails /> },
+            { path: "otpVerification", element: <OtpVerification /> },
+            { path: "orbitSms", element: <OrbitSms /> },
+            { path: "factoringInfo", element: <FactoringInfo /> },
+            { path: "ComplianceInfo", element: <ComplianceInfo /> },
+            { path: "bankingInfo", element: <BankingInfo /> },
+            { path: "finish", element: <Finish /> },
+            { path: "*", element: <NotFound /> },
+          ],
+        },
+      ],
+    },
+    {
+      element: <PrivateRoute />,
+      children: [
+        {
+          path: "lms",
+          element: <LayoutLms />,
+          children: [
+            //cms routesss list
+            {
+              path: `cms/dashboard`,
+              element: <DashboardInfoGraphicsCms />,
+            },
+            {
+              path: "cms/Tickets/AllTickets",
+              element: <AllTickets />,
+            },
+            {
+              path: "cms/Tickets/GetTickets",
+              element: <Tickets />,
+            },
+            {
+              path: "cms/Tickets/TicketDetails/:id",
+              element: <TicketDetails />,
+            },
+            {
+              path: "cms/Tickets/MyTickets",
+              element: <MyTickets />,
+            },
+            {
+              path: "cms/Reports",
+              element: <Reports />,
+            },
+            {
+              path: "cms/Priorities",
+              element: <Priorities />,
+            },
+            {
+              path: "cms/Categories",
+              element: <Categories />,
+            },
+            {
+              path: "cms/SubCategories",
+              element: <SubCategories />,
+            },
+            {
+              path: "cms/Escalation",
+              element: <Escalation />,
+            },
+            {
+              path: "cms/Customers",
+              element: <Customers />,
+            },
+            {
+              path: "cms/Logs",
+              element: <LogsCms />,
+            },
+            ///// Lms routes
+            {
+              path: `Lms/dashboard`,
+              element: <DashboardInfoGraphics />,
+            },
+            {
+              path: "Lms/Setting/WorkFlowMapping",
+              element: <WorkFlowMapping />,
+            },
+            {
+              path: "Lms/Setting/InvoiceSetting",
+              element: <InvoiceSetting />,
+            },
+            {
+              path: "Lms/Setting/ProductFee",
+              element: <ProductFee />,
+            },
+            {
+              path: "Lms/Setting/Calculator",
+              element: <Calculator />,
+            },
+            {
+              path: "Lms/loanmanagement/lateInvoice/:id",
+              element: <LateInvoice />,
+            },
+            {
+              path: "Lms/allapplications/viewapplication",
+              element: <ViewApplication />,
+            },
+            {
+              path: "Lms/LoanManagement/OtherFee",
+              element: <OtherFee />,
+            },
+            {
+              path: "Lms/ProductManagement/AddProduct",
+              element: <AddProduct />,
+            },
+            {
+              path: "Lms/ProductManagement/EditProduct/:id",
+              element: <EditProduct />,
+            },
+            {
+              path: "Lms/LoanManagement/invoicemanagement",
+              element: <InvoiceManagement />,
+            },
+            {
+              path: "Lms/LoanManagement/payinvoice",
+              element: <PayInvoices />,
+            },
+            {
+              path: "Lms/LoanManagement/AccountInvoices/:id",
+              element: <AccountInvoices />,
+            },
+            {
+              path: "Lms/LoanManagement/OtherInvoices",
+              element: <OtherInvoices />,
+            },
+            {
+              path: "Lms/LoanManagement/invoicemanagement/:id/:type",
+              element: <Invoices />,
+            },
+            {
+              path: "Lms/LoanManagement/RetryTransaction/:id/:type",
+              element: <RetryTransaction />,
+            },
+            {
+              path: "Lms/Customers/InvoiceManagement/:accountNumber",
+              element: <ApplicationManagement />,
+            },
+            {
+              path: "Lms/LoanManagement/createInvoice",
+              element: <CreateInvoice />,
+            },
+            {
+              path: "Lms/Setting/ProductManagement",
+              element: <ProductManagement />,
+            },
+            {
+              path: "Lms/Setting/Deliquency",
+              element: <DeliquencyManagement />,
+            },
+            {
+              path: "Lms/Setting/Rescheduling",
+              element: <RescheduleConfigManagement />,
+            },
+            {
+              path: "Lms/Setting/GeneralCreditScoring",
+              element: <GeneralCreditScoring />,
+            },
+            {
+              path: "Lms/accountingFinancing/daybook",
+              element: <DayBook />,
+            },
+            {
+              path: "Lms/transactionHistory",
+              element: <TransactionTabs />,
+            },
+            {
+              path: "Lms/excessPayment",
+              element: <ExcessPayment />,
+            },
+            {
+              path: "Lms/customerServices",
+              element: <CustomerServices />,
+            },
+
+            {
+              path: "Lms/CustomerManagement/AccountDocuments",
+              element: <AccountDocuments />,
+            },
+            {
+              path: "Lms/LoanManagement/CollateralManagement",
+              element: <CollateralManagement />,
+            },
+            {
+              path: "Lms/addcollateral/CollateralManagement",
+              element: <CollateralManagementView />,
+            },
+            {
+              path: "Lms/viewdetails/CollateralManagement/Edit/:id",
+              element: <CollateralManagementEdit />,
+            },
+            {
+              path: "Lms/viewdetails/collateralmanagement/allocation/:id",
+              element: <CollateralAllocation />,
+            },
+            {
+              path: "Lms/viewdetails/collateralmanagement/:customerId",
+              element: <CollateralManagementView />,
+            },
+            {
+              path: "Lms/ChartOfAccount/CoaConfiguration",
+              element: <AccountMapping />,
+            },
+            {
+              path: "Lms/ChartOfAccount/ChartOfAccount",
+              element: <Coa />,
+            },
+            {
+              // One page per category; the report itself is picked on the page.
+              // Twenty-seven entries in a flat sidebar list would be unusable.
+              path: "Lms/ReportsCenter/:category",
+              element: <ReportsCenter />,
+            },
+            {
+              // GL enquiry sits with the accounting screens: an accountant looking
+              // for an entry looks where the chart of accounts and reports are.
+              path: "Lms/LedgerGl/Entries",
+              element: <GlEntries />,
+            },
+            {
+              path: "Lms/LedgerGl/Failed",
+              element: <GlFailedEntries />,
+            },
+            {
+              path: "Lms/LedgerGl/Reconciliation",
+              element: <GlReconciliation />,
+            },
+            {
+              // Sits with the chart of accounts, not the GL enquiry screens: it
+              // chooses accounts rather than reading entries.
+              path: "Lms/ChartOfAccount/WalletAccounts",
+              element: <WalletGlAccounts />,
+            },
+            {
+              path: "Lms/Customers/AllCustomers",
+              element: <LmsAllCustomers />,
+            },
+            {
+              path: "Lms/loanmanagement/generateInvoice/:id",
+              element: <GenerateInvoice />,
+            },
+            {
+              path: "Lms/Customers/Business",
+              element: <Buisness />,
+            },
+            {
+              path: "Lms/customers/individuals",
+              element: <Individuals />,
+            },
+            {
+              path: "Lms/kyc-kyb",
+              element: <KycKyb />,
+            },
+            {
+              path: "Lms/accountLogs/:id",
+              element: <AccountLogs />,
+            },
+            {
+              path: "Lms/callActivity",
+              element: <CustomerServices />,
+            },
+            {
+              path: "Lms/LoanManagement/ApplicationManagement",
+              element: <ApplicationManagement />,
+            },
+            {
+              path: "Lms/LoanManagement/CostByApplication/:id",
+              element: <CostByApplication />,
+            },
+            {
+              path: "Lms/LoanManagement/BrokenPromises/:id",
+              element: <BrokenPromises />,
+            },
+            {
+              path: "Lms/LoanManagement/RescheduleHistory/:id",
+              element: <RescheduleHistory />,
+            },
+            {
+              path: "Lms/LoanManagement/ViewSchedule/:id",
+              element: <LoanPaymentSchedule />,
+            },
+            {
+              path: "Lms/loandetailview",
+              element: <LoanDetailView />,
+            },
+            {
+              path: "Lms/Customers/kyc-kyb",
+              element: <KycKyb />,
+            },
+            {
+              path: "Lms/LoanManagement/ApplicationManagement/loanInvoice",
+              element: <LoanInvoice />,
+            },
+
+            {
+              path: "Lms/LoanManagement/createInvoice",
+              element: <CreateInvoice />,
+            },
+            // {
+            //   path: "accountingFinancing/vouchers",
+            //   element: <Vouchers />,
+            // },
+
+            {
+              path: "Lms/accountingFinancing/trialbalance",
+              element: <TrialBalance />,
+            },
+
+            {
+              path: "Lms/transactionHistory",
+              element: <TransactionTabs />,
+            },
+            {
+              path: "Lms/excessPayment",
+              element: <ExcessPayment />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing",
+              element: <AccountFinancing />,
+            },
+            {
+              path: "Lms/Reports/loans",
+              element: <Loans />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/vouchers",
+              element: <Vouchers />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/ledger",
+              element: <Ledger />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/trialbalance",
+              element: <TrialBalance />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/daybook",
+              element: <DayBook />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/collection",
+              element: <CollectionReport />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/profit-revenue",
+              element: <ProfitRevenueReport />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/cash-flow",
+              element: <CashFlowReport />,
+            },
+            {
+              path: "Lms/Reports/AccountingFinancing/customer-statement",
+              element: <CustomerStatementReport />,
+            },
+            {
+              path: "Lms/Reports/loans/overdue",
+              element: <OverDue />,
+            },
+            {
+              path: "Lms/Reports/loans/performingLoans",
+              element: <PerformingLoans />,
+            },
+            {
+              path: "Lms/Reports/loans/due",
+              element: <Due />,
+            },
+            {
+              path: "Lms/Reports/loans/earlySettlement",
+              element: <EarlySettlement />,
+            },
+            {
+              path: "Lms/Reports/loans/disbursement",
+              element: <LoanDisbursementReport />,
+            },
+            {
+              path: "Lms/Reports/loans/writeOff",
+              element: <WriteOff />,
+            },
+            {
+              path: "Lms/Reports/AccountReport",
+              element: <AccountReport />,
+            },
+            {
+              path: "Lms/Reports/AccountReportsList",
+              element: <AccountReportsList />,
+            },
+
+            {
+              path: "Lms/Logs/AllLogs",
+              element: <AllLogs />,
+            },
+            {
+              path: "Lms/Logs/ApiLogs",
+              element: <ApiLogs />,
+            },
+            {
+              path: "Lms/Logs/ApiLogsByDate/:customerId/:type",
+              element: <LogsByDate />,
+            },
+            {
+              path: "Lms/Logs/DisburseApprovedAmountApiLogs",
+              element: <DisburseApprovedAmountApiLogs />,
+            },
+            {
+              path: "Lms/Expenses/ThirdPartyExpense",
+              element: <ThirdPartyExpense />,
+            },
+            {
+              path: "Lms/Expenses/LoanApplicationExpenses",
+              element: <LoanApplicationExpenses />,
+            },
+            {
+              path: "Lms/Expenses/LoanApplicationExpenseDetail/:nationalId",
+              element: <LoanApplicationExpenseDetail />,
+            },
+            {
+              path: "Lms/Expenses/OnboardingExpensesDetail/:nationalId",
+              element: <OnboardingExpensesDetail />,
+            },
+            {
+              path: "Lms/Expenses/OnboardingExpenses",
+              element: <OnboardingExpenses />,
+            },
+            {
+              path: "Lms/CommodityManagement/CommodityList",
+              element: <CommodityManagement />,
+            },
+            {
+              path: "Lms/CommodityManagement/CommoditySupplier",
+              element: <CommoditySupplier />,
+            },
+            {
+              path: "Lms/CommodityManagement/CommoditySupplier/View/:id",
+              element: <ViewCommoditySupplierData />,
+            },
+            { path: "Lms/Reconciliation/Dashboard", element: <ReconciliationDashboard /> },
+            { path: "Lms/Reconciliation/Transactions", element: <Transactions /> },
+            { path: "Lms/Reconciliation/OperationalExpenses", element: <OperationalExpenseTab /> },
+            {
+              path: "Lms/Reconciliation/ReconciliationSummary",
+              element: <ReconciliationSummary />,
+            },
+            { path: "Lms/Reconciliation/TransactionAccounts", element: <TransactionAccounts /> },
+            { path: "Lms/Reconciliation/ErrorReport", element: <ErrorReport /> },
+            {
+              path: "Lms/LoanManagement/application",
+              element: <Application />,
+            },
+            {
+              path: "Lms/account/LoanManagement/Bureau",
+              element: <Bureau />,
+            },
+
+            // { path: "LOS/Notification/Users", element: <UsersNotification/> },
+            // { path: "LOS/Notification/UserPreferences", element: <UserPreferences/> },
+            // { path: "LOS/Notification/SystemPreferences", element: <SystemPreferences/> },
+            //  { path: "ThirdPartyManagement/Dashboard", element: <ThirdPartyDashboard /> },
+            //  { path: "ThirdPartyManagement/EnvironmentSettings/ServicesList", element: <ServicesList /> },
+            //  { path: "ThirdPartyManagement/Clients", element: <ClientsList /> },
+            //  { path: "ThirdPartyManagement/DevClientRequests", element: <ClientRequestHistory environment="dev" /> },
+            //  { path: "ThirdPartyManagement/ProdClientRequests", element: <ClientRequestHistory environment="prod" /> },
+            //  { path: "ThirdPartyManagement/ClientServiceRequests", element: <ClientRequestHistory environment="service" /> },
+            //  { path: "ThirdPartyManagement/Setting/Employees", element: <Employees /> },
+            //  { path: "ThirdPartyManagement/Setting/RoleList", element: <RoleList /> },
+            //  { path: "ThirdPartyManagement/Setting/AssignPermissions", element: <AssignPermissions /> },
+          ],
+        },
+      ],
+    },
+    {
+      element: <PrivateRoute />,
+      children: [
+        {
+          path: "/",
+          element: <LayoutDashboard />,
+          children: [
+            /* Investor Dashboard Routes - Wrapped with LayoutInvestor for Tailwind CSS scoping */
+            {
+              path: "InvestorDashboard",
+              element: <LayoutInvestor />,
+              children: [
+                { path: "Overview", element: <DashboardOverview /> },
+
+                /* Investors Module */
+                { path: "Investors", element: <InvestorsList /> },
+                { path: "Investors/new", element: <AddInvestor /> },
+                { path: "Investors/:id", element: <InvestorDetail /> },
+                { path: "Investors/kyc-documents/:investorId", element: <KycDocuments /> },
+                { path: "Investors/documents/:investorId", element: <InvestorDocuments /> },
+                { path: "Investors/document-preview/:investorId", element: <DocumentPreview /> },
+                { path: "Investors/kyc-kyb-detail/:investorId", element: <KycKybDetail /> },
+
+                /* Products & Rates */
+                { path: "Products", element: <ProductsList /> },
+                { path: "Products/View/:productId", element: <ProductView /> },
+                { path: "Products/:productId/config", element: <ProductConfiguration /> },
+                { path: "SystemSettings/IncomeRanges", element: <IncomeRangeList /> },
+                {
+                  path: "SystemSettings/IncomeRanges/View/:incomeRangeId",
+                  element: <IncomeRangeView />,
+                },
+                { path: "SystemSettings/InitialInvest", element: <InitialInvestList /> },
+                {
+                  path: "SystemSettings/InvestmentExperience",
+                  element: <InvestmentExperienceList />,
+                },
+                { path: "SystemSettings/InvestmentTimeline", element: <InvestmentTimelineList /> },
+
+                /* Investments */
+                { path: "Investments", element: <InvestmentsList /> },
+                { path: "Investments/:id/adjust", element: <InvestmentAdjust /> },
+                { path: "ApproveInvestment", element: <ApproveInvestment /> },
+                { path: "Logs", element: <Logs /> },
+                { path: "Ledger", element: <InvestorLedger /> },
+
+                /* Reports */
+                { path: "Reports", element: <ReportsMain /> },
+
+                /* Performance Reports */
+                { path: "Reports/pl", element: <PLSummary /> },
+                { path: "Reports/pl-summary", element: <PLSummary /> },
+                { path: "Reports/analytics", element: <PortfolioAnalytics /> },
+                { path: "Reports/portfolio-analytics", element: <PortfolioAnalytics /> },
+                { path: "Reports/benchmark-comparison", element: <BenchmarkComparison /> },
+                { path: "Reports/risk-metrics", element: <RiskMetrics /> },
+
+                /* Financial Reports */
+                { path: "Reports/balance-sheet", element: <BalanceSheet /> },
+                { path: "Reports/income-statement", element: <IncomeStatement /> },
+                { path: "Reports/cash-flow", element: <CashFlowStatement /> },
+                { path: "Reports/fee-analysis", element: <FeeAnalysis /> },
+
+                /* Investor Reports */
+                { path: "Reports/investor-statements", element: <InvestorStatements /> },
+                { path: "Reports/allocation-reports", element: <AllocationReports /> },
+                { path: "Reports/transaction-summary", element: <TransactionSummary /> },
+                { path: "Reports/tax-reports", element: <InvestorStatements /> },
+
+                /* Compliance Reports */
+                { path: "Reports/regulatory-filing", element: <RegulatoryFilings /> },
+                { path: "Reports/audit-trail", element: <RegulatoryFilings /> },
+                { path: "Reports/compliance-monitoring", element: <RegulatoryFilings /> },
+                { path: "Reports/risk-compliance", element: <RegulatoryFilings /> },
+
+                /* Allocation Engine */
+                { path: "AllocationEngine", element: <AllocationDashboard /> },
+                { path: "AllocationEngine/strategies", element: <StrategiesList /> },
+                { path: "AllocationEngine/strategies/new", element: <CreateStrategy /> },
+                { path: "AllocationEngine/strategies/:id", element: <SimulationResults /> },
+                {
+                  path: "AllocationEngine/strategies/:id/simulate",
+                  element: <SimulationResults />,
+                },
+                { path: "AllocationEngine/schedules", element: <AllocationDashboard /> },
+                { path: "AllocationEngine/audit", element: <AllocationAudit /> },
+                { path: "AllocationEngine/settings", element: <AllocationDashboard /> },
+                { path: "AllocationEngine/risk-profiles", element: <RiskProfiles /> },
+
+                /* Other Admin Pages */
+                //  { path: "AuditLogs", element: <AuditLogs /> },
+                //  { path: "Notifications", element: <Notifications /> },
+                //  { path: "AdminUsers", element: <AdminUsers /> },
+                //  { path: "SystemSettings", element: <SystemSettings /> },
+              ],
+            },
+          ],
+        },
+        {
+          path: "applyloan",
+          element: <LandingUserLayout />,
+          children: [
+            { path: "partner", element: <SelectProduct /> },
+            { path: "Terms", element: <UserTermsandCondition /> },
+            // { path: "Dashboard", element: <LandingDashboardPage /> },
+            { path: "businessdetails", element: <BusinessDetails /> },
+            { path: "otpVerification", element: <OtpVerification /> },
+            { path: "orbitSms", element: <OrbitSms /> },
+            { path: "factoringInfo", element: <FactoringInfo /> },
+            { path: "ComplianceInfo", element: <ComplianceInfo /> },
+            { path: "bankingInfo", element: <BankingInfo /> },
+            { path: "finish", element: <Finish /> },
+            { path: "*", element: <NotFound /> },
+          ],
+        },
+      ],
+    },
+  ],
   {
-    element: <PrivateRoute />,
-    children: [
-      {
-        path: "lms",
-        element: <LayoutLms />,
-        children: [
-
-                  //cms routesss list
-                    {
-                      path: `cms/dashboard`,
-                      element: <DashboardInfoGraphicsCms />,
-                    },
-                    {
-                      path: "cms/Tickets/AllTickets",
-                      element: <AllTickets />,
-                    },
-                    {
-                      path: "cms/Tickets/GetTickets",
-                      element: <Tickets />,
-                    },
-                    {
-                      path: "cms/Tickets/TicketDetails/:id",
-                      element: <TicketDetails/>,
-                    },
-                    {
-                      path: "cms/Tickets/MyTickets",
-                      element: <MyTickets />,
-                    },
-                    {
-                      path: "cms/Reports",
-                      element: <Reports />,
-                    },
-                    {
-                      path: "cms/Priorities",
-                      element: <Priorities/>,
-                    },
-                    {
-                      path: "cms/Categories",
-                      element: <Categories/>,
-                    },
-                    {
-                      path: "cms/SubCategories",
-                      element: <SubCategories/>,
-                    },
-                    {
-                      path: "cms/Escalation",
-                      element: <Escalation/>,
-                    },
-                    {
-                      path: "cms/Customers",
-                      element: <Customers/>,
-                    },
-                    {
-                      path: "cms/Logs",
-                      element: <LogsCms/>,
-                    },
-        ///// Lms routes
-        {
-          path: `Lms/dashboard`,
-          element: <DashboardInfoGraphics/>,
-        },
-        {
-          path: "Lms/Setting/WorkFlowMapping",
-          element: <WorkFlowMapping />,
-        },
-        {
-          path: "Lms/Setting/InvoiceSetting",
-          element: <InvoiceSetting/>,
-        },
-        {
-          path: "Lms/Setting/ProductFee",
-          element: <ProductFee/>,
-        },
-        {
-          path: "Lms/Setting/Calculator",
-          element: <Calculator />,
-        },
-        {
-          path: "Lms/loanmanagement/lateInvoice/:id",
-          element: <LateInvoice />,
-        },
-        {
-          path: "Lms/allapplications/viewapplication",
-          element: <ViewApplication />,
-        },
-        {
-          path: "Lms/LoanManagement/OtherFee",
-          element: <OtherFee />,
-        },
-        {
-          path: "Lms/ProductManagement/AddProduct",
-          element: <AddProduct />,
-        },
-        {
-          path: "Lms/ProductManagement/EditProduct/:id",
-          element: <EditProduct />,
-        },
-        {
-          path: "Lms/LoanManagement/invoicemanagement",
-          element: <InvoiceManagement />,
-        },
-        {
-          path: "Lms/LoanManagement/payinvoice",
-          element: <PayInvoices />,
-        },
-        {
-          path: "Lms/LoanManagement/AccountInvoices/:id",
-          element: <AccountInvoices />,
-        },
-        {
-          path: "Lms/LoanManagement/OtherInvoices",
-          element: <OtherInvoices />,
-        },
-        {
-          path: "Lms/LoanManagement/invoicemanagement/:id/:type",
-          element: <Invoices />,
-        },
-        {
-          path: "Lms/LoanManagement/RetryTransaction/:id/:type",
-          element: <RetryTransaction/>,
-        },
-        {
-          path: "Lms/Customers/InvoiceManagement/:accountNumber",
-          element: <ApplicationManagement />,
-        },
-        {
-          path: "Lms/LoanManagement/createInvoice",
-          element: <CreateInvoice />,
-        },
-        {
-          path: "Lms/Setting/ProductManagement",
-          element: <ProductManagement />,
-        },
-        {
-          path: "Lms/Setting/Deliquency",
-          element: <DeliquencyManagement />,
-        },
-        {
-          path: "Lms/Setting/Rescheduling",
-          element: <RescheduleConfigManagement />,
-        },
-        {
-          path: "Lms/Setting/GeneralCreditScoring",
-          element: <GeneralCreditScoring />,
-        },
-        {
-          path: "Lms/accountingFinancing/daybook",
-          element: <DayBook />,
-        },
-        {
-          path: "Lms/transactionHistory",
-          element: <TransactionTabs />,
-        },
-        {
-          path: "Lms/excessPayment",
-          element: <ExcessPayment />,
-        },
-        {
-          path: "Lms/customerServices",
-          element: <CustomerServices />,
-        },
-   
-        {
-          path: "Lms/CustomerManagement/AccountDocuments",
-          element: <AccountDocuments />,
-        },
-        {
-          path: "Lms/LoanManagement/CollateralManagement",
-          element: <CollateralManagement />,
-        },
-        {
-          path: "Lms/addcollateral/CollateralManagement",
-          element: <CollateralManagementView />,
-        },
-        {
-          path: "Lms/viewdetails/CollateralManagement/Edit/:id",
-          element: <CollateralManagementEdit />,
-        },
-        {
-          path: "Lms/viewdetails/collateralmanagement/allocation/:id",
-          element: <CollateralAllocation />,
-        },
-        {
-          path: "Lms/viewdetails/collateralmanagement/:customerId",
-          element: <CollateralManagementView />,
-        },
-        {
-          path: "Lms/ChartOfAccount/CoaConfiguration",
-          element: <AccountMapping />,
-        },
-        {
-          path: "Lms/ChartOfAccount/ChartOfAccount",
-          element: <Coa />,
-        },
-        {
-          // One page per category; the report itself is picked on the page.
-          // Twenty-seven entries in a flat sidebar list would be unusable.
-          path: "Lms/ReportsCenter/:category",
-          element: <ReportsCenter />,
-        },
-        {
-          // GL enquiry sits with the accounting screens: an accountant looking
-          // for an entry looks where the chart of accounts and reports are.
-          path: "Lms/LedgerGl/Entries",
-          element: <GlEntries />,
-        },
-        {
-          path: "Lms/LedgerGl/Failed",
-          element: <GlFailedEntries />,
-        },
-        {
-          path: "Lms/LedgerGl/Reconciliation",
-          element: <GlReconciliation />,
-        },
-        {
-          path: "Lms/LedgerGl/WalletAccounts",
-          element: <WalletGlAccounts />,
-        },
-        {
-          path: "Lms/Customers/AllCustomers",
-          element: <LmsAllCustomers/>,
-        },
-        {
-          path: "Lms/loanmanagement/generateInvoice/:id",
-          element: <GenerateInvoice />,
-        },
-        {
-          path: "Lms/Customers/Business",
-          element: <Buisness />,
-        },
-        {
-          path: "Lms/customers/individuals",
-          element: <Individuals />,
-        },
-        {
-          path: "Lms/kyc-kyb",
-          element: <KycKyb />,
-        },
-        {
-          path: "Lms/accountLogs/:id",
-          element: <AccountLogs />,
-        },
-        {
-          path: "Lms/callActivity",
-          element: <CustomerServices />,
-        },
-        {
-          path: "Lms/LoanManagement/ApplicationManagement",
-          element: <ApplicationManagement />,
-        },
-        {
-          path: "Lms/LoanManagement/CostByApplication/:id",
-          element: <CostByApplication />,
-        },
-        {
-          path: "Lms/LoanManagement/BrokenPromises/:id",
-          element: <BrokenPromises />,
-        },
-        {
-          path: "Lms/LoanManagement/RescheduleHistory/:id",
-          element: <RescheduleHistory />,
-        },
-        {
-          path: "Lms/LoanManagement/ViewSchedule/:id",
-          element: <LoanPaymentSchedule />,
-        },
-        {
-          path: "Lms/loandetailview",
-          element: <LoanDetailView />,
-        },
-        {
-          path: "Lms/Customers/kyc-kyb",
-          element: <KycKyb />,
-        },
-        {
-          path: "Lms/LoanManagement/ApplicationManagement/loanInvoice",
-          element: <LoanInvoice />,
-        },
-   
-        {
-          path: "Lms/LoanManagement/createInvoice",
-          element: <CreateInvoice />,
-        },
-        // {
-        //   path: "accountingFinancing/vouchers",
-        //   element: <Vouchers />,
-        // },
-
-        {
-          path: "Lms/accountingFinancing/trialbalance",
-          element: <TrialBalance />,
-        },
-
-        {
-          path: "Lms/transactionHistory",
-          element: <TransactionTabs />,
-        },
-        {
-          path: "Lms/excessPayment",
-          element: <ExcessPayment />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing",
-          element: <AccountFinancing />,
-        },
-        {
-          path: "Lms/Reports/loans",
-          element: <Loans />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/vouchers",
-          element: <Vouchers />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/ledger",
-          element: <Ledger />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/trialbalance",
-          element: <TrialBalance />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/daybook",
-          element: <DayBook />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/collection",
-          element: <CollectionReport />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/profit-revenue",
-          element: <ProfitRevenueReport />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/cash-flow",
-          element: <CashFlowReport />,
-        },
-        {
-          path: "Lms/Reports/AccountingFinancing/customer-statement",
-          element: <CustomerStatementReport />,
-        },
-        {
-          path: "Lms/Reports/loans/overdue",
-          element: <OverDue />,
-        },
-        {
-          path: "Lms/Reports/loans/performingLoans",
-          element: <PerformingLoans />,
-        },
-        {
-          path: "Lms/Reports/loans/due",
-          element: <Due />,
-        },
-        {
-          path: "Lms/Reports/loans/earlySettlement",
-          element: <EarlySettlement />,
-        },
-        {
-          path: "Lms/Reports/loans/disbursement",
-          element: <LoanDisbursementReport />,
-        },
-        {
-          path: "Lms/Reports/loans/writeOff",
-          element: <WriteOff />,
-        },
-        {
-          path: "Lms/Reports/AccountReport",
-          element:<AccountReport/>,
-        },
-        {
-          path: "Lms/Reports/AccountReportsList",
-          element:<AccountReportsList/>,
-        },
-     
-        {
-          path: "Lms/Logs/AllLogs",
-          element: <AllLogs/>,
-        },
-        {
-          path: "Lms/Logs/ApiLogs",
-          element: <ApiLogs/>,
-        },
-        {
-          path: "Lms/Logs/ApiLogsByDate/:customerId/:type",
-          element: <LogsByDate/>,
-        },
-        {
-          path: "Lms/Logs/DisburseApprovedAmountApiLogs",
-           element: <DisburseApprovedAmountApiLogs/>,
-        },
-        {
-          path: "Lms/Expenses/ThirdPartyExpense",
-          element: <ThirdPartyExpense/>,
-        },
-        {
-          path: "Lms/Expenses/LoanApplicationExpenses",
-          element: <LoanApplicationExpenses/>,
-        },
-        {
-          path: "Lms/Expenses/LoanApplicationExpenseDetail/:nationalId",
-          element: <LoanApplicationExpenseDetail/>,
-        },
-        {
-          path: "Lms/Expenses/OnboardingExpensesDetail/:nationalId",
-          element: <OnboardingExpensesDetail/>,
-        },
-        {
-          path: "Lms/Expenses/OnboardingExpenses",
-          element: <OnboardingExpenses/>,
-        },
-        {
-          path: "Lms/CommodityManagement/CommodityList",
-          element: <CommodityManagement />,
-        },
-        {
-          path: "Lms/CommodityManagement/CommoditySupplier",
-          element: <CommoditySupplier />,
-        },
-        {
-          path: "Lms/CommodityManagement/CommoditySupplier/View/:id",
-          element: <ViewCommoditySupplierData />,
-        },
-        { path: "Lms/Reconciliation/Dashboard", element: <ReconciliationDashboard /> },
-        { path: "Lms/Reconciliation/Transactions", element: <Transactions /> },
-        { path: "Lms/Reconciliation/OperationalExpenses", element: <OperationalExpenseTab/> },
-        { path: "Lms/Reconciliation/ReconciliationSummary", element: <ReconciliationSummary/> },
-        { path: "Lms/Reconciliation/TransactionAccounts", element: <TransactionAccounts/> },
-        { path: "Lms/Reconciliation/ErrorReport", element: <ErrorReport/> },
-        {
-          path: "Lms/LoanManagement/application",
-          element: <Application />,
-        },
-        {
-          path: "Lms/account/LoanManagement/Bureau",
-          element: <Bureau />,
-        },
-       
-        // { path: "LOS/Notification/Users", element: <UsersNotification/> },
-        // { path: "LOS/Notification/UserPreferences", element: <UserPreferences/> },
-        // { path: "LOS/Notification/SystemPreferences", element: <SystemPreferences/> },
-        //  { path: "ThirdPartyManagement/Dashboard", element: <ThirdPartyDashboard /> },
-        //  { path: "ThirdPartyManagement/EnvironmentSettings/ServicesList", element: <ServicesList /> },
-        //  { path: "ThirdPartyManagement/Clients", element: <ClientsList /> },
-        //  { path: "ThirdPartyManagement/DevClientRequests", element: <ClientRequestHistory environment="dev" /> },
-        //  { path: "ThirdPartyManagement/ProdClientRequests", element: <ClientRequestHistory environment="prod" /> },
-        //  { path: "ThirdPartyManagement/ClientServiceRequests", element: <ClientRequestHistory environment="service" /> },
-        //  { path: "ThirdPartyManagement/Setting/Employees", element: <Employees /> },
-        //  { path: "ThirdPartyManagement/Setting/RoleList", element: <RoleList /> },
-        //  { path: "ThirdPartyManagement/Setting/AssignPermissions", element: <AssignPermissions /> },
-        ],
-      },
-    ],
-  },
-  {
-    element: <PrivateRoute />,
-    children: [
-      {
-        path: "/",
-        element: <LayoutDashboard />,
-        children: [
-         /* Investor Dashboard Routes - Wrapped with LayoutInvestor for Tailwind CSS scoping */
-         { 
-           path: "InvestorDashboard",
-           element: <LayoutInvestor />,
-           children: [
-             { path: "Overview", element: <DashboardOverview /> },
-         
-         /* Investors Module */
-         { path: "Investors", element: <InvestorsList /> },
-         { path: "Investors/new", element: <AddInvestor /> },
-         { path: "Investors/:id", element: <InvestorDetail /> },
-         { path: "Investors/kyc-documents/:investorId", element: <KycDocuments /> },
-         { path: "Investors/documents/:investorId", element: <InvestorDocuments /> },
-         { path: "Investors/document-preview/:investorId", element: <DocumentPreview /> },
-         { path: "Investors/kyc-kyb-detail/:investorId", element: <KycKybDetail /> },
-
-         /* Products & Rates */
-         { path: "Products", element: <ProductsList /> },
-         { path: "Products/View/:productId", element: <ProductView /> },
-         { path: "Products/:productId/config", element: <ProductConfiguration /> },
-         { path: "SystemSettings/IncomeRanges", element: <IncomeRangeList /> },
-         { path: "SystemSettings/IncomeRanges/View/:incomeRangeId", element: <IncomeRangeView /> },
-         { path: "SystemSettings/InitialInvest", element: <InitialInvestList /> },
-         { path: "SystemSettings/InvestmentExperience", element: <InvestmentExperienceList /> },
-         { path: "SystemSettings/InvestmentTimeline", element: <InvestmentTimelineList /> },
-
-         /* Investments */
-         { path: "Investments", element: <InvestmentsList /> },
-         { path: "Investments/:id/adjust", element: <InvestmentAdjust /> },
-         { path: "ApproveInvestment", element: <ApproveInvestment /> },
-         { path: "Logs", element: <Logs /> },
-         { path: "Ledger", element: <InvestorLedger /> },
-
-         /* Reports */
-         { path: "Reports", element: <ReportsMain /> },
-         
-         /* Performance Reports */
-         { path: "Reports/pl", element: <PLSummary /> },
-         { path: "Reports/pl-summary", element: <PLSummary /> },
-         { path: "Reports/analytics", element: <PortfolioAnalytics /> },
-         { path: "Reports/portfolio-analytics", element: <PortfolioAnalytics /> },
-         { path: "Reports/benchmark-comparison", element: <BenchmarkComparison /> },
-         { path: "Reports/risk-metrics", element: <RiskMetrics /> },
-
-         /* Financial Reports */
-         { path: "Reports/balance-sheet", element: <BalanceSheet /> },
-         { path: "Reports/income-statement", element: <IncomeStatement /> },
-         { path: "Reports/cash-flow", element: <CashFlowStatement /> },
-         { path: "Reports/fee-analysis", element: <FeeAnalysis /> },
-
-         /* Investor Reports */
-         { path: "Reports/investor-statements", element: <InvestorStatements /> },
-         { path: "Reports/allocation-reports", element: <AllocationReports /> },
-         { path: "Reports/transaction-summary", element: <TransactionSummary /> },
-         { path: "Reports/tax-reports", element: <InvestorStatements /> },
-
-         /* Compliance Reports */
-         { path: "Reports/regulatory-filing", element: <RegulatoryFilings /> },
-         { path: "Reports/audit-trail", element: <RegulatoryFilings /> },
-         { path: "Reports/compliance-monitoring", element: <RegulatoryFilings /> },
-         { path: "Reports/risk-compliance", element: <RegulatoryFilings /> },
-
-         /* Allocation Engine */
-         { path: "AllocationEngine", element: <AllocationDashboard /> },
-         { path: "AllocationEngine/strategies", element: <StrategiesList /> },
-         { path: "AllocationEngine/strategies/new", element: <CreateStrategy /> },
-         { path: "AllocationEngine/strategies/:id", element: <SimulationResults /> },
-         { path: "AllocationEngine/strategies/:id/simulate", element: <SimulationResults /> },
-         { path: "AllocationEngine/schedules", element: <AllocationDashboard /> },
-         { path: "AllocationEngine/audit", element: <AllocationAudit /> },
-         { path: "AllocationEngine/settings", element: <AllocationDashboard /> },
-         { path: "AllocationEngine/risk-profiles", element: <RiskProfiles /> },
-
-         /* Other Admin Pages */
-        //  { path: "AuditLogs", element: <AuditLogs /> },
-        //  { path: "Notifications", element: <Notifications /> },
-        //  { path: "AdminUsers", element: <AdminUsers /> },
-        //  { path: "SystemSettings", element: <SystemSettings /> },
-           ],
-         },
-        ],
-      },
-      {
-        path: "applyloan",
-        element: <LandingUserLayout />,
-        children: [
-          { path: "partner", element: <SelectProduct /> },
-          { path: "Terms", element: <UserTermsandCondition /> },
-          // { path: "Dashboard", element: <LandingDashboardPage /> },
-          { path: "businessdetails", element: <BusinessDetails /> },
-          { path: "otpVerification", element: <OtpVerification /> },
-          { path: "orbitSms", element: <OrbitSms /> },
-          { path: "factoringInfo", element: <FactoringInfo /> },
-          { path: "ComplianceInfo", element: <ComplianceInfo /> },
-          { path: "bankingInfo", element: <BankingInfo /> },
-          { path: "finish", element: <Finish /> },
-          { path: "*", element: <NotFound /> },
-        ],
-      },
-    ],
-  },
-], {
-  future: {
-    v7_startTransition: true,
-  },
-});
+    future: {
+      v7_startTransition: true,
+    },
+  }
+);

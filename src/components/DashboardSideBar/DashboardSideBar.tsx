@@ -266,9 +266,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   const [headerH, setHeaderH] = useState<number | null>(null);
   useEffect(() => {
     const measure = () => {
-      const header = document.querySelector(
-        ".header_layout"
-      ) as HTMLElement | null;
+      const header = document.querySelector(".header_layout") as HTMLElement | null;
       if (header && header.offsetHeight > 0) setHeaderH(header.offsetHeight);
     };
     measure();
@@ -283,7 +281,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   }, []);
 
   const dispatch = useDispatch();
-    const toggled = useSelector((state: RootState) => state.block.toggled);
+  const toggled = useSelector((state: RootState) => state.block.toggled);
   const reduxCollapsed = useSelector((state: RootState) => state.block.collapsed);
   const isCollapsed = effectiveCollapsed !== undefined ? effectiveCollapsed : reduxCollapsed;
   const location = useLocation();
@@ -310,12 +308,8 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     // Financing and Connector Management stay open by default so the primary
     // workflows are always visible regardless of the current route (their nested
     // submenus stay collapsed unless they own the active route).
-    const financingIndex = items.findIndex(
-      (it: any) => it && it.label === "Financing"
-    );
-    const connectorIndex = items.findIndex(
-      (it: any) => it && it.label === "Connector Management"
-    );
+    const financingIndex = items.findIndex((it: any) => it && it.label === "Financing");
+    const connectorIndex = items.findIndex((it: any) => it && it.label === "Connector Management");
     const defaultOpen = [financingIndex, connectorIndex].filter((i) => i !== -1);
 
     const matchIndex = items.findIndex(hasActiveLeaf);
@@ -366,9 +360,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     };
   }, [dispatch]);
 
-  const permissionData = useSelector(
-    (state: RootState) => state.block.permissions
-  );
+  const permissionData = useSelector((state: RootState) => state.block.permissions);
   const token = useSelector((state: RootState) => state.block.token);
 
   // Super admin has no role/permissions assigned (SSOCallback stores empty
@@ -407,16 +399,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       if (Array.isArray(perms)) {
         for (const p of perms) {
           const permName = (p.name || p.permissionName || "").toLowerCase();
-          if (keysToCheck.some((key) => {
-            // Skip single-word module codes (e.g. "product", "lov", "risk") for permission name matching
-            // These should only match moduleCode/moduleName above, not permission names across modules
-            if (!key.includes(" ")) return false;
-            // Word-boundary check: key must appear as complete words in the permission name
-            // e.g. "product category" matches "view product categories" or "create product category"
-            // but "product" alone won't match "view product credit scoring fields"
-            const regex = new RegExp(`(^|\\s)${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}`, 'i');
-            return regex.test(permName);
-          })) return true;
+          if (
+            keysToCheck.some((key) => {
+              // Skip single-word module codes (e.g. "product", "lov", "risk") for permission name matching
+              // These should only match moduleCode/moduleName above, not permission names across modules
+              if (!key.includes(" ")) return false;
+              // Word-boundary check: key must appear as complete words in the permission name
+              // e.g. "product category" matches "view product categories" or "create product category"
+              // but "product" alone won't match "view product credit scoring fields"
+              const regex = new RegExp(`(^|\\s)${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}`, "i");
+              return regex.test(permName);
+            })
+          )
+            return true;
         }
       }
       // Check sub-modules recursively
@@ -438,7 +433,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.ApiManagementIconDark,
       active: pathname.split("/").includes("/LOS"),
       menu: [
-       {
+        {
           label: "Dashboard",
           LinkLable: "LOS",
           Link: "Dashboard",
@@ -454,225 +449,228 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   imgActive: Images.ApiManagementIconDark,
         //   active: pathname.includes("/LOS/UniversalOnboarding"),
         // },
-    // {
-    //   label: "Application Board",
-    //   Link: "ApplicationBoard",
-    //       LinkLable: "LOS",
-    //   img: Images.applicationBoard,
-    //   imgActive: Images.applicationBoardActive,
-    //   active: pathname.split("/").includes("ApplicationBoard"),
-    // },
-    hasAccess("CUSTOMER") && {
-      label: "Customer Management",
-      Link: "/CustomerManagement/Leads",
-      active: pathname.split("/").includes("CustomerManagement/Leads"),
-      img: Images.CustomerManagementIcon,
-      imgActive: Images.CustomerManagementIconDark,
+        // {
+        //   label: "Application Board",
+        //   Link: "ApplicationBoard",
+        //       LinkLable: "LOS",
+        //   img: Images.applicationBoard,
+        //   imgActive: Images.applicationBoardActive,
+        //   active: pathname.split("/").includes("ApplicationBoard"),
+        // },
+        hasAccess("CUSTOMER") && {
+          label: "Customer Management",
+          Link: "/CustomerManagement/Leads",
+          active: pathname.split("/").includes("CustomerManagement/Leads"),
+          img: Images.CustomerManagementIcon,
+          imgActive: Images.CustomerManagementIconDark,
           submenu: [
-       
-        // hasAccess("lead_module") &&
-        // {
-        //   label: "Leads",
-        //   Link: "Leads",
-        //   LinkLable: "/LOS/CustomerManagement",
-        //   active: pathname.includes("/Leads")||pathname.includes("/LeadDetails"),
-        // },
-        // {
-        //   label: "PEP Customers",
-        //   Link: "PepCustomers",
-        //   LinkLable: "/LOS/CustomerManagement",
-        //   active: pathname.includes("/PepCustomers"),
-        // },
-        // {
-        //   label: "All Customer Status",
-        //   Link: "AllCustomerStatus",
-        //   LinkLable: "/LOS/CustomerManagement",
-        //   active: pathname.includes("/AllCustomerStatus"),
-        // },
-        // hasAccess("lead_module") && {
-        //       label: "Leads Details",
-        //       Link: "LeadDetails",
-        //       LinkLable: "/LOS/CustomerManagement",
-        //       active: pathname == "/LOS/CustomerManagement/LeadDetails",
-        // },
-        // {
-        //   label: "Risk Customers",
-        //   Link: "HighRiskUsers",
-        //   LinkLable: "/LOS/CustomerManagement",
-        //   active: pathname.includes("/HighRiskUsers"),
-        // },
-        // hasAccess("opportunity_module") && {
-        //   label: "Opportunities",
-        //   Link: "Opportunity",
-        //       LinkLable: "/LOS/CustomerManagement",
-        //   active: pathname.includes("/Opportunity"),
-        //     },
-        //     {
-        //       label: "Sanctioned Customers",
-        //       Link: "SanctionedCustomers",
-        //       LinkLable: "/LOS/CustomerManagement",
-        //       active: pathname.includes("/SanctionedCustomers"),
-        // },
-    
-      
-        // hasAccess("onboard_customers_module") && {
-        //   label: "Onboard Customers",
-        //   Link: "OnboardCustomers",
-        //       LinkLable: "/LOS/CustomerManagement",
-        //       active: pathname == "/LOS/CustomerManagement/OnboardCustomers",
-        // },
-        // hasAccess("customer_module") &&
-         {
-          label: "Individual",
-          Link: "CustomerList",
-              LinkLable: "/LOS/CustomerManagement",
-          active: pathname.includes("/CustomerList") || pathname.includes("/CustomerDetails") || pathname.includes("/CostByCustomer") || pathname.includes("/OnboardingCostByCustomer"),
-        },
-        {
-          label: "Business",
-          Link: "Business",
-          LinkLable: "/LOS/CustomerManagement",
-          active:
-            pathname.includes("/CustomerManagement/Business") ||
-            pathname.includes("/BusinessDetails"),
-        },
+            // hasAccess("lead_module") &&
+            // {
+            //   label: "Leads",
+            //   Link: "Leads",
+            //   LinkLable: "/LOS/CustomerManagement",
+            //   active: pathname.includes("/Leads")||pathname.includes("/LeadDetails"),
+            // },
+            // {
+            //   label: "PEP Customers",
+            //   Link: "PepCustomers",
+            //   LinkLable: "/LOS/CustomerManagement",
+            //   active: pathname.includes("/PepCustomers"),
+            // },
+            // {
+            //   label: "All Customer Status",
+            //   Link: "AllCustomerStatus",
+            //   LinkLable: "/LOS/CustomerManagement",
+            //   active: pathname.includes("/AllCustomerStatus"),
+            // },
+            // hasAccess("lead_module") && {
+            //       label: "Leads Details",
+            //       Link: "LeadDetails",
+            //       LinkLable: "/LOS/CustomerManagement",
+            //       active: pathname == "/LOS/CustomerManagement/LeadDetails",
+            // },
+            // {
+            //   label: "Risk Customers",
+            //   Link: "HighRiskUsers",
+            //   LinkLable: "/LOS/CustomerManagement",
+            //   active: pathname.includes("/HighRiskUsers"),
+            // },
+            // hasAccess("opportunity_module") && {
+            //   label: "Opportunities",
+            //   Link: "Opportunity",
+            //       LinkLable: "/LOS/CustomerManagement",
+            //   active: pathname.includes("/Opportunity"),
+            //     },
+            //     {
+            //       label: "Sanctioned Customers",
+            //       Link: "SanctionedCustomers",
+            //       LinkLable: "/LOS/CustomerManagement",
+            //       active: pathname.includes("/SanctionedCustomers"),
+            // },
 
-      ].filter(Boolean),
-    },
-  //  {
-  //     label: "Devices",
-  //     Link: "Devices",
-  //     LinkLable: "/LOS/CustomerManagement",
-  //     img: Images.CustomerManagementIcon,
-  //     active: pathname.includes("/Devices"),
-  //     submenu: [
-  //       {
-  //         label: "Devices",
-  //         Link: "Devices",
-  //         LinkLable: "/LOS/CustomerManagement",
-  //         active: pathname.includes("/Devices"),
-  //       },
-  //       {
-  //         label: "Blocked Devices",
-  //         Link: "BlockedDevices",
-  //         LinkLable: "/LOS/CustomerManagement",
-  //         active: pathname.includes("/BlockedDevices"),
-  //       },
-  //     ],
-  //   },
-    hasAccess("PRODUCT") && {
-      label: "Product Management",
-      Link: "ProductManagement",
-    LinkLable: "LOS",
-      img: Images.productManagementIcon,
-      imgActive: Images.productManagementIconActive,
-      active: pathname.includes("/ProductManagement"),
-      submenu: [
-        hasAccess("View Products") && {label: "Product Management",
+            // hasAccess("onboard_customers_module") && {
+            //   label: "Onboard Customers",
+            //   Link: "OnboardCustomers",
+            //       LinkLable: "/LOS/CustomerManagement",
+            //       active: pathname == "/LOS/CustomerManagement/OnboardCustomers",
+            // },
+            // hasAccess("customer_module") &&
+            {
+              label: "Individual",
+              Link: "CustomerList",
+              LinkLable: "/LOS/CustomerManagement",
+              active:
+                pathname.includes("/CustomerList") ||
+                pathname.includes("/CustomerDetails") ||
+                pathname.includes("/CostByCustomer") ||
+                pathname.includes("/OnboardingCostByCustomer"),
+            },
+            {
+              label: "Business",
+              Link: "Business",
+              LinkLable: "/LOS/CustomerManagement",
+              active:
+                pathname.includes("/CustomerManagement/Business") ||
+                pathname.includes("/BusinessDetails"),
+            },
+          ].filter(Boolean),
+        },
+        //  {
+        //     label: "Devices",
+        //     Link: "Devices",
+        //     LinkLable: "/LOS/CustomerManagement",
+        //     img: Images.CustomerManagementIcon,
+        //     active: pathname.includes("/Devices"),
+        //     submenu: [
+        //       {
+        //         label: "Devices",
+        //         Link: "Devices",
+        //         LinkLable: "/LOS/CustomerManagement",
+        //         active: pathname.includes("/Devices"),
+        //       },
+        //       {
+        //         label: "Blocked Devices",
+        //         Link: "BlockedDevices",
+        //         LinkLable: "/LOS/CustomerManagement",
+        //         active: pathname.includes("/BlockedDevices"),
+        //       },
+        //     ],
+        //   },
+        hasAccess("PRODUCT") && {
+          label: "Product Management",
           Link: "ProductManagement",
-        LinkLable: "/LOS",
+          LinkLable: "LOS",
           img: Images.productManagementIcon,
           imgActive: Images.productManagementIconActive,
-          active: pathname === "/LOS/ProductManagement"},
-        hasAccess("Contract Template") && {
-          label: "Contract Template",
-          Link: "ContractTemplate",
-          LinkLable: "/LOS/NotificationTemplate",
-          active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
-        },
-        hasAccess("Product Category") && {
-          label: "Product Category",
-          Link: "ProductCategory",
-          LinkLable: "/LOS/ProductManagement",
-          active: pathname == "/LOS/ProductManagement/ProductCategory",
-        },
-        hasAccess("Product Sub Category") && {
-          label: "Product Sub Category",
-          Link: "ProductSubCategory",
-          LinkLable: "/LOS/ProductManagement",
-          active: pathname == "/LOS/ProductManagement/ProductSubCategory",
-        }
-      ].filter(Boolean)
-    },
-   
-    // hasAccess("department_management_module") &&
-    // {
-    //   label: "Department Management",
-    //   Link: "DepartmentManagement/Departments",
-    //       LinkLable: "LOS",
-    //   img: Images.DepartmentManagementIcon,
-    //   imgActive: Images.DepartmentManagementIconDark,
-    //   active: pathname.includes("/DepartmentManagement"),
-    //       submenu: [
-    //     hasAccess("department_module") && {
-    //       label: "Departments",
-    //       Link: "Departments",
-    //           LinkLable: "/LOS/DepartmentManagement",
-    //           active: pathname.includes("/Departments"),
-    //     },
-    //     // hasAccess("department_permissions_module") && {
-    //     //   label: "Department Permissions",
-    //     //   Link: "DepartmentsPermissions",
-    //     //       LinkLable: "/LOS/DepartmentManagement",
-    //     //       active: pathname == "/LOS/DepartmentManagement/DepartmentsPermissions",
-    //     // },
-    //   ].filter(Boolean),
-    // },
-    hasAccess("LOV") && {
-      label: "LOV",
-      Link: "LOV/RevenueSource",
-          LinkLable: "LOS",
-      img: Images.LovIcon,
-      imgActive: Images.LovIconDark,
-      active: pathname.includes("/LOV"),
+          active: pathname.includes("/ProductManagement"),
           submenu: [
+            hasAccess("View Products") && {
+              label: "Product Management",
+              Link: "ProductManagement",
+              LinkLable: "/LOS",
+              img: Images.productManagementIcon,
+              imgActive: Images.productManagementIconActive,
+              active: pathname === "/LOS/ProductManagement",
+            },
+            hasAccess("Contract Template") && {
+              label: "Contract Template",
+              Link: "ContractTemplate",
+              LinkLable: "/LOS/NotificationTemplate",
+              active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
+            },
+            hasAccess("Product Category") && {
+              label: "Product Category",
+              Link: "ProductCategory",
+              LinkLable: "/LOS/ProductManagement",
+              active: pathname == "/LOS/ProductManagement/ProductCategory",
+            },
+            hasAccess("Product Sub Category") && {
+              label: "Product Sub Category",
+              Link: "ProductSubCategory",
+              LinkLable: "/LOS/ProductManagement",
+              active: pathname == "/LOS/ProductManagement/ProductSubCategory",
+            },
+          ].filter(Boolean),
+        },
+
+        // hasAccess("department_management_module") &&
         // {
-        //   label: "Revenue Source",
-        //   Link: "RevenueSource",
-        //       LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/RevenueSource",
-        // },
-        // {
-        //   label: "Financing Purpose",
-        //   Link: "FinancingPurpose",
-        //   LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/FinancingPurpose",
-        // },
-        // {
-        //   label: "Checks Types",
-        //   Link: "ChecksTypes",
-        //       LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/ChecksTypes",
-        // },
-        // {
-        //   label: "Reasons Types",
-        //   Link: "ReasonsTypes",
-        //       LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/ReasonsTypes",
-        // },
-        // {
-        //   label: "Product Categories",
-        //   Link: "ProductCategories",
-        //       LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/ProductCategories",
-        // },
-        // {
-        //   label: "Product Types",
-        //   Link: "ProductTypes",
-        //       LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/ProductTypes",
-        // },
-        // {
-        //   label: "Commodity Types",
-        //   Link: "CommodityTypes",
-        //       LinkLable: "/LOS/LOV",
-        //       active: pathname == "/LOS/LOV/CommodityTypes",
+        //   label: "Department Management",
+        //   Link: "DepartmentManagement/Departments",
+        //       LinkLable: "LOS",
+        //   img: Images.DepartmentManagementIcon,
+        //   imgActive: Images.DepartmentManagementIconDark,
+        //   active: pathname.includes("/DepartmentManagement"),
+        //       submenu: [
+        //     hasAccess("department_module") && {
+        //       label: "Departments",
+        //       Link: "Departments",
+        //           LinkLable: "/LOS/DepartmentManagement",
+        //           active: pathname.includes("/Departments"),
         //     },
+        //     // hasAccess("department_permissions_module") && {
+        //     //   label: "Department Permissions",
+        //     //   Link: "DepartmentsPermissions",
+        //     //       LinkLable: "/LOS/DepartmentManagement",
+        //     //       active: pathname == "/LOS/DepartmentManagement/DepartmentsPermissions",
+        //     // },
+        //   ].filter(Boolean),
+        // },
+        hasAccess("LOV") && {
+          label: "LOV",
+          Link: "LOV/RevenueSource",
+          LinkLable: "LOS",
+          img: Images.LovIcon,
+          imgActive: Images.LovIconDark,
+          active: pathname.includes("/LOV"),
+          submenu: [
+            // {
+            //   label: "Revenue Source",
+            //   Link: "RevenueSource",
+            //       LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/RevenueSource",
+            // },
+            // {
+            //   label: "Financing Purpose",
+            //   Link: "FinancingPurpose",
+            //   LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/FinancingPurpose",
+            // },
+            // {
+            //   label: "Checks Types",
+            //   Link: "ChecksTypes",
+            //       LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/ChecksTypes",
+            // },
+            // {
+            //   label: "Reasons Types",
+            //   Link: "ReasonsTypes",
+            //       LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/ReasonsTypes",
+            // },
+            // {
+            //   label: "Product Categories",
+            //   Link: "ProductCategories",
+            //       LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/ProductCategories",
+            // },
+            // {
+            //   label: "Product Types",
+            //   Link: "ProductTypes",
+            //       LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/ProductTypes",
+            // },
+            // {
+            //   label: "Commodity Types",
+            //   Link: "CommodityTypes",
+            //       LinkLable: "/LOS/LOV",
+            //       active: pathname == "/LOS/LOV/CommodityTypes",
+            //     },
             hasAccess("Source Of Income") && {
-               label: "Source Of Income",
-               Link: "SourceOfIncome",
-               LinkLable: "/LOS/LOV",
-               active: pathname == "/LOS/LOV/SourceOfIncome",
+              label: "Source Of Income",
+              Link: "SourceOfIncome",
+              LinkLable: "/LOS/LOV",
+              active: pathname == "/LOS/LOV/SourceOfIncome",
             },
             {
               label: "Occupation",
@@ -771,20 +769,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               active: pathname.includes("/ListOfValues"),
             } */
             hasAccess("Credit Scoring Field") && {
-              label:"Credit Scoring Definitions",
-              Link:"CreditScoringDefinitions",
-              LinkLable:"/LOS/LOV",
+              label: "Credit Scoring Definitions",
+              Link: "CreditScoringDefinitions",
+              LinkLable: "/LOS/LOV",
               active: pathname.includes("/CreditScoringDefinitions"),
             },
             hasAccess("Approval Condition Field") && {
-              label:"Approval Conditions",
-              Link:"ApprovalConditions",
-              LinkLable:"/LOS/LOV",
+              label: "Approval Conditions",
+              Link: "ApprovalConditions",
+              LinkLable: "/LOS/LOV",
               active: pathname.includes("/ApprovalConditions"),
-            }
+            },
           ].filter(Boolean),
         },
-
 
         // {
         //   label: "Notification",
@@ -828,252 +825,252 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     }
         //   ],
         // },
-      
-    // hasAccess("WORKFLOW") && {
-    //   label: "Factoring Management",
-    //   Link: "FinancingApplications/AllApplications",
-    //       LinkLable: "LOS",
-    //   img: Images.FinancingApplicationsIcon,
-    //   imgActive: Images.FinancingApplicationsIconDark,
-    //   active: pathname.includes("/FinancingApplications"),
-    //       submenu: [
-    //     // hasAccess("loan_application_module") &&
-    //      {
-    //       label: "All Applications",
-    //       Link: "AllApplications",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //           active: pathname.includes("/AllApplications"),
-    //     },
-    //     // hasAccess("loan_application_module") && 
-    //     {
-    //       label: "Pending Factoring",
-    //       Link: "PendingFinancing",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //           active: pathname.includes("/PendingFinancing"),
-    //     },
-    //     // hasAccess("loan_application_module") && 
-    //     {
-    //       label: "In Progress Factoring",
-    //       Link: "InProgressFinancing",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //           active: pathname.includes("/InProgressFinancing"),
-    //     },
-    //     // hasAccess("loan_application_module") && 
-    //     {
-    //       label: "Approved Factoring",
-    //       Link: "ApprovedFinancing",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //           active: pathname.includes("/ApprovedFinancing"),
-    //     },
-    //     // hasAccess("loan_application_module") && 
-    //     {
-    //       label: "Rejected Factoring",
-    //       Link: "RejectedFinancing",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //       active: pathname.includes("/RejectedFinancing"),
-    //     },
-    //     // hasAccess("loan_application_module") && 
-    //     {
-    //       label: "Incomplete Factoring",
-    //       Link: "IncompleteFinancing",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //       active: pathname.includes("/IncompleteFinancing"),
-    //     },
-    //     // hasAccess("loan_application_module") && 
-    //     {
-    //       label: "Canceled Factoring",
-    //       Link: "CanceledFinancing",
-    //           LinkLable: "/LOS/FinancingApplications",
-    //           active: pathname.includes("/CanceledFinancing"),
-    //     },
-    //     // hasAccess("loan_application_module") && {
-    //     //   label: "Rescheduling Request",
-    //     //   Link: "ReschedulingRequest",
-    //     //       LinkLable: "/LOS/FinancingApplications",
-    //     //       active: pathname.includes("/ReschedulingRequest"),
-    //     // },
-    //     // hasAccess("loan_application_module") && {
-    //     //   label: "Approved Rescheduled Applications",
-    //     //   Link: "ApprovedRescheduledApplications",
-    //     //       LinkLable: "/LOS/FinancingApplications",
-    //     //       active: pathname.includes("/ApprovedRescheduledApplications"),
-    //     // },
-    //     // hasAccess("activity_logs_module") && {
-    //     //   label: "Activity Logs",
-    //     //   Link: "ActivityLogsFinancing",
-    //     //       LinkLable: "/LOS/FinancingApplications",
-    //     //       active: pathname == "/LOS/FinancingApplications/ActivityLogsFinancing",
-    //     // },
-    //   ].filter(Boolean),
-    // },
-    // {
-    //   label: "Web Page Management",
-    //   Link: "WebPageManagement/HeaderFooter",
-    //   img: Images.HomePageManagementIcon,
-    //   imgActive: Images.HomePageManagementIcon,
-    //   LinkLable: "LOS",
-    //   active: pathname.includes("/WebPageManagement"),
-    //   menu: [
-    //     {
-    //       label: "Global Sections",
-    //       Link: "GlobalSections",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/GlobalSections"),
-    //     },
-    //     {
-    //       label: "Home Page",
-    //       Link: "HomePage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/HomePage"),
-    //     },
-    //     /* {
-    //       label: "Career Page",
-    //       Link: "CareerPage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname == "/LOS/WebPageManagement/CareerPage",
-    //     }, */
-    //     {
-    //       label: "About Page",
-    //       Link: "AboutPage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/AboutPage"),
-    //     },
-    //     {
-    //       label: "Privacy Policy Page",
-    //       Link: "PrivacyPolicyTemplatePage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/PrivacyPolicyTemplatePage"),
-    //     },
-    //     {
-    //       label: "Terms Conditions Page",
-    //       Link: "TermsConditionsTemplatePage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/TermsConditionsTemplatePage"),
-    //     },
-    //     {
-    //       label: "Faqs Page",
-    //       Link: "FaqsTemplatePage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/FaqsTemplatePage"),
-    //     },
-    //     {
-    //       label: "Contact Us Page",
-    //       Link: "ContactUsTemplatePage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/ContactUsTemplatePage"),
-    //     },
-    //     {
-    //       label: "Financial Statements Page",
-    //       Link: "FinancialStatementsTemplatePage",
-    //       LinkLable: "/LOS/WebPageManagement",
-    //       active: pathname.includes("/FinancialStatementsTemplatePage"),
-    //     },
-    //   ],
-    // },
-    //     {
-    //       label: "Merchant Management",
-    //       Link: "MerchantManagement/MerchantList",
-    //       LinkLable: "LOS",
-    //       img: Images.DepartmentManagementIcon,
-    //       imgActive: Images.DepartmentManagementIconDark,
-    //       active: pathname.includes("/MerchantManagement"),
-    //       menu: [
-    //         {
-    //           label: "Merchant List",
-    //           Link: "MerchantList",
-    //           LinkLable: "/LOS/MerchantManagement",
-    //           active: pathname.includes("/MerchantList"),
-    //         }
-    //   ],
-    // },
-    // hasAccess("PARTNER") && {
-    //   label: "Partner Management",
-    //   Link: "PartnerManagement/PartnersList",
-    //       LinkLable: "LOS",
-    //   img: Images.PartnerManagementIcon,
-    //   imgActive: Images.PartnerManagementIconDark,
-    //   active: pathname.split("/").includes("PartnerManagement"),
-    //       submenu: [
-    //     // hasAccess("partner_module") &&
-    //      {
-    //       label: "Partners List",
-    //       Link: "PartnersList",
-    //           LinkLable: "/LOS/PartnerManagement",
-    //           active: ["/LOS/PartnerManagement/PartnersList", "/PartnerManagement/PartnerAdminList"].includes(pathname),
-    //     },
-    //     // hasAccess("partner_module") && 
-    //     {
-    //       label:'Partners Commission',
-    //       Link:"AllPartners",
-    //           LinkLable: "/LOS/PartnerManagement",
-    //           active: pathname.includes("/LOS/PartnerManagement/AllPartners"),
-    //     }
-    //   ].filter(Boolean),
-    // },
-    // hasAccess("setting_module") &&
-    // {
-    //   label: "Settings",
-    //   Link: "Settings/AwnInfo",
-    //   LinkLable: "LOS",
-    //   img: Images.SettingsIcon,
-    //   imgActive: Images.SettingsIconDark,
-    //   active: pathname.split("/").includes("Settings"),
-    //   submenu: [
-    //     // hasAccess("awn_info_module") && 
-    //     {
-    //       label: "Factoring Valley Info",
-    //       Link: "AwnInfo",
-    //       LinkLable: "/LOS/Settings",
-    //       active: pathname.includes("/LOS/Settings/AwnInfo"),
-    //     },
-    //     // hasAccess("compliance_module") &&
-    //      {
-    //       label: "Compliance Requirement",
-    //       Link: "ComplianceRequirement",
-    //       LinkLable: "/LOS/Settings",
-    //       active: pathname.includes("/LOS/Settings/ComplianceRequirement"),
-    //     },
-    //      {
-    //       label: "Block History",
-    //       Link: "BlockHistory",
-    //       LinkLable: "/LOS/Settings",
-    //       active: pathname.includes("/LOS/Settings/BlockHistory"),
-    //     },
-    //   ].filter(Boolean),
-    // },
-    // {
-    //   label: "Home Page Management",
-    //   Link: "HomePageManagement",
-    //       LinkLable: "LOS",
-    //   img: Images.HomePageManagementIcon,
-    //   imgActive: Images.HomePageManagementIconActive,
-    //   active: pathname.split("/").includes("HomePageManagement"),
-    // },
-    // {
-    //   label: "Landing Page Management",
-    //   Link: "LandingPageManagement",
-    //       LinkLable: "LOS",
-    //   img: Images.HomePageManagementIcon,
-    //   imgActive: Images.HomePageManagementIconActive,
-    //   active: pathname.split("/").includes("LandingPageManagement"),
-    // },
-    // hasAccess("api_module") &&
-    // {
-    //   label: "API Management",
-    //   Link: "APIManagement/AllAPIs",
-    //       LinkLable: "LOS",
-    //   img: Images.ApiManagementIcon,
-    //   imgActive: Images.ApiManagementIconDark,
-    //   active: pathname.split("/").includes("APIManagement"),
-    //       submenu: [
-    //     hasAccess("api_module") && {
-    //       label: "All APIs",
-    //       Link: "AllAPIs",
-    //           LinkLable: "/LOS/APIManagement",
-    //           active: pathname.includes("/LOS/APIManagement/AllAPIs"),
-    //         },
-    //       ].filter(Boolean),
-    //     },
+
+        // hasAccess("WORKFLOW") && {
+        //   label: "Factoring Management",
+        //   Link: "FinancingApplications/AllApplications",
+        //       LinkLable: "LOS",
+        //   img: Images.FinancingApplicationsIcon,
+        //   imgActive: Images.FinancingApplicationsIconDark,
+        //   active: pathname.includes("/FinancingApplications"),
+        //       submenu: [
+        //     // hasAccess("loan_application_module") &&
+        //      {
+        //       label: "All Applications",
+        //       Link: "AllApplications",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //           active: pathname.includes("/AllApplications"),
+        //     },
+        //     // hasAccess("loan_application_module") &&
+        //     {
+        //       label: "Pending Factoring",
+        //       Link: "PendingFinancing",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //           active: pathname.includes("/PendingFinancing"),
+        //     },
+        //     // hasAccess("loan_application_module") &&
+        //     {
+        //       label: "In Progress Factoring",
+        //       Link: "InProgressFinancing",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //           active: pathname.includes("/InProgressFinancing"),
+        //     },
+        //     // hasAccess("loan_application_module") &&
+        //     {
+        //       label: "Approved Factoring",
+        //       Link: "ApprovedFinancing",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //           active: pathname.includes("/ApprovedFinancing"),
+        //     },
+        //     // hasAccess("loan_application_module") &&
+        //     {
+        //       label: "Rejected Factoring",
+        //       Link: "RejectedFinancing",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //       active: pathname.includes("/RejectedFinancing"),
+        //     },
+        //     // hasAccess("loan_application_module") &&
+        //     {
+        //       label: "Incomplete Factoring",
+        //       Link: "IncompleteFinancing",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //       active: pathname.includes("/IncompleteFinancing"),
+        //     },
+        //     // hasAccess("loan_application_module") &&
+        //     {
+        //       label: "Canceled Factoring",
+        //       Link: "CanceledFinancing",
+        //           LinkLable: "/LOS/FinancingApplications",
+        //           active: pathname.includes("/CanceledFinancing"),
+        //     },
+        //     // hasAccess("loan_application_module") && {
+        //     //   label: "Rescheduling Request",
+        //     //   Link: "ReschedulingRequest",
+        //     //       LinkLable: "/LOS/FinancingApplications",
+        //     //       active: pathname.includes("/ReschedulingRequest"),
+        //     // },
+        //     // hasAccess("loan_application_module") && {
+        //     //   label: "Approved Rescheduled Applications",
+        //     //   Link: "ApprovedRescheduledApplications",
+        //     //       LinkLable: "/LOS/FinancingApplications",
+        //     //       active: pathname.includes("/ApprovedRescheduledApplications"),
+        //     // },
+        //     // hasAccess("activity_logs_module") && {
+        //     //   label: "Activity Logs",
+        //     //   Link: "ActivityLogsFinancing",
+        //     //       LinkLable: "/LOS/FinancingApplications",
+        //     //       active: pathname == "/LOS/FinancingApplications/ActivityLogsFinancing",
+        //     // },
+        //   ].filter(Boolean),
+        // },
+        // {
+        //   label: "Web Page Management",
+        //   Link: "WebPageManagement/HeaderFooter",
+        //   img: Images.HomePageManagementIcon,
+        //   imgActive: Images.HomePageManagementIcon,
+        //   LinkLable: "LOS",
+        //   active: pathname.includes("/WebPageManagement"),
+        //   menu: [
+        //     {
+        //       label: "Global Sections",
+        //       Link: "GlobalSections",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/GlobalSections"),
+        //     },
+        //     {
+        //       label: "Home Page",
+        //       Link: "HomePage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/HomePage"),
+        //     },
+        //     /* {
+        //       label: "Career Page",
+        //       Link: "CareerPage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname == "/LOS/WebPageManagement/CareerPage",
+        //     }, */
+        //     {
+        //       label: "About Page",
+        //       Link: "AboutPage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/AboutPage"),
+        //     },
+        //     {
+        //       label: "Privacy Policy Page",
+        //       Link: "PrivacyPolicyTemplatePage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/PrivacyPolicyTemplatePage"),
+        //     },
+        //     {
+        //       label: "Terms Conditions Page",
+        //       Link: "TermsConditionsTemplatePage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/TermsConditionsTemplatePage"),
+        //     },
+        //     {
+        //       label: "Faqs Page",
+        //       Link: "FaqsTemplatePage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/FaqsTemplatePage"),
+        //     },
+        //     {
+        //       label: "Contact Us Page",
+        //       Link: "ContactUsTemplatePage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/ContactUsTemplatePage"),
+        //     },
+        //     {
+        //       label: "Financial Statements Page",
+        //       Link: "FinancialStatementsTemplatePage",
+        //       LinkLable: "/LOS/WebPageManagement",
+        //       active: pathname.includes("/FinancialStatementsTemplatePage"),
+        //     },
+        //   ],
+        // },
+        //     {
+        //       label: "Merchant Management",
+        //       Link: "MerchantManagement/MerchantList",
+        //       LinkLable: "LOS",
+        //       img: Images.DepartmentManagementIcon,
+        //       imgActive: Images.DepartmentManagementIconDark,
+        //       active: pathname.includes("/MerchantManagement"),
+        //       menu: [
+        //         {
+        //           label: "Merchant List",
+        //           Link: "MerchantList",
+        //           LinkLable: "/LOS/MerchantManagement",
+        //           active: pathname.includes("/MerchantList"),
+        //         }
+        //   ],
+        // },
+        // hasAccess("PARTNER") && {
+        //   label: "Partner Management",
+        //   Link: "PartnerManagement/PartnersList",
+        //       LinkLable: "LOS",
+        //   img: Images.PartnerManagementIcon,
+        //   imgActive: Images.PartnerManagementIconDark,
+        //   active: pathname.split("/").includes("PartnerManagement"),
+        //       submenu: [
+        //     // hasAccess("partner_module") &&
+        //      {
+        //       label: "Partners List",
+        //       Link: "PartnersList",
+        //           LinkLable: "/LOS/PartnerManagement",
+        //           active: ["/LOS/PartnerManagement/PartnersList", "/PartnerManagement/PartnerAdminList"].includes(pathname),
+        //     },
+        //     // hasAccess("partner_module") &&
+        //     {
+        //       label:'Partners Commission',
+        //       Link:"AllPartners",
+        //           LinkLable: "/LOS/PartnerManagement",
+        //           active: pathname.includes("/LOS/PartnerManagement/AllPartners"),
+        //     }
+        //   ].filter(Boolean),
+        // },
+        // hasAccess("setting_module") &&
+        // {
+        //   label: "Settings",
+        //   Link: "Settings/AwnInfo",
+        //   LinkLable: "LOS",
+        //   img: Images.SettingsIcon,
+        //   imgActive: Images.SettingsIconDark,
+        //   active: pathname.split("/").includes("Settings"),
+        //   submenu: [
+        //     // hasAccess("awn_info_module") &&
+        //     {
+        //       label: "Factoring Valley Info",
+        //       Link: "AwnInfo",
+        //       LinkLable: "/LOS/Settings",
+        //       active: pathname.includes("/LOS/Settings/AwnInfo"),
+        //     },
+        //     // hasAccess("compliance_module") &&
+        //      {
+        //       label: "Compliance Requirement",
+        //       Link: "ComplianceRequirement",
+        //       LinkLable: "/LOS/Settings",
+        //       active: pathname.includes("/LOS/Settings/ComplianceRequirement"),
+        //     },
+        //      {
+        //       label: "Block History",
+        //       Link: "BlockHistory",
+        //       LinkLable: "/LOS/Settings",
+        //       active: pathname.includes("/LOS/Settings/BlockHistory"),
+        //     },
+        //   ].filter(Boolean),
+        // },
+        // {
+        //   label: "Home Page Management",
+        //   Link: "HomePageManagement",
+        //       LinkLable: "LOS",
+        //   img: Images.HomePageManagementIcon,
+        //   imgActive: Images.HomePageManagementIconActive,
+        //   active: pathname.split("/").includes("HomePageManagement"),
+        // },
+        // {
+        //   label: "Landing Page Management",
+        //   Link: "LandingPageManagement",
+        //       LinkLable: "LOS",
+        //   img: Images.HomePageManagementIcon,
+        //   imgActive: Images.HomePageManagementIconActive,
+        //   active: pathname.split("/").includes("LandingPageManagement"),
+        // },
+        // hasAccess("api_module") &&
+        // {
+        //   label: "API Management",
+        //   Link: "APIManagement/AllAPIs",
+        //       LinkLable: "LOS",
+        //   img: Images.ApiManagementIcon,
+        //   imgActive: Images.ApiManagementIconDark,
+        //   active: pathname.split("/").includes("APIManagement"),
+        //       submenu: [
+        //     hasAccess("api_module") && {
+        //       label: "All APIs",
+        //       Link: "AllAPIs",
+        //           LinkLable: "/LOS/APIManagement",
+        //           active: pathname.includes("/LOS/APIManagement/AllAPIs"),
+        //         },
+        //       ].filter(Boolean),
+        //     },
         // {
         //   label: "Notification System",
         //   Link: "Notification/Channels",
@@ -1134,8 +1131,6 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       ],
     },
 
-
-  
     {
       label: "LMS",
       Link: "Lms/dashboard",
@@ -1151,7 +1146,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname.includes("/Lms/dashboard"),
           // == "/Lms/dashboard",
         },
-    
+
         // hasAccess("customer_dashboard_module") &&
         // {
         //   label: "Customers",
@@ -1159,9 +1154,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   LinkLable: "/Lms",
         //   img: Images.CustomerManagementIcon,
         //   active: pathname.split("/").includes("Customers"),
-      
+
         // },
-    
+
         // hasAccess("loan_module") &&
         {
           label: "Loan Management",
@@ -1170,21 +1165,23 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/Lms",
           active: pathname.split("/").includes("LoanManagement"),
           submenu: [
-            // hasAccess("loan_application_module") && 
+            // hasAccess("loan_application_module") &&
             {
               label: "All Applications",
               Link: "ApplicationManagement",
               LinkLable: "/Lms/LoanManagement",
-              active: pathname.includes("/Lms/LoanManagement/ApplicationManagement") || pathname.includes("/CostByApplication"),
+              active:
+                pathname.includes("/Lms/LoanManagement/ApplicationManagement") ||
+                pathname.includes("/CostByApplication"),
             },
-    
+
             // {
             //   label: "Invoice Management",
             //   Link: "invoicemanagement",
             //   LinkLable: "LoanManagement",
             //   active: pathname == "/Lms/LoanManagement/invoicemanagement",
             // },
-    
+
             // {
             //   label: "Other Fees/Charges",
             //   Link: "OtherFee",
@@ -1193,7 +1190,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             // },
           ].filter(Boolean),
         },
-     
+
         // {
         //   label: "Department Management",
         //   Link: "departmentmanagement",
@@ -1214,31 +1211,28 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     // },
         //   ],
         // },
-        hasAccess("reports_module") &&
-        {
+        hasAccess("reports_module") && {
           label: "Reports",
           Link: "Reports",
           img: Images.reportsIconDark,
           active: pathname.split("/").includes("Reports"),
           submenu: [
-            //  hasAccess("account_report_module") && 
-             {
+            //  hasAccess("account_report_module") &&
+            {
               label: "Account Report",
               Link: "AccountReportsList",
               LinkLable: "/Lms/Reports",
               active: pathname.includes("/Lms/Reports/AccountReportsList"),
-    
             },
             //  hasAccess("simah_report_module") &&
-              {
+            {
               label: "Simah Report",
               Link: "SimahReportsList",
               LinkLable: "/Lms/Reports",
               active: pathname.includes("/Lms/Reports/SimahReportsList"),
-    
             },
             // hasAccess("accounting_financing_module") &&
-             {
+            {
               label: "Accounting & Financing",
               Link: "AccountingFinancing",
               LinkLable: "/Lms/Reports",
@@ -1259,7 +1253,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   img: Images.reportsIconDark,
         //   active: pathname.split("/").includes("AccountingFinancing"),
         //   submenu: [
-        //         // hasAccess("voucher_module") && 
+        //         // hasAccess("voucher_module") &&
         //         {
         //           label: "Voucher",
         //           link: "vouchers",
@@ -1287,7 +1281,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //           linkLable: "/Lms/Reports/AccountingFinancing",
         //           active: pathname.split("/").includes("ledger"),
         //         },
-              
+
         //   ].filter(Boolean),
         // },
         // hasAccess("accounting_financing_module") &&
@@ -1296,7 +1290,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   Link: "loans",
         //   img: Images.reportsIconDark,
         //   active: pathname.split("/").includes("loans"),
-        //   submenu: [ 
+        //   submenu: [
         //     // {
         //       // label: "Loans Reports",
         //       // Link: "loans",
@@ -1415,7 +1409,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   ].filter(Boolean),
         // },
         // hasAccess("accounting_financing_module") &&
-        // hasAccess("reports_module") && 
+        // hasAccess("reports_module") &&
         {
           // Every report the ledger exposes, grouped the way the API groups
           // them. Each child opens the hub for that category, where the
@@ -1484,46 +1478,46 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               LinkLable: "/Lms/LedgerGl",
               active: pathname.includes("/Lms/LedgerGl/Reconciliation"),
             },
-            {
-              // Which account each wallet rail posts to. A settings screen
-              // rather than an enquiry one, but it belongs to the same desk.
-              label: "Wallet GL Accounts",
-              Link: "WalletAccounts",
-              LinkLable: "/Lms/LedgerGl",
-              active: pathname.includes("/Lms/LedgerGl/WalletAccounts"),
-            },
           ].filter(Boolean),
         },
-        hasAccess("accounting_financing_module") &&
-        {
+        hasAccess("accounting_financing_module") && {
           label: "Chart of account",
           Link: "ChartOfAccount",
           active: pathname.split("/").includes("ChartOfAccount"),
           img: Images.accountCharts,
           submenu: [
             // hasAccess("chart_of_account_module") &&
-             {
+            {
               label: "Accounts",
               Link: "ChartOfAccount",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
             },
             //hasAccess("coa_configuration_module") &&
-             {
+            {
               label: "COA Configuration",
               Link: "CoaConfiguration",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
             },
-             {
+            {
               label: "Chart of accounts field",
               Link: "ChartOfAccountFields",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccountFields"),
             },
+            {
+              // Which account each wallet rail posts to. It picks accounts, so
+              // it belongs beside the chart of accounts rather than beside the
+              // GL enquiry screens that read entries.
+              label: "Wallet GL Accounts",
+              Link: "WalletAccounts",
+              LinkLable: "/Lms/ChartOfAccount",
+              active: pathname.includes("/Lms/ChartOfAccount/WalletAccounts"),
+            },
           ].filter(Boolean),
         },
-     
+
         {
           label: "Collections",
           Link: "Collections/WaiverRequests",
@@ -1590,7 +1584,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   LinkLable: "/Lms/Setting",
             //   active: pathname.includes("/Lms/Setting/WorkFlowMapping"),
             // },
-            // // hasAccess("invoice_management_admin_module") && 
+            // // hasAccess("invoice_management_admin_module") &&
             // {
             //   label: "Invoice Setting",
             //   Link: "InvoiceSetting",
@@ -1609,7 +1603,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   LinkLable: "Setting",
             //   active: pathname == "/pdcmanagement",
             // },
-    
+
             // {
             //   label: "Securization",
             //   Link: "escrowmanagement",
@@ -1643,21 +1637,21 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   img: Images.logsIcon,
         //   active: pathname.split("/").includes("Logs"),
         //   submenu: [
-        //      // hasAccess("system_logs_module") && 
+        //      // hasAccess("system_logs_module") &&
         //      {
         //       label: "Logs",
         //       Link: "AllLogs",
         //       LinkLable: "/Lms/Logs",
         //       active: pathname.includes("/Lms/Logs/AllLogs"),
         //     },
-        //      // hasAccess("system_logs_module") && 
+        //      // hasAccess("system_logs_module") &&
         //      {
         //       label: "Api Logs",
         //       Link: "ApiLogs",
         //       LinkLable: "/Lms/Logs",
         //       active: pathname.includes("/Lms/Logs/ApiLogs"),
         //     },
-        //     // hasAccess("disburse_api_logs_module") && 
+        //     // hasAccess("disburse_api_logs_module") &&
         //     {
         //       label: "Disburse Amount Api Logs",
         //       Link: "DisburseApprovedAmountApiLogs",
@@ -1675,7 +1669,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //       {
         //         label: "Commodity List",
         //         Link: "CommodityList",
-                
+
         //         LinkLable: "/Lms/CommodityManagement",
         //         active: pathname.includes("/Lms/CommodityManagement/CommodityList"),
         //       },
@@ -1731,7 +1725,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     },
         //   ],
         // },
-     
+
         // {
         //   label: "Expenses",
         //   Link: `/Lms/Expenses/ThirdPartyExpense`,
@@ -1759,13 +1753,12 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //        img: "",
         //        active: pathname == "/Lms/Expenses/OnboardingExpenses",
         //     },
-    
-          
+
         //   ],
         // },
       ],
     },
-  
+
     // {
     //   label: "CMS",
     //   Link: "cms/dashboard",
@@ -1850,209 +1843,211 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //       img: Images.logsIcon,
     //       active: pathname.split("/").includes("Logs"),
     //     },
-      
+
     //   ],
-      
+
     // },
-      {
-        label: "Connector Management",
-        Link: "/ThirdPartyManagement/Providers",
-        img: Images.ApiManagementIcon,
-        imgActive: Images.ApiManagementIconDark,
-        active: pathname.split("/").includes("/ThirdPartyManagement"),
-        menu: [
-          // {
-          //   label: "Dashboard",
-          //   Link: "Dashboard",
-          //   LinkLable: "/ThirdPartyManagement",
-          //   img: Images.dashboardIcon,
-          //   active: pathname.includes("/ThirdPartyManagement/Dashboard"),
-          // },
-          // {
-          //   label: "Providers",
-          //   Link: "Providers",
-          //   LinkLable: "/ThirdPartyManagement",
-          //   img: Images.PartnerManagementIcon,
-          //   active: pathname.includes("/ThirdPartyManagement/Providers"),
-          // },
-          {
-            label: "Environment Settings",
-            Link: "EnvironmentSettings",
-            LinkLable: "/ThirdPartyManagement",
-            img: Images.SettingsIcon,
-            active: pathname.split("/").includes("/ThirdPartyManagement/EnvironmentSettings"),
-            submenu: [
-              // {
-              //   label: "Services List",
-              //   Link: "EnvironmentSettings/ServicesList",
-              //   LinkLable: "/ThirdPartyManagement",
-              //   active: pathname.includes("/ThirdPartyManagement/EnvironmentSettings/ServicesList"),
-              // },
-                {
-                label: "Providers",
-                Link: "Providers",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/Providers"),
-              },
-              {
-                label: "All Provider APIs",
-                Link: "AllProviderApis",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/AllProviderApis"),
-              },
-            ],
-          },
-          {
-            label: "Clients Management",
-            Link: "Clients",
-            LinkLable: "/ThirdPartyManagement",
-            img: Images.CustomerManagementIcon,
-            active: pathname.split("/").includes("Clients") || pathname.split("/").includes("ClientRequests"),
-            submenu: [
-              {
-                label: "Clients",
-                Link: "Clients",
-                LinkLable: "/ThirdPartyManagement",
-                active: pathname.includes("/ThirdPartyManagement/Clients"),
-              },
-                {
-                 label: "Client Request Prod",
-                 Link: "RequestHistory/ClientRequestProd",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
-               },
-               {
-                 label: "Client Request Dev",
-                 Link: "RequestHistory/ClientRequestDev",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
-               },
-               {
-                 label: "Client Request Test",
-                 Link: "RequestHistory/ClientRequestTest",
-                 LinkLable: "/ThirdPartyManagement",
-                 active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestTest"),
-               },
-               /* {
+    {
+      label: "Connector Management",
+      Link: "/ThirdPartyManagement/Providers",
+      img: Images.ApiManagementIcon,
+      imgActive: Images.ApiManagementIconDark,
+      active: pathname.split("/").includes("/ThirdPartyManagement"),
+      menu: [
+        // {
+        //   label: "Dashboard",
+        //   Link: "Dashboard",
+        //   LinkLable: "/ThirdPartyManagement",
+        //   img: Images.dashboardIcon,
+        //   active: pathname.includes("/ThirdPartyManagement/Dashboard"),
+        // },
+        // {
+        //   label: "Providers",
+        //   Link: "Providers",
+        //   LinkLable: "/ThirdPartyManagement",
+        //   img: Images.PartnerManagementIcon,
+        //   active: pathname.includes("/ThirdPartyManagement/Providers"),
+        // },
+        {
+          label: "Environment Settings",
+          Link: "EnvironmentSettings",
+          LinkLable: "/ThirdPartyManagement",
+          img: Images.SettingsIcon,
+          active: pathname.split("/").includes("/ThirdPartyManagement/EnvironmentSettings"),
+          submenu: [
+            // {
+            //   label: "Services List",
+            //   Link: "EnvironmentSettings/ServicesList",
+            //   LinkLable: "/ThirdPartyManagement",
+            //   active: pathname.includes("/ThirdPartyManagement/EnvironmentSettings/ServicesList"),
+            // },
+            {
+              label: "Providers",
+              Link: "Providers",
+              LinkLable: "/ThirdPartyManagement",
+              active: pathname.includes("/ThirdPartyManagement/Providers"),
+            },
+            {
+              label: "All Provider APIs",
+              Link: "AllProviderApis",
+              LinkLable: "/ThirdPartyManagement",
+              active: pathname.includes("/ThirdPartyManagement/AllProviderApis"),
+            },
+          ],
+        },
+        {
+          label: "Clients Management",
+          Link: "Clients",
+          LinkLable: "/ThirdPartyManagement",
+          img: Images.CustomerManagementIcon,
+          active:
+            pathname.split("/").includes("Clients") ||
+            pathname.split("/").includes("ClientRequests"),
+          submenu: [
+            {
+              label: "Clients",
+              Link: "Clients",
+              LinkLable: "/ThirdPartyManagement",
+              active: pathname.includes("/ThirdPartyManagement/Clients"),
+            },
+            {
+              label: "Client Request Prod",
+              Link: "RequestHistory/ClientRequestProd",
+              LinkLable: "/ThirdPartyManagement",
+              active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
+            },
+            {
+              label: "Client Request Dev",
+              Link: "RequestHistory/ClientRequestDev",
+              LinkLable: "/ThirdPartyManagement",
+              active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
+            },
+            {
+              label: "Client Request Test",
+              Link: "RequestHistory/ClientRequestTest",
+              LinkLable: "/ThirdPartyManagement",
+              active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestTest"),
+            },
+            /* {
                  label: "Request Detail",
                  Link: "RequestHistory/RequestDetail",
                  LinkLable: "/ThirdPartyManagement",
                  active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory/RequestDetail"),
                }, */
-              //  {
-              //    label: "Request Service",
-              //    Link: "RequestHistory/RequestService",
-              //    LinkLable: "/ThirdPartyManagement",
-              //    active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
-              // },
-              // {
-              //   label: "Dev Client Requests",
-              //   Link: "DevClientRequests",
-              //   LinkLable: "/ThirdPartyManagement",
-              //   active: pathname == "/ThirdPartyManagement/DevClientRequests",
-              // },
-              // {
-              //   label: "Prod Client Requests",
-              //   Link: "ProdClientRequests",
-              //   LinkLable: "/ThirdPartyManagement",
-              //   active: pathname == "/ThirdPartyManagement/ProdClientRequests",
-              // },
-              // {
-              //   label: "Client Service Requests",
-              //   Link: "ClientServiceRequests",
-              //   LinkLable: "/ThirdPartyManagement",
-              //   active: pathname == "/ThirdPartyManagement/ClientServiceRequests",
-              // },
-            ],
-          },
-          // {
-          //   label: "Services Management",
-          //   Link: "Services",
-          //   LinkLable: "/ThirdPartyManagement",
-          //   img: Images.logsIcon,
-          //   active: pathname.split("/").includes("Services") || pathname.split("/").includes("EnvironmentSettings"),
-          //   submenu: [
-          //     {
-          //       label: "All Services",
-          //       Link: "Services",
-          //       LinkLable: "/ThirdPartyManagement",
-          //       active: pathname.includes("/ThirdPartyManagement/Services"),
-          //     },
-          //     {
-          //       label: "Services API",
-          //       Link: "Services/Apis",
-          //       LinkLable: "/ThirdPartyManagement",
-          //       active: pathname.includes("/ThirdPartyManagement/Services/Apis"),
-          //     },
-          //     {
-          //       label: "Services Environment",
-          //       Link: "Services/Environment",
-          //       LinkLable: "/ThirdPartyManagement",
-          //       active: pathname.includes("/ThirdPartyManagement/Services/Environment"),
-          //     },
-          //   ],
-          // },
-          // {
-          //   label: "Environment APIs",
-          //   Link: "AllEnvironment",
-          //   LinkLable: "/ThirdPartyManagement",
-          //   img: Images.logsIcon,
-          //   active: pathname.split("/").includes("AllEnvironment") || pathname.split("/").includes("EnvConfig") || pathname.split("/").includes("ExportCsv"),
-          //   submenu: [
-          //     {
-          //       label: "All Environment",
-          //       Link: "AllEnvironment",
-          //       LinkLable: "/ThirdPartyManagement",
-          //       active: pathname.includes("/ThirdPartyManagement/AllEnvironment"),
-          //     },
-          //     {
-          //       label: "Env Config",
-          //       Link: "EnvConfig",
-          //       LinkLable: "/ThirdPartyManagement",
-          //       active: pathname.includes("/ThirdPartyManagement/EnvConfig"),
-          //     },
-          //     {
-          //       label: "Export CSV",
-          //       Link: "ExportCsv",
-          //       LinkLable: "/ThirdPartyManagement",
-          //       active: pathname.includes("/ThirdPartyManagement/ExportCsv"),
-          //     },
-          //   ],
-          // },
-          //  {
-          //    label: "Request History",
-          //    Link: "RequestHistory",
-          //    LinkLable: "/ThirdPartyManagement",
-          //    img: Images.logsIcon,
-          //    active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory"),
-          //    submenu: [
-          //      {
-          //        label: "Client Request Prod",
-          //        Link: "RequestHistory/ClientRequestProd",
-          //        LinkLable: "/ThirdPartyManagement",
-          //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
-          //      },
-          //      {
-          //        label: "Client Request Dev",
-          //        Link: "RequestHistory/ClientRequestDev",
-          //        LinkLable: "/ThirdPartyManagement",
-          //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
-          //      },
-          //      /* {
-          //        label: "Request Detail",
-          //        Link: "RequestHistory/RequestDetail",
-          //        LinkLable: "/ThirdPartyManagement",
-          //        active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory/RequestDetail"),
-          //      }, */
-          //      {
-          //        label: "Request Service",
-          //        Link: "RequestHistory/RequestService",
-          //        LinkLable: "/ThirdPartyManagement",
-          //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
-          //     },
-          //   ],
-          // },
-           /* {
+            //  {
+            //    label: "Request Service",
+            //    Link: "RequestHistory/RequestService",
+            //    LinkLable: "/ThirdPartyManagement",
+            //    active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
+            // },
+            // {
+            //   label: "Dev Client Requests",
+            //   Link: "DevClientRequests",
+            //   LinkLable: "/ThirdPartyManagement",
+            //   active: pathname == "/ThirdPartyManagement/DevClientRequests",
+            // },
+            // {
+            //   label: "Prod Client Requests",
+            //   Link: "ProdClientRequests",
+            //   LinkLable: "/ThirdPartyManagement",
+            //   active: pathname == "/ThirdPartyManagement/ProdClientRequests",
+            // },
+            // {
+            //   label: "Client Service Requests",
+            //   Link: "ClientServiceRequests",
+            //   LinkLable: "/ThirdPartyManagement",
+            //   active: pathname == "/ThirdPartyManagement/ClientServiceRequests",
+            // },
+          ],
+        },
+        // {
+        //   label: "Services Management",
+        //   Link: "Services",
+        //   LinkLable: "/ThirdPartyManagement",
+        //   img: Images.logsIcon,
+        //   active: pathname.split("/").includes("Services") || pathname.split("/").includes("EnvironmentSettings"),
+        //   submenu: [
+        //     {
+        //       label: "All Services",
+        //       Link: "Services",
+        //       LinkLable: "/ThirdPartyManagement",
+        //       active: pathname.includes("/ThirdPartyManagement/Services"),
+        //     },
+        //     {
+        //       label: "Services API",
+        //       Link: "Services/Apis",
+        //       LinkLable: "/ThirdPartyManagement",
+        //       active: pathname.includes("/ThirdPartyManagement/Services/Apis"),
+        //     },
+        //     {
+        //       label: "Services Environment",
+        //       Link: "Services/Environment",
+        //       LinkLable: "/ThirdPartyManagement",
+        //       active: pathname.includes("/ThirdPartyManagement/Services/Environment"),
+        //     },
+        //   ],
+        // },
+        // {
+        //   label: "Environment APIs",
+        //   Link: "AllEnvironment",
+        //   LinkLable: "/ThirdPartyManagement",
+        //   img: Images.logsIcon,
+        //   active: pathname.split("/").includes("AllEnvironment") || pathname.split("/").includes("EnvConfig") || pathname.split("/").includes("ExportCsv"),
+        //   submenu: [
+        //     {
+        //       label: "All Environment",
+        //       Link: "AllEnvironment",
+        //       LinkLable: "/ThirdPartyManagement",
+        //       active: pathname.includes("/ThirdPartyManagement/AllEnvironment"),
+        //     },
+        //     {
+        //       label: "Env Config",
+        //       Link: "EnvConfig",
+        //       LinkLable: "/ThirdPartyManagement",
+        //       active: pathname.includes("/ThirdPartyManagement/EnvConfig"),
+        //     },
+        //     {
+        //       label: "Export CSV",
+        //       Link: "ExportCsv",
+        //       LinkLable: "/ThirdPartyManagement",
+        //       active: pathname.includes("/ThirdPartyManagement/ExportCsv"),
+        //     },
+        //   ],
+        // },
+        //  {
+        //    label: "Request History",
+        //    Link: "RequestHistory",
+        //    LinkLable: "/ThirdPartyManagement",
+        //    img: Images.logsIcon,
+        //    active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory"),
+        //    submenu: [
+        //      {
+        //        label: "Client Request Prod",
+        //        Link: "RequestHistory/ClientRequestProd",
+        //        LinkLable: "/ThirdPartyManagement",
+        //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
+        //      },
+        //      {
+        //        label: "Client Request Dev",
+        //        Link: "RequestHistory/ClientRequestDev",
+        //        LinkLable: "/ThirdPartyManagement",
+        //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
+        //      },
+        //      /* {
+        //        label: "Request Detail",
+        //        Link: "RequestHistory/RequestDetail",
+        //        LinkLable: "/ThirdPartyManagement",
+        //        active: pathname.split("/").includes("/ThirdPartyManagement/RequestHistory/RequestDetail"),
+        //      }, */
+        //      {
+        //        label: "Request Service",
+        //        Link: "RequestHistory/RequestService",
+        //        LinkLable: "/ThirdPartyManagement",
+        //        active: pathname.includes("/ThirdPartyManagement/RequestHistory/RequestService"),
+        //     },
+        //   ],
+        // },
+        /* {
              label: "System Logs",
              Link: "SystemLogs",
              LinkLable: "/ThirdPartyManagement",
@@ -2067,34 +2062,34 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                },
              ],
            }, */
-          //  {
-          //    label: "Settings",
-          //    Link: "Setting/Employees",
-          //    LinkLable: "/ThirdPartyManagement",
-          //    img: Images.SettingsIcon,
-          //    imgActive: Images.SettingsIconDark,
-          //    active: pathname.split("/").includes("/ThirdPartyManagement/Setting"),
-          //    submenu: [
-          //      {
-          //        label: "Employees",
-          //        Link: "Employees",
-          //        LinkLable: "/ThirdPartyManagement/Setting",
-          //        active: pathname == "/ThirdPartyManagement/Setting/Employees",
-          //      },
-          //      {
-          //        label: "Manage Roles",
-          //        Link: "RoleList",
-          //        LinkLable: "/ThirdPartyManagement/Setting",
-          //        active: pathname == "/ThirdPartyManagement/Setting/RoleList",
-          //      },
-          //      {
-          //        label: "Manage Permissions",
-          //        Link: "AssignPermissions",
-          //        LinkLable: "/ThirdPartyManagement/Setting",
-          //        active: pathname == "/ThirdPartyManagement/Setting/AssignPermissions",
-          //      },
-          //    ],
-          //  },
+        //  {
+        //    label: "Settings",
+        //    Link: "Setting/Employees",
+        //    LinkLable: "/ThirdPartyManagement",
+        //    img: Images.SettingsIcon,
+        //    imgActive: Images.SettingsIconDark,
+        //    active: pathname.split("/").includes("/ThirdPartyManagement/Setting"),
+        //    submenu: [
+        //      {
+        //        label: "Employees",
+        //        Link: "Employees",
+        //        LinkLable: "/ThirdPartyManagement/Setting",
+        //        active: pathname == "/ThirdPartyManagement/Setting/Employees",
+        //      },
+        //      {
+        //        label: "Manage Roles",
+        //        Link: "RoleList",
+        //        LinkLable: "/ThirdPartyManagement/Setting",
+        //        active: pathname == "/ThirdPartyManagement/Setting/RoleList",
+        //      },
+        //      {
+        //        label: "Manage Permissions",
+        //        Link: "AssignPermissions",
+        //        LinkLable: "/ThirdPartyManagement/Setting",
+        //        active: pathname == "/ThirdPartyManagement/Setting/AssignPermissions",
+        //      },
+        //    ],
+        //  },
       ],
     },
     // {
@@ -2160,7 +2155,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //       img: Images.SettingsIcon,
     //       active: pathname.includes("/InvestorDashboard/SystemSettings"),
     //       submenu: [
-           
+
     //         {
     //           label: "Income Ranges",
     //           Link: "IncomeRanges",
@@ -2189,7 +2184,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //           img: Images.applicationBoard,
     //           active: pathname.includes("/InvestorDashboard/SystemSettings/InvestmentTimeline"),
     //         },
-              
+
     //       ],
     //     },
     //     {
@@ -2263,9 +2258,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
   // Reference existing Financing-tab modules so they can be reused in the Wallet
   // tab without duplicating their (large) configs.
   const lmsModule = sidebarItems.find((x: any) => x && x.label === "LMS");
-  const connectorModule = sidebarItems.find(
-    (x: any) => x && x.label === "Connector Management"
-  );
+  const connectorModule = sidebarItems.find((x: any) => x && x.label === "Connector Management");
 
   const walletItems: any[] = [
     hasAccess("DASHBOARD") && {
@@ -2280,7 +2273,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.ApiManagementIconDark,
       active: pathname.includes("/LOS/NotificationOrchestrator"),
     },
-    
+
     hasAccess("CUSTOMER") && {
       label: "Customer Management",
       Link: "/CustomerManagement/CustomerList",
@@ -2353,7 +2346,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
-     hasAccess("CARD") && {
+    hasAccess("CARD") && {
       label: "Card Management",
       Link: "CardManagement/Dashboard",
       LinkLable: "",
@@ -2847,9 +2840,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         onClick={() => {
           // Toggle the submenu open/close (multiple can be open at once)
           setOpenSubmenuIndices((prev) =>
-            prev.includes(index)
-              ? prev.filter((i) => i !== index)
-              : [...prev, index]
+            prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index]
           );
         }}
       >
@@ -2872,8 +2863,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         className={`col-12 fw-bold menu-items css-12w9als ${isCollapsed ? "is-collapsed" : ""}`}
         style={{
           fontSize: "13px",
-          backgroundColor:
-            themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
+          backgroundColor: themeStyle?.dashboardSibeBarFlow.flowDashboardSideBarBg,
           display: window.innerWidth <= 768 && !toggled ? "none" : "block",
         }}
       >
@@ -2894,7 +2884,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               width: isCollapsed ? "40px" : "150px",
               height: "auto",
               cursor: "default",
-              transition: "width 0.3s ease"
+              transition: "width 0.3s ease",
             }}
           />
           <img
@@ -2905,7 +2895,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               width: isCollapsed ? "40px" : "150px",
               height: "auto",
               cursor: "default",
-              transition: "width 0.3s ease"
+              transition: "width 0.3s ease",
             }}
           />
           {window.innerWidth <= 768 && !isCollapsed && (
@@ -2923,7 +2913,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             not the Sidebar). At 0 the height snaps instantly, so re-measuring an
             open submenu can't slide the items below it = no jerking. */}
         <Menu transitionDuration={0}>
-          {(
+          {
             <div className="wallet-menu-scope">
               {walletItems.map((item, index) => (
                 <React.Fragment key={index}>
@@ -2932,7 +2922,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                   ) : (
                     <div
                       className="menu-items css-12w9als"
-                      style={{ ["--mi-color" as any]: getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR }}
+                      style={{
+                        ["--mi-color" as any]:
+                          getModuleTheme(item.label)?.color || DEFAULT_MI_COLOR,
+                      }}
                     >
                       <Link
                         to={`${item.Link}`}
@@ -2952,7 +2945,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                 </React.Fragment>
               ))}
             </div>
-          )}
+          }
         </Menu>
       </Sidebar>
       <style>
