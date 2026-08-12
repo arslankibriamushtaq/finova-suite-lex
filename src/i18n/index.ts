@@ -39,6 +39,7 @@ import businessOnboarding from "./locales/businessOnboarding";
 import customersB from "./locales/customersB";
 import exchange from "./locales/exchange";
 import walletLedger from "./locales/walletLedger";
+import walletGlAccounts from "./locales/walletGlAccounts";
 import walletQr from "./locales/walletQr";
 // <-- register new module locale files here (keep alphabetical)
 
@@ -75,6 +76,7 @@ const modules: ModuleLocale[] = [
   customersB,
   exchange,
   walletLedger,
+  walletGlAccounts,
   walletQr,
 ];
 

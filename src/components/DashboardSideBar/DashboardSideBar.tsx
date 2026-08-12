@@ -1484,6 +1484,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               LinkLable: "/Lms/LedgerGl",
               active: pathname.includes("/Lms/LedgerGl/Reconciliation"),
             },
+            {
+              // Which account each wallet rail posts to. A settings screen
+              // rather than an enquiry one, but it belongs to the same desk.
+              label: "Wallet GL Accounts",
+              Link: "WalletAccounts",
+              LinkLable: "/Lms/LedgerGl",
+              active: pathname.includes("/Lms/LedgerGl/WalletAccounts"),
+            },
           ].filter(Boolean),
         },
         hasAccess("accounting_financing_module") &&

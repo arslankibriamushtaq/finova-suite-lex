@@ -125,7 +125,7 @@ const ledgerGl: ModuleLocale = {
     "recon.byType": "By transaction type",
     "recon.empty": "No entries on this date.",
     "recon.syncNote":
-      "Core banking sync has not been switched on yet, so pending sync currently equals the entry count on every day.",
+      "Core banking sync runs on a timer, so a pending count on a recent day is usually a queue rather than a fault. A count that does not clear is worth investigating.",
     "recon.toast.loadFailed": "Failed to load the reconciliation",
   },
   fr: {
@@ -244,7 +244,7 @@ const ledgerGl: ModuleLocale = {
     "recon.byType": "Par type de transaction",
     "recon.empty": "Aucune écriture à cette date.",
     "recon.syncNote":
-      "La synchronisation bancaire n'est pas encore activée : les écritures en attente égalent donc le total de chaque journée.",
+      "La synchronisation bancaire s'exécute périodiquement : un nombre en attente sur une journée récente traduit généralement une file d'attente, non une anomalie. Un nombre qui ne diminue pas mérite un examen.",
     "recon.toast.loadFailed": "Échec du chargement du rapprochement",
   },
   ar: {
@@ -361,7 +361,7 @@ const ledgerGl: ModuleLocale = {
     "recon.byType": "حسب نوع العملية",
     "recon.empty": "لا توجد قيود في هذا التاريخ.",
     "recon.syncNote":
-      "لم تُفعّل المزامنة مع النظام المصرفي بعد، لذا تساوي القيود المنتظرة إجمالي قيود اليوم.",
+      "تعمل المزامنة مع النظام المصرفي دوريًا، لذا فإن وجود قيود منتظرة في يوم قريب يعني عادةً وجود طابور انتظار لا خللًا. أما العدد الذي لا يتناقص فيستحق الفحص.",
     "recon.toast.loadFailed": "تعذر تحميل التسوية",
   },
 };

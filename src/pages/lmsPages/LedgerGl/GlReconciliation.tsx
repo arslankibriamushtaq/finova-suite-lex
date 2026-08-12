@@ -88,11 +88,7 @@ const GlReconciliation = () => {
               title={t("recon.reconciledHint")}
               className={`border gap-1 font-medium ${reconciled ? TONES.emerald : TONES.amber}`}
             >
-              {reconciled ? (
-                <CheckCircle2 className="h-3 w-3" />
-              ) : (
-                <XCircle className="h-3 w-3" />
-              )}
+              {reconciled ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
               {reconciled ? t("recon.reconciled") : t("recon.notReconciled")}
             </Badge>
           )}
@@ -122,8 +118,8 @@ const GlReconciliation = () => {
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>{t("recon.reconciledHint")}</span>
           </div>
-          {/* Fineract sync has never run, so this figure is expected to equal
-              the entry count on every day until it is switched on. */}
+          {/* Sync runs on a timer now, so a pending count on a recent day is
+              usually a queue and not a fault. What does not clear is a fault. */}
           <div className="flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
             <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
             <span>{t("recon.syncNote")}</span>

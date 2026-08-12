@@ -1,29 +1,29 @@
-import { useSelector } from "react-redux"
-import { RootState } from "../redux/rootReducer"
-import { implementWorkFlowAction } from "../redux/apis/apisCrudWebPageManagement"
-import toast from "react-hot-toast"
-import { isSuperAdminFromToken } from "../utils/getLandingRoute"
+import { useSelector } from "react-redux";
+import { RootState } from "../redux/rootReducer";
+import { implementWorkFlowAction } from "../redux/apis/apisCrudWebPageManagement";
+import toast from "react-hot-toast";
+import { isSuperAdminFromToken } from "../utils/getLandingRoute";
 
 /** Decode a JWT and return true if it carries the `super_admin` Keycloak realm role. */
 function tokenIsSuperAdmin(token?: string): boolean {
-  if (!token || typeof token !== "string") return false
+  if (!token || typeof token !== "string") return false;
   try {
-    const payload = token.split(".")[1]
-    if (!payload) return false
-    const claims = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")))
-    return isSuperAdminFromToken(claims)
+    const payload = token.split(".")[1];
+    if (!payload) return false;
+    const claims = JSON.parse(atob(payload.replace(/-/g, "+").replace(/_/g, "/")));
+    return isSuperAdminFromToken(claims);
   } catch {
-    return false
+    return false;
   }
 }
 
 interface Permission {
-  id: number
-  name?: string
-  permissionName?: string
-  permissionCode?: string
-  code?: string
-  moduleId?: number
+  id: number;
+  name?: string;
+  permissionName?: string;
+  permissionCode?: string;
+  code?: string;
+  moduleId?: number;
 }
 
 /**
@@ -36,7 +36,7 @@ interface Permission {
 const getPermissionKeys = (p: Permission): string[] =>
   [p?.permissionCode, p?.code, p?.name, p?.permissionName]
     .filter((v): v is string => typeof v === "string" && v.trim() !== "")
-    .map((v) => v.trim().toLowerCase())
+    .map((v) => v.trim().toLowerCase());
 
 // ============================================
 // WORKFLOW ACTION TYPES
@@ -58,43 +58,43 @@ export const WORKFLOW_MODULE_NAMES = {
   PRODUCT_ADMIN: "product_admin",
   DOCUMENT: "document",
   PROCESSING_FEE_SLAB: "processing_fee_slab",
-  
+
   // Department Management
   DEPARTMENT: "department",
-  
+
   // LOV Management
   PURPOSE_OF_FINANCE: "purpose_of_finance",
   SOURCE_OF_REVENUE: "source_of_revenue",
   SUB_COMMODITY_TYPE: "sub_commodity_type",
-  
+
   // Partner Management
   PARTNER: "partner",
   PARTNER_ADMIN: "partner_admin",
-  
+
   // Settings
   EMPLOYEE: "employee",
   ROLE: "role",
   PERMISSION: "permission",
-  
+
   // API Management
   API: "api",
-  
+
   // Block Codes (for future use)
   USER_BLOCK_COMPLIANCE: "user_block_compliance",
   USER_BLOCK_AML: "user_block_aml",
   USER_BLOCK_ANTI_FRAUD: "user_block_anti_fraud",
   USER_BLOCK_SANCTION: "user_block_sanction",
   BLOCK_ENTITY: "block_entity",
-  
+
   // Write Off
   WRITE_OFF: "write_off",
-  
+
   // Workflow
   WORKFLOW: "workflow",
-  
+
   // Invoice
   INVOICE_ADMIN: "invoice_admin",
-}
+};
 
 // ============================================
 // PERMISSION CONSTANTS - Add all module permissions here
@@ -109,7 +109,17 @@ export const LEDGER_GL_PERMISSIONS = {
   READ: "gl.entries:read",
   RETRY: "gl.entries:retry",
   REVERSE: "ledger.entries:reverse",
-}
+};
+
+/**
+ * Which GL account each wallet rail posts to.
+ * Read goes to most back-office roles; write is admin / head_of_accounts only,
+ * because the blast radius is every wallet transaction from then on.
+ */
+export const WALLET_GL_ACCOUNT_PERMISSIONS = {
+  READ: "ledger.wallet-gl-accounts:read",
+  WRITE: "ledger.wallet-gl-accounts:write",
+};
 
 // Product Management Module permission names (legacy / workflow)
 export const PRODUCT_PERMISSIONS = {
@@ -127,7 +137,7 @@ export const PRODUCT_PERMISSIONS = {
   ADMIN_CHECKER_REJECT: "product_admin.checker.reject",
   ADMIN_APPROVER_APPROVE: "product_admin.approver.approve",
   ADMIN_APPROVER_REJECT: "product_admin.approver.reject",
-}
+};
 
 // New LOS API permission names (product_management_module permissionsList)
 // Use these with hasPermission() when your API returns this structure
@@ -145,7 +155,7 @@ export const PRODUCT_PERMISSIONS_LOS = {
   CREATE_ADMIN: "PRODUCT_CREATE",
   EDIT_ADMIN: "PRODUCT_UPDATE",
   DELETE_ADMIN: "PRODUCT_DELETE",
-} as const
+} as const;
 
 // Document Module permission names (moduleId: 14)
 // Required documents live under the backend PRODUCT module as PRODUCT_DOCUMENT_*.
@@ -161,7 +171,7 @@ export const DOCUMENT_PERMISSIONS = {
   CHECKER_REJECT: "document.checker.reject",
   APPROVER_APPROVE: "document.approver.approve",
   APPROVER_REJECT: "document.approver.reject",
-}
+};
 
 // ============================================
 // MODULE 3-4: Application Board Module
@@ -170,7 +180,7 @@ export const BOARD_ACTIONS_PERMISSIONS = {
   CREATE_CHAT: "create_chat",
   DEPARTMENT_ASSIGNMENT: "department_assignment",
   USER_ASSIGNMENT: "user_assignment",
-}
+};
 
 // ============================================
 // MODULE 5-9: Customer Management Module
@@ -180,12 +190,12 @@ export const BOARD_ACTIONS_PERMISSIONS = {
 export const LEAD_PERMISSIONS = {
   LIST: "CUSTOMER_READ",
   EXPORT: "CUSTOMER_READ",
-}
+};
 
 export const CUSTOMER_PERMISSIONS = {
   LIST: "CUSTOMER_READ",
   EXPORT: "CUSTOMER_READ",
-}
+};
 
 // Business (SME) lives under Customer Management and has no dedicated backend
 // codes — it reuses CUSTOMER_READ/WRITE so the gates actually resolve. Named
@@ -196,17 +206,17 @@ export const BUSINESS_PERMISSIONS = {
   VIEW: "CUSTOMER_READ",
   /** Approve / reject business documents, manage block codes. */
   REVIEW: "CUSTOMER_WRITE",
-}
+};
 
 export const OPPORTUNITY_PERMISSIONS = {
   LIST: "CUSTOMER_READ",
   EXPORT: "CUSTOMER_READ",
-}
+};
 
 export const ONBOARD_CUSTOMERS_PERMISSIONS = {
   LIST: "ONBOARDING_READ",
   RESEND_EMAIL: "ONBOARDING_WRITE",
-}
+};
 
 // ============================================
 // MODULE 10-22: Product Management (already defined above)
@@ -215,21 +225,21 @@ export const ONBOARD_CUSTOMERS_PERMISSIONS = {
 export const ASSIGNED_PRODUCT_CATEGORY_PERMISSIONS = {
   LIST: "list_assigned_product_category",
   UPDATE: "update_assigned_product_category",
-}
+};
 
 export const PRODUCT_PARTNERS_PERMISSIONS = {
   LIST: "list_product_partner",
   UPDATE: "update_product_partner",
-}
+};
 
 export const PRODUCT_INSURANCE_VENDORS_PERMISSIONS = {
   LIST: "list_product_insurance_vendor",
   UPDATE: "update_product_insurance_vendor",
-}
+};
 
 export const PRODUCT_SETTING_PERMISSIONS = {
   LIST: "list_product_setting",
-}
+};
 
 export const PROCESSING_FEE_SLAB_PERMISSIONS = {
   LIST: "list_processing_fee_slab",
@@ -242,33 +252,33 @@ export const PROCESSING_FEE_SLAB_PERMISSIONS = {
   CHECKER_REJECT: "processing_fee_slab.checker.reject",
   APPROVER_APPROVE: "processing_fee_slab.approver.approve",
   APPROVER_REJECT: "processing_fee_slab.approver.reject",
-}
+};
 
 export const PRODUCT_VERIFICATION_METHODS_PERMISSIONS = {
   LIST: "product_verification_methods",
   UPDATE: "update_product_verification_methods",
-}
+};
 
 export const APPLICATION_STEPS_PERMISSIONS = {
   VIEW: "application_steps",
-}
+};
 
 export const TERMS_CONDITIONS_PERMISSIONS = {
   VIEW: "terms_&_conditions",
-}
+};
 
 export const FEE_SETTING_PERMISSIONS = {
   VIEW: "application_fee",
-}
+};
 
 export const API_REQUEST_DURATION_PERMISSIONS = {
   VIEW: "api_request_duration",
   UPDATE: "update_api_request_duration",
-}
+};
 
 export const DEPARTMENT_PERMISSION_MODULE_PERMISSIONS = {
   VIEW: "department_permission",
-}
+};
 
 // ============================================
 // MODULE 23: Insurance Vendors Management
@@ -285,7 +295,7 @@ export const VENDOR_PERMISSIONS = {
   SHOW: "show_vendor",
   DELETE: "delete_vendor",
   UPDATE_STATUS: "update_vendor_status",
-}
+};
 
 // ============================================
 // MODULE 24-26: Department Management
@@ -294,7 +304,7 @@ export const DEPARTMENT_PERMISSIONS_MODULE = {
   LIST: "list_department_permissions",
   UPDATE: "update_department_permissions",
   SHOW_ASSIGNED: "show_assigned_department_permissions",
-}
+};
 
 export const DEPARTMENT_PERMISSIONS = {
   CREATE: "create_department",
@@ -310,14 +320,14 @@ export const DEPARTMENT_PERMISSIONS = {
   CHECKER_REJECT: "department.checker.reject",
   APPROVER_APPROVE: "department.approver.approve",
   APPROVER_REJECT: "department.approver.reject",
-}
+};
 
 // ============================================
 // MODULE 27-35: LOV Management
 // ============================================
 export const LOV_PERMISSIONS = {
   MANAGEMENT: "lov_management",
-}
+};
 
 export const PURPOSE_OF_FINANCE_PERMISSIONS = {
   CREATE: "create_purpose_of_finance",
@@ -332,7 +342,7 @@ export const PURPOSE_OF_FINANCE_PERMISSIONS = {
   CHECKER_REJECT: "purpose_of_finance.checker.reject",
   APPROVER_APPROVE: "purpose_of_finance.approver.approve",
   APPROVER_REJECT: "purpose_of_finance.approver.reject",
-}
+};
 
 // NOTE(permissions): "Source of Revenue" is served by the LEGACY backend
 // (VITE_REACT_APP_API_BASE_URL, /source-of-revenue) and is distinct from the new
@@ -352,7 +362,7 @@ export const SOURCE_OF_REVENUE_PERMISSIONS = {
   CHECKER_REJECT: "source_of_revenue.checker.reject",
   APPROVER_APPROVE: "source_of_revenue.approver.approve",
   APPROVER_REJECT: "source_of_revenue.approver.reject",
-}
+};
 
 // NOTE(permissions): Check-Types are served by the LEGACY backend
 // (VITE_REACT_APP_API_BASE_URL, /check-type), not the identity-service. The new LOV
@@ -367,7 +377,7 @@ export const CHECKS_TYPES_PERMISSIONS = {
   SHOW: "show_checks_type",
   UPDATE_STATUS: "update_checks_type_status",
   LIST_CONSTANT: "list_constant_checks_type",
-}
+};
 
 export const TYPES_REASONS_PERMISSIONS = {
   LIST: "list_types_reason",
@@ -376,7 +386,7 @@ export const TYPES_REASONS_PERMISSIONS = {
   DELETE: "delete_types_reason",
   SHOW: "show_types_reason",
   UPDATE_STATUS: "update_types_reason_status",
-}
+};
 
 export const PRODUCT_CATEGORIES_PERMISSIONS = {
   LIST: "PRODUCT_CATEGORY_READ",
@@ -385,7 +395,7 @@ export const PRODUCT_CATEGORIES_PERMISSIONS = {
   DELETE: "PRODUCT_CATEGORY_DELETE",
   UPDATE_STATUS: "PRODUCT_CATEGORY_UPDATE",
   SET_DEFAULT: "PRODUCT_CATEGORY_UPDATE",
-}
+};
 
 export const PRODUCT_TYPES_PERMISSIONS = {
   LIST: "list_product_type",
@@ -393,7 +403,7 @@ export const PRODUCT_TYPES_PERMISSIONS = {
   UPDATE_STATUS: "update_product_type_status",
   SHOW: "show_product_type",
   DELETE: "delete_product_type",
-}
+};
 
 export const COMMODITY_TYPES_PERMISSIONS = {
   LIST: "list_commodity_type",
@@ -402,7 +412,7 @@ export const COMMODITY_TYPES_PERMISSIONS = {
   SHOW: "show_commodity_type",
   DELETE: "delete_commodity_type",
   UPDATE_STATUS: "update_commodity_type_status",
-}
+};
 
 export const SUB_COMMODITY_TYPES_PERMISSIONS = {
   LIST: "list_sub_commodity_type",
@@ -414,7 +424,7 @@ export const SUB_COMMODITY_TYPES_PERMISSIONS = {
   CHECKER_REJECT: "sub_commodity_type.checker.reject",
   APPROVER_APPROVE: "sub_commodity_type.approver.approve",
   APPROVER_REJECT: "sub_commodity_type.approver.reject",
-}
+};
 
 // ============================================
 // MODULE 36-39: Loan Management
@@ -424,11 +434,11 @@ export const LOAN_PERMISSIONS = {
   RESEND_LOGIN_EMAIL: "resend_login_email",
   EXPORT_CSV: "export_csv",
   RETRY_KASTLE: "retry_kastle_entry",
-}
+};
 
 export const LOAN_APPLICATION_PERMISSIONS = {
   LIST: "list_application",
-}
+};
 
 export const VIEW_LOAN_APPLICATION_PERMISSIONS = {
   VIEW: "view_application",
@@ -448,11 +458,11 @@ export const VIEW_LOAN_APPLICATION_PERMISSIONS = {
   CALCULATE_WEIGHTAGE: "calculate_weightage",
   APPROVE_CREDIT: "approve_credit_check",
   REJECT_CREDIT: "reject_credit_check",
-}
+};
 
 export const ACTIVITY_LOGS_PERMISSIONS = {
   LIST: "list_activity_logs",
-}
+};
 
 // ============================================
 // MODULE 40-41: Partner Management
@@ -473,7 +483,7 @@ export const PARTNER_PERMISSIONS = {
   APPROVER_APPROVE: "partner.approver.approve",
   APPROVER_REJECT: "partner.approver.reject",
   LIST_COMMISSION: "PARTNER_READ",
-}
+};
 
 // Backend has no separate partner-admin module — gate under the Partner module.
 export const PARTNER_ADMIN_PERMISSIONS = {
@@ -490,14 +500,14 @@ export const PARTNER_ADMIN_PERMISSIONS = {
   CHECKER_REJECT: "partner_admin.checker.reject",
   APPROVER_APPROVE: "partner_admin.approver.approve",
   APPROVER_REJECT: "partner_admin.approver.reject",
-}
+};
 
 // ============================================
 // MODULE 42-45: Settings Management
 // ============================================
 export const SETTING_PERMISSIONS = {
   MANAGEMENT: "setting_management",
-}
+};
 
 export const EMPLOYEE_PERMISSIONS = {
   CREATE: "EMPLOYEE_CREATE",
@@ -516,7 +526,7 @@ export const EMPLOYEE_PERMISSIONS = {
   CHECKER_REJECT: "employee.checker.reject",
   APPROVER_APPROVE: "employee.approver.approve",
   APPROVER_REJECT: "employee.approver.reject",
-}
+};
 
 export const ROLE_PERMISSIONS = {
   LIST: "ROLE_READ",
@@ -534,7 +544,7 @@ export const ROLE_PERMISSIONS = {
   CHECKER_REJECT: "role.checker.reject",
   APPROVER_APPROVE: "role.approver.approve",
   APPROVER_REJECT: "role.approver.reject",
-}
+};
 
 export const PERMISSION_PERMISSIONS = {
   LIST: "PERMISSION_READ",
@@ -549,7 +559,7 @@ export const PERMISSION_PERMISSIONS = {
   CHECKER_REJECT: "permission.checker.reject",
   APPROVER_APPROVE: "permission.approver.approve",
   APPROVER_REJECT: "permission.approver.reject",
-}
+};
 
 // ============================================
 // MODULE 50: API Management
@@ -574,7 +584,7 @@ export const API_PERMISSIONS = {
   CHECKER_REJECT: "api.checker.reject",
   APPROVER_APPROVE: "api.approver.approve",
   APPROVER_REJECT: "api.approver.reject",
-}
+};
 
 // ============================================
 // RISK Management — identity-service RISK_* codes
@@ -584,28 +594,28 @@ export const RISK_BLACKLIST_PERMISSIONS = {
   CREATE: "RISK_BLACKLIST_CREATE",
   DELETE: "RISK_BLACKLIST_DELETE",
   CHECK: "RISK_BLACKLIST_CHECK",
-}
+};
 
 export const RISK_DEVICES_PERMISSIONS = {
   LIST: "RISK_DEVICES_READ",
   CREATE: "RISK_DEVICES_CREATE",
   EDIT: "RISK_DEVICES_UPDATE",
   DELETE: "RISK_DEVICES_DELETE",
-}
+};
 
 export const RISK_FRAUD_PERMISSIONS = {
   LIST: "RISK_FRAUD_RULES_READ",
   CREATE: "RISK_FRAUD_RULES_CREATE",
   EDIT: "RISK_FRAUD_RULES_UPDATE",
   DELETE: "RISK_FRAUD_RULES_DELETE",
-}
+};
 
 // Internal checks / risk parameters / thresholds config
 export const RISK_CONFIG_PERMISSIONS = {
   LIST: "RISK_PARAMETERS_READ",
   EDIT: "RISK_PARAMETERS_UPDATE",
   MANAGE: "RISK_PARAMETERS_MANAGE",
-}
+};
 
 // ============================================
 // POLICY (lending policies: dunning, reschedule, waivers) — identity-service POLICY_*
@@ -617,7 +627,7 @@ export const POLICY_PERMISSIONS = {
   DELETE: "POLICY_DELETE",
   MANAGE: "POLICY_MANAGE",
   AUTHORIZE: "POLICY_AUTHORIZE",
-}
+};
 
 // ============================================
 // WALLET admin (transfer charges, account limits) — identity-service WALLET_*
@@ -627,7 +637,7 @@ export const WALLET_PERMISSIONS = {
   CREATE: "WALLET_CREATE",
   EDIT: "WALLET_WRITE", // backend Wallet has CREATE/READ/WRITE/MANAGE (no UPDATE/DELETE)
   MANAGE: "WALLET_MANAGE",
-}
+};
 
 // ============================================
 // EXCHANGE — Exchange Top-up (providers + payments). Module code: EXCHANGE.
@@ -648,7 +658,7 @@ export const EXCHANGE_PERMISSIONS = {
   DOCUMENT_TYPE_EDIT: "EXCHANGE_DOCUMENT_TYPE_UPDATE",
   VERIFICATION_LIST: "EXCHANGE_VERIFICATION_READ",
   VERIFICATION_REVIEW: "EXCHANGE_VERIFICATION_REVIEW", // approve/reject
-}
+};
 
 // ============================================
 // BNPL — wallet-service, Casbin object `wallet.bnpl.admin-categories`
@@ -665,7 +675,7 @@ export const BNPL_PERMISSIONS = {
   // Casbin object `wallet.bnpl.admin-currency-limits` (acts: read / update).
   CURRENCY_LIMIT_READ: "BNPL_CURRENCY_LIMIT_READ",
   CURRENCY_LIMIT_UPDATE: "BNPL_CURRENCY_LIMIT_UPDATE",
-}
+};
 
 // ============================================
 // SullisCash — wallet-service, Casbin object `wallet.sullis-cash.admin-config`
@@ -676,7 +686,7 @@ export const SULLIS_CASH_PERMISSIONS = {
   MODULE: "SULLIS_CASH",
   CONFIG_READ: "SULLIS_CASH_CONFIG_READ",
   CONFIG_UPDATE: "SULLIS_CASH_CONFIG_UPDATE",
-}
+};
 
 // ============================================
 // KYC — identity-service KYC_*
@@ -684,58 +694,88 @@ export const SULLIS_CASH_PERMISSIONS = {
 export const KYC_PERMISSIONS = {
   LIST: "KYC_READ",
   EDIT: "KYC_WRITE",
-}
+};
 
 // ============================================
 // LOV entities (EDD reference data) — identity-service LOV_* codes
 // ============================================
 export const LOV_SOURCE_OF_FUNDS_PERMISSIONS = {
-  LIST: "LOV_SOF_READ", CREATE: "LOV_SOF_CREATE", EDIT: "LOV_SOF_UPDATE", DELETE: "LOV_SOF_DELETE",
-}
+  LIST: "LOV_SOF_READ",
+  CREATE: "LOV_SOF_CREATE",
+  EDIT: "LOV_SOF_UPDATE",
+  DELETE: "LOV_SOF_DELETE",
+};
 export const LOV_SOURCE_OF_INCOME_PERMISSIONS = {
-  LIST: "LOV_SOI_READ", CREATE: "LOV_SOI_CREATE", EDIT: "LOV_SOI_UPDATE", DELETE: "LOV_SOI_DELETE",
-}
+  LIST: "LOV_SOI_READ",
+  CREATE: "LOV_SOI_CREATE",
+  EDIT: "LOV_SOI_UPDATE",
+  DELETE: "LOV_SOI_DELETE",
+};
 export const LOV_SOURCE_OF_WEALTH_PERMISSIONS = {
-  LIST: "LOV_SOW_READ", CREATE: "LOV_SOW_CREATE", EDIT: "LOV_SOW_UPDATE", DELETE: "LOV_SOW_DELETE",
-}
+  LIST: "LOV_SOW_READ",
+  CREATE: "LOV_SOW_CREATE",
+  EDIT: "LOV_SOW_UPDATE",
+  DELETE: "LOV_SOW_DELETE",
+};
 export const LOV_PURPOSE_OF_FINANCE_PERMISSIONS = {
-  LIST: "LOV_POF_READ", CREATE: "LOV_POF_CREATE", EDIT: "LOV_POF_UPDATE", DELETE: "LOV_POF_DELETE",
-}
+  LIST: "LOV_POF_READ",
+  CREATE: "LOV_POF_CREATE",
+  EDIT: "LOV_POF_UPDATE",
+  DELETE: "LOV_POF_DELETE",
+};
 export const LOV_NET_WORTH_RANGE_PERMISSIONS = {
-  LIST: "LOV_NWR_READ", CREATE: "LOV_NWR_CREATE", EDIT: "LOV_NWR_UPDATE", DELETE: "LOV_NWR_DELETE",
-}
+  LIST: "LOV_NWR_READ",
+  CREATE: "LOV_NWR_CREATE",
+  EDIT: "LOV_NWR_UPDATE",
+  DELETE: "LOV_NWR_DELETE",
+};
 export const LOV_RELATIONSHIP_PERMISSIONS = {
-  LIST: "LOV_RELATIONSHIP_READ", CREATE: "LOV_RELATIONSHIP_CREATE", EDIT: "LOV_RELATIONSHIP_UPDATE", DELETE: "LOV_RELATIONSHIP_DELETE",
-}
+  LIST: "LOV_RELATIONSHIP_READ",
+  CREATE: "LOV_RELATIONSHIP_CREATE",
+  EDIT: "LOV_RELATIONSHIP_UPDATE",
+  DELETE: "LOV_RELATIONSHIP_DELETE",
+};
 export const LOV_APPROVAL_CONDITION_PERMISSIONS = {
-  LIST: "APPROVAL_CONDITION_FIELD_READ", CREATE: "APPROVAL_CONDITION_FIELD_CREATE", EDIT: "APPROVAL_CONDITION_FIELD_UPDATE", DELETE: "APPROVAL_CONDITION_FIELD_DELETE",
-}
+  LIST: "APPROVAL_CONDITION_FIELD_READ",
+  CREATE: "APPROVAL_CONDITION_FIELD_CREATE",
+  EDIT: "APPROVAL_CONDITION_FIELD_UPDATE",
+  DELETE: "APPROVAL_CONDITION_FIELD_DELETE",
+};
 export const RISK_CREDIT_SCORING_FIELDS_PERMISSIONS = {
-  LIST: "RISK_CREDIT_SCORING_FIELDS_READ", CREATE: "RISK_CREDIT_SCORING_FIELDS_CREATE", EDIT: "RISK_CREDIT_SCORING_FIELDS_UPDATE", DELETE: "RISK_CREDIT_SCORING_FIELDS_DELETE",
-}
+  LIST: "RISK_CREDIT_SCORING_FIELDS_READ",
+  CREATE: "RISK_CREDIT_SCORING_FIELDS_CREATE",
+  EDIT: "RISK_CREDIT_SCORING_FIELDS_UPDATE",
+  DELETE: "RISK_CREDIT_SCORING_FIELDS_DELETE",
+};
 // PRODUCT-module reference data (countries, template types) live under the Product module.
 export const PRODUCT_COUNTRY_PERMISSIONS = {
-  LIST: "COUNTRY_READ", CREATE: "COUNTRY_CREATE", EDIT: "COUNTRY_UPDATE", DELETE: "COUNTRY_DELETE",
-}
+  LIST: "COUNTRY_READ",
+  CREATE: "COUNTRY_CREATE",
+  EDIT: "COUNTRY_UPDATE",
+  DELETE: "COUNTRY_DELETE",
+};
 export const PRODUCT_TEMPLATE_TYPE_PERMISSIONS = {
-  LIST: "TEMPLATE_TYPE_READ", CREATE: "TEMPLATE_TYPE_CREATE", EDIT: "TEMPLATE_TYPE_UPDATE", DELETE: "TEMPLATE_TYPE_DELETE",
-}
+  LIST: "TEMPLATE_TYPE_READ",
+  CREATE: "TEMPLATE_TYPE_CREATE",
+  EDIT: "TEMPLATE_TYPE_UPDATE",
+  DELETE: "TEMPLATE_TYPE_DELETE",
+};
 
 /** Get all modules array from Redux permission data (los or direct array) */
 function getAllModulesFromPermissionData(permissionData: any): any[] {
-  if (!permissionData) return []
-  if (permissionData?.los && Array.isArray(permissionData.los)) return permissionData.los
-  if (Array.isArray(permissionData)) return permissionData
-  return []
+  if (!permissionData) return [];
+  if (permissionData?.los && Array.isArray(permissionData.los)) return permissionData.los;
+  if (Array.isArray(permissionData)) return permissionData;
+  return [];
 }
 
 export const useProductPermissions = () => {
-  const permissionData = useSelector((state: RootState) => state.block.permissions)
-  const token = useSelector((state: RootState) => state.block.token)
-  const allModules = getAllModulesFromPermissionData(permissionData)
+  const permissionData = useSelector((state: RootState) => state.block.permissions);
+  const token = useSelector((state: RootState) => state.block.token);
+  const allModules = getAllModulesFromPermissionData(permissionData);
   // Super admin has no role/permissions assigned but carries the `super_admin`
   // Keycloak realm role — grant them every permission so gated actions stay visible.
-  const isSuperAdmin = tokenIsSuperAdmin(token)
+  const isSuperAdmin = tokenIsSuperAdmin(token);
 
   /**
    * Check if user has a specific permission
@@ -743,59 +783,59 @@ export const useProductPermissions = () => {
    * @returns boolean indicating if user has the permission
    */
   const hasPermission = (permissionName: string): boolean => {
-    if (isSuperAdmin) return true
-    if (!permissionName || allModules.length === 0) return false
+    if (isSuperAdmin) return true;
+    if (!permissionName || allModules.length === 0) return false;
 
-    const target = permissionName.trim().toLowerCase()
-    const matches = (p: Permission) => getPermissionKeys(p).includes(target)
+    const target = permissionName.trim().toLowerCase();
+    const matches = (p: Permission) => getPermissionKeys(p).includes(target);
 
     const findPermissionInModule = (module: any): boolean => {
       if (module.permissionsList && Array.isArray(module.permissionsList)) {
-        if (module.permissionsList.some(matches)) return true
+        if (module.permissionsList.some(matches)) return true;
       }
       if (module.permissions && Array.isArray(module.permissions)) {
-        if (module.permissions.some(matches)) return true
+        if (module.permissions.some(matches)) return true;
       }
       if (module.sub_modules && Array.isArray(module.sub_modules)) {
         for (const subModule of module.sub_modules) {
-          if (findPermissionInModule(subModule)) return true
+          if (findPermissionInModule(subModule)) return true;
         }
       }
       if (module.subModulesList && Array.isArray(module.subModulesList)) {
         for (const subModule of module.subModulesList) {
-          if (findPermissionInModule(subModule)) return true
+          if (findPermissionInModule(subModule)) return true;
         }
       }
-      return false
-    }
+      return false;
+    };
 
-    return allModules.some((module: any) => findPermissionInModule(module))
-  }
+    return allModules.some((module: any) => findPermissionInModule(module));
+  };
 
   /**
    * Get all permission names for a module (and its submodules) by moduleName.
    * Useful for custom checks when using the new LOS module structure.
    */
   const getModulePermissionNames = (moduleName: string): string[] => {
-    const names: string[] = []
+    const names: string[] = [];
     const collect = (module: any) => {
       if (module.permissionsList && Array.isArray(module.permissionsList)) {
-        module.permissionsList.forEach((p: Permission) => names.push(...getPermissionKeys(p)))
+        module.permissionsList.forEach((p: Permission) => names.push(...getPermissionKeys(p)));
       }
       if (module.permissions && Array.isArray(module.permissions)) {
-        module.permissions.forEach((p: Permission) => names.push(...getPermissionKeys(p)))
+        module.permissions.forEach((p: Permission) => names.push(...getPermissionKeys(p)));
       }
       if (module.subModulesList && Array.isArray(module.subModulesList)) {
-        module.subModulesList.forEach((sub: any) => collect(sub))
+        module.subModulesList.forEach((sub: any) => collect(sub));
       }
       if (module.sub_modules && Array.isArray(module.sub_modules)) {
-        module.sub_modules.forEach((sub: any) => collect(sub))
+        module.sub_modules.forEach((sub: any) => collect(sub));
       }
-    }
-    const module = allModules.find((m: any) => m.moduleName === moduleName)
-    if (module) collect(module)
-    return names
-  }
+    };
+    const module = allModules.find((m: any) => m.moduleName === moduleName);
+    if (module) collect(module);
+    return names;
+  };
 
   /**
    * Check if user has any of the given permissions
@@ -803,8 +843,8 @@ export const useProductPermissions = () => {
    * @returns boolean indicating if user has any of the permissions
    */
   const hasAnyPermission = (permissionNames: string[]): boolean => {
-    return permissionNames.some((name) => hasPermission(name))
-  }
+    return permissionNames.some((name) => hasPermission(name));
+  };
 
   // Convenience methods for common permission checks
 
@@ -823,8 +863,8 @@ export const useProductPermissions = () => {
       PRODUCT_PERMISSIONS_LOS.CREATE_ADMIN,
       PRODUCT_PERMISSIONS_LOS.EDIT_ADMIN,
       PRODUCT_PERMISSIONS_LOS.DELETE_ADMIN,
-    ])
-  }
+    ]);
+  };
 
   /**
    * Check if user can verify (checker permissions)
@@ -833,8 +873,8 @@ export const useProductPermissions = () => {
     return hasAnyPermission([
       PRODUCT_PERMISSIONS.CHECKER_VERIFY,
       PRODUCT_PERMISSIONS.ADMIN_CHECKER_VERIFY,
-    ])
-  }
+    ]);
+  };
 
   /**
    * Check if user can reject as checker
@@ -843,8 +883,8 @@ export const useProductPermissions = () => {
     return hasAnyPermission([
       PRODUCT_PERMISSIONS.CHECKER_REJECT,
       PRODUCT_PERMISSIONS.ADMIN_CHECKER_REJECT,
-    ])
-  }
+    ]);
+  };
 
   /**
    * Check if user can approve (approver permissions)
@@ -853,8 +893,8 @@ export const useProductPermissions = () => {
     return hasAnyPermission([
       PRODUCT_PERMISSIONS.APPROVER_APPROVE,
       PRODUCT_PERMISSIONS.ADMIN_APPROVER_APPROVE,
-    ])
-  }
+    ]);
+  };
 
   /**
    * Check if user can reject as approver
@@ -863,86 +903,85 @@ export const useProductPermissions = () => {
     return hasAnyPermission([
       PRODUCT_PERMISSIONS.APPROVER_REJECT,
       PRODUCT_PERMISSIONS.ADMIN_APPROVER_REJECT,
-    ])
-  }
+    ]);
+  };
 
   // Alias methods
-  const canAdd = (): boolean => canMakeChanges()
-  const canEdit = (): boolean => canMakeChanges()
-  const canDelete = (): boolean => canMakeChanges()
+  const canAdd = (): boolean => canMakeChanges();
+  const canEdit = (): boolean => canMakeChanges();
+  const canDelete = (): boolean => canMakeChanges();
 
   // ============================================
   // GENERIC PERMISSION HELPERS - Use for any module
   // ============================================
-  
+
   /**
    * Generic helper to check if user can perform CRUD operations
    * @param permissionObj - Permission constants object (e.g., DOCUMENT_PERMISSIONS, PRODUCT_PERMISSIONS)
    */
   const canCreate = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.CREATE,
-      permissionObj.MAKER_SUBMIT,
-      permissionObj.MAKER_RESUBMIT,
-      permissionObj.ADMIN_MAKER_SUBMIT,
-      permissionObj.ADMIN_MAKER_RESUBMIT,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [
+        permissionObj.CREATE,
+        permissionObj.MAKER_SUBMIT,
+        permissionObj.MAKER_RESUBMIT,
+        permissionObj.ADMIN_MAKER_SUBMIT,
+        permissionObj.ADMIN_MAKER_RESUBMIT,
+      ].filter(Boolean)
+    );
+  };
 
   const canUpdate = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.EDIT,
-      permissionObj.MAKER_SUBMIT,
-      permissionObj.MAKER_RESUBMIT,
-      permissionObj.ADMIN_MAKER_SUBMIT,
-      permissionObj.ADMIN_MAKER_RESUBMIT,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [
+        permissionObj.EDIT,
+        permissionObj.MAKER_SUBMIT,
+        permissionObj.MAKER_RESUBMIT,
+        permissionObj.ADMIN_MAKER_SUBMIT,
+        permissionObj.ADMIN_MAKER_RESUBMIT,
+      ].filter(Boolean)
+    );
+  };
 
   const canRemove = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.DELETE,
-      permissionObj.MAKER_SUBMIT,
-      permissionObj.MAKER_RESUBMIT,
-      permissionObj.ADMIN_MAKER_SUBMIT,
-      permissionObj.ADMIN_MAKER_RESUBMIT,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [
+        permissionObj.DELETE,
+        permissionObj.MAKER_SUBMIT,
+        permissionObj.MAKER_RESUBMIT,
+        permissionObj.ADMIN_MAKER_SUBMIT,
+        permissionObj.ADMIN_MAKER_RESUBMIT,
+      ].filter(Boolean)
+    );
+  };
 
   const canView = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.LIST,
-      permissionObj.VIEW,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission([permissionObj.LIST, permissionObj.VIEW].filter(Boolean));
+  };
 
   const canVerifyModule = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.CHECKER_VERIFY,
-      permissionObj.ADMIN_CHECKER_VERIFY,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [permissionObj.CHECKER_VERIFY, permissionObj.ADMIN_CHECKER_VERIFY].filter(Boolean)
+    );
+  };
 
   const canRejectAsChecker = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.CHECKER_REJECT,
-      permissionObj.ADMIN_CHECKER_REJECT,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [permissionObj.CHECKER_REJECT, permissionObj.ADMIN_CHECKER_REJECT].filter(Boolean)
+    );
+  };
 
   const canApproveModule = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.APPROVER_APPROVE,
-      permissionObj.ADMIN_APPROVER_APPROVE,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [permissionObj.APPROVER_APPROVE, permissionObj.ADMIN_APPROVER_APPROVE].filter(Boolean)
+    );
+  };
 
   const canRejectAsApprover = (permissionObj: Record<string, string>): boolean => {
-    return hasAnyPermission([
-      permissionObj.APPROVER_REJECT,
-      permissionObj.ADMIN_APPROVER_REJECT,
-    ].filter(Boolean))
-  }
+    return hasAnyPermission(
+      [permissionObj.APPROVER_REJECT, permissionObj.ADMIN_APPROVER_REJECT].filter(Boolean)
+    );
+  };
 
   return {
     // Core permission check functions
@@ -969,11 +1008,11 @@ export const useProductPermissions = () => {
     canAdd,
     canEdit,
     canDelete,
-  }
-}
+  };
+};
 
 // Also export a simpler hook for generic use
-export const usePermissions = useProductPermissions
+export const usePermissions = useProductPermissions;
 
 // ============================================
 // WORKFLOW ACTION HELPER FUNCTIONS
@@ -987,7 +1026,7 @@ export const usePermissions = useProductPermissions
  */
 export const getWorkflowActionId = (row: any, actionType: WORKFLOW_ACTIONS): string | null => {
   console.log(`Getting workflow action ID for type: ${actionType}`, { row, actions: row?.actions });
-  
+
   if (!row?.actions || !Array.isArray(row.actions)) {
     console.warn(`No actions array found in row data`, row);
     return null;
@@ -995,21 +1034,35 @@ export const getWorkflowActionId = (row: any, actionType: WORKFLOW_ACTIONS): str
 
   // Map action types to possible type names in the API response
   const actionTypeMap: Record<WORKFLOW_ACTIONS, string[]> = {
-    [WORKFLOW_ACTIONS.CHECK]: ["Verify", "Check", "Checker Verify", "verify", "check", "Auto Approval"],
-    [WORKFLOW_ACTIONS.CHECK_REJECT]: ["Reject", "Checker Reject", "Check Reject", "reject", "check-reject"],
+    [WORKFLOW_ACTIONS.CHECK]: [
+      "Verify",
+      "Check",
+      "Checker Verify",
+      "verify",
+      "check",
+      "Auto Approval",
+    ],
+    [WORKFLOW_ACTIONS.CHECK_REJECT]: [
+      "Reject",
+      "Checker Reject",
+      "Check Reject",
+      "reject",
+      "check-reject",
+    ],
     [WORKFLOW_ACTIONS.APPROVE]: ["Approve", "Approver Approve", "approve"],
     [WORKFLOW_ACTIONS.APPROVE_REJECT]: ["Approver Reject", "Approve Reject", "approve-reject"],
   };
 
   const possibleTypes = actionTypeMap[actionType] || [];
   console.log(`Looking for action types:`, possibleTypes);
-  
+
   // Find action that matches any of the possible type names
   const action = row.actions.find((act: any) => {
     const actType = act?.type || "";
-    const matches = possibleTypes.some(type => 
-      actType.toLowerCase().includes(type.toLowerCase()) ||
-      type.toLowerCase().includes(actType.toLowerCase())
+    const matches = possibleTypes.some(
+      (type) =>
+        actType.toLowerCase().includes(type.toLowerCase()) ||
+        type.toLowerCase().includes(actType.toLowerCase())
     );
     if (matches) {
       console.log(`Found matching action:`, { type: actType, id: act?.id });
@@ -1020,7 +1073,7 @@ export const getWorkflowActionId = (row: any, actionType: WORKFLOW_ACTIONS): str
   const actionId = action?.id || null;
   console.log(`Extracted workflow action ID:`, actionId);
   return actionId;
-}
+};
 
 // ============================================
 // WORKFLOW ACTION HOOK
@@ -1052,33 +1105,33 @@ export const useWorkflowActions = () => {
         moduleName,
         workflowActionId,
         action: actionString,
-        body
+        body,
       });
-      
-      const response = await implementWorkFlowAction(moduleName, workflowActionId, actionString)
+
+      const response = await implementWorkFlowAction(moduleName, workflowActionId, actionString);
       console.log(`Workflow API response:`, response);
-      
+
       if (response?.data?.success) {
-        toast.success(response?.data?.message || `${actionString} action completed successfully`)
-        return { success: true, data: response.data }
+        toast.success(response?.data?.message || `${actionString} action completed successfully`);
+        return { success: true, data: response.data };
       } else {
-        toast.error(response?.data?.message || `Failed to execute ${actionString} action`)
-        return { success: false, data: response.data }
+        toast.error(response?.data?.message || `Failed to execute ${actionString} action`);
+        return { success: false, data: response.data };
       }
     } catch (error: any) {
-      console.error(`Workflow action error (${action}):`, error)
+      console.error(`Workflow action error (${action}):`, error);
       console.error(`Error details:`, {
         message: error?.message,
         response: error?.response?.data,
         status: error?.response?.status,
       });
-      toast.error(error?.response?.data?.message || `Failed to execute ${action} action`)
-      return { success: false, error }
+      toast.error(error?.response?.data?.message || `Failed to execute ${action} action`);
+      return { success: false, error };
     }
-  }
+  };
 
   // Convenience methods for specific actions
-  
+
   /**
    * Verify/Check an item (Checker role)
    * @param moduleName - The module name
@@ -1086,9 +1139,10 @@ export const useWorkflowActions = () => {
    * @param body - Optional request body
    */
   const verifyItem = async (moduleName: string, row: any, body: any = {}) => {
-    const workflowActionId = typeof row === 'string' ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.CHECK);
-    return executeWorkflowAction(moduleName, workflowActionId || "1", WORKFLOW_ACTIONS.CHECK, body)
-  }
+    const workflowActionId =
+      typeof row === "string" ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.CHECK);
+    return executeWorkflowAction(moduleName, workflowActionId || "1", WORKFLOW_ACTIONS.CHECK, body);
+  };
 
   /**
    * Reject as Checker
@@ -1097,9 +1151,15 @@ export const useWorkflowActions = () => {
    * @param body - Optional request body
    */
   const rejectAsChecker = async (moduleName: string, row: any, body: any = {}) => {
-    const workflowActionId = typeof row === 'string' ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.CHECK_REJECT);
-    return executeWorkflowAction(moduleName, workflowActionId || "1", WORKFLOW_ACTIONS.CHECK_REJECT, body)
-  }
+    const workflowActionId =
+      typeof row === "string" ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.CHECK_REJECT);
+    return executeWorkflowAction(
+      moduleName,
+      workflowActionId || "1",
+      WORKFLOW_ACTIONS.CHECK_REJECT,
+      body
+    );
+  };
 
   /**
    * Approve an item (Approver role)
@@ -1108,9 +1168,15 @@ export const useWorkflowActions = () => {
    * @param body - Optional request body
    */
   const approveItem = async (moduleName: string, row: any, body: any = {}) => {
-    const workflowActionId = typeof row === 'string' ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.APPROVE);
-    return executeWorkflowAction(moduleName, workflowActionId || "1", WORKFLOW_ACTIONS.APPROVE, body)
-  }
+    const workflowActionId =
+      typeof row === "string" ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.APPROVE);
+    return executeWorkflowAction(
+      moduleName,
+      workflowActionId || "1",
+      WORKFLOW_ACTIONS.APPROVE,
+      body
+    );
+  };
 
   /**
    * Reject as Approver
@@ -1119,9 +1185,15 @@ export const useWorkflowActions = () => {
    * @param body - Optional request body
    */
   const rejectAsApprover = async (moduleName: string, row: any, body: any = {}) => {
-    const workflowActionId = typeof row === 'string' ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.APPROVE_REJECT);
-    return executeWorkflowAction(moduleName, workflowActionId || "1", WORKFLOW_ACTIONS.APPROVE_REJECT, body)
-  }
+    const workflowActionId =
+      typeof row === "string" ? row : getWorkflowActionId(row, WORKFLOW_ACTIONS.APPROVE_REJECT);
+    return executeWorkflowAction(
+      moduleName,
+      workflowActionId || "1",
+      WORKFLOW_ACTIONS.APPROVE_REJECT,
+      body
+    );
+  };
 
   return {
     executeWorkflowAction,
@@ -1133,8 +1205,7 @@ export const useWorkflowActions = () => {
     // Export constants for easy access
     WORKFLOW_ACTIONS,
     WORKFLOW_MODULE_NAMES,
-  }
-}
+  };
+};
 
-export default useProductPermissions
-
+export default useProductPermissions;

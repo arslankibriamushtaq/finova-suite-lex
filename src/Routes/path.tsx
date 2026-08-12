@@ -266,6 +266,7 @@ import Coa from "../components/ChartOfAccount/coa";
 import GlEntries from "../pages/lmsPages/LedgerGl/GlEntries";
 import GlFailedEntries from "../pages/lmsPages/LedgerGl/GlFailedEntries";
 import GlReconciliation from "../pages/lmsPages/LedgerGl/GlReconciliation";
+import WalletGlAccounts from "../pages/lmsPages/LedgerGl/WalletGlAccounts";
 import ChartOfAccountFields from "../components/ChartOfAccount/ChartOfAccountFields";
 import GenerateInvoice from "../components/Loans/GenerateInvoice";
 // import Days from "../components/Reports/Days";
@@ -1632,6 +1633,10 @@ export const router = createBrowserRouter([
           element: <GlReconciliation />,
         },
         {
+          path: "Lms/LedgerGl/WalletAccounts",
+          element: <WalletGlAccounts />,
+        },
+        {
           path: "Lms/ChartOfAccount/ChartOfAccountFields",
           element: <ChartOfAccountFields />,
         },
@@ -2274,6 +2279,10 @@ export const router = createBrowserRouter([
         {
           path: "Lms/LedgerGl/Reconciliation",
           element: <GlReconciliation />,
+        },
+        {
+          path: "Lms/LedgerGl/WalletAccounts",
+          element: <WalletGlAccounts />,
         },
         {
           path: "Lms/Customers/AllCustomers",
