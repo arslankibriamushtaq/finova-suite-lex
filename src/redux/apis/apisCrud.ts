@@ -115,6 +115,52 @@ export function getCustomer360(customerId: number | string) {
 export function getOnboarding360(customerId: number | string) {
   return axios.get(`/customer-service/api/v1/customers/${customerId}/onboarding-360`);
 }
+
+/*
+ * Per-tab slices of the Onboarding 360 aggregate.
+ *
+ * `/onboarding-360` still returns every section and stays the Overview tab's
+ * source. The five endpoints below let a tab pay only for its own upstream
+ * calls, and each returns exactly the section of the same name from the
+ * aggregate — byte-identical field names and shapes, so the render code that
+ * reads them does not change.
+ *
+ * All of them are fault tolerant server-side: an upstream outage yields an
+ * empty section rather than a 500, and 404 means the customer itself is
+ * missing. Policy is the same `customers:read` as the aggregate.
+ */
+const onboarding360Base = (customerId: number | string) =>
+  `/customer-service/api/v1/customers/${customerId}/onboarding-360`;
+
+/** Every wallet the customer holds, primary first, each embedding its own transactions. */
+export function getOnboarding360Wallet(customerId: number | string) {
+  return axios.get(`${onboarding360Base(customerId)}/wallet`);
+}
+
+/**
+ * Recent movements of ONE wallet, capped at 20 by the backend.
+ * Omitting `walletId` falls back to the primary wallet; an unknown id returns an
+ * empty list rather than a 404, so a stale selection cannot break the tab.
+ */
+export function getOnboarding360Transactions(customerId: number | string, walletId?: string) {
+  const query = walletId ? `?walletId=${encodeURIComponent(walletId)}` : "";
+  return axios.get(`${onboarding360Base(customerId)}/transactions${query}`);
+}
+
+/** Cards matched on customerId AND on the customer's wallets. Masked PAN only. */
+export function getOnboarding360Cards(customerId: number | string) {
+  return axios.get(`${onboarding360Base(customerId)}/cards`);
+}
+
+/** Derived KYC state plus the full risk payload (trend, breakdown, weightage, Q&A). */
+export function getOnboarding360RiskKyc(customerId: number | string) {
+  return axios.get(`${onboarding360Base(customerId)}/risk-kyc`);
+}
+
+/** Document metadata only — no base64. Fetch an image via getOnboardingDocumentImage. */
+export function getOnboarding360Documents(customerId: number | string) {
+  return axios.get(`${onboarding360Base(customerId)}/documents`);
+}
 export function getOnboardingDocumentImage(imagePath: string) {
   let path = imagePath || "";
   // Backend returns the path without the Kong service prefix (e.g. "/api/v1/customers/...").

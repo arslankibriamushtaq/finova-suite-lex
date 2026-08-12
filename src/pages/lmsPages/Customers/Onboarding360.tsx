@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
@@ -28,6 +28,7 @@ import {
   Nfc,
   Truck,
   Layers,
+  RefreshCw,
 } from "lucide-react";
 import {
   LineChart,
@@ -60,7 +61,15 @@ import {
 } from "../../../components/ui/table";
 import { cn } from "../../../lib/utils";
 import { useLanguage } from "../../../hooks/use-language";
-import { getOnboarding360, getOnboardingDocumentImage } from "../../../redux/apis/apisCrud";
+import {
+  getOnboarding360,
+  getOnboarding360Wallet,
+  getOnboarding360Transactions,
+  getOnboarding360Cards,
+  getOnboarding360RiskKyc,
+  getOnboarding360Documents,
+  getOnboardingDocumentImage,
+} from "../../../redux/apis/apisCrud";
 import {
   StatusBadge,
   Field,
@@ -577,6 +586,14 @@ const Onboarding360 = () => {
   const [lightbox, setLightbox] = useState<{ src: string; label: string } | null>(null);
   const [selectedWalletId, setSelectedWalletId] = useState<string | undefined>();
   const [txnWalletFilter, setTxnWalletFilter] = useState<string>("all");
+  /** Which per-tab sections are currently being refreshed, keyed by tab. */
+  const [tabLoading, setTabLoading] = useState<Record<string, boolean>>({});
+  /**
+   * Movements fetched from the per-wallet transactions endpoint, keyed by
+   * walletId. Only the single-wallet view uses these — "All wallets" has to
+   * stay on the merged feed, because that endpoint serves one wallet at a time.
+   */
+  const [walletTxns, setWalletTxns] = useState<Record<string, Txn[]>>({});
 
   useEffect(() => {
     let active = true;
@@ -600,6 +617,64 @@ const Onboarding360 = () => {
       active = false;
     };
   }, [customerId, reloadKey]);
+
+  /*
+   * The aggregate above still carries every section, so the page is complete
+   * the moment it resolves. Opening a tab then refreshes just that section from
+   * its own endpoint, which returns the identical shape — hence a plain merge
+   * into `data` and no change to any of the render code below.
+   *
+   * A tab is fetched once per customer/reload. On failure the section is left
+   * as the aggregate delivered it and the tab is un-marked so it can retry,
+   * rather than blanking content the user can already see.
+   */
+  const loadedTabs = useRef<Set<string>>(new Set());
+  /** Wallets whose transactions call already failed — do not ask again. */
+  const txnFetchFailed = useRef<Set<string>>(new Set());
+
+  useEffect(() => {
+    loadedTabs.current = new Set();
+    txnFetchFailed.current = new Set();
+    setWalletTxns({});
+  }, [customerId, reloadKey]);
+
+  const loadTabSection = useCallback(
+    async (tab: string) => {
+      if (!customerId || loadedTabs.current.has(tab)) return;
+      loadedTabs.current.add(tab);
+      setTabLoading((prev) => ({ ...prev, [tab]: true }));
+      try {
+        const fetchers: Record<string, () => Promise<any>> = {
+          wallet: () => getOnboarding360Wallet(customerId),
+          cards: () => getOnboarding360Cards(customerId),
+          risk: () => getOnboarding360RiskKyc(customerId),
+          documents: () => getOnboarding360Documents(customerId),
+        };
+        const fetcher = fetchers[tab];
+        if (!fetcher) return;
+        const section = (await fetcher())?.data?.data;
+        if (section) setData((prev: any) => ({ ...(prev || {}), ...section }));
+      } catch (err: any) {
+        // Either way the aggregate's copy of this section stays on screen.
+        //
+        // A 404 means this backend build does not serve the per-tab endpoint at
+        // all (the customer itself resolved — the aggregate loaded), so leave
+        // the tab marked and stop asking; retrying would repeat the same 404 on
+        // every visit. Anything else (network blip, 5xx) is worth another go.
+        if (err?.response?.status !== 404) loadedTabs.current.delete(tab);
+      } finally {
+        setTabLoading((prev) => ({ ...prev, [tab]: false }));
+      }
+    },
+    [customerId]
+  );
+
+  useEffect(() => {
+    // Transactions reads the wallet section too: the filter chips list every
+    // wallet, and "All wallets" is built from their embedded movements.
+    if (activeTab === "wallet" || activeTab === "transactions") loadTabSection("wallet");
+    else if (activeTab !== "overview") loadTabSection(activeTab);
+  }, [activeTab, loadTabSection]);
 
   const customer = data?.customer;
   const wallet = data?.wallet;
@@ -665,13 +740,64 @@ const Onboarding360 = () => {
     );
   }, [wallets, transactions]);
 
-  const visibleTransactions = useMemo(
-    () =>
-      txnWalletFilter === "all"
-        ? allTransactions
-        : allTransactions.filter((tx) => tx.walletId === txnWalletFilter),
-    [allTransactions, txnWalletFilter]
-  );
+  /**
+   * The wallet the transactions endpoint should be asked about, or undefined
+   * when it cannot answer the current view.
+   *
+   * That endpoint is scoped to ONE wallet. With several wallets on "All" it
+   * cannot produce the merged feed, so the movements embedded in the wallet
+   * section stay the source. But "All" over a single wallet IS that wallet, so
+   * the endpoint applies exactly — which is the common case, and without this
+   * a single-wallet customer would never call it at all.
+   */
+  const txnTargetWalletId = useMemo(() => {
+    if (txnWalletFilter !== "all") return txnWalletFilter;
+    return wallets.length === 1 ? wallets[0]?.walletId : undefined;
+  }, [txnWalletFilter, wallets]);
+
+  useEffect(() => {
+    if (activeTab !== "transactions" || !customerId || !txnTargetWalletId) return;
+    if (walletTxns[txnTargetWalletId] || txnFetchFailed.current.has(txnTargetWalletId)) return;
+    let active = true;
+    (async () => {
+      setTabLoading((prev) => ({ ...prev, transactions: true }));
+      try {
+        const section = (await getOnboarding360Transactions(customerId, txnTargetWalletId))?.data
+          ?.data;
+        if (!active) return;
+        setWalletTxns((prev) => ({ ...prev, [txnTargetWalletId]: section?.transactions ?? [] }));
+      } catch {
+        // Fall through to the movements already embedded in the wallet section,
+        // and do not ask again for this wallet — otherwise every re-selection
+        // of the chip repeats a call that has already been shown to fail.
+        txnFetchFailed.current.add(txnTargetWalletId);
+      } finally {
+        if (active) setTabLoading((prev) => ({ ...prev, transactions: false }));
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [activeTab, txnTargetWalletId, customerId, walletTxns]);
+
+  const visibleTransactions = useMemo(() => {
+    // Prefer the rows the transactions endpoint returned; they are stamped with
+    // the wallet's own details so the table's wallet column still resolves.
+    // Until that call lands (or if it failed) fall back to the movements
+    // embedded in the wallet section.
+    const fetched = txnTargetWalletId ? walletTxns[txnTargetWalletId] : undefined;
+    if (fetched) {
+      const w = wallets.find((x) => x.walletId === txnTargetWalletId);
+      return fetched.map((tx) => ({
+        ...tx,
+        walletId: txnTargetWalletId,
+        walletNumber: w?.walletNumber,
+        currency: w?.currency,
+      }));
+    }
+    if (txnWalletFilter === "all") return allTransactions;
+    return allTransactions.filter((tx) => tx.walletId === txnWalletFilter);
+  }, [allTransactions, txnWalletFilter, txnTargetWalletId, walletTxns, wallets]);
 
   /* Grouped per currency — wallets are denominated differently, so their
      amounts must never be added together into a single bar. */
@@ -810,6 +936,16 @@ const Onboarding360 = () => {
                 )}
               </Block>
             </div>
+
+            {/* The tab already has the aggregate's copy of its section on
+                screen, so this is a quiet "refreshing" note rather than a
+                spinner that would replace content the user is reading. */}
+            {tabLoading[activeTab] && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                {t("onboarding360.refreshing")}
+              </div>
+            )}
 
             <Tabs
               id="onb360-tabs"
