@@ -235,7 +235,8 @@ const GlEntryDetail = ({
                             {line.subLedgerId ? (
                               <div className="flex min-w-0 flex-col">
                                 <span className="text-xs text-muted-foreground">
-                                  {humanizeCode(line.subLedgerType) || t("gl.detail.party")}
+                                  {humanizeCode(line.subLedgerType ?? undefined) ||
+                                    t("gl.detail.party")}
                                 </span>
                                 {/* The name is a convenience the ledger resolves;
                                     the id is the record, so it stays reachable on

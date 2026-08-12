@@ -242,6 +242,7 @@ import WalletQrCodes from "../pages/lmsPages/Wallet/WalletQrCodes";
 import BnplCategories from "../pages/lmsPages/Bnpl/BnplCategories";
 import BnplCurrencyLimits from "../pages/lmsPages/Bnpl/BnplCurrencyLimits";
 import SullisCashConfig from "../pages/lmsPages/SullisCash/SullisCashConfig";
+import SullisCashLoans from "../pages/lmsPages/SullisCash/SullisCashLoans";
 import WalletLedgerTransactions from "../pages/lmsPages/WalletLedger/WalletLedgerTransactions";
 import WalletLedgerAccounts from "../pages/lmsPages/WalletLedger/WalletLedgerAccounts";
 import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
@@ -942,6 +943,12 @@ export const router = createBrowserRouter(
             {
               path: "/LOS/SullisCash/Settings",
               element: <SullisCashConfig />,
+            },
+            {
+              // Read-only loan book. Separate route because it is a separate
+              // Casbin object — support can read loans without re-pricing.
+              path: "/LOS/SullisCash/Loans",
+              element: <SullisCashLoans />,
             },
             {
               path: "/LOS/Exchange/Providers",

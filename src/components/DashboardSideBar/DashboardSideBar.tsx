@@ -142,7 +142,19 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   BNPL: "bnpl",
   "BNPL Categories": "bnplCategories",
   "BNPL Currency Limits": "bnplCurrencyLimits",
+  SullisCash: "sullisCash",
   "SullisCash Settings": "sullisCashSettings",
+  "SullisCash Loans": "sullisCashLoans",
+  "All Reports": "allReports",
+  "Currency Reports": "currencyReports",
+  "Ledger & Journal": "ledgerJournal",
+  Lending: "lending",
+  "Collections & Risk": "collectionsRisk",
+  "Profitability & Regulatory": "profitabilityRegulatory",
+  "General Ledger": "generalLedger",
+  "GL Entries": "glEntries",
+  "Failed Entries": "glFailedEntries",
+  Reconciliation: "glReconciliation",
   "Product Category": "productCategory",
   "Product Sub Category": "productSubCategory",
   LOV: "lov",
@@ -2485,56 +2497,33 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       active: pathname.includes("/Wallet/InternalTransfer"),
     },
     hasAccess("WALLET") && {
-      // Publishing a code and paying one are opposite ends of the same
-      // feature — one parent, so they are found together.
-      label: "Wallet QR",
-      Link: "/LOS/Wallet/Qr/Codes",
-      img: Images.CustomerManagementIcon,
-      imgActive: Images.CustomerManagementIconDark,
-      active: pathname.includes("/LOS/Wallet/Qr"),
-      menu: [
-        {
-          label: "QR Codes",
-          Link: "Codes",
-          LinkLable: "/LOS/Wallet/Qr",
-          active: pathname.includes("/LOS/Wallet/Qr/Codes"),
-        },
-        {
-          label: "Scan & Pay",
-          Link: "ScanPay",
-          LinkLable: "/LOS/Wallet/Qr",
-          active: pathname.includes("/LOS/Wallet/Qr/ScanPay"),
-        },
-      ],
-    },
-    hasAccess("WALLET") && {
       label: "Wallet Transactions Limits",
       Link: "/LOS/CustomerManagement/WalletTransactionLimits",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/WalletTransactionLimits"),
     },
-    hasAccess(["LEDGER", "WALLET"]) && {
-      label: "Wallet Ledger",
-      Link: "/LOS/WalletLedger/Transactions",
-      img: Images.reportsIconDark,
-      imgActive: Images.reportsIconDark,
-      active: pathname.includes("/LOS/WalletLedger"),
-      menu: [
-        {
-          label: "Transactions",
-          Link: "Transactions",
-          LinkLable: "/LOS/WalletLedger",
-          active: pathname.includes("/LOS/WalletLedger/Transactions"),
-        },
-        {
-          label: "Account Statements",
-          Link: "Accounts",
-          LinkLable: "/LOS/WalletLedger",
-          active: pathname.includes("/LOS/WalletLedger/Accounts"),
-        },
-      ].filter(Boolean),
-    },
+    // hasAccess(["LEDGER", "WALLET"]) && {
+    //   label: "Wallet Ledger",
+    //   Link: "/LOS/WalletLedger/Transactions",
+    //   img: Images.reportsIconDark,
+    //   imgActive: Images.reportsIconDark,
+    //   active: pathname.includes("/LOS/WalletLedger"),
+    //   menu: [
+    //     {
+    //       label: "Transactions",
+    //       Link: "Transactions",
+    //       LinkLable: "/LOS/WalletLedger",
+    //       active: pathname.includes("/LOS/WalletLedger/Transactions"),
+    //     },
+    //     {
+    //       label: "Account Statements",
+    //       Link: "Accounts",
+    //       LinkLable: "/LOS/WalletLedger",
+    //       active: pathname.includes("/LOS/WalletLedger/Accounts"),
+    //     },
+    //   ].filter(Boolean),
+    // },
     hasAccess(["BNPL", "WALLET"]) && {
       // Two screens that only make sense together: a category cannot exist in a
       // currency that has no limit, so they share one parent rather than
@@ -2560,11 +2549,27 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       ],
     },
     hasAccess(["SULLIS_CASH", "WALLET"]) && {
-      label: "SullisCash Settings",
+      // Terms and the loan book are two different Casbin objects, so they are
+      // two entries rather than one screen with a tab.
+      label: "SullisCash",
       Link: "/LOS/SullisCash/Settings",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/LOS/SullisCash"),
+      menu: [
+        {
+          label: "SullisCash Settings",
+          Link: "Settings",
+          LinkLable: "/LOS/SullisCash",
+          active: pathname.includes("/LOS/SullisCash/Settings"),
+        },
+        {
+          label: "SullisCash Loans",
+          Link: "Loans",
+          LinkLable: "/LOS/SullisCash",
+          active: pathname.includes("/LOS/SullisCash/Loans"),
+        },
+      ].filter(Boolean),
     },
     hasAccess("EXCHANGE") && {
       label: "Exchange Top-up",

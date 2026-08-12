@@ -686,6 +686,12 @@ export const SULLIS_CASH_PERMISSIONS = {
   MODULE: "SULLIS_CASH",
   CONFIG_READ: "SULLIS_CASH_CONFIG_READ",
   CONFIG_UPDATE: "SULLIS_CASH_CONFIG_UPDATE",
+  /**
+   * The loan book, read-only and deliberately separate from the config acts so
+   * support staff can see customer loans without being able to re-price the
+   * product. Casbin object `wallet.sullis-cash.admin-loans`.
+   */
+  LOANS_READ: "SULLIS_CASH_LOAN_READ",
 };
 
 // ============================================

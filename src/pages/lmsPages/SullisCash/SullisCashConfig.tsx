@@ -37,7 +37,16 @@ import {
 } from "../../../components/ui/dialog";
 import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../../components/ui/select";
+import { LEDGER_CURRENCIES } from "../../../redux/apis/apisCrudLms";
+import {
   getSullisCashConfig,
+  getSullisCashConfigs,
   updateSullisCashConfig,
   sullisCashErrorMessage,
   formatSullisAmount,
@@ -161,6 +170,11 @@ const SullisCashConfigPage = () => {
   const { hasPermission } = usePermissions();
   const canUpdate = hasPermission(SULLIS_CASH_PERMISSIONS.CONFIG_UPDATE);
 
+  // Terms are per currency: 3,000 SAR and 3,000 CAD are different offers, so
+  // every field on this page belongs to the currency selected here.
+  const [currency, setCurrency] = useState("SAR");
+  /** Currencies this tenant already has terms for; the rest can be seeded. */
+  const [configured, setConfigured] = useState<string[]>([]);
   const [config, setConfig] = useState<SullisCashConfig | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [isLoading, setIsLoading] = useState(false);
@@ -168,10 +182,11 @@ const SullisCashConfigPage = () => {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [quickDraft, setQuickDraft] = useState("");
 
-  const load = async () => {
+  const load = async (code: string) => {
     setIsLoading(true);
     try {
-      const data = await getSullisCashConfig();
+      // Never 404s — an untouched currency is seeded from platform defaults.
+      const data = await getSullisCashConfig(code);
       setConfig(data);
       setForm(toForm(data));
     } catch (error) {
@@ -181,10 +196,28 @@ const SullisCashConfigPage = () => {
     }
   };
 
+  /** Which currencies already have terms, so the picker can say which are new. */
+  const loadConfigured = async () => {
+    try {
+      const rows = await getSullisCashConfigs();
+      const codes = rows.map((r) => r.currency).filter(Boolean);
+      setConfigured(codes);
+      // Open on a currency that actually has terms rather than assuming SAR.
+      if (codes.length && !codes.includes(currency)) setCurrency(codes[0]);
+    } catch (error) {
+      toast.error(sullisCashErrorMessage(error, t("cfg.toast.loadFailed")));
+    }
+  };
+
   useEffect(() => {
-    load();
+    loadConfigured();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    load(currency);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currency]);
 
   const set = <K extends keyof FormState>(key: K, value: FormState[K]) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -208,7 +241,7 @@ const SullisCashConfigPage = () => {
     // Checked on entry as well as on save — a chip that could never be offered
     // should not sit in the list looking valid.
     if (Number.isFinite(min) && Number.isFinite(max) && (value < min || value > max)) {
-      return toast.error(t("cfg.valid.quickAmountRange", { amount: formatSullisAmount(value) }));
+      return toast.error(t("cfg.valid.quickAmountRange", { amount: formatSullisAmount(value, currency) }));
     }
     if (form.quickAmounts.some((a) => Number(a) === value)) {
       setQuickDraft("");
@@ -249,7 +282,7 @@ const SullisCashConfigPage = () => {
       const value = Number(raw);
       if (!Number.isFinite(value)) return t("cfg.valid.quickAmountInvalid");
       if (value < min || value > max) {
-        return t("cfg.valid.quickAmountRange", { amount: formatSullisAmount(value) });
+        return t("cfg.valid.quickAmountRange", { amount: formatSullisAmount(value, currency) });
       }
     }
 
@@ -286,12 +319,14 @@ const SullisCashConfigPage = () => {
 
     setIsSaving(true);
     try {
-      const saved = await updateSullisCashConfig(body);
+      const saved = await updateSullisCashConfig(currency, body);
       // Re-seed from the response, not the request: the server is the authority
       // on rounding, so the form must show what it actually stored.
       setConfig(saved);
       setForm(toForm(saved));
-      toast.success(t("cfg.toast.saved"));
+      // A first save materialises the row, so the picker must learn about it.
+      if (!configured.includes(currency)) setConfigured((prev) => [...prev, currency]);
+      toast.success(t("cfg.toast.saved", { currency }));
       setConfirmOpen(false);
     } catch (error) {
       toast.error(sullisCashErrorMessage(error, t("cfg.toast.saveFailed")));
@@ -348,12 +383,30 @@ const SullisCashConfigPage = () => {
           </h3>
           <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("cfg.subtitle")}</p>
         </div>
-        <StatusPill
-          enabled={form.enabled}
-          label={form.enabled ? t("cfg.availability.on") : t("cfg.availability.off")}
-          updatedAt={config?.updatedAt ? formatDateTime(config.updatedAt) : undefined}
-          updatedLabel={t("cfg.updatedAtShort")}
-        />
+        <div className="d-flex align-items-center gap-2">
+          {/* Which currency's terms are on screen. A currency with no row yet is
+              marked New — opening it seeds one from platform defaults, and it
+              only becomes real on save. */}
+          <Select value={currency} onValueChange={setCurrency}>
+            <SelectTrigger className="data-[size=default]:h-10" style={{ minWidth: 190 }}>
+              <SelectValue placeholder={t("cfg.currency.label")} />
+            </SelectTrigger>
+            <SelectContent>
+              {Array.from(new Set([...configured, ...LEDGER_CURRENCIES])).map((code) => (
+                <SelectItem key={code} value={code}>
+                  {code}
+                  {!configured.includes(code) ? ` · ${t("cfg.currency.new")}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <StatusPill
+            enabled={form.enabled}
+            label={form.enabled ? t("cfg.availability.on") : t("cfg.availability.off")}
+            updatedAt={config?.updatedAt ? formatDateTime(config.updatedAt) : undefined}
+            updatedLabel={t("cfg.updatedAtShort")}
+          />
+        </div>
       </div>
 
       {readOnly && (
@@ -419,12 +472,12 @@ const SullisCashConfigPage = () => {
                   variant="outline"
                   className={`border font-medium gap-1 ${TONES.emerald}`}
                 >
-                  {formatSullisAmount(Number(amount))}
+                  {formatSullisAmount(Number(amount), currency)}
                   {!readOnly && (
                     <button
                       type="button"
                       aria-label={t("cfg.field.quickAmountsRemove", {
-                        amount: formatSullisAmount(Number(amount)),
+                        amount: formatSullisAmount(Number(amount), currency),
                       })}
                       onClick={() => removeQuickAmount(amount)}
                       className="rounded-sm p-0.5 transition-opacity hover:opacity-70"
@@ -601,12 +654,12 @@ const SullisCashConfigPage = () => {
             <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
               <PreviewStat
                 label={t("cfg.preview.principal")}
-                value={formatSullisAmount(preview.principal)}
+                value={formatSullisAmount(preview.principal, currency)}
               />
               <Operator symbol="+" />
               <PreviewStat
                 label={t("cfg.preview.profit")}
-                value={formatSullisAmount(preview.profit)}
+                value={formatSullisAmount(preview.profit, currency)}
                 caption={t("cfg.profit.effective", {
                   rate: formatRatePercent(preview.totalRate),
                   days: preview.days,
@@ -615,7 +668,7 @@ const SullisCashConfigPage = () => {
               <Operator symbol="=" />
               <PreviewStat
                 label={t("cfg.preview.totalDue")}
-                value={formatSullisAmount(preview.totalDue)}
+                value={formatSullisAmount(preview.totalDue, currency)}
                 tone="total"
               />
             </div>
@@ -630,7 +683,7 @@ const SullisCashConfigPage = () => {
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
                 <span>{t("cfg.preview.penaltyPerDay")}</span>
                 <span className="font-bold tabular-nums">
-                  {formatSullisAmount(preview.penaltyPerDay)}
+                  {formatSullisAmount(preview.penaltyPerDay, currency)}
                 </span>
                 <span className="opacity-80">
                   {graceDays > 0
