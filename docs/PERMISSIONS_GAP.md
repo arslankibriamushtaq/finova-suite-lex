@@ -67,6 +67,8 @@ These are the primary asks. Sorted by severity.
 
 Currently rendered for **every authenticated user**. Each needs a module + `*_READ` before the frontend can add a gate.
 
+> Scope: active menu entries only. Commented-out entries (LOV → Monthly Income, LOV → List Of Values, Connector → System Logs) are excluded — see [SIDEBAR_ACTIVE_PAGES.md](SIDEBAR_ACTIVE_PAGES.md) for the full rendered/not-rendered split.
+
 | Sidebar item | Route | Line | Proposed module |
 |---|---|---|---|
 | LMS → Dashboard | `/Lms/dashboard` | [1146](../src/components/DashboardSideBar/DashboardSideBar.tsx#L1146) | `LENDING` |
@@ -82,12 +84,9 @@ Currently rendered for **every authenticated user**. Each needs a module + `*_RE
 | LMS → Setting → Dunning Policy | `/Lms/Setting/DunningPolicy` | [1572](../src/components/DashboardSideBar/DashboardSideBar.tsx#L1572) | `POLICY` (exists) |
 | Connector Mgmt → Environment Settings / Providers / All Provider APIs | `/ThirdPartyManagement/*` | [1870–1894](../src/components/DashboardSideBar/DashboardSideBar.tsx#L1870-L1894) | `MIDDLEWARE` (exists — parent gated at [2759](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2759), children are not) |
 | Connector Mgmt → Clients Management + Client Requests (Prod/Dev/Test) | `/ThirdPartyManagement/Clients`, `/RequestHistory/*` | [1897–1931](../src/components/DashboardSideBar/DashboardSideBar.tsx#L1897-L1931) | `MIDDLEWARE` |
-| Connector Mgmt → System Logs → Laravel Logs | `/ThirdPartyManagement/SystemLogs/LaravelLogs` | [2048](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2048) | `ADMIN` or new `SYSTEM_LOG` |
 | Customer Mgmt → Users | `/LOS/CustomerManagement/OnboardingUsers` | [2284](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2284) | `ONBOARDING` (exists) |
-| LOV → Occupation | `/LOS/LOV/Occupation` | [678](../src/components/DashboardSideBar/DashboardSideBar.tsx#L678) | `LOV_OCCUPATION_*` |
-| LOV → Template Types | `/LOS/LOV/TemplateTypes` | [696](../src/components/DashboardSideBar/DashboardSideBar.tsx#L696) | `TEMPLATE_TYPE_*` (exists per constants — needs confirming) |
-| LOV → Monthly Income | `/LOS/LOV/MonthlyIncome` | [744](../src/components/DashboardSideBar/DashboardSideBar.tsx#L744) | `LOV_MONTHLY_INCOME_*` |
-| LOV → List Of Values | `/LOS/LOV/ListOfValues` | [768](../src/components/DashboardSideBar/DashboardSideBar.tsx#L768) | `LOV_READ` (exists) |
+| LOV → Occupation | `/LOS/LOV/Occupation` | [2704](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2704) | `LOV_OCCUPATION_*` |
+| LOV → Template Types | `/LOS/LOV/TemplateTypes` | [2722](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2722) | `TEMPLATE_TYPE_*` (exists per constants — needs confirming) |
 | Wallet QR → QR Codes / Scan & Pay | `/LOS/Wallet/Qr/*` | [2495–2506](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2495-L2506) | `WALLET_QR_*` |
 | Risk Mgmt children (Blacklist NID/Mobile, Fraud Rules, Internal Checks, Devices) | `/LOS/RiskManagement/*` | [2317–2346](../src/components/DashboardSideBar/DashboardSideBar.tsx#L2317-L2346) | `RISK_*` codes exist — sub-item gates just not wired |
 
