@@ -100,6 +100,17 @@ export const WORKFLOW_MODULE_NAMES = {
 // PERMISSION CONSTANTS - Add all module permissions here
 // ============================================
 
+/**
+ * GL entry enquiry and corrections (ledger-service).
+ * `READ` gates every enquiry screen; the two write actions are admin and
+ * head_of_accounts only, so gate the buttons rather than letting the call 403.
+ */
+export const LEDGER_GL_PERMISSIONS = {
+  READ: "gl.entries:read",
+  RETRY: "gl.entries:retry",
+  REVERSE: "ledger.entries:reverse",
+}
+
 // Product Management Module permission names (legacy / workflow)
 export const PRODUCT_PERMISSIONS = {
   // Product permissions
@@ -651,6 +662,9 @@ export const BNPL_PERMISSIONS = {
   CATEGORY_CREATE: "BNPL_CATEGORY_CREATE",
   CATEGORY_EDIT: "BNPL_CATEGORY_UPDATE",
   CATEGORY_DELETE: "BNPL_CATEGORY_DELETE",
+  // Casbin object `wallet.bnpl.admin-currency-limits` (acts: read / update).
+  CURRENCY_LIMIT_READ: "BNPL_CURRENCY_LIMIT_READ",
+  CURRENCY_LIMIT_UPDATE: "BNPL_CURRENCY_LIMIT_UPDATE",
 }
 
 // ============================================

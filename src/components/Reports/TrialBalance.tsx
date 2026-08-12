@@ -4,6 +4,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { Scale } from "lucide-react";
 import { getTrialBalanceReport } from "../../redux/apis/apisCrudLms";
+import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import CurrencySelect from "./CurrencySelect";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
@@ -21,6 +23,9 @@ const TrialBalance = () => {
   const [page, setPage] = useState(1);
   const [accounts, setAccounts] = useState<any[]>([]);
   const [date, setDate] = useState<any>(null);
+  // A trial balance is per currency — debits and credits from two currencies
+  // would never balance against each other.
+  const [currency, setCurrency] = useState("SAR");
   const [totals, setTotals] = useState<any>({
     totalDebits: 0,
     totalCredits: 0,
@@ -41,14 +46,14 @@ const TrialBalance = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [date, pageSize]);
+  }, [date, currency, pageSize]);
 
   const fetchData = async () => {
     try {
       setLoading(true);
       // Only send `date` when the user picks one; otherwise hit the bare endpoint.
       const finalDate = date ? date.format("YYYY-MM-DD") : undefined;
-      const response = await getTrialBalanceReport(finalDate);
+      const response = await getTrialBalanceReport(finalDate, currency);
       if (response && response.data) {
         const root = response.data?.data ?? response.data;
         const list =
@@ -60,11 +65,12 @@ const TrialBalance = () => {
           totalDebits: root?.totalDebits ?? 0,
           totalCredits: root?.totalCredits ?? 0,
           difference: root?.difference ?? 0,
+          currency: root?.currency,
         });
       }
     } catch (error: any) {
       console.error("Error fetching trial balance:", error);
-      toast.error(error?.message || t('trialBalance.toast.fetchError'));
+      toast.error(ledgerErrorMessage(error, t('trialBalance.toast.fetchError')));
       setAccounts([]);
       setTotals({ totalDebits: 0, totalCredits: 0, difference: 0 });
     } finally {
@@ -75,7 +81,11 @@ const TrialBalance = () => {
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [date]);
+  }, [date, currency]);
+
+  // The response echoes the currency it was computed in; the selector is only
+  // the fallback while a fetch is in flight.
+  const reportCurrency = totals?.currency || currency;
 
   const filteredAccounts = useMemo(() => {
     if (!debouncedSearch) return accounts;
@@ -134,13 +144,13 @@ const TrialBalance = () => {
     },
     {
       name: t('trialBalance.col.debitBalance'),
-      selector: (row: any) => `${formatAmount(row.debitBalance)} SAR`,
+      selector: (row: any) => `${formatAmount(row.debitBalance)} ${reportCurrency}`,
       sortable: true,
       right: true,
     },
     {
       name: t('trialBalance.col.creditBalance'),
-      selector: (row: any) => `${formatAmount(row.creditBalance)} SAR`,
+      selector: (row: any) => `${formatAmount(row.creditBalance)} ${reportCurrency}`,
       sortable: true,
       right: true,
     },
@@ -209,6 +219,7 @@ const TrialBalance = () => {
             placeholder={t('filter.asOfDate')}
             style={{ flex: "1 1 200px", minWidth: 180, borderRadius: 2, height: 40 }}
           />
+          <CurrencySelect value={currency} onChange={setCurrency} />
           <button
             type="button"
             className="theme-btn-next"
@@ -227,7 +238,7 @@ const TrialBalance = () => {
               <div style={{ fontSize: 14 }}>{t('trialBalance.summary.totalDebits')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.totalDebits)}{" "}
-                <span style={{ fontSize: 14 }}>SAR</span>
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
@@ -236,7 +247,7 @@ const TrialBalance = () => {
               <div style={{ fontSize: 14 }}>{t('trialBalance.summary.totalCredits')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
                 {formatAmount(totals.totalCredits)}{" "}
-                <span style={{ fontSize: 14 }}>SAR</span>
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
@@ -251,7 +262,7 @@ const TrialBalance = () => {
                 }}
               >
                 {formatAmount(totals.difference)}{" "}
-                <span style={{ fontSize: 14 }}>SAR</span>
+                <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>

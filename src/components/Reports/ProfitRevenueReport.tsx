@@ -4,6 +4,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import TableView from "../TableView/TableView";
 import { TrendingUp } from "lucide-react";
 import { getProfitRevenueReport } from "../../redux/apis/apisCrudLms";
+import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import CurrencySelect from "./CurrencySelect";
 import toast from "react-hot-toast";
 import { saveAs } from "file-saver";
 import Loader from "../Loader/Loader";
@@ -18,8 +20,11 @@ const formatAmount = (n: number | string | undefined | null) =>
 const ProfitRevenueReport = () => {
   const { t } = useTranslation("reports");
   const [period, setPeriod] = useState<any>(null);
+  // Profit is reported in one currency at a time — never summed across them.
+  const [currency, setCurrency] = useState("SAR");
   const [loading, setLoading] = useState(false);
   const [responseData, setResponseData] = useState<any>(null);
+
   const [items, setItems] = useState<any[]>([]);
 
   const [pageSize, setPageSize] = useState(10);
@@ -27,6 +32,9 @@ const ProfitRevenueReport = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  // The response echoes the currency it was computed in.
+  const reportCurrency = responseData?.currency || currency;
 
   useEffect(() => {
     const handle = setTimeout(() => {
@@ -38,13 +46,13 @@ const ProfitRevenueReport = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [period, pageSize]);
+  }, [period, currency, pageSize]);
 
   const fetchReportData = async () => {
     try {
       setLoading(true);
       const periodParam = period ? period.format("YYYY-MM") : undefined;
-      const response = await getProfitRevenueReport(periodParam);
+      const response = await getProfitRevenueReport(periodParam, currency);
       if (response && response.data) {
         const root = response.data?.data ?? response.data ?? {};
         setResponseData(root);
@@ -62,7 +70,7 @@ const ProfitRevenueReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching profit revenue report:", error);
-      toast.error(error?.message || t('profitRevenue.toast.fetchError'));
+      toast.error(ledgerErrorMessage(error, t('profitRevenue.toast.fetchError')));
       setResponseData(null);
       setItems([]);
     } finally {
@@ -73,7 +81,7 @@ const ProfitRevenueReport = () => {
   useEffect(() => {
     fetchReportData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [period]);
+  }, [period, currency]);
 
   const filteredItems = useMemo(() => {
     if (!debouncedSearch) return items;
@@ -196,6 +204,7 @@ const ProfitRevenueReport = () => {
               placeholder={t('profitRevenue.periodPlaceholder')}
               style={{ flex: "1 1 180px", minWidth: 160, borderRadius: 2, height: 40, background: "#fff" }}
             />
+            <CurrencySelect value={currency} onChange={setCurrency} />
             <button
               type="button"
               className="theme-btn-next"
@@ -213,7 +222,7 @@ const ProfitRevenueReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.profitEarned')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(responseData?.profitEarned)} <span style={{ fontSize: 14 }}>SAR</span>
+                {formatAmount(responseData?.profitEarned)} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
@@ -221,7 +230,7 @@ const ProfitRevenueReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.profitCollected')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(responseData?.profitCollected)} <span style={{ fontSize: 14 }}>SAR</span>
+                {formatAmount(responseData?.profitCollected)} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>
@@ -229,7 +238,7 @@ const ProfitRevenueReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14 }}>{t('profitRevenue.summary.accruedProfit')}</div>
               <div style={{ fontSize: 22, fontWeight: 700 }}>
-                {formatAmount(responseData?.accruedProfit)} <span style={{ fontSize: 14 }}>SAR</span>
+                {formatAmount(responseData?.accruedProfit)} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </AntCol>

@@ -3,6 +3,8 @@ import { DatePicker, Button } from "antd";
 import { TrendingUp } from "lucide-react";
 import TableView from "../TableView/TableView";
 import { getCashFlowReport } from "../../redux/apis/apisCrudLms";
+import { ledgerErrorMessage } from "../../utils/ledgerErrors";
+import CurrencySelect from "./CurrencySelect";
 import dayjs from "dayjs";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -16,13 +18,19 @@ const CashFlowReport = () => {
   const [to, setTo] = useState(0);
   const [reportData, setReportData] = useState<any>([]);
   const [date, setDate] = useState<any>(null);
+  // One report is one currency — the server refuses to sum across them.
+  const [currency, setCurrency] = useState("SAR");
   const [loading, setLoading] = useState(false);
 
   const [totals, setTotals] = useState<any>(null);
 
   useEffect(() => {
     fetchReportData();
-  }, [page, pageSize, date]);
+  }, [page, pageSize, date, currency]);
+
+  // The response echoes the currency it was computed in — trust that over the
+  // selector, which may have moved on since the fetch.
+  const reportCurrency = totals?.currency || currency;
 
   const columns = [
     {
@@ -32,7 +40,9 @@ const CashFlowReport = () => {
     {
       name: t('cashFlow.col.value'),
       selector: (row: any) => row.value || 0,
-      cell: (row: any) => <b>{row.value != null ? `${Number(row.value).toLocaleString()} SAR` : "-"}</b>
+      cell: (row: any) => (
+        <b>{row.value != null ? `${Number(row.value).toLocaleString()} ${reportCurrency}` : "-"}</b>
+      )
     },
   ];
 
@@ -40,7 +50,7 @@ const CashFlowReport = () => {
     try {
       setLoading(true);
       const finalDate = date ? date.format("YYYY-MM-DD") : dayjs().format("YYYY-MM-DD");
-      const response = await getCashFlowReport(finalDate);
+      const response = await getCashFlowReport(finalDate, currency);
       if (response && response.data) {
         const data = response.data.data;
 
@@ -69,7 +79,7 @@ const CashFlowReport = () => {
       }
     } catch (error: any) {
       console.error("Error fetching cash flow report:", error);
-      toast.error(error?.message || t('cashFlow.toast.fetchError'));
+      toast.error(ledgerErrorMessage(error, t('cashFlow.toast.fetchError')));
       setReportData([]);
       setTotals(null);
     } finally {
@@ -83,12 +93,13 @@ const CashFlowReport = () => {
       return;
     }
 
-    const headers = ["Metric", "Value"];
+    const headers = ["Metric", "Value", "Currency"];
     const csvContent = [
       headers.join(","),
       ...reportData.map((item: any) => [
         `"${item.metric || ""}"`,
         item.value || 0,
+        reportCurrency,
       ].join(",")),
     ].join("\n");
 
@@ -96,7 +107,7 @@ const CashFlowReport = () => {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.setAttribute("href", url);
-    link.setAttribute("download", `Cash_Flow_Report_${date.format("YYYY_MM_DD")}.csv`);
+    link.setAttribute("download", `Cash_Flow_Report_${(date || dayjs()).format("YYYY_MM_DD")}_${reportCurrency}.csv`);
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
@@ -111,6 +122,7 @@ const CashFlowReport = () => {
             <TrendingUp className="h-4 w-4" />
           </span>
           {t('cashFlow.title')}
+          <span className="fs-6 fw-normal text-muted">· {reportCurrency}</span>
         </h3>
       </div>
 
@@ -123,6 +135,7 @@ const CashFlowReport = () => {
             placeholder={t('common:date')}
             style={{ flex: "1 1 200px", minWidth: 180, height: 40, borderRadius: 2, background: "#fff" }}
           />
+          <CurrencySelect value={currency} onChange={setCurrency} />
           <Button
             className="theme-btn-next"
             onClick={fetchReportData}
@@ -147,7 +160,7 @@ const CashFlowReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.totalInflows')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.totalInflows?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+                {totals.totalInflows?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
@@ -155,7 +168,7 @@ const CashFlowReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.totalOutflows')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.totalOutflows?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+                {totals.totalOutflows?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
@@ -163,7 +176,7 @@ const CashFlowReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.netPosition')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.netPosition?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+                {totals.netPosition?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>
@@ -171,7 +184,7 @@ const CashFlowReport = () => {
             <div className="card-product p-4 text-dark h-100">
               <div style={{ fontSize: 14, fontWeight: 600 }}>{t('cashFlow.summary.bankBalance')}</div>
               <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-                {totals.bankBalance?.toLocaleString()} <span style={{ fontSize: 14 }}>SAR</span>
+                {totals.bankBalance?.toLocaleString()} <span style={{ fontSize: 14 }}>{reportCurrency}</span>
               </div>
             </div>
           </div>

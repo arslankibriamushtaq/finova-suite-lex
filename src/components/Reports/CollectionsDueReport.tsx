@@ -23,9 +23,16 @@ const CollectionsDueReport = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
+      // Both dates are required by the ledger; default to the current month
+      // rather than firing a call that is guaranteed to 422.
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+        .toISOString()
+        .slice(0, 10);
       const res = await getCollectionsDueReport(
-        fromDate || undefined,
-        toDate || undefined
+        fromDate || monthStart,
+        toDate || now.toISOString().slice(0, 10),
+        { page: page - 1, size: pageSize }
       );
       if (res) {
         const data = res.data.data;

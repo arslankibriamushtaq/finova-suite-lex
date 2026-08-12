@@ -238,7 +238,9 @@ import WalletDashboard from "../pages/lmsPages/Wallet/WalletDashboard";
 import WalletHome from "../pages/lmsPages/Wallet/WalletHome";
 import SendMoney from "../pages/lmsPages/Wallet/SendMoney";
 import InternalTransfer from "../pages/lmsPages/Wallet/InternalTransfer";
+import WalletQrCodes from "../pages/lmsPages/Wallet/WalletQrCodes";
 import BnplCategories from "../pages/lmsPages/Bnpl/BnplCategories";
+import BnplCurrencyLimits from "../pages/lmsPages/Bnpl/BnplCurrencyLimits";
 import SullisCashConfig from "../pages/lmsPages/SullisCash/SullisCashConfig";
 import WalletLedgerTransactions from "../pages/lmsPages/WalletLedger/WalletLedgerTransactions";
 import WalletLedgerAccounts from "../pages/lmsPages/WalletLedger/WalletLedgerAccounts";
@@ -261,6 +263,9 @@ import CollateralManagementEdit from "../pages/lmsPages/LoanManagement/Collectro
 import CollateralAllocation from "../pages/lmsPages/LoanManagement/CollateralAllocation";
 import AccountMapping from "../components/ChartOfAccount/accountMapping";
 import Coa from "../components/ChartOfAccount/coa";
+import GlEntries from "../pages/lmsPages/LedgerGl/GlEntries";
+import GlFailedEntries from "../pages/lmsPages/LedgerGl/GlFailedEntries";
+import GlReconciliation from "../pages/lmsPages/LedgerGl/GlReconciliation";
 import ChartOfAccountFields from "../components/ChartOfAccount/ChartOfAccountFields";
 import GenerateInvoice from "../components/Loans/GenerateInvoice";
 // import Days from "../components/Reports/Days";
@@ -272,6 +277,7 @@ import LoanPaymentSchedule from "../pages/lmsPages/LoanManagement/ViewPaymentSch
 import LoanDetailView from "../pages/lmsPages/LoanManagement/LoanDetailView";
 import LoanInvoice from "../pages/lmsPages/LoanManagement/LoanInvoice";
 import TrialBalance from "../components/Reports/TrialBalance";
+import ReportsCenter from "../components/Reports/ReportsCenter";
 import AccountFinancing from "../components/Reports/AccountFinancing";
 import CollectionReport from "../components/Reports/CollectionReport";
 import ProfitRevenueReport from "../components/Reports/ProfitRevenueReport";
@@ -900,6 +906,16 @@ export const router = createBrowserRouter([
             element: <InternalTransfer />,
           },
           {
+            // One screen, two entry points: the sidebar's two children pick the
+            // opening tab, so a deep link lands where the label promised.
+            path: "/LOS/Wallet/Qr/Codes",
+            element: <WalletQrCodes />,
+          },
+          {
+            path: "/LOS/Wallet/Qr/ScanPay",
+            element: <WalletQrCodes />,
+          },
+          {
             path: "/LOS/WalletLedger/Transactions",
             element: <WalletLedgerTransactions />,
           },
@@ -910,6 +926,10 @@ export const router = createBrowserRouter([
           {
             path: "/LOS/Bnpl/Categories",
             element: <BnplCategories />,
+          },
+          {
+            path: "/LOS/Bnpl/CurrencyLimits",
+            element: <BnplCurrencyLimits />,
           },
           {
             path: "/LOS/SullisCash/Settings",
@@ -1592,6 +1612,26 @@ export const router = createBrowserRouter([
           element: <Coa />,
         },
         {
+          // One page per category; the report itself is picked on the page.
+          // Twenty-seven entries in a flat sidebar list would be unusable.
+          path: "Lms/ReportsCenter/:category",
+          element: <ReportsCenter />,
+        },
+        {
+          // GL enquiry sits with the accounting screens: an accountant looking
+          // for an entry looks where the chart of accounts and reports are.
+          path: "Lms/LedgerGl/Entries",
+          element: <GlEntries />,
+        },
+        {
+          path: "Lms/LedgerGl/Failed",
+          element: <GlFailedEntries />,
+        },
+        {
+          path: "Lms/LedgerGl/Reconciliation",
+          element: <GlReconciliation />,
+        },
+        {
           path: "Lms/ChartOfAccount/ChartOfAccountFields",
           element: <ChartOfAccountFields />,
         },
@@ -2214,6 +2254,26 @@ export const router = createBrowserRouter([
         {
           path: "Lms/ChartOfAccount/ChartOfAccount",
           element: <Coa />,
+        },
+        {
+          // One page per category; the report itself is picked on the page.
+          // Twenty-seven entries in a flat sidebar list would be unusable.
+          path: "Lms/ReportsCenter/:category",
+          element: <ReportsCenter />,
+        },
+        {
+          // GL enquiry sits with the accounting screens: an accountant looking
+          // for an entry looks where the chart of accounts and reports are.
+          path: "Lms/LedgerGl/Entries",
+          element: <GlEntries />,
+        },
+        {
+          path: "Lms/LedgerGl/Failed",
+          element: <GlFailedEntries />,
+        },
+        {
+          path: "Lms/LedgerGl/Reconciliation",
+          element: <GlReconciliation />,
         },
         {
           path: "Lms/Customers/AllCustomers",

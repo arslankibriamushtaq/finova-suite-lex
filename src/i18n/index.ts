@@ -17,6 +17,7 @@ import cardManagement from "./locales/cardManagement";
 import loanManagement from "./locales/loanManagement";
 import settings from "./locales/settings";
 import investor from "./locales/investor";
+import ledgerGl from "./locales/ledgerGl";
 import connector from "./locales/connector";
 import productManagement2 from "./locales/productManagement2";
 import partner from "./locales/partner";
@@ -38,6 +39,7 @@ import businessOnboarding from "./locales/businessOnboarding";
 import customersB from "./locales/customersB";
 import exchange from "./locales/exchange";
 import walletLedger from "./locales/walletLedger";
+import walletQr from "./locales/walletQr";
 // <-- register new module locale files here (keep alphabetical)
 
 const modules: ModuleLocale[] = [
@@ -51,6 +53,7 @@ const modules: ModuleLocale[] = [
   loanManagement,
   settings,
   investor,
+  ledgerGl,
   connector,
   productManagement2,
   partner,
@@ -72,6 +75,7 @@ const modules: ModuleLocale[] = [
   customersB,
   exchange,
   walletLedger,
+  walletQr,
 ];
 
 export const moduleNamespaces: string[] = modules.map((m) => m.namespace);

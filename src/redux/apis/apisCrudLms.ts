@@ -555,9 +555,11 @@ export function getWriteOffLoansReport(period?: string) {
   const qs = period ? `?period=${encodeURIComponent(period)}` : "";
   return axios.get(`/ledger-service/api/v1/reports/write-off-loans${qs}`);
 }
-export function getTrialBalanceReport(date?: string) {
-  const qs = date ? `?date=${encodeURIComponent(date)}` : "";
-  return axios.get(`/ledger-service/api/v1/reports/trial-balance${qs}`);
+/** `currency` is mandatory — a trial balance spanning currencies cannot balance. */
+export function getTrialBalanceReport(date: string | undefined, currency: string) {
+  const params = new URLSearchParams({ currency });
+  if (date) params.append("date", date);
+  return axios.get(`/ledger-service/api/v1/reports/trial-balance?${params.toString()}`);
 }
 export function getNplReport(asOfDate?: string) {
   const qs = asOfDate ? `?asOfDate=${encodeURIComponent(asOfDate)}` : "";
@@ -616,13 +618,67 @@ export function getCollectionsReport(fromDate?: string, toDate?: string) {
   const qs = parts.length ? `?${parts.join("&")}` : "";
   return axios.get(`/ledger-service/api/v1/reports/collections${qs}`);
 }
-export function getProfitRevenueReport(period?: string) {
-  const qs = period ? `?period=${encodeURIComponent(period)}` : "";
-  return axios.get(`/ledger-service/api/v1/reports/profit-revenue${qs}`);
+/** `currency` is mandatory — profit summed across currencies means nothing. */
+export function getProfitRevenueReport(period: string | undefined, currency: string) {
+  const params = new URLSearchParams({ currency });
+  if (period) params.append("period", period);
+  return axios.get(`/ledger-service/api/v1/reports/profit-revenue?${params.toString()}`);
 }
-export function getCashFlowReport(date: string) {
-  return axios.get(`/ledger-service/api/v1/reports/cash-flow?date=${date}`);
+/**
+ * The ledger's supported currencies. Server-side config
+ * (`LEDGER_SUPPORTED_CURRENCIES`) with no endpoint exposing it yet — replace
+ * this list with that call as soon as the backend adds one.
+ */
+export const LEDGER_CURRENCIES = ["SAR", "CAD", "USD", "EUR", "GBP", "PKR", "AED"];
+
+/**
+ * `currency` is mandatory: cash flow summed across currencies is meaningless,
+ * so the server rejects the call without it (422). One call per currency —
+ * never add the totals together.
+ */
+export function getCashFlowReport(date: string, currency: string) {
+  return axios.get(
+    `/ledger-service/api/v1/reports/cash-flow?date=${date}&currency=${encodeURIComponent(currency)}`
+  );
 }
+/**
+ * `currency` is mandatory — a portfolio spanning currencies has no single size.
+ */
+export function getPortfolioSummaryReport(currency: string, from?: string, to?: string) {
+  const params = new URLSearchParams({ currency });
+  if (from) params.append("from", from);
+  if (to) params.append("to", to);
+  return axios.get(`/ledger-service/api/v1/reports/portfolio-summary?${params.toString()}`);
+}
+
+/** `currency` is mandatory. Note: `write-off-provisions`, not `write-off-loans`. */
+export function getWriteOffProvisionsReport(currency: string, period?: string) {
+  const params = new URLSearchParams({ currency });
+  if (period) params.append("period", period);
+  return axios.get(`/ledger-service/api/v1/reports/write-off-provisions?${params.toString()}`);
+}
+
+/** Account balances as of a date. Not currency-scoped yet. */
+export function getAccountBalancesReport(asOfDate?: string, extra?: any) {
+  const params = new URLSearchParams();
+  if (asOfDate) params.append("asOfDate", asOfDate);
+  if (extra?.search) params.append("search", extra.search);
+  if (extra?.page != null) params.append("page", String(extra.page));
+  if (extra?.size != null) params.append("size", String(extra.size));
+  const qs = params.toString();
+  return axios.get(`/ledger-service/api/v1/reports/account${qs ? `?${qs}` : ""}`);
+}
+
+export function getReconciliationDetailReport(date?: string) {
+  const qs = date ? `?date=${encodeURIComponent(date)}` : "";
+  return axios.get(`/ledger-service/api/v1/reports/reconciliation-detail${qs}`);
+}
+
+export function getDpdBucketsReport(date?: string) {
+  const qs = date ? `?date=${encodeURIComponent(date)}` : "";
+  return axios.get(`/ledger-service/api/v1/reports/dpd-buckets${qs}`);
+}
+
 export function getCustomerStatementReport(customerId: string, paramsOrFromDate?: any, toDate?: string) {
   let queryString = "";
   if (typeof paramsOrFromDate === "string") {
@@ -798,8 +854,10 @@ export function getAllReports(
   fromdate: any,
   todate: any
 ) {
+  // Trial balance now rejects a call without a currency. The hardcoded date is
+  // pre-existing — this helper is used by screens that never wired up filters.
   return axios.get(
-    `ledger-service/api/v1/reports/trial-balance?date=2026-03-30`
+    `ledger-service/api/v1/reports/trial-balance?date=2026-03-30&currency=SAR`
   );
 }
 export function getVauchers(body: any) {
@@ -1367,15 +1425,13 @@ export function getLoanBalanceReport(params?: any) {
   const query = Object.keys(cleaned).length ? new URLSearchParams(cleaned).toString() : "";
   return axios.get(`/ledger-service/api/v1/reports/loan-balance-outstanding${query ? `?${query}` : ""}`);
 }
-export function getCollectionsDueReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/CollectionsDue`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-  return axios.get(url);
+/** Both dates are required by the ledger — the endpoint 422s without them. */
+export function getCollectionsDueReport(fromDate: string, toDate: string, extra?: any) {
+  const params = new URLSearchParams({ fromDate, toDate });
+  if (extra?.search) params.append("search", extra.search);
+  if (extra?.page != null) params.append("page", String(extra.page));
+  if (extra?.size != null) params.append("size", String(extra.size));
+  return axios.get(`/ledger-service/api/v1/reports/collections-due?${params.toString()}`);
 }
 export function getSkippedInstallmentsReport(fromDate?: string, toDate?: string) {
   let url = `/api/Reports/SkippedInstallments`;
@@ -1407,25 +1463,21 @@ export function getCustomerAccountStatementReport(fromDate?: string, toDate?: st
   }
   return axios.get(url);
 }
-export function getProductWiseProfitLossReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/ProductWiseProfitAndLoss`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-  return axios.get(url);
+/** `period` (YYYY-MM) is required. Not currency-aware yet — see the caveat below. */
+export function getProductWiseProfitLossReport(period: string, extra?: any) {
+  const params = new URLSearchParams({ period });
+  if (extra?.search) params.append("search", extra.search);
+  if (extra?.page != null) params.append("page", String(extra.page));
+  if (extra?.size != null) params.append("size", String(extra.size));
+  return axios.get(`/ledger-service/api/v1/reports/product-wise-pnl?${params.toString()}`);
 }
-export function getCustomerWiseProfitLossReport(fromDate?: string, toDate?: string) {
-  let url = `/api/Reports/CustomerWiseProfitAndLoss`;
-  const params: string[] = [];
-  if (fromDate) params.push(`fromDate=${fromDate}`);
-  if (toDate) params.push(`toDate=${toDate}`);
-  if (params.length > 0) {
-    url += `?${params.join("&")}`;
-  }
-  return axios.get(url);
+/** `period` (YYYY-MM) is required. Not currency-aware yet — see the caveat below. */
+export function getCustomerWiseProfitLossReport(period: string, extra?: any) {
+  const params = new URLSearchParams({ period });
+  if (extra?.search) params.append("search", extra.search);
+  if (extra?.page != null) params.append("page", String(extra.page));
+  if (extra?.size != null) params.append("size", String(extra.size));
+  return axios.get(`/ledger-service/api/v1/reports/customer-wise-pnl?${params.toString()}`);
 }
 export function getProductById(id: any) {
   return axios.get(`/api/Product/GetById/${id}`);

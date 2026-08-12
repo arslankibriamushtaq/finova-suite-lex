@@ -27,10 +27,13 @@ const ProductWiseProfitLoss = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-        const res = await getProductWiseProfitLossReport(
-        fromDate || undefined,
-        toDate || undefined
-      );
+      // The ledger takes a month, not a range — derive it from the From date
+      // and fall back to the current month so the screen is never empty.
+      const period = (fromDate || new Date().toISOString()).slice(0, 7);
+      const res = await getProductWiseProfitLossReport(period, {
+        page: page - 1,
+        size: pageSize,
+      });
       if (res) {
         const data = res.data.data;
         setAllCallActivity(data || []);

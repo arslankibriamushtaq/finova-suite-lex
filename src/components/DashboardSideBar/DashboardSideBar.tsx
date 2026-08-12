@@ -36,6 +36,8 @@ import {
   BookOpen,
   Gauge,
   ShoppingBag,
+  QrCode,
+  ScanLine,
   Coins,
   type LucideIcon,
 } from "lucide-react";
@@ -71,9 +73,14 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "send money": { Icon: Send, color: "#8b5cf6" },
   "internal transfer": { Icon: ArrowLeftRight, color: "#6366f1" },
   "wallet transactions limits": { Icon: SlidersHorizontal, color: "#14b8a6" },
+  "wallet qr": { Icon: QrCode, color: "#10b981" },
+  "qr codes": { Icon: QrCode, color: "#10b981" },
+  "scan & pay": { Icon: ScanLine, color: "#10b981" },
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
   "wallet ledger": { Icon: BookOpen, color: "#10b981" },
+  bnpl: { Icon: ShoppingBag, color: "#a855f7" },
   "bnpl categories": { Icon: ShoppingBag, color: "#a855f7" },
+  "bnpl currency limits": { Icon: Coins, color: "#a855f7" },
   "sulliscash settings": { Icon: Coins, color: "#f59e0b" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
@@ -118,6 +125,9 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Send Money": "sendMoney",
   "Internal Transfer": "internalTransfer",
   "Wallet Transactions Limits": "walletTransactionsLimits",
+  "Wallet QR": "walletQr",
+  "QR Codes": "walletQrCodes",
+  "Scan & Pay": "walletQrScanPay",
   Ledger: "ledger",
   "Wallet Ledger": "walletLedger",
   Transactions: "transactions",
@@ -129,7 +139,9 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   "Product Management": "productManagement",
   Products: "products",
   "Contract Template": "contractTemplate",
+  BNPL: "bnpl",
   "BNPL Categories": "bnplCategories",
+  "BNPL Currency Limits": "bnplCurrencyLimits",
   "SullisCash Settings": "sullisCashSettings",
   "Product Category": "productCategory",
   "Product Sub Category": "productSubCategory",
@@ -1402,6 +1414,78 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     // },
         //   ].filter(Boolean),
         // },
+        // hasAccess("accounting_financing_module") &&
+        // hasAccess("reports_module") && 
+        {
+          // Every report the ledger exposes, grouped the way the API groups
+          // them. Each child opens the hub for that category, where the
+          // individual report is picked — a flat list of 27 would be unusable.
+          label: "All Reports",
+          Link: "ReportsCenter/currency",
+          img: Images.reportsIconDark,
+          active: pathname.split("/").includes("ReportsCenter"),
+          submenu: [
+            {
+              label: "Currency Reports",
+              Link: "currency",
+              LinkLable: "/Lms/ReportsCenter",
+              active: pathname.includes("/Lms/ReportsCenter/currency"),
+            },
+            {
+              label: "Ledger & Journal",
+              Link: "ledger",
+              LinkLable: "/Lms/ReportsCenter",
+              active: pathname.includes("/Lms/ReportsCenter/ledger"),
+            },
+            {
+              label: "Lending",
+              Link: "lending",
+              LinkLable: "/Lms/ReportsCenter",
+              active: pathname.includes("/Lms/ReportsCenter/lending"),
+            },
+            {
+              label: "Collections & Risk",
+              Link: "collections",
+              LinkLable: "/Lms/ReportsCenter",
+              active: pathname.includes("/Lms/ReportsCenter/collections"),
+            },
+            {
+              label: "Profitability & Regulatory",
+              Link: "profitability",
+              LinkLable: "/Lms/ReportsCenter",
+              active: pathname.includes("/Lms/ReportsCenter/profitability"),
+            },
+          ].filter(Boolean),
+        },
+        hasAccess("accounting_financing_module") && {
+          // GL enquiry, the failed-posting queue and the daily reconciliation.
+          // Grouped next to the chart of accounts because they are read from
+          // the same desk.
+          label: "General Ledger",
+          Link: "LedgerGl/Entries",
+          img: Images.accountCharts,
+          active: pathname.split("/").includes("LedgerGl"),
+          submenu: [
+            {
+              label: "GL Entries",
+              Link: "Entries",
+              LinkLable: "/Lms/LedgerGl",
+              active: pathname.includes("/Lms/LedgerGl/Entries"),
+            },
+            {
+              label: "Failed Entries",
+              Link: "Failed",
+              LinkLable: "/Lms/LedgerGl",
+              active: pathname.includes("/Lms/LedgerGl/Failed"),
+            },
+            {
+              label: "Reconciliation",
+              Link: "Reconciliation",
+              LinkLable: "/Lms/LedgerGl",
+              active: pathname.includes("/Lms/LedgerGl/Reconciliation"),
+            },
+          ].filter(Boolean),
+        },
         hasAccess("accounting_financing_module") &&
         {
           label: "Chart of account",
@@ -2400,6 +2484,29 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       active: pathname.includes("/Wallet/InternalTransfer"),
     },
     hasAccess("WALLET") && {
+      // Publishing a code and paying one are opposite ends of the same
+      // feature — one parent, so they are found together.
+      label: "Wallet QR",
+      Link: "/LOS/Wallet/Qr/Codes",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/LOS/Wallet/Qr"),
+      menu: [
+        {
+          label: "QR Codes",
+          Link: "Codes",
+          LinkLable: "/LOS/Wallet/Qr",
+          active: pathname.includes("/LOS/Wallet/Qr/Codes"),
+        },
+        {
+          label: "Scan & Pay",
+          Link: "ScanPay",
+          LinkLable: "/LOS/Wallet/Qr",
+          active: pathname.includes("/LOS/Wallet/Qr/ScanPay"),
+        },
+      ],
+    },
+    hasAccess("WALLET") && {
       label: "Wallet Transactions Limits",
       Link: "/LOS/CustomerManagement/WalletTransactionLimits",
       img: Images.CustomerManagementIcon,
@@ -2428,11 +2535,28 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       ].filter(Boolean),
     },
     hasAccess(["BNPL", "WALLET"]) && {
-      label: "BNPL Categories",
+      // Two screens that only make sense together: a category cannot exist in a
+      // currency that has no limit, so they share one parent rather than
+      // sitting apart in the list.
+      label: "BNPL",
       Link: "/LOS/Bnpl/Categories",
       img: Images.CustomerManagementIcon,
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/LOS/Bnpl"),
+      menu: [
+        {
+          label: "BNPL Categories",
+          Link: "Categories",
+          LinkLable: "/LOS/Bnpl",
+          active: pathname.includes("/LOS/Bnpl/Categories"),
+        },
+        {
+          label: "BNPL Currency Limits",
+          Link: "CurrencyLimits",
+          LinkLable: "/LOS/Bnpl",
+          active: pathname.includes("/LOS/Bnpl/CurrencyLimits"),
+        },
+      ],
     },
     hasAccess(["SULLIS_CASH", "WALLET"]) && {
       label: "SullisCash Settings",

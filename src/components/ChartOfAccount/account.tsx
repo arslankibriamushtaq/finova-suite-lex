@@ -136,7 +136,24 @@ const Account = ({
     },
     {
       name: t("account.col.type"),
-      selector: (row: { accountType: any }) => row.accountType,
+      cell: (row: any) => (
+        <div className="d-flex align-items-center gap-2">
+          <span>{row.accountType}</span>
+          {row.isHeader && (
+            <span
+              className="rounded-pill px-2 py-1"
+              style={{
+                fontSize: "10px",
+                fontWeight: 600,
+                backgroundColor: "var(--muted)",
+                color: "var(--muted-foreground)",
+              }}
+            >
+              {t("account.headerBadge")}
+            </span>
+          )}
+        </div>
+      ),
     },
     {
       name: t("common:status"),
@@ -269,6 +286,12 @@ const Account = ({
         accountCode: item.accountCode,
         accountType: item.accountType,
         status: item.status,
+        // Real values since the COA became a tree: a header is a grouping node
+        // that rejects postings, so it can never be a journal line's account.
+        isHeader: !!item.isHeader,
+        isManualEntriesAllowed: item.isManualEntriesAllowed !== false,
+        parentAccountId: item.parentAccountId ?? null,
+        hierarchyLevel: item.hierarchyLevel ?? 0,
         id: item.id,
       };
     });
@@ -509,11 +532,14 @@ function AddGroupModal({ modal, setModal, mappedData, setAddGroupMod }: any) {
                 placeholder={t("account.selectParent")}
                 allowClear
               >
-                {mappedData?.map((item: any) => (
-                  <Option key={item.accountCode} value={item.accountCode}>
-                    {item.accountCode} - {item.accountTitle}
-                  </Option>
-                ))}
+                {/* Only a header can group other accounts under it. */}
+                {mappedData
+                  ?.filter((item: any) => item.isHeader)
+                  .map((item: any) => (
+                    <Option key={item.accountCode} value={item.accountCode}>
+                      {item.accountCode} - {item.accountTitle}
+                    </Option>
+                  ))}
               </Select>
             </div>
             <div className="col d-flex align-items-center gap-2 pt-4">

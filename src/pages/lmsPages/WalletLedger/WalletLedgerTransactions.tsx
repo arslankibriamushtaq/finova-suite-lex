@@ -98,11 +98,20 @@ const STATUS_TONE: Record<string, string> = {
 const CARD_THEMES = ["emerald", "teal", "indigo", "amber", "cyan", "violet", "green", "rose"];
 
 /**
- * The row's direction as the statement shows it: DEBIT means money went INTO
- * the perspective account, CREDIT means it left. INTERNAL is a customer-to-
- * customer transfer, where that account's balance did not move at all.
+ * In / out from the perspective account's point of view. `signedAmount` is the
+ * server's own answer — positive means that balance rose — so read it rather
+ * than inferring from DEBIT/CREDIT, which points the opposite way depending on
+ * whether the account is debit- or credit-normal (110401 is a LIABILITY, so a
+ * customer deposit credits it). INTERNAL is a customer-to-customer transfer,
+ * where the balance did not move at all.
  */
-const DirectionBadge = ({ direction }: { direction?: string | null }) => {
+const DirectionBadge = ({
+  direction,
+  signedAmount,
+}: {
+  direction?: string | null;
+  signedAmount?: number | null;
+}) => {
   const { t } = useTranslation("walletLedger");
   if (!direction) return <span className="text-muted-foreground">-</span>;
   if (direction === "INTERNAL") {
@@ -112,7 +121,9 @@ const DirectionBadge = ({ direction }: { direction?: string | null }) => {
       </Badge>
     );
   }
-  const isIn = direction === "DEBIT";
+  // Fall back to the credit-normal reading of the default perspective account
+  // when the entry carries no signed amount.
+  const isIn = signedAmount != null ? signedAmount > 0 : direction === "CREDIT";
   return (
     <Badge
       variant="outline"
@@ -593,7 +604,9 @@ const WalletLedgerTransactions = () => {
     {
       // Same In / Out reading as the statement, from the perspective account.
       name: t("tx.col.direction"),
-      cell: (row: WalletLedgerEntry) => <DirectionBadge direction={row.direction} />,
+      cell: (row: WalletLedgerEntry) => (
+        <DirectionBadge direction={row.direction} signedAmount={row.signedAmount} />
+      ),
       width: "120px",
     },
     {
