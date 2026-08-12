@@ -70,7 +70,29 @@ export const formatDateTime = (value?: string) => {
  * Short all-caps runs that are genuine acronyms (`ID`, `KYC`, `PEP`, `CIF`,
  * `SME`, `NID`) are preserved rather than title-cased into `Id` / `Kyc`.
  */
-const ACRONYMS = new Set(["ID", "KYC", "PEP", "CIF", "SME", "NID", "IBAN", "TIN", "VAT", "PDF"]);
+const ACRONYMS = new Set([
+  "ID",
+  "KYC",
+  "PEP",
+  "CIF",
+  "SME",
+  "NID",
+  "IBAN",
+  "TIN",
+  "VAT",
+  "PDF",
+  // Ledger entry types and payment rails: WALLET_TRANSFER_P2P_WALLET_NUMBER
+  // would otherwise read "P2p", and IBFT/RTP/QR/FX/GL/BNPL likewise.
+  "P2P",
+  "IBFT",
+  "RTP",
+  "QR",
+  "FX",
+  "GL",
+  "BNPL",
+  "DPD",
+  "NPL",
+]);
 
 export const humanizeCode = (code?: string): string => {
   if (!code) return "";

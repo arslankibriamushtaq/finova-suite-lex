@@ -175,9 +175,16 @@ const GlEntries = () => {
       width: "180px",
     },
     {
+      // Entry types run long — WALLET_TRANSFER_P2P_WALLET_NUMBER is four words
+      // once humanised — so the cell wraps rather than clipping the tail, which
+      // is the part that distinguishes one transfer type from another.
       name: t("gl.col.type"),
-      cell: (row: GlEntry) => <span>{humanizeCode(row.entryType)}</span>,
-      width: "200px",
+      cell: (row: GlEntry) => (
+        <span style={{ whiteSpace: "break-spaces" }} title={row.entryType || ""}>
+          {humanizeCode(row.entryType) || "-"}
+        </span>
+      ),
+      width: "220px",
     },
     {
       name: t("gl.col.description"),
