@@ -36,6 +36,7 @@ import {
   DialogTitle,
 } from "../../../components/ui/dialog";
 import { TONES, formatDateTime } from "../../../components/shared/detailKitUtils";
+import { cn } from "../../../lib/utils";
 import {
   Select,
   SelectContent,
@@ -131,37 +132,121 @@ const Section = ({
   description?: string;
   children: React.ReactNode;
 }) => (
-  <Card className="pro-card-glow">
-    <CardHeader className="relative pb-3">
-      <CardTitle className="flex items-center gap-2.5 text-base">
+  // gap-0/py-0 hands the spacing to the header and body rather than fighting
+  // Card's own py-6 + gap-6, which left every section airier than its contents.
+  // The rule sits on the body as border-t, not on the header as border-b:
+  // CardHeader carries a `[.border-b]:pb-6` variant whose compound selector
+  // outranks any padding set here, so a divider there forces the old spacing
+  // back.
+  // h-full + a growing body so two cards side by side end on the same line;
+  // without it a card is only as tall as its own fields and the row looks torn.
+  <Card className="pro-card-glow h-full gap-0 py-0">
+    <CardHeader className="relative gap-0.5 px-4 py-3">
+      <CardTitle className="flex items-center gap-2 text-sm">
         <span className="pro-head-badge">
           <Icon className="h-4 w-4" />
         </span>
         {title}
       </CardTitle>
-      {description && <CardDescription className="mt-1">{description}</CardDescription>}
+      {description && <CardDescription className="text-xs">{description}</CardDescription>}
     </CardHeader>
-    <CardContent className="relative">{children}</CardContent>
+    {/* @container so the fields inside lay themselves out against the CARD's
+        width, not the viewport's. The cards are half-width now, so a viewport
+        breakpoint would put three fields in a 450px card. */}
+    <CardContent className="@container relative flex-1 border-t px-4 py-4">{children}</CardContent>
   </Card>
 );
 
+/**
+ * A number field that carries its unit in an addon beside the box.
+ *
+ * An addon rather than a label floating inside the input on padding: `Input`'s
+ * base class is `px-3`, and Bootstrap ships `.px-3` with `!important`, so no
+ * `ps-*` override can win — the value printed straight over the prefix. The
+ * addon owns its own strip of the group, so nothing can overlap.
+ *
+ * `border-s`/`border-e` rather than left/right, so the currency sits before the
+ * number in Arabic too. The spinner is hidden: stepper arrows on a rate field
+ * invite dragging a price by accident, and they would crowd the suffix.
+ */
+const UnitAddon = ({ side, children }: { side: "start" | "end"; children: React.ReactNode }) => (
+  <span
+    className={cn(
+      "flex shrink-0 select-none items-center bg-muted/60 px-2.5 text-xs font-medium text-muted-foreground",
+      side === "start" ? "border-e border-border" : "border-s border-border"
+    )}
+  >
+    {children}
+  </span>
+);
+
+const UnitInput = ({
+  prefix,
+  suffix,
+  className,
+  wrapperClassName,
+  ...props
+}: React.ComponentProps<typeof Input> & {
+  prefix?: string;
+  suffix?: string;
+  wrapperClassName?: string;
+}) => (
+  // Fills its grid cell rather than carrying its own cap: the column decides the
+  // width, so every control on the page ends on the same edge.
+  <div
+    className={cn(
+      "flex h-10 w-full items-stretch overflow-hidden rounded-md bg-card ring-1 ring-input focus-within:ring-2 focus-within:ring-ring [&:has(input:disabled)]:opacity-60",
+      wrapperClassName
+    )}
+  >
+    {prefix && <UnitAddon side="start">{prefix}</UnitAddon>}
+    <Input
+      className={cn(
+        "h-full min-w-0 flex-1 rounded-none border-0 bg-transparent tabular-nums shadow-none focus-visible:ring-0 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none",
+        className
+      )}
+      {...props}
+    />
+    {suffix && <UnitAddon side="end">{suffix}</UnitAddon>}
+  </div>
+);
+
+/**
+ * One setting: its name directly above its control.
+ *
+ * Not a label column beside the control. That reads well in a narrow settings
+ * panel, but across a 1200px card it opened a 200px gutter between a setting
+ * and the box that sets it — twice per line — and the eye had four alignment
+ * edges to track instead of one. Stacked, a label and its field are one object.
+ */
 const Field = ({
   label,
-  hint,
   htmlFor,
   className,
   children,
 }: {
   label: string;
-  hint?: string;
   htmlFor?: string;
   className?: string;
   children: React.ReactNode;
 }) => (
-  <div className={`space-y-2 ${className || ""}`}>
+  <div className={cn("flex min-w-0 flex-col gap-1.5", className)}>
     <Label htmlFor={htmlFor}>{label}</Label>
     {children}
-    {hint && <p className="text-xs text-muted-foreground">{hint}</p>}
+  </div>
+);
+
+/**
+ * The settings of one section, as a grid that answers to the card it is in.
+ *
+ * Container breakpoints, not viewport ones: a half-width card is ~450px on a
+ * wide screen, where `sm:`/`lg:` would happily put three fields. The column is
+ * what sizes the control, so the field just fills its cell — no arbitrary
+ * max-width, and every control lines up on the same edges.
+ */
+const FieldGrid = ({ children }: { children: React.ReactNode }) => (
+  <div className="grid grid-cols-1 gap-x-4 gap-y-4 @md:grid-cols-2 @3xl:grid-cols-3">
+    {children}
   </div>
 );
 
@@ -375,7 +460,9 @@ const SullisCashConfigPage = () => {
 
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom d-flex flex-wrap align-items-start justify-content-between gap-2">
+      {/* align-items-center: the controls are one 40px row against a two-line
+          title block, so centring them reads level with it. */}
+      <div className="mb-3 pb-2 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div className="min-w-0">
           <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
             <span className="pro-head-badge">
@@ -414,321 +501,361 @@ const SullisCashConfigPage = () => {
         </div>
       </div>
 
+      {/* ring, not border: Bootstrap's `.border` is !important and unthemed, so
+          a bare border here goes light grey in dark mode. */}
       {readOnly && (
-        <div className="mb-3 flex items-start gap-2 rounded-lg border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+        <div className="mb-3 flex items-start gap-2 rounded-lg bg-muted/40 px-3 py-2 text-xs text-muted-foreground ring-1 ring-border">
           <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
           <span>{t("cfg.readOnly")}</span>
         </div>
       )}
 
-      <div className="space-y-4">
-        <Section icon={Wallet} title={t("cfg.availability.title")}>
-          <div className="flex items-center justify-between gap-4 rounded-lg border border-border px-3 py-2">
-            <div className="min-w-0">
-              <p className="text-sm font-medium">{t("cfg.availability.enabled")}</p>
-              <p className="text-xs text-muted-foreground">{t("cfg.availability.enabledHint")}</p>
-            </div>
-            <Switch
-              checked={form.enabled}
-              disabled={readOnly}
-              onCheckedChange={(v) => set("enabled", v)}
-            />
-          </div>
-        </Section>
+      {/* Two columns, not one long stack. Six full-width cards each holding two
+          short fields meant the page was mostly empty space read top to bottom,
+          and the worked example — the one thing worth watching while you edit —
+          sat at the very bottom where you could not see it change. The form
+          keeps the fluid column; the example moves into a rail that sticks to
+          the top of the viewport. Under xl they stack, example last. */}
+      <div className="grid grid-cols-1 gap-3 xl:grid-cols-[minmax(0,1fr)_340px] xl:items-start">
+        <div className="flex flex-col gap-3">
+          {/* Full width, alone at the top. It is the master switch for the whole
+              product, not a peer of the fields that price it — and as a card in
+              the pack it was one short row of content under a header, with the
+              switch marooned in the middle of the page.
 
-        <Section icon={Coins} title={t("cfg.amounts.title")}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field label={t("cfg.field.minLoanAmount")} htmlFor="sc-min-loan">
-              <Input
-                id="sc-min-loan"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="200.00"
-                disabled={readOnly}
-                value={form.minLoanAmount}
-                onChange={(e) => set("minLoanAmount", e.target.value)}
-              />
-            </Field>
-            <Field
-              label={t("cfg.field.maxLoanAmount")}
-              htmlFor="sc-max-loan"
-              hint={t("cfg.field.maxLoanAmountHint")}
-            >
-              <Input
-                id="sc-max-loan"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="3000.00"
-                disabled={readOnly}
-                value={form.maxLoanAmount}
-                onChange={(e) => set("maxLoanAmount", e.target.value)}
-              />
-            </Field>
-          </div>
-
-          <div className="mt-4 space-y-2">
-            <Label htmlFor="sc-quick-draft">{t("cfg.field.quickAmounts")}</Label>
-            <div className="flex flex-wrap items-center gap-2">
-              {form.quickAmounts.map((amount) => (
-                <Badge
-                  key={amount}
-                  variant="outline"
-                  className={`border font-medium gap-1 ${TONES.emerald}`}
-                >
-                  {formatSullisAmount(Number(amount), currency)}
-                  {!readOnly && (
-                    <button
-                      type="button"
-                      aria-label={t("cfg.field.quickAmountsRemove", {
-                        amount: formatSullisAmount(Number(amount), currency),
-                      })}
-                      onClick={() => removeQuickAmount(amount)}
-                      className="rounded-sm p-0.5 transition-opacity hover:opacity-70"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  )}
-                </Badge>
-              ))}
-              {form.quickAmounts.length === 0 && (
-                <span className="text-xs text-muted-foreground">
-                  {t("cfg.field.quickAmountsEmpty")}
-                </span>
-              )}
-            </div>
-            {!readOnly && (
-              <div className="flex items-center gap-2">
-                <Input
-                  id="sc-quick-draft"
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  className="max-w-[200px]"
-                  placeholder="1600"
-                  value={quickDraft}
-                  onChange={(e) => setQuickDraft(e.target.value)}
-                  onKeyDown={(e) => {
-                    // Enter adds the chip instead of submitting anything —
-                    // there is no form element to submit to.
-                    if (e.key === "Enter") {
-                      e.preventDefault();
-                      addQuickAmount();
-                    }
-                  }}
-                />
-                <Button variant="outline" className="gap-2" onClick={addQuickAmount}>
-                  <Plus className="h-4 w-4" />
-                  {t("cfg.field.quickAmountsAdd")}
-                </Button>
+              No inner box either: the section card already frames this, and a
+              border inside a border read as a panel that had lost its contents. */}
+          <Section icon={Wallet} title={t("cfg.availability.title")}>
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0">
+                <p className="m-0 text-sm font-medium">{t("cfg.availability.enabled")}</p>
+                <p className="m-0 mt-0.5 text-xs text-muted-foreground">
+                  {t("cfg.availability.enabledHint")}
+                </p>
               </div>
-            )}
-            <p className="text-xs text-muted-foreground">{t("cfg.field.quickAmountsHint")}</p>
-          </div>
-        </Section>
+              <Switch
+                checked={form.enabled}
+                disabled={readOnly}
+                onCheckedChange={(v) => set("enabled", v)}
+              />
+            </div>
+          </Section>
 
-        <Section icon={Percent} title={t("cfg.profit.title")}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field
-              label={t("cfg.field.dailyProfitRate")}
-              htmlFor="sc-profit-rate"
-              hint={t("cfg.field.dailyProfitRateHint")}
-            >
-              <Input
-                id="sc-profit-rate"
-                type="number"
-                min="0"
-                step="0.0001"
-                placeholder="0.0833"
-                disabled={readOnly}
-                value={form.dailyProfitRate}
-                onChange={(e) => set("dailyProfitRate", e.target.value)}
-              />
-            </Field>
-            {/* A per-day percent is unreadable as a price — the tenure total is
-                the number a customer would actually compare, so it is shown
-                beside the input as its own stat rather than a floating badge. */}
-            {preview.days > 0 && (
-              <PreviewStat
-                label={t("cfg.profit.title")}
-                value={formatRatePercent(preview.totalRate)}
-                caption={t("cfg.profit.perDay", {
-                  rate: formatRatePercent(Number(form.dailyProfitRate) || 0),
-                  days: preview.days,
-                })}
-              />
-            )}
-          </div>
-        </Section>
+          {/* Two-up, cards stretched to a common height per row. Paired by size
+              so stretching costs almost nothing: Loan amounts (a field pair plus
+              the chip list) sits with Tenure (three fields), and the two
+              single-row cards, Profit and Late penalty, sit together. That is
+              why Tenure comes before Profit here. */}
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <Section icon={Coins} title={t("cfg.amounts.title")}>
+              <FieldGrid>
+                <Field label={t("cfg.field.minLoanAmount")} htmlFor="sc-min-loan">
+                  <UnitInput
+                    id="sc-min-loan"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    prefix={currency}
+                    placeholder="200.00"
+                    disabled={readOnly}
+                    value={form.minLoanAmount}
+                    onChange={(e) => set("minLoanAmount", e.target.value)}
+                  />
+                </Field>
+                <Field label={t("cfg.field.maxLoanAmount")} htmlFor="sc-max-loan">
+                  <UnitInput
+                    id="sc-max-loan"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    prefix={currency}
+                    placeholder="3000.00"
+                    disabled={readOnly}
+                    value={form.maxLoanAmount}
+                    onChange={(e) => set("maxLoanAmount", e.target.value)}
+                  />
+                </Field>
+              </FieldGrid>
 
-        <Section icon={CalendarClock} title={t("cfg.tenure.title")}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <Field label={t("cfg.field.minTenureDays")} htmlFor="sc-min-tenure">
-              <Input
-                id="sc-min-tenure"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="7"
-                disabled={readOnly}
-                value={form.minTenureDays}
-                onChange={(e) => set("minTenureDays", e.target.value)}
-              />
-            </Field>
-            <Field label={t("cfg.field.maxTenureDays")} htmlFor="sc-max-tenure">
-              <Input
-                id="sc-max-tenure"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="60"
-                disabled={readOnly}
-                value={form.maxTenureDays}
-                onChange={(e) => set("maxTenureDays", e.target.value)}
-              />
-            </Field>
-            <Field
-              label={t("cfg.field.defaultTenureDays")}
-              htmlFor="sc-default-tenure"
-              hint={t("cfg.field.defaultTenureDaysHint")}
-            >
-              <Input
-                id="sc-default-tenure"
-                type="number"
-                min="1"
-                step="1"
-                placeholder="60"
-                disabled={readOnly}
-                value={form.defaultTenureDays}
-                onChange={(e) => set("defaultTenureDays", e.target.value)}
-              />
-            </Field>
-          </div>
-        </Section>
+              {/* Its own block below a rule: the chips are a list that grows, not
+                a third field in the grid above. */}
+              <div className="mt-4 space-y-1.5 border-t pt-4">
+                <Label htmlFor="sc-quick-draft">{t("cfg.field.quickAmounts")}</Label>
+                <div className="flex min-h-7 flex-wrap items-center gap-2">
+                  {form.quickAmounts.map((amount) => (
+                    <Badge
+                      key={amount}
+                      variant="outline"
+                      className={`border font-medium gap-1 ${TONES.emerald}`}
+                    >
+                      {formatSullisAmount(Number(amount), currency)}
+                      {!readOnly && (
+                        <button
+                          type="button"
+                          aria-label={t("cfg.field.quickAmountsRemove", {
+                            amount: formatSullisAmount(Number(amount), currency),
+                          })}
+                          onClick={() => removeQuickAmount(amount)}
+                          className="rounded-sm p-0.5 transition-opacity hover:opacity-70"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      )}
+                    </Badge>
+                  ))}
+                  {form.quickAmounts.length === 0 && (
+                    <span className="text-xs text-muted-foreground">
+                      {t("cfg.field.quickAmountsEmpty")}
+                    </span>
+                  )}
+                </div>
+                {!readOnly && (
+                  <div className="flex items-center gap-2">
+                    <UnitInput
+                      wrapperClassName="max-w-[220px]"
+                      id="sc-quick-draft"
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      prefix={currency}
+                      placeholder="1600"
+                      value={quickDraft}
+                      onChange={(e) => setQuickDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        // Enter adds the chip instead of submitting anything —
+                        // there is no form element to submit to.
+                        if (e.key === "Enter") {
+                          e.preventDefault();
+                          addQuickAmount();
+                        }
+                      }}
+                    />
+                    <Button
+                      variant="outline"
+                      className="h-10 shrink-0 gap-2"
+                      onClick={addQuickAmount}
+                    >
+                      <Plus className="h-4 w-4" />
+                      {t("cfg.field.quickAmountsAdd")}
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </Section>
 
-        <Section icon={AlertTriangle} title={t("cfg.penalty.title")}>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <Field
-              label={t("cfg.field.penaltyDailyRate")}
-              htmlFor="sc-penalty-rate"
-              hint={t("cfg.field.penaltyDailyRateHint")}
-            >
-              <Input
-                id="sc-penalty-rate"
-                type="number"
-                min="0"
-                step="0.01"
-                placeholder="0.05"
-                disabled={readOnly}
-                value={form.penaltyDailyRate}
-                onChange={(e) => set("penaltyDailyRate", e.target.value)}
-              />
-            </Field>
-            <Field
-              label={t("cfg.field.penaltyGraceDays")}
-              htmlFor="sc-grace-days"
-              hint={t("cfg.field.penaltyGraceDaysHint")}
-            >
-              <Input
-                id="sc-grace-days"
-                type="number"
-                min="0"
-                step="1"
-                placeholder="3"
-                disabled={readOnly}
-                value={form.penaltyGraceDays}
-                onChange={(e) => set("penaltyGraceDays", e.target.value)}
-              />
-            </Field>
+            <Section icon={CalendarClock} title={t("cfg.tenure.title")}>
+              <FieldGrid>
+                <Field label={t("cfg.field.minTenureDays")} htmlFor="sc-min-tenure">
+                  <UnitInput
+                    id="sc-min-tenure"
+                    type="number"
+                    min="1"
+                    step="1"
+                    suffix={t("cfg.unit.days")}
+                    placeholder="7"
+                    disabled={readOnly}
+                    value={form.minTenureDays}
+                    onChange={(e) => set("minTenureDays", e.target.value)}
+                  />
+                </Field>
+                <Field label={t("cfg.field.maxTenureDays")} htmlFor="sc-max-tenure">
+                  <UnitInput
+                    id="sc-max-tenure"
+                    type="number"
+                    min="1"
+                    step="1"
+                    suffix={t("cfg.unit.days")}
+                    placeholder="60"
+                    disabled={readOnly}
+                    value={form.maxTenureDays}
+                    onChange={(e) => set("maxTenureDays", e.target.value)}
+                  />
+                </Field>
+                <Field label={t("cfg.field.defaultTenureDays")} htmlFor="sc-default-tenure">
+                  <UnitInput
+                    id="sc-default-tenure"
+                    type="number"
+                    min="1"
+                    step="1"
+                    suffix={t("cfg.unit.days")}
+                    placeholder="60"
+                    disabled={readOnly}
+                    value={form.defaultTenureDays}
+                    onChange={(e) => set("defaultTenureDays", e.target.value)}
+                  />
+                </Field>
+              </FieldGrid>
+            </Section>
+
+            <Section icon={Percent} title={t("cfg.profit.title")}>
+              <FieldGrid>
+                <Field label={t("cfg.field.dailyProfitRate")} htmlFor="sc-profit-rate">
+                  <UnitInput
+                    id="sc-profit-rate"
+                    type="number"
+                    min="0"
+                    step="0.0001"
+                    suffix={t("cfg.unit.percent")}
+                    placeholder="0.0833"
+                    disabled={readOnly}
+                    value={form.dailyProfitRate}
+                    onChange={(e) => set("dailyProfitRate", e.target.value)}
+                  />
+                </Field>
+                {/* A per-day percent is unreadable as a price — the tenure total
+                  is the number a customer would compare. Built as a cell like
+                  every other: name on top, content beneath, on the same 40px
+                  line as the field beside it. */}
+                {preview.days > 0 && (
+                  <div className="flex min-w-0 flex-col gap-1.5">
+                    <Label>{t("cfg.profit.title")}</Label>
+                    <div className="flex h-10 min-w-0 items-center gap-2">
+                      <span className="text-lg font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                        {formatRatePercent(preview.totalRate)}
+                      </span>
+                      <span className="min-w-0 truncate text-xs text-muted-foreground">
+                        {t("cfg.profit.perDay", {
+                          rate: formatRatePercent(Number(form.dailyProfitRate) || 0),
+                          days: preview.days,
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </FieldGrid>
+            </Section>
+            <Section icon={AlertTriangle} title={t("cfg.penalty.title")}>
+              <FieldGrid>
+                <Field label={t("cfg.field.penaltyDailyRate")} htmlFor="sc-penalty-rate">
+                  <UnitInput
+                    id="sc-penalty-rate"
+                    type="number"
+                    min="0"
+                    step="0.01"
+                    suffix={t("cfg.unit.percentPerDay")}
+                    placeholder="0.05"
+                    disabled={readOnly}
+                    value={form.penaltyDailyRate}
+                    onChange={(e) => set("penaltyDailyRate", e.target.value)}
+                  />
+                </Field>
+                <Field label={t("cfg.field.penaltyGraceDays")} htmlFor="sc-grace-days">
+                  <UnitInput
+                    id="sc-grace-days"
+                    type="number"
+                    min="0"
+                    step="1"
+                    suffix={t("cfg.unit.days")}
+                    placeholder="3"
+                    disabled={readOnly}
+                    value={form.penaltyGraceDays}
+                    onChange={(e) => set("penaltyGraceDays", e.target.value)}
+                  />
+                </Field>
+              </FieldGrid>
+            </Section>
           </div>
-        </Section>
+        </div>
 
         {/* The terms as money. Percentages per day are hard to price by eye, so
-            the largest loan the settings allow is worked through end to end. */}
+            the largest loan the settings allow is worked through end to end.
+            Sticky, because its whole value is watching it move as you type. */}
         {preview.principal > 0 && preview.days > 0 && (
-          <Section
-            icon={Coins}
-            title={t("cfg.preview.title")}
-            description={t("cfg.preview.subtitle")}
-          >
-            {/* Laid out as the equation it is — principal + profit = total —
-                rather than four equal tiles that hide the arithmetic. The
-                operator cells sit between the tiles on desktop and stack
-                between them on phones, so the sum reads either way. */}
-            <div className="grid grid-cols-1 items-stretch gap-3 md:grid-cols-[1fr_auto_1fr_auto_1fr]">
-              <PreviewStat
-                label={t("cfg.preview.principal")}
-                value={formatSullisAmount(preview.principal, currency)}
-              />
-              <Operator symbol="+" />
-              <PreviewStat
-                label={t("cfg.preview.profit")}
-                value={formatSullisAmount(preview.profit, currency)}
-                caption={t("cfg.profit.effective", {
-                  rate: formatRatePercent(preview.totalRate),
-                  days: preview.days,
-                })}
-              />
-              <Operator symbol="=" />
-              <PreviewStat
-                label={t("cfg.preview.totalDue")}
-                value={formatSullisAmount(preview.totalDue, currency)}
-                tone="total"
-              />
-            </div>
+          <aside className="xl:sticky xl:top-3">
+            <Section
+              icon={Coins}
+              title={t("cfg.preview.title")}
+              description={t("cfg.preview.subtitle")}
+            >
+              {/* A receipt, not three tiles side by side: in a 360px rail the
+                  terms read down the page, and stacking them puts the sum on
+                  one axis with the total under a rule where a total belongs. */}
+              <div className="flex flex-col gap-3">
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {t("cfg.preview.principal")}
+                  </span>
+                  <span className="shrink-0 text-sm font-semibold tabular-nums">
+                    {formatSullisAmount(preview.principal, currency)}
+                  </span>
+                </div>
 
-            {/* The penalty is conditional and not part of the sum above, so it
-                sits below the divider rather than pretending to be a fourth
-                term of the equation. */}
-            {preview.penaltyPerDay > 0 && (
-              <div
-                className={`mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 rounded-lg border px-3 py-2 text-xs ${TONES.amber}`}
-              >
-                <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
-                <span>{t("cfg.preview.penaltyPerDay")}</span>
-                <span className="font-bold tabular-nums">
-                  {formatSullisAmount(preview.penaltyPerDay, currency)}
-                </span>
-                <span className="opacity-80">
-                  {graceDays > 0
-                    ? t("cfg.preview.penaltyAfterGrace", { days: graceDays })
-                    : t("cfg.preview.penaltyNoGrace")}
-                </span>
+                <div className="flex items-baseline justify-between gap-3">
+                  <span className="min-w-0 text-xs text-muted-foreground">
+                    {t("cfg.preview.profit")}
+                    <span className="mt-0.5 block text-[11px] opacity-80">
+                      {t("cfg.profit.effective", {
+                        rate: formatRatePercent(preview.totalRate),
+                        days: preview.days,
+                      })}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-sm font-semibold tabular-nums">
+                    + {formatSullisAmount(preview.profit, currency)}
+                  </span>
+                </div>
+
+                <div className="flex items-baseline justify-between gap-3 border-t pt-3">
+                  <span className="text-xs font-medium">{t("cfg.preview.totalDue")}</span>
+                  <span className="shrink-0 text-lg font-bold tabular-nums text-emerald-600 dark:text-emerald-400">
+                    {formatSullisAmount(preview.totalDue, currency)}
+                  </span>
+                </div>
               </div>
-            )}
-          </Section>
-        )}
 
-        {/* A plain row, not a `.pro-card`: that class would pin these buttons to
-            the 34px filter-bar height via an !important rule. */}
-        {!readOnly && (
-          <div className="flex flex-wrap items-center justify-end gap-2 pt-1">
-            {isDirty && (
-              <Badge variant="outline" className={`border font-medium me-auto ${TONES.amber}`}>
-                {t("cfg.unsaved")}
-              </Badge>
-            )}
-            <Button
-              variant="outline"
-              className="gap-2"
-              disabled={!isDirty || isSaving}
-              onClick={() => config && setForm(toForm(config))}
-            >
-              <RotateCcw className="h-4 w-4" />
-              {t("cfg.discard")}
-            </Button>
-            <Button
-              className="wallet-brand-btn gap-2"
-              disabled={!isDirty || isSaving}
-              onClick={requestSave}
-            >
-              <Save className="h-4 w-4" />
-              {isSaving ? t("cfg.saving") : t("cfg.save")}
-            </Button>
-          </div>
+              {/* The penalty is conditional and never part of the sum above, so
+                  it sits apart rather than reading as a fourth term. */}
+              {preview.penaltyPerDay > 0 && (
+                <div
+                  className={`mt-4 flex flex-col gap-1 rounded-lg px-3 py-2 text-xs ring-1 ${TONES.amber}`}
+                >
+                  <span className="flex items-center gap-1.5 font-medium">
+                    <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+                    {t("cfg.preview.penaltyPerDay")}
+                    <span className="ms-auto font-bold tabular-nums">
+                      {formatSullisAmount(preview.penaltyPerDay, currency)}
+                    </span>
+                  </span>
+                  <span className="opacity-80">
+                    {graceDays > 0
+                      ? t("cfg.preview.penaltyAfterGrace", { days: graceDays })
+                      : t("cfg.preview.penaltyNoGrace")}
+                  </span>
+                </div>
+              )}
+            </Section>
+          </aside>
         )}
       </div>
+
+      {/* A plain row, not a `.pro-card`: that class would pin these buttons to
+          the 34px filter-bar height via an !important rule. */}
+      {!readOnly && (
+        <div className="mt-4 flex flex-wrap items-center justify-end gap-2">
+          {isDirty && (
+            <Badge variant="outline" className={`border font-medium me-auto ${TONES.amber}`}>
+              {t("cfg.unsaved")}
+            </Badge>
+          )}
+          <Button
+            variant="outline"
+            className="h-10 gap-2"
+            disabled={!isDirty || isSaving}
+            onClick={() => config && setForm(toForm(config))}
+          >
+            <RotateCcw className="h-4 w-4" />
+            {t("cfg.discard")}
+          </Button>
+          <Button
+            className="wallet-brand-btn h-10 gap-2"
+            disabled={!isDirty || isSaving}
+            onClick={requestSave}
+          >
+            <Save className="h-4 w-4" />
+            {isSaving ? t("cfg.saving") : t("cfg.save")}
+          </Button>
+        </div>
+      )}
 
       {/* Confirmed rather than saved outright: this re-prices a live lending
           product, and the snapshot rule is the one thing an admin must know
@@ -802,7 +929,9 @@ const StatusPill = ({
   // grey #dee2e6 outline around a dark surface. Bootstrap has no `.ring-1`, so
   // the token colour survives. Same reason `shadow-sm` is gone — Bootstrap's is
   // `!important` and would overwrite the ring's box-shadow.
-  <div className="flex shrink-0 items-center gap-2.5 rounded-lg bg-card px-3 py-2 ring-1 ring-border">
+  // h-10, matching the currency select it sits beside — the two were 40px and
+  // 46px, which read as a misalignment rather than two sizes.
+  <div className="flex h-10 shrink-0 items-center gap-2.5 rounded-lg bg-card px-3 ring-1 ring-border">
     <span
       className={`size-2 shrink-0 rounded-full ring-4 ${
         enabled ? "bg-emerald-500 ring-emerald-500/15" : "bg-slate-400 ring-slate-400/15"
@@ -819,60 +948,6 @@ const StatusPill = ({
         </p>
       )}
     </div>
-  </div>
-);
-
-/**
- * One figure in the worked example.
- *
- * `tabular-nums` matters here: without it the digits are proportional, so the
- * amounts in adjacent tiles do not line up and the column reads as ragged.
- * `tone="total"` tints the result so the eye lands on what is actually repaid
- * rather than treating all three terms as equals.
- */
-const PreviewStat = ({
-  label,
-  value,
-  caption,
-  tone = "default",
-}: {
-  label: string;
-  value: string;
-  caption?: string;
-  tone?: "default" | "total";
-}) => {
-  const isTotal = tone === "total";
-  return (
-    <div
-      className={`flex flex-col rounded-lg border px-4 py-3 ${
-        isTotal ? "border-emerald-500/30 bg-emerald-500/5" : "border-border bg-muted/40"
-      }`}
-    >
-      <p className="m-0 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
-        {label}
-      </p>
-      <p
-        className={`m-0 mt-1 font-bold tabular-nums ${
-          isTotal ? "text-lg text-emerald-600 dark:text-emerald-400" : "text-base text-foreground"
-        }`}
-      >
-        {value}
-      </p>
-      {caption && <p className="m-0 mt-1 text-[11px] text-muted-foreground">{caption}</p>}
-    </div>
-  );
-};
-
-/**
- * The `+` / `=` between the tiles. Muted and light so it guides the eye without
- * competing with the figures it joins.
- */
-const Operator = ({ symbol }: { symbol: string }) => (
-  <div
-    aria-hidden="true"
-    className="flex items-center justify-center text-lg font-light text-muted-foreground"
-  >
-    {symbol}
   </div>
 );
 

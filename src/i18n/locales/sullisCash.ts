@@ -10,6 +10,9 @@ const sullisCash: ModuleLocale = {
   namespace: "sullisCash",
   en: {
     "cfg.title": "SullisCash Settings",
+    "cfg.unit.days": "days",
+    "cfg.unit.percent": "%",
+    "cfg.unit.percentPerDay": "% / day",
     "cfg.currency.label": "Currency",
     "cfg.currency.new": "New",
     "loans.title": "SullisCash Loans",
@@ -78,36 +81,27 @@ const sullisCash: ModuleLocale = {
     "cfg.amounts.title": "Loan amounts",
     "cfg.field.minLoanAmount": "Minimum loan",
     "cfg.field.maxLoanAmount": "Borrowing limit",
-    "cfg.field.maxLoanAmountHint":
-      "Counted across every open loan a wallet holds, not per loan — someone 2,500 in with a 3,000 limit can borrow 500 more.",
     "cfg.field.quickAmounts": "Quick amounts",
-    "cfg.field.quickAmountsHint":
-      "The chips the app offers. Each must sit inside the loan range above.",
     "cfg.field.quickAmountsAdd": "Add amount",
     "cfg.field.quickAmountsEmpty": "No quick amounts — the app will ask the customer to type one.",
     "cfg.field.quickAmountsRemove": "Remove {{amount}}",
 
     // Profit
     "cfg.profit.title": "Profit",
-    "cfg.field.dailyProfitRate": "Daily profit rate (%)",
-    "cfg.field.dailyProfitRateHint":
-      "A percent of the principal per day, fixed at disbursement. 0.0833 over 60 days works out at about 5%.",
+    "cfg.field.dailyProfitRate": "Daily profit rate",
     "cfg.profit.effective": "{{rate}} over {{days}} days",
     "cfg.profit.perDay": "{{rate}} per day × {{days}} days",
 
     // Tenure
     "cfg.tenure.title": "Tenure",
-    "cfg.field.minTenureDays": "Shortest tenure (days)",
-    "cfg.field.maxTenureDays": "Longest tenure (days)",
-    "cfg.field.defaultTenureDays": "Default tenure (days)",
-    "cfg.field.defaultTenureDaysHint": "Used when the app does not send a tenure.",
+    "cfg.field.minTenureDays": "Shortest tenure",
+    "cfg.field.maxTenureDays": "Longest tenure",
+    "cfg.field.defaultTenureDays": "Default tenure",
 
     // Penalty
     "cfg.penalty.title": "Late penalty",
-    "cfg.field.penaltyDailyRate": "Penalty rate (% per overdue day)",
-    "cfg.field.penaltyDailyRateHint": "A percent of the principal for each overdue day.",
-    "cfg.field.penaltyGraceDays": "Grace period (days)",
-    "cfg.field.penaltyGraceDaysHint": "Free days after the due date before the penalty starts.",
+    "cfg.field.penaltyDailyRate": "Penalty rate",
+    "cfg.field.penaltyGraceDays": "Grace period",
 
     // Worked example
     "cfg.preview.title": "Worked example",
@@ -157,6 +151,9 @@ const sullisCash: ModuleLocale = {
 
   fr: {
     "cfg.title": "Paramètres SullisCash",
+    "cfg.unit.days": "jours",
+    "cfg.unit.percent": "%",
+    "cfg.unit.percentPerDay": "% / jour",
     "cfg.currency.label": "Devise",
     "cfg.currency.new": "Nouvelle",
     "loans.title": "Prêts SullisCash",
@@ -223,35 +220,25 @@ const sullisCash: ModuleLocale = {
     "cfg.amounts.title": "Montants des prêts",
     "cfg.field.minLoanAmount": "Prêt minimum",
     "cfg.field.maxLoanAmount": "Limite d’emprunt",
-    "cfg.field.maxLoanAmountHint":
-      "Calculée sur l’ensemble des prêts en cours d’un portefeuille, et non par prêt — avec 2 500 en cours et une limite de 3 000, il reste 500 à emprunter.",
     "cfg.field.quickAmounts": "Montants rapides",
-    "cfg.field.quickAmountsHint":
-      "Les raccourcis proposés dans l’application. Chacun doit se situer dans la plage ci-dessus.",
     "cfg.field.quickAmountsAdd": "Ajouter un montant",
     "cfg.field.quickAmountsEmpty":
       "Aucun montant rapide — l’application demandera au client de saisir le sien.",
     "cfg.field.quickAmountsRemove": "Supprimer {{amount}}",
 
     "cfg.profit.title": "Profit",
-    "cfg.field.dailyProfitRate": "Taux de profit journalier (%)",
-    "cfg.field.dailyProfitRateHint":
-      "Un pourcentage du principal par jour, figé au décaissement. 0,0833 sur 60 jours équivaut à environ 5 %.",
+    "cfg.field.dailyProfitRate": "Taux de profit journalier",
     "cfg.profit.effective": "{{rate}} sur {{days}} jours",
     "cfg.profit.perDay": "{{rate}} par jour × {{days}} jours",
 
     "cfg.tenure.title": "Durée",
-    "cfg.field.minTenureDays": "Durée la plus courte (jours)",
-    "cfg.field.maxTenureDays": "Durée la plus longue (jours)",
-    "cfg.field.defaultTenureDays": "Durée par défaut (jours)",
-    "cfg.field.defaultTenureDaysHint": "Utilisée lorsque l’application n’envoie pas de durée.",
+    "cfg.field.minTenureDays": "Durée la plus courte",
+    "cfg.field.maxTenureDays": "Durée la plus longue",
+    "cfg.field.defaultTenureDays": "Durée par défaut",
 
     "cfg.penalty.title": "Pénalité de retard",
-    "cfg.field.penaltyDailyRate": "Taux de pénalité (% par jour de retard)",
-    "cfg.field.penaltyDailyRateHint": "Un pourcentage du principal pour chaque jour de retard.",
-    "cfg.field.penaltyGraceDays": "Délai de grâce (jours)",
-    "cfg.field.penaltyGraceDaysHint":
-      "Jours gratuits après l’échéance avant le début de la pénalité.",
+    "cfg.field.penaltyDailyRate": "Taux de pénalité",
+    "cfg.field.penaltyGraceDays": "Délai de grâce",
 
     "cfg.preview.title": "Exemple chiffré",
     "cfg.preview.subtitle": "À la limite d’emprunt, sur la durée par défaut.",
@@ -297,6 +284,9 @@ const sullisCash: ModuleLocale = {
 
   ar: {
     "cfg.title": "إعدادات SullisCash",
+    "cfg.unit.days": "يوم",
+    "cfg.unit.percent": "%",
+    "cfg.unit.percentPerDay": "% / يوم",
     "cfg.currency.label": "العملة",
     "cfg.currency.new": "جديدة",
     "loans.title": "تمويلات SullisCash",
@@ -361,33 +351,24 @@ const sullisCash: ModuleLocale = {
     "cfg.amounts.title": "مبالغ القروض",
     "cfg.field.minLoanAmount": "الحد الأدنى للقرض",
     "cfg.field.maxLoanAmount": "حد الاقتراض",
-    "cfg.field.maxLoanAmountHint":
-      "يُحتسب على مجموع القروض القائمة للمحفظة وليس لكل قرض على حدة — من عليه 2,500 وحده 3,000 يمكنه اقتراض 500 فقط.",
     "cfg.field.quickAmounts": "المبالغ السريعة",
-    "cfg.field.quickAmountsHint":
-      "الاختصارات التي يعرضها التطبيق. يجب أن يقع كل مبلغ ضمن نطاق القرض أعلاه.",
     "cfg.field.quickAmountsAdd": "إضافة مبلغ",
     "cfg.field.quickAmountsEmpty": "لا توجد مبالغ سريعة — سيطلب التطبيق من العميل إدخال المبلغ.",
     "cfg.field.quickAmountsRemove": "إزالة {{amount}}",
 
     "cfg.profit.title": "الربح",
-    "cfg.field.dailyProfitRate": "نسبة الربح اليومية (%)",
-    "cfg.field.dailyProfitRateHint":
-      "نسبة من أصل المبلغ لكل يوم، تُثبَّت عند الصرف. 0.0833 على مدى 60 يوماً تعادل نحو 5%.",
+    "cfg.field.dailyProfitRate": "نسبة الربح اليومية",
     "cfg.profit.effective": "{{rate}} على مدى {{days}} يوماً",
     "cfg.profit.perDay": "{{rate}} يومياً × {{days}} يوماً",
 
     "cfg.tenure.title": "مدة السداد",
-    "cfg.field.minTenureDays": "أقصر مدة (بالأيام)",
-    "cfg.field.maxTenureDays": "أطول مدة (بالأيام)",
-    "cfg.field.defaultTenureDays": "المدة الافتراضية (بالأيام)",
-    "cfg.field.defaultTenureDaysHint": "تُستخدم عندما لا يرسل التطبيق مدة.",
+    "cfg.field.minTenureDays": "أقصر مدة",
+    "cfg.field.maxTenureDays": "أطول مدة",
+    "cfg.field.defaultTenureDays": "المدة الافتراضية",
 
     "cfg.penalty.title": "غرامة التأخير",
-    "cfg.field.penaltyDailyRate": "نسبة الغرامة (% لكل يوم تأخير)",
-    "cfg.field.penaltyDailyRateHint": "نسبة من أصل المبلغ عن كل يوم تأخير.",
-    "cfg.field.penaltyGraceDays": "فترة السماح (بالأيام)",
-    "cfg.field.penaltyGraceDaysHint": "أيام مجانية بعد تاريخ الاستحقاق قبل بدء الغرامة.",
+    "cfg.field.penaltyDailyRate": "نسبة الغرامة",
+    "cfg.field.penaltyGraceDays": "فترة السماح",
 
     "cfg.preview.title": "مثال محسوب",
     "cfg.preview.subtitle": "عند حد الاقتراض وعلى المدة الافتراضية.",
