@@ -78,10 +78,12 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   "scan & pay": { Icon: ScanLine, color: "#10b981" },
   ledger: { Icon: BookOpen, color: "#0ea5e9" },
   "wallet ledger": { Icon: BookOpen, color: "#10b981" },
+  // Groups only, no entry per child: a leaf draws an icon only when it has its
+  // own entry, so leaving the children out gives the plain iconless list that
+  // Exchange Top-Up has. They still get the group's colour on the active pill,
+  // which `--mi-color` inherits from the group wrapper.
   bnpl: { Icon: ShoppingBag, color: "#a855f7" },
-  "bnpl categories": { Icon: ShoppingBag, color: "#a855f7" },
-  "bnpl currency limits": { Icon: Coins, color: "#a855f7" },
-  "sulliscash settings": { Icon: Coins, color: "#f59e0b" },
+  sulliscash: { Icon: Coins, color: "#f59e0b" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
@@ -410,6 +412,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       const perms = mod.permissionsList || mod.permissions || [];
       if (Array.isArray(perms)) {
         for (const p of perms) {
+          // Preferred: an exact permission CODE (e.g. "PRODUCT_CATEGORY_READ").
+          // Codes are stable identifiers, unlike the display name below, so a
+          // gate written against one cannot be broken by renaming a permission
+          // in the admin UI.
+          const permCode = (p.permissionCode || p.code || "").toLowerCase();
+          if (permCode && keysToCheck.includes(permCode)) return true;
+          // Legacy fallback: match the human display name. Kept for gates that
+          // have not been moved to codes yet — remove once they all have.
           const permName = (p.name || p.permissionName || "").toLowerCase();
           if (
             keysToCheck.some((key) => {
@@ -537,7 +547,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
                 pathname.includes("/CostByCustomer") ||
                 pathname.includes("/OnboardingCostByCustomer"),
             },
-            {
+            hasAccess("BUSINESS_READ") && {
               label: "Business",
               Link: "Business",
               LinkLable: "/LOS/CustomerManagement",
@@ -576,7 +586,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           imgActive: Images.productManagementIconActive,
           active: pathname.includes("/ProductManagement"),
           submenu: [
-            hasAccess("View Products") && {
+            hasAccess("PRODUCT_READ") && {
               label: "Product Management",
               Link: "ProductManagement",
               LinkLable: "/LOS",
@@ -584,19 +594,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               imgActive: Images.productManagementIconActive,
               active: pathname === "/LOS/ProductManagement",
             },
-            hasAccess("Contract Template") && {
+            hasAccess("CONTRACT_TEMPLATE_READ") && {
               label: "Contract Template",
               Link: "ContractTemplate",
               LinkLable: "/LOS/NotificationTemplate",
               active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
             },
-            hasAccess("Product Category") && {
+            hasAccess("PRODUCT_CATEGORY_READ") && {
               label: "Product Category",
               Link: "ProductCategory",
               LinkLable: "/LOS/ProductManagement",
               active: pathname == "/LOS/ProductManagement/ProductCategory",
             },
-            hasAccess("Product Sub Category") && {
+            hasAccess("PRODUCT_SUB_CATEGORY_READ") && {
               label: "Product Sub Category",
               Link: "ProductSubCategory",
               LinkLable: "/LOS/ProductManagement",
@@ -678,43 +688,43 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //       LinkLable: "/LOS/LOV",
             //       active: pathname == "/LOS/LOV/CommodityTypes",
             //     },
-            hasAccess("Source Of Income") && {
+            hasAccess("LOV_SOI_READ") && {
               label: "Source Of Income",
               Link: "SourceOfIncome",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/SourceOfIncome",
             },
-            {
+            hasAccess("LOV_OCCUPATION_READ") && {
               label: "Occupation",
               Link: "Occupation",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/Occupation",
             },
-            hasAccess("Source Of Wealth") && {
+            hasAccess("LOV_SOW_READ") && {
               label: "Source Of Wealth",
               Link: "SourceOfWealth",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/SourceOfWealth",
             },
-            hasAccess("Source Of Funds") && {
+            hasAccess("LOV_SOF_READ") && {
               label: "Source Of Funds",
               Link: "SourceOfFunds",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/SourceOfFunds",
             },
-            {
+            hasAccess("TEMPLATE_TYPE_READ") && {
               label: "Template Types",
               Link: "TemplateTypes",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/TemplateTypes",
             },
-            hasAccess("Net Worth Range") && {
+            hasAccess("LOV_NWR_READ") && {
               label: "Net Worth Ranges",
               Link: "NetWorthRanges",
               LinkLable: "/LOS/LOV",
               active: pathname == "/LOS/LOV/NetWorthRanges",
             },
-            hasAccess("Purpose Of Finance") && {
+            hasAccess("LOV_POF_READ") && {
               label: "Purpose of Financing",
               Link: "PurposeofFinancing",
               LinkLable: "/LOS/LOV",
@@ -780,13 +790,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               LinkLable: "/LOS/LOV",
               active: pathname.includes("/ListOfValues"),
             } */
-            hasAccess("Credit Scoring Field") && {
+            hasAccess("RISK_CREDIT_SCORING_FIELDS_READ") && {
               label: "Credit Scoring Definitions",
               Link: "CreditScoringDefinitions",
               LinkLable: "/LOS/LOV",
               active: pathname.includes("/CreditScoringDefinitions"),
             },
-            hasAccess("Approval Condition Field") && {
+            hasAccess("APPROVAL_CONDITION_FIELD_READ") && {
               label: "Approval Conditions",
               Link: "ApprovalConditions",
               LinkLable: "/LOS/LOV",
@@ -1150,7 +1160,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.HomePageManagementIconActive,
       active: pathname.split("/").includes("Lms/dashboard"),
       menu: [
-        {
+        hasAccess("LENDING_READ") && {
           label: "Dashboard",
           Link: `dashboard`,
           LinkLable: "Lms",
@@ -1170,7 +1180,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         // },
 
         // hasAccess("loan_module") &&
-        {
+        hasAccess("LENDING_APPLICATION_READ") && {
           label: "Loan Management",
           Link: "loanmanagement",
           img: Images.loanIcon,
@@ -1178,7 +1188,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           active: pathname.split("/").includes("LoanManagement"),
           submenu: [
             // hasAccess("loan_application_module") &&
-            {
+            hasAccess("LENDING_APPLICATION_READ") && {
               label: "All Applications",
               Link: "ApplicationManagement",
               LinkLable: "/Lms/LoanManagement",
@@ -1223,34 +1233,34 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     // },
         //   ],
         // },
-        hasAccess("reports_module") && {
+        hasAccess("REPORT") && {
           label: "Reports",
           Link: "Reports",
           img: Images.reportsIconDark,
           active: pathname.split("/").includes("Reports"),
           submenu: [
             //  hasAccess("account_report_module") &&
-            {
+            hasAccess("REPORT_READ") && {
               label: "Account Report",
               Link: "AccountReportsList",
               LinkLable: "/Lms/Reports",
               active: pathname.includes("/Lms/Reports/AccountReportsList"),
             },
             //  hasAccess("simah_report_module") &&
-            {
+            hasAccess("REPORT_READ") && {
               label: "Simah Report",
               Link: "SimahReportsList",
               LinkLable: "/Lms/Reports",
               active: pathname.includes("/Lms/Reports/SimahReportsList"),
             },
-            // hasAccess("accounting_financing_module") &&
-            {
+            // hasAccess("LEDGER") &&
+            hasAccess("REPORT_READ") && {
               label: "Accounting & Financing",
               Link: "AccountingFinancing",
               LinkLable: "/Lms/Reports",
               active: pathname.split("/").includes("AccountingFinancing"),
             },
-            {
+            hasAccess("REPORT_READ") && {
               label: "Loans Reports",
               Link: "loans",
               LinkLable: "/Lms/Reports",
@@ -1258,7 +1268,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             },
           ].filter(Boolean),
         },
-        // hasAccess("accounting_financing_module") &&
+        // hasAccess("LEDGER") &&
         // {
         //   label: "Accounting & Financing",
         //   Link: "AccountingFinancing",
@@ -1296,7 +1306,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
 
         //   ].filter(Boolean),
         // },
-        // hasAccess("accounting_financing_module") &&
+        // hasAccess("LEDGER") &&
         // {
         //   label: "Loans Reports",
         //   Link: "loans",
@@ -1420,9 +1430,9 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //     // },
         //   ].filter(Boolean),
         // },
-        // hasAccess("accounting_financing_module") &&
-        // hasAccess("reports_module") &&
-        {
+        // hasAccess("LEDGER") &&
+        // hasAccess("REPORT") &&
+        hasAccess("REPORT_READ") && {
           // Every report the ledger exposes, grouped the way the API groups
           // them. Each child opens the hub for that category, where the
           // individual report is picked — a flat list of 27 would be unusable.
@@ -1431,31 +1441,31 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           img: Images.reportsIconDark,
           active: pathname.split("/").includes("ReportsCenter"),
           submenu: [
-            {
+            hasAccess("REPORT_READ") && {
               label: "Currency Reports",
               Link: "currency",
               LinkLable: "/Lms/ReportsCenter",
               active: pathname.includes("/Lms/ReportsCenter/currency"),
             },
-            {
+            hasAccess("REPORT_READ") && {
               label: "Ledger & Journal",
               Link: "ledger",
               LinkLable: "/Lms/ReportsCenter",
               active: pathname.includes("/Lms/ReportsCenter/ledger"),
             },
-            {
+            hasAccess("REPORT_READ") && {
               label: "Lending",
               Link: "lending",
               LinkLable: "/Lms/ReportsCenter",
               active: pathname.includes("/Lms/ReportsCenter/lending"),
             },
-            {
+            hasAccess("REPORT_READ") && {
               label: "Collections & Risk",
               Link: "collections",
               LinkLable: "/Lms/ReportsCenter",
               active: pathname.includes("/Lms/ReportsCenter/collections"),
             },
-            {
+            hasAccess("REPORT_READ") && {
               label: "Profitability & Regulatory",
               Link: "profitability",
               LinkLable: "/Lms/ReportsCenter",
@@ -1463,7 +1473,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             },
           ].filter(Boolean),
         },
-        hasAccess("accounting_financing_module") && {
+        hasAccess("LEDGER") && {
           // GL enquiry, the failed-posting queue and the daily reconciliation.
           // Grouped next to the chart of accounts because they are read from
           // the same desk.
@@ -1472,19 +1482,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           img: Images.accountCharts,
           active: pathname.split("/").includes("LedgerGl"),
           submenu: [
-            {
+            hasAccess("GL_ENTRY_READ") && {
               label: "GL Entries",
               Link: "Entries",
               LinkLable: "/Lms/LedgerGl",
               active: pathname.includes("/Lms/LedgerGl/Entries"),
             },
-            {
+            hasAccess("GL_ENTRY_READ") && {
               label: "Failed Entries",
               Link: "Failed",
               LinkLable: "/Lms/LedgerGl",
               active: pathname.includes("/Lms/LedgerGl/Failed"),
             },
-            {
+            hasAccess("GL_RECONCILIATION_READ") && {
               label: "Reconciliation",
               Link: "Reconciliation",
               LinkLable: "/Lms/LedgerGl",
@@ -1492,27 +1502,27 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             },
           ].filter(Boolean),
         },
-        hasAccess("accounting_financing_module") && {
+        hasAccess("LEDGER") && {
           label: "Chart of account",
           Link: "ChartOfAccount",
           active: pathname.split("/").includes("ChartOfAccount"),
           img: Images.accountCharts,
           submenu: [
             // hasAccess("chart_of_account_module") &&
-            {
+            hasAccess("COA_READ") && {
               label: "Accounts",
               Link: "ChartOfAccount",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname === "/Lms/ChartOfAccount/ChartOfAccount",
             },
             //hasAccess("coa_configuration_module") &&
-            {
+            hasAccess("COA_CONFIG_READ") && {
               label: "COA Configuration",
               Link: "CoaConfiguration",
               LinkLable: "/Lms/ChartOfAccount",
               active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
             },
-            {
+            hasAccess("COA_FIELD_READ") && {
               label: "Chart of accounts field",
               Link: "ChartOfAccountFields",
               LinkLable: "/Lms/ChartOfAccount",
@@ -1530,14 +1540,14 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           ].filter(Boolean),
         },
 
-        {
+        hasAccess("COLLECTIONS_READ") && {
           label: "Collections",
           Link: "Collections/WaiverRequests",
           img: Images.SettingsIcon,
           imgActive: Images.SettingsIconDark,
           active: pathname.split("/").includes("Collections"),
           submenu: [
-            {
+            hasAccess("WAIVER_REQUEST_READ") && {
               label: "Waiver Requests",
               Link: "WaiverRequests",
               LinkLable: "/Lms/Collections",
@@ -1571,19 +1581,19 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   active: pathname.includes("/Lms/Setting/ProductFee"),
             // },
             // hasAccess("delinquency_module") &&
-            {
+            hasAccess("POLICY_READ") && {
               label: "Delinquency",
               Link: "Deliquency",
               LinkLable: "/Lms/Setting",
               active: pathname.includes("/Lms/Setting/Deliquency"),
             },
-            {
+            hasAccess("POLICY_READ") && {
               label: "Rescheduling",
               Link: "Rescheduling",
               LinkLable: "/Lms/Setting",
               active: pathname.includes("/Lms/Setting/Rescheduling"),
             },
-            {
+            hasAccess("POLICY_READ") && {
               label: "Dunning Policy",
               Link: "DunningPolicy",
               LinkLable: "/Lms/Setting",
@@ -1880,7 +1890,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   img: Images.PartnerManagementIcon,
         //   active: pathname.includes("/ThirdPartyManagement/Providers"),
         // },
-        {
+        hasAccess("MIDDLEWARE_PROVIDER_READ") && {
           label: "Environment Settings",
           Link: "EnvironmentSettings",
           LinkLable: "/ThirdPartyManagement",
@@ -1893,21 +1903,21 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   LinkLable: "/ThirdPartyManagement",
             //   active: pathname.includes("/ThirdPartyManagement/EnvironmentSettings/ServicesList"),
             // },
-            {
+            hasAccess("MIDDLEWARE_PROVIDER_READ") && {
               label: "Providers",
               Link: "Providers",
               LinkLable: "/ThirdPartyManagement",
               active: pathname.includes("/ThirdPartyManagement/Providers"),
             },
-            {
+            hasAccess("MIDDLEWARE_API_READ") && {
               label: "All Provider APIs",
               Link: "AllProviderApis",
               LinkLable: "/ThirdPartyManagement",
               active: pathname.includes("/ThirdPartyManagement/AllProviderApis"),
             },
-          ],
+          ].filter(Boolean),
         },
-        {
+        hasAccess("MIDDLEWARE_CLIENT_READ") && {
           label: "Clients Management",
           Link: "Clients",
           LinkLable: "/ThirdPartyManagement",
@@ -1916,25 +1926,25 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             pathname.split("/").includes("Clients") ||
             pathname.split("/").includes("ClientRequests"),
           submenu: [
-            {
+            hasAccess("MIDDLEWARE_CLIENT_READ") && {
               label: "Clients",
               Link: "Clients",
               LinkLable: "/ThirdPartyManagement",
               active: pathname.includes("/ThirdPartyManagement/Clients"),
             },
-            {
+            hasAccess("MIDDLEWARE_CLIENT_REQUEST_READ") && {
               label: "Client Request Prod",
               Link: "RequestHistory/ClientRequestProd",
               LinkLable: "/ThirdPartyManagement",
               active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestProd"),
             },
-            {
+            hasAccess("MIDDLEWARE_CLIENT_REQUEST_READ") && {
               label: "Client Request Dev",
               Link: "RequestHistory/ClientRequestDev",
               LinkLable: "/ThirdPartyManagement",
               active: pathname.includes("/ThirdPartyManagement/RequestHistory/ClientRequestDev"),
             },
-            {
+            hasAccess("MIDDLEWARE_CLIENT_REQUEST_READ") && {
               label: "Client Request Test",
               Link: "RequestHistory/ClientRequestTest",
               LinkLable: "/ThirdPartyManagement",
@@ -1970,7 +1980,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   LinkLable: "/ThirdPartyManagement",
             //   active: pathname == "/ThirdPartyManagement/ClientServiceRequests",
             // },
-          ],
+          ].filter(Boolean),
         },
         // {
         //   label: "Services Management",
@@ -2293,13 +2303,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.split("/").includes("CustomerManagement"),
       menu: [
-        {
+        hasAccess("ONBOARDING_READ") && {
           label: "Users",
           Link: "OnboardingUsers",
           LinkLable: "/LOS/CustomerManagement",
           active: pathname.includes("/OnboardingUsers"),
         },
-        {
+        hasAccess("CUSTOMER_READ") && {
           label: "Individuals",
           Link: "CustomerList",
           LinkLable: "/LOS/CustomerManagement",
@@ -2309,7 +2319,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             pathname.includes("/CostByCustomer") ||
             pathname.includes("/OnboardingCostByCustomer"),
         },
-        {
+        hasAccess("BUSINESS_READ") && {
           label: "Business",
           Link: "Business",
           LinkLable: "/LOS/CustomerManagement",
@@ -2326,31 +2336,31 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.LovIconDark,
       active: pathname.includes("/RiskManagement"),
       menu: [
-        {
+        hasAccess("RISK_BLACKLIST_READ") && {
           label: "Blacklist NID",
           Link: "BlacklistNid",
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/BlacklistNid",
         },
-        {
+        hasAccess("RISK_BLACKLIST_READ") && {
           label: "Blacklist Mobile",
           Link: "BlacklistMobile",
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/BlacklistMobile",
         },
-        {
+        hasAccess("RISK_FRAUD_RULES_READ") && {
           label: "Fraud Rule Management",
           Link: "FraudRuleManagement",
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/FraudRuleManagement",
         },
-        {
+        hasAccess("RISK_PARAMETERS_READ") && {
           label: "Internal Checks Config",
           Link: "InternalChecksConfig",
           LinkLable: "/LOS/RiskManagement",
           active: pathname == "/LOS/RiskManagement/InternalChecksConfig",
         },
-        {
+        hasAccess("RISK_DEVICES_READ") && {
           label: "Device Management",
           Link: "DeviceManagement",
           LinkLable: "/LOS/RiskManagement",
@@ -2364,65 +2374,65 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       LinkLable: "",
       active: pathname.includes("/CardManagement"),
       menu: [
-        {
+        hasAccess("CARD_READ") && {
           label: "Dashboard",
           Link: "Dashboard",
           LinkLable: "/CardManagement",
           active: pathname === "/CardManagement/Dashboard",
           noIcon: true,
         },
-        {
+        hasAccess("CARD_READ") && {
           label: "Cards",
           Link: "Cards",
           LinkLable: "/CardManagement",
           active: pathname.includes("/CardManagement/Cards"),
         },
-        {
+        hasAccess("CARD_PRODUCT_READ") && {
           label: "Card Products",
           Link: "Products",
           LinkLable: "/CardManagement",
           active: pathname === "/CardManagement/Products",
         },
-        {
+        hasAccess("CARD_SETTINGS_READ") && {
           label: "Card Settings",
           Link: "Settings",
           LinkLable: "/CardManagement",
           active: pathname === "/CardManagement/Settings",
         },
-      ],
+      ].filter(Boolean),
     },
-    hasAccess("block_code_module") && {
+    hasAccess("BLOCK_CODE") && {
       label: "Block Codes",
       Link: "/LOS/BlockCodes/AllBlockCodes",
       img: Images.SettingsIcon,
       imgActive: Images.SettingsIconDark,
       active: pathname.split("/").includes("BlockCodes"),
       menu: [
-        {
+        hasAccess("BLOCK_CODE_READ") && {
           label: "All Block Codes",
           Link: "AllBlockCodes",
           LinkLable: "/LOS/BlockCodes",
           active: pathname.includes("/LOS/BlockCodes/AllBlockCodes"),
         },
-        {
+        hasAccess("BLOCK_CODE_READ") && {
           label: "Compliance",
           Link: "Compliance",
           LinkLable: "/LOS/BlockCodes",
           active: pathname.includes("/LOS/BlockCodes/Compliance"),
         },
-        {
+        hasAccess("BLOCK_CODE_READ") && {
           label: "AML",
           Link: "AML",
           LinkLable: "/LOS/BlockCodes",
           active: pathname.includes("/LOS/BlockCodes/AML"),
         },
-        {
+        hasAccess("BLOCK_CODE_READ") && {
           label: "Anti-Fraud",
           Link: "AntiFraud",
           LinkLable: "/LOS/BlockCodes",
           active: pathname.includes("/LOS/BlockCodes/AntiFraud"),
         },
-        {
+        hasAccess("BLOCK_CODE_READ") && {
           label: "Sanction",
           Link: "Sanction",
           LinkLable: "/LOS/BlockCodes",
@@ -2524,7 +2534,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
     //     },
     //   ].filter(Boolean),
     // },
-    hasAccess(["BNPL", "WALLET"]) && {
+    hasAccess("BNPL") && {
       // Two screens that only make sense together: a category cannot exist in a
       // currency that has no limit, so they share one parent rather than
       // sitting apart in the list.
@@ -2534,21 +2544,21 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/LOS/Bnpl"),
       menu: [
-        {
+        hasAccess("BNPL_CATEGORY_READ") && {
           label: "BNPL Categories",
           Link: "Categories",
           LinkLable: "/LOS/Bnpl",
           active: pathname.includes("/LOS/Bnpl/Categories"),
         },
-        {
+        hasAccess("BNPL_CURRENCY_LIMIT_READ") && {
           label: "BNPL Currency Limits",
           Link: "CurrencyLimits",
           LinkLable: "/LOS/Bnpl",
           active: pathname.includes("/LOS/Bnpl/CurrencyLimits"),
         },
-      ],
+      ].filter(Boolean),
     },
-    hasAccess(["SULLIS_CASH", "WALLET"]) && {
+    hasAccess("SULLIS_CASH") && {
       // Terms and the loan book are two different Casbin objects, so they are
       // two entries rather than one screen with a tab.
       label: "SullisCash",
@@ -2557,13 +2567,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/LOS/SullisCash"),
       menu: [
-        {
+        hasAccess("SULLIS_CASH_CONFIG_READ") && {
           label: "SullisCash Settings",
           Link: "Settings",
           LinkLable: "/LOS/SullisCash",
           active: pathname.includes("/LOS/SullisCash/Settings"),
         },
-        {
+        hasAccess("SULLIS_CASH_LOAN_READ") && {
           label: "SullisCash Loans",
           Link: "Loans",
           LinkLable: "/LOS/SullisCash",
@@ -2578,31 +2588,31 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       imgActive: Images.CustomerManagementIconDark,
       active: pathname.includes("/LOS/Exchange"),
       menu: [
-        {
+        hasAccess("EXCHANGE_COUNTRY_READ") && {
           label: "Countries",
           Link: "Countries",
           LinkLable: "/LOS/Exchange",
           active: pathname === "/LOS/Exchange/Countries",
         },
-        {
+        hasAccess("EXCHANGE_DOCUMENT_TYPE_READ") && {
           label: "Document Types",
           Link: "DocumentTypes",
           LinkLable: "/LOS/Exchange",
           active: pathname === "/LOS/Exchange/DocumentTypes",
         },
-        {
+        hasAccess("EXCHANGE_PROVIDER_READ") && {
           label: "Providers",
           Link: "Providers",
           LinkLable: "/LOS/Exchange",
           active: pathname === "/LOS/Exchange/Providers",
         },
-        {
+        hasAccess("EXCHANGE_VERIFICATION_READ") && {
           label: "Verifications",
           Link: "Verifications",
           LinkLable: "/LOS/Exchange",
           active: pathname.startsWith("/LOS/Exchange/Verifications"),
         },
-        {
+        hasAccess("EXCHANGE_PAYMENT_READ") && {
           label: "Payments",
           Link: "Payments",
           LinkLable: "/LOS/Exchange",
@@ -2669,25 +2679,25 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               imgActive: Images.productManagementIconActive,
               active: pathname.includes("/ProductManagement"),
               menu: [
-                hasAccess("View Products") && {
+                hasAccess("PRODUCT_READ") && {
                   label: "Products",
                   Link: "ProductManagement",
                   LinkLable: "/LOS",
                   active: pathname === "/LOS/ProductManagement",
                 },
-                hasAccess("Contract Template") && {
+                hasAccess("CONTRACT_TEMPLATE_READ") && {
                   label: "Contract Template",
                   Link: "ContractTemplate",
                   LinkLable: "/LOS/NotificationTemplate",
                   active: pathname == "/LOS/NotificationTemplate/ContractTemplate",
                 },
-                hasAccess("Product Category") && {
+                hasAccess("PRODUCT_CATEGORY_READ") && {
                   label: "Product Category",
                   Link: "ProductCategory",
                   LinkLable: "/LOS/ProductManagement",
                   active: pathname == "/LOS/ProductManagement/ProductCategory",
                 },
-                hasAccess("Product Sub Category") && {
+                hasAccess("PRODUCT_SUB_CATEGORY_READ") && {
                   label: "Product Sub Category",
                   Link: "ProductSubCategory",
                   LinkLable: "/LOS/ProductManagement",
@@ -2701,55 +2711,55 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
               imgActive: Images.LovIconDark,
               active: pathname.includes("/LOV"),
               menu: [
-                hasAccess("Source Of Income") && {
+                hasAccess("LOV_SOI_READ") && {
                   label: "Source Of Income",
                   Link: "SourceOfIncome",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/SourceOfIncome",
                 },
-                {
+                hasAccess("LOV_OCCUPATION_READ") && {
                   label: "Occupation",
                   Link: "Occupation",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/Occupation",
                 },
-                hasAccess("Source Of Wealth") && {
+                hasAccess("LOV_SOW_READ") && {
                   label: "Source Of Wealth",
                   Link: "SourceOfWealth",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/SourceOfWealth",
                 },
-                hasAccess("Source Of Funds") && {
+                hasAccess("LOV_SOF_READ") && {
                   label: "Source Of Funds",
                   Link: "SourceOfFunds",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/SourceOfFunds",
                 },
-                {
+                hasAccess("TEMPLATE_TYPE_READ") && {
                   label: "Template Types",
                   Link: "TemplateTypes",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/TemplateTypes",
                 },
-                hasAccess("Net Worth Range") && {
+                hasAccess("LOV_NWR_READ") && {
                   label: "Net Worth Ranges",
                   Link: "NetWorthRanges",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/NetWorthRanges",
                 },
-                hasAccess("Purpose Of Finance") && {
+                hasAccess("LOV_POF_READ") && {
                   label: "Purpose of Financing",
                   Link: "PurposeofFinancing",
                   LinkLable: "/LOS/LOV",
                   active: pathname == "/LOS/LOV/PurposeofFinancing",
                 },
-                hasAccess("Credit Scoring Field") && {
+                hasAccess("RISK_CREDIT_SCORING_FIELDS_READ") && {
                   label: "Credit Scoring Definitions",
                   Link: "CreditScoringDefinitions",
                   LinkLable: "/LOS/LOV",
                   active: pathname.includes("/CreditScoringDefinitions"),
                 },
-                hasAccess("Approval Condition Field") && {
+                hasAccess("APPROVAL_CONDITION_FIELD_READ") && {
                   label: "Approval Conditions",
                   Link: "ApprovalConditions",
                   LinkLable: "/LOS/LOV",

@@ -104,11 +104,37 @@ export const WORKFLOW_MODULE_NAMES = {
  * GL entry enquiry and corrections (ledger-service).
  * `READ` gates every enquiry screen; the two write actions are admin and
  * head_of_accounts only, so gate the buttons rather than letting the call 403.
+ *
+ * These were Casbin object:act strings (`gl.entries:read`) until the
+ * identity-service registered the LEDGER module — the catalog cannot express
+ * that shape, so the codes below are what `/permissions/role/{id}` returns.
  */
 export const LEDGER_GL_PERMISSIONS = {
-  READ: "gl.entries:read",
-  RETRY: "gl.entries:retry",
-  REVERSE: "ledger.entries:reverse",
+  READ: "GL_ENTRY_READ",
+  RETRY: "GL_ENTRY_RETRY",
+  REVERSE: "GL_ENTRY_REVERSE",
+  RECONCILIATION_READ: "GL_RECONCILIATION_READ",
+};
+
+/** The Ledger module itself: the standalone ledger view and account statements. */
+export const LEDGER_PERMISSIONS = {
+  MODULE: "LEDGER",
+  READ: "LEDGER_READ",
+  ACCOUNT_READ: "LEDGER_ACCOUNT_READ",
+};
+
+/** Chart of accounts, its configuration, and the custom field definitions. */
+export const COA_PERMISSIONS = {
+  LIST: "COA_READ",
+  CREATE: "COA_CREATE",
+  EDIT: "COA_UPDATE",
+  DELETE: "COA_DELETE",
+  CONFIG_READ: "COA_CONFIG_READ",
+  CONFIG_UPDATE: "COA_CONFIG_UPDATE",
+  FIELD_LIST: "COA_FIELD_READ",
+  FIELD_CREATE: "COA_FIELD_CREATE",
+  FIELD_EDIT: "COA_FIELD_UPDATE",
+  FIELD_DELETE: "COA_FIELD_DELETE",
 };
 
 /**
@@ -197,15 +223,14 @@ export const CUSTOMER_PERMISSIONS = {
   EXPORT: "CUSTOMER_READ",
 };
 
-// Business (SME) lives under Customer Management and has no dedicated backend
-// codes — it reuses CUSTOMER_READ/WRITE so the gates actually resolve. Named
-// separately so a future BUSINESS_* code only has to change here.
+// Business (SME) lives under Customer Management but has its own codes, so a
+// role can hold retail-customer access without also getting SME access.
 export const BUSINESS_PERMISSIONS = {
-  LIST: "CUSTOMER_READ",
-  EXPORT: "CUSTOMER_READ",
-  VIEW: "CUSTOMER_READ",
+  LIST: "BUSINESS_READ",
+  EXPORT: "BUSINESS_READ",
+  VIEW: "BUSINESS_READ",
   /** Approve / reject business documents, manage block codes. */
-  REVIEW: "CUSTOMER_WRITE",
+  REVIEW: "BUSINESS_WRITE",
 };
 
 export const OPPORTUNITY_PERMISSIONS = {
@@ -395,6 +420,22 @@ export const PRODUCT_CATEGORIES_PERMISSIONS = {
   DELETE: "PRODUCT_CATEGORY_DELETE",
   UPDATE_STATUS: "PRODUCT_CATEGORY_UPDATE",
   SET_DEFAULT: "PRODUCT_CATEGORY_UPDATE",
+};
+
+export const PRODUCT_SUB_CATEGORIES_PERMISSIONS = {
+  LIST: "PRODUCT_SUB_CATEGORY_READ",
+  CREATE: "PRODUCT_SUB_CATEGORY_CREATE",
+  EDIT: "PRODUCT_SUB_CATEGORY_UPDATE",
+  DELETE: "PRODUCT_SUB_CATEGORY_DELETE",
+  UPDATE_STATUS: "PRODUCT_SUB_CATEGORY_UPDATE",
+};
+
+/** The contract document a product issues — distinct from TEMPLATE_TYPE_*. */
+export const CONTRACT_TEMPLATE_PERMISSIONS = {
+  LIST: "CONTRACT_TEMPLATE_READ",
+  CREATE: "CONTRACT_TEMPLATE_CREATE",
+  EDIT: "CONTRACT_TEMPLATE_UPDATE",
+  DELETE: "CONTRACT_TEMPLATE_DELETE",
 };
 
 export const PRODUCT_TYPES_PERMISSIONS = {
@@ -637,6 +678,110 @@ export const WALLET_PERMISSIONS = {
   CREATE: "WALLET_CREATE",
   EDIT: "WALLET_WRITE", // backend Wallet has CREATE/READ/WRITE/MANAGE (no UPDATE/DELETE)
   MANAGE: "WALLET_MANAGE",
+  /** Admin-initiated money movement — deliberately not plain WALLET_READ. */
+  TRANSFER_CREATE: "WALLET_TRANSFER_CREATE",
+  INTERNAL_TRANSFER_CREATE: "WALLET_INTERNAL_TRANSFER_CREATE",
+  /** Per-account and per-transaction ceilings. */
+  LIMIT_READ: "WALLET_LIMIT_READ",
+  LIMIT_UPDATE: "WALLET_LIMIT_UPDATE",
+};
+
+/** Publishing a QR code and paying one are separate acts. */
+export const WALLET_QR_PERMISSIONS = {
+  LIST: "WALLET_QR_READ",
+  CREATE: "WALLET_QR_CREATE",
+  PAY: "WALLET_QR_PAY",
+};
+
+// ============================================
+// NOTIFICATION — notification-service (channels, languages, templates)
+// ============================================
+export const NOTIFICATION_PERMISSIONS = {
+  MODULE: "NOTIFICATION",
+  LIST: "NOTIFICATION_READ",
+  CREATE: "NOTIFICATION_CREATE",
+  EDIT: "NOTIFICATION_UPDATE",
+  DELETE: "NOTIFICATION_DELETE",
+};
+
+// ============================================
+// CARD — card-management service (/admin/cards, /admin/card-products)
+// ============================================
+export const CARD_PERMISSIONS = {
+  MODULE: "CARD",
+  LIST: "CARD_READ",
+  CREATE: "CARD_CREATE",
+  EDIT: "CARD_UPDATE",
+  /** Reversible holds and the terminal state are separate acts on purpose. */
+  FREEZE: "CARD_FREEZE",
+  BLOCK: "CARD_BLOCK",
+  CANCEL: "CARD_CANCEL",
+  PRODUCT_LIST: "CARD_PRODUCT_READ",
+  PRODUCT_CREATE: "CARD_PRODUCT_CREATE",
+  PRODUCT_EDIT: "CARD_PRODUCT_UPDATE",
+  PRODUCT_DELETE: "CARD_PRODUCT_DELETE",
+  SETTINGS_READ: "CARD_SETTINGS_READ",
+  SETTINGS_UPDATE: "CARD_SETTINGS_UPDATE",
+};
+
+// ============================================
+// BLOCK_CODE — /block-codes catalog + /user-blocks application
+// The Compliance / AML / Anti-Fraud / Sanction pages are filtered views of one
+// resource, so they share these codes.
+// ============================================
+export const BLOCK_CODE_PERMISSIONS = {
+  MODULE: "BLOCK_CODE",
+  LIST: "BLOCK_CODE_READ",
+  CREATE: "BLOCK_CODE_CREATE",
+  EDIT: "BLOCK_CODE_UPDATE",
+  DELETE: "BLOCK_CODE_DELETE",
+  /** Applying a code to a user is a different act from editing the catalog. */
+  USER_BLOCK: "USER_BLOCK_APPLY",
+  USER_UNBLOCK: "USER_BLOCK_REMOVE",
+};
+
+// ============================================
+// LENDING — LMS dashboard and the loan application book
+// ============================================
+export const LENDING_PERMISSIONS = {
+  MODULE: "LENDING",
+  READ: "LENDING_READ",
+  APPLICATION_LIST: "LENDING_APPLICATION_READ",
+  APPLICATION_APPROVE: "LENDING_APPLICATION_APPROVE",
+  APPLICATION_REJECT: "LENDING_APPLICATION_REJECT",
+  APPLICATION_DISBURSE: "LENDING_APPLICATION_DISBURSE",
+};
+
+// ============================================
+// COLLECTIONS — collections-service waiver requests
+// ============================================
+export const COLLECTIONS_PERMISSIONS = {
+  MODULE: "COLLECTIONS",
+  READ: "COLLECTIONS_READ",
+  WAIVER_LIST: "WAIVER_REQUEST_READ",
+  WAIVER_APPROVE: "WAIVER_REQUEST_APPROVE",
+  WAIVER_REJECT: "WAIVER_REQUEST_REJECT",
+};
+
+// ============================================
+// REPORT — every report screen. Read-only plus the download.
+// ============================================
+export const REPORT_PERMISSIONS = {
+  MODULE: "REPORT",
+  READ: "REPORT_READ",
+  EXPORT: "REPORT_EXPORT",
+};
+
+// ============================================
+// MIDDLEWARE sub-resources — Connector Management children
+// ============================================
+export const MIDDLEWARE_PERMISSIONS = {
+  MODULE: "MIDDLEWARE",
+  READ: "MIDDLEWARE_READ",
+  PROVIDER_LIST: "MIDDLEWARE_PROVIDER_READ",
+  API_LIST: "MIDDLEWARE_API_READ",
+  CLIENT_LIST: "MIDDLEWARE_CLIENT_READ",
+  CLIENT_REQUEST_LIST: "MIDDLEWARE_CLIENT_REQUEST_READ",
 };
 
 // ============================================
@@ -728,6 +873,12 @@ export const LOV_PURPOSE_OF_FINANCE_PERMISSIONS = {
   CREATE: "LOV_POF_CREATE",
   EDIT: "LOV_POF_UPDATE",
   DELETE: "LOV_POF_DELETE",
+};
+export const LOV_OCCUPATION_PERMISSIONS = {
+  LIST: "LOV_OCCUPATION_READ",
+  CREATE: "LOV_OCCUPATION_CREATE",
+  EDIT: "LOV_OCCUPATION_UPDATE",
+  DELETE: "LOV_OCCUPATION_DELETE",
 };
 export const LOV_NET_WORTH_RANGE_PERMISSIONS = {
   LIST: "LOV_NWR_READ",

@@ -2,7 +2,7 @@
 
 Everything the identity-service permission catalog is missing for the **active sidebar pages** (the 74 pages listed in [SIDEBAR_ACTIVE_PAGES.md](SIDEBAR_ACTIVE_PAGES.md)). Commented-out menu entries are excluded — nothing here is speculative UI.
 
-**Ask:** 10 new modules · 95 new permission codes.
+**Ask:** 10 new modules · 96 new permission codes.
 **Endpoint they must appear in:** `GET /identity-service/api/v1/permissions/role/{roleId}`
 **Catalog baseline:** audit of 2026-07-16 — 174 codes across 19 modules (`DASHBOARD, ADMIN, CUSTOMER, PARTNER, PERMISSION, POLICY, PRODUCT, LOV, PROFILE, RISK, ROLE, WALLET, TEST, KYC, MIDDLEWARE, EMPLOYEE, ONBOARDING, PII, FRAUD`). Anything already added since then can be ticked off rather than re-created.
 
@@ -28,7 +28,7 @@ These alone make every currently-invisible menu reachable. Everything else in th
 | `BLOCK_CODE` | `BLOCK_CODE_READ` | Block Codes (5 pages) |
 | `LEDGER` | `LEDGER_READ` | Ledger, Wallet Ledger (2), General Ledger (3), Chart of account (3) |
 | `BNPL` | `BNPL_CATEGORY_READ` | BNPL (2 pages) |
-| `SULLIS_CASH` | `SULLIS_CASH_CONFIG_READ` | SullisCash Settings |
+| `SULLIS_CASH` | `SULLIS_CASH_CONFIG_READ` | SullisCash (Settings + Loans) |
 | `EXCHANGE` | `EXCHANGE_PROVIDER_READ` | Exchange Top-up (5 pages) |
 | `LENDING` | `LENDING_READ` | LMS Dashboard, Loan Management |
 | `COLLECTIONS` | `COLLECTIONS_READ` | Collections → Waiver Requests |
@@ -121,12 +121,17 @@ wallet-service, Casbin objects `wallet.bnpl.admin-categories` and `wallet.bnpl.a
 
 ## 6. SULLIS_CASH *(new module)*
 
-wallet-service, Casbin object `wallet.sullis-cash.admin-config`. Names already in constants ([useProductPermissions.ts:675](../src/hooks/useProductPermissions.ts#L675)).
+wallet-service. Two distinct Casbin objects, deliberately split so support staff can read the loan book without being able to re-price the product. Names already in constants ([useProductPermissions.ts:685](../src/hooks/useProductPermissions.ts#L685)).
 
-| Code | Permission name | Gates |
-|---|---|---|
-| ⭐ `SULLIS_CASH_CONFIG_READ` | View SullisCash Config | SullisCash Settings — `/LOS/SullisCash/Settings` |
-| `SULLIS_CASH_CONFIG_UPDATE` | Update SullisCash Config | save settings |
+| Code | Permission name | Casbin object | Gates |
+|---|---|---|---|
+| ⭐ `SULLIS_CASH_CONFIG_READ` | View SullisCash Config | `wallet.sullis-cash.admin-config:read` | SullisCash → Settings — `/LOS/SullisCash/Settings` |
+| `SULLIS_CASH_CONFIG_UPDATE` | Update SullisCash Config | `wallet.sullis-cash.admin-config:update` | save terms — `PUT /api/v1/sullis-cash/admin/config/{currency}` |
+| `SULLIS_CASH_LOAN_READ` | View SullisCash Loans | `wallet.sullis-cash.admin-loans:read` | SullisCash → Loans — `/LOS/SullisCash/Loans` |
+
+**Settings is now per currency.** `GET …/config` lists the configured currencies, `GET …/config/{currency}` reads one (seeding platform defaults on first touch), `PUT …/config/{currency}` saves one. The three codes above are currency-blind — a role that can price SAR can price every currency. If pricing authority needs to be split by currency, tell us and we'll gate per row instead.
+
+**The loan book has no write acts.** There is no admin settle / waive / cancel on a SullisCash loan, so `SULLIS_CASH_LOAN_READ` is the whole surface.
 
 ## 7. EXCHANGE *(new module)*
 
