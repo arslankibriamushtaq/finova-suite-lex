@@ -41,6 +41,7 @@ import exchange from "./locales/exchange";
 import walletLedger from "./locales/walletLedger";
 import walletGlAccounts from "./locales/walletGlAccounts";
 import walletQr from "./locales/walletQr";
+import permissions from "./locales/permissions";
 // <-- register new module locale files here (keep alphabetical)
 
 const modules: ModuleLocale[] = [
@@ -78,6 +79,7 @@ const modules: ModuleLocale[] = [
   walletLedger,
   walletGlAccounts,
   walletQr,
+  permissions,
 ];
 
 export const moduleNamespaces: string[] = modules.map((m) => m.namespace);

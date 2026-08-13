@@ -6,13 +6,17 @@ import { getRoles, getRolePermission, getPermissionByRole, syncRolePermissions }
 import toast from "react-hot-toast";
 import Loader from "../Loader/Loader";
 import { usePermissions, PERMISSION_PERMISSIONS } from "../../hooks/useProductPermissions";
+import { moduleLabel, permissionLabel } from "../../utils/permissionLabels";
 
 
 const { Option } = Select;
 const { Text } = Typography;
 
 const AssignPermissions: React.FC = () => {
-  const { t } = useTranslation("settings");
+  // `permissions` carries the catalog vocabulary: the module and permission
+  // names on this page are API data, so they are translated from their codes
+  // rather than from page copy.
+  const { t } = useTranslation(["settings", "permissions"]);
   const [selectedRole, setSelectedRole] = useState<string | undefined>(
     undefined
   );
@@ -89,6 +93,9 @@ const AssignPermissions: React.FC = () => {
           ? responseData.map((module: any) => ({
               id: module.moduleId,
               name: module.moduleName,
+              // Kept alongside the name so the card title can be localized from
+              // the stable code rather than the server's wording.
+              code: module.moduleCode,
               permissions: Array.isArray(module.permissions) ? module.permissions : [],
             }))
           : [];
@@ -156,7 +163,7 @@ const AssignPermissions: React.FC = () => {
   const renderModuleCard = (module: any) => {
     const hasPermissions = module.permissions && module.permissions.length > 0;
     const isFullySelected = isModuleFullySelected(module);
-    const moduleName = (module.name || "").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
+    const moduleName = moduleLabel(t, module.code || module.name, module.name);
     const total = module.permissions?.length || 0;
     const selectedCount = module.permissions?.filter((p: any) => selectedPermissions.includes(p.id)).length || 0;
 
@@ -204,7 +211,11 @@ const AssignPermissions: React.FC = () => {
           <div className="d-flex flex-column" style={{ gap: "4px" }}>
             {module.permissions.map((permission: any) => {
               const isChecked = selectedPermissions.includes(permission.id);
-              const permissionName = (permission.permissionName || permission.permissionCode || "").replace(/_/g, " ").replace(/\b\w/g, (l: string) => l.toUpperCase());
+              const permissionName = permissionLabel(
+                t,
+                permission.permissionCode || permission.code || "",
+                permission.permissionName
+              );
 
               return (
                 <label
