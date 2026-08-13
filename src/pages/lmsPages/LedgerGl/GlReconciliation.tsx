@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { CheckCircle2, Info, RefreshCw, Scale, XCircle } from "lucide-react";
+import { CheckCircle2, RefreshCw, Scale, XCircle } from "lucide-react";
 
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
-import { Block, EmptyState, Field, PermissionDenied } from "../../../components/shared/detailKit";
-import { FilterField } from "../../../components/shared/filterKit";
+import { EmptyState, Field, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, humanizeCode } from "../../../components/shared/detailKitUtils";
 import { useProductPermissions, LEDGER_GL_PERMISSIONS } from "../../../hooks/useProductPermissions";
 import { ledgerErrorMessage } from "../../../utils/ledgerErrors";
@@ -20,6 +19,42 @@ import {
 } from "../../../redux/apis/apisLedgerGl";
 
 const today = () => new Date().toISOString().slice(0, 10);
+
+/**
+ * One currency's block.
+ *
+ * `.pro-card` + `.pro-head-badge`, the same surface and icon badge as the page
+ * header and as the table card on every other ledger screen.
+ * Deliberately not the shared `Block`: that one is `rounded-xl` over an
+ * `onb-card` class no stylesheet defines, so it landed on the page with 12px
+ * corners and the default border against everything else's 2px and emerald.
+ */
+const CurrencyCard = ({
+  icon: Icon,
+  title,
+  right,
+  children,
+}: {
+  icon: typeof Scale;
+  title: string;
+  right?: React.ReactNode;
+  children: React.ReactNode;
+}) => (
+  // p-4, not p-3: `.pro-card.p-3` is the compact filter-bar rule and would crush
+  // the vertical padding to 8px.
+  <div className="pro-card w-100 p-4">
+    <div className="mb-3 flex items-center justify-between gap-2">
+      <div className="flex items-center gap-2">
+        <span className="pro-head-badge">
+          <Icon className="h-4 w-4" />
+        </span>
+        <h3 className="m-0 text-sm font-semibold tracking-tight">{title}</h3>
+      </div>
+      {right}
+    </div>
+    {children}
+  </div>
+);
 
 /**
  * Daily summary and reconciliation, one block per currency.
@@ -76,54 +111,47 @@ const GlReconciliation = () => {
 
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-          <span className="pro-head-badge">
-            <Scale className="h-4 w-4" />
-          </span>
-          {t("recon.title")}
-          {reconciled !== null && (
-            <Badge
-              variant="outline"
-              title={t("recon.reconciledHint")}
-              className={`border gap-1 font-medium ${reconciled ? TONES.emerald : TONES.amber}`}
-            >
-              {reconciled ? <CheckCircle2 className="h-3 w-3" /> : <XCircle className="h-3 w-3" />}
-              {reconciled ? t("recon.reconciled") : t("recon.notReconciled")}
-            </Badge>
-          )}
-        </h3>
-        <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("recon.subtitle")}</p>
-      </div>
-
-      <div className="pro-card p-3 mb-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <FilterField label={t("recon.date")} htmlFor="recon-date">
-            <Input
-              id="recon-date"
-              className="h-10 sm:w-56"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
-          </FilterField>
+      {/* align-items-center: the controls are one 40px row against a two-line
+          title block, so centring them reads level with it. */}
+      <div className="mb-3 pb-2 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div className="min-w-0">
+          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+            <span className="pro-head-badge">
+              <Scale className="h-4 w-4" />
+            </span>
+            {t("recon.title")}
+            {reconciled !== null && (
+              <Badge
+                variant="outline"
+                className={`border gap-1 font-medium ${reconciled ? TONES.emerald : TONES.amber}`}
+              >
+                {reconciled ? (
+                  <CheckCircle2 className="h-3 w-3" />
+                ) : (
+                  <XCircle className="h-3 w-3" />
+                )}
+                {reconciled ? t("recon.reconciled") : t("recon.notReconciled")}
+              </Badge>
+            )}
+          </h3>
+          <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("recon.subtitle")}</p>
+        </div>
+        {/* The date is the page's only filter, so it sits in the header beside
+            the title rather than alone in a full-width card. `bg-card` because
+            the input ships transparent and would vanish into the page. */}
+        <div className="d-flex align-items-center gap-2">
+          <Input
+            id="recon-date"
+            aria-label={t("recon.date")}
+            className="h-10 w-auto bg-card"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+          />
           <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
             {t("common:refresh")}
           </Button>
-        </div>
-
-        <div className="mt-3 flex flex-col gap-2">
-          <div className="flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>{t("recon.reconciledHint")}</span>
-          </div>
-          {/* Sync runs on a timer now, so a pending count on a recent day is
-              usually a queue and not a fault. What does not clear is a fault. */}
-          <div className="flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
-            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-            <span>{t("recon.syncNote")}</span>
-          </div>
         </div>
       </div>
 
@@ -139,8 +167,7 @@ const GlReconciliation = () => {
             const balanced = r?.balanced ?? s?.balanced;
             return (
               <div key={code} className="col-12 col-xl-6 d-flex">
-                <Block
-                  className="w-100"
+                <CurrencyCard
                   icon={Scale}
                   title={code}
                   right={
@@ -227,7 +254,7 @@ const GlReconciliation = () => {
                       </div>
                     </div>
                   )}
-                </Block>
+                </CurrencyCard>
               </div>
             );
           })}

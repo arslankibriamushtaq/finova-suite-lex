@@ -1,8 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { AlertTriangle, Info, Pencil, RefreshCw, Wallet } from "lucide-react";
+import { AlertTriangle, ChevronDown, Info, Pencil, RefreshCw, Wallet } from "lucide-react";
 
+import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
 import { Button } from "../../../components/ui/button";
 import {
@@ -12,6 +13,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../../../components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../../../components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -40,6 +47,9 @@ interface PostableAccount {
   accountType: string;
 }
 
+const SELECT_TRIGGER_CLS =
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-lg border border-foreground/30 bg-foreground px-4 py-2 text-sm font-medium text-background shadow-sm transition-colors hover:bg-foreground/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-60";
+
 /**
  * Which GL account each wallet rail posts to.
  *
@@ -67,6 +77,8 @@ const WalletGlAccounts = () => {
   const [editing, setEditing] = useState<WalletGlAccountSetting | null>(null);
   const [chosenCode, setChosenCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const load = async () => {
     if (!canRead) return;
@@ -117,6 +129,27 @@ const WalletGlAccounts = () => {
 
   const accountByCode = useMemo(() => new Map(accounts.map((a) => [a.accountCode, a])), [accounts]);
 
+  /**
+   * Prefer what the server says the account is; fall back to the picker's copy
+   * so the name and type still show if the settings response omits them.
+   */
+  const rows = useMemo(
+    () =>
+      settings.map((s) => {
+        const resolved = accountByCode.get(s.accountCode);
+        return {
+          ...s,
+          id: s.settingKey,
+          rail: humanizeCode(s.settingKey),
+          resolvedName: s.accountName || resolved?.accountName || "",
+          resolvedType: s.accountType || resolved?.accountType || "",
+        };
+      }),
+    [settings, accountByCode]
+  );
+
+  type WalletGlRow = (typeof rows)[number];
+
   const openEdit = (setting: WalletGlAccountSetting) => {
     setEditing(setting);
     setChosenCode(setting.accountCode);
@@ -142,7 +175,95 @@ const WalletGlAccounts = () => {
     }
   };
 
+  const headers = [
+    {
+      name: t("wga.col.rail"),
+      cell: (row: WalletGlRow) => (
+        <div className="flex flex-col">
+          <span className="font-medium">{row.rail}</span>
+          {row.description && (
+            <span className="text-xs text-muted-foreground">{row.description}</span>
+          )}
+        </div>
+      ),
+      width: "280px",
+    },
+    {
+      name: t("wga.col.account"),
+      cell: (row: WalletGlRow) => (
+        <div className="flex flex-col">
+          <span className="font-mono text-xs">{row.accountCode}</span>
+          <span>{row.resolvedName || "—"}</span>
+        </div>
+      ),
+      width: "260px",
+    },
+    {
+      name: t("wga.col.type"),
+      cell: (row: WalletGlRow) =>
+        row.resolvedType ? (
+          <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
+            {row.resolvedType}
+          </Badge>
+        ) : (
+          <span className="text-muted-foreground">—</span>
+        ),
+      width: "180px",
+    },
+    // The whole column goes when the account cannot be changed — an Action
+    // header over an empty cell reads as a control that failed to render.
+    ...(canWrite
+      ? [
+          {
+            name: t("wga.col.action"),
+            cell: (row: WalletGlRow) => (
+              // Row clicks are stopped here so opening the menu never triggers
+              // the row's own handlers, same as every other Action column.
+              <div
+                className="relative inline-block"
+                onClick={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                <DropdownMenu modal={false}>
+                  <DropdownMenuTrigger asChild>
+                    <button type="button" className={SELECT_TRIGGER_CLS}>
+                      {t("common:select")}
+                      <ChevronDown className="h-4 w-4 shrink-0 opacity-80" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="end"
+                    side="bottom"
+                    className="z-[9999]"
+                    sideOffset={4}
+                  >
+                    <DropdownMenuItem
+                      onSelect={(e) => {
+                        e.preventDefault();
+                        openEdit(row);
+                      }}
+                    >
+                      <Pencil className="h-4 w-4" />
+                      {t("common:edit")}
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            ),
+            width: "120px",
+          },
+        ]
+      : []),
+  ];
+
   if (!canRead) return <PermissionDenied />;
+
+  // The endpoint returns every rail in one response, so paging is local.
+  const totalRows = rows.length;
+  const from = totalRows === 0 ? 0 : (page - 1) * pageSize + 1;
+  const to = Math.min(page * pageSize, totalRows);
+  const totalPage = Math.ceil(totalRows / pageSize) || 1;
+  const pageRows = rows.slice((page - 1) * pageSize, page * pageSize);
 
   const chosen = accountByCode.get(chosenCode);
   const changed = !!editing && !!chosenCode && chosenCode !== editing.accountCode;
@@ -180,73 +301,28 @@ const WalletGlAccounts = () => {
         </div>
       </div>
 
-      {settings.length === 0 ? (
-        <div className="pro-card">
-          <EmptyState icon={Wallet} text={isLoading ? t("common:loading") : t("wga.empty")} />
-        </div>
-      ) : (
-        <div className="pro-card overflow-x-auto">
-          <table className="w-full min-w-[720px] text-sm">
-            <thead className="bg-muted/50 text-muted-foreground">
-              <tr>
-                <th className="p-3 text-start font-medium">{t("wga.col.rail")}</th>
-                <th className="p-3 text-start font-medium">{t("wga.col.account")}</th>
-                <th className="p-3 text-start font-medium">{t("wga.col.type")}</th>
-                {canWrite && <th className="p-3 text-end font-medium">{t("wga.col.action")}</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {settings.map((s) => {
-                // Prefer what the server says the account is; fall back to the
-                // picker's copy so the type still shows if the API omits it.
-                const resolved = accountByCode.get(s.accountCode);
-                const name = s.accountName || resolved?.accountName;
-                const type = s.accountType || resolved?.accountType;
-                return (
-                  <tr key={s.settingKey} className="border-t">
-                    <td className="p-3">
-                      <div className="flex flex-col">
-                        <span className="font-medium">{humanizeCode(s.settingKey)}</span>
-                        {s.description && (
-                          <span className="text-xs text-muted-foreground">{s.description}</span>
-                        )}
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex flex-col">
-                        <span className="font-mono text-xs">{s.accountCode}</span>
-                        <span>{name || "—"}</span>
-                      </div>
-                    </td>
-                    <td className="p-3">
-                      {type ? (
-                        <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
-                          {type}
-                        </Badge>
-                      ) : (
-                        <span className="text-muted-foreground">—</span>
-                      )}
-                    </td>
-                    {canWrite && (
-                      <td className="p-3 text-end">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="gap-2"
-                          onClick={() => openEdit(s)}
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          {t("common:edit")}
-                        </Button>
-                      </td>
-                    )}
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <div className="pro-card">
+        {!isLoading && totalRows === 0 ? (
+          <EmptyState icon={Wallet} text={t("wga.empty")} />
+        ) : (
+          <TableView
+            header={headers}
+            data={pageRows}
+            totalRows={totalRows}
+            isLoading={isLoading}
+            from={from}
+            to={to}
+            page={page}
+            totalPage={totalPage}
+            setPage={setPage}
+            pageSize={pageSize}
+            setPageSize={(size: number) => {
+              setPageSize(size);
+              setPage(1);
+            }}
+          />
+        )}
+      </div>
 
       <Dialog open={!!editing} onOpenChange={(open) => !open && closeEdit()}>
         <DialogContent className="pro-dialog sm:max-w-lg">
@@ -267,9 +343,11 @@ const WalletGlAccounts = () => {
             </div>
 
             <div className="flex flex-col gap-1">
-              <span className="text-sm font-medium">{t("wga.edit.new")}</span>
+              <label htmlFor="wga-account" className="text-sm font-medium">
+                {t("wga.edit.new")}
+              </label>
               <Select value={chosenCode} onValueChange={setChosenCode}>
-                <SelectTrigger className="w-full data-[size=default]:h-10">
+                <SelectTrigger id="wga-account" className="w-full data-[size=default]:h-10">
                   <SelectValue placeholder={t("wga.edit.choose")} />
                 </SelectTrigger>
                 <SelectContent>

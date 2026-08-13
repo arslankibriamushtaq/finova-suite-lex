@@ -13,8 +13,6 @@ const ledgerGl: ModuleLocale = {
     "gl.filter.clear": "Clear filters",
     "gl.filter.currency": "Currency",
     "gl.filter.allCurrencies": "All currencies",
-    "gl.filter.currencyHint":
-      "Optional — nothing on this list is totalled, so entries from several currencies can sit together.",
     "gl.filter.status": "Status",
     "gl.filter.allStatuses": "All statuses",
     "gl.filter.type": "Entry type",
@@ -98,8 +96,6 @@ const ledgerGl: ModuleLocale = {
     "failed.title": "Failed GL Entries",
     "failed.subtitle": "Entries the ledger could not post. Work them off this queue.",
     "failed.empty": "Nothing failed. The queue is clear.",
-    "failed.note":
-      "An entry that posted but has not reached core banking is not here — it shows as pending sync on the reconciliation.",
     "failed.toast.loadFailed": "Failed to load the queue",
 
     // ---- Daily summary / reconciliation
@@ -108,8 +104,6 @@ const ledgerGl: ModuleLocale = {
     "recon.date": "Date",
     "recon.reconciled": "Reconciled",
     "recon.notReconciled": "Not reconciled",
-    "recon.reconciledHint":
-      "Reconciled means every currency balances AND core banking has every entry. Balancing alone is only halfway.",
     "recon.summary": "Daily summary",
     "recon.reconciliation": "Reconciliation",
     "recon.entries": "Entries",
@@ -124,8 +118,6 @@ const ledgerGl: ModuleLocale = {
     "recon.byStatus": "By status",
     "recon.byType": "By transaction type",
     "recon.empty": "No entries on this date.",
-    "recon.syncNote":
-      "Core banking sync runs on a timer, so a pending count on a recent day is usually a queue rather than a fault. A count that does not clear is worth investigating.",
     "recon.toast.loadFailed": "Failed to load the reconciliation",
   },
   fr: {
@@ -137,8 +129,6 @@ const ledgerGl: ModuleLocale = {
     "gl.filter.clear": "Effacer les filtres",
     "gl.filter.currency": "Devise",
     "gl.filter.allCurrencies": "Toutes les devises",
-    "gl.filter.currencyHint":
-      "Facultatif — rien n'est totalisé dans cette liste, des écritures de plusieurs devises peuvent donc y figurer.",
     "gl.filter.status": "Statut",
     "gl.filter.allStatuses": "Tous les statuts",
     "gl.filter.type": "Type d'écriture",
@@ -218,8 +208,6 @@ const ledgerGl: ModuleLocale = {
     "failed.title": "Écritures en échec",
     "failed.subtitle": "Écritures que le grand livre n'a pas pu comptabiliser.",
     "failed.empty": "Aucun échec. La file est vide.",
-    "failed.note":
-      "Une écriture comptabilisée mais non parvenue au système bancaire ne figure pas ici — elle apparaît en attente de synchronisation dans le rapprochement.",
     "failed.toast.loadFailed": "Échec du chargement de la file",
 
     "recon.title": "Résumé quotidien et rapprochement",
@@ -227,8 +215,6 @@ const ledgerGl: ModuleLocale = {
     "recon.date": "Date",
     "recon.reconciled": "Rapproché",
     "recon.notReconciled": "Non rapproché",
-    "recon.reconciledHint":
-      "Rapproché signifie que chaque devise est équilibrée ET que le système bancaire a reçu toutes les écritures.",
     "recon.summary": "Résumé quotidien",
     "recon.reconciliation": "Rapprochement",
     "recon.entries": "Écritures",
@@ -243,8 +229,6 @@ const ledgerGl: ModuleLocale = {
     "recon.byStatus": "Par statut",
     "recon.byType": "Par type de transaction",
     "recon.empty": "Aucune écriture à cette date.",
-    "recon.syncNote":
-      "La synchronisation bancaire s'exécute périodiquement : un nombre en attente sur une journée récente traduit généralement une file d'attente, non une anomalie. Un nombre qui ne diminue pas mérite un examen.",
     "recon.toast.loadFailed": "Échec du chargement du rapprochement",
   },
   ar: {
@@ -256,8 +240,6 @@ const ledgerGl: ModuleLocale = {
     "gl.filter.clear": "مسح عوامل التصفية",
     "gl.filter.currency": "العملة",
     "gl.filter.allCurrencies": "كل العملات",
-    "gl.filter.currencyHint":
-      "اختياري — لا يوجد أي إجمالي في هذه القائمة، فقد تجتمع فيها عملات متعددة.",
     "gl.filter.status": "الحالة",
     "gl.filter.allStatuses": "كل الحالات",
     "gl.filter.type": "نوع القيد",
@@ -336,8 +318,6 @@ const ledgerGl: ModuleLocale = {
     "failed.title": "القيود الفاشلة",
     "failed.subtitle": "قيود تعذّر على الأستاذ ترحيلها.",
     "failed.empty": "لا توجد قيود فاشلة.",
-    "failed.note":
-      "القيد المُرحَّل الذي لم يصل إلى النظام المصرفي ليس هنا — يظهر في التسوية بانتظار المزامنة.",
     "failed.toast.loadFailed": "تعذر تحميل القائمة",
 
     "recon.title": "الملخص اليومي والتسوية",
@@ -345,7 +325,6 @@ const ledgerGl: ModuleLocale = {
     "recon.date": "التاريخ",
     "recon.reconciled": "مُسوّى",
     "recon.notReconciled": "غير مُسوّى",
-    "recon.reconciledHint": "التسوية تعني توازن كل عملة ووصول جميع القيود إلى النظام المصرفي معًا.",
     "recon.summary": "الملخص اليومي",
     "recon.reconciliation": "التسوية",
     "recon.entries": "القيود",
@@ -360,8 +339,6 @@ const ledgerGl: ModuleLocale = {
     "recon.byStatus": "حسب الحالة",
     "recon.byType": "حسب نوع العملية",
     "recon.empty": "لا توجد قيود في هذا التاريخ.",
-    "recon.syncNote":
-      "تعمل المزامنة مع النظام المصرفي دوريًا، لذا فإن وجود قيود منتظرة في يوم قريب يعني عادةً وجود طابور انتظار لا خللًا. أما العدد الذي لا يتناقص فيستحق الفحص.",
     "recon.toast.loadFailed": "تعذر تحميل التسوية",
   },
 };

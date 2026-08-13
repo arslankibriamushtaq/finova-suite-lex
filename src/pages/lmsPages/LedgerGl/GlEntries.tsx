@@ -6,7 +6,6 @@ import {
   BookOpen,
   ChevronDown,
   Eye,
-  Info,
   RefreshCw,
   Repeat,
   SlidersHorizontal,
@@ -180,7 +179,7 @@ const GlEntries = () => {
       // is the part that distinguishes one transfer type from another.
       name: t("gl.col.type"),
       cell: (row: GlEntry) => (
-        <span style={{ whiteSpace: "break-spaces" }} title={row.referenceType || ""}>
+        <span className="whitespace-break-spaces" title={row.referenceType || ""}>
           {humanizeCode(row.referenceType) || "-"}
         </span>
       ),
@@ -189,7 +188,7 @@ const GlEntries = () => {
     {
       name: t("gl.col.description"),
       cell: (row: GlEntry) => (
-        <span style={{ whiteSpace: "break-spaces" }}>{row.description || "-"}</span>
+        <span className="whitespace-break-spaces">{row.description || "-"}</span>
       ),
       width: "240px",
     },
@@ -492,11 +491,6 @@ const GlEntries = () => {
             </div>
           </div>
         )}
-
-        <div className="mt-3 flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          <span>{t("gl.filter.currencyHint")}</span>
-        </div>
       </div>
 
       <div className="pro-card">

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import toast from "react-hot-toast";
-import { AlertTriangle, ChevronDown, Eye, Info, RefreshCw } from "lucide-react";
+import { AlertTriangle, ChevronDown, Eye, RefreshCw } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
 import { Badge } from "../../../components/ui/badge";
@@ -19,7 +19,6 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../../../components/ui/dropdown-menu";
-import { FilterField } from "../../../components/shared/filterKit";
 import { EmptyState, PermissionDenied } from "../../../components/shared/detailKit";
 import { TONES, humanizeCode } from "../../../components/shared/detailKitUtils";
 import { useProductPermissions, LEDGER_GL_PERMISSIONS } from "../../../hooks/useProductPermissions";
@@ -92,7 +91,7 @@ const GlFailedEntries = () => {
     {
       name: t("gl.col.description"),
       cell: (row: GlEntry) => (
-        <span style={{ whiteSpace: "break-spaces" }}>{row.description || "-"}</span>
+        <span className="whitespace-break-spaces">{row.description || "-"}</span>
       ),
       width: "260px",
     },
@@ -172,48 +171,45 @@ const GlFailedEntries = () => {
 
   return (
     <div className="service">
-      <div className="mb-3 pb-2 border-bottom">
-        <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
-          <span className="pro-head-badge">
-            <AlertTriangle className="h-4 w-4" />
-          </span>
-          {t("failed.title")}
-        </h3>
-        <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("failed.subtitle")}</p>
-      </div>
-
-      <div className="pro-card p-3 mb-3">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
-          <FilterField label={t("gl.filter.currency")}>
-            <Select
-              value={currency}
-              onValueChange={(v) => {
-                setCurrency(v);
-                setPage(1);
-              }}
-            >
-              <SelectTrigger className="w-full data-[size=default]:h-10 sm:w-56">
-                <SelectValue placeholder={t("gl.filter.currency")} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t("gl.filter.allCurrencies")}</SelectItem>
-                {LEDGER_CURRENCIES.map((c) => (
-                  <SelectItem key={c} value={c}>
-                    {c}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </FilterField>
+      {/* One filter, so it sits in the header beside the title rather than
+          alone in a full-width card. Centred: the controls are one 40px row
+          against a two-line title block. */}
+      <div className="mb-3 pb-2 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <div className="min-w-0">
+          <h3 className="mb-0 fw-bold text-dark ps-0 d-flex align-items-center gap-2">
+            <span className="pro-head-badge">
+              <AlertTriangle className="h-4 w-4" />
+            </span>
+            {t("failed.title")}
+          </h3>
+          <p className="mb-0 mt-1 text-sm text-muted-foreground">{t("failed.subtitle")}</p>
+        </div>
+        <div className="d-flex align-items-center gap-2">
+          <Select
+            value={currency}
+            onValueChange={(v) => {
+              setCurrency(v);
+              setPage(1);
+            }}
+          >
+            {/* bg-card: the trigger ships transparent, and here it sits on the
+                page background rather than inside a card. */}
+            <SelectTrigger className="w-40 bg-card data-[size=default]:h-10">
+              <SelectValue placeholder={t("gl.filter.currency")} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>{t("gl.filter.allCurrencies")}</SelectItem>
+              {LEDGER_CURRENCIES.map((c) => (
+                <SelectItem key={c} value={c}>
+                  {c}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button variant="outline" className="h-10 gap-2" onClick={load} disabled={isLoading}>
             <RefreshCw className={`h-4 w-4 ${isLoading ? "animate-spin" : ""}`} />
             {t("common:refresh")}
           </Button>
-        </div>
-
-        <div className="mt-3 flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          <span>{t("failed.note")}</span>
         </div>
       </div>
 
