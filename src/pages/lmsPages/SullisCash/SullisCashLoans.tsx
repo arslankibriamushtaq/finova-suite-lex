@@ -6,7 +6,6 @@ import {
   ChevronDown,
   Eye,
   HandCoins,
-  Info,
   RefreshCw,
   SlidersHorizontal,
 } from "lucide-react";
@@ -78,17 +77,19 @@ const LoanStatusBadge = ({ status }: { status?: string }) => (
 const StatsCard = ({ stats }: { stats: SullisCashLoanStats }) => {
   const { t } = useTranslation("sullisCash");
   return (
-    <div className="card-product p-4 text-dark h-100">
-      <div className="d-flex align-items-center justify-content-between gap-2">
-        <span style={{ fontSize: 14, fontWeight: 600 }}>{stats.currency}</span>
+    <div className="card-product p-3 p-sm-4 text-dark h-100">
+      {/* Wraps rather than squeezing the badge when the card gets narrow. */}
+      <div className="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <span className="text-sm font-semibold">{stats.currency}</span>
         <Badge variant="outline" className={`border font-medium ${TONES.slate}`}>
           {t("loans.stats.totalLoans", { count: stats.totalLoans })}
         </Badge>
       </div>
-      <div className="mt-2" style={{ fontSize: 22, fontWeight: 700 }}>
-        {formatSullisAmount(stats.outstandingPrincipal, stats.currency)}
+      {/* Amounts carry no currency code — the card's own heading is the
+          currency, so repeating it on every figure just costs width. */}
+      <div className="mt-2 break-words text-xl font-bold sm:text-[22px]">
+        {formatSullisAmount(stats.outstandingPrincipal)}
       </div>
-      <div className="text-xs text-muted-foreground">{t("loans.stats.outstanding")}</div>
       <div className="mt-2 d-flex flex-wrap gap-3 text-xs">
         <span>
           {t("loans.stats.active")}: <b>{stats.activeLoans}</b>
@@ -97,8 +98,7 @@ const StatsCard = ({ stats }: { stats: SullisCashLoanStats }) => {
           {t("loans.stats.overdue")}: <b>{stats.overdueLoans}</b>
         </span>
         <span>
-          {t("loans.stats.disbursed")}:{" "}
-          <b>{formatSullisAmount(stats.disbursedPrincipal, stats.currency)}</b>
+          {t("loans.stats.disbursed")}: <b>{formatSullisAmount(stats.disbursedPrincipal)}</b>
         </span>
       </div>
     </div>
@@ -232,9 +232,7 @@ const SullisCashLoansPage = () => {
     },
     {
       name: t("loans.col.totalDue"),
-      cell: (row: SullisCashLoan) => (
-        <b>{formatSullisAmount(row.totalDue, row.currency)}</b>
-      ),
+      cell: (row: SullisCashLoan) => <b>{formatSullisAmount(row.totalDue, row.currency)}</b>,
       width: "150px",
     },
     {
@@ -451,11 +449,6 @@ const SullisCashLoansPage = () => {
             </div>
           </div>
         )}
-
-        <div className="mt-3 flex items-start gap-2 rounded-sm border border-dashed p-2 text-xs text-muted-foreground">
-          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-          <span>{t("loans.readOnlyNote")}</span>
-        </div>
       </div>
 
       <div className="pro-card">
@@ -492,7 +485,10 @@ const SullisCashLoansPage = () => {
             <div className="flex max-h-[70vh] min-w-0 flex-col gap-3 overflow-y-auto overflow-x-hidden">
               <div className="grid min-w-0 gap-x-6 md:grid-cols-2">
                 <div className="min-w-0">
-                  <Field label={t("loans.detail.status")} value={<LoanStatusBadge status={detail.status} />} />
+                  <Field
+                    label={t("loans.detail.status")}
+                    value={<LoanStatusBadge status={detail.status} />}
+                  />
                   <Field label={t("loans.col.currency")} value={detail.currency} />
                   <Field
                     label={t("loans.col.principal")}
@@ -542,7 +538,10 @@ const SullisCashLoansPage = () => {
                     label={t("loans.detail.penaltyGraceDays")}
                     value={detail.penaltyGraceDays ?? "—"}
                   />
-                  <Field label={t("loans.detail.repaidAt")} value={formatDateTime(detail.repaidAt || undefined)} />
+                  <Field
+                    label={t("loans.detail.repaidAt")}
+                    value={formatDateTime(detail.repaidAt || undefined)}
+                  />
                 </div>
               </div>
 

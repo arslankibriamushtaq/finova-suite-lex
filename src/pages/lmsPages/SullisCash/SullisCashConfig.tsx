@@ -241,7 +241,9 @@ const SullisCashConfigPage = () => {
     // Checked on entry as well as on save — a chip that could never be offered
     // should not sit in the list looking valid.
     if (Number.isFinite(min) && Number.isFinite(max) && (value < min || value > max)) {
-      return toast.error(t("cfg.valid.quickAmountRange", { amount: formatSullisAmount(value, currency) }));
+      return toast.error(
+        t("cfg.valid.quickAmountRange", { amount: formatSullisAmount(value, currency) })
+      );
     }
     if (form.quickAmounts.some((a) => Number(a) === value)) {
       setQuickDraft("");
@@ -388,7 +390,10 @@ const SullisCashConfigPage = () => {
               marked New — opening it seeds one from platform defaults, and it
               only becomes real on save. */}
           <Select value={currency} onValueChange={setCurrency}>
-            <SelectTrigger className="data-[size=default]:h-10" style={{ minWidth: 190 }}>
+            {/* bg-card: the trigger ships `bg-transparent`, which reads fine
+                inside a white `.pro-card` but disappears here — this one sits
+                straight on the sage page background. */}
+            <SelectTrigger className="min-w-[190px] bg-card data-[size=default]:h-10">
               <SelectValue placeholder={t("cfg.currency.label")} />
             </SelectTrigger>
             <SelectContent>
@@ -791,7 +796,13 @@ const StatusPill = ({
   updatedAt?: string;
   updatedLabel: string;
 }) => (
-  <div className="flex shrink-0 items-center gap-2.5 rounded-lg border border-border bg-card px-3 py-2 shadow-sm">
+  // The outline is a `ring-1`, not `border border-border`: Bootstrap ships an
+  // unlayered `.border { border-color: var(--bs-border-color) !important }` that
+  // beats the Tailwind border colour, so in dark mode this chip drew a light
+  // grey #dee2e6 outline around a dark surface. Bootstrap has no `.ring-1`, so
+  // the token colour survives. Same reason `shadow-sm` is gone — Bootstrap's is
+  // `!important` and would overwrite the ring's box-shadow.
+  <div className="flex shrink-0 items-center gap-2.5 rounded-lg bg-card px-3 py-2 ring-1 ring-border">
     <span
       className={`size-2 shrink-0 rounded-full ring-4 ${
         enabled ? "bg-emerald-500 ring-emerald-500/15" : "bg-slate-400 ring-slate-400/15"
