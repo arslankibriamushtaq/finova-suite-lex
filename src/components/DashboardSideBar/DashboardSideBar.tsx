@@ -1799,7 +1799,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         //   img: Images.PartnerManagementIcon,
         //   active: pathname.includes("/ThirdPartyManagement/Providers"),
         // },
-        hasAccess("MIDDLEWARE_PROVIDER_READ") && {
+        hasAccess("MIDDLEWARE_PROVIDERS_READ") && {
           label: "Environment Settings",
           Link: "EnvironmentSettings",
           LinkLable: "/ThirdPartyManagement",
@@ -1812,13 +1812,13 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             //   LinkLable: "/ThirdPartyManagement",
             //   active: pathname.includes("/ThirdPartyManagement/EnvironmentSettings/ServicesList"),
             // },
-            hasAccess("MIDDLEWARE_PROVIDER_READ") && {
+            hasAccess("MIDDLEWARE_PROVIDERS_READ") && {
               label: "Providers",
               Link: "Providers",
               LinkLable: "/ThirdPartyManagement",
               active: pathname.includes("/ThirdPartyManagement/Providers"),
             },
-            hasAccess("MIDDLEWARE_API_READ") && {
+            hasAccess("MIDDLEWARE_PROVIDER_APIS_READ") && {
               label: "All Provider APIs",
               Link: "AllProviderApis",
               LinkLable: "/ThirdPartyManagement",
@@ -2203,7 +2203,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       img: Images.accountCharts,
       active: pathname.split("/").includes("ChartOfAccount"),
       menu: [
-        hasAccess("COA_READ") && {
+        hasAccess("LEDGER_ACCOUNT_READ") && {
           label: "Accounts",
           Link: "ChartOfAccount",
           LinkLable: "/Lms/ChartOfAccount",
@@ -2215,7 +2215,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/Lms/ChartOfAccount",
           active: pathname.includes("/Lms/ChartOfAccount/CoaConfiguration"),
         },
-        hasAccess("COA_FIELD_READ") && {
+        hasAccess("LEDGER_COA_FIELD_READ") && {
           label: "Chart of accounts field",
           Link: "ChartOfAccountFields",
           LinkLable: "/Lms/ChartOfAccount",

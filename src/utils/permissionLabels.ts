@@ -26,6 +26,7 @@ const ACTIONS = [
   "SUSPEND",
   "ASSIGN",
   "CANCEL",
+  "CONFIRM",
   "CREATE",
   "DELETE",
   "EXPORT",

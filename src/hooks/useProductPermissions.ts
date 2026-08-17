@@ -116,25 +116,44 @@ export const LEDGER_GL_PERMISSIONS = {
   RECONCILIATION_READ: "GL_RECONCILIATION_READ",
 };
 
-/** The Ledger module itself: the standalone ledger view and account statements. */
+/** The Ledger module itself: the standalone ledger view and journal entries. */
 export const LEDGER_PERMISSIONS = {
   MODULE: "LEDGER",
   READ: "LEDGER_READ",
-  ACCOUNT_READ: "LEDGER_ACCOUNT_READ",
+  /**
+   * Wallet-side account statements. NOT `LEDGER_ACCOUNT_READ` — the backend
+   * gave that name to the chart of accounts, so statements are prefixed.
+   */
+  ACCOUNT_READ: "WALLET_LEDGER_ACCOUNT_READ",
+  ENTRY_READ: "LEDGER_ENTRY_READ",
+  ENTRY_CREATE: "LEDGER_ENTRY_CREATE",
+  RECONCILIATION_READ: "LEDGER_RECONCILIATION_READ",
+  RECONCILIATION_MANAGE: "LEDGER_RECONCILIATION_MANAGE",
 };
 
-/** Chart of accounts, its configuration, and the custom field definitions. */
+/**
+ * Chart of accounts, its configuration, and the custom field definitions.
+ *
+ * The backend models the chart of accounts as *ledger accounts*, so the codes
+ * are `LEDGER_ACCOUNT_*` rather than the `COA_*` we proposed. Only the config
+ * pair kept the COA prefix.
+ */
 export const COA_PERMISSIONS = {
-  LIST: "COA_READ",
-  CREATE: "COA_CREATE",
-  EDIT: "COA_UPDATE",
-  DELETE: "COA_DELETE",
+  LIST: "LEDGER_ACCOUNT_READ",
+  CREATE: "LEDGER_ACCOUNT_CREATE",
+  EDIT: "LEDGER_ACCOUNT_UPDATE",
+  /**
+   * There is no delete endpoint — accounts are activated/deactivated, and that
+   * is what MANAGE authorizes. Callers wanting "remove" get the same gate.
+   */
+  DELETE: "LEDGER_ACCOUNT_MANAGE",
+  MANAGE: "LEDGER_ACCOUNT_MANAGE",
   CONFIG_READ: "COA_CONFIG_READ",
   CONFIG_UPDATE: "COA_CONFIG_UPDATE",
-  FIELD_LIST: "COA_FIELD_READ",
-  FIELD_CREATE: "COA_FIELD_CREATE",
-  FIELD_EDIT: "COA_FIELD_UPDATE",
-  FIELD_DELETE: "COA_FIELD_DELETE",
+  FIELD_LIST: "LEDGER_COA_FIELD_READ",
+  FIELD_CREATE: "LEDGER_COA_FIELD_CREATE",
+  FIELD_EDIT: "LEDGER_COA_FIELD_UPDATE",
+  FIELD_DELETE: "LEDGER_COA_FIELD_DELETE",
 };
 
 /**
@@ -679,10 +698,10 @@ export const WALLET_PERMISSIONS = {
   EDIT: "WALLET_WRITE", // backend Wallet has CREATE/READ/WRITE/MANAGE (no UPDATE/DELETE)
   MANAGE: "WALLET_MANAGE",
   /** Admin-initiated money movement — deliberately not plain WALLET_READ. */
-  TRANSFER_CREATE: "WALLET_TRANSFER_CREATE",
+  TRANSFER_CREATE: "WALLET_TRANSFERS_CREATE",
   INTERNAL_TRANSFER_CREATE: "WALLET_INTERNAL_TRANSFER_CREATE",
-  /** Per-account and per-transaction ceilings. */
-  LIMIT_READ: "WALLET_LIMIT_READ",
+  /** Per-account and per-transaction ceilings. Backend name is limit-bounds. */
+  LIMIT_READ: "WALLET_LIMIT_BOUNDS_READ",
   LIMIT_UPDATE: "WALLET_LIMIT_UPDATE",
 };
 
@@ -701,6 +720,10 @@ export const NOTIFICATION_PERMISSIONS = {
   LIST: "NOTIFICATION_READ",
   CREATE: "NOTIFICATION_CREATE",
   EDIT: "NOTIFICATION_UPDATE",
+  /**
+   * Registered but enforces nothing: notification-service has no channel /
+   * language / template controllers, so this gates the button only.
+   */
   DELETE: "NOTIFICATION_DELETE",
 };
 
@@ -746,9 +769,15 @@ export const BLOCK_CODE_PERMISSIONS = {
 export const LENDING_PERMISSIONS = {
   MODULE: "LENDING",
   READ: "LENDING_READ",
+  DASHBOARD_READ: "LENDING_DASHBOARD_READ",
   APPLICATION_LIST: "LENDING_APPLICATION_READ",
+  /** Backed by the manual-approval task endpoints, not by loan-applications. */
   APPLICATION_APPROVE: "LENDING_APPLICATION_APPROVE",
   APPLICATION_REJECT: "LENDING_APPLICATION_REJECT",
+  /**
+   * Registered but enforces nothing: lending-service has no disburse endpoint,
+   * so this is a UI-only gate until one exists.
+   */
   APPLICATION_DISBURSE: "LENDING_APPLICATION_DISBURSE",
 };
 
@@ -768,7 +797,13 @@ export const COLLECTIONS_PERMISSIONS = {
 // ============================================
 export const REPORT_PERMISSIONS = {
   MODULE: "REPORT",
+  /** Covers all 27 report objects; the sidebar categories are views over them. */
   READ: "REPORT_READ",
+  /**
+   * Registered but enforces nothing: export is the same GET as the report, so
+   * the server cannot separate them. Use it to hide the button, not to secure
+   * the data — anyone who can read a report can already export it.
+   */
   EXPORT: "REPORT_EXPORT",
 };
 
@@ -778,9 +813,10 @@ export const REPORT_PERMISSIONS = {
 export const MIDDLEWARE_PERMISSIONS = {
   MODULE: "MIDDLEWARE",
   READ: "MIDDLEWARE_READ",
-  PROVIDER_LIST: "MIDDLEWARE_PROVIDER_READ",
-  API_LIST: "MIDDLEWARE_API_READ",
+  PROVIDER_LIST: "MIDDLEWARE_PROVIDERS_READ",
+  API_LIST: "MIDDLEWARE_PROVIDER_APIS_READ",
   CLIENT_LIST: "MIDDLEWARE_CLIENT_READ",
+  /** One object covers prod/dev/test — a per-environment gate is not expressible. */
   CLIENT_REQUEST_LIST: "MIDDLEWARE_CLIENT_REQUEST_READ",
 };
 
@@ -793,11 +829,14 @@ export const EXCHANGE_PERMISSIONS = {
   PROVIDER_LIST: "EXCHANGE_PROVIDER_READ",
   PROVIDER_CREATE: "EXCHANGE_PROVIDER_CREATE",
   PROVIDER_EDIT: "EXCHANGE_PROVIDER_UPDATE",
-  PROVIDER_DELETE: "EXCHANGE_PROVIDER_DELETE",
+  // No PROVIDER_DELETE: AdminExchangeController exposes no delete-provider
+  // endpoint, so a code for it would gate a button on nothing.
   PAYMENT_LIST: "EXCHANGE_PAYMENT_READ",
+  PAYMENT_CONFIRM: "EXCHANGE_PAYMENT_CONFIRM",
   COUNTRY_LIST: "EXCHANGE_COUNTRY_READ",
   COUNTRY_CREATE: "EXCHANGE_COUNTRY_CREATE",
   COUNTRY_EDIT: "EXCHANGE_COUNTRY_UPDATE",
+  COUNTRY_DELETE: "EXCHANGE_COUNTRY_DELETE",
   DOCUMENT_TYPE_LIST: "EXCHANGE_DOCUMENT_TYPE_READ",
   DOCUMENT_TYPE_CREATE: "EXCHANGE_DOCUMENT_TYPE_CREATE",
   DOCUMENT_TYPE_EDIT: "EXCHANGE_DOCUMENT_TYPE_UPDATE",

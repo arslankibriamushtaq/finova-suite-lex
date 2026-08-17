@@ -1,5 +1,36 @@
 # Permission Catalog — Backend Request
 
+> ## ✅ Delivered — 2026-08-17 (identity-service V86–V91, V93, V96–V97)
+>
+> The backend registered **101 codes across 15 modules** and, critically, granted them: `role_permissions`
+> had not been written since V21, so codes that *were* registered still read as missing because
+> `/permissions/role/{roleId}` joins that table. V97 grants the full set to `super_admin` and `admin`;
+> every other role is assigned through the admin UI, which is also what triggers the Casbin + Redis re-sync.
+>
+> **The frontend has been updated to the codes as registered, not as proposed.** Renames applied:
+>
+> | We proposed | Registered — now used |
+> |---|---|
+> | `WALLET_TRANSFER_CREATE` | `WALLET_TRANSFERS_CREATE` |
+> | `WALLET_LIMIT_READ` | `WALLET_LIMIT_BOUNDS_READ` |
+> | `MIDDLEWARE_PROVIDER_READ` | `MIDDLEWARE_PROVIDERS_READ` |
+> | `MIDDLEWARE_API_READ` | `MIDDLEWARE_PROVIDER_APIS_READ` |
+> | `COA_READ` / `_CREATE` / `_UPDATE` | `LEDGER_ACCOUNT_READ` / `_CREATE` / `_UPDATE` |
+> | `COA_DELETE` | `LEDGER_ACCOUNT_MANAGE` (no delete endpoint; activate/deactivate) |
+> | `COA_FIELD_*` | `LEDGER_COA_FIELD_*` |
+> | `LEDGER_ACCOUNT_READ` (statements) | `WALLET_LEDGER_ACCOUNT_READ` (the name was taken) |
+> | `EXCHANGE_PROVIDER_DELETE` | dropped — no endpoint |
+>
+> **Three codes are registered but enforce nothing** (`NOTIFICATION_DELETE`, `LENDING_APPLICATION_DISBURSE`,
+> `REPORT_EXPORT`): no backing endpoint, so they hide buttons rather than secure data. They are annotated as
+> such in `useProductPermissions.ts` so nobody mistakes them for real authorization.
+>
+> **Still open on the backend side:** `BANK_READ` has no owning module and stays invisible; six Casbin
+> subjects (`business_customer`, `business_partner`, `csa`, `head_of_accounts`, `developer`, `manager_admin`)
+> have no row in `roles`, so the admin role picker cannot list or assign them.
+>
+> The sections below are the original request, kept for the rationale behind each code.
+
 **One document. Everything the frontend needs from the identity-service permission catalog.**
 
 **Where they must appear:** `GET /identity-service/api/v1/permissions/role/{roleId}`

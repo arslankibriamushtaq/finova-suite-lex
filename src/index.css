@@ -435,6 +435,54 @@ body,
 }
 
 /* ---------------------------------------------------------------------------
+   Compact read-only tile for a label + value pair inside a `.pro-card`, where
+   the full `.stat-card` KPI treatment (150px tall, gradient, 40px icon badge)
+   is too heavy. Same emerald tint and 2px corner as the card it sits in, so a
+   row of these reads as part of the card rather than as pasted-in grey boxes.
+   Use `.pro-tile` on the wrapper, `.pro-tile__label` / `.pro-tile__value`.
+--------------------------------------------------------------------------- */
+.pro-tile {
+  min-width: 0;
+  padding: 10px 12px;
+  border-radius: 2px;
+  border: 1px solid color-mix(in srgb, #10b981 14%, var(--surface-border));
+  background: color-mix(in srgb, #10b981 4%, var(--surface-card));
+}
+.pro-tile__label {
+  display: block;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+.pro-tile__value {
+  display: block;
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+/* The figure the tile exists for — the one value worth reading first. */
+.pro-tile__value--accent {
+  font-size: 18px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #059669;
+}
+html.dark .pro-tile,
+.dark .pro-tile {
+  border-color: color-mix(in srgb, #10b981 20%, var(--surface-border));
+  background: color-mix(in srgb, #10b981 7%, var(--surface-card));
+}
+html.dark .pro-tile__value--accent,
+.dark .pro-tile__value--accent {
+  color: #34d399;
+}
+
+/* ---------------------------------------------------------------------------
    Compact data table for places where the full DataTable (TableView) is too
    heavy — inside dialogs or nested in a card. Mirrors TableView's emerald head,
    striped rows and hover so nested tables read as the same component.

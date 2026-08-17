@@ -243,6 +243,8 @@ import BnplCategories from "../pages/lmsPages/Bnpl/BnplCategories";
 import BnplCurrencyLimits from "../pages/lmsPages/Bnpl/BnplCurrencyLimits";
 import SullisCashConfig from "../pages/lmsPages/SullisCash/SullisCashConfig";
 import SullisCashLoans from "../pages/lmsPages/SullisCash/SullisCashLoans";
+import CryptoTreasury from "../pages/lmsPages/Crypto/CryptoTreasury";
+import CryptoTransfers from "../pages/lmsPages/Crypto/CryptoTransfers";
 import WalletLedgerTransactions from "../pages/lmsPages/WalletLedger/WalletLedgerTransactions";
 import WalletLedgerAccounts from "../pages/lmsPages/WalletLedger/WalletLedgerAccounts";
 import ExchangeProviders from "../pages/lmsPages/Exchange/ExchangeProviders";
@@ -949,6 +951,17 @@ export const router = createBrowserRouter(
               // Casbin object — support can read loans without re-pricing.
               path: "/LOS/SullisCash/Loans",
               element: <SullisCashLoans />,
+            },
+            {
+              // Two Casbin objects, so two routes: `crypto.admin.treasury` is
+              // the platform's own inventory, `crypto.admin.transfers` is every
+              // customer's send. Ops read the treasury without touching either.
+              path: "/LOS/Crypto/Treasury",
+              element: <CryptoTreasury />,
+            },
+            {
+              path: "/LOS/Crypto/Transfers",
+              element: <CryptoTransfers />,
             },
             {
               path: "/LOS/Exchange/Providers",
