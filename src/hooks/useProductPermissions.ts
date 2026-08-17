@@ -143,8 +143,8 @@ export const COA_PERMISSIONS = {
  * because the blast radius is every wallet transaction from then on.
  */
 export const WALLET_GL_ACCOUNT_PERMISSIONS = {
-  READ: "ledger.wallet-gl-accounts:read",
-  WRITE: "ledger.wallet-gl-accounts:write",
+  READ: "WALLET_GL_ACCOUNT_READ",
+  WRITE: "WALLET_GL_ACCOUNT_WRITE",
 };
 
 // Product Management Module permission names (legacy / workflow)
@@ -837,6 +837,29 @@ export const SULLIS_CASH_PERMISSIONS = {
    * product. Casbin object `wallet.sullis-cash.admin-loans`.
    */
   LOANS_READ: "SULLIS_CASH_LOAN_READ",
+};
+
+// ============================================
+// CRYPTO admin — crypto-service (treasury, transfers)
+// ============================================
+/**
+ * Casbin authorizes crypto-service on objects (`crypto.admin.treasury:create`),
+ * but this hook matches identity-service `permissionCode`s, so the gates are
+ * written in that vocabulary.
+ *
+ * TREASURY_CREATE is separate from READ because that one endpoint attaches the
+ * signing handle for the wallet funding every payout — `developer` reads the
+ * treasury but cannot register one. TRANSFERS has no CREATE at all: there is no
+ * admin send endpoint, and a constant for one would advertise a capability the
+ * system does not have.
+ */
+export const CRYPTO_PERMISSIONS = {
+  MODULE: "CRYPTO",
+  TREASURY_READ: "CRYPTO_TREASURY_READ",
+  TREASURY_CREATE: "CRYPTO_TREASURY_CREATE",
+  TRANSFERS_READ: "CRYPTO_TRANSFER_READ",
+  /** Reconcile and abandon. Neither moves coin. */
+  TRANSFERS_UPDATE: "CRYPTO_TRANSFER_UPDATE",
 };
 
 // ============================================

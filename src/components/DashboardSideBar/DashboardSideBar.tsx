@@ -39,6 +39,7 @@ import {
   QrCode,
   ScanLine,
   Coins,
+  Bitcoin,
   type LucideIcon,
 } from "lucide-react";
 
@@ -88,6 +89,7 @@ const MODULE_THEME: Record<string, { Icon: LucideIcon; color: string }> = {
   // which `--mi-color` inherits from the group wrapper.
   bnpl: { Icon: ShoppingBag, color: "#a855f7" },
   sulliscash: { Icon: Coins, color: "#f59e0b" },
+  crypto: { Icon: Bitcoin, color: "#f97316" },
   "general credit scoring": { Icon: Gauge, color: "#f59e0b" },
   "accounts limit setting": { Icon: SlidersHorizontal, color: "#14b8a6" },
   "exchange top-up": { Icon: ArrowLeftRight, color: "#f97316" },
@@ -151,6 +153,9 @@ const SIDEBAR_LABEL_KEYS: Record<string, string> = {
   SullisCash: "sullisCash",
   "SullisCash Settings": "sullisCashSettings",
   "SullisCash Loans": "sullisCashLoans",
+  Crypto: "crypto",
+  "Crypto Treasury": "cryptoTreasury",
+  "Crypto Transfers": "cryptoTransfers",
   "All Reports": "allReports",
   "Currency Reports": "currencyReports",
   "Ledger & Journal": "ledgerJournal",
@@ -252,6 +257,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
       p.includes("/WalletLedger") ||
       p.includes("/LOS/Bnpl") ||
       p.includes("/LOS/SullisCash") ||
+      p.includes("/LOS/Crypto") ||
       p.includes("/NotificationOrchestrator") ||
       p.includes("/RiskManagement") ||
       p.includes("/LOS/Setting") ||
@@ -1456,7 +1462,10 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           ].filter(Boolean),
         },
 
-        {
+        // Every child of this group is a lending policy, so the group follows
+        // the same permission — otherwise a role without it opens an empty
+        // dropdown instead of not seeing one.
+        hasAccess("POLICY_READ") && {
           label: "Setting",
           Link: "notification",
           img: Images.SettingsIcon,
@@ -2212,7 +2221,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
           LinkLable: "/Lms/ChartOfAccount",
           active: pathname.includes("/Lms/ChartOfAccount/ChartOfAccountFields"),
         },
-        {
+        hasAccess("WALLET_GL_ACCOUNT_READ") && {
           // Which account each wallet rail posts to. It picks accounts, so it
           // belongs beside the chart of accounts rather than beside the GL
           // enquiry screens that read entries.
@@ -2263,7 +2272,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         pathname.split("/").includes("ReportsCenter") ||
         pathname.includes("/LOS/WalletLedger/Transactions"),
       menu: [
-        hasAccess(["LEDGER", "WALLET"]) && {
+        hasAccess("LEDGER") && {
           // The wallet-side view of the same postings. It is a standalone page
           // rather than a ReportsCenter category, so it keeps its own absolute
           // route — only its home in the sidebar changed.
@@ -2584,6 +2593,30 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
         },
       ].filter(Boolean),
     },
+    hasAccess("CRYPTO") && {
+      // The platform's own inventory and every customer's sends are two Casbin
+      // objects, so two entries — ops read the treasury without the transfer
+      // list, and support reads transfers without touching the treasury.
+      label: "Crypto",
+      Link: "/LOS/Crypto/Treasury",
+      img: Images.CustomerManagementIcon,
+      imgActive: Images.CustomerManagementIconDark,
+      active: pathname.includes("/LOS/Crypto"),
+      menu: [
+        hasAccess("CRYPTO_TREASURY_READ") && {
+          label: "Crypto Treasury",
+          Link: "Treasury",
+          LinkLable: "/LOS/Crypto",
+          active: pathname.includes("/LOS/Crypto/Treasury"),
+        },
+        hasAccess("CRYPTO_TRANSFER_READ") && {
+          label: "Crypto Transfers",
+          Link: "Transfers",
+          LinkLable: "/LOS/Crypto",
+          active: pathname.includes("/LOS/Crypto/Transfers"),
+        },
+      ].filter(Boolean),
+    },
     hasAccess("EXCHANGE") && {
       label: "Exchange Top-up",
       Link: "/LOS/Exchange/Providers",
@@ -2674,7 +2707,7 @@ const DasbhboardSidebar = ({ effectiveCollapsed }: { effectiveCollapsed?: boolea
             pathname.includes("/ProductManagement") ||
             pathname.includes("/LOV"),
           menu: [
-            {
+            hasAccess("DASHBOARD_READ") && {
               label: "Dashboard",
               Link: "Dashboard",
               LinkLable: "/LOS",

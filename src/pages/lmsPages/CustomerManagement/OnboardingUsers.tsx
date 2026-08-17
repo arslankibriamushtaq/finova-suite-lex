@@ -7,6 +7,11 @@ import { SearchOutlined } from "@ant-design/icons";
 import { RefreshCw, Eye, ChevronDown, Users } from "lucide-react";
 
 import TableView from "../../../components/TableView/TableView";
+import { PermissionDenied } from "../../../components/shared/detailKit";
+import {
+  useProductPermissions,
+  ONBOARD_CUSTOMERS_PERMISSIONS,
+} from "../../../hooks/useProductPermissions";
 import { Button } from "../../../components/ui/button";
 import {
   Select,
@@ -139,6 +144,10 @@ const ProgressCell = ({ row }: { row: OnboardingSession }) => {
 const OnboardingUsers = () => {
   const navigate = useNavigate();
   const { t } = useTranslation("customerManagement");
+  // Hiding the menu entry is not access control — this route is reachable by
+  // URL, so the page has to make the same decision the sidebar did.
+  const { hasPermission } = useProductPermissions();
+  const canRead = hasPermission(ONBOARD_CUSTOMERS_PERMISSIONS.LIST);
 
   const [data, setData] = useState<OnboardingSession[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -335,6 +344,8 @@ const OnboardingUsers = () => {
       width: "120px",
     },
   ];
+
+  if (!canRead) return <PermissionDenied />;
 
   return (
     <div className="service customer-list-page">

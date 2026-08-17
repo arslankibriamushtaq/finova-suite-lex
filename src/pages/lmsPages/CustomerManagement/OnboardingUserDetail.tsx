@@ -17,6 +17,11 @@ import {
 } from "lucide-react";
 
 import { Badge } from "../../../components/ui/badge";
+import { PermissionDenied } from "../../../components/shared/detailKit";
+import {
+  useProductPermissions,
+  ONBOARD_CUSTOMERS_PERMISSIONS,
+} from "../../../hooks/useProductPermissions";
 import { Button } from "../../../components/ui/button";
 import { cn } from "../../../lib/utils";
 import {
@@ -128,6 +133,10 @@ const Block = ({
 
 const OnboardingUserDetail = () => {
   const { t, i18n } = useTranslation("customerManagement");
+  // Hiding the menu entry is not access control — this route is reachable by
+  // URL, so the page has to make the same decision the sidebar did.
+  const { hasPermission } = useProductPermissions();
+  const canRead = hasPermission(ONBOARD_CUSTOMERS_PERMISSIONS.LIST);
   // When Arabic is active, prefer the API's Arabic step label (labelAr).
   const isArabic = i18n.language === "ar";
   const params = useParams();
@@ -195,6 +204,8 @@ const OnboardingUserDetail = () => {
     { icon: CalendarDays, label: t("onboardingUserDetail.fact.started"), value: formatDateTime(startedAt) },
     { icon: Clock, label: t("onboardingUserDetail.fact.lastUpdated"), value: formatDateTime(session?.updatedAt) },
   ].filter((f) => f.value && f.value !== "—");
+
+  if (!canRead) return <PermissionDenied />;
 
   return (
     <div className="service customer-list-page onb-detail-page">

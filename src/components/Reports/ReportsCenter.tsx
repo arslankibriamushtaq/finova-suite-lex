@@ -5,6 +5,8 @@ import { FileBarChart } from "lucide-react";
 
 import { Badge } from "../ui/badge";
 import { TONES } from "../shared/detailKitUtils";
+import { PermissionDenied } from "../shared/detailKit";
+import { useProductPermissions, REPORT_PERMISSIONS } from "../../hooks/useProductPermissions";
 import { ReportsCenterProvider } from "./ReportHeader";
 
 // Currency-scoped
@@ -186,6 +188,10 @@ const CATEGORIES: Record<string, { titleKey: string; reports: ReportEntry[] }> =
 const ReportsCenter = () => {
   const { t } = useTranslation("reports");
   const { category } = useParams();
+  // Hiding the menu entry is not access control — this route is reachable by
+  // URL, so the page has to make the same decision the sidebar did.
+  const { hasPermission } = useProductPermissions();
+  const canRead = hasPermission(REPORT_PERMISSIONS.READ);
 
   const active = CATEGORIES[category || "currency"] ?? CATEGORIES.currency;
   const [selected, setSelected] = useState(active.reports[0].key);
@@ -199,6 +205,8 @@ const ReportsCenter = () => {
     () => active.reports.find((r) => r.key === selected) ?? active.reports[0],
     [active, selected]
   );
+
+  if (!canRead) return <PermissionDenied />;
 
   return (
     <div className="service col-12">
