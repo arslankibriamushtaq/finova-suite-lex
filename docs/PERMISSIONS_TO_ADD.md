@@ -2,8 +2,9 @@
 
 Everything the identity-service permission catalog is missing for the **active sidebar pages** (the 74 pages listed in [SIDEBAR_ACTIVE_PAGES.md](SIDEBAR_ACTIVE_PAGES.md)). Commented-out menu entries are excluded — nothing here is speculative UI.
 
-**Ask:** 10 new modules · 96 new permission codes.
+**Ask:** 11 new modules · 102 new permission codes.
 **Endpoint they must appear in:** `GET /identity-service/api/v1/permissions/role/{roleId}`
+**Re-audited:** 2026-08-17 against the current sidebar — every gate resolves to a code below or a pre-existing module, with `WALLET_GL_ACCOUNT_*` the sole remaining gap.
 **Catalog baseline:** audit of 2026-07-16 — 174 codes across 19 modules (`DASHBOARD, ADMIN, CUSTOMER, PARTNER, PERMISSION, POLICY, PRODUCT, LOV, PROFILE, RISK, ROLE, WALLET, TEST, KYC, MIDDLEWARE, EMPLOYEE, ONBOARDING, PII, FRAUD`). Anything already added since then can be ticked off rather than re-created.
 
 ---
@@ -103,8 +104,12 @@ Covers the standalone Ledger page, Wallet Ledger, General Ledger and Chart of ac
 | `COA_FIELD_CREATE` | Create COA Field | `POST /coa-fields` |
 | `COA_FIELD_UPDATE` | Update COA Field | incl. activate/deactivate |
 | `COA_FIELD_DELETE` | Delete COA Field | deactivate |
+| `WALLET_GL_ACCOUNT_READ` | View Wallet GL Accounts | Chart of account → Wallet GL Accounts |
+| `WALLET_GL_ACCOUNT_WRITE` | Update Wallet GL Accounts | change which GL account a wallet rail posts to |
 
 > Splitting `GL_*` / `COA_*` into their own modules is fine by us — the frontend only needs the code strings to be stable. Say which module owns them.
+
+**`WALLET_GL_ACCOUNT_*` is the one outstanding ask.** That screen landed after this document was first written, so it was never in the batch. It is the only sidebar entry with no code at all — it currently carries the Casbin strings `ledger.wallet-gl-accounts:read` / `:write` ([useProductPermissions.ts:145](../src/hooks/useProductPermissions.ts#L145)), which the identity catalog cannot express, so the page is reachable by super admin only. Read suits most back-office roles; write is admin / head_of_accounts only, because the blast radius is every wallet transaction posted from then on.
 
 ## 5. BNPL *(new module)*
 
@@ -186,6 +191,25 @@ Nine report pages, all read-only + export.
 | `REPORT_EXPORT` | Export Report | CSV / PDF / Excel download on every report |
 
 > Optional granularity if reports must be split by audience — say the word and we'll gate per category: `REPORT_ACCOUNT_READ`, `REPORT_SIMAH_READ`, `REPORT_CURRENCY_READ`, `REPORT_LEDGER_READ`, `REPORT_LENDING_READ`, `REPORT_COLLECTIONS_READ`, `REPORT_PROFITABILITY_READ`.
+
+---
+
+## 10b. CRYPTO *(new module)*
+
+crypto-service. Two Casbin objects, split so ops can read the treasury without the customer transfer list and support can read transfers without touching the treasury. Names already in constants ([useProductPermissions.ts](../src/hooks/useProductPermissions.ts)).
+
+| Code | Permission name | Casbin object | Gates |
+|---|---|---|---|
+| ⭐ `CRYPTO_TREASURY_READ` | View Crypto Treasury | `crypto.admin.treasury:read` | Crypto → Treasury — `/LOS/Crypto/Treasury` |
+| `CRYPTO_TREASURY_CREATE` | Create Crypto Treasury Address | `crypto.admin.treasury:create` | register / rotate an address — `POST /api/v1/admin/crypto/treasury` |
+| `CRYPTO_TRANSFER_READ` | View Crypto Transfers | `crypto.admin.transfers:read` | Crypto → Transfers — `/LOS/Crypto/Transfers` |
+| `CRYPTO_TRANSFER_UPDATE` | Update Crypto Transfer | `crypto.admin.transfers:update` | reconcile + mark dead — `POST …/{id}/reconcile`, `POST …/{id}/abandon` |
+
+**There is deliberately no `CRYPTO_TRANSFER_CREATE`.** A transfer needs a signature from the user's device and no operator holds a key that could produce one, so crypto-service exposes no admin send endpoint. Please do not register a create code for transfers — one would advertise a capability the system does not have, and any support process built on it would be built on nothing.
+
+**`CRYPTO_TREASURY_CREATE` is the sensitive one.** That endpoint attaches the KMS/HSM signing handle for the wallet funding every payout, which is why `developer` should hold `CRYPTO_TREASURY_READ` and not it. Neither treasury code lets anyone read key material: the API only ever returns the handle masked to its last six characters.
+
+Backend role grants per the service's own Casbin migration (`V96__add_crypto_admin_policies.sql`): `super_admin` full, `admin` treasury create+read and transfers read+update, `developer` read on both.
 
 ---
 
